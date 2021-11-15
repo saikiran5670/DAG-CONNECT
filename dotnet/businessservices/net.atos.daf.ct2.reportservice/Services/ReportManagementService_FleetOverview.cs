@@ -232,6 +232,45 @@ namespace net.atos.daf.ct2.reportservice.Services
                             }
                         }
                     }
+                    //apply filter shared by UI 
+                    //fleetOverviewFilter.HealthStatus
+                    if (fleetOverviewFilter.HealthStatus?.Count > 0)
+                    {
+                        result = result.Where(hs => fleetOverviewFilter.HealthStatus.Contains(hs.VehicleHealthStatusType)).ToList();
+                    }
+                    //fleetOverviewFilter.AlertCategory
+                    if (fleetOverviewFilter.AlertCategory?.Count > 0)
+                    {
+                        foreach (var element in result.ToList())
+                        {
+                            if ((element?.FleetOverviewAlert?.Count == 0) || (element?.FleetOverviewAlert?.Count > 0 && !element.FleetOverviewAlert.Any(y => fleetOverviewFilter.AlertCategory.Contains(y.CategoryType))))
+                            {
+                                result.Remove(element);
+                            }
+                        }
+                    }
+                    //fleetOverviewFilter.AlertLevel
+                    if (fleetOverviewFilter.AlertLevel?.Count > 0)
+                    {
+                        foreach (var element in result.ToList())
+                        {
+
+                            if (element?.FleetOverviewAlert?.Count > 0 && !element.FleetOverviewAlert.Any(y => fleetOverviewFilter.AlertLevel.Contains(y.AlertLevel)))
+                            {
+                                result.Remove(element);
+                            }
+                        }
+                    }
+                    //fleetOverviewFilter.DriverId
+                    if (fleetOverviewFilter.DriverId?.Count > 0)
+                    {
+                        result = result.Where(hs => fleetOverviewFilter.DriverId.Contains(hs.Driver1Id)).ToList();
+                    }
+                    //fleetOverviewFilter.OtherFilter
+                    if (fleetOverviewFilter.OtherFilter?.Count > 0)
+                    {
+                        result = result.Where(hs => fleetOverviewFilter.OtherFilter.Contains(hs.VehicleDrivingStatusType)).ToList();
+                    }
                     List<DriverDetails> driverDetails = _reportManager.GetDriverDetails(result.Where(p => !string.IsNullOrEmpty(p.Driver1Id))
                                                                                              .Select(x => x.Driver1Id).Distinct().ToList(), request.OrganizationId).Result;
                     List<WarningDetails> warningDetails = await _reportManager.GetWarningDetails(result.Where(p => p.LatestWarningClass > 0).Select(x => x.LatestWarningClass).Distinct().ToList(), result.Where(p => p.LatestWarningNumber > 0).Select(x => x.LatestWarningNumber).Distinct().ToList(), request.LanguageCode);
@@ -321,6 +360,46 @@ namespace net.atos.daf.ct2.reportservice.Services
                     //if vehicle have any warning, then return only waarning data 
                     if (result?.Count > 0)
                     {
+                        //apply filter shared by UI 
+                        //fleetOverviewFilter.HealthStatus
+                        if (fleetOverviewFilter.HealthStatus?.Count > 0)
+                        {
+                            result = result.Where(hs => fleetOverviewFilter.HealthStatus.Contains(hs.VehicleHealthStatusType)).ToList();
+                        }
+                        //fleetOverviewFilter.AlertCategory
+                        if (fleetOverviewFilter.AlertCategory?.Count > 0)
+                        {
+                            foreach (var element in result.ToList())
+                            {
+                                if ((element?.FleetOverviewAlert?.Count == 0) || (element?.FleetOverviewAlert?.Count > 0 && !element.FleetOverviewAlert.Any(y => fleetOverviewFilter.AlertCategory.Contains(y.CategoryType))))
+                                {
+                                    result.Remove(element);
+                                }
+                            }
+                        }
+                        //fleetOverviewFilter.AlertLevel
+                        if (fleetOverviewFilter.AlertLevel?.Count > 0)
+                        {
+                            foreach (var element in result.ToList())
+                            {
+
+                                if (element?.FleetOverviewAlert?.Count > 0 && !element.FleetOverviewAlert.Any(y => fleetOverviewFilter.AlertLevel.Contains(y.AlertLevel)))
+                                {
+                                    result.Remove(element);
+                                }
+                            }
+                        }
+                        //fleetOverviewFilter.DriverId
+                        if (fleetOverviewFilter.DriverId?.Count > 0)
+                        {
+                            result = result.Where(hs => fleetOverviewFilter.DriverId.Contains(hs.Driver1Id)).ToList();
+                        }
+                        //fleetOverviewFilter.OtherFilter
+                        if (fleetOverviewFilter.OtherFilter?.Count > 0)
+                        {
+                            result = result.Where(hs => fleetOverviewFilter.OtherFilter.Contains(hs.VehicleDrivingStatusType)).ToList();
+                        }
+
                         List<DriverDetails> driverDetails = _reportManager.GetDriverDetails(result.Where(p => !string.IsNullOrEmpty(p.Driver1Id))
                                                                                                  .Select(x => x.Driver1Id).Distinct().ToList(), request.OrganizationId).Result;
                         List<WarningDetails> warningDetails = await _reportManager.GetWarningDetails(result.Where(p => p.LatestWarningClass > 0).Select(x => x.LatestWarningClass).Distinct().ToList(), result.Where(p => p.LatestWarningNumber > 0).Select(x => x.LatestWarningNumber).Distinct().ToList(), request.LanguageCode);
