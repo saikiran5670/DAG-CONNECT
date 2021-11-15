@@ -1647,9 +1647,9 @@ let prepare = []
       this.resetLogFormControlValue();
      }
      this.setVehicleGroupAndVehiclePreSelection();
-     if(this.showBack){
-       this.onSearch();
-     }
+    //  if(this.showBack){
+    //    this.onSearch();
+    //  }
   }
 
   getVehicleGroups(){
