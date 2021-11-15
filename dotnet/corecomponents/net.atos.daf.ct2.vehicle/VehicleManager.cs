@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.utilities;
 using net.atos.daf.ct2.vehicle.entity;
@@ -16,11 +17,12 @@ namespace net.atos.daf.ct2.vehicle
     {
         readonly IVehicleRepository _vehicleRepository;
         private readonly IMemoryCache _memoryCache;
-
-        public VehicleManager(IVehicleRepository vehicleRepository, IMemoryCache memoryCache)
+        private readonly IConfiguration _configuration;
+        public VehicleManager(IVehicleRepository vehicleRepository, IMemoryCache memoryCache, IConfiguration configuration)
         {
             this._vehicleRepository = vehicleRepository;
             _memoryCache = memoryCache ?? throw new ArgumentNullException($"Memory cache object is null in { nameof(VehicleManager) }");
+            _configuration = configuration;
         }
 
         public async Task<List<VehiclesBySubscriptionId>> GetVehicleBySubscriptionId(int subscriptionId, string state)
@@ -528,7 +530,7 @@ namespace net.atos.daf.ct2.vehicle
                             vehiclesOwned = vehiclesVisible = new List<VisibilityVehicle>();
 
                             // In-Memory cache implementation
-                            var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(2));
+                            var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(Convert.ToInt32(_configuration["CacheIntervals:VehicleVisiblityInSeconds"])));
                             if (_memoryCache.TryGetValue(string.Format(CacheConstants.DynamicOwnedGroupVisiblityVehicleKey, orgId), out IEnumerable<VisibilityVehicle> owned))
                                 vehiclesOwned = owned;
                             if (_memoryCache.TryGetValue(string.Format(CacheConstants.DynamicVisibleGroupVisiblityVehicleKey, orgId), out IEnumerable<VisibilityVehicle> visible))
@@ -630,7 +632,7 @@ namespace net.atos.daf.ct2.vehicle
                             vehiclesOwned = vehiclesVisible = new List<VisibilityVehicle>();
 
                             // In-Memory cache implementation
-                            var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(2));
+                            var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(Convert.ToInt32(_configuration["CacheIntervals:VehicleVisiblityInSeconds"])));
                             if (_memoryCache.TryGetValue(string.Format(CacheConstants.DynamicOwnedGroupVisiblityVehicleKey, orgId), out IEnumerable<VisibilityVehicle> owned))
                                 vehiclesOwned = owned;
                             if (_memoryCache.TryGetValue(string.Format(CacheConstants.DynamicVisibleGroupVisiblityVehicleKey, orgId), out IEnumerable<VisibilityVehicle> visible))
@@ -732,7 +734,7 @@ namespace net.atos.daf.ct2.vehicle
                             vehiclesOwned = vehiclesVisible = new List<VisibilityVehicle>();
 
                             // In-Memory cache implementation
-                            var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(2));
+                            var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(Convert.ToInt32(_configuration["CacheIntervals:VehicleVisiblityInSeconds"])));
                             if (_memoryCache.TryGetValue(string.Format(CacheConstants.DynamicOwnedGroupVisiblityVehicleKey, orgId), out IEnumerable<VisibilityVehicle> owned))
                                 vehiclesOwned = owned;
                             if (_memoryCache.TryGetValue(string.Format(CacheConstants.DynamicVisibleGroupVisiblityVehicleKey, orgId), out IEnumerable<VisibilityVehicle> visible))

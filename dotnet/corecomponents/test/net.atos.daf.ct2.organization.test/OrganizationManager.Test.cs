@@ -35,7 +35,7 @@ namespace net.atos.daf.ct2.organization.test
             _dataAccess = new PgSQLDataAccess(connectionString);
             _auditLogRepository = new AuditLogRepository(_dataAccess);
             _auditlog = new AuditTraillib(_auditLogRepository);
-            _vehicleManager = new VehicleManager(new VehicleRepository(_dataAccess, null), null);
+            _vehicleManager = new VehicleManager(new VehicleRepository(_dataAccess, null), null, null);
             _organizationRepository = new OrganizationRepository(_dataAccess, null,
                                                                   _vehicleManager,
                                                                   _groupManager,
