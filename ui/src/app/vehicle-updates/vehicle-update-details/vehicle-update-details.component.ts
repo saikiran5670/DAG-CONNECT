@@ -56,7 +56,7 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
     baseLineId: "",
     scheduleDateTime: "",
     vin: '',
-    campaignId: '',
+    campaignID: '',
     scheduledDate:'',
     scheduledTime:''
 
@@ -347,7 +347,7 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
   openScheduler(rowData: any) { 
   this.schedulerData.campaignName = rowData.campaignSubject;
   this.schedulerData.baseLineId = rowData.baselineAssignmentId;
-  this.schedulerData.campaignId = rowData.campaignID;
+  this.schedulerData.campaignID = rowData.campaignID;
   this.schedulerData.vin = this.selectedVin;
   }
  
