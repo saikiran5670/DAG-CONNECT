@@ -90,7 +90,7 @@
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAlerts }} ({{alertLength}})</span>
             </div>
-        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+        <div *ngIf='alertLength>0' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
             <span class='custom-font' (click)="gotoLogBook()">
                 <span class='backBtnCss'>{{ translationData.lblLogBook }} </span><span>></span>
             </span>
