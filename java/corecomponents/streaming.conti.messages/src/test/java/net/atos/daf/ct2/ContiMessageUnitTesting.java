@@ -7,6 +7,7 @@ import net.atos.daf.ct2.main.ContiMessageProcessing;
 import net.atos.daf.ct2.pojo.standard.Index;
 import net.atos.daf.ct2.pojo.standard.Monitor;
 import net.atos.daf.ct2.pojo.standard.Status;
+import net.atos.daf.ct2.processing.MessageProcessing;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
@@ -21,6 +22,8 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.TempDir;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileReader;
@@ -46,6 +49,7 @@ public class ContiMessageUnitTesting {
   private Properties producerProperties;
   private String indexMessage, statusMessage, monitorMessage;
   private EmbeddedSingleNodeKafkaZookeeperCluster embeddedSingleNodeKafkaZookeeperCluster;
+  private static final Logger logger = LoggerFactory.getLogger(ContiMessageUnitTesting.class);
 
   @BeforeEach
   void setUp() throws Exception {
@@ -242,7 +246,7 @@ public class ContiMessageUnitTesting {
     indexMessage.forEach(
         r -> {
           String value = r.value().toString();
-          System.out.println(value);
+         logger.info(value);
           assertEquals(r.value().getTransID(), "03000");
         });
 
@@ -258,7 +262,7 @@ public class ContiMessageUnitTesting {
     statusMessage.forEach(
         r -> {
           String value = r.value().toString();
-          System.out.println(value);
+          logger.info(value);
           assertEquals(r.value().getTransID(), "03010");
         });
 
@@ -274,7 +278,7 @@ public class ContiMessageUnitTesting {
     monitorMessage.forEach(
         r -> {
           String value = r.value().toString();
-          System.out.println(value);
+          logger.info(value);
           assertEquals(r.value().getTransID(), "03030");
         });
   }
