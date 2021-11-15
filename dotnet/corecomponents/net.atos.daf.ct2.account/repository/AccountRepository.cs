@@ -35,9 +35,17 @@ namespace net.atos.daf.ct2.account
                 parameter.Add("@type", (char)account.AccountType);
                 parameter.Add("@driver_id", account.DriverId);
                 parameter.Add("@created_at", account.CreatedAt.Value);
+                parameter.Add("@organization_Id", account.Organization_Id);
+                parameter.Add("@owner_email", account.OwnerEmail?.ToLower());
 
-                string query = @"insert into master.account(email,salutation,first_name,last_name,type,driver_id,state,preference_id,blob_id,created_at) " +
-                              "values(@email,@salutation,@first_name,@last_name,@type,@driver_id,'A',null,null,@created_at) RETURNING id";
+                // For System account, organization preference will be the default preference.
+                string query = account.AccountType == AccountType.PortalAccount
+                    ? @"insert into master.account(email,salutation,first_name,last_name,type,driver_id,state,preference_id,blob_id,created_at) 
+                      values(@email,@salutation,@first_name,@last_name,@type,@driver_id,'A',null,null,@created_at) RETURNING id"
+
+                    : @"insert into master.account(email,salutation,first_name,last_name,type,driver_id,state,preference_id,blob_id,created_at,owner_email) 
+                      values(@email,@salutation,@first_name,@last_name,@type,@driver_id,'A', 
+                      (select preference_id from master.organization org where org.id=@organization_Id),null,@created_at,@owner_email) RETURNING id";
 
                 var id = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 account.Id = id;
@@ -56,7 +64,6 @@ namespace net.atos.daf.ct2.account
                     }
                     parameter.Add("@state", "A");
                     parameter.Add("@account_id", account.Id);
-                    parameter.Add("@organization_Id", account.Organization_Id);
                     query = @"insert into master.accountorg(account_id,organization_id,start_date,end_date,state)  
                                    values(@account_id,@organization_Id,@start_date,@end_date,@state) RETURNING id";
                     await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
@@ -286,7 +293,7 @@ namespace net.atos.daf.ct2.account
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@email", emailId.ToLower());
-                var query = @"select id, email, salutation, first_name, last_name, driver_id from master.account where lower(email) = @email and state='A'";
+                var query = @"select id, email,owner_email,type, salutation, first_name, last_name, driver_id from master.account where lower(email) = @email and state='A'";
 
                 dynamic result = await _dataAccess.QueryFirstOrDefaultAsync<dynamic>(query, parameter);
 
@@ -304,7 +311,7 @@ namespace net.atos.daf.ct2.account
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@accountId", accountId);
-                var query = @"select id, email, salutation, first_name, last_name from master.account where id = @accountId and state='A'";
+                var query = @"select id, email,owner_email,type, salutation, first_name, last_name from master.account where id = @accountId and state='A'";
 
                 dynamic result = await _dataAccess.QuerySingleAsync<dynamic>(query, parameter);
 
@@ -680,8 +687,15 @@ namespace net.atos.daf.ct2.account
                 var parameter = new DynamicParameters();
                 parameter.Add("@noOfDays", noOfDays);
 
-                var query = @"Select acc.id as Id, acc.email as EmailId, acc.salutation as Salutation, acc.first_name as FirstName, last_name as LastName from master.account acc inner join master.passwordpolicy pp on acc.id = pp.account_id where pp.is_blocked = false and pp.is_reminder_sent = false and acc.State= 'A' and EXTRACT(day FROM(now() - TO_TIMESTAMP(modified_at / 1000))) >= @noOfDays";
-                return await _dataAccess.QueryAsync<Account>(query, parameter);
+                var query = @"Select acc.id as Id, acc.email as email, acc.owner_email as owner_email,acc.type, acc.salutation as salutation, acc.first_name as first_name, last_name as LastName from master.account acc inner join master.passwordpolicy pp on acc.id = pp.account_id where pp.is_blocked = false and pp.is_reminder_sent = false and acc.State= 'A' and EXTRACT(day FROM(now() - TO_TIMESTAMP(modified_at / 1000))) >= @noOfDays";
+
+                var result = await _dataAccess.QueryAsync<dynamic>(query, parameter);
+                List<Account> accounts = new List<Account>();
+                foreach (var item in result)
+                {
+                    accounts.Add(MapAccount(item));
+                }
+                return accounts;
             }
             catch (Exception)
             {
@@ -993,8 +1007,8 @@ namespace net.atos.daf.ct2.account
                                                 -- Fetch Owned vehicles from vehicle group type 'G'
                                                 SELECT count(gr.group_id) 
                                                 FROM master.groupref gr 
-                                                WHERE gr.group_id=vg.id or gr.group_id=om.vehicle_group_id
-                                                      and om.owner_org_id=@organization_id and lower(os.code)='owner'
+                                                WHERE gr.group_id=vg.id --or gr.group_id=om.vehicle_group_id
+                                                      --and om.owner_org_id=@organization_id and lower(os.code)='owner'
                                                )
                                           END as count,
                                         CASE WHEN (a.id is NULL) THEN ag.id ELSE a.id END as group_id,
@@ -1004,11 +1018,11 @@ namespace net.atos.daf.ct2.account
                                     INNER JOIN master.accessrelationship ar on ar.vehicle_group_id=vg.id and vg.object_type='V' and vg.group_type in('G','D')
                                     INNER JOIN master.group ag on ag.id = ar.account_group_id and ag.organization_id=@organization_id and ag.object_type='A'                             
                                     LEFT OUTER JOIN master.account a on a.id = ag.ref_id 
-							        LEFT JOIN master.orgrelationshipmapping as om on vg.id = om.vehicle_group_id
-							        LEFT JOIN master.orgrelationship as os on om.relationship_id=os.id and os.state='A'
-                                    WHERE vg.organization_id=@organization_id and 
-                                            case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
-	                                        else COALESCE(end_date,0) = 0 end
+							        --LEFT JOIN master.orgrelationshipmapping as om on vg.id = om.vehicle_group_id
+							        --LEFT JOIN master.orgrelationship as os on om.relationship_id=os.id and os.state='A'
+                                    WHERE vg.organization_id=@organization_id 
+                                          --and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
+	                                      --else COALESCE(end_date,0) = 0 end
                                     ORDER BY vg.id desc 
                                 ) vehiclegroup
 
@@ -1659,6 +1673,8 @@ namespace net.atos.daf.ct2.account
             account.FirstName = record.first_name;
             account.LastName = record.last_name;
             account.DriverId = record.driver_id;
+            account.OwnerEmail = record.owner_email;
+            account.AccountType = (AccountType)Convert.ToChar(record.type);
             return account;
         }
         private Account Map(dynamic record)

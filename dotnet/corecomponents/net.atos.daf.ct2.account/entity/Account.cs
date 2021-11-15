@@ -10,6 +10,7 @@ namespace net.atos.daf.ct2.account.entity
         //}
         public int Id { get; set; }
         public string EmailId { get; set; }
+        public string OwnerEmail { get; set; }
         public string Salutation { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }

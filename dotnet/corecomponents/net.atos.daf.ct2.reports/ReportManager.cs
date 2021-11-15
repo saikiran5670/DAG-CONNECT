@@ -618,7 +618,7 @@ namespace net.atos.daf.ct2.reports
                     kpiInfoResponse.AnticipationScore = new KPI(kpiInfo.anticipationscore_total, kpiInfo.anticipationscore_count);
                     kpiInfoResponse.BrakingScore = new KPI(kpiInfo.brakingscore_total, kpiInfo.brakingscore_count);
                     kpiInfoResponse.FuelConsumption = new KPI(kpiInfo.fuelconsumption_total, kpiInfo.fuelconsumption_count);
-                    kpiInfoResponse.Ecoscore = new KPI(kpiInfo.ecoscore_total, kpiInfo.ecoscore_count);
+                    kpiInfoResponse.Ecoscore = kpiInfo.ecoscore_total;
                     kpiInfoResponse.NumberOfTrips = kpiInfo.numberoftrips;
                     kpiInfoResponse.NumberOfVehicles = kpiInfo.numberofvehicles;
                     kpiInfoResponse.AverageGrossWeight = new KPI(kpiInfo.averagegrossweight_total, kpiInfo.averagegrossweight_count);
@@ -665,7 +665,7 @@ namespace net.atos.daf.ct2.reports
                     chartInfoResponse.AnticipationScore = new KPI(chartInfo.anticipationscore_total, chartInfo.anticipationscore_count);
                     chartInfoResponse.BrakingScore = new KPI(chartInfo.brakingscore_total, chartInfo.brakingscore_count);
                     chartInfoResponse.FuelConsumption = new KPI(chartInfo.fuelconsumption_total, chartInfo.fuelconsumption_count);
-                    chartInfoResponse.Ecoscore = new KPI(chartInfo.ecoscore_total, chartInfo.ecoscore_count);
+                    chartInfoResponse.Ecoscore = chartInfo.ecoscore_total;
 
                     response.ChartInfo.Add(chartInfoResponse);
                 }

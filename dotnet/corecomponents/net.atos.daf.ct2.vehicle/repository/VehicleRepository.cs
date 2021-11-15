@@ -1462,6 +1462,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 {
                     vehicleproperty.ID = await _dataAccess.ExecuteScalarAsync<int>(InsertQueryStatement, parameter);
                     objVeh.VehiclePropertiesId = vehicleproperty.ID;
+                    objVeh.Reference_Date = DateTime.Now;
                     objVeh = await Create(objVeh);
                     vehicleproperty.VehicleId = objVeh.ID;
                     _log.Info("VehicleUpdateInterface Property createRequest vehicle" + vehicleproperty);
@@ -1836,10 +1837,9 @@ namespace net.atos.daf.ct2.vehicle.repository
                 }
                 return existingVehicleProperties;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-
-                throw ex;
+                throw;
             }
         }
 
@@ -2327,19 +2327,16 @@ namespace net.atos.daf.ct2.vehicle.repository
 
         #region Vehicle Visibility
 
-        public async Task<VisibilityVehicle> GetVehicleForVisibility(int vehicleId)
+        public async Task<VisibilityVehicle> GetVehicleForVisibility(int vehicleId, int organizationId)
         {
             try
             {
-                var query = @"select id, vin, name, license_plate_number as RegistrationNo, true as hasowned from master.vehicle where ";
                 var parameter = new DynamicParameters();
+                parameter.Add("@id", vehicleId);
+                parameter.Add("@organization_id", organizationId);
 
-                // Vehicle Id 
-                if (vehicleId > 0)
-                {
-                    parameter.Add("@id", vehicleId);
-                    query += " id=@id";
-                }
+                var query = @"select id, vin, name, license_plate_number as RegistrationNo, (organization_id = @organization_id) as hasowned from master.vehicle where id=@id";
+
                 return await _dataAccess.QueryFirstOrDefaultAsync<VisibilityVehicle>(query, parameter);
             }
             catch (Exception)

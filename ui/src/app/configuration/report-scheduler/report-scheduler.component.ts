@@ -34,7 +34,7 @@ export class ReportSchedulerComponent implements OnInit {
   titleText: string;
   translationData: any = {};
   localStLanguage: any;
-  dataSource: any; 
+  dataSource: any;
   initData: any = [];
   schedulerData: any= [];
   originalAlertData: any= [];
@@ -57,6 +57,7 @@ export class ReportSchedulerComponent implements OnInit {
   prefDateFormat: any = 'DD/MM/YYYY'; //-- coming from pref setting
   accountPrefObj: any;
   @ViewChild('gridComp') gridComp: DataTableComponent
+  filterValue: string;
 
   constructor(
     private translationService: TranslationService,
@@ -66,7 +67,7 @@ export class ReportSchedulerComponent implements OnInit {
     private dialogService: ConfirmDialogService,
     private organizationService: OrganizationService,
     ) { }
-  
+
     ngOnInit() {
       this.localStLanguage = JSON.parse(localStorage.getItem("language"));
       this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
@@ -83,7 +84,7 @@ export class ReportSchedulerComponent implements OnInit {
         menuId: 19 //-- for report scheduler
       }
       this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-        this.processTranslation(data);  
+        this.processTranslation(data);
         this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
           if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
             this.proceedStep(prefData, this.accountPrefObj.accountPreference);
@@ -95,27 +96,27 @@ export class ReportSchedulerComponent implements OnInit {
               this.proceedStep(prefData, pref);
             });
           }
-          this.loadScheduledReports();  
+          this.loadScheduledReports();
         }, error => {
-          this.loadScheduledReports();  
-        });  
-      }); 
+          this.loadScheduledReports();
+        });
+      });
 
       this.reportSchedulerService.getReportSchedulerParameter(this.accountId, this.accountOrganizationId).subscribe(parameterData => {
         this.reportSchedulerParameterData = parameterData;
         this.ReportTypeList = this.reportSchedulerParameterData["reportType"];
         this.StatusList= [{id : "A", name : "Active"}, {id : "I", name : "Suspended"}]
       })
-      
+
     }
-    
-  
+
+
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
     //console.log("process translationData:: ", this.translationData)
   }
 
-  
+
   proceedStep(prefData: any, preference: any){
     let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
     if(_search.length > 0){
@@ -161,16 +162,16 @@ export class ReportSchedulerComponent implements OnInit {
 
   removeDuplicates(originalArray, prop) {
     var newArray = [];
-    var lookupObject  = {}; 
+    var lookupObject  = {};
     for(var i in originalArray) {
        lookupObject[originalArray[i][prop]] = originalArray[i];
-    } 
+    }
     for(i in lookupObject) {
         newArray.push(lookupObject[i]);
     }
      return newArray;
   }
-  
+
   onClickNewReportScheduler(){
     this.actionType = 'create';
     this.createEditStatus = true;
@@ -179,7 +180,7 @@ export class ReportSchedulerComponent implements OnInit {
   onClose(){
     this.grpTitleVisible = false;
   }
- 
+
   onBackToPage(objData){
     this.createEditStatus = objData.actionFlag;
     this.viewStatus = objData.actionFlag;
@@ -188,7 +189,7 @@ export class ReportSchedulerComponent implements OnInit {
     }
     this.loadScheduledReports();
   }
-  
+
   pageSizeUpdated(_event){
     setTimeout(() => {
       document.getElementsByTagName('mat-sidenav-content')[0].scrollTo(0, 0)
@@ -205,20 +206,20 @@ export class ReportSchedulerComponent implements OnInit {
       this.showLoadingIndicator=false;
   }
 
-   loadScheduledReports(){    
+   loadScheduledReports(){
      this.showLoadingIndicator = true;
      this.reportSchedulerService.getReportSchedulerData(this.accountId, this.accountOrganizationId).subscribe((data) => {
        this.reportTypeSelection= 0;
        this.statusSelection= 0;
-       this.schedulerData =this.makeLists(data["reportSchedulerRequest"]);  
+       this.schedulerData =this.makeLists(data["reportSchedulerRequest"]);
        this.initData = this.schedulerData;
-      //  this.updateDatasource(this.schedulerData);  
+      //  this.updateDatasource(this.schedulerData);
 
-       this.hideloader();     
+       this.hideloader();
     }, (error) => {
-       this.hideloader();     
-    })   
-   
+       this.hideloader();
+    })
+
  }
 
  makeLists(initdata: any){
@@ -257,14 +258,14 @@ export class ReportSchedulerComponent implements OnInit {
       }
     }
     element.frequencyTypeName = this.getFrequencyTypeName(element.frequencyType);
-    initdata[index].recipientList = recipientTxt.slice(0, -2); 
+    initdata[index].recipientList = recipientTxt.slice(0, -2);
     initdata[index].driverList = driverTxt.slice(0, -2);
     initdata[index].vehicleGroupAndVehicleList = vehicleGroupTxt == "" ? vehicleGroupTxt : vehicleGroupTxt.slice(0, -2);
     initdata[index].lastScheduleRunDate= element.lastScheduleRunDate == 0 ? '-' : Util.convertUtcToDateFormat(element.lastScheduleRunDate, this.prefDateFormat, this.prefTimeZone);
     initdata[index].nextScheduleRunDate= element.nextScheduleRunDate == 0 ? '-' : Util.convertUtcToDateFormat(element.nextScheduleRunDate, this.prefDateFormat, this.prefTimeZone);
     initdata[index].isDriver = this.ReportTypeList.filter(item => item.id == initdata[index].reportId)[0].isDriver == 'Y' ? true : false;
   });
-  
+
   return initdata;
 }
 
@@ -298,55 +299,53 @@ getUnique(arr, comp) {
   return unique;
 }
 
-  // updateDatasource(data){
-  //   this.initData = data;
-  //   if(this.initData.length > 0){
-  //     this.initData = this.getNewTagData(data); 
-  //   } 
-  //   this.dataSource = new MatTableDataSource(this.initData);
-  //   // this.dataSource.filterPredicate = function(data: any, filter: string): boolean {
-  //   //   return (
-  //   //     data.reportName.toString().toLowerCase().includes(filter) ||
-  //   //     data.recipientList.toString().toLowerCase().includes(filter) ||
-  //   //     data.driverList.toString().toLowerCase().includes(filter) ||
-  //   //     data.status.toString().toLowerCase().includes(filter) 
-  //   //   );
-  //   // };
-   
-  //   this.dataSource.sortingDataAccessor = (data: any, sortHeaderId: string): string => {
-  //     if (typeof data[sortHeaderId] === 'string') {
-  //       return data[sortHeaderId].toLocaleLowerCase();
-  //     }
-    
-  //     return data[sortHeaderId];
-  //   };
+  updateDatasource(data){
+    this.initData = data;
+    this.dataSource = new MatTableDataSource(this.initData);
+    // this.dataSource.filterPredicate = function(data: any, filter: string): boolean {
+    //   return (
+    //     data.reportName.toString().toLowerCase().includes(filter) ||
+    //     data.recipientList.toString().toLowerCase().includes(filter) ||
+    //     data.driverList.toString().toLowerCase().includes(filter) ||
+    //     data.status.toString().toLowerCase().includes(filter)
+    //   );
+    // };
 
-  //   setTimeout(()=>{
-  //     this.dataSource.paginator = this.paginator;
-  //     this.dataSource.sort = this.sort;
-  //     this.dataSource.sortData = (data: String[], sort: MatSort) => {
-  //       const isAsc = sort.direction === 'asc';
-  //       let columnName = this.sort.active;
-  //       return data.sort((a: any, b:any)=>{
-  //           return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
-  //       });
-  //     }
-  //   });
-  // }
+    this.dataSource.sortingDataAccessor = (data: any, sortHeaderId: string): string => {
+      if (typeof data[sortHeaderId] === 'string') {
+        return data[sortHeaderId].toLocaleLowerCase();
+      }
 
-  // compare(a: Number  |String, b: Number |String, isAsc: boolean, columnName: any){
-  //   if(columnName == "recipientList"){
-  //     if(!(a instanceof Number)) a = a.toString().toUpperCase();
-  //     if(!(b instanceof Number)) b= b.toString().toUpperCase();
-  //   }
-  //   return (a < b ? -1 : 1) * (isAsc ? 1 :-1);
-  // }
+      return data[sortHeaderId];
+    };
+
+    setTimeout(()=>{
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+      this.dataSource.sortData = (data: String[], sort: MatSort) => {
+        const isAsc = sort.direction === 'asc';
+        let columnName = this.sort.active;
+        return data.sort((a: any, b:any)=>{
+            return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
+        });
+      }
+    });
+    Util.applySearchFilter(this.dataSource, this.columnCodes ,this.filterValue );
+  }
+
+  compare(a: Number  |String, b: Number |String, isAsc: boolean, columnName: any){
+    if(columnName == "recipientList"){
+      if(!(a instanceof Number)) a = a.toString().toUpperCase();
+      if(!(b instanceof Number)) b= b.toString().toUpperCase();
+    }
+    return (a < b ? -1 : 1) * (isAsc ? 1 :-1);
+  }
 
   // getNewTagData(data: any){
   //   let currentDate = new Date().getTime();
   //   data.forEach(row => {
   //     if(row.createdAt){
-  //       let createdDate = parseInt(row.createdAt); 
+  //       let createdDate = parseInt(row.createdAt);
   //       let nextDate = createdDate + 86400000;
   //       if(currentDate >= createdDate && currentDate < nextDate){
   //         row.newTag = true;
@@ -354,7 +353,7 @@ getUnique(arr, comp) {
   //       else{
   //         row.newTag = false;
   //       }
-  //     } 
+  //     }
   //     else{
   //       row.newTag = false;
   //     }
@@ -362,7 +361,7 @@ getUnique(arr, comp) {
   //   let newTrueData = data.filter(item => item.newTag == true);
   //   newTrueData.sort((userobj1, userobj2) => parseInt(userobj2.createdAt) - parseInt(userobj1.createdAt));
   //   let newFalseData = data.filter(item => item.newTag == false);
-  //   Array.prototype.push.apply(newTrueData, newFalseData); 
+  //   Array.prototype.push.apply(newTrueData, newFalseData);
   //   return newTrueData;
   // }
 
@@ -381,12 +380,12 @@ getUnique(arr, comp) {
           this.successMsgBlink(this.getDeletMsg(name));
           this.loadScheduledReports();
         }, error => {
-      
+
         });
     }
    });
   }
-    
+
   getDeletMsg(reportSchedulerName: any){
       if(this.translationData.lblReportSchedulerDelete)
         return this.translationData.lblReportSchedulerDelete.replace('$', reportSchedulerName);
@@ -412,7 +411,7 @@ getUnique(arr, comp) {
    successMsgBlink(msg: any){
     this.grpTitleVisible = true;
     this.displayMessage = msg;
-    setTimeout(() => {  
+    setTimeout(() => {
       this.grpTitleVisible = false;
     }, 5000);
   }
@@ -420,7 +419,7 @@ getUnique(arr, comp) {
   errorMsgBlink(errorMsg: any){
     this.errorMsgVisible = true;
     this.displayMessage = errorMsg;
-    setTimeout(() => {  
+    setTimeout(() => {
       this.errorMsgVisible = false;
     }, 5000);
   }
@@ -428,7 +427,7 @@ getUnique(arr, comp) {
   onChangeReportSchedulerStatus(rowData: any){
     const options = {
       title: this.translationData.lblReportScheduler || "Report Scheduler",
-      message: this.translationData.lblYouwanttoDetails || "You want to # '$' Details?",   
+      message: this.translationData.lblYouwanttoDetails || "You want to # '$' Details?",
       cancelText: this.translationData.lblCancel || "Cancel",
       confirmText: (rowData.status == 'A') ? this.translationData.lblDeactivate || " Deactivate" : this.translationData.lblActivate || " Activate",
       status: rowData.status == 'A' ? 'Deactivate' : 'Activate' ,
@@ -440,7 +439,7 @@ getUnique(arr, comp) {
     dialogConfig.data = options;
     this.dialogRef = this.dialog.open(ActiveInactiveDailogComponent, dialogConfig);
     this.dialogRef.afterClosed().subscribe((res: any) => {
-      if(res == true){ 
+      if(res == true){
         let obj = {
           "reportId": rowData.id,
           "status": rowData.status
@@ -458,7 +457,7 @@ getUnique(arr, comp) {
     });
   }
 
-  onVehicleGroupClick(data: any) {   
+  onVehicleGroupClick(data: any) {
     const colsList = ['name','vin','licensePlateNumber'];
     const colsName =[this.translationData.lblVehicleName || 'Vehicle Name', this.translationData.lblVIN || 'VIN', this.translationData.lblRegistrationNumber || 'Registration Number'];
     const tableTitle =`${data.scheduledReportVehicleRef[0].vehicleGroupName} - ${this.translationData.lblVehicles || 'Vehicles'}`;
@@ -466,7 +465,7 @@ getUnique(arr, comp) {
       groupId: data.scheduledReportVehicleRef[0].vehicleGroupId,
       groupType: 'G',
       functionEnum: 'A',
-      organizationId: data.organizationId    
+      organizationId: data.organizationId
       // groupType: data.groupType,
       // functionEnum: data.functionEnum
     }
@@ -486,8 +485,8 @@ getUnique(arr, comp) {
       tableTitle: tableTitle
     }
     this.dialogVeh = this.dialog.open(CommonTableComponent, dialogConfig);
-  }  
-  
+  }
+
   onReportTypeChange(_event: any){
     this.reportTypeSelection = parseInt(_event.value);
     if (this.reportTypeSelection == 0 && this.statusSelection == 0) {
@@ -510,7 +509,7 @@ getUnique(arr, comp) {
       if (selectedStatus != 0) {
         reportSchedulerData = reportSchedulerData.filter(item => item.status === selectedStatus);
       }
-      // this.updateDatasource(reportSchedulerData);
+      this.updateDatasource(reportSchedulerData);
       this.gridComp.updatedTableData(reportSchedulerData);
     }
   }

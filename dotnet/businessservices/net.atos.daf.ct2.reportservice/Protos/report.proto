@@ -9,6 +9,7 @@ service ReportService{
 rpc GetUserPreferenceReportDataColumn (IdRequest) returns (UserPreferenceDataColumnResponse);
 rpc CreateUserPreference (UserPreferenceCreateRequest) returns (UserPreferenceCreateResponse);
 rpc GetVinsFromTripStatisticsWithVehicleDetails (VehicleListRequest) returns (VehicleListAndDetailsResponse);
+rpc GetVisibility (VehicleListRequest) returns (MockVehicleListAndDetailsResponse);
 rpc GetFilteredTripDetails (TripFilterRequest) returns (TripResponse);
 rpc GetDriversActivity (ActivityFilterRequest) returns (DriverActivityResponse);
 rpc GetDriverActivity (SingleDriverActivityFilterRequest) returns (DriverActivityResponse);
@@ -360,6 +361,23 @@ string Vin = 11;
 string RegistrationNo = 12;
 }
 
+message VehicleDetailsWithAccountVisibiltyForAlert {
+int32 VehicleGroupId = 1;
+int32 AccountId = 2;
+string ObjectType = 3;
+string GroupType = 4;
+string FunctionEnum = 5;
+int32 OrganizationId = 6;
+string AccessType = 7;
+string VehicleGroupDetails = 8;
+int32 VehicleId = 9;
+string VehicleName = 10;
+string Vin = 11;
+string RegistrationNo = 12;
+string SubscriptionType = 13;
+repeated int64 FeatureIds = 14;
+}
+
 message VehicleFromTripDetails {
 string Vin = 1;
 int64 StartTimeStamp=2;
@@ -371,6 +389,11 @@ Responsecode Code = 1;
 string Message = 2;
 repeated VehicleFromTripDetails VinTripList = 3;
 repeated VehicleDetailsWithAccountVisibilty VehicleDetailsWithAccountVisibiltyList = 4;
+}
+
+message MockVehicleListAndDetailsResponse{
+repeated VehicleDetailsWithAccountVisibilty VehicleDetailsWithAccountVisibiltyList = 1;
+repeated VehicleDetailsWithAccountVisibiltyForAlert VehicleDetailsWithAccountVisibiltyForAlertList = 2;
 }
 
 message VehicleListRequest{

@@ -3,6 +3,7 @@ package net.atos.daf.ct2.postgre;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.util.Objects;
 
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
@@ -48,8 +49,6 @@ public class MileageSink extends RichSinkFunction<TripMileage> implements Serial
 		statement.setLong(13, rec.getModifiedAt());
 
 		logger.info("mileage data for veh "+rec);
-		//statement.addBatch();
-		//statement.executeBatch();
 		statement.execute();
 	}
 
@@ -89,13 +88,13 @@ public class MileageSink extends RichSinkFunction<TripMileage> implements Serial
 	@Override
     public void close() throws Exception {
 		super.close(); 
-		if (statement != null) {
+		if (Objects.nonNull(statement)) {
         	statement.close();
         }
-        logger.info("In close() of tripSink :: ");
+        logger.info("In close() of mileageSink :: ");
         
-        if (connection != null) {
-        	System.out.println("Releasing connection from Trip Job");
+        if (Objects.nonNull(connection)) {
+        	logger.info("Releasing connection from Mileage Job");
             connection.close();
         }
     	

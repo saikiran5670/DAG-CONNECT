@@ -25,7 +25,7 @@ namespace net.atos.daf.ct2.visibility.entity
         public int VehicleGroupId { get; set; }
         public int AccountId { get; set; } = default;
         public string ObjectType { get; set; } = string.Empty;
-        public string GroupType { get; set; }
+        public string GroupType { get; set; } = string.Empty;
         public string FunctionEnum { get; set; } = string.Empty;
         public int OrganizationId { get; set; } = default;
         public string AccessType { get; set; } = string.Empty;
@@ -36,7 +36,7 @@ namespace net.atos.daf.ct2.visibility.entity
         public string RegistrationNo { get; set; } = string.Empty;
         public string VehicleGroupDetails { get; set; } = string.Empty;
         public int[] VehicleGroupIds { get; set; } = new int[] { };
-        public List<long> FeatureIds { get; set; }
+        public List<long> FeatureIds { get; set; } = new List<long>();
         public string SubscriptionType { get; set; } = string.Empty;
     }
 

@@ -23,6 +23,7 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
+import net.atos.daf.ct2.postgre.VehicleStatusSource;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.restartstrategy.RestartStrategies;
 import org.apache.flink.api.common.state.MapStateDescriptor;
@@ -94,8 +95,9 @@ public class ContiHBaseProcessing implements Serializable {
             properties = configuration();
             contiHBaseProcessing.auditContiJobDetails(properties, "Conti HBase streaming job started");
 
-            //contiHBaseProcessing.flinkConnection();
-            contiHBaseProcessing.flinkConnection(properties);
+			if(properties.getProperty("flink.streaming.evn").equalsIgnoreCase("default"))
+				contiHBaseProcessing.flinkConnection();
+			else contiHBaseProcessing.flinkConnection(properties);
             contiHBaseProcessing.processing(properties);
             contiHBaseProcessing.startExecution();
 
@@ -203,7 +205,8 @@ public class ContiHBaseProcessing implements Serializable {
          * New code added for fetching status data from databases
          * Using jdbcInput format
          */
-        RowTypeInfo rowTypeInfo = new RowTypeInfo(VEHICLE_STATUS_SCHEMA_DEF);
+		//TODO After flink update to 1.14.0 use below code
+        /*RowTypeInfo rowTypeInfo = new RowTypeInfo(VEHICLE_STATUS_SCHEMA_DEF);
 
         String jdbcUrl = new StringBuilder("jdbc:postgresql://")
                 .append(properties.getProperty(POSTGRE_HOSTNAME))
@@ -231,10 +234,12 @@ public class ContiHBaseProcessing implements Serializable {
                         .status(String.valueOf(row.getField(2)))
                         .fuelType(String.valueOf(row.getField(3)))
                         .build())
-                .returns(VehicleStatusSchema.class);
+                .returns(VehicleStatusSchema.class);*/
+
+		SingleOutputStreamOperator<VehicleStatusSchema> dbVehicleStatusStream = streamExecutionEnvironment.addSource(new VehicleStatusSource(properties));
 
 
-        DataStream<VehicleStatusSchema> statusSchemaDataStream = kafkaCDCMessage.union(dbVehicleStatusStream);
+		DataStream<VehicleStatusSchema> statusSchemaDataStream = kafkaCDCMessage.union(dbVehicleStatusStream);
 
         BroadcastStream<KafkaRecord<VehicleStatusSchema>> broadcastStream = statusSchemaDataStream
                 .<KafkaRecord<VehicleStatusSchema>>map(vehicleStatusSchema -> {

@@ -8,6 +8,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { UserDetailTableComponent } from '../../user-management/new-user-step/user-detail-table/user-detail-table.component';
 import { AccountService } from '../../../services/account.service';
 import { VehicleService } from '../../../services/vehicle.service';
+import { Util } from 'src/app/shared/util';
 
 @Component({
   selector: 'app-create-edit-view-vehicle-account-access-relationship',
@@ -20,11 +21,11 @@ export class CreateEditViewVehicleAccountAccessRelationshipComponent implements 
   @Input() translationData: any={};
   @Input() associationTypeId: any;
   @Input() vehicleDisplayPreference: any;
-  breadcumMsg: any = '';  
+  breadcumMsg: any = '';
   @Output() accessRelationCreate = new EventEmitter<object>();
   accessRelationshipFormGroup: FormGroup;
-  accessTypeList: any = []; 
-  associationTypeList: any = []; 
+  accessTypeList: any = [];
+  associationTypeList: any = [];
   dataSource: any = new MatTableDataSource([]);
   displayedColumns: string[] = ['select', 'name'];
   selectionForAssociation = new SelectionModel(true, []);
@@ -38,7 +39,8 @@ export class CreateEditViewVehicleAccountAccessRelationshipComponent implements 
   accountOrganizationId: any;
   associationTypeLocal: any = 1;
   associationData: any = [];
-
+  filterValue: any;
+  showLoadingIndicator: boolean = false;
   constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private accountService: AccountService, private vehicleService: VehicleService) { }
 
   ngOnInit() {
@@ -92,11 +94,11 @@ export class CreateEditViewVehicleAccountAccessRelationshipComponent implements 
     this.selectedViewType = 'both';
     this.onListChange({value: this.selectedViewType});
   }
-  
+
   getBreadcum(type: any){
-    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / 
-    ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / 
-    ${this.translationData.lblAccessRelationshipManagement ? this.translationData.lblAccessRelationshipManagement : 'Access Relationship Management'} / 
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } /
+    ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} /
+    ${this.translationData.lblAccessRelationshipManagement ? this.translationData.lblAccessRelationshipManagement : 'Access Relationship Management'} /
     ${(type == 'view') ? (this.translationData.lblViewAccountAssociationDetails ? this.translationData.lblViewAccountAssociationDetails : 'View Account Association Details') : (this.translationData.lblEditAccountAssociationDetails ? this.translationData.lblEditAccountAssociationDetails : 'Edit Account Association Details')}`;
   }
 
@@ -143,6 +145,7 @@ export class CreateEditViewVehicleAccountAccessRelationshipComponent implements 
       }
 
     });
+    Util.applySearchFilter(this.dataSource, this.displayedColumns ,this.filterValue );
   }
 
   compare(a: Number | String, b: Number | String, isAsc: boolean, columnName: any){
@@ -152,13 +155,13 @@ export class CreateEditViewVehicleAccountAccessRelationshipComponent implements 
     }
     return (a< b ? -1 : 1) * (isAsc ? 1 : -1);
   }
-  
+
   onCancel(){
     let emitObj = {
       stepFlag: false,
       msg: ""
-    }    
-    this.accessRelationCreate.emit(emitObj);    
+    }
+    this.accessRelationCreate.emit(emitObj);
   }
 
   onReset(){
@@ -189,38 +192,51 @@ export class CreateEditViewVehicleAccountAccessRelationshipComponent implements 
       organizationId: this.accountOrganizationId
     }
 
-    if(this.associationTypeLocal == 1){ //-- for vehicle 
+    this.showLoadingIndicator=true;
+    if(this.associationTypeLocal == 1){ //-- for vehicle
       if(this.actionType == 'create'){ //-- create
         this.accountService.createVehicleAccessRelationship(payloadObj).subscribe((createResp: any) => {
           this.getAccessRelationList(curObj);
+          this.hideloader();
         }, (error) => {
+          this.hideloader();
           console.log("error:: ", error);
         });
       }
       else{ //-- update
         this.accountService.updateVehicleAccessRelationship(payloadObj).subscribe((updateResp: any) => {
           this.getAccessRelationList(curObj);
+          this.hideloader();
         }, (error) => {
+          this.hideloader();
           console.log("error:: ", error);
         });
       }
     }
-    else{ //-- for account 
+    else{ //-- for account
       if(this.actionType == 'create'){ //-- create
         this.accountService.createAccountAccessRelationship(payloadObj).subscribe((createResp: any) => {
           this.getAccessRelationList(curObj);
+          this.hideloader();
         }, (error) => {
+          this.hideloader();
           console.log("error:: ", error);
         });
       }
       else{ //-- update
         this.accountService.updateAccountAccessRelationship(payloadObj).subscribe((updateResp: any) => {
           this.getAccessRelationList(curObj);
+          this.hideloader();
         }, (error) => {
+          this.hideloader();
           console.log("error:: ", error);
         });
       }
     }
+  }
+
+  hideloader(){
+    this.showLoadingIndicator=false;
   }
 
   getAccessRelationList(curObj: any){
@@ -229,8 +245,8 @@ export class CreateEditViewVehicleAccountAccessRelationshipComponent implements 
         stepFlag: false,
         msg: this.getSuccessMessage(curObj),
         tableData: relData
-      }    
-      this.accessRelationCreate.emit(emitObj); 
+      }
+      this.accessRelationCreate.emit(emitObj);
     });
   }
 

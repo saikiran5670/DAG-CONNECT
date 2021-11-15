@@ -91,6 +91,7 @@ export class AccountInfoSettingsComponent implements OnInit {
   createPrefFlag = false;
   orgDefaultPreference: any = {}
   isDefaultBrandLogo= false;
+  showLoadingIndicator: boolean = false;
 
   myFilter = (d: Date | null): boolean => {
     const date = (d || new Date());
@@ -176,6 +177,7 @@ export class AccountInfoSettingsComponent implements OnInit {
       "name": "",
       "accountGroupId": 0
     }
+    this.showLoadingIndicator=true;
     this.accountService.getAccount(userObjData).subscribe((_data: any)=>{
       this.accountInfo = _data;
       this.editAccountSettingsFlag = false;
@@ -185,7 +187,9 @@ export class AccountInfoSettingsComponent implements OnInit {
       if(this.accountInfo.length != 0){
         this.blobId = this.accountInfo[0]["blobId"];
       }
+      this.showLoadingIndicator=false;
       if(this.blobId != 0){
+        this.showLoadingIndicator=true;
         this.changePictureFlag= true;
         this.isSelectPictureConfirm= true;
         this.accountService.getAccountPicture(this.blobId).subscribe(data => {
@@ -193,12 +197,17 @@ export class AccountInfoSettingsComponent implements OnInit {
             this.profilePicture = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + data["image"]);
             this.croppedImage = this.profilePicture;
           }
+          this.showLoadingIndicator=false;
+        }, (error) => {
+          this.showLoadingIndicator=false;
         })
       }
       else{
         this.changePictureFlag= false;
         this.isSelectPictureConfirm= false;
       }
+    }, (error) => {
+      this.showLoadingIndicator=false;
     });
   }
 
@@ -226,6 +235,7 @@ export class AccountInfoSettingsComponent implements OnInit {
       this.landingPageDisplayDropdownData.sort(this.compare);
       this.resetLandingPageFilter();
       //this.landingPageDisplayDropdownData = dropDownData.landingpagedisplay;
+     // preferenceId = 0;
       if(preferenceId > 0){ //-- account pref
         this.accountService.getAccountPreference(preferenceId).subscribe(resp => {
           this.accountPreferenceData = resp;
@@ -373,6 +383,7 @@ export class AccountInfoSettingsComponent implements OnInit {
           driverId: this.accountSettingsForm.controls.driverId.value,
           type: this.accountInfo.type ? this.accountInfo.type : 'P'
       }
+      this.showLoadingIndicator=true;
       this.accountService.updateAccount(objData).subscribe((data)=>{
         this.accountInfo = [data];
         this.editAccountSettingsFlag = false;
@@ -381,6 +392,9 @@ export class AccountInfoSettingsComponent implements OnInit {
         this.updateLocalStorageAccountInfo("accountsettings", data);
         let editText = 'AccountSettings';
         this.successMsgBlink(this.getEditMsg(editText));
+        this.showLoadingIndicator=false;
+      }, (error) => {
+        this.showLoadingIndicator=false;
       });
     }
   }
@@ -408,7 +422,7 @@ export class AccountInfoSettingsComponent implements OnInit {
   onGeneralSettingsUpdate(){
     if(this.brandLogoError == ''){
       if(!this.brandLogoFileValidated){
-        this.uploadLogo = this.accountPreferenceData["iconByte"] == "" ? "" : this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + this.accountPreferenceData["iconByte"]);
+        this.uploadLogo = this.accountPreferenceData?.["iconByte"] == "" ? "" : this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + this.accountPreferenceData?.["iconByte"]);
       }
       this.setTimerValueInLocalStorage(parseInt(this.userSettingsForm.controls.pageRefreshTime.value)); //update timer
       let objData: any = {
@@ -423,14 +437,18 @@ export class AccountInfoSettingsComponent implements OnInit {
         timeFormatId: this.userSettingsForm.controls.timeFormat.value ? this.userSettingsForm.controls.timeFormat.value : this.timeFormatDropdownData[0].id,
         vehicleDisplayId: this.userSettingsForm.controls.vehDisplay.value ? this.userSettingsForm.controls.vehDisplay.value : this.vehicleDisplayDropdownData[0].id,
         landingPageDisplayId: this.userSettingsForm.controls.landingPage.value ? this.userSettingsForm.controls.landingPage.value : this.landingPageDisplayDropdownData[0].id,
-        iconId: this.uploadLogo != '' ? this.accountPreferenceData.iconId : 0,
+        iconId: this.uploadLogo != '' ? this.accountPreferenceData?.iconId : 0,
         iconByte: this.isDefaultBrandLogo ?  "" : this.uploadLogo == "" ? "" : this.uploadLogo["changingThisBreaksApplicationSecurity"].split(",")[1],
         createdBy: this.accountId
         //driverId: ""
       }
       if(this.accountInfo[0]["preferenceId"] > 0){ //-- account pref available
+        this.showLoadingIndicator=true;
         this.accountService.updateAccountPreference(objData).subscribe((data: any) => {
         this.savePrefSetting(data);
+        this.showLoadingIndicator=false;
+        }, (error) => {
+          this.showLoadingIndicator=false;
         });
       }
       else{
@@ -441,13 +459,17 @@ export class AccountInfoSettingsComponent implements OnInit {
           }
         }
         if(this.createPrefFlag){ //--- pref created
+          this.showLoadingIndicator=true;
           this.accountService.createPreference(objData).subscribe((prefData: any) => {
+            this.showLoadingIndicator=false;
             this.accountInfo[0]["preferenceId"] = prefData.id;
             let localAccountInfo = JSON.parse(localStorage.getItem("accountInfo"));
             localAccountInfo.accountDetail.preferenceId = prefData.id;
             localStorage.setItem("accountInfo", JSON.stringify(localAccountInfo));
             this.savePrefSetting(prefData);
-          }, (error) => { });
+          }, (error) => { 
+            this.showLoadingIndicator=false;
+           });
         }else{ //--- pref not created
           this.savePrefSetting(this.orgDefaultPreference); //-- org default pref
         }

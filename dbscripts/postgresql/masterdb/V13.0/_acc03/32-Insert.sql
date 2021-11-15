@@ -6882,7 +6882,3 @@ SELECT 'EN-GB','L','lblVehicleName','Vehicle Name',(select extract(epoch from no
 WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblVehicleName');
 
 
-
-
-
-

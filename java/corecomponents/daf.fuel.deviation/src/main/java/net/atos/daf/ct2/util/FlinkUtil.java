@@ -50,7 +50,9 @@ public class FlinkUtil {
 				(StateBackend) new FsStateBackend(envParams.get(FuelDeviationConstants.CHECKPOINT_DIRECTORY), true));
 		
 		// enable externalized checkpoints which are retained after job  cancellation
-		env.getCheckpointConfig().enableExternalizedCheckpoints(ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
+		
+		if("true".equals(envParams.get(FuelDeviationConstants.RETAIN_ON_CANCELLATION)))
+			env.getCheckpointConfig().enableExternalizedCheckpoints(ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
 
 
 		if("true".equals(envParams.get(FuelDeviationConstants.RESTART_FLAG))){
@@ -66,8 +68,6 @@ public class FlinkUtil {
 						  Time.of(Long.parseLong(envParams.get(FuelDeviationConstants.RESTART_FAILURE_DELAY)), TimeUnit.MILLISECONDS) // delay
 						));
 			}
-		}else{
-			env.setRestartStrategy(RestartStrategies.noRestart());
 		}
 		return env;
 	}

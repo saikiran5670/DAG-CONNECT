@@ -71,6 +71,11 @@ message AlertVehicleDetails{
 message AssociatedVehicleResponse {
   repeated AssociatedVehicle AssociatedVehicle = 1;
   ResponseCode Code = 2;
+  repeated FeatureEnum FeatureEnum=3;
+}
+message FeatureEnum
+{
+	string FeatureEnumType =1; 
 }
 message AssociatedVehicle {	
     int32 VehicleId =  1;        

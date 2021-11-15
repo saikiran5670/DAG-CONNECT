@@ -63,8 +63,8 @@ namespace net.atos.daf.ct2.reports.repository
             {
                 var parameter = new DynamicParameters();
 
-                parameter.Add("@start_time_stamp", logbookFilter.Start_Time / 1000, System.Data.DbType.Int32);
-                parameter.Add("@end_time_stamp", logbookFilter.End_time / 1000, System.Data.DbType.Int32);
+                parameter.Add("@start_time_stamp", logbookFilter.Start_Time);
+                parameter.Add("@end_time_stamp", logbookFilter.End_time);
                 string queryLogBookPull = @"select distinct ta.vin as VIN,
                                 v.registration_no as VehicleRegNo,
                                 v.name as VehicleName,
@@ -78,7 +78,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 RANK () OVER (PARTITION BY ta.vin,ta.alert_id
 								ORDER BY ta.alert_generated_time ASC) Occurrence,
                                 ta.urgency_level_type as AlertLevel,
-                                extract(epoch from TO_TIMESTAMP(ta.alert_generated_time /1000)::timestamp)*1000 AS AlertGeneratedTime,
+                                ta.alert_generated_time as AlertGeneratedTime,
                                 processed_message_time_stamp as ProcessedMessageTimestamp,
                                 case when (ts.id is not null ) then ts.start_time_stamp when (ts.id is null and tr.id is not null ) then tr.start_time_stamp end  as TripStartTime,
                                 case when (ts.id is not null ) then ts.end_time_stamp when (ts.id is null and tr.id is not null ) then tr.end_time_stamp end as TripEndTime,
@@ -93,13 +93,17 @@ namespace net.atos.daf.ct2.reports.repository
                                 left join master.geolocationaddress alertgeoadd
                                 on TRUNC(CAST(alertgeoadd.latitude as numeric),4)= TRUNC(CAST(ta.latitude as numeric),4) 
                                 and TRUNC(CAST(alertgeoadd.longitude as numeric),4) = TRUNC(CAST(ta.longitude as numeric),4)
-                                where 1=1 
-                                and ((to_timestamp(ta.alert_generated_time/1000)::timestamp) >= (to_timestamp(@start_time_stamp)::timestamp)
-                                and (to_timestamp(ta.alert_generated_time/1000)::timestamp) <= (to_timestamp(@end_time_stamp )::timestamp))
+                                where  (ta.alert_generated_time >= @start_time_stamp and ta.alert_generated_time <= @end_time_stamp)
                                 and ta.category_type <> 'O'
                 				and ta.type <> 'W' ";
-
-
+                parameter.Add("@featureIds", logbookFilter.FeatureIds);
+                var queryStatementFeature = @"select enum from translation.enumtranslation where feature_id = ANY(@featureIds)";
+                List<string> resultFeaturEnum = (List<string>)await _dataAccess.QueryAsync<string>(queryStatementFeature, parameter);
+                if (resultFeaturEnum.Count > 0)
+                {
+                    parameter.Add("@featureEnums", resultFeaturEnum);
+                    queryLogBookPull += " and ta.type = Any(@featureEnums) ";
+                }
                 if (logbookFilter.VIN.Count > 0)
                 {
                     parameter.Add("@vin", logbookFilter.VIN);

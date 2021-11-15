@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
 using net.atos.daf.ct2.utilities;
 using net.atos.daf.ct2.vehicle;
 using net.atos.daf.ct2.vehicle.entity;
@@ -17,12 +18,14 @@ namespace net.atos.daf.ct2.visibility
         private readonly IVisibilityRepository _visibilityRepository;
         private readonly IVehicleManager _vehicleManager;
         private readonly IMemoryCache _memoryCache;
+        private readonly IConfiguration _configuration;
 
-        public VisibilityManager(IVisibilityRepository visibilityRepository, IVehicleManager vehicleManager, IMemoryCache memoryCache)
+        public VisibilityManager(IVisibilityRepository visibilityRepository, IVehicleManager vehicleManager, IMemoryCache memoryCache, IConfiguration configuration)
         {
             _visibilityRepository = visibilityRepository;
             _vehicleManager = vehicleManager;
             _memoryCache = memoryCache ?? throw new ArgumentNullException($"Memory cache object is null in { nameof(VisibilityManager) }");
+            _configuration = configuration;
         }
 
         public async Task<int> GetReportFeatureId(int reportId)
@@ -48,7 +51,7 @@ namespace net.atos.daf.ct2.visibility
             if (orgId != contextOrgId)
             {
                 // In-Memory cache implementation
-                var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(2));
+                var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(Convert.ToInt32(_configuration["CacheIntervals:VehicleVisiblityInSeconds"])));
                 if (_memoryCache.TryGetValue(string.Format(CacheConstants.ContextOrgVisiblityKey, contextOrgId), out Dictionary<VehicleGroupDetails, List<VisibilityVehicle>> result))
                     resultDict = result;
                 else
@@ -89,7 +92,7 @@ namespace net.atos.daf.ct2.visibility
             if (reportFeatureId > 0 && vehicles.Count() > 0)
             {
                 // In-Memory cache implementation
-                var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(10));
+                var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(Convert.ToInt32(_configuration["CacheIntervals:SubscriptionOrgRelFeaturesInSeconds"])));
                 IEnumerable<VehiclePackage> vehiclePackages;
                 if (_memoryCache.TryGetValue(string.Format(CacheConstants.SubscribedVehicleByFeatureKey, reportFeatureId, contextOrgId), out IEnumerable<VehiclePackage> result))
                     vehiclePackages = result;
@@ -113,8 +116,8 @@ namespace net.atos.daf.ct2.visibility
                         var subscriptionVehicleIds = vehiclePackages.Where(e => e.HasOwned == true && e.PackageType == "V").SelectMany(e => e.VehicleIds);
                         var vinPackageVehicleIds = vehiclePackages.Where(e => e.PackageType == "N").SelectMany(e => e.VehicleIds).ToList();
 
-                        var visibleVehiclesFromVR = ownedVehicles.Where(x => subscriptionVehicleIds.Contains(x.Id));//v1, v2, v3
-                        var visibleVehiclesFromN = ownedVehicles.Where(x => vinPackageVehicleIds.Contains(x.Id));//v2, v4
+                        var visibleVehiclesFromVR = ownedVehicles.Where(x => subscriptionVehicleIds.Contains(x.Id)).ToList();//v1, v2, v3
+                        var visibleVehiclesFromN = ownedVehicles.Where(x => vinPackageVehicleIds.Contains(x.Id)).ToList();//v2, v4
                         ownedVehicles = visibleVehiclesFromVR.Union(visibleVehiclesFromN, new ObjectComparer()).ToList();
 
                         //Step1- take subscribed vehicle id org+vin
@@ -149,14 +152,14 @@ namespace net.atos.daf.ct2.visibility
                         }
 
                         //Fetch vehicles records from visible vehicles list from org+ vin package
-                        var filteredVisibleVehicleIds = relationshipVehicleIds.Intersect(subscriptionVehicleIds);
+                        var filteredVisibleVehicleIds = relationshipVehicleIds.Intersect(subscriptionVehicleIds).ToList();
 
                         //Fetch vehicles records from visible vehicles list from Vin package
-                        var filteredVinPackageVisibleVehicleIds = relationshipVehicleIds.Intersect(vinPackageVehicleIds);
+                        var filteredVinPackageVisibleVehicleIds = relationshipVehicleIds.Intersect(vinPackageVehicleIds).ToList();
 
                         //Step3- Union and assigned to visible  vehicle
-                        var visibleVehiclesFromVR = visibleVehicles.Where(x => filteredVisibleVehicleIds.Contains(x.Id));//v1, v2, v3
-                        var visibleVehiclesFromN = visibleVehicles.Where(x => filteredVinPackageVisibleVehicleIds.Contains(x.Id));//v2, v4
+                        var visibleVehiclesFromVR = visibleVehicles.Where(x => filteredVisibleVehicleIds.Contains(x.Id)).ToList();//v1, v2, v3
+                        var visibleVehiclesFromN = visibleVehicles.Where(x => filteredVinPackageVisibleVehicleIds.Contains(x.Id)).ToList();//v2, v4
 
                         visibleVehicles = visibleVehiclesFromVR.Union(visibleVehiclesFromN, new ObjectComparer()).ToList();
                     }
@@ -194,7 +197,7 @@ namespace net.atos.daf.ct2.visibility
             if (vehicles.Count() > 0)
             {
                 // In-Memory cache implementation
-                var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(10));
+                var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(Convert.ToInt32(_configuration["CacheIntervals:SubscriptionOrgRelFeaturesInSeconds"])));
                 IEnumerable<VehiclePackageForAlert> vehiclePackages;
                 if (_memoryCache.TryGetValue(string.Format(CacheConstants.SubscribedVehicleByFeatureForAlertKey, string.Join(',', featureIds), contextOrgId), out IEnumerable<VehiclePackageForAlert> result))
                     vehiclePackages = result;
@@ -223,16 +226,16 @@ namespace net.atos.daf.ct2.visibility
                     {
                         //Step 1 - Take subscribed vehicle id org+vin
                         var subscriptionVehicleIds = vehiclePackages.Where(e => e.HasOwned == true && e.PackageType == "V").Select(e => e.Vehicle_Id);
-                        var ownedVehiclesFromV = ownedVehicles.Where(x => subscriptionVehicleIds.Contains(x.Id));//v1, v2, v3
+                        var ownedVehiclesFromV = ownedVehicles.Where(x => subscriptionVehicleIds.Contains(x.Id)).ToList();//v1, v2, v3
 
                         //Step 2 - Take vin type vehicle id vin
                         var vinPackageVehicleIds = vehiclePackages.Where(e => e.PackageType == "N").Select(e => e.Vehicle_Id);
-                        var ownedVehiclesFromN = ownedVehicles.Where(x => vinPackageVehicleIds.Contains(x.Id));//v2, v4
+                        var ownedVehiclesFromN = ownedVehicles.Where(x => vinPackageVehicleIds.Contains(x.Id)).ToList();//v2, v4
 
                         //Step 3 - Union and assigned to owned vehicle
-                        var ownedVehiclesFromNV = ownedVehiclesFromV.Union(ownedVehiclesFromN, new ObjectComparer());
+                        var ownedVehiclesFromNV = ownedVehiclesFromV.Union(ownedVehiclesFromN, new ObjectComparer()).ToList();
 
-                        ownedVehicles = ownedVehicles.Union(ownedVehiclesFromNV, new ObjectComparer());
+                        ownedVehicles = ownedVehicles.Union(ownedVehiclesFromNV, new ObjectComparer()).ToList();
 
                         //Step 4 - Assign subscribed features to owned vehicles
                         foreach (var vehicle in ownedVehicles)
@@ -272,17 +275,17 @@ namespace net.atos.daf.ct2.visibility
                         var relationshipVehicleIds = relationshipVehicles.Select(x => x.Vehicle_Id);
 
                         //Fetch vehicles records to be removed from visible vehicles list
-                        var filteredVisibleVehicleIds = relationshipVehicleIds.Intersect(subscriptionVehicleIds);
+                        var filteredVisibleVehicleIds = relationshipVehicleIds.Intersect(subscriptionVehicleIds).ToList();
 
                         //Step 3 - Take VIN type vehicle ids
                         var vinPackageVehicleIds = vehiclePackages.Where(e => e.PackageType == "N").Select(e => e.Vehicle_Id).ToList();
 
                         //Fetch vehicles records to be removed from visible vehicles list from Vin package
-                        var filteredVinPackageVisibleVehicleIds = relationshipVehicleIds.Intersect(vinPackageVehicleIds);
+                        var filteredVinPackageVisibleVehicleIds = relationshipVehicleIds.Intersect(vinPackageVehicleIds).ToList();
 
                         //Step 4 - Union and assigned to visible vehicles
-                        var visibleVehiclesFromVR = visibleVehicles.Where(x => filteredVisibleVehicleIds.Contains(x.Id));//v1, v2, v3
-                        var visibleVehiclesFromN = visibleVehicles.Where(x => filteredVinPackageVisibleVehicleIds.Contains(x.Id));//v2, v4
+                        var visibleVehiclesFromVR = visibleVehicles.Where(x => filteredVisibleVehicleIds.Contains(x.Id)).ToList();//v1, v2, v3
+                        var visibleVehiclesFromN = visibleVehicles.Where(x => filteredVinPackageVisibleVehicleIds.Contains(x.Id)).ToList();//v2, v4
                         visibleVehicles = visibleVehiclesFromVR.Union(visibleVehiclesFromN, new ObjectComparer()).ToList();
 
                         //Step 5 - Assign subscribed features to visible vehicles

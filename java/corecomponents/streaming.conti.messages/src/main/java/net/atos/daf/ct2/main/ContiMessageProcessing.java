@@ -5,10 +5,8 @@ import static net.atos.daf.ct2.constant.DAFCT2Constant.BROADCAST_NAME;
 import static net.atos.daf.ct2.constant.DAFCT2Constant.CONTI_CORRUPT_MESSAGE_TOPIC_NAME;
 import static net.atos.daf.ct2.constant.DAFCT2Constant.GRPC_PORT;
 import static net.atos.daf.ct2.constant.DAFCT2Constant.GRPC_SERVER;
-import static net.atos.daf.ct2.constant.DAFCT2Constant.INDEX_TRANSID;
 import static net.atos.daf.ct2.constant.DAFCT2Constant.JOB_NAME;
 import static net.atos.daf.ct2.constant.DAFCT2Constant.MASTER_DATA_TOPIC_NAME;
-import static net.atos.daf.ct2.constant.DAFCT2Constant.MONITOR_TRANSID;
 import static net.atos.daf.ct2.constant.DAFCT2Constant.POSTGRE_CDC_FETCH_DATA_QUERY;
 import static net.atos.daf.ct2.constant.DAFCT2Constant.POSTGRE_DATABASE_NAME;
 import static net.atos.daf.ct2.constant.DAFCT2Constant.POSTGRE_DRIVER;
@@ -16,11 +14,7 @@ import static net.atos.daf.ct2.constant.DAFCT2Constant.POSTGRE_HOSTNAME;
 import static net.atos.daf.ct2.constant.DAFCT2Constant.POSTGRE_PASSWORD;
 import static net.atos.daf.ct2.constant.DAFCT2Constant.POSTGRE_PORT;
 import static net.atos.daf.ct2.constant.DAFCT2Constant.POSTGRE_USER;
-import static net.atos.daf.ct2.constant.DAFCT2Constant.SINK_INDEX_TOPIC_NAME;
-import static net.atos.daf.ct2.constant.DAFCT2Constant.SINK_MONITOR_TOPIC_NAME;
-import static net.atos.daf.ct2.constant.DAFCT2Constant.SINK_STATUS_TOPIC_NAME;
 import static net.atos.daf.ct2.constant.DAFCT2Constant.SOURCE_TOPIC_NAME;
-import static net.atos.daf.ct2.constant.DAFCT2Constant.STATUS_TRANSID;
 import static net.atos.daf.ct2.constant.DAFCT2Constant.VEHICLE_STATUS_SCHEMA_DEF;
 
 import java.io.FileReader;
@@ -30,6 +24,7 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
+import net.atos.daf.ct2.postgre.VehicleStatusSource;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.restartstrategy.RestartStrategies;
 import org.apache.flink.api.common.state.MapStateDescriptor;
@@ -47,7 +42,6 @@ import org.apache.flink.streaming.api.datastream.BroadcastStream;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.KeyedStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
-import org.apache.flink.streaming.api.environment.CheckpointConfig.ExternalizedCheckpointCleanup;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.slf4j.Logger;
@@ -102,8 +96,9 @@ public class ContiMessageProcessing implements Serializable {
             properties = configuration();
             contiMessageProcessing.auditContiJobDetails(properties, "Conti streaming job started");
 
-            //contiMessageProcessing.flinkConnection();
-            contiMessageProcessing.flinkConnection(properties);
+			if(properties.getProperty("flink.streaming.evn").equalsIgnoreCase("default"))
+				contiMessageProcessing.flinkConnection();
+			else contiMessageProcessing.flinkConnection(properties);
             contiMessageProcessing.processing(properties);
             contiMessageProcessing.startExecution();
 
@@ -149,7 +144,7 @@ public class ContiMessageProcessing implements Serializable {
 
 		// enable externalized checkpoints which are retained after job
 		// cancellation
-		env.getCheckpointConfig().enableExternalizedCheckpoints(ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
+//		env.getCheckpointConfig().enableExternalizedCheckpoints(ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
 
 		logger.info("RESTART_FLAG :: " + properties.getProperty(DAFCT2Constant.RESTART_FLAG));
 		if ("true".equals(properties.getProperty(DAFCT2Constant.RESTART_FLAG))) {
@@ -167,8 +162,6 @@ public class ContiMessageProcessing implements Serializable {
 								TimeUnit.MILLISECONDS) // delay
 				));
 			}
-		} else {
-			env.setRestartStrategy(RestartStrategies.noRestart());
 		}
 
 		logger.info("RestartStrategy ::{}",env.getRestartStrategy());
@@ -211,7 +204,8 @@ public class ContiMessageProcessing implements Serializable {
          * New code added for fetching status data from databases
          * Using jdbcInput format
          */
-        RowTypeInfo rowTypeInfo = new RowTypeInfo(VEHICLE_STATUS_SCHEMA_DEF);
+		//TODO After flink update to 1.14.0 use below code
+        /*RowTypeInfo rowTypeInfo = new RowTypeInfo(VEHICLE_STATUS_SCHEMA_DEF);
 
         String jdbcUrl = new StringBuilder("jdbc:postgresql://")
                 .append(properties.getProperty(POSTGRE_HOSTNAME))
@@ -239,10 +233,11 @@ public class ContiMessageProcessing implements Serializable {
                         .status(String.valueOf(row.getField(2)))
                         .fuelType(String.valueOf(row.getField(3)))
                         .build())
-                .returns(VehicleStatusSchema.class);
+                .returns(VehicleStatusSchema.class);*/
 
+		SingleOutputStreamOperator<VehicleStatusSchema> dbVehicleStatusStream = streamExecutionEnvironment.addSource(new VehicleStatusSource(properties));
 
-        DataStream<VehicleStatusSchema> statusSchemaDataStream = kafkaCDCMessage.union(dbVehicleStatusStream);
+		DataStream<VehicleStatusSchema> statusSchemaDataStream = kafkaCDCMessage.union(dbVehicleStatusStream);
 
         BroadcastStream<KafkaRecord<VehicleStatusSchema>> broadcastStream = statusSchemaDataStream
                 .<KafkaRecord<VehicleStatusSchema>>map(vehicleStatusSchema -> {
@@ -312,7 +307,7 @@ public class ContiMessageProcessing implements Serializable {
 					if (Objects.nonNull(jsonVid))
 						vid = jsonVid.asText();
 
-					kafkaRec.setKey(transId);
+					kafkaRec.setKey(vid);
 					
 					if (DAFCT2Constant.TRANSID_INDEX.equals(transId)){
 						
@@ -350,148 +345,28 @@ public class ContiMessageProcessing implements Serializable {
         		.filter(rec ->  DAFCT2Constant.CORRUPT.equals(rec.getKey()) || DAFCT2Constant.UNKNOWN.equals(rec.getKey()))
         		.name("Filter corrupt Records");
         
-        KeyedStream<KafkaRecord<Tuple3<String, String, Object>>, String> contiKeyedIndexStream = contiInputStream
-        		.filter(rec -> DAFCT2Constant.TRANSID_INDEX.equals(rec.getKey()))
-        		.name("Filter Index Records")
-        		.keyBy(new KeySelector<KafkaRecord<Tuple3<String, String, Object>>, String>(){
-
-					/**
-					 * 
-					 */
-					private static final long serialVersionUID = 1L;
-
-					@Override
-					public String getKey(KafkaRecord<Tuple3<String, String, Object>> value) throws Exception {
-						String vid = DAFCT2Constant.UNKNOWN;
-						try {
-							/*JsonNode jsonNodeRec = JsonMapper.configuring().readTree((String) value.getValue());
-							JsonNode jsonVidVal = jsonNodeRec.get("VID");*/
-							 vid = value.getValue().f0;
-							
-							//value.setKey(vid);
-						} catch (Exception e) {
-							//value.setKey(vid);
-							logger.error("Issue mandatory field VID is null for index record :{}",value);
-						}
-						return vid;
-
-					}
-        			
-        		});
-        
-        KeyedStream<KafkaRecord<Tuple3<String, String, Object>>, String> contiKeyedMonitorStream = contiInputStream
-        		.filter(rec -> DAFCT2Constant.TRANSID_MONITOR.equals(rec.getKey()))
-        		.name("Filter Monitor Records")
-        		.keyBy(new KeySelector<KafkaRecord<Tuple3<String, String, Object>>, String>(){
-
-					/**
-					 * 
-					 */
-					private static final long serialVersionUID = 1L;
-
-					@Override
-					public String getKey(KafkaRecord<Tuple3<String, String, Object>> value) throws Exception {
-						String vid = DAFCT2Constant.UNKNOWN;
-						try {
-							vid = value.getValue().f0;
-							
-						} catch (Exception e) {
-							//value.setKey(vid);
-							logger.error("Issue mandatory field VID is null for monitor record :{}",value);
-						}
-						return vid;
-
-					}
-        			
-        		});
-        
-        KeyedStream<KafkaRecord<Tuple3<String, String, Object>>, String> contiKeyedStatusStream = contiInputStream
-        		.filter(rec -> DAFCT2Constant.TRANSID_STATUS.equals(rec.getKey()))
-        		.name("Filter Status Records")
-        		.keyBy(new KeySelector<KafkaRecord<Tuple3<String, String, Object>>, String>(){
-
-					/**
-					 * 
-					 */
-					private static final long serialVersionUID = 1L;
-
-					@Override
-					public String getKey(KafkaRecord<Tuple3<String, String, Object>> value) throws Exception {
-						String vid = DAFCT2Constant.UNKNOWN;
-						try {
-							
-								vid = value.getValue().f0;
-							
-							//value.setKey(vid);
-						} catch (Exception e) {
-							//value.setKey(vid);
-							logger.error("Issue mandatory field VID is null for status record :{}",value);
-						}
-						return vid;
-
-					}
-        			
-        		});
+        KeyedStream<KafkaRecord<Tuple3<String, String, Object>>, String> contiValidRecords = contiInputStream
+        		.filter(rec ->  !DAFCT2Constant.CORRUPT.equals(rec.getKey()) )
+        		.name("Filter Valid Records")
+        		.keyBy(rec -> rec.getKey());
         
         if("true".equals(properties.getProperty(DAFCT2Constant.STORE_HISTORICAL_DATA))){
         	new MessageProcessing<Tuple3<String, String, Object>, VehicleStatusSchema, String>()
         	.contiKeyedMessageForHistorical(
-        			contiKeyedIndexStream,
+        			contiValidRecords,
         			properties,
-        			broadcastStream,
-        			"Index",
-        			Integer.parseInt(properties.getProperty(DAFCT2Constant.HBASE_INDEX_PARALLELISM)));
-        	
-        	new MessageProcessing<Tuple3<String, String, Object>, VehicleStatusSchema, String>()
-        	.contiKeyedMessageForHistorical(
-        			contiKeyedMonitorStream,
-        			properties,
-        			broadcastStream,
-        			"Monitor",
-        			Integer.parseInt(properties.getProperty(DAFCT2Constant.HBASE_MONITOR_PARALLELISM)));
-        	
-        	new MessageProcessing<Tuple3<String, String, Object>, VehicleStatusSchema, String>()
-        	.contiKeyedMessageForHistorical(
-        			contiKeyedStatusStream,
-        			properties,
-        			broadcastStream,
-        			"Status",
-        			Integer.parseInt(properties.getProperty(DAFCT2Constant.HBASE_STATUS_PARALLELISM)));
-        	
+        			broadcastStream
+        			);
         }
         
         new EgressCorruptMessages().egressCorruptMessages(contiCorruptRecords, properties,
                 properties.getProperty(CONTI_CORRUPT_MESSAGE_TOPIC_NAME));
         
         new MessageProcessing<Tuple3<String, String, Object>, VehicleStatusSchema, Index>()
-                .consumeKeyedContiMessage(
-                		contiKeyedIndexStream,
-                        properties.getProperty(INDEX_TRANSID),
-                        "Index",
-                        properties.getProperty(SINK_INDEX_TOPIC_NAME),
-                        properties,
-                        Index.class,
-                        broadcastStream);
-
-        new MessageProcessing<Tuple3<String, String, Object>, VehicleStatusSchema, Status>()
-                .consumeKeyedContiMessage(
-                		contiKeyedStatusStream,
-                        properties.getProperty(STATUS_TRANSID),
-                        "Status",
-                        properties.getProperty(SINK_STATUS_TOPIC_NAME),
-                        properties,
-                        Status.class,
-                        broadcastStream);
-
-        new MessageProcessing<Tuple3<String, String, Object>, VehicleStatusSchema, Monitor>()
-                .consumeKeyedContiMessage(
-                		contiKeyedMonitorStream,
-                        properties.getProperty(MONITOR_TRANSID),
-                        "Monitor",
-                        properties.getProperty(SINK_MONITOR_TOPIC_NAME),
-                        properties,
-                        Monitor.class,
-                        broadcastStream);
+        	.consumeKeyedContiMessage(
+        		contiValidRecords,
+                properties,
+                broadcastStream);
     }
 
     public StreamExecutionEnvironment getstreamExecutionEnvironment() {

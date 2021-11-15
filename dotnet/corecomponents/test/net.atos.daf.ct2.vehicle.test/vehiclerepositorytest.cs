@@ -31,7 +31,7 @@ namespace net.atos.daf.ct2.vehicle.test
             _datamartDataacess = new PgSQLDataMartDataAccess(datamartconnectionString);
             _vehicleRepository = new VehicleRepository(_dataAccess, _datamartDataacess);
             _groupRepository = new GroupRepository(_dataAccess);
-            _vehiclemanager = new VehicleManager(_vehicleRepository, null);
+            _vehiclemanager = new VehicleManager(_vehicleRepository, null, null);
 
         }
         //[TestCategory("Unit-Test-Case")]

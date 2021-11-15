@@ -38,7 +38,9 @@ public class MileageStreamingJob {
 			if (params.get("input") != null)
 				envParams = ParameterTool.fromPropertiesFile(params.get("input"));
 
-			final StreamExecutionEnvironment env = FlinkUtil.createStreamExecutionEnvironment(envParams);
+			final StreamExecutionEnvironment env = envParams.get("flink.streaming.evn").equalsIgnoreCase("default") ?
+					StreamExecutionEnvironment.getExecutionEnvironment() : FlinkUtil.createStreamExecutionEnvironment(envParams);
+
 			env.getConfig().setGlobalJobParameters(envParams);
 
 			mileageStreamingJob.auditMileageJobDetails(envParams, "Mileage streaming job started");
@@ -65,7 +67,7 @@ public class MileageStreamingJob {
 									return eventTm;
 								}
 							}))
-					//.keyBy( stsRec -> stsRec.getValue().getVin() )
+					.keyBy(rec ->rec.getValue().getVin()!=null ? rec.getValue().getVin() : rec.getValue().getVid())
 					.map(new MapFunction<KafkaRecord<Status>, VehicleMileage>() {
 						/**
 						 * 
@@ -152,6 +154,7 @@ public class MileageStreamingJob {
 				}
 			}
 
+			logger.info("vMileageObj ::{} ",vMileageObj);
 		} catch (Exception e) {
 			logger.error("Issue while mapping deserialized status object to trip mileage object :: " + e);
 			logger.error("Issue while processing mileage record :: " + stsMsg);
@@ -165,8 +168,7 @@ public class MileageStreamingJob {
 			new MileageAuditService().auditTrail(properties.get(MileageConstants.GRPC_SERVER),
 					properties.get(MileageConstants.GRPC_PORT), MileageConstants.MILEAGE_JOB_NAME, message);
 		} catch (MileageAuditServiceException e) {
-			logger.info("Mileage Streaming Job :: ", e.getMessage());
-			System.out.println("Mileage STreaming Job :: " + e);
+			logger.error("Issue in Mileage Streaming Job :: ", e.getMessage());
 		}
 
 	}

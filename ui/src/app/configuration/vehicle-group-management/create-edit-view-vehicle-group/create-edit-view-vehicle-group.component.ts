@@ -6,6 +6,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { VehicleService } from '../../../services/vehicle.service';
 import { CustomValidators } from '../../../shared/custom.validators';
+import { Util } from 'src/app/shared/util';
 
 @Component({
   selector: 'app-create-edit-view-vehicle-group',
@@ -33,10 +34,12 @@ export class CreateEditViewVehicleGroupComponent implements OnInit {
   showVehicleList: boolean = true;
   duplicateVehicleCheck: boolean = false;
   existingGroupList:any =[];
+  filterValue: string;
+  showLoadingIndicator: boolean = false;
 
   constructor(private _formBuilder: FormBuilder, private vehicleService: VehicleService) { }
 
-  ngOnInit() { 
+  ngOnInit() {
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.vehicleGroupForm = this._formBuilder.group({
       vehicleGroupName: ['', [Validators.required, CustomValidators.noWhitespaceValidatorforDesc]],
@@ -86,9 +89,9 @@ export class CreateEditViewVehicleGroupComponent implements OnInit {
   }
 
   getBreadcum() {
-    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / 
-    ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / 
-    ${this.translationData.lblVehicleGroupManagement ? this.translationData.lblVehicleGroupManagement : "Vehicle Group Management"} / 
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} /
+    ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} /
+    ${this.translationData.lblVehicleGroupManagement ? this.translationData.lblVehicleGroupManagement : "Vehicle Group Management"} /
     ${(this.actionType == 'edit') ? (this.translationData.lblEditVehicleGroupDetails ? this.translationData.lblEditVehicleGroupDetails : 'Edit Vehicle Group Details') : (this.translationData.lblViewVehicleGroupDetails ? this.translationData.lblViewVehicleGroupDetails : 'View Vehicle Group Details') }`;
   }
 
@@ -111,7 +114,7 @@ export class CreateEditViewVehicleGroupComponent implements OnInit {
     let emitObj = {
       stepFlag: false,
       successMsg: ""
-    }  
+    }
     this.backToPage.emit(emitObj);
   }
 
@@ -147,6 +150,7 @@ export class CreateEditViewVehicleGroupComponent implements OnInit {
     setTimeout(()=>{
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+      Util.applySearchFilter(this.dataSource, this.displayedColumns ,this.filterValue );
     });
   }
 
@@ -181,16 +185,19 @@ export class CreateEditViewVehicleGroupComponent implements OnInit {
     if(this.actionType == 'create'){ // create
       let createVehGrpObj = {
         id: 0,
-        name: this.vehicleGroupForm.controls.vehicleGroupName.value, 
-        description: this.vehicleGroupForm.controls.vehicleGroupDescription.value, 
+        name: this.vehicleGroupForm.controls.vehicleGroupName.value,
+        description: this.vehicleGroupForm.controls.vehicleGroupDescription.value,
         organizationId: this.accountOrganizationId,
-        groupType: this.vehicleGroupForm.controls.vehicleGroupType.value, 
+        groupType: this.vehicleGroupForm.controls.vehicleGroupType.value,
         functionEnum: (this.vehicleGroupForm.controls.vehicleGroupType.value == "G") ? "N" : this.vehicleGroupForm.controls.methodType.value, //-- N-> Group &  O/A/V -> Dynamic
         vehicles: vehicleList
       }
+      this.showLoadingIndicator=true;
       this.vehicleService.createVehicleGroup(createVehGrpObj).subscribe((createVehData: any) => {
         this.getVehicleGroupData();
+        this.showLoadingIndicator=false;
       }, (err) => {
+        this.showLoadingIndicator=false;
         //console.log(err);
         if (err.status == 409) {
           this.duplicateVehicleGroupMsg = true;
@@ -199,22 +206,25 @@ export class CreateEditViewVehicleGroupComponent implements OnInit {
     }
     else{ // update
       this.checkDuplicateGroupName();
-      if(this.actionType == 'edit' && this.duplicateVehicleCheck){ 
+      if(this.actionType == 'edit' && this.duplicateVehicleCheck){
         this.duplicateVehicleCheck=false;
         this.duplicateVehicleGroupMsg = true;
       } else{
       let updateVehGrpObj = {
         id: this.selectedRowData.groupId,
-        name: this.vehicleGroupForm.controls.vehicleGroupName.value, 
-        description: this.vehicleGroupForm.controls.vehicleGroupDescription.value, 
+        name: this.vehicleGroupForm.controls.vehicleGroupName.value,
+        description: this.vehicleGroupForm.controls.vehicleGroupDescription.value,
         organizationId: this.selectedRowData.organizationId,
-        groupType: this.vehicleGroupForm.controls.vehicleGroupType.value, 
+        groupType: this.vehicleGroupForm.controls.vehicleGroupType.value,
         functionEnum: (this.vehicleGroupForm.controls.vehicleGroupType.value == "G") ? "N" : this.vehicleGroupForm.controls.methodType.value, //-- N-> Group &  O/A/V -> Dynamic
         vehicles: vehicleList
       }
+      this.showLoadingIndicator=true;
       this.vehicleService.updateVehicleGroup(updateVehGrpObj).subscribe((updateVehData: any) => {
         this.getVehicleGroupData();
+        this.showLoadingIndicator=false;
       }, (err) => {
+        this.showLoadingIndicator=false;
         //console.log(err);
         if (err.status == 409) {
           this.duplicateVehicleGroupMsg = true;
@@ -225,14 +235,14 @@ export class CreateEditViewVehicleGroupComponent implements OnInit {
   }
 
   checkDuplicateGroupName(){
-    if(this.actionType == 'edit'){    
+    if(this.actionType == 'edit'){
       let vehGrpName = `${this.vehicleGroupForm.controls.vehicleGroupName.value}`;
       this.existingGroupList.forEach(element => {
         let vehicleName = element.groupName;
         if(vehGrpName !== this.selectedRowData.groupName && vehGrpName==vehicleName){
             this.duplicateVehicleCheck = true;
          }
-      });   
+      });
       }
    }
     getVehicleGroupDataForCheckDuplicate(){

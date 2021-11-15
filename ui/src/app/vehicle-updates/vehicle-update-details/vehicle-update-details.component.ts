@@ -56,7 +56,7 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
     baseLineId: "",
     scheduleDateTime: "",
     vin: '',
-    campaignId: '',
+    campaignID: '',
     scheduledDate:'',
     scheduledTime:''
 
@@ -347,7 +347,7 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
   openScheduler(rowData: any) { 
   this.schedulerData.campaignName = rowData.campaignSubject;
   this.schedulerData.baseLineId = rowData.baselineAssignmentId;
-  this.schedulerData.campaignId = rowData.campaignID;
+  this.schedulerData.campaignID = rowData.campaignID;
   this.schedulerData.vin = this.selectedVin;
   }
  
@@ -425,14 +425,17 @@ showConfirmDailog(schedulerData: any) {
       this.showLoadingIndicator = true;
       if(res){ 
         this.otaSoftwareService.getschedulesoftwareupdate(this.schedulerData).subscribe((sheduleData: any) => {
-          this.hideloader();
+          // this.hideloader();
           let successMsg =`${this.schedulerData.campaignID} ${this.formattedDate} ${this.scheduledTime} scheduled successfully.`
           this.successMsgBlink(successMsg);
           this.otaSoftwareService.getvehicleupdatedetails(this.selectedVehicleUpdateDetails.vin).subscribe((data: any) =>{
+            this.hideloader();
             if (data  && data.vehicleUpdateDetails && data.vehicleUpdateDetails !== null) {
               this.loadVehicleDetailsData(data)
             }
 
+          }, (error) => {
+            this.hideloader();
           })
           
 

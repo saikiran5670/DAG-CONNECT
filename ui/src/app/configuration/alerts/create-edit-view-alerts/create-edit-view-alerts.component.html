@@ -241,7 +241,87 @@
       </ng-template>
     </app-data-table>
     </mat-expansion-panel>
-
+    
+ <!-- Select common period -->
+ <br/>
+ <mat-card *ngIf="actionType != 'view'" class='mat-elevation-z'>
+  <mat-expansion-panel class="full-width" fxLayoutGap="10px">
+    <mat-expansion-panel-header class="full-width">
+      <mat-panel-title>
+        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>
+          {{translationData.lblPeriod }}
+          <span class='mandatoryColor'>*</span></span>
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <div fxLayout="row" class="full-width filter-direction">
+      <mat-radio-group formControlName="fullorCustom" (change)='onApplyPeriodOnChange($event)'>
+        <mat-radio-button style='margin-right: 20px;' value="A">
+          {{ translationData.lblFullDay }}
+        </mat-radio-button>
+        <mat-radio-button style='margin-right: 20px;' value="C">
+          {{ translationData.lblCustomPeriod }}
+        </mat-radio-button>
+      </mat-radio-group>
+    </div>
+    <div *ngIf="selectedApplyOnPeriod =='C'" fxLayout="row" class="areaWidth">
+      <div class="areaWidth" fxLayout="column" style='margin-right: 10px;'>
+        <div fxLayout="row" class="areaWidth" fxLayoutGap="5px">
+          <div class="max-width-35-per" fxLayout="column">
+            <mat-label>{{ translationData.lblFrom }}</mat-label>
+            <mat-form-field appearance="outline">
+              <!-- <mat-label>Choose a date</mat-label> -->
+              <input matInput [matDatepicker]="picker" placeholder="Choose a date" formControlName="fromDate">
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+          </div>
+          <div class="max-width-20-per" fxLayout="column">
+            <mat-label>{{ translationData.lblAt }}</mat-label>
+            <mat-form-field appearance="outline" class="full-width">
+              <input type="time" matInput formControlName="fromTimeRange">
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+      <div class="areaWidth" fxLayout="column">
+        <div fxLayout="row" class="areaWidth" fxLayoutGap="5px">
+          <div class="max-width-35-per" fxLayout="column">
+            <mat-label>{{ translationData.lblTo }}</mat-label>
+            <mat-form-field appearance="outline">
+              <!-- <mat-label>Choose a date</mat-label> -->
+              <input matInput [matDatepicker]="picker1" placeholder="Choose a date" formControlName="toDate">
+              <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+              <mat-datepicker #picker1></mat-datepicker>
+            </mat-form-field>
+          </div>
+          <div class="max-width-20-per" fxLayout="column">
+            <mat-label>{{ translationData.lblAt }}</mat-label>
+            <mat-form-field appearance="outline" class="full-width">
+              <input type="time" matInput formControlName="toTimeRange">
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+    </div>
+ 
+  </mat-expansion-panel>
+</mat-card>
+<div *ngIf="actionType == 'view'" class='mat-elevation-z'>
+  <div fxLayout="row" fxLayoutAlign="space-between"
+  class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+  <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+    Validity Type : <span style='font-weight: 500!important;'>{{ this.selectedRowData.alertUrgencyLevelRefs[0].periodType == 'A' ? (translationData.lblAlways) :  (translationData.lblCustom) }}</span>
+    </div>
+  </div>
+  <div fxLayout="row" *ngIf="this.selectedRowData.alertUrgencyLevelRefs[0].periodType == 'C'" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+  <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+    From : <span style='font-weight: 500!important;'>{{ from[0]}} {{ from[1] }}</span>
+    </div>
+    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+      To : <span style='font-weight: 500!important;'>{{ to[0]}} {{ to[1] }}</span>
+      </div>
+  </div>
+</div>
     <!-- Advance filter -->
     <div *ngIf="(alert_category_selected === 'F' && (alert_type_selected === 'A' || alert_type_selected === 'L' ||
     alert_type_selected === 'T' || alert_type_selected === 'P' || alert_type_selected === 'I')
@@ -275,6 +355,8 @@
             [selectedRowData] = 'selectedRowData'
             [actionType] = 'actionType'
             [prefUnitFormat] ='prefUnitFormat'
+            [periodSelectedDateTime] ='periodSelectedDateTime'  
+            [selectedApplyOn] ='selectedApplyOnPeriod'    
             (isAdvancedAlertPayload) = 'onAdvancedAlertPayload($event)'>
           </app-alert-advanced-filter>
         </mat-card>
@@ -814,4 +896,5 @@
       </div>
     </div>
   </mat-card-actions>
+  <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
 </div>

@@ -40,7 +40,9 @@ public class FuelDeviationJob {
 			if (params.get("input") != null)
 				envParams = ParameterTool.fromPropertiesFile(params.get("input"));
 
-			final StreamExecutionEnvironment env = FlinkUtil.createStreamExecutionEnvironment(envParams);
+			final StreamExecutionEnvironment env = envParams.get("flink.streaming.evn").equalsIgnoreCase("default") ?
+					StreamExecutionEnvironment.getExecutionEnvironment() : FlinkUtil.createStreamExecutionEnvironment(envParams);
+
 			env.getConfig().setGlobalJobParameters(envParams);
 
 			fuelDeviationJob.auditFuelDevialJobDetails(envParams, "Fuel Deviation job started");
@@ -68,6 +70,7 @@ public class FuelDeviationJob {
 									return eventTm;
 								}
 							}))
+					.keyBy(rec ->rec.getValue().getVin()!=null ? rec.getValue().getVin() : rec.getValue().getVid())
 					.map(new MapFunction<KafkaRecord<Index>, FuelDeviationData>() {
 						/**
 						 * 

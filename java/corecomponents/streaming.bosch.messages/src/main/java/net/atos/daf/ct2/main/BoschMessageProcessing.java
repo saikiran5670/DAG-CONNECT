@@ -31,7 +31,8 @@ public class BoschMessageProcessing {
 	public static Properties configuration() throws DAFCT2Exception {
 
 		Properties properties = new Properties();
-		properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+		
+		//properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, properties.get(DAFCT2Constant.AUTO_OFFSET_RESET_CONFIG));
 
 		try {
 			properties.load(new FileReader(FILE_PATH));
@@ -51,14 +52,14 @@ public class BoschMessageProcessing {
 		Properties properties = null;
 		try {
 			FILE_PATH = args[0];
-
+		
 			properties = configuration();
 			System.out.println("properties object ===>" + properties);
 			//boschMessageProcessing.auditBoschJobDetails(properties, "Bosch streaming job started");
 
 			boschMessageProcessing.flinkConnection();
 			boschMessageProcessing.processing(properties);
-			boschMessageProcessing.startExecution();
+			boschMessageProcessing.startExecution(properties);
 			
 		} catch (DAFCT2Exception e) {
 			log.error("Exception: ", e);
@@ -80,14 +81,33 @@ public class BoschMessageProcessing {
 		log.info("Stage 1. Message processing method " );
 		ConsumeSourceStream consumeSrcStream = new ConsumeSourceStream();
 		ValidateSourceStream validateSourceStream = new ValidateSourceStream();
+		//load source properties file
+		Properties sourceProperties = new Properties();
+		
+		sourceProperties.put(DAFCT2Constant.SOURCE_BOSCH_TOPIC_NAME,  properties.getProperty(DAFCT2Constant.SOURCE_BOSCH_TOPIC_NAME));
+		sourceProperties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,properties.get(DAFCT2Constant.SOURCE_AUTO_OFFSET_RESET_CONFIG_VAL));
+		sourceProperties.put(ConsumerConfig.CLIENT_ID_CONFIG, properties.get(DAFCT2Constant.SOURCE_CLIENT_ID_CONFIG_VAL));
+		sourceProperties.put(ConsumerConfig.GROUP_ID_CONFIG, properties.get(DAFCT2Constant.SOURCE_GROUP_ID_CONFIG_VAL));
+		sourceProperties.put(ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG, properties.get(DAFCT2Constant.SOURCE_REQUEST_TIMEOUT_MS_CONFIG_VAL));
+		sourceProperties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, properties.get(DAFCT2Constant.SOURCE_BOOTSTRAP_SERVERS_CONFIG_VAL));
+		sourceProperties.put(DAFCT2Constant.SOURCE_SECURITY_PROTOCOL_CONFIG, properties.get(DAFCT2Constant.SOURCE_SECURITY_PROTOCOL_CONFIG_VAL));
+		sourceProperties.put(DAFCT2Constant.SOURCE_SASL_MECHANISM_CONFIG, properties.get(DAFCT2Constant.SOURCE_SASL_MECHANISM_CONFIG_VAL));
+		sourceProperties.put(DAFCT2Constant.SOURCE_SASL_JAAS_CONFIG, properties.get(DAFCT2Constant.SOURCE_SASL_JAAS_CONFIG_VAL));
 		
 		DataStream<KafkaRecord<String>> boschInputStream = consumeSrcStream.consumeSourceInputStream(
-				streamExecutionEnvironment, DAFCT2Constant.SOURCE_BOSCH_TOPIC_NAME, properties);
-		log.info("Stage 2. Data Read from kafka topic done ==>" + properties.getProperty(DAFCT2Constant.SOURCE_BOSCH_TOPIC_NAME) );
+				streamExecutionEnvironment, DAFCT2Constant.SOURCE_BOSCH_TOPIC_NAME, sourceProperties);
+		
+		log.info("Stage 2. Data Read from kafka topic done ==>" + sourceProperties.getProperty(DAFCT2Constant.SOURCE_BOSCH_TOPIC_NAME) );
 		
 		//data load in hbase
 		log.info("data loading in hbase process started..");
-		MessageParseUtil.storeDataInHbase(boschInputStream,properties);
+		String isHbaseStore = (String) properties.get(DAFCT2Constant.SINK_HBASE_STORE);
+		log.info(" Hbase store status "+isHbaseStore);
+		
+		if("TRUE".equalsIgnoreCase(isHbaseStore)) {
+			MessageParseUtil.storeDataInHbase(boschInputStream,properties);
+		} 
+		
 		
 				
 		log.info("Stage 3. data filtering as per message type start ");
@@ -124,10 +144,10 @@ public class BoschMessageProcessing {
 		
 	}
 
-	public void startExecution() throws DAFCT2Exception {
+	public void startExecution(Properties properties) throws DAFCT2Exception {
 
 		try {
-			this.streamExecutionEnvironment.execute("Bosch Streaming");
+			this.streamExecutionEnvironment.execute(properties.getProperty(DAFCT2Constant.BOSCH_JOB_NAME));
 
 		} catch (Exception e) {
 			log.error("Unable to process Message using Flink ", e);

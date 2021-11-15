@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -29,7 +29,7 @@ export class UserRoleManagementComponent implements OnInit {
   viewFlag: boolean = false;
   initData: any = [];
   rowsData: any;
-  actionBtn:any;  
+  actionBtn:any;
   createStatus: boolean = false;
   titleText: string;
   translationData: any = {};
@@ -43,11 +43,12 @@ export class UserRoleManagementComponent implements OnInit {
   userType: any = '';
   userLevel: any = 40;
   dialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
+  filterValue: any;
 
   constructor(
-    private translationService: TranslationService, 
-    private roleService: RoleService, 
-    private dialogService: ConfirmDialogService, 
+    private translationService: TranslationService,
+    private roleService: RoleService,
+    private dialogService: ConfirmDialogService,
     private _snackBar: MatSnackBar,
     private dialog: MatDialog) {
     // this.defaultTranslation();
@@ -75,7 +76,7 @@ export class UserRoleManagementComponent implements OnInit {
   //     lblNewUserRoleName: "New User Role Name",
   //     lblUserRoleType: "Role Type",
   //     lblUserRoleDescriptionOptional: "User Role Description (Optional)",
-  //     lblEnterUserRoleName: "Enter User Role Name", 
+  //     lblEnterUserRoleName: "Enter User Role Name",
   //     lblEnterAboutUserRole: "Enter About User Role",
   //     lblHintMessage: "You can select services from below list to provide access for this role",
   //     lblSelectRoleAccess: "Select Role Access",
@@ -86,7 +87,7 @@ export class UserRoleManagementComponent implements OnInit {
   //     lblUserRoleCreatedSuccessfully: "User Role '$' Created Successfully",
   //     lblDeleteAccount: "Delete Account",
   //     lblAreyousureyouwanttodeleterole: "Are you sure you want to delete '$' role?",
-  //     lblEditUserRoleDetails: "Edit User Role Details", 
+  //     lblEditUserRoleDetails: "Edit User Role Details",
   //     lblUserRoleName: "User Role Name",
   //     lblPleaseentertheUserRolename: "Please enter the User Role name",
   //     lblUserRoleNameShouldbeMax60Characters: "User Role name should be max. 60 characters",
@@ -101,9 +102,9 @@ export class UserRoleManagementComponent implements OnInit {
 
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
-    this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
+    this.organizationId = parseInt(localStorage.getItem('accountOrganizationId'));
     this.userType = localStorage.getItem("userType");
-    this.userLevel = parseInt(localStorage.getItem("userLevel"));
+    this.userLevel = parseInt(localStorage.getItem('userLevel'));
     this.adminAccessType = JSON.parse(localStorage.getItem("accessType"));
     this.isGlobal = true;
     let translationObj = {
@@ -121,49 +122,45 @@ export class UserRoleManagementComponent implements OnInit {
     });
   }
 
-  processTranslation(transData: any){   
+  processTranslation(transData: any){
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
     //console.log("process translationData:: ", this.translationData)
   }
 
   loadInitData() {
     this.showLoadingIndicator = true;
-     let objData = { 
+    let objData = {
         Organizationid : this.organizationId,
         IsGlobal: this.isGlobal
      };
-  
+
     this.roleService.getUserRoles(objData).subscribe((data: any) => {
       this.hideloader();
       let filterData = data.filter(i => i.level >= this.userLevel); // get records >= loged In userlevel
       if(filterData && filterData.length > 0){
-        this.initData = this.getNewTagData(filterData); 
+        this.initData = this.getNewTagData(filterData);
       }else{
-        this.initData = filterData;   
+        this.initData = filterData;
       }
       setTimeout(()=>{
         this.dataSource = new MatTableDataSource(this.initData);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
-        this.dataSource.sortData = (data: String[], sort: MatSort) => {
-          const isAsc = sort.direction === 'asc';  
-          return data.sort((a: any, b: any) => {
-            return this.compare(a[sort.active], b[sort.active], isAsc);
-          });
-        }
+        this.dataSource.filterPredicate = function(data: any, filter: string): boolean {
+              return (
+                data.roleName.toString().toLowerCase().includes(filter) ||  data.description.toString().toLowerCase().includes(filter)
+              );
+            };
+
       });
     }, (error) => {
-      //console.log(error)
+
       this.hideloader();
     });
+
   }
 
-  compare(a: Number | String, b: Number | String, isAsc: boolean) {
-     if(!(a instanceof Number)) a = a.toString().toUpperCase();
-     if(!(b instanceof Number)) b = b.toString().toUpperCase();
-     return (a < b ? -1 : 1) * (isAsc ? 1 : -1); 
-   }
-   
+
   getNewTagData(data: any){
     let currentDate = new Date().getTime();
     data.forEach(row => {
@@ -179,14 +176,14 @@ export class UserRoleManagementComponent implements OnInit {
     let newTrueData = data.filter(item => item.newTag == true);
     newTrueData.sort((userobj1,userobj2) => userobj2.createdAt - userobj1.createdAt);
     let newFalseData = data.filter(item => item.newTag == false);
-    Array.prototype.push.apply(newTrueData,newFalseData); 
+    Array.prototype.push.apply(newTrueData,newFalseData);
     return newTrueData;
   }
 
   newUserRole() {
     this.titleText = this.translationData.lblCreateNewUserRole ;
     this.rowsData = [];
-    this.rowsData = this.initData; 
+    this.rowsData = this.initData;
     this.editFlag = true;
     this.createStatus = true;
     this.duplicateFlag = false;
@@ -202,7 +199,7 @@ export class UserRoleManagementComponent implements OnInit {
     this.rowsData = [];
     this.rowsData.push(row);
     this.editFlag = true;
-    this.createStatus = false;    
+    this.createStatus = false;
     this.viewFlag = false;
   }
 
@@ -245,9 +242,9 @@ export class UserRoleManagementComponent implements OnInit {
             title: this.translationData.lblAlert || 'Alert',
             message: this.translationData.lblRoleCantBeDeletedmsg || 'Role cannot be deleted.',
             list: errorList,
-            confirmText: this.translationData.lblOk || 'OK' 
+            confirmText: this.translationData.lblOk || 'OK'
           };
-      
+
           const dialogConfig = new MatDialogConfig();
           dialogConfig.disableClose = true;
           dialogConfig.autoFocus = true;
@@ -262,16 +259,18 @@ export class UserRoleManagementComponent implements OnInit {
   }
 
   getDeletMsg(roleName: any){
-    if(this.translationData.lblUserRoleDelete)
+    if(this.translationData.lblUserRoleDelete) {
       return this.translationData.lblUserRoleDelete.replace('$', roleName);
-    else
+    }
+    else {
       return ("Account role '$' was successfully deleted").replace('$', roleName);
+    }
   }
 
   successMsgBlink(msg: any){
     this.grpTitleVisible = true;
     this.displayMessage = msg;
-    setTimeout(() => {  
+    setTimeout(() => {
       this.grpTitleVisible = false;
     }, 5000);
   }
@@ -284,16 +283,20 @@ export class UserRoleManagementComponent implements OnInit {
 
   getCreateEditMsg(editText: any, name: any){
     if(editText == 'create'){
-      if(this.translationData.lblUserRoleCreatedSuccessfully)
+      if(this.translationData.lblUserRoleCreatedSuccessfully) {
         return this.translationData.lblUserRoleCreatedSuccessfully.replace('$', name);
-      else
-        return ("Account Role '$' Created Successfully").replace('$', name);
+      }
+      else {
+        return ('Account Role \'$\' Created Successfully').replace('$', name);
+      }
     }
     else if(editText == 'edit'){
-      if(this.translationData.lblUserRoledetailssuccessfullyupdated)
+      if(this.translationData.lblUserRoledetailssuccessfullyupdated) {
         return this.translationData.lblUserRoledetailssuccessfullyupdated.replace('$', name);
-      else
-        return ("Account Role '$' details successfully updated").replace('$', name);
+      }
+      else {
+        return ('Account Role \'$\' details successfully updated').replace('$', name);
+      }
     }
   }
 
@@ -324,24 +327,24 @@ export class UserRoleManagementComponent implements OnInit {
 
 exportAsPdf() {
   let DATA = document.getElementById('accountRoleData');
-    
+
   html2canvas( DATA , { onclone: (document) => {
     this.actionBtn = document.getElementsByClassName('action');
     for (let obj of this.actionBtn) {
-      obj.style.visibility = 'hidden';  }       
+      obj.style.visibility = 'hidden';  }
   }})
-  .then(canvas => {         
+  .then(canvas => {
       let fileWidth = 208;
       let fileHeight = canvas.height * fileWidth / canvas.width;
-      
+
       const FILEURI = canvas.toDataURL('image/png')
       let PDF = new jsPDF('p', 'mm', 'a4');
       let position = 0;
       PDF.addImage(FILEURI, 'PNG', 0, position, fileWidth, fileHeight)
-      
+
       PDF.save('AccountRole_Data.pdf');
       PDF.output('dataurlnewwindow');
-  });     
+  });
 }
 
 }

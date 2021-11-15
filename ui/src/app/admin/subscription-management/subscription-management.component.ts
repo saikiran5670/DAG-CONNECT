@@ -16,6 +16,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { FormControl } from '@angular/forms';
 import { element } from 'protractor';
+import { Util } from 'src/app/shared/util';
 
 @Component({
   selector: 'app-subscription-management',
@@ -77,6 +78,7 @@ export class SubscriptionManagementComponent implements OnInit {
   StatusList: any = [];
   showLoadingIndicator: any = true;
   filterData: any = [];
+  filterValue: string;
 
   constructor(
     private httpClient: HttpClient,
@@ -233,10 +235,21 @@ export class SubscriptionManagementComponent implements OnInit {
 
   updatedTableData(tableData : any) {
     this.initData = tableData;
-    this.dataSource = new MatTableDataSource(this.initData);
+
     setTimeout(()=>{
+      this.dataSource = new MatTableDataSource(tableData);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+      this.dataSource.filterPredicate = function(data, filter: any){
+           return data.packageCode.toString().toLowerCase().includes(filter) ||
+               data.subscriptionId.toLowerCase().includes(filter) ||
+               data.name.toLowerCase().toLowerCase().includes(filter) ||
+               data.type.toLowerCase().includes(filter) ||
+               data.state.toLowerCase().includes(filter)  ||
+               data.count.toString().includes(filter) ||
+               (getDt(data.subscriptionStartDate)).toString().toLowerCase().includes(filter) ||
+              (getDt(data.subscriptionEndDate)).toString().toLowerCase().includes(filter)
+      }
       this.dataSource.sortData = (data:String[], sort: MatSort) => {
         const isAsc = sort.direction === 'asc';
         let columnName = this.sort.active;
@@ -256,6 +269,7 @@ export class SubscriptionManagementComponent implements OnInit {
       return (a<b ? -1 : 1) * (isAsc ? 1 : -1);
 
   }
+
 
   onShopclick(data:any){
     this.getSsoToken().subscribe((data:any) => {
@@ -286,13 +300,17 @@ export class SubscriptionManagementComponent implements OnInit {
     }
 
 
-  onVehicleClick(rowData: any){
+  onVehicleClick(rowData: any){``
     const colsList = ['name','vin','licensePlateNumber'];
     const colsName =[this.translationData.lblVehicleName , this.translationData.lblVIN , this.translationData.lblRegistrationNumber ];
     const tableTitle =`${rowData.subscriptionId} - ${this.translationData.lblVehicles }`;
+    this.showLoadingIndicator=true;
     this.subscriptionService.getVehicleBySubscriptionId(rowData).subscribe((vehList: any) => {
       this.vehicleData = vehList["vehicles"]
       this.callToCommonTable(this.vehicleData, colsList, colsName, tableTitle);
+      this.showLoadingIndicator=false;
+    }, (error) => {
+      this.showLoadingIndicator=false;
     });
   }
 
@@ -303,7 +321,7 @@ export class SubscriptionManagementComponent implements OnInit {
     dialogConfig.autoFocus = true;
     dialogConfig.data = {
       tableData: tableData,
-      colsList: colsList,
+      colsList: this.vehicleDiaplayColumns,
       colsName:colsName,
       tableTitle: tableTitle
     }
@@ -371,7 +389,7 @@ export class SubscriptionManagementComponent implements OnInit {
     this.subscriptionService.getSubscriptionByType(this.changedOrgId ? this.changedOrgId : this.accountOrganizationId, type).subscribe((data : any) => {
       this.initData = data["subscriptionList"];
       this.filterData = this.initData;
-      this.updatedTableData(this.initData);
+      // this.updatedTableData(this.initData);
     });
   }
 
@@ -380,4 +398,16 @@ export class SubscriptionManagementComponent implements OnInit {
     this.showLoadingIndicator = false;
   }
 
+}
+function getDt(date){
+  if (date === 0) {​​​​​​​​
+    return '-';
+  }​​​​​​​​
+  else {​​​​​​​​
+    var newdate = new Date(date);
+    var day = newdate.getDate();
+    var month = newdate.getMonth();
+    var year = newdate.getFullYear();
+    return (`${​​​​​​​​day}/${​​​​​​​​month + 1}/${​​​​​​​​year}​​​​​​​​`);
+  }​​​​​​​​
 }

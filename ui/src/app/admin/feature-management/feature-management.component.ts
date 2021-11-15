@@ -10,6 +10,8 @@ import { FeatureService } from '../../services/feature.service';
 import { MatTableExporterDirective } from 'mat-table-exporter';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { Util } from 'src/app/shared/util';
+import { DataTableComponent } from 'src/app/shared/data-table/data-table.component';
 
 @Component({
   selector: 'app-feature-management',
@@ -26,6 +28,7 @@ export class FeatureManagementComponent implements OnInit {
   selectedElementData: any;
   titleVisible : boolean = false;
   feautreCreatedMsg : any = '';
+  @ViewChild('gridComp') gridComp: DataTableComponent;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
@@ -38,19 +41,20 @@ export class FeatureManagementComponent implements OnInit {
   translationData: any = {};
   createEditViewFeatureFlag: boolean = false;
   actionType: any;
-  actionBtn:any;  
+  actionBtn:any;
   dialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
   showLoadingIndicator: any = false;
-  
+  filterValue: string;
+
   constructor(private translationService: TranslationService,
     private featureService: FeatureService,
     private dialogService: ConfirmDialogService,
-    private dialog: MatDialog) { 
+    private dialog: MatDialog) {
     // this.defaultTranslation();
   }
 
-  
-  ngOnInit() { 
+
+  ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     let translationObj = {
@@ -79,11 +83,12 @@ export class FeatureManagementComponent implements OnInit {
       });
       // filterTypeData = this.getNewTagData(filterTypeData);
       this.initData = filterTypeData;
-      // this.updatedTableData(filterTypeData);
+
     }, (error) => {
       console.log("error:: ", error);
       this.hideloader();
     });
+    this.gridComp.updatedTableData(this.initData);
   }
 
   hideloader() {
@@ -94,7 +99,7 @@ export class FeatureManagementComponent implements OnInit {
   // getNewTagData(data: any){
   //   let currentDate = new Date().getTime();
   //   data.forEach(row => {
-  //     let createdDate = parseInt(row.createdAt); 
+  //     let createdDate = parseInt(row.createdAt);
   //     let nextDate = createdDate + 86400000;
   //     if(currentDate > createdDate && currentDate < nextDate){
   //       row.newTag = true;
@@ -106,7 +111,7 @@ export class FeatureManagementComponent implements OnInit {
   //   let newTrueData = data.filter(item => item.newTag == true);
   //   newTrueData.sort((userobj1, userobj2) => parseInt(userobj2.createdAt) - parseInt(userobj1.createdAt));
   //   let newFalseData = data.filter(item => item.newTag == false);
-  //   Array.prototype.push.apply(newTrueData, newFalseData); 
+  //   Array.prototype.push.apply(newTrueData, newFalseData);
   //   return newTrueData;
   // }
 
@@ -116,25 +121,25 @@ export class FeatureManagementComponent implements OnInit {
 
   exportAsPdf() {
     let DATA = document.getElementById('featureData');
-      
+
     html2canvas( DATA , { onclone: (document) => {
       this.actionBtn = document.getElementsByClassName('action');
       for (let obj of this.actionBtn) {
-        obj.style.visibility = 'hidden';  }       
+        obj.style.visibility = 'hidden';  }
     }})
-    .then(canvas => {  
-        
+    .then(canvas => {
+
         let fileWidth = 208;
         let fileHeight = canvas.height * fileWidth / canvas.width;
-        
+
         const FILEURI = canvas.toDataURL('image/png')
         let PDF = new jsPDF('p', 'mm', 'a4');
         let position = 0;
         PDF.addImage(FILEURI, 'PNG', 0, position, fileWidth, fileHeight)
-        
+
         PDF.save('Feature_Data.pdf');
         PDF.output('dataurlnewwindow');
-    });     
+    });
   }
 
   processTranslation(transData: any){
@@ -143,22 +148,23 @@ export class FeatureManagementComponent implements OnInit {
   }
 
   applyFilter(filterValue: string) {
-    this.updatedDataSource(this.initData);
+
     filterValue = filterValue.trim(); // Remove whitespace
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
     this.dataSource.filter = filterValue;
-    this.updatedDataSource(this.dataSource.filteredData);
-  }
-  
-  updatedDataSource(tableData: any){
-    this.dataSource = new MatTableDataSource(tableData);
-      setTimeout(()=>{
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
-      });
+
   }
 
-  createNewFeature(){ 
+  updatedDataSource(tableData: any){
+    this.gridComp.updatedTableData(tableData);
+    // this.dataSource = new MatTableDataSource(tableData);
+    //   setTimeout(()=>{
+    //     this.dataSource.paginator = this.paginator;
+    //     this.dataSource.sort = this.sort;
+    //   });
+  }
+
+  createNewFeature(){
     this.actionType = 'create';
     this.getDataAttributeList();
   }
@@ -174,9 +180,13 @@ export class FeatureManagementComponent implements OnInit {
   }
 
   getDataAttributeList(){
+    this.showLoadingIndicator=true;
     this.featureService.getDataAttribute().subscribe((data : any) => {
       this.dataAttributeList = data;
       this.createEditViewFeatureFlag = true;
+      this.showLoadingIndicator=false;
+    }, (error) => {
+      this.showLoadingIndicator=false;
     });
   }
 
@@ -191,14 +201,14 @@ export class FeatureManagementComponent implements OnInit {
       status: rowData.state == 'ACTIVE' ? 'Inactive' : 'Active' ,
       name: rowData.name
     };
-    
+
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
     dialogConfig.data = options;
     this.dialogRef = this.dialog.open(ActiveInactiveDailogComponent, dialogConfig);
     this.dialogRef.afterClosed().subscribe((res: any) => {
-      if(res){ 
+      if(res){
               // TODO: change status with latest grid data
               // let updatedFeatureParams = {
               //       id: rowData.id,
@@ -271,7 +281,7 @@ export class FeatureManagementComponent implements OnInit {
   successMsgBlink(msg: any){
     this.titleVisible = true;
     this.feautreCreatedMsg = msg;
-    setTimeout(() => {  
+    setTimeout(() => {
       this.titleVisible = false;
     }, 5000);
   }

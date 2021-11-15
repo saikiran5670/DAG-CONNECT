@@ -39,7 +39,7 @@ export class Util {
         if(date.includes('Z'))
         {
             date= date.replace('Z','+00:00');
-        }      
+        }
         let _date= date.split("T")[0];
         let _time= (date.split("T")[1]).slice(0, -6);
          date=new Date();
@@ -49,7 +49,7 @@ export class Util {
          date.setHours(_time.split(":")[0]);
          date.setMinutes(_time.split(":")[1]);
          date.setSeconds(_time.split(":")[2]);
-      
+
          return date;
     }
 
@@ -145,24 +145,24 @@ export class Util {
             }
             case 'ddateformat_dd-mm-yyyy': {
                 dFormat = 'DD-MM-YYYY';
-      
+
               break;
             }
             case 'ddateformat_mm-dd-yyyy': {
                 dFormat = 'MM-DD-YYYY';
-      
+
               break;
             }
             default:{
                 dFormat = 'DD/MM/YYYY';
-      
+
             }
           }
         let _format =  dFormat ? dFormat + ' HH:mm:ss' : 'DD/MM/YYYY HH:mm:ss';
         let cDate = moment.utc(cTime).format(_format);
         return cDate;
     }
-    
+
     public static convertUtcToDateNoFormat(_utc: any, timeZone: any){
         // let _t = timeZone.split(')');
         // let _timezone: any;
@@ -184,7 +184,7 @@ export class Util {
          date.setHours(_time.split(":")[0]);
          date.setMinutes(_time.split(":")[1]);
          date.setSeconds(_time.split(":")[2]);
-      
+
          return date;
     }
 
@@ -209,7 +209,7 @@ export class Util {
          date.setHours(_time.split(":")[0]);
          date.setMinutes(_time.split(":")[1]);
          date.setSeconds(_time.split(":")[2]);
-      
+
          let time =  _time.split(":")[0] + _time.split(":")[1] + _time.split(":")[2];
          return _time;
     }
@@ -253,7 +253,7 @@ export class Util {
         return (_date._d);
     }
 
-    
+
     public static getHhMmTime(totalSeconds: any){
     let data: any = "00:00";
     let hours = Math.floor(totalSeconds / 3600);
@@ -285,7 +285,7 @@ export class Util {
     data = `${(hours >= 10) ? hours : ('0'+hours)}:${(minutes >= 10) ? minutes : ('0'+minutes)}:${(seconds >= 10) ? seconds : ('0'+seconds)}`;
     return data;
   }
-   
+
     public static getMillisecondsToUTCDate(_date: any, prefTimezone: any) {
         let _dateWithoutMiliSeconds: any = new Date(_date.setMilliseconds(0));
         // let _t = prefTimezone.split(') ');
@@ -297,43 +297,43 @@ export class Util {
         _timezone = this.getExactZone(prefTimezone);
         // if(moment().tz(_timezone).utcOffset() == moment().tz(moment.tz.guess()).utcOffset()) {​​​​​​
         // console.log(moment.utc( _date ).valueOf());
-        // return _dateWithoutMiliSeconds.getTime(); 
-        // }​​​​​​ 
+        // return _dateWithoutMiliSeconds.getTime();
+        // }​​​​​​
         // else{
         console.log(_dateWithoutMiliSeconds.getTime() )
         let localTimeZoneOffset = moment().tz(moment.tz.guess()).utcOffset();
        // let gmt = moment(_dateWithoutMiliSeconds).utcOffset(localTimeZoneOffset);
-        
+
         let PrefTzToGMT: any = moment().tz(_timezone).utcOffset() * -1;
         let diff = localTimeZoneOffset + PrefTzToGMT;
-        let PrefTimeAsPerSelected = moment(_dateWithoutMiliSeconds).utcOffset(diff);       
+        let PrefTimeAsPerSelected = moment(_dateWithoutMiliSeconds).utcOffset(diff);
         let _convertedUtc = PrefTimeAsPerSelected['_d'].getTime();
         // console.log('_convertedUtc:' +_convertedUtc );
         return _convertedUtc;
         //}
-        // let gmt_val:any =moment.utc(_dateWithoutMiliSeconds).valueOf();     
+        // let gmt_val:any =moment.utc(_dateWithoutMiliSeconds).valueOf();
         // return gmt_val;
     }
-        
+
         // let PrefTzToGMT: any = moment().tz(_timezone).utcOffset() * -1;
         // let PrefTimeAsPerSelected = moment(_dateWithoutMiliSeconds).utcOffset(PrefTzToGMT);
         // let _convertedUtc = PrefTimeAsPerSelected['_d'].getTime();
         // return _convertedUtc;
-  
+
         // if(moment().tz(_timezone).utcOffset() == moment().tz(moment.tz.guess()).utcOffset()) {​​​​​​
         //     console.log(moment.utc( _date ).valueOf());
-        //    return _dateWithoutMiliSeconds.getTime(); 
-        //    }​​​​​​ 
+        //    return _dateWithoutMiliSeconds.getTime();
+        //    }​​​​​​
        // let localTimeZoneOffset = moment().tz(moment.tz.guess()).utcOffset() * -1;
             // let gmt = moment(_dateWithoutMiliSeconds).utcOffset(localTimeZoneOffset);
- 
+
             // let PrefTzToGMT: any = moment().tz(_timezone).utcOffset();
             // let PrefTimeAsPerSelected = moment(gmt['_d']).utcOffset(PrefTzToGMT);
- 
+
             // let _convertedUtc = PrefTimeAsPerSelected['_d'].getTime();
             // return gmt['_d'].getTime();
     public static getMillisecondsToUTCDate1(_date: any, prefTimezone: any) {
-        
+
         // //    console.log("_date", _date)
          let _dateWithoutMiliSeconds:any = new Date(_date.setMilliseconds(0));
         // //    console.log("_date without miliseconds", _dateWithoutMiliSeconds)
@@ -346,12 +346,12 @@ export class Util {
         let _timezone: any;
         _timezone = this.getExactZone(prefTimezone);
         let gmtTimeDiff = _dateWithoutMiliSeconds.getTimezoneOffset();// +5.30 diff
-         console.log("gmtTimeDiff", gmtTimeDiff)  
+         console.log("gmtTimeDiff", gmtTimeDiff)
         //let _gmt = moment(_dateWithoutMiliSeconds).utcOffset(gmtTimeDiff); // gmt time of selected from locale
         // console.log(" gmt time of selected from locale", _gmt)
         //let localeToGmtTz:any = _date.getTimezoneOffset();
-        let PrefTzToGMT: any = moment().tz(_timezone).utcOffset() * -1;// diff selected timezone pref 
-        
+        let PrefTzToGMT: any = moment().tz(_timezone).utcOffset() * -1;// diff selected timezone pref
+
         console.log("diff selected timezone pref ", PrefTzToGMT);
 
         let PrefTimeAsPerSelected =  moment(_dateWithoutMiliSeconds).utcOffset(PrefTzToGMT);
@@ -392,6 +392,34 @@ export class Util {
 //     let _date: any = moment.utc(_utc).tz(_timezone ? _timezone : prefTimezone).format("DD-MM-YYYY h:mm:ss A");
 //     return _date;
 // }
+
+public static applySearchFilter(filterData:any, columns:any, filterValue:string){
+
+  filterData.filter = filterValue;
+
+  filterData.filterPredicate = (data: any, filter: string): boolean => {
+
+   for(let col of columns) {
+  if(data[col]) {
+    if(data[col] instanceof Number && data[col].toLowerCase().includes(filter.toLowerCase())) {
+
+      return data;
+
+    }
+
+    if(!(data[col] instanceof Number) && data[col].toString().toLowerCase().includes(filter)) {
+
+      return data;
+    }
+  }
+
+}
+
+  }
+
+}
+
+
 }
 
 

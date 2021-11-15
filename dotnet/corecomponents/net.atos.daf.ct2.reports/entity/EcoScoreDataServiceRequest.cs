@@ -13,7 +13,8 @@
     {
         public string AccountEmail { get; set; }
         public string DriverId { get; set; }
-        public string OrganizationId { get; set; }
+        public string OrganizationCode { get; set; }
+        public int OrganizationId { get; set; }
         public string VIN { get; set; }
         public AggregateType AggregationType { get; set; }
         public long StartTimestamp { get; set; }

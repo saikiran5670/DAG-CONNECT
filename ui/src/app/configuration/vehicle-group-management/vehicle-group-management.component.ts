@@ -11,6 +11,7 @@ import { MatTableExporterDirective } from 'mat-table-exporter';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { ActiveInactiveDailogComponent } from '../../shared/active-inactive-dailog/active-inactive-dailog.component';
+import { Util } from 'src/app/shared/util';
 
 @Component({
   selector: 'app-vehicle-group-management',
@@ -27,7 +28,7 @@ export class VehicleGroupManagementComponent implements OnInit {
   accountOrganizationId: any;
   initData: any = [];
   dataSource: any;
-  actionBtn:any; 
+  actionBtn:any;
   displayedColumns: any = ['groupName', 'vehicleCount', 'action'];
   showLoadingIndicator: boolean = false;
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -39,12 +40,13 @@ export class VehicleGroupManagementComponent implements OnInit {
   vehicleListData: any = [];
   adminAccessType: any = {};
   notDeleteDialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
+  filterValue: string;
 
   constructor(private dialogService: ConfirmDialogService,
     private translationService: TranslationService,
     private vehicleService: VehicleService,
-    private dialog: MatDialog) { 
-      this.defaultTranslation();  
+    private dialog: MatDialog) {
+      this.defaultTranslation();
   }
 
   defaultTranslation() {
@@ -118,6 +120,7 @@ export class VehicleGroupManagementComponent implements OnInit {
           return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
         });
       }
+      Util.applySearchFilter(this.dataSource, this.displayedColumns ,this.filterValue );
     });
   }
 
@@ -132,7 +135,7 @@ export class VehicleGroupManagementComponent implements OnInit {
   getNewTagData(data: any){
     let currentDate = new Date().getTime();
     data.forEach(row => {
-      let createdDate = parseInt(row.createdAt); 
+      let createdDate = parseInt(row.createdAt);
       let nextDate = createdDate + 86400000;
       if(currentDate > createdDate && currentDate < nextDate){
         row.newTag = true;
@@ -144,7 +147,7 @@ export class VehicleGroupManagementComponent implements OnInit {
     let newTrueData = data.filter(item => item.newTag == true);
     newTrueData.sort((userobj1, userobj2) => parseInt(userobj2.createdAt) - parseInt(userobj1.createdAt));
     let newFalseData = data.filter(item => item.newTag == false);
-    Array.prototype.push.apply(newTrueData, newFalseData); 
+    Array.prototype.push.apply(newTrueData, newFalseData);
     return newTrueData;
   }
 
@@ -163,14 +166,19 @@ export class VehicleGroupManagementComponent implements OnInit {
   }
 
   getVehicleList(rowData?: any){
+    this.showLoadingIndicator=true;
     this.vehicleService.getVehicle(this.accountOrganizationId).subscribe((vehList: any) => {
       this.vehicleListData = vehList;
+      this.showLoadingIndicator=false;
       if(this.actionType != 'create'){
+        this.showLoadingIndicator=true;
         this.selectedRowData = rowData;
         this.vehicleService.getVehicleListById(rowData.groupId).subscribe((selectedVehList: any) => {
           this.selectedRowData.selectedVehicleList = selectedVehList;
           this.createViewEditStatus = true;
+          this.showLoadingIndicator=false;
         }, (error) => {
+          this.showLoadingIndicator=false;
           //console.log("error:: ", error);
           if(error.status == 404){
             this.selectedRowData.selectedVehicleList = [];
@@ -181,6 +189,8 @@ export class VehicleGroupManagementComponent implements OnInit {
       else{
         this.createViewEditStatus = true;
       }
+    }, (error) => {
+      this.showLoadingIndicator=false;
     });
   }
 
@@ -194,8 +204,12 @@ export class VehicleGroupManagementComponent implements OnInit {
       functionEnum: rowData.functionEnum,
       organizationId: rowData.organizationId
     }
+    this.showLoadingIndicator=true;
     this.vehicleService.getVehiclesDetails(objData).subscribe((vehList: any) => {
       this.callToCommonTable(vehList, colsList, colsName, tableTitle);
+      this.showLoadingIndicator=false;
+    }, (error) => {
+      this.showLoadingIndicator=false;
     });
   }
 
@@ -251,7 +265,7 @@ export class VehicleGroupManagementComponent implements OnInit {
                 title: this.translationData.lblAlert || 'Alert',
                 message: this.translationData.lblThisvehiclegrouphasactiveassociationsandhencecannotbedeleted || "This vehicle-group has active associations and hence cannot be deleted.",
                 name: name,
-                confirmText: this.translationData.lblOk || 'Ok' 
+                confirmText: this.translationData.lblOk || 'Ok'
               };
               const dialogConfig = new MatDialogConfig();
               dialogConfig.disableClose = true;
@@ -297,7 +311,7 @@ export class VehicleGroupManagementComponent implements OnInit {
       this.showSuccessMessage(item.successMsg);
     }
     if(item.gridData){
-     this.initData = item.gridData; 
+     this.initData = item.gridData;
     }
     this.updateDataSource(this.initData);
   }
@@ -308,25 +322,25 @@ export class VehicleGroupManagementComponent implements OnInit {
 
 exportAsPdf() {
   let DATA = document.getElementById('vehicleGroupMgmtData');
-    
+
   html2canvas( DATA , { onclone: (document) => {
     this.actionBtn = document.getElementsByClassName('action');
     for (let obj of this.actionBtn) {
-      obj.style.visibility = 'hidden';  }       
+      obj.style.visibility = 'hidden';  }
   }})
-  .then(canvas => {  
-    
+  .then(canvas => {
+
       let fileWidth = 208;
       let fileHeight = canvas.height * fileWidth / canvas.width;
-      
+
       const FILEURI = canvas.toDataURL('image/png')
       let PDF = new jsPDF('p', 'mm', 'a4');
       let position = 0;
       PDF.addImage(FILEURI, 'PNG', 0, position, fileWidth, fileHeight)
-      
+
       PDF.save('VehicleGroupMgmt_Data.pdf');
       PDF.output('dataurlnewwindow');
-  });     
+  });
 }
 
 }

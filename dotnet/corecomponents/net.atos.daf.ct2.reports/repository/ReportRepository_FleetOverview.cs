@@ -181,7 +181,7 @@ namespace net.atos.daf.ct2.reports.repository
                     lcts.latest_warning_timestamp,
                     lcts.latest_warning_position_latitude,
                     lcts.latest_warning_position_longitude,
-                    RANK() Over ( Partition By lcts.vin Order by  lcts.start_time_stamp desc ) Veh_trip_rank
+                    RANK () OVER ( PARTITION BY vin ORDER BY id DESC ) Veh_trip_rank
                     from livefleet.livefleet_current_trip_statistics lcts
                     where lcts.vin = Any(@vins) 
                     and to_timestamp(lcts.latest_processed_message_time_stamp/1000)::date >= (now()::date - @days)
@@ -190,9 +190,8 @@ namespace net.atos.daf.ct2.reports.repository
                     ,CTE_Unique_latest_trip as (
                     select 
                     *,
-                    ROW_NUMBER() OVER( PARTITION BY Vin ORDER BY Id desc) AS row_num 
-                    from CTE_Trips_By_Vin 
-                    where Veh_trip_rank =1 
+                    ROW_NUMBER() OVER( PARTITION BY Veh_trip_rank ORDER BY Id desc) AS row_num 
+                    from CTE_Trips_By_Vin where Veh_trip_rank =1
                     )
                     --select * from CTE_Unique_latest_trip
                     ,CTE_fleetOverview as
@@ -258,7 +257,7 @@ namespace net.atos.daf.ct2.reports.repository
                     on lcts.vin=veh.vin                   
                     left join tripdetail.tripalert tripal
                     on lcts.vin=tripal.vin and  lcts.trip_id=tripal.trip_id 
-                    where row_num=1
+                   -- where row_num=1
                     ) 
                     --select * from CTE_fleetOverview 
                     ,CTE_fleetOverview_alertgeoadd as
@@ -308,31 +307,31 @@ namespace net.atos.daf.ct2.reports.repository
                     TRUNC(CAST(lcts_StartPositionLattitude as numeric),4)= TRUNC(CAST(wangeoadd.latitude as numeric),4) 
                     and TRUNC(CAST(lcts_StartPositionLongitude as numeric),4) = TRUNC(CAST(wangeoadd.longitude as numeric),4)
                     )
-                    select * from CTE_fleetOverview_stageoadd
-                    where 1=1 ";
-                if (fleetOverviewFilter.DriverId.Count > 0)
-                {
-                    parameterFleetOverview.Add("@driverids", fleetOverviewFilter.DriverId);
-                    queryFleetOverview += " and lcts_Driver1Id = Any(@driverids) ";
-                }
-                if (fleetOverviewFilter.HealthStatus.Count > 0)
-                {
-                    parameterFleetOverview.Add("@healthstatus", fleetOverviewFilter.HealthStatus);
-                    queryFleetOverview += " and lcts_VehicleHealthStatusType = Any(@healthstatus) ";
-                }
-                if (fleetOverviewFilter.AlertCategory.Count > 0)
-                {
-                    //need to be implement in upcomming sprint 
+                   select * from CTE_fleetOverview_wangeoadd 
+                   ";
+                //if (fleetOverviewFilter.DriverId.Count > 0)
+                //{
+                //    parameterFleetOverview.Add("@driverids", fleetOverviewFilter.DriverId);
+                //    queryFleetOverview += " and lcts_Driver1Id = Any(@driverids) ";
+                //}
+                //if (fleetOverviewFilter.HealthStatus.Count > 0)
+                //{
+                //    parameterFleetOverview.Add("@healthstatus", fleetOverviewFilter.HealthStatus);
+                //    queryFleetOverview += " and lcts_VehicleHealthStatusType = Any(@healthstatus) ";
+                //}
+                //if (fleetOverviewFilter.AlertCategory.Count > 0)
+                //{
+                //    //need to be implement in upcomming sprint 
 
-                    parameterFleetOverview.Add("@alertcategory", fleetOverviewFilter.AlertCategory);
-                    queryFleetOverview += " and CategoryType = Any(@alertcategory) ";
-                }
-                if (fleetOverviewFilter.AlertLevel.Count > 0)
-                {
-                    //need to be implement in upcomming sprint 
-                    parameterFleetOverview.Add("@alertlevel", fleetOverviewFilter.AlertLevel);
-                    queryFleetOverview += " and AlertLevel = Any(@alertlevel) ";
-                }
+                //    parameterFleetOverview.Add("@alertcategory", fleetOverviewFilter.AlertCategory);
+                //    queryFleetOverview += " and CategoryType = Any(@alertcategory) ";
+                //}
+                //if (fleetOverviewFilter.AlertLevel.Count > 0)
+                //{
+                //    //need to be implement in upcomming sprint 
+                //    parameterFleetOverview.Add("@alertlevel", fleetOverviewFilter.AlertLevel);
+                //    queryFleetOverview += " and AlertLevel = Any(@alertlevel) ";
+                //}
                 IEnumerable<FleetOverviewResult> alertResult = await _dataMartdataAccess.QueryAsync<FleetOverviewResult>(queryFleetOverview, parameterFleetOverview);
                 return repositoryMapper.GetFleetOverviewDetails(alertResult);
             }
@@ -461,33 +460,32 @@ namespace net.atos.daf.ct2.reports.repository
                                 where CWVR.row_num = 1
                                 )
                                 select * from CTE_Result_For_Filter
-                                where 1=1 
 ";
                 //For driver all data all should be return as driver id is not present in result 
-                if (fleetOverviewFilter.DriverId.Count > 0)
-                {
-                    parameterFleetOverview.Add("@driverids", fleetOverviewFilter.DriverId);
-                    //if passed any specific driver id then it should be false the condition and data should not return.
-                    queryFleetOverview += " and 1=2 ";
-                }
-                if (fleetOverviewFilter.HealthStatus.Count > 0)
-                {
-                    parameterFleetOverview.Add("@healthstatus", fleetOverviewFilter.HealthStatus);
-                    queryFleetOverview += " and lcts_VehicleHealthStatusType = Any(@healthstatus) ";
-                }
-                if (fleetOverviewFilter.AlertCategory.Count > 0)
-                {
-                    //need to be implement in upcomming sprint 
+                //if (fleetOverviewFilter.DriverId.Count > 0)
+                //{
+                //    parameterFleetOverview.Add("@driverids", fleetOverviewFilter.DriverId);
+                //    //if passed any specific driver id then it should be false the condition and data should not return.
+                //    queryFleetOverview += " and 1=2 ";
+                //}
+                //if (fleetOverviewFilter.HealthStatus.Count > 0)
+                //{
+                //    parameterFleetOverview.Add("@healthstatus", fleetOverviewFilter.HealthStatus);
+                //    queryFleetOverview += " and lcts_VehicleHealthStatusType = Any(@healthstatus) ";
+                //}
+                //if (fleetOverviewFilter.AlertCategory.Count > 0)
+                //{
+                //    //need to be implement in upcomming sprint 
 
-                    parameterFleetOverview.Add("@alertcategory", fleetOverviewFilter.AlertCategory);
-                    queryFleetOverview += " and CategoryType = Any(@alertcategory) ";
-                }
-                if (fleetOverviewFilter.AlertLevel.Count > 0)
-                {
-                    //need to be implement in upcomming sprint 
-                    parameterFleetOverview.Add("@alertlevel", fleetOverviewFilter.AlertLevel);
-                    queryFleetOverview += " and AlertLevel = Any(@alertlevel) ";
-                }
+                //    parameterFleetOverview.Add("@alertcategory", fleetOverviewFilter.AlertCategory);
+                //    queryFleetOverview += " and CategoryType = Any(@alertcategory) ";
+                //}
+                //if (fleetOverviewFilter.AlertLevel.Count > 0)
+                //{
+                //    //need to be implement in upcomming sprint 
+                //    parameterFleetOverview.Add("@alertlevel", fleetOverviewFilter.AlertLevel);
+                //    queryFleetOverview += " and AlertLevel = Any(@alertlevel) ";
+                //}
                 IEnumerable<FleetOverviewResult> alertResult = await _dataMartdataAccess.QueryAsync<FleetOverviewResult>(queryFleetOverview, parameterFleetOverview);
                 return repositoryMapper.GetFleetOverviewDetails(alertResult);
             }
@@ -541,31 +539,31 @@ namespace net.atos.daf.ct2.reports.repository
                     where  veh.vin = Any(@vins)  
                     )
                     select * from CTE_Result_For_Filter
-                    where 1=1 ";
+                     ";
                 //For driver all data all should be return as driver id is not present in result 
-                if (fleetOverviewFilter.DriverId.Count > 0)
-                {
-                    parameterFleetOverview.Add("@driverids", fleetOverviewFilter.DriverId);
-                    //if passed any specific driver id then it should be false the condition and data should not return.
-                    queryFleetOverview += " and 1=2 ";
-                }
-                if (fleetOverviewFilter.HealthStatus.Count > 0)
-                {
-                    parameterFleetOverview.Add("@healthstatus", fleetOverviewFilter.HealthStatus);
-                    queryFleetOverview += " and lcts_VehicleHealthStatusType = Any(@healthstatus) ";
-                }
-                if (fleetOverviewFilter.AlertCategory.Count > 0)
-                {
-                    //if passed any specific category then it should be false the condition and data should not return.
-                    parameterFleetOverview.Add("@alertcategory", fleetOverviewFilter.AlertCategory);
-                    queryFleetOverview += " and CategoryType = Any(@alertcategory) ";
-                }
-                if (fleetOverviewFilter.AlertLevel.Count > 0)
-                {
-                    //if passed any specific level then it should be false the condition and data should not return.
-                    parameterFleetOverview.Add("@alertlevel", fleetOverviewFilter.AlertLevel);
-                    queryFleetOverview += " and AlertLevel = Any(@alertlevel) ";
-                }
+                //if (fleetOverviewFilter.DriverId.Count > 0)
+                //{
+                //    parameterFleetOverview.Add("@driverids", fleetOverviewFilter.DriverId);
+                //    //if passed any specific driver id then it should be false the condition and data should not return.
+                //    queryFleetOverview += " and 1=2 ";
+                //}
+                //if (fleetOverviewFilter.HealthStatus.Count > 0)
+                //{
+                //    parameterFleetOverview.Add("@healthstatus", fleetOverviewFilter.HealthStatus);
+                //    queryFleetOverview += " and lcts_VehicleHealthStatusType = Any(@healthstatus) ";
+                //}
+                //if (fleetOverviewFilter.AlertCategory.Count > 0)
+                //{
+                //    //if passed any specific category then it should be false the condition and data should not return.
+                //    parameterFleetOverview.Add("@alertcategory", fleetOverviewFilter.AlertCategory);
+                //    queryFleetOverview += " and CategoryType = Any(@alertcategory) ";
+                //}
+                //if (fleetOverviewFilter.AlertLevel.Count > 0)
+                //{
+                //    //if passed any specific level then it should be false the condition and data should not return.
+                //    parameterFleetOverview.Add("@alertlevel", fleetOverviewFilter.AlertLevel);
+                //    queryFleetOverview += " and AlertLevel = Any(@alertlevel) ";
+                //}
                 IEnumerable<FleetOverviewResult> alertResult = await _dataMartdataAccess.QueryAsync<FleetOverviewResult>(queryFleetOverview, parameterFleetOverview);
                 return repositoryMapper.GetFleetOverviewDetails(alertResult);
             }

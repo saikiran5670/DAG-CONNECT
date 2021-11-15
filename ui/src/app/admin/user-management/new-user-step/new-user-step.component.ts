@@ -37,7 +37,7 @@ export class NewUserStepComponent implements OnInit {
   isLinear = false;
   orgName: any;
   duplicateEmailMsg: string= "";
-  
+
   firstFormGroup: FormGroup;
   secondFormGroup: FormGroup;
   // thirdFormGroup: FormGroup;
@@ -70,6 +70,7 @@ export class NewUserStepComponent implements OnInit {
   orgDefaultFlag: any;
   contextOrgName: any;
   adminAccessType: any = {};
+  showLoadingIndicator: boolean = false;
 
   myFilter = (d: Date | null): boolean => {
     const date = (d || new Date());
@@ -80,27 +81,28 @@ export class NewUserStepComponent implements OnInit {
   mapRoleIds: any = [];
 
   public filteredLanguges: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
-  
+
   public filteredTimezones: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
-  
+
   public filteredLandingPageDisplay: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
-  
+
+
 
   constructor(private _formBuilder: FormBuilder, private cdref: ChangeDetectorRef, private dialog: MatDialog, private accountService: AccountService, private domSanitizer: DomSanitizer) { }
 
   ngAfterViewInit() {
-    this.roleDataSource.paginator = this.paginator.toArray()[0];
-    this.roleDataSource.sort = this.sort.toArray()[0];
-    this.userGrpDataSource.paginator = this.paginator.toArray()[1];
-    this.userGrpDataSource.sort = this.sort.toArray()[1];
-    this.roleDataSource.sortData = (data: String[], sort: MatSort) => {
-      const isAsc = sort.direction === 'asc';
-      return data.sort((a: any, b: any) => {
-          let columnName = sort.active;
-        return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
-      });
-     }
-     this.solutationList = [
+    this.roleDataSource.filterPredicate = function(data: any, filter: string): boolean {
+      return (
+        data.roleName.toString().toLowerCase().includes(filter)
+      );
+    };
+    setTimeout(()=>{
+      this.roleDataSource.paginator = this.paginator.toArray()[0];
+      this.roleDataSource.sort = this.sort.toArray()[0];
+      this.userGrpDataSource.paginator = this.paginator.toArray()[1];
+      this.userGrpDataSource.sort = this.sort.toArray()[1];
+    });
+      this.solutationList = [
       {
         name: this.translationData.lblMr
       },
@@ -115,7 +117,7 @@ export class NewUserStepComponent implements OnInit {
 
   compare(a: any, b: any, isAsc: boolean, columnName:any) {
     if(!(a instanceof Number)) a = a.toString().toUpperCase();
-    if(!(b instanceof Number)) b = b.toString().toUpperCase(); 
+    if(!(b instanceof Number)) b = b.toString().toUpperCase();
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
   resetLanguageFilter(){
@@ -140,7 +142,7 @@ export class NewUserStepComponent implements OnInit {
   ngOnInit() {
     if(localStorage.getItem('contextOrgId'))
       this.accountOrganizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
-    else 
+    else
       this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
 
     this.adminAccessType =  JSON.parse(localStorage.getItem("accessType"));
@@ -168,7 +170,7 @@ export class NewUserStepComponent implements OnInit {
       validator: [
         CustomValidators.specialCharValidationForName('firstName'),
         CustomValidators.numberValidationForName('firstName'),
-        CustomValidators.specialCharValidationForName('lastName'), 
+        CustomValidators.specialCharValidationForName('lastName'),
         CustomValidators.numberValidationForName('lastName'),
         CustomValidators.numberFieldValidation('pageRefreshTime', 60),
         CustomValidators.numberMinFieldValidation('pageRefreshTime', 1)
@@ -254,7 +256,7 @@ export class NewUserStepComponent implements OnInit {
       console.log("timezonedropdowndata 1", this.defaultSetting.timezoneDropdownData);
       this.defaultSetting.timezoneDropdownData.sort(this.compareHere);
       this.resetTimezoneFilter();
-      
+
       this.firstFormGroup.get('unit').setValue((this.orgPreference.unit && this.orgPreference.unit != '') ? this.orgPreference.unit : this.defaultSetting.unitDropdownData[0].id);
       this.firstFormGroup.get('currency').setValue((this.orgPreference.currency && this.orgPreference.currency != '') ? this.orgPreference.currency : this.defaultSetting.currencyDropdownData[0].id);
       this.firstFormGroup.get('dateFormat').setValue((this.orgPreference.dateFormat && this.orgPreference.dateFormat != '') ? this.orgPreference.dateFormat : this.defaultSetting.dateFormatDropdownData[0].id);
@@ -264,7 +266,7 @@ export class NewUserStepComponent implements OnInit {
       console.log("landingPageDisplayDropdownData 1", this.defaultSetting.landingPageDisplayDropdownData);
       this.defaultSetting.landingPageDisplayDropdownData.sort(this.compareHere);
       this.resetLandingPageFilter();
-      
+
       this.firstFormGroup.get('pageRefreshTime').setValue((this.orgPreference.pageRefreshTime && this.orgPreference.pageRefreshTime != '') ? this.orgPreference.pageRefreshTime : 1);
       this.setDefaultOrgVal();
     }
@@ -284,7 +286,7 @@ export class NewUserStepComponent implements OnInit {
         msg: ""
       }
       this.userCreate.emit(emitObj);
-    }  
+    }
   }
 
   onCreate(createStatus: any){
@@ -301,6 +303,7 @@ export class NewUserStepComponent implements OnInit {
         driverId: ""
       }
 
+      this.showLoadingIndicator=true;
       this.accountService.createAccount(objData).subscribe((res: any) => {
         this.userData = res;
         let preferenceObj = {
@@ -315,7 +318,7 @@ export class NewUserStepComponent implements OnInit {
           vehicleDisplayId: this.firstFormGroup.controls.vehDisplay.value != '' ?  this.firstFormGroup.controls.vehDisplay.value : ((this.orgPreference.vehicleDisplay && this.orgPreference.vehicleDisplay != '') ? this.orgPreference.vehicleDisplay : this.defaultSetting.vehicleDisplayDropdownData[0].id),
           landingPageDisplayId: this.firstFormGroup.controls.landingPage.value != '' ?  this.firstFormGroup.controls.landingPage.value : ((this.orgPreference.landingPageDisplay && this.orgPreference.landingPageDisplay != '') ? this.orgPreference.landingPageDisplay : this.defaultSetting.landingPageDisplayDropdownData[0].id),
           pageRefreshTime: this.firstFormGroup.controls.pageRefreshTime.value != '' ?  parseInt(this.firstFormGroup.controls.pageRefreshTime.value) : ((this.orgPreference.pageRefreshTime && this.orgPreference.pageRefreshTime != '') ? this.orgPreference.pageRefreshTime : 1)
-          
+
         }
         console.log("languagedropdowndata 2", this.defaultSetting.languageDropdownData);
         let createPrefFlag = false;
@@ -341,14 +344,17 @@ export class NewUserStepComponent implements OnInit {
             "imageType": "P",
             "image": this.croppedImage.split(",")[1]
           }
-      
+
           this.accountService.saveAccountPicture(objData).subscribe((data: any) => {
             if(data){ }
+            this.showLoadingIndicator=false;
           }, (error) => {
+            this.showLoadingIndicator=false;
             this.imageError= "Something went wrong. Please try again!";
-          })
+          });
         }
-      }, (error) => { 
+      }, (error) => {
+        this.showLoadingIndicator=false;
         console.log(error);
         if(error.status == 409){
           if(error.error.account && error.error.account.organizationId != this.accountOrganizationId){
@@ -365,8 +371,9 @@ export class NewUserStepComponent implements OnInit {
       });
   }
 
-  saveAccountRoles(_createStatus: any){    
+  saveAccountRoles(_createStatus: any){
     //---- Role obj----------//
+    // this.roleDataSource = new MatTableDataSource(this.roleData);
     this.mapRoleIds = this.selectionForRole.selected.map(resp => resp.roleId);
     let mapRoleData: any = [];
     if(this.mapRoleIds.length > 0){
@@ -386,7 +393,7 @@ export class NewUserStepComponent implements OnInit {
       this.accountService.addAccountRoles(roleObj).subscribe((data: any)=>{
         //this.updateTableData(false);
         this.goForword(_createStatus);
-      }, (error) => { 
+      }, (error) => {
         this.goForword(_createStatus);
        });
     }
@@ -399,7 +406,7 @@ export class NewUserStepComponent implements OnInit {
     else{
       this.userCreatedMsg = this.getUserCreatedMessage(true);
       this.grpTitleVisible = true;
-      setTimeout(() => {  
+      setTimeout(() => {
         this.grpTitleVisible = false;
       }, 5000);
       this.stepper.next();
@@ -459,7 +466,7 @@ export class NewUserStepComponent implements OnInit {
     //---- Role obj----------//
     // this.mapRoleIds = this.selectionForRole.selected.map(resp => resp.roleId);
     // let mapRoleData: any = [];
-    
+
     // if(this.mapRoleIds.length > 0){
     //   mapRoleData = this.mapRoleIds;
     // }
@@ -481,18 +488,18 @@ export class NewUserStepComponent implements OnInit {
         mapGrpData.push({
           accountGroupId: element,
           accountId: this.linkFlag ? this.linkAccountId : this.userData.id
-        }); 
+        });
       });
     }
     else{
       mapGrpData = [{
         accountGroupId: 0,
         accountId: this.linkFlag ? this.linkAccountId : this.userData.id
-      }];  
+      }];
     }
 
     let grpObj = {
-      accounts: mapGrpData 
+      accounts: mapGrpData
     }
 
     // if(this.mapRoleIds.length > 0 && mapGrpIds.length > 0){
@@ -514,9 +521,13 @@ export class NewUserStepComponent implements OnInit {
     // }
 
     if(mapGrpIds.length > 0){
+      this.showLoadingIndicator=true;
       this.accountService.addAccountGroups(grpObj).subscribe((data: any)=>{
         this.updateTableData(false);
-      }, (error) => {  });
+        this.showLoadingIndicator=false;
+      }, (error) => { 
+        this.showLoadingIndicator=false;
+       });
     }else{
       this.onCancel(true);
     }
@@ -538,9 +549,8 @@ export class NewUserStepComponent implements OnInit {
         tableData: data
       }
       this.userCreate.emit(emitObj);
-    });
+   });
   }
-
   isAllSelectedForRole(){
     const numSelected = this.selectionForRole.selected.length;
     const numRows = this.roleDataSource.data.length;
@@ -554,7 +564,7 @@ export class NewUserStepComponent implements OnInit {
   checkboxLabel(row?): string{
     if(row)
       return `${this.isAllSelectedForRole() ? 'select' : 'deselect'} all`;
-    else  
+    else
       return `${this.selectionForRole.isSelected(row) ? 'deselect' : 'select'} row`;
   }
 
@@ -571,7 +581,7 @@ export class NewUserStepComponent implements OnInit {
   checkboxLabelForUserGrp(row?): string{
     if(row)
       return `${this.isAllSelectedForUserGrp() ? 'select' : 'deselect'} all`;
-    else  
+    else
       return `${this.selectionForUserGrp.isSelected(row) ? 'deselect' : 'select'} row`;
   }
 
@@ -594,7 +604,7 @@ export class NewUserStepComponent implements OnInit {
   }
 
   getUserCreatedMessage(createStatus: any){
-    this.userName = `${this.firstFormGroup.controls.salutation.value} ${this.firstFormGroup.controls.firstName.value} ${this.firstFormGroup.controls.lastName.value}`;  
+    this.userName = `${this.firstFormGroup.controls.salutation.value} ${this.firstFormGroup.controls.firstName.value} ${this.firstFormGroup.controls.lastName.value}`;
     let _txt: any = '';
     if(createStatus){
       if(this.linkAccountId == parseInt(localStorage.getItem('accountId'))){ // some same account changes
@@ -619,16 +629,15 @@ export class NewUserStepComponent implements OnInit {
     this.grpTitleVisible = false;
     this.stepper.previous();
   }
-
   applyFilterForRole(filterValue: string) {
     filterValue = filterValue.trim(); // Remove whitespace
-    filterValue = filterValue.toLowerCase(); 
+    filterValue = filterValue.toLowerCase();
     this.roleDataSource.filter = filterValue;
   }
-  
+
   applyFilterForUserGrp(filterValue: string) {
     filterValue = filterValue.trim(); // Remove whitespace
-    filterValue = filterValue.toLowerCase(); 
+    filterValue = filterValue.toLowerCase();
     this.userGrpDataSource.filter = filterValue;
   }
 
@@ -691,7 +700,7 @@ export class NewUserStepComponent implements OnInit {
     this.isSelectPictureConfirm = true;
     this.isAccountPictureSelected = false;
     this.croppedImageTemp= '';
-    //TODO : send cropped image to backend 
+    //TODO : send cropped image to backend
   }
 
   counter(i: number) {
@@ -701,8 +710,8 @@ export class NewUserStepComponent implements OnInit {
   viewUserGrpDetails(rowData: any){
     let objData = {
       accountId: 0,
-      organizationId: rowData.organizationId, 
-      accountGroupId: rowData.groupId, 
+      organizationId: rowData.organizationId,
+      accountGroupId: rowData.groupId,
       vehicleGroupId: 0,
       roleId: 0,
       name: ""
@@ -710,7 +719,7 @@ export class NewUserStepComponent implements OnInit {
 
     this.accountService.getAccountDetails(objData).subscribe((data)=>{
       let repsData = this.makeRoleAccountGrpList(data);
-      this.callToUserDetailTable(repsData, rowData);  
+      this.callToUserDetailTable(repsData, rowData);
     });
   }
 
@@ -732,10 +741,10 @@ export class NewUserStepComponent implements OnInit {
         accGrpTxt = accGrpTxt.slice(0, -2);
       }
 
-      initdata[index].roleList = roleTxt; 
+      initdata[index].roleList = roleTxt;
       initdata[index].accountGroupList = accGrpTxt;
     });
-    
+
     return initdata;
   }
 
@@ -757,6 +766,7 @@ export class NewUserStepComponent implements OnInit {
       accountId: this.linkAccountId, //-- link account id
       organizationId: this.accountOrganizationId
     }
+    this.showLoadingIndicator=true;
     this.accountService.linkAccountToOrganisation(linkObj).subscribe((res) => {
       let infoObj = {
         id: this.linkAccountId,
@@ -782,16 +792,23 @@ export class NewUserStepComponent implements OnInit {
           landingPageDisplayId: this.firstFormGroup.controls.landingPage.value != '' ?  this.firstFormGroup.controls.landingPage.value : ((this.orgPreference.landingPageDisplay && this.orgPreference.landingPageDisplay != '') ? this.orgPreference.landingPageDisplay : this.defaultSetting.landingPageDisplayDropdownData[0].id),
           pageRefreshTime: this.firstFormGroup.controls.pageRefreshTime.value != '' ?  parseInt(this.firstFormGroup.controls.pageRefreshTime.value) : ((this.orgPreference.pageRefreshTime && this.orgPreference.pageRefreshTime != '') ? this.orgPreference.pageRefreshTime : 1)
         }
+        this.showLoadingIndicator=false;
         if(this.prefId != 0){
+          this.showLoadingIndicator=true;
           this.accountService.updateAccountPreference(prefObj).subscribe((data) => {
             this.saveAccountRoles(linkStatus);
             //this.linkStatusStepper(linkStatus);
+            this.showLoadingIndicator=false;
+          }, (error) => {
+            this.showLoadingIndicator=false;
           });
         }
         else{ //if prefId == 0
           this.saveAccountRoles(linkStatus);
           //this.linkStatusStepper(linkStatus);
         }
+      }, (error) => {
+        this.showLoadingIndicator=false;
       });
     });
   }
@@ -803,7 +820,7 @@ export class NewUserStepComponent implements OnInit {
   //   else{
   //     this.userCreatedMsg = this.getUserCreatedMessage(true);
   //     this.grpTitleVisible = true;
-  //     setTimeout(() => {  
+  //     setTimeout(() => {
   //       this.grpTitleVisible = false;
   //     }, 5000);
   //     this.stepper.next();

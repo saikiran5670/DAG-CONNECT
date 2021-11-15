@@ -21,6 +21,7 @@ export class EditViewVehicleComponent implements OnInit {
   duplicateVehicleMsg: boolean = false;
   duplicateRegistrationNumber: boolean = false;
   vehicleStatus: any = '';
+  showLoadingIndicator: boolean = false;
   constructor(private _formBuilder: FormBuilder, private vehicleService: VehicleService) { }
 
   ngOnInit(){
@@ -92,6 +93,7 @@ export class EditViewVehicleComponent implements OnInit {
   }
 
   onUpdateVehicle(){ //-- update
+    this.showLoadingIndicator=true;
     this.duplicateVehicleMsg = false;
     this.duplicateRegistrationNumber = false;
     let updateVehObj = {
@@ -103,8 +105,9 @@ export class EditViewVehicleComponent implements OnInit {
     this.vehicleService.updateVehicle(updateVehObj).subscribe((updatedVehData: any) => {
       // this.getVehicleGridData();
       this.updateRelationshipVehiclesData.emit();
-
+      this.showLoadingIndicator=false;
     }, (error) => {
+      this.showLoadingIndicator=false;
       //console.error(error);
       if(error.status == 409) {
         if(error.error == 'Duplicate vehicle Name'){
