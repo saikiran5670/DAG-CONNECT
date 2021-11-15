@@ -114,7 +114,7 @@ namespace net.atos.daf.ct2.tcuvehiclebusinessservice
             {
                 _log.Info("Fetching Vehicle object from database");
 
-                VehicleManager vehicleManager = new VehicleManager(_vehiclerepo, null);
+                VehicleManager vehicleManager = new VehicleManager(_vehiclerepo, null, null);
 
                 var receivedVehicle = await GetVehicle(tcuDataReceive, vehicleManager);
 

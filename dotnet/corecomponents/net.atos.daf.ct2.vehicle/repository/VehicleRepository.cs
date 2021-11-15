@@ -1462,6 +1462,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 {
                     vehicleproperty.ID = await _dataAccess.ExecuteScalarAsync<int>(InsertQueryStatement, parameter);
                     objVeh.VehiclePropertiesId = vehicleproperty.ID;
+                    objVeh.Reference_Date = DateTime.Now;
                     objVeh = await Create(objVeh);
                     vehicleproperty.VehicleId = objVeh.ID;
                     _log.Info("VehicleUpdateInterface Property createRequest vehicle" + vehicleproperty);

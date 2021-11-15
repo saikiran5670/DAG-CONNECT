@@ -12,6 +12,7 @@ import { PackageService } from 'src/app/services/package.service';
 import { AlertService } from 'src/app/services/alert.service';
 import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dialog.service';
 import { ReportMapService } from '../../report/report-map.service';
+import { Util } from 'src/app/shared/util';
 
 @Component({
   selector: 'app-alerts',
@@ -70,6 +71,7 @@ export class AlertsComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
+  filterValue: any;
 
   constructor(
     private translationService: TranslationService,
@@ -303,10 +305,10 @@ export class AlertsComponent implements OnInit {
             case 'LH': unitTypeEnum= "H";
             item.UnitTypeVal =  this.translationData.lblHours;
             break;
-  
-            case 'LD': 
+
+            case 'LD':
             if(this.prefUnitFormat == 'dunit_Metric'){
-              unitTypeEnum= "K"; 
+              unitTypeEnum= "K";
               item.UnitTypeVal = this.translationData.lblkm;
              }
               else{
@@ -314,40 +316,40 @@ export class AlertsComponent implements OnInit {
               item.UnitTypeVal = this.translationData.lblmile;
               }
               break;
-  
+
             case 'LU': unitTypeEnum= "H";
             item.UnitTypeVal =  this.translationData.lblHours;
              break;
-  
-            case 'LG': 
+
+            case 'LG':
             if(this.prefUnitFormat == 'dunit_Metric'){
-              unitTypeEnum= "K";  
+              unitTypeEnum= "K";
               item.UnitTypeVal = this.translationData.lblkm;}
               else{
               unitTypeEnum= "L";
               item.UnitTypeVal = this.translationData.lblmile;
               }
              break;
-  
+
             case 'FP': unitTypeEnum= "P";
             item.UnitTypeVal =  "%"
-            break; 
-  
+            break;
+
             case 'FL': unitTypeEnum= "P";
             item.UnitTypeVal =  "%"
             break;
-  
+
             case 'FT': unitTypeEnum= "P";
             item.UnitTypeVal =  "%"
             break;
-  
+
             case 'FI': unitTypeEnum= "S";
             item.UnitTypeVal = this.translationData.lblSeconds;
             break;
-  
-            case 'FA': 
+
+            case 'FA':
             if(this.prefUnitFormat == 'dunit_Metric'){
-              unitTypeEnum= "A";  
+              unitTypeEnum= "A";
               item.UnitTypeVal = this.translationData.lblkilometerperhour;
             }
               else{
@@ -355,11 +357,11 @@ export class AlertsComponent implements OnInit {
                 item.UnitTypeVal = this.translationData.lblMilesPerHour
               }
               break;
-  
+
             case 'FF': unitTypeEnum= "P";
             item.UnitTypeVal =  "%"
             break;
-  
+
             return item.UnitTypeVal;
           }
 
@@ -502,14 +504,14 @@ export class AlertsComponent implements OnInit {
       //     return this.compare(a1, b1, isAsc);
       //   });
       //  }
-      this.dataSource.filterPredicate = function(data: any, filter: string): boolean {
-        return (
-        data.name.toString().toLowerCase().includes(filter) ||
-        data.category.toString().toLowerCase().includes(filter) ||
-         data.type.toString().toLowerCase().includes(filter) ||
-        data.highThresholdValue.toString().includes(filter)
-      );
-    };
+    //   this.dataSource.filterPredicate = function(data: any, filter: string): boolean {
+    //     return (
+    //     data.name.toString().toLowerCase().includes(filter) ||
+    //     data.category.toString().toLowerCase().includes(filter) ||
+    //      data.type.toString().toLowerCase().includes(filter) ||
+    //     data.highThresholdValue.toString().includes(filter)
+    //   );
+    // };
       this.dataSource.sortData = (data : String[], sort: MatSort) => {
         const isAsc = sort.direction === 'asc';
         let columnName = this.sort.active;
@@ -518,6 +520,7 @@ export class AlertsComponent implements OnInit {
         });
       }
     });
+    Util.applySearchFilter(this.dataSource, this.displayedColumns , this.filterValue );
   }
   compare(a: Number | String, b: Number | String, isAsc: boolean, columnName: any) {
     if(columnName == "name" || columnName =="category"){
