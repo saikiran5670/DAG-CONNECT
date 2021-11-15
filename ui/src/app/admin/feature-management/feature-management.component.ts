@@ -11,6 +11,7 @@ import { MatTableExporterDirective } from 'mat-table-exporter';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { Util } from 'src/app/shared/util';
+import { DataTableComponent } from 'src/app/shared/data-table/data-table.component';
 
 @Component({
   selector: 'app-feature-management',
@@ -27,6 +28,7 @@ export class FeatureManagementComponent implements OnInit {
   selectedElementData: any;
   titleVisible : boolean = false;
   feautreCreatedMsg : any = '';
+  @ViewChild('gridComp') gridComp: DataTableComponent;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
@@ -81,11 +83,12 @@ export class FeatureManagementComponent implements OnInit {
       });
       // filterTypeData = this.getNewTagData(filterTypeData);
       this.initData = filterTypeData;
-      // this.updatedTableData(filterTypeData);
+
     }, (error) => {
       console.log("error:: ", error);
       this.hideloader();
     });
+    this.gridComp.updatedTableData(this.initData);
   }
 
   hideloader() {
@@ -145,20 +148,20 @@ export class FeatureManagementComponent implements OnInit {
   }
 
   applyFilter(filterValue: string) {
-    this.updatedDataSource(this.initData);
+
     filterValue = filterValue.trim(); // Remove whitespace
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
     this.dataSource.filter = filterValue;
-    this.updatedDataSource(this.dataSource.filteredData);
+
   }
 
   updatedDataSource(tableData: any){
-    this.dataSource = new MatTableDataSource(tableData);
-      setTimeout(()=>{
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
-      });
-      Util.applySearchFilter(this.dataSource, this.columnLabels ,this.filterValue );
+    this.gridComp.updatedTableData(tableData);
+    // this.dataSource = new MatTableDataSource(tableData);
+    //   setTimeout(()=>{
+    //     this.dataSource.paginator = this.paginator;
+    //     this.dataSource.sort = this.sort;
+    //   });
   }
 
   createNewFeature(){
