@@ -519,7 +519,7 @@ namespace net.atos.daf.ct2.reports.repository
                                  )
                                  
                                  SELECT ROW_NUMBER () OVER (ORDER BY  ecoscoreranking DESC) as Ranking,
-                                 driverName, driverid, cast(ecoscoreranking as decimal(18,1)) as ecoscoreranking
+                                 driverName, driverid, trunc(ecoscoreranking::numeric,1) as ecoscoreranking
                                  FROM ecoscorealldriver
                                  where 1=1 AND (totaldriverdistance >= @MinDriverTotalDistance OR @MinDriverTotalDistance IS NULL)
                                  ORDER BY ecoscoreranking DESC, driverName";
