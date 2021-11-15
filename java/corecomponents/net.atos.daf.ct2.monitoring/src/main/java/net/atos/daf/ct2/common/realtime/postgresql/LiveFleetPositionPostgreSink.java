@@ -107,8 +107,7 @@ public class LiveFleetPositionPostgreSink extends RichSinkFunction<KafkaRecord<M
 				}
 			}
 		} catch (Exception e) {
-			log.info("Monitoring :: Live Fleet Position record insertion failed !!! ");
-			e.printStackTrace();
+			log.info("Monitoring :: Live Fleet Position record insertion failed !!! {}",e);
 		}
 		
 
