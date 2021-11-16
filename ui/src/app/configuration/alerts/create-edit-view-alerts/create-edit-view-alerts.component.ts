@@ -890,9 +890,14 @@ proceedStep(prefData: any, preference: any){
     this.updateVehiclesDataSource(vehicleSelected);
   }
 
-  onChangeUnitType(value){
-    this.unitForThreshold= this.unitTypes.filter(item => item.enum == value)[0].value;
-    this.unitTypeEnum= value;
+  onChangeUnitType(value: any){
+    let _s = this.unitTypes.filter(item => item.enum == value);
+    if(_s && _s.length > 0){
+      this.unitForThreshold = _s[0].value;
+    }else{
+      this.unitForThreshold = '';
+    }
+    this.unitTypeEnum = value;
   }
 
   loadMap() {
