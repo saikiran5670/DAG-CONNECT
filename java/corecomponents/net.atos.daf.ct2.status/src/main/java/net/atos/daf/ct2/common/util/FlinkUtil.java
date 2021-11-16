@@ -44,7 +44,7 @@ public class FlinkUtil {
 		 * restart attempts 20000 //time in milliseconds between restarts ));
 		 */
 
-		logger.info("envParams:: " + envParams);
+		logger.debug("envParams:: " + envParams);
 		env.setParallelism(Integer.parseInt(envParams.get(DafConstants.PARALLELISM)));
 
 		/*
