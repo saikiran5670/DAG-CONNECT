@@ -32,9 +32,7 @@ implements Serializable {
 	@Override
 	public void process(String key, ProcessWindowFunction<Index, Index, String, GlobalWindow>.Context arg1,
 			Iterable<Index> values, Collector<Index> out) throws Exception {
-		// TODO Auto-generated method stub
 		try {
-			//System.out.println("Inside calculation method");
 			for (Index indexData : values) {
 				TripPreviosData tripPreviousData = tripPreviousRecord1.get(key);
 				if (tripPreviousData == null) {
@@ -49,6 +47,7 @@ implements Serializable {
 				} else {
 					if (Objects.nonNull(tripPreviousRecord1)) {
 						// add Logger
+						logger.debug("tripPreviousRecord1 found {}",tripPreviousRecord1);
 
 						if (!pData.getTripId().equals(indexData.getDocument().getTripID())) {
 							pData.setTripDistance(0);
@@ -75,8 +74,7 @@ implements Serializable {
 						}
 						
 						// Index positionDetail= crateIndexObject(indexData, drivingTime);
-						System.out.println("data ready for insert");
-						logger.info("data is processed to insert" + indexData.toString());
+						logger.info("data is processed to insert {}" , indexData.toString());
 						}
 
 					}
@@ -86,9 +84,8 @@ implements Serializable {
 			}
 
 		} catch (Exception e) {
-			//System.out.println("inside catch");
 			logger.error("error in processing of LivefleetPosition" +e.getMessage());
-			e.printStackTrace();
+			logger.error(e);
 		}
 
 	}

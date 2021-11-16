@@ -57,27 +57,24 @@ public class IndexDataHbaseSink extends RichSinkFunction<KafkaRecord<Index>> {
 			conn = connectionPool.getHbaseConnection();
 			if (null == conn) {
 				log.warn("get connection from pool failed");
-				//System.out.println("get connection from pool failed");
 
 			}
 			TableName tabName = TableName.valueOf(tableName);
 			table = conn.getConnection().getTable(tabName);
 
-			log.info("table_name  -- " + tableName);
-			
-			//System.out.println("table_name  -- " + tableName);
+			log.debug("table_name  -- {}" , tableName);
 			
 
 		} catch (IOException e) {
-			log.error("create connection failed from the configuration" + e.getMessage());
+			log.error("create connection failed from the configuration {}" , e.getMessage());
 			throw e;
 		} catch (Exception e) {
 
-			log.error("there is an exception" + e.getMessage());
+			log.error("there is an exception {}" , e.getMessage());
 			throw e;
 		}
 
-		log.info("Index table_name -- " + tableName);
+		log.debug("Index table_name -- {}" , tableName);
 	}
 
 	public void invoke(KafkaRecord<Index> value, Context context) throws Exception {
@@ -96,31 +93,10 @@ public class IndexDataHbaseSink extends RichSinkFunction<KafkaRecord<Index>> {
 			    		  value.getValue().getDocument().getTripID() + "_" + value.getValue().getVid()
 			    		  + "_" + currentTimeStamp));
 			
-			log.info("Index Data Row_Key :: "
-					+ (value.getValue().getTransID() + "_" + value.getValue().getDocument().getTripID() + "_"
+			log.debug("Index Data Row_Key :: {}"
+					, (value.getValue().getTransID() + "_" + value.getValue().getDocument().getTripID() + "_"
 							+ value.getValue().getVid() + "_" + currentTimeStamp));
-			/*
-			 * System.out.println("Index Data Row_Key :: " + (value.getValue().getTransID()
-			 * + "_" + value.getValue().getDocument().getTripID() + "_" +
-			 * value.getValue().getVid() + "_" + currentTimeStamp));
-			 */
-			
-			
-			/*
-			 * Put put = new Put(Bytes.toBytes(value.getValue().getTransID() + "_" +
-			 * value.getValue().getDocument().getTripID() + "_" + value.getValue().getVid()
-			 * + "_" + value.getValue().getReceivedTimestamp()));
-			 */
 
-			/*
-			 * log.info("Index Data Row_Key :: " + (value.getValue().getTransID() + "_" +
-			 * value.getValue().getDocument().getTripID() + "_" + value.getValue().getVid()
-			 * + "_" + value.getValue().getReceivedTimestamp()));
-			 * System.out.println("Index Data Row_Key :: " + (value.getValue().getTransID()
-			 * + "_" + value.getValue().getDocument().getTripID() + "_" +
-			 * value.getValue().getVid() + "_" + value.getValue().getReceivedTimestamp()));
-			 */
-			
 			// we have commented some of the below column values as we need to use them in future
 
 			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("TransID"),
@@ -253,7 +229,7 @@ public class IndexDataHbaseSink extends RichSinkFunction<KafkaRecord<Index>> {
 
 			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("TT_ListValue"),
 					Bytes.toBytes(Arrays.toString(value.getValue().getDocument().getTt_ListValue())));
-//System.out.println("below ttList");
+
 			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("EngineCoolantLevel"),
 					Bytes.toBytes(Arrays.toString(value.getValue().getDocument().getEngineCoolantLevel())));
 			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("EngineOilLevel"),
@@ -286,19 +262,16 @@ public class IndexDataHbaseSink extends RichSinkFunction<KafkaRecord<Index>> {
 					Bytes.toBytes(Arrays.toString(value.getValue().getDocument().getTachoVehicleSpeed())));
 			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("TotalTachoMileage"),
 					Bytes.toBytes(Arrays.toString(value.getValue().getDocument().getTotalTachoMileage())));
-			//System.out.println("hbase techo values-->");
+
 
 			table.put(put);
-			
-			//System.out.println("table data added-->");
+
 		} catch (ParseException e) {
-			//System.out.println("Index input message--" +value);
-			e.printStackTrace();
+			log.error("ParseException ",e.getMessage());
 		} catch (IOException e) {
-			//System.out.println("Index input message--" +value);
-			e.printStackTrace();
+			log.error("IOException ",e.getMessage());
 		} catch (Exception e) {
-			//System.out.println("Index input message--" +value);
+			log.error("Exception ",e.getMessage());
 		}
 	}
 

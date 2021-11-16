@@ -134,7 +134,7 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<Index> imp
 	
 	public TripStatisticsPojo tripCalculationUpdate(Index index) {
 		currentTripPojo = new TripStatisticsPojo();
-		System.out.println("inside update method");
+		log.debug("inside update method");
 		if (index.getDocument() != null) 
 			currentTripPojo.setTripId(index.getDocument().getTripID());
 
@@ -163,7 +163,7 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<Index> imp
 
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error("ParseException {}",e);
 		}
 
 
@@ -174,7 +174,7 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<Index> imp
 	public TripStatisticsPojo tripCalculation(Index index) {
 
 		currentTripPojo = new TripStatisticsPojo();
-		System.out.println("inside trip calculation");
+		log.debug("inside trip calculation");
 
 		if (index.getDocument() != null) 
 			currentTripPojo.setTripId(index.getDocument().getTripID());
@@ -192,8 +192,8 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<Index> imp
 
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
-			log.info("catch in first exception modified" + e.getMessage());
-			e.printStackTrace();
+			log.error("catch in first exception modified" + e.getMessage());
+			log.error("ParseException {}",e);
 		}
 
 		if(index.getDriverID()!=null && !index.getDriverID().isEmpty() && index.getDriverID()!=" ")
@@ -239,9 +239,7 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<Index> imp
 			log.info("LATEST WARNING STATUS RECEIVED from LIVEFLEET_WARNING_STATUS FOR vin/vid {}",index.getVin()!=null ? index.getVin() : index.getVid());
 
 		} catch(Exception e) {
-			log.error("Error in LiveFleet Current Trip Statstics: Failed read latest warning status table " + e.getMessage());
-			log.error("Error in LiveFleet Current Trip Statstics: Failed read latest warning status table " + index);
-			e.printStackTrace();
+			log.error("Error in LiveFleet Current Trip Statstics: Failed read latest warning status table {} {}" , e.getMessage(),index);
 		}
 
 		if(warnStatsPojo!=null) {
@@ -275,8 +273,7 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<Index> imp
 	@Override
 	public void close() throws Exception {
 		connection.close();
-		log.error("Error");
-		log.info("In Close");
+		log.debug("In Close");
 
 	}
 

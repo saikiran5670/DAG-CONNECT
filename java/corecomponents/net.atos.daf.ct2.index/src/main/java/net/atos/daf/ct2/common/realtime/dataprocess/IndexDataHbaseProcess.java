@@ -50,7 +50,7 @@ public class IndexDataHbaseProcess {
 					StreamExecutionEnvironment.getExecutionEnvironment() :
 					FlinkUtil.createStreamExecutionEnvironment(envParams,envParams.get(DafConstants.INDEX_TRIPJOB));
 
-			log.info("env :: " + env);
+			log.debug("env :: " + env);
 
 			FlinkKafkaIndexDataConsumer flinkKafkaConsumer = new FlinkKafkaIndexDataConsumer();
 
@@ -61,7 +61,7 @@ public class IndexDataHbaseProcess {
 		
 			consumerStream.addSink(new IndexDataHbaseSink()); // Writing into HBase Table
 
-			log.info("after addsinkHbase");
+			log.debug("after addsinkHbase");
 
 			try {
 				
@@ -72,7 +72,6 @@ public class IndexDataHbaseProcess {
 				auditing.auditTrialGrpcCall(auditMap);
 				auditing.closeChannel();
 			} catch (Exception e) {
-
 				log.error("Issue while auditing :: " + e.getMessage());
 			}
 
@@ -81,20 +80,17 @@ public class IndexDataHbaseProcess {
 
 		} catch (Exception e) {
 
-			log.error("Error in Index Hbase Data Process" + e.getMessage());
-			e.printStackTrace();
+			log.error("Error in Index Hbase Data Process {} {}" , e.getMessage(),e);
 
 			try {
 				auditMap = createAuditMap(DafConstants.AUDIT_EVENT_STATUS_FAIL,
 						"Realtime index data processing Job Failed, reason :: " + e.getMessage());
-				//System.out.println("before calling auditTrail in catch");
 				auditing = new AuditETLJobClient(envParams.get(DafConstants.GRPC_SERVER),
 						Integer.valueOf(envParams.get(DafConstants.GRPC_PORT)));
 				auditing.auditTrialGrpcCall(auditMap);
 				auditing.closeChannel();
 			} catch (Exception ex) {
-
-				log.error("Issue while auditing :: " + ex.getMessage());
+				log.error("Issue while auditing :: {}" , ex.getMessage());
 			}
 
 		}
@@ -102,7 +98,6 @@ public class IndexDataHbaseProcess {
 
 	private static Map<String, String> createAuditMap(String jobStatus, String message) {
 		Map<String, String> auditMap = new HashMap<>();
-		// System.out.println("inside createAudit Map" + message);
 		auditMap.put(DafConstants.JOB_EXEC_TIME, String.valueOf(TimeFormatter.getInstance().getCurrentUTCTimeInSec()));
 		auditMap.put(DafConstants.AUDIT_PERFORMED_BY, DafConstants.TRIP_JOB_NAME);
 		auditMap.put(DafConstants.AUDIT_COMPONENT_NAME, DafConstants.TRIP_JOB_NAME);

@@ -777,7 +777,7 @@ namespace net.atos.daf.ct2.alert.repository
                     aleurg.id as aleurg_id,
                     aleurg.alert_id as aleurg_alert_id,
                     aleurg.urgency_level_type as aleurg_urgency_level_type,
-                    aleurg.threshold_value as aleurg_threshold_value,
+                    aleurg.threshold_value::text as aleurg_threshold_value,
                     aleurg.unit_type as aleurg_unit_type,
                     aleurg.day_type as aleurg_day_type,
                     aleurg.period_type as aleurg_period_type,
@@ -800,7 +800,7 @@ namespace net.atos.daf.ct2.alert.repository
                     alefil.alert_id as alefil_alert_id,
                     alefil.alert_urgency_level_id as alefil_alert_urgency_level_id,
                     alefil.filter_type as alefil_filter_type,
-                    alefil.threshold_value as alefil_threshold_value,
+                    alefil.threshold_value::text as alefil_threshold_value,
                     alefil.unit_type as alefil_unit_type,
                     alefil.landmark_type as alefil_landmark_type,
                     alefil.ref_id as alefil_ref_id,
@@ -935,7 +935,7 @@ namespace net.atos.daf.ct2.alert.repository
                 return repositoryMapper.GetAlertList(alertResult);
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
