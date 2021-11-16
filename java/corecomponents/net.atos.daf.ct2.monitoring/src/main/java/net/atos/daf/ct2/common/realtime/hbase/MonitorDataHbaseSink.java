@@ -90,7 +90,7 @@ public class MonitorDataHbaseSink extends RichSinkFunction<KafkaRecord<Monitor>>
 			    		  value.getValue().getDocument().getTripID() + "_" + value.getValue().getVid()
 			    		  + "_" + currentTimeStamp));
 			
-			log.debug("Monitoring Data Row_Key :: "
+			log.info("Monitoring Data Row_Key :: "
 					+ (value.getValue().getTransID() + "_" + value.getValue().getDocument().getTripID() + "_"
 							+ value.getValue().getVid() + "_" + currentTimeStamp));
 			
