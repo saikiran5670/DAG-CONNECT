@@ -20,8 +20,10 @@ namespace net.atos.daf.ct2.reports.repository
                 parameter.Add("@todate", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 parameter.Add("@vins", vinList.ToArray());
                 var query = @"SELECT DISTINCT vin,
-                                     array_agg(distinct end_time_stamp) AS EndTimeStamp FROM tripdetail.trip_statistics 
-                              WHERE end_time_stamp >= @fromdate AND end_time_stamp <= @todate AND 
+                              array_agg(distinct end_time_stamp) AS EndTimeStamp 
+                              FROM tripdetail.trip_statistics ts
+                              Join Master.vehicle V on ts.vin = v.vin
+                              WHERE  ts.end_time_stamp >= v.reference_date and end_time_stamp >= @fromdate AND end_time_stamp <= @todate AND 
                                      vin = Any(@vins) group by vin";
                 return _dataMartdataAccess.QueryAsync<VehicleFromTripDetails>(query, parameter);
             }
