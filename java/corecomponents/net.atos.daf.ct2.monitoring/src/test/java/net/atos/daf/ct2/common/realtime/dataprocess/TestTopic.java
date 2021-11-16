@@ -61,7 +61,7 @@ public class TestTopic {
 			final StreamExecutionEnvironment env = FlinkUtil.createStreamExecutionEnvironment(envParams,
 					envParams.get(DafConstants.MONITOR_JOB));
 
-			log.info("env :: " + env);
+			log.debug("env :: " + env);
 			FlinkKafkaMonitorDataConsumer flinkKafkaConsumer = new FlinkKafkaMonitorDataConsumer();
 			env.getConfig().setGlobalJobParameters(envParams);
 

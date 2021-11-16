@@ -55,8 +55,8 @@ public class LiveFleetDriverActivityPostgreSink extends RichSinkFunction<KafkaRe
 		livefleetdriver = envParams.get(DafConstants.QUERY_DRIVER_ACTIVITY);
 		driverreadquery = envParams.get(DafConstants.QUERY_DRIVER_ACTIVITY_READ);
 
-		System.out.println("livefleetdriver --> " + livefleetdriver);
-		System.out.println("driverreadquery --> " + driverreadquery);
+		log.debug("livefleetdriver --> " + livefleetdriver);
+		log.debug("driverreadquery --> " + driverreadquery);
 
 		try {
 
@@ -70,7 +70,7 @@ public class LiveFleetDriverActivityPostgreSink extends RichSinkFunction<KafkaRe
 
 		} catch (Exception e) {
 			log.error("Error in Live fleet driver" + e.getMessage());
-			e.printStackTrace();
+			log.error("Exception {}",e);
 
 		}
 
@@ -87,20 +87,19 @@ public class LiveFleetDriverActivityPostgreSink extends RichSinkFunction<KafkaRe
 		try {
 			queue.add(row);
 			if (queue.size() >= 1) {
-				System.out.println("inside syncronized");
+				log.debug("inside syncronized");
 				synchronized (synchronizedCopy) {
 					synchronizedCopy = new ArrayList<Index>(queue);
 					queue.clear();
 					Long trip_Start_time = driverDAO.read(index.getValue().getDocument().getTripID());
 					driverDAO.insert(row, trip_Start_time);
-					// jPAPostgreDao.saveTripDetails(synchronizedCopy);
-					System.out.println("Driver activity save done");
-					// System.out.println("anshu1");
+					log.info("Driver activity save done");
 
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("Exception {}",e.getMessage());
+			log.error("Exception {}",e);
 		}
 
 	}
@@ -127,10 +126,7 @@ public class LiveFleetDriverActivityPostgreSink extends RichSinkFunction<KafkaRe
 	public void close() throws Exception {
 
 		connection.close();
-
-		log.error("Error");
-
-		log.info("In Close");
+		log.debug("In Close");
 
 	}
 

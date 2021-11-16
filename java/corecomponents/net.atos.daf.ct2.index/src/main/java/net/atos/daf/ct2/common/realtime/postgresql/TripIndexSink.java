@@ -100,7 +100,7 @@ public class TripIndexSink extends RichSinkFunction<IndexTripData> implements Se
 		if (statement != null) {
 			statement.close();
 		}
-		logger.info("In close() of TripIndexSink :: ");
+		logger.debug("In close() of TripIndexSink :: ");
 
 		if (connection != null) {
 			logger.info("Releasing connection from TripIndexSink Job");

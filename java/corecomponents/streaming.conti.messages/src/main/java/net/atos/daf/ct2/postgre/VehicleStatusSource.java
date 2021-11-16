@@ -62,7 +62,7 @@ public class VehicleStatusSource extends RichSourceFunction<VehicleStatusSchema>
             String driverNm = properties.getProperty(POSTGRE_DRIVER);
             masterConnection=PostgreConnection.getInstance()
                     .getConnection(serverNm, port, databaseNm, userNm, password, driverNm);
-            logger.info("Postgre connection established {}", masterConnection.getClientInfo());
+            logger.debug("Postgre connection established {}", masterConnection.getClientInfo());
             PreparedStatement preparedStatement = masterConnection.prepareStatement(properties.getProperty(POSTGRE_CDC_FETCH_DATA_QUERY));
             resultSet = preparedStatement.executeQuery();
         }catch (Exception ex){

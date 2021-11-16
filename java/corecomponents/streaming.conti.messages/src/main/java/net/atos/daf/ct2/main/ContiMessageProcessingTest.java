@@ -35,7 +35,7 @@ public class ContiMessageProcessingTest {
         try {
             properties.load(new FileReader(FILE_PATH));
             properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, properties.getProperty(AUTO_OFFSET_RESET_CONFIG));
-            System.out.println("Configuration Loaded for Connecting Kafka inorder to Perform Mapping.");
+            logger.info("Configuration Loaded for Connecting Kafka inorder to Perform Mapping.");
         } catch (IOException e) {
             System.err.println("Unable to Find the File " + FILE_PATH);
             throw new DAFCT2Exception("Unable to Find the File " + FILE_PATH, e);
@@ -51,27 +51,13 @@ public class ContiMessageProcessingTest {
             properties = configuration();
             contiMessageProcessing.flinkConnection(properties);
 
-           /* ConsumeSourceStream consumeSrcStream = new ConsumeSourceStream();
-            DataStream<KafkaRecord<String>> kafkaRecordDataStream = consumeSrcStream.consumeSourceInputStream(
-                    streamExecutionEnvironment, SINK_INDEX_TOPIC_NAME, properties);
-
-            kafkaRecordDataStream.map(
-                    data -> {logger.info("Recived msg : {}",data.toString());return data;}
-            ).returns(TypeInformation.of(new TypeHint<KafkaRecord<String>>() {
-                @Override
-                public TypeInformation<KafkaRecord<String>> getTypeInfo() {
-                    return super.getTypeInfo();
-                }
-            }));
-            kafkaRecordDataStream.print();*/
-
             streamExecutionEnvironment.addSource(new VehicleStatusSource(properties))
                             .print();
 
             streamExecutionEnvironment.execute("ContiMessageProcessing");
 
         }catch (Exception ex){
-            ex.printStackTrace();
+           logger.error("Error in ContiMessageProcessingTest :{}",ex);
         }
     }
 }

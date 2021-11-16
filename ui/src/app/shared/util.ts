@@ -300,15 +300,15 @@ export class Util {
         // return _dateWithoutMiliSeconds.getTime();
         // }​​​​​​
         // else{
-        console.log(_dateWithoutMiliSeconds.getTime() )
-        let localTimeZoneOffset = moment().tz(moment.tz.guess()).utcOffset();
+       // console.log(_dateWithoutMiliSeconds.getTime() )
+        let localTimeZoneOffset = moment(_dateWithoutMiliSeconds).tz(moment.tz.guess()).utcOffset();
        // let gmt = moment(_dateWithoutMiliSeconds).utcOffset(localTimeZoneOffset);
 
-        let PrefTzToGMT: any = moment().tz(_timezone).utcOffset() * -1;
+        let PrefTzToGMT: any = moment(_dateWithoutMiliSeconds).tz(_timezone).utcOffset() * -1;
         let diff = localTimeZoneOffset + PrefTzToGMT;
         let PrefTimeAsPerSelected = moment(_dateWithoutMiliSeconds).utcOffset(diff);
         let _convertedUtc = PrefTimeAsPerSelected['_d'].getTime();
-        // console.log('_convertedUtc:' +_convertedUtc );
+        console.log('_convertedUtc:' +_convertedUtc );             
         return _convertedUtc;
         //}
         // let gmt_val:any =moment.utc(_dateWithoutMiliSeconds).valueOf();

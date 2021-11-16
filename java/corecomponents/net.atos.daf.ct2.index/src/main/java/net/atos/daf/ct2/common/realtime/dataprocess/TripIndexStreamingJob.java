@@ -27,7 +27,7 @@ public class TripIndexStreamingJob {
 		ParameterTool envParams = null;
 
 		try {
-			logger.info(" In TripIndexDataJob :: ");
+			logger.debug(" In TripIndexDataJob :: ");
 			
 			ParameterTool params = ParameterTool.fromArgs(args);
 			if (params.get("input") != null)
