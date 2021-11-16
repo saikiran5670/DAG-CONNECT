@@ -33,7 +33,7 @@ public class MileageStreamingJob {
 		ParameterTool envParams = null;
 		MileageStreamingJob mileageStreamingJob = null;
 		try {
-			logger.info(" In MileageStreamingJob :: ");
+			logger.debug(" In MileageStreamingJob :: ");
 			mileageStreamingJob = new MileageStreamingJob();
 			ParameterTool params = ParameterTool.fromArgs(args);
 			if (params.get("input") != null)
@@ -137,7 +137,7 @@ public class MileageStreamingJob {
 				}
 			}
 
-			logger.debug("vMileageObj ::{} ",vMileageObj);
+			logger.info("vMileageObj ::{} ",vMileageObj);
 		} catch (Exception e) {
 			logger.error("Issue while mapping deserialized status object to trip mileage object :: {}" , e);
 			logger.error("Issue while processing mileage record ::{} ", stsMsg);
