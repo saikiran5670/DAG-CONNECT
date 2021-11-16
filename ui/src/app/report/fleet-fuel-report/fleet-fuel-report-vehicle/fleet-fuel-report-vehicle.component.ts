@@ -1598,6 +1598,8 @@ getLast3MonthDate(){
     this.vehicleSelected = false;
     this.showRanking = false;
     this.showGraph= false;
+    this.isChartsOpen = false;
+    this.isDetailsOpen = true;
     this.graphData= [];
    this.updateDataSource(this.tripData);
     //this.resetTripFormControlValue();
