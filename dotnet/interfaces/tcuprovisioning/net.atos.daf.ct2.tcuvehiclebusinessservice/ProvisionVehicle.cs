@@ -191,7 +191,7 @@ namespace net.atos.daf.ct2.tcuvehiclebusinessservice
                     Is_Tcu_Register = true,
                     Tcu_Brand = _boschTcuBrand,
                     Tcu_Version = _boschTcuVesrion,
-                    Reference_Date = tcuDataReceive.ReferenceDate,
+                    Reference_Date = tcuDataReceive.ReferenceDate == new DateTime() ? DateTime.Now : tcuDataReceive.ReferenceDate,
                     VehiclePropertiesId = 0,
                     Opt_In = VehicleStatusType.Inherit,
                     Is_Ota = false,
@@ -224,7 +224,7 @@ namespace net.atos.daf.ct2.tcuvehiclebusinessservice
                 receivedVehicle.Tcu_Id = tcuDataReceive.DeviceIdentifier;
                 receivedVehicle.Tcu_Serial_Number = tcuDataReceive.DeviceSerialNumber;
                 receivedVehicle.Is_Tcu_Register = true;
-                receivedVehicle.Reference_Date = tcuDataReceive.ReferenceDate;
+                //receivedVehicle.Reference_Date = tcuDataReceive.ReferenceDate;
                 receivedVehicle.Tcu_Brand = _boschTcuBrand;
                 receivedVehicle.Tcu_Version = _boschTcuVesrion;
 
