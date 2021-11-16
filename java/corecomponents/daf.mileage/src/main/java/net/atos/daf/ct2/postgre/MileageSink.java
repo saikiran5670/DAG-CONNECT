@@ -103,7 +103,7 @@ public class MileageSink extends RichSinkFunction<TripMileage> implements Serial
 			if (Objects.nonNull(statement)) {
 				statement.close();
 			}
-			logger.info("In close() of mileageSink :: ");
+			logger.debug("In close() of mileageSink :: ");
 
 			if (Objects.nonNull(connection)) {
 				logger.debug("Releasing connection from Mileage Job");

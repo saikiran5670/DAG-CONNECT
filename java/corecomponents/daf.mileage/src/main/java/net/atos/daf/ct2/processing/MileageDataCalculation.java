@@ -155,7 +155,7 @@ public class MileageDataCalculation extends ProcessWindowFunction<VehicleMileage
 		MapStateDescriptor<String, List<Long>> vehTimeDescriptor = new MapStateDescriptor<String, List<Long>>(
 				"vehEvtTimeListState", TypeInformation.of(String.class), evtTimeTypeInfo);
 		vehEvtTimeListState = getRuntimeContext().getMapState(vehTimeDescriptor);
-		logger.info("Created the Map state for Mileage Job ");
+		logger.debug("Created the Map state for Mileage Job ");
 	}
 
 }

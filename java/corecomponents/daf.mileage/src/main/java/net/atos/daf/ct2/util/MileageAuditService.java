@@ -42,7 +42,7 @@ public class MileageAuditService implements Serializable {
 	      auditMap.put(MileageConstants.AUDIT_TARGET_OBJECT_ID, MileageConstants.DEFAULT_OBJECT_ID);
 
 	      auditETLJobClient.auditTrialGrpcCall(auditMap);
-	      log.info("Audit Trial Started for job ::{} ",jobName);
+	      log.debug("Audit Trial Started for job ::{} ",jobName);
 	          
 	    } catch (Exception e) {
 	    	log.error("Issue in MileageAuditService ::{}",e.getMessage());
