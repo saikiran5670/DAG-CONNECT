@@ -30,7 +30,7 @@ public class FlinkUtil {
 		
 		env = StreamExecutionEnvironment.getExecutionEnvironment();
 		
-		logger.info("envParams:: " + envParams);
+		logger.debug("envParams:: {}" , envParams);
 		env.setParallelism(Integer.parseInt(envParams.get(DafConstants.PARALLELISM)));
 
 		

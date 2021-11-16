@@ -38,7 +38,7 @@ public class StatusDataProcess {
 			final StreamExecutionEnvironment env = FlinkUtil.createStreamExecutionEnvironment(envParams,
 					envParams.get(DafConstants.STATUS_JOB));
 
-			log.info("env :: " + env);
+			log.debug("env :: " + env);
 			FlinkKafkaStatusDataConsumer FlinkKafkaStatusConsumer = new FlinkKafkaStatusDataConsumer();
 
 			env.getConfig().setGlobalJobParameters(envParams);
