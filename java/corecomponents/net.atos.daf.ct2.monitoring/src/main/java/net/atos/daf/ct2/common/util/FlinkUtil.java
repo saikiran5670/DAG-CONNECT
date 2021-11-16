@@ -21,7 +21,7 @@ public class FlinkUtil {
 		Logger logger = LoggerFactory.getLogger(MonitorDataProcess.class);
 		StreamExecutionEnvironment env;
 
-		logger.info("Start of FLINK UTIL...");
+		logger.debug("Start of FLINK UTIL...");
 		env = StreamExecutionEnvironment.getExecutionEnvironment();
 
 		env.setParallelism(Integer.parseInt(envParams.get(DafConstants.PARALLELISM)));

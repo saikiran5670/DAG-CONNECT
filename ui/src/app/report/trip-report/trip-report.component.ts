@@ -1257,9 +1257,9 @@ export class TripReportComponent implements OnInit, OnDestroy {
     // }
     this.resetTripFormControlValue();
     this.setVehicleGroupAndVehiclePreSelection();
-    if (this.showBack) {
-      this.onSearch();
-    }
+    // if (this.showBack) {
+    //   this.onSearch();
+    // }
   }
   compare(a, b) {
     if (a.vehicleGroupName< b.vehicleGroupName) {
@@ -1287,7 +1287,8 @@ export class TripReportComponent implements OnInit, OnDestroy {
 
   setVehicleGroupAndVehiclePreSelection() {
     if (!this.internalSelection && this.globalSearchFilterData.modifiedFrom !== "") {
-      this.onVehicleGroupChange(this.globalSearchFilterData.vehicleGroupDropDownValue || { value : 0 });
+      // this.onVehicleGroupChange(this.globalSearchFilterData.vehicleGroupDropDownValue || { value : 0 });
+      this.onVehicleGroupChange(this.globalSearchFilterData.vehicleGroupDropDownValue);
     }
     // if(this.vehicleDD.length>0){
     //   let vehicleID = this.vehicleDD[0].vehicleId;

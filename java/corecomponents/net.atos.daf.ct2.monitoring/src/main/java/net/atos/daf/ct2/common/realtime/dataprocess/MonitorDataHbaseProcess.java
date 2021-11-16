@@ -79,7 +79,7 @@ public class MonitorDataHbaseProcess {
 					StreamExecutionEnvironment.getExecutionEnvironment() : FlinkUtil.createStreamExecutionEnvironment(envParams,envParams.get(DafConstants.MONITOR_JOB));
 
 
-			log.info("env :: " + env);
+			log.debug("env :: " + env);
 			FlinkKafkaMonitorDataConsumer flinkKafkaConsumer = new FlinkKafkaMonitorDataConsumer();
 			env.getConfig().setGlobalJobParameters(envParams);
 
@@ -87,7 +87,7 @@ public class MonitorDataHbaseProcess {
 			//consumerStream.print();
 			
 			consumerStream.addSink(new MonitorDataHbaseSink()); // Writing into HBase Table
-			log.info("after addsink");
+			log.debug("after addsink");
 			try {
 
 				

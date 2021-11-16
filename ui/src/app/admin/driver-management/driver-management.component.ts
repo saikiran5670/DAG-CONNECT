@@ -65,7 +65,7 @@ export class DriverManagementComponent implements OnInit {
       name: 'Opt-Out'
     }
   ];
-  selectedConsentType: any = ''; 
+  selectedConsentType: any = '';
   importedDriverlist: any = [];
   rejectedDriverList: any = [];
   driverDialogRef: MatDialogRef<CommonTableComponent>;
@@ -75,10 +75,10 @@ export class DriverManagementComponent implements OnInit {
   userType: any = localStorage.getItem("userType");
   organizationData: any;
 
-  constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private dialogService: ConfirmDialogService, private translationService: TranslationService, private driverService: DriverService, private organizationService: OrganizationService) { 
+  constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private dialogService: ConfirmDialogService, private translationService: TranslationService, private driverService: DriverService, private organizationService: OrganizationService) {
   }
 
-  
+
   ngOnInit(){
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
@@ -149,7 +149,7 @@ export class DriverManagementComponent implements OnInit {
   }
 
   onConsentStatusChange(evt){
-    this.onConsentChange(evt.value);  
+    this.onConsentChange(evt.value);
   }
 
   get consentType() {
@@ -210,7 +210,7 @@ export class DriverManagementComponent implements OnInit {
   //   let currentDate = new Date().getTime();
   //   if(data.length > 0){
   //     data.forEach(row => {
-  //       let createdDate = parseInt(row.createdAt); 
+  //       let createdDate = parseInt(row.createdAt);
   //       let nextDate = createdDate + 86400000;
   //       if(currentDate > createdDate && currentDate < nextDate){
   //         row.newTag = true;
@@ -222,7 +222,7 @@ export class DriverManagementComponent implements OnInit {
   //     let newTrueData = data.filter(item => item.newTag == true);
   //     newTrueData.sort((userobj1, userobj2) => parseInt(userobj2.createdAt) - parseInt(userobj1.createdAt));
   //     let newFalseData = data.filter(item => item.newTag == false);
-  //     Array.prototype.push.apply(newTrueData, newFalseData); 
+  //     Array.prototype.push.apply(newTrueData, newFalseData);
   //     return newTrueData;
   //   }
   //   else{
@@ -230,7 +230,7 @@ export class DriverManagementComponent implements OnInit {
   //   }
   // }
 
-  importDrivers(clearInput: any){ 
+  importDrivers(clearInput: any){
     if(this.filelist.length > 0){
       this.validateExcelFileField(clearInput);
       this.excelEmptyMsg = false;
@@ -316,7 +316,7 @@ export class DriverManagementComponent implements OnInit {
                 element.driverNumber = element.driverID.substring(3, 19);
               }
             });
-            Array.prototype.push.apply(this.rejectedDriverList, filterFailDrv); 
+            Array.prototype.push.apply(this.rejectedDriverList, filterFailDrv);
           }
           this.importDriverPopup = true;
           this.selectedConsentType = 'All';
@@ -332,7 +332,7 @@ export class DriverManagementComponent implements OnInit {
     }
     //this.newDriverCount = (this.filelist.length - this.rejectedDriverList.length); // new = (total - rejected)
   }
-  
+
   validateFields(driverList: any){
     let validData: any = [];
     let invalidData: any = [];
@@ -346,11 +346,11 @@ export class DriverManagementComponent implements OnInit {
         ////console.log(`${key}: ${value}`);
         switch(key){
           case "countryCode":{
-            let objData: any = this.countryCodeValidation(value, 'Driver ID Country Code',index);  
+            let objData: any = this.countryCodeValidation(value, 'Driver ID Country Code',index);
             driverIdCountryCode = objData.status;
             if(!driverIdCountryCode){
               item.returnMassage = objData.reason;
-            }else{ 
+            }else{
               let val = value.toString().trim();
               if(val.length == 1){
                 item.countryCode = `${val}  `;
@@ -363,7 +363,7 @@ export class DriverManagementComponent implements OnInit {
             break;
           }
           case "driverNumber":{
-            let objData: any = this.driverIDNumberValidation(value,index);  
+            let objData: any = this.driverIDNumberValidation(value,index);
             driverIdNumber = objData.status;
             if(!driverIdNumber){
               item.returnMassage = objData.reason;
@@ -371,7 +371,7 @@ export class DriverManagementComponent implements OnInit {
             break;
           }
           case "firstName":{
-            let objData: any = this.nameValidation(value, 30, 'First Name',index); 
+            let objData: any = this.nameValidation(value, 30, 'First Name',index);
             fname = objData.status;
             if(!fname){
               item.returnMassage = objData.reason;
@@ -383,7 +383,7 @@ export class DriverManagementComponent implements OnInit {
             break;
           }
           case "lastName":{
-            let objData: any = this.nameValidation(value, 20, 'Last Name',index); 
+            let objData: any = this.nameValidation(value, 20, 'Last Name',index);
             lname = objData.status;
             if(!lname){
               item.returnMassage = objData.reason;
@@ -397,7 +397,7 @@ export class DriverManagementComponent implements OnInit {
             break;
           }
           case "email":{
-            let objData: any = this.emailValidation(value,index); 
+            let objData: any = this.emailValidation(value,index);
             email = objData.status;
             if(!email){
               item.returnMassage = objData.reason;
@@ -430,30 +430,30 @@ export class DriverManagementComponent implements OnInit {
     return { validDriverList: validData, invalidDriverList: invalidData };
   }
 
-  emailValidation(value: any,index:any){ 
+  emailValidation(value: any,index:any){
     let obj: any = { status: true, reason: 'correct data' };
     const regx = /[a-zA-Z0-9-_.]{1,}@[a-zA-Z0-9-_.]{2,}[.]{1}[a-zA-Z]{2,}/;
     // if(!value){
     //   obj.undefineStatus = true
-    //   return obj; 
+    //   return obj;
     // }
     // if(value && value.trim().length == 0){ //-- optional field
-    //  return obj; 
+    //  return obj;
     // }
     //else{
       if(!value || value == '' || value.length == 0 || value.trim().length == 0){
         obj.status = false;
         obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblRequireEmailField || 'Required Email field'}`;
-        return obj;  
+        return obj;
       }
       if(value.length > 100){ //-- as per db table
         obj.status = false;
-        obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblEmailIDexceedsmaximumallowedlengthof100chars}`;  
+        obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblEmailIDexceedsmaximumallowedlengthof100chars}`;
         return obj;
       }
       if(!regx.test(value)){
         obj.status = false;
-        obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblEmailIDformatisinvalid}`;  
+        obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblEmailIDformatisinvalid}`;
         return obj;
       }
       return obj;
@@ -468,16 +468,16 @@ export class DriverManagementComponent implements OnInit {
     if(!value || value == '' || value.trim().length == 0){
       obj.status = false;
       obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblDriverIDCountryCodeismandatoryinput}`;
-      return obj;  
+      return obj;
     }
     if(value.trim().length > 3){
       obj.status = false;
-      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblDriverIDCountryCodeshouldnotbemorethan3charsinlength}`;  
+      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblDriverIDCountryCodeshouldnotbemorethan3charsinlength}`;
       return obj;
     }
     if(!numberRegex.test(value)){
       obj.status = false;
-      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - `+ this.getValidateMsg(type, this.translationData.lblNumbersnotallowedin ); 
+      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - `+ this.getValidateMsg(type, this.translationData.lblNumbersnotallowedin );
       return obj;
     }
     if(!SpecialCharRegex.test(value)){
@@ -487,10 +487,10 @@ export class DriverManagementComponent implements OnInit {
     }
     // if(!regx.test(value)){
     //   obj.status = false;
-    //   obj.reason = this.translationData.lblDriverIDCountryCodeformatisinvalid || 'Driver ID Country Code format is invalid';  
+    //   obj.reason = this.translationData.lblDriverIDCountryCodeformatisinvalid || 'Driver ID Country Code format is invalid';
     //   return obj;
     // }
-    return obj; 
+    return obj;
   }
 
   driverIDNumberValidation(value: any, index: any){
@@ -499,19 +499,19 @@ export class DriverManagementComponent implements OnInit {
     if(!value || value == '' || value.trim().length == 0){
       obj.status = false;
       obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblDriverIDNumberismandatoryinput}`;
-      return obj;  
+      return obj;
     }
     if(value.trim().length != 16){
       obj.status = false;
-      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblDriverIDshouldbeexactly16charsinlength}`;  
+      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblDriverIDshouldbeexactly16charsinlength}`;
       return obj;
     }
     if(!regx.test(value)){
       obj.status = false;
-      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblDriverIDNumberformatisinvalid}`;  
+      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblDriverIDNumberformatisinvalid}`;
       return obj;
     }
-    return obj; 
+    return obj;
   }
 
   driveIdValidation(value: any, index: any){
@@ -520,16 +520,16 @@ export class DriverManagementComponent implements OnInit {
     if(!value || value == '' || value.trim().length == 0){
       obj.status = false;
       obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblDriverIDismandatoryinput}`;
-      return obj;  
+      return obj;
     }
     if(value.length != 19){
       obj.status = false;
-      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblDriverIDshouldbeexactly19charsinlength}`;  
+      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblDriverIDshouldbeexactly19charsinlength}`;
       return obj;
     }
     if(!regx.test(value)){
       obj.status = false;
-      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblDriverIDformatisinvalid}`;  
+      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblDriverIDformatisinvalid}`;
       return obj;
     }
     return obj;
@@ -541,25 +541,25 @@ export class DriverManagementComponent implements OnInit {
     let SpecialCharRegex = /[^!@#\$%&*]+$/;
     // if(!value){
     //   obj.undefineStatus = true
-    //   return obj; 
+    //   return obj;
     // }
     // if(value && value.trim().length == 0){ //-- optional field
-    //   return obj; 
+    //   return obj;
     // }
     //else{
       if(!value || value == '' || value.length == 0){ // required field
         obj.status = false;
-        obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - Required ${type} field `;  
+        obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - Required ${type} field `;
         return obj;
       }
       if(value.length > maxLength){
         obj.status = false;
-        obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - `+this.getValidateMsg(type, this.translationData.lblexceedsmaximumallowedlengthofchars, maxLength) 
+        obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - `+this.getValidateMsg(type, this.translationData.lblexceedsmaximumallowedlengthofchars, maxLength)
         return obj;
       }
       if(!numberRegex.test(value)){
         obj.status = false;
-        obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - `+this.getValidateMsg(type, this.translationData.lblNumbersnotallowedin ); 
+        obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - `+this.getValidateMsg(type, this.translationData.lblNumbersnotallowedin );
         return obj;
       }
       if(!SpecialCharRegex.test(value)){
@@ -579,7 +579,7 @@ export class DriverManagementComponent implements OnInit {
   getValidateMsg(type: any, typeTrans: any, maxLength?: any){
     if(typeTrans){
       if(maxLength){
-        typeTrans = typeTrans.replace('$', type); 
+        typeTrans = typeTrans.replace('$', type);
         return typeTrans.replace('#', maxLength)
       }
       else{
@@ -598,7 +598,7 @@ export class DriverManagementComponent implements OnInit {
     this.driverData = element;
     this.importDriverPopup = false;
     this.editFlag = true;
-    this.actionType = type; 
+    this.actionType = type;
   }
 
   onDelete(row: any){
@@ -606,9 +606,9 @@ export class DriverManagementComponent implements OnInit {
       title: this.translationData.lblDeleteDriver,
       message: this.translationData.lblAreyousureyouwanttodeletedriver,
       cancelText: this.translationData.lblCancel ,
-      confirmText: this.translationData.lblDelete 
+      confirmText: this.translationData.lblDelete
     };
-   
+
     let name = `${row.firstName} ${row.lastName}`;
     this.dialogService.DeleteModelOpen(options, name);
     this.dialogService.confirmedDel().subscribe((res) => {
@@ -633,7 +633,7 @@ export class DriverManagementComponent implements OnInit {
   successMsgBlink(msg: any){
     this.titleVisibleMsg = true;
     this.userCreatedMsg = msg;
-    setTimeout(() => {  
+    setTimeout(() => {
       this.titleVisibleMsg = false;
     }, 5000);
   }
@@ -642,25 +642,25 @@ export class DriverManagementComponent implements OnInit {
     this.importDriverPopup = false;
   }
 
-  addfile(event: any){ 
-    this.excelEmptyMsg = false;   
-    this.file = event.target.files[0];     
-    let fileReader = new FileReader();    
-    fileReader.readAsArrayBuffer(this.file);     
-    fileReader.onload = (e) => {    
-        this.arrayBuffer = fileReader.result;    
-        var data = new Uint8Array(this.arrayBuffer);   
-        var arr = new Array();    
+  addfile(event: any){
+    this.excelEmptyMsg = false;
+    this.file = event.target.files[0];
+    let fileReader = new FileReader();
+    fileReader.readAsArrayBuffer(this.file);
+    fileReader.onload = (e) => {
+        this.arrayBuffer = fileReader.result;
+        var data = new Uint8Array(this.arrayBuffer);
+        var arr = new Array();
         for(var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
-        var bstr = arr.join("");    
-        var workbook = XLSX.read(bstr, {type:"binary"});    
-        var first_sheet_name = workbook.SheetNames[0];    
-        var worksheet = workbook.Sheets[first_sheet_name];    
-        ////console.log(XLSX.utils.sheet_to_json(worksheet,{raw:true}));    
-        var arraylist = XLSX.utils.sheet_to_json(worksheet, {raw:true, header: 0, defval: ""});     
+        var bstr = arr.join("");
+        var workbook = XLSX.read(bstr, {type:"binary"});
+        var first_sheet_name = workbook.SheetNames[0];
+        var worksheet = workbook.Sheets[first_sheet_name];
+        ////console.log(XLSX.utils.sheet_to_json(worksheet,{raw:true}));
+        var arraylist = XLSX.utils.sheet_to_json(worksheet, {raw:true, header: 0, defval: ""});
         this.filelist = [];
-        this.filelist = arraylist;    
-    }    
+        this.filelist = arraylist;
+    }
   }
 
   updateEditData(item: any) {
@@ -688,7 +688,7 @@ export class DriverManagementComponent implements OnInit {
   changeOptStatus(driverData: any){ //--- single opt-in/out mode
     this.callToCommonTable(driverData, false, driverData.status);
   }
-  
+
   onConsentClick(consentType: string){ //--- All opt-in/out mode
     this.callToCommonTable(this.initData, true, consentType);
   }
@@ -715,7 +715,7 @@ export class DriverManagementComponent implements OnInit {
           this.loadDriverData();
           // this.updateGridData(this.initData);
         // }
-        if(res.consentMsg) { 
+        if(res.consentMsg) {
           if(dialogConfig.data.consentType == 'H' || dialogConfig.data.consentType == 'I') {
             var msg = res.tableData.length + " drivers were successfully Opted-In.";
           } else if(dialogConfig.data.consentType == 'U') {
@@ -730,7 +730,7 @@ export class DriverManagementComponent implements OnInit {
     });
   }
 
-  showDriverListPopup(driverList: any){ 
+  showDriverListPopup(driverList: any){
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
@@ -738,7 +738,7 @@ export class DriverManagementComponent implements OnInit {
       tableData: driverList,
       colsList: ['countryCode', 'driverNumber', 'firstName', 'lastName', 'email', 'returnMassage'],
       colsName: [this.translationData.lblDriverIDCountryCode , this.translationData.lblDriverIDNumber , this.translationData.lblFirstName , this.translationData.lblLastName, this.translationData.lblEmail , this.translationData.lblFailReason],
-      tableTitle: this.translationData.lblRejectedDriverDetails 
+      tableTitle: this.translationData.lblRejectedDriverDetails
     }
     this.driverDialogRef = this.dialog.open(CommonTableComponent, dialogConfig);
   }

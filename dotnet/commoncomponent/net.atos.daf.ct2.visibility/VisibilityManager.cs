@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
 using net.atos.daf.ct2.utilities;
 using net.atos.daf.ct2.vehicle;
 using net.atos.daf.ct2.vehicle.entity;
@@ -17,12 +18,14 @@ namespace net.atos.daf.ct2.visibility
         private readonly IVisibilityRepository _visibilityRepository;
         private readonly IVehicleManager _vehicleManager;
         private readonly IMemoryCache _memoryCache;
+        private readonly IConfiguration _configuration;
 
-        public VisibilityManager(IVisibilityRepository visibilityRepository, IVehicleManager vehicleManager, IMemoryCache memoryCache)
+        public VisibilityManager(IVisibilityRepository visibilityRepository, IVehicleManager vehicleManager, IMemoryCache memoryCache, IConfiguration configuration)
         {
             _visibilityRepository = visibilityRepository;
             _vehicleManager = vehicleManager;
             _memoryCache = memoryCache ?? throw new ArgumentNullException($"Memory cache object is null in { nameof(VisibilityManager) }");
+            _configuration = configuration;
         }
 
         public async Task<int> GetReportFeatureId(int reportId)
@@ -48,7 +51,7 @@ namespace net.atos.daf.ct2.visibility
             if (orgId != contextOrgId)
             {
                 // In-Memory cache implementation
-                var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(2));
+                var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(Convert.ToInt32(_configuration["CacheIntervals:VehicleVisiblityInSeconds"])));
                 if (_memoryCache.TryGetValue(string.Format(CacheConstants.ContextOrgVisiblityKey, contextOrgId), out Dictionary<VehicleGroupDetails, List<VisibilityVehicle>> result))
                     resultDict = result;
                 else
@@ -89,7 +92,7 @@ namespace net.atos.daf.ct2.visibility
             if (reportFeatureId > 0 && vehicles.Count() > 0)
             {
                 // In-Memory cache implementation
-                var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(10));
+                var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(Convert.ToInt32(_configuration["CacheIntervals:SubscriptionOrgRelFeaturesInSeconds"])));
                 IEnumerable<VehiclePackage> vehiclePackages;
                 if (_memoryCache.TryGetValue(string.Format(CacheConstants.SubscribedVehicleByFeatureKey, reportFeatureId, contextOrgId), out IEnumerable<VehiclePackage> result))
                     vehiclePackages = result;
@@ -194,7 +197,7 @@ namespace net.atos.daf.ct2.visibility
             if (vehicles.Count() > 0)
             {
                 // In-Memory cache implementation
-                var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(10));
+                var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(Convert.ToInt32(_configuration["CacheIntervals:SubscriptionOrgRelFeaturesInSeconds"])));
                 IEnumerable<VehiclePackageForAlert> vehiclePackages;
                 if (_memoryCache.TryGetValue(string.Format(CacheConstants.SubscribedVehicleByFeatureForAlertKey, string.Join(',', featureIds), contextOrgId), out IEnumerable<VehiclePackageForAlert> result))
                     vehiclePackages = result;

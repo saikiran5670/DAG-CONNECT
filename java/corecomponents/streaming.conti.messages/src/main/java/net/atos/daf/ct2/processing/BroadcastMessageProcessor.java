@@ -42,7 +42,7 @@ public class BroadcastMessageProcessor extends KeyedBroadcastProcessFunction<Str
 									   KafkaRecord<VehicleStatusSchema>,
 									   KafkaRecord<Tuple3<String, String, Object>>>.ReadOnlyContext ctx,
 							   Collector<KafkaRecord<Tuple3<String, String, Object>>> out) throws Exception {
-		//logger.info("Single record from processBroadcastElement :: {}",inputRec);
+		logger.debug("Single record from processBroadcastElement :: {}",inputRec);
 
 		Message<String> msgVid = new Message<>((String) ctx.getCurrentKey());
 		ReadOnlyBroadcastState<Message<String>, KafkaRecord<VehicleStatusSchema>> broadcastStateMap = ctx.getBroadcastState(broadcastStateDescriptor);
@@ -77,7 +77,7 @@ public class BroadcastMessageProcessor extends KeyedBroadcastProcessFunction<Str
 					inputRec.setValue(of);
 				}
 
-				logger.info("VID and VIN mapping found for message. VID:{} value: {}",ctx.getCurrentKey(), inputRec);
+				logger.debug("VID and VIN mapping found for message. VID:{} value: {}",ctx.getCurrentKey(), inputRec);
 				out.collect(inputRec);
 
 			}else{
@@ -127,7 +127,7 @@ public class BroadcastMessageProcessor extends KeyedBroadcastProcessFunction<Str
 										KeyedBroadcastProcessFunction<String, KafkaRecord<Tuple3<String, String, Object>>,
 			KafkaRecord<VehicleStatusSchema>, KafkaRecord<Tuple3<String, String, Object>>>.Context context,
 										Collector<KafkaRecord<Tuple3<String, String, Object>>> collector) throws Exception {
-		logger.info("Broadcast state updated from BroadcastMessageProcessor:: {}" , vehicleStatusSchemaKafkaRecord);
+		logger.debug("Broadcast state updated from BroadcastMessageProcessor:: {}" , vehicleStatusSchemaKafkaRecord);
 		context.getBroadcastState(broadcastStateDescriptor).put(new Message<String>( vehicleStatusSchemaKafkaRecord.getKey()), vehicleStatusSchemaKafkaRecord);
 	}
 }

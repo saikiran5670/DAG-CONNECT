@@ -122,11 +122,14 @@ public class MileageDataCalculation extends ProcessWindowFunction<VehicleMileage
 			tripMileage.setRealDistance(realMileage);
 
 			for (Long vTimestamp : vehDeleteTripTs) {
-				logger.info(
-						"deleting trip that does not fall under business critera :" + vMileageMap.get(vTimestamp));
+				logger.debug(
+						"deleting trip that does not fall under business critera :{}", vMileageMap.get(vTimestamp));
 				vMileageMap.remove(vTimestamp);
 			}
 			modelState.put(key, vMileageMap);
+			
+			logger.debug(
+					"Mileage data calculated for veh :{}",tripMileage);
 
 			out.collect(tripMileage);
 		} catch (Exception e) {
@@ -152,7 +155,7 @@ public class MileageDataCalculation extends ProcessWindowFunction<VehicleMileage
 		MapStateDescriptor<String, List<Long>> vehTimeDescriptor = new MapStateDescriptor<String, List<Long>>(
 				"vehEvtTimeListState", TypeInformation.of(String.class), evtTimeTypeInfo);
 		vehEvtTimeListState = getRuntimeContext().getMapState(vehTimeDescriptor);
-		logger.info("Created the Map state for Mileage Job ");
+		logger.debug("Created the Map state for Mileage Job ");
 	}
 
 }

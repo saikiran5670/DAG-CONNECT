@@ -1788,7 +1788,7 @@ createEndMarker(){
       },
       scaleLabel: {
         display: true,
-        labelString: 'Minutes'   
+        labelString:  this.translationData.lblMinutes ||'Minutes'  
       }
     }];
     this.barChartOptions1.scales.xAxes= [{ 
@@ -1806,7 +1806,7 @@ createEndMarker(){
   }]; 
     this.barChartData6= [
       { data: this.fuelConsumptionChart,
-        label: 'Minutes',
+        label:  this.translationData.lblMinutes ||'Minutes',
         backgroundColor: '#7BC5EC',
         hoverBackgroundColor: '#7BC5EC', }];
   }
@@ -1989,7 +1989,7 @@ createEndMarker(){
         },
         scaleLabel: {
           display: true,
-          labelString: 'Minutes'   
+          labelString: this.translationData.lblMinutes ||'Minutes'   
         }
       }];
       this.lineChartOptions1.scales.xAxes= [{
@@ -2004,7 +2004,7 @@ createEndMarker(){
            },             
         }
     }]; 
-    this.lineChartData6= [{ data: this.idleDuration, label: 'Minutes' }, ];
+    this.lineChartData6= [{ data: this.idleDuration, label: this.translationData.lblMinutes ||'Minutes'    }, ];
   }
   
     this.lineChartLabels = this.barChartLabels;

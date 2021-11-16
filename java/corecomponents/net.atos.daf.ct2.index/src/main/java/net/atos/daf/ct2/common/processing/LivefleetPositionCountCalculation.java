@@ -22,9 +22,9 @@ import net.atos.daf.ct2.pojo.standard.Index;
 public class LivefleetPositionCountCalculation extends ProcessWindowFunction<Index, Index, String, GlobalWindow>
 		implements Serializable {
 
-	
+
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = LogManager.getLogger(LivefleetPositionCountCalculation.class);
@@ -34,10 +34,9 @@ public class LivefleetPositionCountCalculation extends ProcessWindowFunction<Ind
 
 	@Override
 	public void process(String key, ProcessWindowFunction<Index, Index, String, GlobalWindow>.Context arg1,
-			Iterable<Index> values, Collector<Index> out) throws Exception {
+						Iterable<Index> values, Collector<Index> out) throws Exception {
 		// TODO Auto-generated method stub
 		try {
-			//System.out.println("Inside calculation method");
 			for (Index indexData : values) {
 				DriverPreviousData driverPreviousData = previousDriverRecord.get(key);
 				if (driverPreviousData == null) {
@@ -57,16 +56,12 @@ public class LivefleetPositionCountCalculation extends ProcessWindowFunction<Ind
 							previousDriverRecord.put(key, pData);
 						} else {
 
-						Long currentEvtDateTime = convertDateToMillis(indexData.getEvtDateTime());
-						Long drivingTime = currentEvtDateTime - pData.getStarDate() + pData.getDriveTime()
-								- indexData.getVIdleDuration();
-						
-						indexData.setNumSeq(drivingTime); // here we are using this field to store drive time
+							Long currentEvtDateTime = convertDateToMillis(indexData.getEvtDateTime());
+							Long drivingTime = currentEvtDateTime - pData.getStarDate() + pData.getDriveTime()
+									- indexData.getVIdleDuration();
 
-						
-						// Index positionDetail= crateIndexObject(indexData, drivingTime);
-						//System.out.println("data ready for insert");
-						logger.info("data is processed to insert" + indexData.toString());
+							indexData.setNumSeq(drivingTime); // here we are using this field to store drive time
+							logger.info("data is processed to insert" + indexData.toString());
 						}
 
 					}
@@ -76,9 +71,7 @@ public class LivefleetPositionCountCalculation extends ProcessWindowFunction<Ind
 			}
 
 		} catch (Exception e) {
-			//System.out.println("inside catch");
-			logger.error("error in processing of LivefleetPosition" +e.getMessage());
-			e.printStackTrace();
+			logger.error("error in processing of LivefleetPosition {} {}", e.getMessage(), e);
 		}
 
 	}
@@ -91,19 +84,5 @@ public class LivefleetPositionCountCalculation extends ProcessWindowFunction<Ind
 				"modelState", TypeInformation.of(String.class), TypeInformation.of(DriverPreviousData.class));
 		previousDriverRecord = getRuntimeContext().getMapState(descriptor);
 	}
-
-	/*public Index crateIndexObject(Index indexData, Long drivingTime) {
-		System.out.println("inside calculation population method");
-		Index positionDetail = new Index();
-		IndexDocument doc = new IndexDocument();
-		doc.setDriver1RemainingDrivingTime(drivingTime); // Its driver driving time
-		positionDetail.setDocument(doc);
-
-		positionDetail.setEvtDateTime(null);
-		// positionDetail.
-
-		return positionDetail;
-
-	} */
 
 }
