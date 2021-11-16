@@ -1583,7 +1583,7 @@ getLast3MonthDate(){
 
   showRanking : boolean = false;
   onReset(){
-    // this.isRankingOpen=  false;
+    this.isRankingOpen=  false;
     this.internalSelection = false;
     this.setDefaultStartEndTime();
     this.setDefaultTodayDate();
@@ -1596,8 +1596,10 @@ getLast3MonthDate(){
     // this.rankingColumns=[];
     this.displayData =[];
     this.vehicleSelected = false;
-    this.showRanking = true;
+    this.showRanking = false;
     this.showGraph= false;
+    this.isChartsOpen = false;
+    this.isDetailsOpen = true;
     this.graphData= [];
    this.updateDataSource(this.tripData);
     //this.resetTripFormControlValue();
