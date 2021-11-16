@@ -123,6 +123,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                array_agg(distinct da.activity_date) ActivityDateTime
                                             FROM livefleet.livefleet_trip_driver_activity da
                                             join master.driver d on d.driver_id=da.driver_id and d.organization_id = @organizationId
+                                            join master.vehicle v on v.vin=da.vin and da.activity_date >= v.reference_date
                                             where da.is_driver1 = true and (da.activity_date >= @FromDate AND da.activity_date <= @ToDate) and vin=ANY (@Vins)
                                             GROUP BY da.driver_id, da.vin,d.first_name,d.last_name
                                             --,da.activity_date
