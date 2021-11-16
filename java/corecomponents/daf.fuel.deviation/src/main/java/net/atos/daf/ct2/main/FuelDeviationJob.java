@@ -175,7 +175,7 @@ public class FuelDeviationJob {
 			else
 				fuelStopObj.setGpsHeading(FuelDeviationConstants.ZERO_DOUBLE_VAL);
 
-			logger.debug("fuelStopObj object :: {}", fuelStopObj);
+			logger.info("fuelStopObj object :: {}", fuelStopObj);
 		} catch (Exception e) {
 			logger.error("Issue while mapping deserialized Index object to fuelDeviationDuringStop object ::{} ", e.getMessage());
 			logger.error("Issue while processing fuelDeviationDuringStop record :: {}", idxMsg);
