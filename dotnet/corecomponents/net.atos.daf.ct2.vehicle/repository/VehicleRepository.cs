@@ -619,41 +619,10 @@ namespace net.atos.daf.ct2.vehicle.repository
                 if (vehicle.Organization_Id != vehicleDetails.OrganizationId)
                 {
                     //Update existing vehicle groups if change ownership happens
-                    //Delete single groups and access relationships created in old owner org
-                    parameter = new DynamicParameters();
-                    parameter.Add("@Id", vehicle.ID);
-                    parameter.Add("@Old_OrganizationId", vehicleDetails.OrganizationId);
+                    await DeleteDependanciesInOwnOrg(vehicle.ID, vehicleDetails.OrganizationId.Value);
 
-                    //Check if access relationship exists on the vehicle and old owner org with single vehicle group type
-                    var vehicleGroupIds = await _dataAccess
-                                        .QueryAsync<int>(@"select vehicle_group_id from master.accessrelationship where vehicle_group_id in 
-                                                   (select id from master.group where ref_id = @Id 
-                                                    and organization_id = @Old_OrganizationId
-                                                    and group_type = 'S' and object_type = 'V')", parameter);
-
-                    if (vehicleGroupIds.Count() > 0)
-                    {
-                        var param = new DynamicParameters();
-                        param.Add("@VehicleGroupIds", vehicleGroupIds.ToArray());
-                        //Delete access relationships with single vehicle group
-                        await _dataAccess.ExecuteAsync(@"delete from master.accessrelationship where vehicle_group_id = ANY(@VehicleGroupIds)", param);
-                    }
-
-                    //Delete Foreign key references from scheduledreportvehicleref records which uses single type group(s)
-                    await _dataAccess.ExecuteAsync(@"delete from master.scheduledreportvehicleref where vehicle_group_id in 
-                                                    (select id from master.group where ref_id = @Id 
-                                                    and organization_id = @Old_OrganizationId
-                                                    and group_type = 'S' and object_type = 'V')", parameter);
-
-                    //Delete groups with single type
-                    await _dataAccess.ExecuteAsync(@"delete from master.group where ref_id = @Id and organization_id = @Old_OrganizationId 
-                                                 and group_type = 'S' and object_type = 'V'", parameter);
-
-                    //Delete vehicle entries from GroupRef for old owner org
-                    await _dataAccess.ExecuteAsync(@"delete from master.groupref gref
-                                                where gref.ref_id = @Id and gref.group_id in 
-                                                    (select id from master.group grp where grp.organization_id = @Old_OrganizationId 
-                                                    and grp.group_type = 'G' and grp.object_type = 'V')", parameter);
+                    //Vehicles which are in one org but part of groups of other org due to visibility shared
+                    await DeleteDependanciesInVisibleOrgs(vehicle.ID, vehicleDetails.OrganizationId.Value);
                 }
 
                 transaction.Commit();
@@ -671,6 +640,113 @@ namespace net.atos.daf.ct2.vehicle.repository
             {
                 _dataAccess.Connection.Close();
             }
+        }
+
+        private async Task<bool> DeleteDependanciesInOwnOrg(int vehicleId, int old_OrganizationId)
+        {
+            var parameter = new DynamicParameters();
+            parameter.Add("@Id", vehicleId);
+            parameter.Add("@Old_OrganizationId", old_OrganizationId);
+
+            var vehicleGroupIds = await _dataAccess
+                    .QueryAsync<int>(@"select id from master.group where ref_id = @Id 
+                                                            and organization_id = @Old_OrganizationId
+                                                            and group_type = 'S' and object_type = 'V'", parameter);
+
+            parameter = new DynamicParameters();
+            parameter.Add("@VehicleGroupIds", vehicleGroupIds);
+
+            //Check if access relationship exists on the vehicle and old owner org with single vehicle group type
+            //Delete access relationships with single vehicle group
+            await _dataAccess.ExecuteAsync(@"delete from master.accessrelationship where vehicle_group_id = ANY(@VehicleGroupIds)", parameter);
+
+            //Delete Foreign key references from scheduledreportvehicleref records which uses single type group(s)
+            await _dataAccess.ExecuteAsync(@"delete from master.scheduledreportvehicleref where vehicle_group_id = ANY(@VehicleGroupIds)", parameter);
+
+            //Delete groups with single type
+            await _dataAccess.ExecuteAsync(@"delete from master.group where id = ANY(@VehicleGroupIds)", parameter);
+
+            parameter = new DynamicParameters();
+            parameter.Add("@Old_OrganizationId", old_OrganizationId);
+            parameter.Add("@VehicleGroupIds", vehicleGroupIds);
+            parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+            //Delete Alerts created on vehicle groups with single type            
+            await _dataAccess.ExecuteAsync(@"update master.alert
+                                                    set modified_at=@modified_at,
+                                                        state='D'
+                                                    where organization_id=@Old_OrganizationId 
+                                                    and state in ('A','I') 
+                                                    and vehicle_group_id = ANY(@VehicleGroupIds)", parameter);
+
+            parameter = new DynamicParameters();
+            parameter.Add("@Id", vehicleId);
+            parameter.Add("@Old_OrganizationId", old_OrganizationId);
+            parameter.Add("@VehicleGroupIds", vehicleGroupIds);
+            //Delete vehicle entries from GroupRef for old owner org
+            await _dataAccess.ExecuteAsync(@"delete from master.groupref gref
+                                             where gref.ref_id = @Id and gref.group_id in 
+                                                    (select id from master.group grp where grp.organization_id = @Old_OrganizationId 
+                                                    and grp.group_type = 'G' and grp.object_type = 'V')", parameter);
+            return true;
+        }
+
+        private async Task<bool> DeleteDependanciesInVisibleOrgs(int vehicleId, int old_OrganizationId)
+        {
+            var parameter = new DynamicParameters();
+            parameter.Add("@Id", vehicleId);
+            parameter.Add("@Old_OrganizationId", old_OrganizationId);
+
+            var visibleOrgDependancies = await _dataAccess.QueryAsync<VehicleDependancy>(
+                        @"select distinct v.id as VehicleId, g.id as SingleTypeGroupId, g.organization_id as VisibleOrganizationId
+                        from master.group g
+                        inner join master.vehicle v on g.ref_id=v.id and g.group_type='S' and g.object_type='V'
+                        and v.organization_id<>g.organization_id
+                        where v.id=@Id and v.organization_id=@Old_OrganizationId", parameter);
+
+            var vehicleGroupIds = visibleOrgDependancies.Select(x => x.SingleTypeGroupId).Distinct().ToArray();
+
+            parameter = new DynamicParameters();
+            parameter.Add("@VehicleGroupIds", vehicleGroupIds);
+
+            //Check if access relationship exists on the vehicle and old owner org with single vehicle group type
+            //Delete access relationships with single vehicle group
+            await _dataAccess.ExecuteAsync(@"delete from master.accessrelationship where vehicle_group_id = ANY(@VehicleGroupIds)", parameter);
+
+            //Delete Foreign key references from scheduledreportvehicleref records which uses single type group(s)
+            await _dataAccess.ExecuteAsync(@"delete from master.scheduledreportvehicleref where vehicle_group_id = ANY(@VehicleGroupIds)", parameter);
+
+            //Delete groups with single type
+            await _dataAccess.ExecuteAsync(@"delete from master.group where id = ANY(@VehicleGroupIds)", parameter);
+
+            foreach (var item in visibleOrgDependancies)
+            {
+                parameter = new DynamicParameters();
+                parameter.Add("@OrganizationId", item.VisibleOrganizationId);
+                parameter.Add("@VehicleGroupId", item.SingleTypeGroupId);
+                parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                //Delete Alerts created on vehicle groups with single type            
+                await _dataAccess.ExecuteAsync(@"update master.alert
+                                                    set modified_at=@modified_at,
+                                                        state='D'
+                                                    where organization_id=@OrganizationId 
+                                                    and state in ('A','I') 
+                                                    and vehicle_group_id = @VehicleGroupId", parameter);
+            }
+
+            //Vehicles which are in one org but part of G type groups of other org due to visibility shared
+            parameter = new DynamicParameters();
+            parameter.Add("@Id", vehicleId);
+            parameter.Add("@Old_OrganizationId", old_OrganizationId);
+
+            await _dataAccess.ExecuteAsync(
+                @"delete from master.groupref gref
+                where gref.ref_id=@Id and gref.group_id in 
+                    (select distinct g.id from master.group g
+                    inner join master.groupref gref on g.id=gref.group_id and g.group_type='G' and g.object_type='V'
+                    inner join master.vehicle v on gref.ref_id=v.id and v.organization_id<>g.organization_id
+                    where v.id=@Id and v.organization_id=@Old_OrganizationId)", parameter);
+
+            return true;
         }
 
         public async Task<int> IsVINExists(string vin)
