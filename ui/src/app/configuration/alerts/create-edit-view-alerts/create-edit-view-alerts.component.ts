@@ -477,7 +477,7 @@ proceedStep(prefData: any, preference: any){
     this.alertTypeByCategoryList = this.alertTypeByCategoryList.filter(item => item.enum != 'Y');
   }
 
-  onChangeAlertType(value){
+  onChangeAlertType(value: any, flag?: boolean){
     this.vehicleGroupList= [];
     this.vehicleByVehGroupList= [];
     this.vehicleListForTable= [];
@@ -497,7 +497,9 @@ proceedStep(prefData: any, preference: any){
       this.getVehicleGroupsForAlertType(alertTypeObj);
     }
 
-    
+    if(flag){ // default selection after alert type change
+      this.alertForm.get('vehicleGroup').setValue('ALL');
+    }
     //----------------------------------------------------------------------------------------------------------
 
     if(this.alert_category_selected === 'L' && (this.alert_type_selected === 'N' || this.alert_type_selected === 'X' || this.alert_type_selected === 'C' ||this.alert_type_selected === 'S')){
@@ -741,9 +743,9 @@ proceedStep(prefData: any, preference: any){
          let itemSplit = item.split("~");
          if(itemSplit[2] != 'S') {
           let vehicleGroupObj= {
-            "vehicleGroupId" : itemSplit[0],
+            "vehicleGroupId" : parseInt(itemSplit[0]),
             "vehicleGroupName" : itemSplit[1],
-            "vehicleId" : element.vehicleId
+            "vehicleId" : parseInt(element.vehicleId)
           }
           this.vehicleGroupList.push(vehicleGroupObj);
           console.log("vehicleGroupList 1", this.vehicleGroupList);
@@ -763,13 +765,15 @@ proceedStep(prefData: any, preference: any){
   }
  
   resetVehicleGroupFilter(){
-		this.filteredVehicleGroups.next(this.vehicleGroupList.slice());
-	  }
- resetVehiclesFilter(){
-   this.filteredVehicles.next(this.vehicleByVehGroupList.slice());
- }
+    this.filteredVehicleGroups.next(this.vehicleGroupList.slice());
+	}
+
+  resetVehiclesFilter(){
+    this.filteredVehicles.next(this.vehicleByVehGroupList.slice());
+  }
   getVehiclesForAlertType(alertTypeObj: any){
-    this.vehicleByVehGroupList= [];
+    this.vehicleByVehGroupList = [];
+    this.vehicleListForTable = [];
     let featuresData= this.alertCategoryTypeFilterData.filter(item => item.featureKey == alertTypeObj.key);
     if(featuresData.length == 1 && featuresData[0].subscriptionType == 'O'){
       this.associatedVehicleData.forEach(element => {        
@@ -1296,8 +1300,10 @@ PoiCheckboxClicked(event: any, row: any) {
     this.onChangeAlertCategory(this.selectedRowData.category);
     
     this.alertForm.get('alertType').setValue(this.selectedRowData.type);
-    this.alert_type_selected= this.selectedRowData.type;
+    this.onChangeAlertType(this.selectedRowData.type);
+    this.alert_type_selected = this.selectedRowData.type;
     this.alertForm.get('applyOn').setValue(this.selectedRowData.applyOn);
+    this.selectedApplyOn = this.selectedRowData.applyOn;
     if(this.selectedRowData.alertLandmarkRefs.length > 0){
     this.poiWidth =this.selectedRowData.alertLandmarkRefs[0].distance;
     this.sliderChanged();
@@ -1313,7 +1319,7 @@ PoiCheckboxClicked(event: any, row: any) {
     }
     
     this.alertForm.get('statusMode').setValue(this.selectedRowData.state);
-    this.onChangeAlertType(this.selectedRowData.type);
+    // this.onChangeAlertType(this.selectedRowData.type);
     this.convertValuesToPrefUnit();
     this.selectedApplyOnPeriod = this.selectedRowData.alertUrgencyLevelRefs[0].periodType;
     if(this.selectedApplyOnPeriod == 'C'){
@@ -1845,6 +1851,8 @@ convertToFromTime(milliseconds: any){
       // this.updateVehiclesList(this.alertTypeObject);
       this.getVehiclesForAlertType(this.alertTypeObject);
       this.getVehicleGroupsForAlertType(this.alertTypeObject);
+    }else{
+      this.alertForm.get('vehicleGroup').setValue('ALL');
     }
   }
 

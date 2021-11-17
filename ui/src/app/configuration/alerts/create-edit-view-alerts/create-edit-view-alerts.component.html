@@ -75,7 +75,7 @@
             <mat-label>{{ translationData.lblAlertType }} <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span></mat-label>
             <div *ngIf="actionType != 'view'">
               <mat-form-field appearance="outline" class="full-width">
-                  <mat-select placeholder="{{ translationData.lblSelectAlertType }}" formControlName="alertType" (selectionChange)="onChangeAlertType($event.value)">
+                  <mat-select placeholder="{{ translationData.lblSelectAlertType }}" formControlName="alertType" (selectionChange)="onChangeAlertType($event.value, true)">
                       <mat-option *ngFor="let type of alertTypeByCategoryList" [value]="type.enum">
                           {{type.value}}
                       </mat-option>
