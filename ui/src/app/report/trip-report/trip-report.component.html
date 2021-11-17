@@ -379,7 +379,7 @@
               <mat-cell *matCellDef="let row">{{ row.convertedFuelConsumed100Km != '' ? row.convertedFuelConsumed100Km : '-' }}</mat-cell>
             </ng-container> -->
             <ng-container matColumnDef="fuelConsumed">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFuelConsumed || 'Fuel Consumed'  }} <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgal || 'gal' ) : (translationData.lblltr || 'ltr' ) }})</span>
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFuelConsumed || 'Fuel Consumed'  }} <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmpg || 'mpg') : (translationData.lblltr100km || 'l/100 km' ) }})</span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.convertedFuelConsumed != '' ? row.convertedFuelConsumed : '-' }}</mat-cell>
             </ng-container>

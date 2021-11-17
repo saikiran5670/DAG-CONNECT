@@ -24,28 +24,29 @@ namespace net.atos.daf.ct2.reports.repository
                 parameterOfFilters.Add("@Vins", fleetUtilizationFilters.VIN);
                 string queryFleetUtilization = @"WITH CTE_FleetDeatils as
                                             	(
-                                            		SELECT
-                                            			VIN
-                                                      , count(distinct date_trunc('day', to_timestamp(end_time_stamp/1000))) as totalworkingdays
-                                            		  , count(trip_id)                as numberoftrips
-                                            		  , SUM(etl_gps_trip_time)        as etl_gps_trip_time
-                                            		  , SUM(end_time_stamp)           as end_time_stamp
-                                            		  , SUM(etl_gps_distance)         as etl_gps_distance
-                                            		  , SUM(etl_gps_driving_time)     as etl_gps_driving_time
-                                            		  , SUM(idle_duration)            as idle_duration
-                                            		  , SUM(etl_gps_distance)     as veh_message_distance
-                                            		  , SUM(average_speed)            as average_speed
-                                            		  , SUM(average_gross_weight_comb)           as average_weight
-                                            		  , Max(last_odometer)           as last_odometer
-                                                      , SUM(case when average_gross_weight_comb >0 then 1 else 0 end)  as numoftripswithavgweight
+                                            		  select  ts.VIN
+                                                      , count(distinct date_trunc('day', to_timestamp(ts.end_time_stamp/1000))) as totalworkingdays
+                                            		  , count(ts.trip_id)                as numberoftrips
+                                            		  , SUM(ts.etl_gps_trip_time)        as etl_gps_trip_time
+                                            		  , SUM(ts.end_time_stamp)           as end_time_stamp
+                                            		  , SUM(ts.etl_gps_distance)         as etl_gps_distance
+                                            		  , SUM(ts.etl_gps_driving_time)     as etl_gps_driving_time
+                                            		  , SUM(ts.idle_duration)            as idle_duration
+                                            		  , SUM(ts.etl_gps_distance)         as veh_message_distance
+                                            		  , SUM(ts.average_speed)            as average_speed
+                                            		  , SUM(ts.average_gross_weight_comb) as average_weight
+                                            		  , Max(ts.last_odometer)           as last_odometer
+                                                      , SUM(case when ts.average_gross_weight_comb >0 then 1 else 0 end)  as numoftripswithavgweight
                                             		FROM
-                                            			tripdetail.trip_statistics
+                                            			tripdetail.trip_statistics ts
+														join master.vehicle VH on TS.vin=VH.vin
                                             		where
-                                            			end_time_stamp   >= @FromDate
-                                            			and end_time_stamp <= @ToDate
-                                                        and VIN = ANY(@Vins)
+                                            			ts.end_time_stamp >= @FromDate
+                                            			and ts.end_time_stamp <= @ToDate
+                                                        and ts.VIN = ANY(@Vins)
+														and ts.end_time_stamp >= VH.reference_date
                                             		GROUP BY
-                                            			VIN
+                                            			ts.VIN
                                             	)
                                               , cte_combine as
                                             	(
@@ -107,24 +108,25 @@ namespace net.atos.daf.ct2.reports.repository
                 string query;
                 if (tripFilters.VIN.Count > 0)
                 {
-                    query = @"WITH cte_workingdays AS(
-                        select
-                        date_trunc('day', to_timestamp(end_time_stamp/1000)) as startdate,
-                        count(distinct date_trunc('day', to_timestamp(end_time_stamp/1000))) as totalworkingdays,
-						Count(distinct vin) as vehiclecount,
-						Count(distinct trip_id) as tripcount,
-                        sum(etl_gps_distance) as totaldistance,
-                        sum(etl_gps_trip_time) as totaltriptime,
-                        sum(etl_gps_driving_time) as totaldrivingtime,
-                        sum(idle_duration) as totalidleduration,
-                        sum(veh_message_distance) as totalAveragedistanceperday,
-                        SUM(average_speed) as totalaverageSpeed,
-                        sum(average_gross_weight_comb) as totalaverageweightperprip,
-                        sum(last_odometer) as totalodometer
-                        FROM tripdetail.trip_statistics
-                        where (end_time_stamp >= @StartDateTime  and end_time_stamp<= @EndDateTime) 
-						and vin=ANY(@vins)
-                        group by date_trunc('day', to_timestamp(end_time_stamp/1000))                     
+                    query = @"WITH cte_workingdays AS( select
+                        date_trunc('day', to_timestamp(ts.end_time_stamp/1000)) as startdate,
+                        count(distinct date_trunc('day', to_timestamp(ts.end_time_stamp/1000))) as totalworkingdays,
+						Count(distinct ts.vin) as vehiclecount,
+						Count(distinct ts.trip_id) as tripcount,
+                        sum(ts.etl_gps_distance) as totaldistance,
+                        sum(ts.etl_gps_trip_time) as totaltriptime,
+                        sum(ts.etl_gps_driving_time) as totaldrivingtime,
+                        sum(ts.idle_duration) as totalidleduration,
+                        sum(ts.veh_message_distance) as totalAveragedistanceperday,
+                        SUM(ts.average_speed) as totalaverageSpeed,
+                        sum(ts.average_gross_weight_comb) as totalaverageweightperprip,
+                        sum(ts.last_odometer) as totalodometer
+                        FROM tripdetail.trip_statistics ts
+						join master.vehicle VH on TS.vin=VH.vin
+                        where (ts.end_time_stamp >= @StartDateTime  and ts.end_time_stamp<= @EndDateTime) 
+						and ts.vin=ANY(@vins)
+						and ts.end_time_stamp >= VH.reference_date
+                        group by date_trunc('day', to_timestamp(ts.end_time_stamp/1000))                     
                         )
                         select
                         '' as VIN,
@@ -147,21 +149,23 @@ namespace net.atos.daf.ct2.reports.repository
                 {
                     query = query = @"WITH cte_workingdays AS(
                         select
-                        date_trunc('day', to_timestamp(end_time_stamp/1000)) as startdate,
-                        count(distinct date_trunc('day', to_timestamp(end_time_stamp/1000))) as totalworkingdays,
-						Count(distinct vin) as vehiclecount,
-						Count(distinct trip_id) as tripcount,
-                        sum(etl_gps_distance) as totaldistance,
-                        sum(etl_gps_trip_time) as totaltriptime,
-                        sum(etl_gps_driving_time) as totaldrivingtime,
-                        sum(idle_duration) as totalidleduration,
-                        sum(veh_message_distance) as totalAveragedistanceperday,
-                        SUM(average_speed) as totalaverageSpeed,
-                        sum(average_gross_weight_comb) as totalaverageweightperprip,
-                        sum(last_odometer) as totalodometer
-                        FROM tripdetail.trip_statistics
-                        where (end_time_stamp >= @StartDateTime  and end_time_stamp<= @EndDateTime)
-                        group by date_trunc('day', to_timestamp(end_time_stamp/1000))                     
+                        date_trunc('day', to_timestamp(ts.end_time_stamp/1000)) as startdate,
+                        count(distinct date_trunc('day', to_timestamp(ts.end_time_stamp/1000))) as totalworkingdays,
+						Count(distinct ts.vin) as vehiclecount,
+						Count(distinct ts.trip_id) as tripcount,
+                        sum(ts.etl_gps_distance) as totaldistance,
+                        sum(ts.etl_gps_trip_time) as totaltriptime,
+                        sum(ts.etl_gps_driving_time) as totaldrivingtime,
+                        sum(ts.idle_duration) as totalidleduration,
+                        sum(ts.veh_message_distance) as totalAveragedistanceperday,
+                        SUM(ts.average_speed) as totalaverageSpeed,
+                        sum(ts.average_gross_weight_comb) as totalaverageweightperprip,
+                        sum(ts.last_odometer) as totalodometer
+                        FROM tripdetail.trip_statistics ts
+                        join master.vehicle VH on TS.vin=VH.vin
+                        where (ts.end_time_stamp >= @StartDateTime  and ts.end_time_stamp<= @EndDateTime)
+                        and ts.end_time_stamp >= VH.reference_date
+                        group by date_trunc('day', to_timestamp(ts.end_time_stamp/1000))                     
                         )
                         select
                         '' as VIN,
