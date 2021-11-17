@@ -45,7 +45,7 @@ public class FuelDeviationSink extends RichSinkFunction<FuelDeviation> implement
 			statement.setDouble(10, rec.getGpsHeading());
 			statement.setDouble(11, TimeFormatter.getInstance().getCurrentUTCTime());
 
-			logger.debug("FuelDeviation data for veh::{} ", rec);
+			logger.info("FuelDeviation data for veh::{} ", rec);
 			statement.execute();
 		}  catch (SQLException e) {
 			logger.error("Sql Issue while inserting data to fuelDeviation table ::{} ", e.getMessage());
@@ -75,7 +75,7 @@ public class FuelDeviationSink extends RichSinkFunction<FuelDeviation> implement
 					envParams.get(FuelDeviationConstants.DATAMART_POSTGRE_DATABASE_NAME),
 					envParams.get(FuelDeviationConstants.DATAMART_POSTGRE_USER),
 					envParams.get(FuelDeviationConstants.DATAMART_POSTGRE_PASSWORD),envParams.get(FuelDeviationConstants.POSTGRE_SQL_DRIVER));
-			logger.debug("In FuelDeviation sink connection done ::{} ", connection);
+			logger.info("In FuelDeviation sink connection done ::{} ", connection);
 			statement = connection.prepareStatement(query);
 		} catch (Exception e) {
 			logger.error("Issue while establishing Postgre connection in FuelDeviation streaming Job ::{} ", e);
@@ -100,7 +100,7 @@ public class FuelDeviationSink extends RichSinkFunction<FuelDeviation> implement
 			logger.debug("In close() of FuelDeviationSink :: ");
 
 			if (Objects.nonNull(connection)) {
-				logger.debug("Releasing connection from FuelDeviation Job");
+				logger.info("Releasing connection from FuelDeviation Job");
 				connection.close();
 			}
 		} catch (Exception e) {
