@@ -826,18 +826,6 @@ titleStyle: any = { name: 'sans-serif', family: 4, size: 11, bold: true };
           });
         }
       });
-      // tempCol.sort( (col1: any, col2: any) =>{
-      //   if(col1.columnGroup && col2.columnGroup){
-      //     let vin1 = col1.columnGroup.toLowerCase();
-      //     let vin2 = col2.columnGroup.toLowerCase();
-      //     if(vin1 < vin2)
-      //       return -1;
-      //     if(vin1 > vin2)
-      //       return 1;
-      //   }
-      //   return 0;
-      // });
-      // this.columnDefinitions.push(...tempCol);
       }
   }
 
