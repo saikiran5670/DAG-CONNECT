@@ -501,7 +501,7 @@ export class MapFunctionsService {
         // Create a corridor width to display the route:
         this.corridorPath = new H.map.Polyline(linestring, {
           style: {
-            lineWidth: pathWidth,
+            lineWidth: pathWidth > 100 ? 100 : pathWidth, // max-100
             strokeColor: 'rgba(181, 199, 239, 0.6)'
           }
         });

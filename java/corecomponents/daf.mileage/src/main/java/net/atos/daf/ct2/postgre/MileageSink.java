@@ -50,7 +50,7 @@ public class MileageSink extends RichSinkFunction<TripMileage> implements Serial
 			statement.setDouble(12, rec.getGpsDistance());
 			statement.setLong(13, rec.getModifiedAt());
 
-			logger.debug("mileage data calculated for veh ::{} ",rec);
+			logger.info("mileage data calculated for veh ::{} ",rec);
 			statement.execute();
 		} catch (SQLException e) {
 			logger.error("Sql Issue while inserting data to vehiclemileage table ::{} ", e.getMessage());
@@ -80,7 +80,7 @@ public class MileageSink extends RichSinkFunction<TripMileage> implements Serial
 					envParams.get(MileageConstants.DATAMART_POSTGRE_USER),
 					envParams.get(MileageConstants.DATAMART_POSTGRE_PASSWORD),envParams.get(MileageConstants.POSTGRE_SQL_DRIVER));
 			
-			logger.debug("In Mileage sink connection done::{}" , connection);
+			logger.info("In Mileage sink connection done::{}" , connection);
 			statement = connection.prepareStatement(query);
 		} catch (Exception e) {
 			// TODO: handle exception both logger and throw is not required
@@ -103,10 +103,10 @@ public class MileageSink extends RichSinkFunction<TripMileage> implements Serial
 			if (Objects.nonNull(statement)) {
 				statement.close();
 			}
-			logger.info("In close() of mileageSink :: ");
+			logger.debug("In close() of mileageSink :: ");
 
 			if (Objects.nonNull(connection)) {
-				logger.debug("Releasing connection from Mileage Job");
+				logger.info("Releasing connection from Mileage Job");
 				connection.close();
 			}
 		} catch (Exception e) {

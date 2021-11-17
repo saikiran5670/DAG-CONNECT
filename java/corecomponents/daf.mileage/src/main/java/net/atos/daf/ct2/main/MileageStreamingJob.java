@@ -33,7 +33,7 @@ public class MileageStreamingJob {
 		ParameterTool envParams = null;
 		MileageStreamingJob mileageStreamingJob = null;
 		try {
-			logger.info(" In MileageStreamingJob :: ");
+			logger.debug(" In MileageStreamingJob :: ");
 			mileageStreamingJob = new MileageStreamingJob();
 			ParameterTool params = ParameterTool.fromArgs(args);
 			if (params.get("input") != null)
@@ -146,7 +146,7 @@ public class MileageStreamingJob {
 	}
 
 	public void auditMileageJobDetails(ParameterTool properties, String message) {
-		logger.info("Calling audit service for Mileage Job :: ");
+		logger.debug("Calling audit service for Mileage Job :: ");
 		try {
 			new MileageAuditService().auditTrail(properties.get(MileageConstants.GRPC_SERVER),
 					properties.get(MileageConstants.GRPC_PORT), MileageConstants.MILEAGE_JOB_NAME, message);
