@@ -231,6 +231,7 @@ export class MapFunctionsService {
               if (data[0]["corridorProperties"]) {
                 this.additionalData = data[0]["corridorProperties"];
                 this.setAdditionalData();
+              }
                   if(this.trafficOnceChecked){
                     this.hereMap.addLayer(this.defaultLayers.vector.normal.traffic);
                   }
@@ -252,7 +253,6 @@ export class MapFunctionsService {
                 this.endAddressPositionLong = data[0].endLong;
                 this.calculateTruckRoute();
 
-              }
             })
           }
         }
@@ -491,7 +491,7 @@ export class MapFunctionsService {
   }
 
   addTruckRouteShapeToMap(lineWidth?) {
-    let pathWidth = this.corridorWidthKm * 10;
+    let pathWidth = lineWidth ? (lineWidth * 10) : (this.corridorWidthKm * 10);
 
     if (this.routePoints.sections) {
       this.routePoints.sections.forEach((section) => {
