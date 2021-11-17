@@ -272,15 +272,16 @@ namespace net.atos.daf.ct2.driver
                     {
                         parameter = new DynamicParameters();
                         parameter.Add("@driver_id", driver.Driver_id_ext);
+                        parameter.Add("@hashed_driver_id", DriverIdHashing.ComputeSha256Hash(driver.Driver_id_ext));
                         parameter.Add("@first_name", driver.FirstName);
                         parameter.Add("@last_name", driver.LastName);
                         parameter.Add("@organization_id", driver.Organization_id);
 
-                        query = @"INSERT INTO master.driver (driver_id, first_name, last_name, organization_id)
-                            VALUES(@driver_id, @first_name, @last_name, @organization_id)
+                        query = @"INSERT INTO master.driver (driver_id, hashed_driver_id, first_name, last_name, organization_id)
+                            VALUES(@driver_id, @hashed_driver_id, @first_name, @last_name, @organization_id)
                             ON CONFLICT(driver_id, organization_id)
                             DO
-                            UPDATE SET driver_id=@driver_id, first_name=@first_name, last_name=@last_name";
+                            UPDATE SET driver_id=@driver_id, hashed_driver_id=@hashed_driver_id, first_name=@first_name, last_name=@last_name";
 
                         await _dataMartdataAccess.ExecuteScalarAsync<int>(query, parameter);
                     }
@@ -432,6 +433,7 @@ namespace net.atos.daf.ct2.driver
                 if (status == "I")
                 {
                     parameters.Add("@driver_id", driver.DriverID);
+                    parameters.Add("@hashed_driver_id", DriverIdHashing.ComputeSha256Hash(driver.DriverID));
                     parameters.Add("@first_name", driver.FirstName);
                     parameters.Add("@last_name", driver.LastName);
                     parameters.Add("@organization_id", driver.OrganizationId);
@@ -441,12 +443,14 @@ namespace net.atos.daf.ct2.driver
                         queryStatement = @"INSERT INTO master.driver
                                       (
                                         driver_id
+                                       ,hashed_driver_id
                                        ,first_name
                                        ,last_name
                                        ,organization_id 
                                        ) 
                             	VALUES(
                                         @driver_id
+                                       ,@hashed_driver_id
                                        ,@first_name
                                        ,@last_name
                                        ,@organization_id
@@ -459,6 +463,7 @@ namespace net.atos.daf.ct2.driver
                         queryStatement = @" UPDATE master.driver
                                     SET
                                      driver_id=@driver_id
+                                    ,hashed_driver_id=@hashed_driver_id
                                     ,first_name=@first_name
                                     ,last_name=@last_name                                
                                      WHERE id = @id and organization_id=@organization_id
