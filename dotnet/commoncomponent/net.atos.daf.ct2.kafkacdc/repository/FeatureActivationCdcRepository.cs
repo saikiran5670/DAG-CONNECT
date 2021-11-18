@@ -354,5 +354,44 @@ namespace net.atos.daf.ct2.kafkacdc.repository
                 throw;
             }
         }
+
+        public async Task<IEnumerable<int>> GetAlertFeatureIds()
+        {
+            try
+            {
+                string query = @"SELECT id FROM master.feature where name like 'Alerts%' and state='A';";
+                IEnumerable<int> featureids = await _dataAccess.QueryAsync<int>(query, null);
+                return featureids;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<List<VehicleAlertRef>> GetAlertandVin(List<int> vehicleIds)
+        {
+            try
+            {
+                string query = @"SELECT ale.Id as AlertId, vehs.vin as VIN from master.alert ale
+                    INNER join master.group grp 
+					on ale.vehicle_group_id=grp.id
+					left join master.groupref vgrpref
+					on  grp.id=vgrpref.group_id and grp.object_type='V'	
+					left join master.vehicle veh
+					on vgrpref.ref_id=veh.id and veh.id = ANY(@vehicleIds)
+                    left join master.vehicle vehs
+					on grp.ref_id=vehs.id and grp.group_type='S' and vehs.id = ANY(@vehicleIds) ";
+                var parameter = new DynamicParameters();
+                parameter.Add("@vehicleIds", vehicleIds);
+                IEnumerable<VehicleAlertRef> vehicleAlertRefs = await _dataMartdataAccess.QueryAsync<VehicleAlertRef>(query, parameter);
+                return vehicleAlertRefs.AsList();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 }
