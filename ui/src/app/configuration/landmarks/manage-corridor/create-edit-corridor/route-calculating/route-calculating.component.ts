@@ -9,7 +9,10 @@ import {
 import { ConfigService } from '@ngx-config/core';
 import { Options } from '@angular-slider/ngx-slider';
 import { LandmarkCategoryService } from '../../.../../../../../services/landmarkCategory.service'
+import { decode, encode } from '../../../../../services/flexible-polyline';
+// import { decode } from './index';
 declare var H: any;
+
 
 @Component({
   selector: 'app-route-calculating',
@@ -110,7 +113,7 @@ export class RouteCalculatingComponent implements OnInit {
 
   value: number = 100;
   options: Options = {
-    floor: 0,
+    floor: 500,
     ceil: 10000
   };
   searchStrError : boolean = false;
@@ -157,6 +160,7 @@ export class RouteCalculatingComponent implements OnInit {
   activeSearchList : boolean = false;
   activeEndList : boolean = false;
   poiLocalCollection = [];
+  sampledGpsCoordinates: any =[];
 
   constructor(private hereService: HereService,private formBuilder: FormBuilder, private corridorService : CorridorService,
     private completerService: CompleterService, private config: ConfigService,private landmarkCategoryService: LandmarkCategoryService) {
@@ -1207,13 +1211,79 @@ export class RouteCalculatingComponent implements OnInit {
   corridorPath;
   addTruckRouteShapeToMap(lineWidth?){
     let pathWidth= this.corridorWidthKm * 10;
+    let threshold = this.corridorWidthKm * 0.75;
+    if(threshold < 1) threshold =1;
+    let sampledGpsCoordinate: any;
     this.routeDistance = 0;
     if(this.routePoints.sections){
-    this.routePoints.sections.forEach((section) => {
+    this.routePoints.sections.forEach((section, index) => {
       // decode LineString from the flexible polyline
       this.routeDistance += section.travelSummary.length;
       let linestring = H.geo.LineString.fromFlexiblePolyline(section.polyline);
-  
+     var coordinates = decode(section.polyline);//polylinePlugin.decode(section.polyline);
+      // var coordinates = this.mapFunctionsService.decode(section.polyline);
+      console.log(coordinates);
+      console.log(Object.values(coordinates));
+      // coordinates.polyline.forEach(element => {
+        
+      // });
+      let polyl = coordinates.polyline;
+      let counter=0;
+      let sampledLineString: any =[];
+      // let newLineString3: any;
+      if(index > 0){
+        let origLocation = this.routePoints.sections[index-1].arrival.place.originalLocation;
+        let viaRoute = this.viaRoutePlottedPoints.filter( e => e.latitude == origLocation.lat && e.longitude == origLocation.lng);
+        // sampledGpsCoordinate = {
+        //   type: 'V',
+        //   viaStopName: viaRoute[0].viaRoutName,
+        //   latitude: origLocation.lat,
+        //   longitude: origLocation.lng
+        // };
+        this.sampledGpsCoordinates.push(sampledGpsCoordinate);
+      }
+      for(var i=0; i<polyl.length-1;i++){
+        var polylc=polyl[i];
+        var polylc5=polyl[i+1];
+        // console.log(this.distanceInKmBetweenEarthCoordinates(this.degreesToRadians(polylc[0]), this.degreesToRadians(polylc[1]),
+        // this.degreesToRadians(polylc[0]), this.degreesToRadians(polylc[1])));
+        // console.log('lat 1:'+polylc[0]+' long 1:'+polylc[1]+' lat 2:'+polylc5[0]+' long 2:'+polylc5[1]+' Distance:'+this.distanceInKmBetweenEarthCoordinates(polylc[0], polylc[1], polylc5[0], polylc5[1])*1000+' Meters');
+        counter += this.distanceInKmBetweenEarthCoordinates(polylc[0], polylc[1], polylc5[0], polylc5[1]);
+        if(i==0 || i==polyl.length-1){
+          sampledLineString.push(polylc[0], polylc[1], 0);
+          // sampledLineString.push(polylc5[1]);
+          // sampledLineString.push(0);
+          sampledGpsCoordinate = {
+            type: 'R',
+            viaStopName: '',
+            latitude: polylc[0],
+            longitude: polylc[1]
+          };
+          this.sampledGpsCoordinates.push(sampledGpsCoordinate);
+        }
+        if(counter > threshold){
+          sampledLineString.push(polylc5[0], polylc5[1], 0);
+          // sampledLineString.push(polylc5[1]);
+          // sampledLineString.push(0);
+          sampledGpsCoordinate = {
+            type: 'R',
+            viaStopName: '',
+            latitude: polylc5[0],
+            longitude: polylc5[1]
+          };
+          this.sampledGpsCoordinates.push(sampledGpsCoordinate);
+          counter = 0;
+        }
+      }
+      // console.log(linestring);
+      // console.log(newLineString);
+      console.log(this.distanceInKmBetweenEarthCoordinates(19.14045, 72.88235, 12.96618, 77.5869)*1000+' Meters');
+      // newLineString3 =  { Y: newLineString, a: 0};
+      console.log(linestring);
+      linestring.Y = sampledLineString;
+      console.log(linestring);
+      console.log(this.sampledGpsCoordinates);
+      // var encode1 = encode(coordinates);
        // Create a corridor width to display the route:
         this.corridorPath = new H.map.Polyline(linestring, {
         style:  {
@@ -1255,6 +1325,25 @@ export class RouteCalculatingComponent implements OnInit {
   hideloader() {
     // Setting display of spinner
     this.showLoadingIndicator = false;
+  }
+
+ degreesToRadians(degrees) {
+    return degrees * Math.PI / 180;
+  }
+  
+   distanceInKmBetweenEarthCoordinates(lat1, lon1, lat2, lon2) {
+    var earthRadiusKm = 6371;
+  
+    var dLat = this.degreesToRadians(lat2-lat1);
+    var dLon = this.degreesToRadians(lon2-lon1);
+  
+    lat1 = this.degreesToRadians(lat1);
+    lat2 = this.degreesToRadians(lat2);
+  
+    var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2); 
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+    return earthRadiusKm * c;
   }
 
 
