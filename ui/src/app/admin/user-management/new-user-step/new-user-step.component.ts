@@ -12,6 +12,7 @@ import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dial
 import { UserDetailTableComponent } from './user-detail-table/user-detail-table.component';
 import { LinkOrgPopupComponent } from './link-org-popup/link-org-popup.component';
 import { DomSanitizer } from '@angular/platform-browser';
+import { Router, NavigationExtras  } from '@angular/router';
 import { ReplaySubject } from 'rxjs';
 
 @Component({
@@ -27,6 +28,7 @@ export class NewUserStepComponent implements OnInit {
   @Input() translationData: any = {};
   @Input() userDataForEdit: any;
   @Input() orgPreference: any;
+  @Input() fromCreate: any;
   @Output() userCreate = new EventEmitter<object>();
   @ViewChild('stepper') stepper;
   roleDataSource: any = [];
@@ -65,6 +67,7 @@ export class NewUserStepComponent implements OnInit {
   linkAccountId: any = 0;
   imageError= '';
   croppedImageTemp= '';
+  breadcumMsg: any = '';
   @Input() privilegeAccess: any;
   prefId: any = 0;
   orgDefaultFlag: any;
@@ -88,7 +91,7 @@ export class NewUserStepComponent implements OnInit {
 
 
 
-  constructor(private _formBuilder: FormBuilder, private cdref: ChangeDetectorRef, private dialog: MatDialog, private accountService: AccountService, private domSanitizer: DomSanitizer) { }
+  constructor(private _formBuilder: FormBuilder, private cdref: ChangeDetectorRef, private dialog: MatDialog, private accountService: AccountService, private domSanitizer: DomSanitizer, private router: Router) { }
 
   ngAfterViewInit() {
     this.roleDataSource.filterPredicate = function(data: any, filter: string): boolean {
@@ -185,6 +188,16 @@ export class NewUserStepComponent implements OnInit {
     // this.thirdFormGroup = this._formBuilder.group({
     //   thirdCtrl: ['', Validators.required]
     // });
+
+    this.breadcumMsg = this.getBreadcum(this.fromCreate);
+    if( this.breadcumMsg!=''){
+      let navigationExtras: NavigationExtras = {
+        queryParams:  {
+         "UserDetails": this.fromCreate
+        }
+      };
+      this.router.navigate([], navigationExtras);
+    }
     if(this.adminAccessType && this.adminAccessType.systemAccountAccess){
       this.userTypeList = [
         {
@@ -210,6 +223,14 @@ export class NewUserStepComponent implements OnInit {
     this.setDefaultSetting();
   }
 
+  getBreadcum(val: any){
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } /
+    ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} /
+    ${this.translationData.lblAccountManagement ? this.translationData.lblAccountManagement : "Account Management"} /
+    ${(this.fromCreate == 'Create') ? (this.translationData.lblCreate ? 'Create '+ this.translationData.lblNewUser : 'New Account') :'Create New Account'}`;
+    // ${this.translationData.lblAccountDetails ? this.translationData.lblAccountDetails : 'Account Details'}`;
+  }
+ 
   setDefaultOrgVal(){
     this.orgDefaultFlag = {
       language: true,

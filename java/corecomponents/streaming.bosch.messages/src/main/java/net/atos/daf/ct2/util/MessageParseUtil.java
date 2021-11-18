@@ -38,7 +38,6 @@ import net.atos.daf.ct2.utils.JsonMapper;
 
 public class MessageParseUtil {
 	
-	
 	private static final Logger logger = LogManager.getLogger(MessageParseUtil.class);
 
 	public static DataStream<KafkaRecord<String>> filterDataInputStream(
@@ -1375,7 +1374,22 @@ public class MessageParseUtil {
 			if (key != null && document != null) {
 				if (document.get(key) != null) {
 					JsonNode innerJsonNode = document.get(key);
+					if(innerJsonNode.get("dimension") != null && innerJsonNode.get("shape") != null ) {
+						
+						int dimensionVal = innerJsonNode.get("dimension").asInt();
+						
+						Long[] ordAbsArrFields = getSparkMatrixAttributeValue("shape", innerJsonNode);
+						
+						//dimension =2 then abs and ord field value 
+						if(dimensionVal >= 2 && ordAbsArrFields != null && ordAbsArrFields.length >=2 ) {
+							matrix.setAbs(ordAbsArrFields[0]);
+							matrix.setOrd(ordAbsArrFields[1]);
+						} else if (dimensionVal == 1 && ordAbsArrFields != null && ordAbsArrFields.length ==1) {
+							matrix.setAbs(ordAbsArrFields[0]);
+						}
+						
 
+					}
 					if (innerJsonNode.get("sparseMatrix") != null) {
 						JsonNode innerSparseMatrixJsonNode = innerJsonNode.get("sparseMatrix");
 						Long[] aArr = getSparkMatrixAttributeValue("A", innerSparseMatrixJsonNode);

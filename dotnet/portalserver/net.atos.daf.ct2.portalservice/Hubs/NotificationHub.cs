@@ -24,7 +24,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace net.atos.daf.ct2.portalservice.hubs
 {
-    //[Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class NotificationHub : Hub
     {
         private readonly ILog _logger;
@@ -125,71 +125,71 @@ namespace net.atos.daf.ct2.portalservice.hubs
                 _logger.Error("Error in OnDisconnectedAsync method", err);
             }
         }
-        [AllowAnonymous]
-        public async Task NotifyAlert(string someTextFromClient)
-        {
-            var list = someTextFromClient.Split(',');
-            int accountId = Convert.ToInt32(list[0]);
-            int orgId = Convert.ToInt32(list[1]);
+        //[AllowAnonymous]
+        //public async Task NotifyAlert(string someTextFromClient)
+        //{
+        //    var list = someTextFromClient.Split(',');
+        //    int accountId = Convert.ToInt32(list[0]);
+        //    int orgId = Convert.ToInt32(list[1]);
 
-            try
-            {
-                //Get Feature ids for alert feature
-                var featureIds = GetMappedFeatureIdByStartWithName(NotificationHubConstant.ALERT_FEATURE_STARTWITH);
-                if (!_accountSignalRClientsMappingList._accountClientMapperList.Any(a => a.AccountId == accountId && a.HubClientId == this.Context.ConnectionId))
-                {
-                    AccountSignalRClientMapper accountSignalRClientMapper = new AccountSignalRClientMapper()
-                    {
-                        AccountId = accountId,
-                        OrganizationId = orgId,
-                        HubClientId = this.Context.ConnectionId,
-                        FeatureIds = featureIds
-                    };
-                    _accountSignalRClientsMappingList._accountClientMapperList.Add(accountSignalRClientMapper);
-                }
-                int pkId = 0;
-                while (true)
-                {
-                    NotificationAlertMessages notificationAlertMessages = new NotificationAlertMessages
-                    {
-                        TripAlertId = pkId,
-                        TripId = Dns.GetHostName(),
-                        Vin = "XLR0998HGFFT76657",
-                        AlertCategory = "L",
-                        AlertType = "G",
-                        AlertId = pkId * 2,
-                        AlertGeneratedTime = DateTime.Now.Millisecond,
-                        VehicleGroupId = 185,
-                        VehicleGroupName = "Fleet",
-                        VehicleName = "testKri",
-                        VehicleLicencePlate = "testKri",
-                        AlertCategoryKey = JsonConvert.SerializeObject(_kafkaConfiguration),
-                        AlertTypeKey = _userDetails.OrgId.ToString(),
-                        UrgencyTypeKey = Context.ConnectionId,
-                        UrgencyLevel = "C"
-                    };
-                    //IReadOnlyList<string> connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Where(clients => clients.AccountId == accountId).Select(clients => clients.HubClientId).ToList();
-                    await Clients.All.SendAsync("TestAlertResponse", JsonConvert.SerializeObject(JsonConvert.SerializeObject(notificationAlertMessages, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() })));
-                    if (pkId > 1000)
-                    {
-                        pkId = 1;
-                    }
-                    pkId = pkId + 1;
-                    Thread.Sleep(60000);//1 minute 
-                }
-            }
-            catch (RpcException ex) when (ex.StatusCode == Grpc.Core.StatusCode.Cancelled)
-            {
-                _logger.Error("Error in NotifyAlert.RpcException", ex);
-                await Clients.Client(this.Context.ConnectionId).SendAsync("TestErrorResponse", ex.Message);
-            }
-            catch (Exception ex)
-            {
-                _ = ex.Message + someTextFromClient;
-                _logger.Error("Error in NotifyAlert", ex);
-                await Clients.Client(this.Context.ConnectionId).SendAsync("TestErrorResponse", ex.Message);
-            }
-        }
+        //    try
+        //    {
+        //        //Get Feature ids for alert feature
+        //        var featureIds = GetMappedFeatureIdByStartWithName(NotificationHubConstant.ALERT_FEATURE_STARTWITH);
+        //        if (!_accountSignalRClientsMappingList._accountClientMapperList.Any(a => a.AccountId == accountId && a.HubClientId == this.Context.ConnectionId))
+        //        {
+        //            AccountSignalRClientMapper accountSignalRClientMapper = new AccountSignalRClientMapper()
+        //            {
+        //                AccountId = accountId,
+        //                OrganizationId = orgId,
+        //                HubClientId = this.Context.ConnectionId,
+        //                FeatureIds = featureIds
+        //            };
+        //            _accountSignalRClientsMappingList._accountClientMapperList.Add(accountSignalRClientMapper);
+        //        }
+        //        int pkId = 0;
+        //        while (true)
+        //        {
+        //            NotificationAlertMessages notificationAlertMessages = new NotificationAlertMessages
+        //            {
+        //                TripAlertId = pkId,
+        //                TripId = Dns.GetHostName(),
+        //                Vin = "XLR0998HGFFT76657",
+        //                AlertCategory = "L",
+        //                AlertType = "G",
+        //                AlertId = pkId * 2,
+        //                AlertGeneratedTime = DateTime.Now.Millisecond,
+        //                VehicleGroupId = 185,
+        //                VehicleGroupName = "Fleet",
+        //                VehicleName = "testKri",
+        //                VehicleLicencePlate = "testKri",
+        //                AlertCategoryKey = JsonConvert.SerializeObject(_kafkaConfiguration),
+        //                AlertTypeKey = _userDetails.OrgId.ToString(),
+        //                UrgencyTypeKey = Context.ConnectionId,
+        //                UrgencyLevel = "C"
+        //            };
+        //            //IReadOnlyList<string> connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Where(clients => clients.AccountId == accountId).Select(clients => clients.HubClientId).ToList();
+        //            await Clients.All.SendAsync("TestAlertResponse", JsonConvert.SerializeObject(JsonConvert.SerializeObject(notificationAlertMessages, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() })));
+        //            if (pkId > 1000)
+        //            {
+        //                pkId = 1;
+        //            }
+        //            pkId = pkId + 1;
+        //            Thread.Sleep(60000);//1 minute 
+        //        }
+        //    }
+        //    catch (RpcException ex) when (ex.StatusCode == Grpc.Core.StatusCode.Cancelled)
+        //    {
+        //        _logger.Error("Error in NotifyAlert.RpcException", ex);
+        //        await Clients.Client(this.Context.ConnectionId).SendAsync("TestErrorResponse", ex.Message);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _ = ex.Message + someTextFromClient;
+        //        _logger.Error("Error in NotifyAlert", ex);
+        //        await Clients.Client(this.Context.ConnectionId).SendAsync("TestErrorResponse", ex.Message);
+        //    }
+        //}
         public async Task PushNotificationForAlert()
         {
             try

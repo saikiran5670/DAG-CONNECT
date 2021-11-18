@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+option csharp_namespace = "net.atos.daf.ct2.datacleanupservice";
+
+package datacleanupservice;
+
+service DataCleanupService {
+  rpc DeleteDataFromTables (google.protobuf.Empty) returns (CleanDataResponse);
+  
+}
+
+enum ResponseCode{
+  None = 0;
+  Success = 200;
+  Failed = 400;
+  Conflict = 409;
+  NotFound = 404;
+  InternalServerError = 500;
+}
+
+message CleanDataResponse {
+  ResponseCode Code = 2;
+}
