@@ -88,7 +88,7 @@ namespace net.atos.daf.ct2.reports.repository
                 string queryFleetUtilization = @"WITH CTE_FleetDeatils as
                                                          	(
                                                          		Select
-                                                         			VIN
+                                                         			v.VIN
                                                                   , sum(trip_idle_pto_fuel_consumed) as tripidleptofuelconsumed
                                                                   , sum(idling_consumption_with_pto) as idlingconsumptionwithpto
                                                          		  , count(trip_id)                                                         as numberoftrips
@@ -133,11 +133,12 @@ namespace net.atos.daf.ct2.reports.repository
                                                                   , SUM(case when veh_message_dpaanticipation_score>0 then 1 else 0 end)  as numoftripswithdpaanticipationscore
                                                                   , SUM(case when veh_message_dpabraking_score > 0 then 1 else 0 end)  as numoftripswithdpabrakingscore
                                                          		From
-                                                         			tripdetail.trip_statistics 
-                                                               WHERE (end_time_stamp >= @FromDate and end_time_stamp<= @ToDate) 
-                                                                        and VIN=ANY(@Vins)
+                                                         			tripdetail.trip_statistics ts
+                                                                    Join master.vehicle v on ts.vin=v.vin                                                                    
+                                                               WHERE ts.end_time_stamp >= v.reference_date and (end_time_stamp >= @FromDate and end_time_stamp<= @ToDate) 
+                                                                        and v.VIN=ANY(@Vins)
                                                          		GROUP BY
-                                                         			VIN
+                                                         			v.VIN
                                                          	)
                                                            , cte_combine as
                                                          	(
@@ -258,7 +259,7 @@ namespace net.atos.daf.ct2.reports.repository
                 string queryFleetUtilization = @"WITH CTE_FleetDeatils as
                                                   	(
                                                   		Select
-                                                  			VIN
+                                                  			v.VIN
                                                           , sum(trip_idle_pto_fuel_consumed) as tripidleptofuelconsumed
                                                           , sum(idling_consumption_with_pto) as idlingconsumptionwithpto
                                                   		  , driver1_id                                                             as tripDriverId
@@ -302,12 +303,13 @@ namespace net.atos.daf.ct2.reports.repository
                                                           , SUM(case when veh_message_dpaanticipation_score>0 then 1 else 0 end)  as numoftripswithdpaanticipationscore
                                                           , SUM(case when veh_message_dpabraking_score > 0 then 1 else 0 end)  as numoftripswithdpabrakingscore
                                                   		From
-                                                  			tripdetail.trip_statistics
-                                                       WHERE (end_time_stamp >= @FromDate and end_time_stamp<= @ToDate) 
-                                                                        and VIN=ANY(@Vins)
+                                                  			tripdetail.trip_statistics ts
+                                                       Join master.vehicle v on ts.vin=v.vin                                                                    
+                                                               WHERE ts.end_time_stamp >= v.reference_date and (end_time_stamp >= @FromDate and end_time_stamp<= @ToDate) 
+                                                                        and v.VIN=ANY(@Vins)
                                                   		GROUP BY
                                                   			driver1_id
-                                                  		  , VIN
+                                                  		  , v.VIN
                                                   	)
                                                     , cte_combine as
                                                   	(
@@ -447,7 +449,7 @@ namespace net.atos.daf.ct2.reports.repository
 						sum(co2_emission)                                   as co2emission
                         FROM tripdetail.trip_statistics CT
 						Join master.vehicle v
-						on CT.vin = v.vin
+						on CT.vin = v.vin and CT.end_time_stamp >= v.reference_date
                         where (start_time_stamp >= @FromDate 
 							   and end_time_stamp<= @ToDate) 
 						and CT.vin=ANY(@vins)
@@ -499,7 +501,7 @@ namespace net.atos.daf.ct2.reports.repository
 						sum(co2_emission)                                       as co2emission	
                         FROM tripdetail.trip_statistics CT
 						Join master.vehicle v
-						on CT.vin = v.vin
+						on CT.vin = v.vin and CT.end_time_stamp >= v.reference_date
                         Left join master.driver dr on
 						dr.driver_id = CT.driver1_id
                         where (start_time_stamp >= @FromDate 
@@ -543,8 +545,8 @@ namespace net.atos.daf.ct2.reports.repository
                 string queryFleetUtilization = @"WITH CTE_FleetDeatils as
 			(
 				Select distinct
-					VIN				  
-                  , id as Id
+					v.VIN				  
+                  , ts.id as Id
 				  , trip_id  as tripid
 				  , 1 as numberoftrips 
 				  , 1 as totalworkingdays
@@ -587,9 +589,10 @@ namespace net.atos.daf.ct2.reports.repository
                   , (case when veh_message_dpabraking_score > 0 then 1 else 0 end)  as numoftripswithdpabrakingscore
                   , (case when veh_message_dpaanticipation_score>0 then 1 else 0 end)  as numoftripswithdpaanticipationscore
                 From
-					tripdetail.trip_statistics                    
-                where(end_time_stamp >= @FromDate
-                               and end_time_stamp <= @ToDate) and VIN = @Vin
+					tripdetail.trip_statistics      ts             
+                Join master.vehicle v on ts.vin=v.vin                                                                    
+                 WHERE ts.end_time_stamp >= v.reference_date and (end_time_stamp >= @FromDate
+                               and end_time_stamp <= @ToDate) and ts.VIN = @Vin
 				
 			)
 		  , cte_combine as
@@ -707,8 +710,8 @@ namespace net.atos.daf.ct2.reports.repository
                 string queryFleetUtilization = @"WITH CTE_FleetDeatils as
 			(
 				Select distinct
-					VIN
-                  , id as Id
+					v.VIN
+                  , ts.id as Id
                   ,trip_id                                                                 as tripid
 				  , driver1_id                                                             as tripDriverId
 				  , 1                                                         as numberoftrips
@@ -752,9 +755,10 @@ namespace net.atos.daf.ct2.reports.repository
                   , (case when veh_message_dpabraking_score > 0 then 1 else 0 end)  as numoftripswithdpabrakingscore
                   , (case when veh_message_dpaanticipation_score>0 then 1 else 0 end)  as numoftripswithdpaanticipationscore
 				From
-					tripdetail.trip_statistics
-				where (end_time_stamp >= @FromDate 
-							   and end_time_stamp<= @ToDate) and VIN =@Vin and driver1_id =@DriverId
+					tripdetail.trip_statistics ts
+				Join master.vehicle v on ts.vin=v.vin                                                                    
+                WHERE ts.end_time_stamp >= v.reference_date and (end_time_stamp >= @FromDate 
+							   and end_time_stamp<= @ToDate) and v.VIN =@Vin and driver1_id =@DriverId
 				
 			)
 		  , cte_combine as

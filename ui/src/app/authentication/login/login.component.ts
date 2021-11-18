@@ -288,7 +288,12 @@ export class LoginComponent implements OnInit {
           });
         }
         else{
+          if(this.result){
           this.gotoDashBoard();
+          }
+          else{
+            this.dialogRefLogin.close();
+          }
         }
       }, (error) => {
         this.gotoDashBoard();
@@ -401,6 +406,7 @@ export class LoginComponent implements OnInit {
       // this.dialogRefLogin.afterClosed().subscribe(res => {
       //   this.loginClicks = 0;
       // });
+     
       this.dialogRefLogin.disableClose = true;//disable default close operation
       this.dialogRefLogin.beforeClosed().subscribe(result => {
         this.result = result;

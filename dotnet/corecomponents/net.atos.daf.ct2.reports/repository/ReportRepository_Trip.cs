@@ -79,7 +79,7 @@ namespace net.atos.daf.ct2.reports.repository
                          left JOIN master.geolocationaddress as endgeoaddr
                             on TRUNC(CAST(endgeoaddr.latitude as numeric),4)= TRUNC(CAST(TS.end_position_lattitude as numeric),4) 
                                and TRUNC(CAST(endgeoaddr.longitude as numeric),4) = TRUNC(CAST(TS.end_position_longitude as numeric),4)
-                        where  TS.vin = @vin
+                        where  TS.vin = @vin and ts.end_time_stamp >= vh.reference_date
 	                        AND (
 		                        end_time_stamp >= @StartDateTime
 		                        AND end_time_stamp <= @EndDateTime

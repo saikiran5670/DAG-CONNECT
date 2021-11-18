@@ -38,23 +38,25 @@ namespace net.atos.daf.ct2.dashboard.repository
                 string queryFleetUtilization = @"WITH cte_filteredTrip as
                                                            (
                                                                SELECT
-                                                                   vin
-                                                                 , is_ongoing_trip            as isongoingtrip
-                                                                 , Round(SUM(co2_emission),2) as co2emission
+                                                                   ts.vin
+                                                                 , ts.is_ongoing_trip            as isongoingtrip
+                                                                 , Round(SUM(ts.co2_emission),2) as co2emission
 															     --,SUM(co2_emission)         as co2emission
-                                                                 , SUM(etl_gps_distance)      as distance
-                                                                 , SUM(etl_gps_driving_time)  as drivingtime
-                                                                 , SUM(fuel_consumption)      as fuelconsumption 
-                                                                 , SUM(etl_gps_fuel_consumed) as fuelconsumed
-                                                                 , SUM(idling_consumption)    as idlingfuelconsumption
-                                                                 , SUM(idle_duration)         as idlingtime
+                                                                 , SUM(ts.etl_gps_distance)      as distance
+                                                                 , SUM(ts.etl_gps_driving_time)  as drivingtime
+                                                                 , SUM(ts.fuel_consumption)      as fuelconsumption 
+                                                                 , SUM(ts.etl_gps_fuel_consumed) as fuelconsumed
+                                                                 , SUM(ts.idling_consumption)    as idlingfuelconsumption
+                                                                 , SUM(ts.idle_duration)         as idlingtime
                                                                FROM
-                                                                   tripdetail.trip_statistics
+                                                                   tripdetail.trip_statistics ts
+																   join master.vehicle VH on TS.vin=VH.vin
                                                                WHERE
-                                                                   is_ongoing_trip = false 
-                                                  AND (end_time_stamp >= @FromDate and end_time_stamp<= @ToDate)
-                                                  AND vin=ANY(@Vins)
-                                                        	GROUP BY   vin, is_ongoing_trip 
+                                                                   ts.is_ongoing_trip = false 
+                                                  AND (ts.end_time_stamp >= @FromDate and ts.end_time_stamp<= @ToDate)
+                                                  AND ts.vin=ANY(@Vins)
+												  AND ts.end_time_stamp >= VH.reference_date
+                                                        	GROUP BY   ts.vin, ts.is_ongoing_trip 
                                                            )
                                                         SELECT
                                                             isongoingtrip
@@ -110,10 +112,11 @@ namespace net.atos.daf.ct2.dashboard.repository
 	                 COUNT(CASE WHEN tra.urgency_level_type = 'C' then 1 ELSE NULL END) as Critical,
 	                 COUNT(CASE WHEN tra.urgency_level_type = 'W' then 1 ELSE NULL END) as Warning
                 from tripdetail.tripalert tra
+
                 where tra.alert_id = Any(@Alertids) 
                 and tra.vin = Any(@vins) 
                 and tra.category_type <> 'O'
-                and tra.type <> 'W'
+                and tra.type <> 'W'       
                 and to_timestamp(tra.alert_generated_time/1000)::timestamp >= (NOW() - INTERVAL '24 HOURS')";
 
                 List<Alert24Hours> lstAlert = (List<Alert24Hours>)await _dataMartdataAccess.QueryAsync<Alert24Hours>(queryAlert24Hours, parameterOfFilters);
@@ -181,9 +184,11 @@ namespace net.atos.daf.ct2.dashboard.repository
 					    ,ROUND(SUM(ts.etl_gps_distance),2) as todaydistance
                         ,SUM(ts.etl_gps_driving_time) as todaydrivingtime
                         FROM tripdetail.trip_statistics ts
+                         join master.vehicle VH on TS.vin=VH.vin
                         WHERE ts.end_time_stamp >= @todaydatetime  --(today 00hr)
    							AND ts.start_time_stamp >=  @todaydatetime  --(today 00hr)
 							AND ts.vin = Any(@Vins)
+                            AND ts.end_time_stamp >= VH.reference_date 
 							GROUP BY ts.vin
                         )
 						--/*
@@ -241,9 +246,11 @@ namespace net.atos.daf.ct2.dashboard.repository
 					    ,ROUND(SUM(ts.etl_gps_distance),2) as yesterdayDistance
                         ,SUM(ts.etl_gps_driving_time) as yesterdayDrivingTime
                         FROM tripdetail.trip_statistics ts
+                        join master.vehicle VH on TS.vin=VH.vin  
                         WHERE (ts.end_time_stamp >=  @yesterdaydatetime   --(yesterday 00hr) 
    							AND ts.end_time_stamp <= @todaydatetime ) --(today 00hr)
 							AND ts.vin = Any(@Vins)
+                           AND  ts.end_time_stamp >= VH.reference_date 
 							GROUP BY ts.vin
                         )
                         SELECT 
@@ -276,24 +283,26 @@ namespace net.atos.daf.ct2.dashboard.repository
                 //parameter.Add("@vins", vin);
                 string query = @"WITH cte_workingdays AS(
                         select
-                        date_trunc('day', to_timestamp(end_time_stamp/1000)) as startdate,
-                        count(distinct date_trunc('day', to_timestamp(end_time_stamp/1000))) as totalworkingdays,
-						Count(distinct vin) as vehiclecount,
-						Count(distinct trip_id) as tripcount,
-                        sum(etl_gps_distance) as totaldistance,
-                        sum(etl_gps_trip_time) as totaltriptime,
-                        sum(etl_gps_driving_time) as totaldrivingtime,
-                        sum(idle_duration) as totalidleduration,
-                        sum(etl_gps_distance) as totalAveragedistanceperday,
-                        sum(average_speed) as totalaverageSpeed,
-                        sum(average_weight) as totalaverageweightperprip,
-                        sum(last_odometer) as totalodometer,
-                        SUM(etl_gps_fuel_consumed)    as fuelconsumed,
-                        (SUM(etl_gps_fuel_consumed)/SUM(etl_gps_distance))          as fuelconsumption
-                        FROM tripdetail.trip_statistics
-                        where is_ongoing_trip = false AND (end_time_stamp >= @StartDateTime  and end_time_stamp<= @EndDateTime) 
-						and vin=ANY(@vins)
-                        group by date_trunc('day', to_timestamp(end_time_stamp/1000))                     
+                        date_trunc('day', to_timestamp(ts.end_time_stamp/1000)) as startdate,
+                        count(distinct date_trunc('day', to_timestamp(ts.end_time_stamp/1000))) as totalworkingdays,
+						Count(distinct ts.vin) as vehiclecount,
+						Count(distinct ts.trip_id) as tripcount,
+                        sum(ts.etl_gps_distance) as totaldistance,
+                        sum(ts.etl_gps_trip_time) as totaltriptime,
+                        sum(ts.etl_gps_driving_time) as totaldrivingtime,
+                        sum(ts.idle_duration) as totalidleduration,
+                        sum(ts.etl_gps_distance) as totalAveragedistanceperday,
+                        sum(ts.average_speed) as totalaverageSpeed,
+                        sum(ts.average_weight) as totalaverageweightperprip,
+                        sum(ts.last_odometer) as totalodometer,
+                        SUM(ts.etl_gps_fuel_consumed)    as fuelconsumed,
+                        (SUM(ts.etl_gps_fuel_consumed)/SUM(ts.etl_gps_distance))          as fuelconsumption
+                        FROM tripdetail.trip_statistics ts
+                        join master.vehicle VH on ts.vin=VH.vin
+                        where ts.is_ongoing_trip = false AND (ts.end_time_stamp >= @StartDateTime  and ts.end_time_stamp<= @EndDateTime) 
+						and ts.vin=ANY(@vins)
+                        and ts.end_time_stamp >= VH.reference_date 
+                        group by date_trunc('day', to_timestamp(ts.end_time_stamp/1000))                     
                         )
                         select
                         '' as VIN,
