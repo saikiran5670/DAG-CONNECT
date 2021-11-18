@@ -252,7 +252,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net.atos.daf.ct2.notificati
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net.atos.daf.ct2.schedularservice", "dataservices\net.atos.daf.ct2.schedularservice\net.atos.daf.ct2.schedularservice.csproj", "{0340577B-2392-4198-ABE1-804B7BBC907B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "net.atos.daf.ct2.schedular", "commoncomponent\net.atos.daf.ct2.schedular\net.atos.daf.ct2.schedular.csproj", "{C42850AE-3C87-4F45-994B-6EB132B4D438}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net.atos.daf.ct2.schedular", "commoncomponent\net.atos.daf.ct2.schedular\net.atos.daf.ct2.schedular.csproj", "{C42850AE-3C87-4F45-994B-6EB132B4D438}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
