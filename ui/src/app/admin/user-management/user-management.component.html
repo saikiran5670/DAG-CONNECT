@@ -84,8 +84,8 @@
       </mat-table>
       <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageSizeUpdated($event)"></mat-paginator>
     </div>
-    <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
+    <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>  
   </mat-card>
   <app-edit-view-user *ngIf='editFlag || viewFlag' [privilegeAccess]='privilegeAccess' [defaultSetting]="defaultSetting" [fromEdit]="editFlag ? 'edit' : 'view'" [translationData]='translationData' [selectedPreference]='selectedPreference' [accountInfoData]='userDataForEdit' [allRoleData]='editViewRoleList' [allUserGrpData]='userGrpData' [selectedRoleData]='selectedRoleData' [selectedUserGrpData]='selectedUserGrpData' (userCreate)="checkCreation($event)"></app-edit-view-user>
-  <app-new-user-step *ngIf='stepFlag' [privilegeAccess]='privilegeAccess' [defaultSetting]="defaultSetting" [translationData]='translationData' [userDataForEdit]='userDataForEdit' [roleData]='filterRoleList' [userGrpData]='userGrpData' [orgPreference]='orgPreference' (userCreate)="checkCreation($event)"></app-new-user-step>
+  <app-new-user-step *ngIf='stepFlag' [privilegeAccess]='privilegeAccess' [defaultSetting]="defaultSetting" [fromCreate]="stepFlag ? 'Create' : 'Create'" [translationData]='translationData' [userDataForEdit]='userDataForEdit' [roleData]='filterRoleList' [userGrpData]='userGrpData' [orgPreference]='orgPreference' (userCreate)="checkCreation($event)"></app-new-user-step>
 </div>
