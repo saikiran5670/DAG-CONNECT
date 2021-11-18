@@ -90,36 +90,38 @@
 
 <div fxLayout="column" fxLayoutAlign="space-between" style="padding-top:5px;">
     <mat-label>{{ translationData.lblHealthStatus }} </mat-label>
-<mat-form-field appearance="outline" class="full-width dropdown-filters">
-    <mat-select  #select [disabled]="vehicleListData.length == 0" placeholder="Health Status" [(ngModel)]="selection2" formControlName="status" multiple>
-      <div class="select-all">
-          <mat-checkbox [(ngModel)]="allSelected"
-                          [ngModelOptions]="{standalone: true}"
-                          (change)="toggleAllSelectionHealth()">All</mat-checkbox>
-      </div>
-      <mat-option (click)="onChangHealthStatus()" *ngFor="let item of healthList" [value]="item.value">
-        {{item.name}}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
+    <mat-form-field appearance="outline" class="full-width dropdown-filters">
+        <mat-select #select [disabled]="vehicleListData.length == 0" placeholder="Health Status"
+            [(ngModel)]="selection2" formControlName="status" multiple>
+            <div class="select-all">
+                <mat-checkbox [(ngModel)]="allSelected" [ngModelOptions]="{standalone: true}"
+                    (change)="toggleAllSelectionHealth()">All</mat-checkbox>
+            </div>
+            <mat-option (click)="onChangHealthStatus()" *ngFor="let item of healthList" [value]="item.value">
+                {{item.name}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
 </div>
 
 
 
-                <div fxLayout="column" fxLayoutAlign="space-between">
-                    <mat-label>{{ translationData.lblOtherFilter }} </mat-label>
-                    <mat-form-field appearance="outline" class="full-width dropdown-filters">
-                        <mat-select [disabled]="vehicleListData.length == 0" placeholder="Other Filter"
-                            (selectionChange)="onChangeOtherFilter($event.value)" formControlName="otherFilter">
-                            <mat-option value="all">{{translationData.lblAll }}</mat-option>
-                            <mat-option *ngFor="let item of otherList" [value]="item.value">
-                                {{item.name}}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-            </form>
-        </div>
+<div fxLayout="column" fxLayoutAlign="space-between">
+    <mat-label>{{ translationData.lblOtherFilter }} </mat-label>
+    <mat-form-field appearance="outline" class="full-width dropdown-filters">
+        <mat-select [disabled]="vehicleListData.length == 0" placeholder="Other Filter"
+            (selectionChange)="onChangeOtherFilter($event.value)" formControlName="otherFilter">
+            <mat-option value="all">{{translationData.lblAll }}</mat-option>
+            <mat-option *ngFor="let item of otherList" [value]="item.value">
+                {{item.name}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+</div>
+
+    </form>
+</div>
+
         <div *ngIf="selectedIndex == 1">
             <div class="fleet-filter-driver">
                 <form [formGroup]="driverVehicleForm">
@@ -173,7 +175,7 @@
     <div *ngIf="selectedIndex == 1">
         <app-fleet-overview-filter-driver *ngIf="selectedIndex == 1" (tabVisibility)="tabVisibilityHandler($event)"
             [translationData]='translationData' [noRecordFlag]="noRecordFlag" [driverListData]="driverListData"
-            (driverFilterComponentEmit)="checkCreationForDriver($event)" [todayFlagClicked] = "todayFlagClicked">
+            (driverFilterComponentEmit)="checkCreationForDriver($event)">
         </app-fleet-overview-filter-driver>
     </div>
 </div>
