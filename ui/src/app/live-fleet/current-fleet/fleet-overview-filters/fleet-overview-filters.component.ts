@@ -516,7 +516,7 @@ removeDuplicates(originalArray, prop) {
           }
         });
       });
-    this.vehicleListData= this.fleetData.filter(i=> i.VehGroupId == id);
+    this.vehicleListData= this.fleetData.filter(i=> i.VehGroupId == id);   
     }
   }
 
@@ -792,14 +792,15 @@ removeDuplicates(originalArray, prop) {
   this.levelList = [];
   this.categoryList = [];
   this.otherList = [];
+  let vehicleGrps = [];
   if(data){
   data.forEach(item => {
     let sortedAlertData;
     if(item.fleetOverviewAlert && item.fleetOverviewAlert.length > 0){
-      sortedAlertData = item.fleetOverviewAlert.sort((x,y) =>y.time - x.time);
-      
-   
-    if(this.filterData && this.filterData.alertCategory && sortedAlertData){
+      sortedAlertData = item.fleetOverviewAlert.sort((x,y) =>y.time - x.time);        
+    
+    
+      if(this.filterData && this.filterData.alertCategory && sortedAlertData){
           this.filterData["alertCategory"].forEach(e => {         
             if (sortedAlertData[0]['categoryType'] == e.value) {
               let catName = this.translationData[e.name];
@@ -818,6 +819,16 @@ removeDuplicates(originalArray, prop) {
       this.levelList= this.removeDuplicates(this.levelList,"value");
     }
 }
+
+    if (this.filterData && this.filterData.vehicleGroups) {
+      this.filterData["vehicleGroups"].forEach(element => {
+        if (item.vin == element.vin) {
+          vehicleGrps.push(element);
+        }
+      });
+      vehicleGrps = this.removeDuplicates(vehicleGrps, "vehicleGroupId");
+      this.filteredSelectGroups.next(vehicleGrps);
+    }
 
 if(this.filterData && this.filterData.healthStatus){
     this.filterData["healthStatus"].forEach(e => {
