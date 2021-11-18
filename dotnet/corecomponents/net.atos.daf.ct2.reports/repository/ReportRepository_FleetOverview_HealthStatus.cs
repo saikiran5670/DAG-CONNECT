@@ -111,39 +111,33 @@ namespace net.atos.daf.ct2.reports.repository
             //  select distinct * from WarningData
             var query = @"
                          SELECT 
-						  lws.id as WarningId
+                        lws.id as WarningId
                         , lws.trip_id as WarningTripId        
                         , lws.vin as WarningVin          
                         , lws.warning_time_stamp as WarningTimetamp
-               
                         , lws.warning_class as WarningClass
-               
                         , lws.warning_number as WarningNumber
-               
                         , lws.latitude as WarningLat
-               
                         , lws.longitude as WarningLng
-               
                         , lws.heading as WarningHeading
-               
                         , lws.vehicle_health_status_type as WarningVehicleHealthStatusType
-               
                         , lws.vehicle_driving_status_type as WarningVehicleDrivingStatusType
-               
-                        , lws.driver1_id  as WarningDrivingId               
-                        , lws.warning_type     as WarningType          
+                        , lws.driver1_id as WarningDrivingId               
+                        , lws.warning_type  as WarningType          
                         , lws.distance_until_next_service    as WarningDistanceUntilNectService           
                         , lws.odometer_val as WarningOdometerVal
                         ,lws.lastest_processed_message_time_stamp as WarningLatestProcessedMessageTimestamp
                         ,latgeoadd.id as WarningAddressId
-                        , coalesce(latgeoadd.address,'') as WarningAddress
-                           FROM  livefleet.livefleet_warning_statistics lws
-                            left join master.geolocationaddress latgeoadd  on TRUNC(CAST(lws.latitude as numeric),4)= TRUNC(CAST(latgeoadd.latitude as numeric), 4)
-                            and TRUNC(CAST(lws.longitude as numeric),4) = TRUNC(CAST(latgeoadd.longitude as numeric), 4) 
-                          where lws.vin =@vin  
-						  and ((@tripId <> '' and lws.trip_id=@tripId) OR (@tripId=''))  
-                          and to_timestamp(lws.warning_time_stamp/1000)::date >= (now()::date -  @days )
-                          and message_type=10 and vehicle_health_status_type !='N' ";
+                        ,coalesce(latgeoadd.address,'') as WarningAddress
+                        FROM  livefleet.livefleet_warning_statistics lws
+                        join master.vehicle veh
+                        on lws.vin = veh.vin and lws.warning_time_stamp >= veh.reference_date
+                        left join master.geolocationaddress latgeoadd  on TRUNC(CAST(lws.latitude as numeric),4)= TRUNC(CAST(latgeoadd.latitude as numeric), 4)
+                        and TRUNC(CAST(lws.longitude as numeric),4) = TRUNC(CAST(latgeoadd.longitude as numeric), 4) 
+                        where lws.vin =@vin  
+                        and ((@tripId <> '' and lws.trip_id=@tripId) OR (@tripId=''))  
+                        and to_timestamp(lws.warning_time_stamp/1000)::date >= (now()::date -  @days )
+                        and message_type=10 and vehicle_health_status_type !='N' ";
 
             if (!string.IsNullOrEmpty(vehicleHealthStatusRequest.WarningType))
             {
