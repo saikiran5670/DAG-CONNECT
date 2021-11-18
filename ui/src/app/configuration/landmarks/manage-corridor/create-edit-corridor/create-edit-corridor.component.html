@@ -19,7 +19,7 @@
             <div *ngIf="actionType != 'view'">{{ translationData.lblCorridorType}} <span
                     class='mandatoryColor'>*</span></div>
 
-            <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+            <div fxLayout="column" class="areaWidth margin-bottom-sm" fxLayoutGap="3px" fxLayoutAlign="left">
                 <span class="col-sm" style="padding-left:0px;">
                 <mat-form-field appearance="outline" style="top:0.75em;">
                     <mat-select [(value)]="selectedCorridorTypeId" (selectionChange)="corridorTypeChanged($event)" required>

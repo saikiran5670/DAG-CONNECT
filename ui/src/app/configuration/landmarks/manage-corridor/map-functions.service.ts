@@ -153,16 +153,25 @@ export class MapFunctionsService {
     if (_selectedRoutes) {
       for (var i in _selectedRoutes) {
         if (accountOrganizationId) {
+          if(_selectedRoutes[i].trips && _selectedRoutes[i].trips.length > 0){ // for existing trip
+            this.startAddressPositionLat = _selectedRoutes[i].trips[0].startLatitude;
+            this.startAddressPositionLong = _selectedRoutes[i].trips[0].startLongitude;
+            this.endAddressPositionLat = _selectedRoutes[i].trips[0].endLatitude;
+            this.endAddressPositionLong = _selectedRoutes[i].trips[0].endLongitude;
+            startAddress = _selectedRoutes[i].trips[0].startPosition;
+            endAddress = _selectedRoutes[i].trips[0].endPosition;
+          }else{ // for routing calculating
+            this.startAddressPositionLat = _selectedRoutes[i].startLat;
+            this.startAddressPositionLong = _selectedRoutes[i].startLong;
+            this.endAddressPositionLat = _selectedRoutes[i].endLat;
+            this.endAddressPositionLong = _selectedRoutes[i].endLong;
+            startAddress = _selectedRoutes[i].startPoint;
+            endAddress = _selectedRoutes[i].endPoint;
+          }
 
-          this.startAddressPositionLat = _selectedRoutes[i].startLat;
-          this.startAddressPositionLong = _selectedRoutes[i].startLong;
-          this.endAddressPositionLat = _selectedRoutes[i].endLat;
-          this.endAddressPositionLong = _selectedRoutes[i].endLong;
           this.corridorWidth = _selectedRoutes[i].width;
           this.corridorWidthKm = this.corridorWidth / 1000;
           corridorName = _selectedRoutes[i].corridoreName;
-          startAddress = _selectedRoutes[i].startPoint;
-          endAddress = _selectedRoutes[i].endPoint;
           this.corridorId = _selectedRoutes[i].id;
         } else {
           this.startAddressPositionLat = _selectedRoutes[i].startPositionlattitude;
@@ -247,10 +256,18 @@ export class MapFunctionsService {
                 else{
                   this.viaRoutePlottedPoints = [];
                 }
-                this.startAddressPositionLat = data[0].startLat;
-                this.startAddressPositionLong = data[0].startLong;
-                this.endAddressPositionLat = data[0].endLat;
-                this.endAddressPositionLong = data[0].endLong;
+
+                if(data[0].trips && data[0].trips.length > 0){ // For existing trip
+                  this.startAddressPositionLat = data[0].trips[0].startLatitude;
+                  this.startAddressPositionLong = data[0].trips[0].startLongitude;
+                  this.endAddressPositionLat = data[0].trips[0].endLatitude;
+                  this.endAddressPositionLong = data[0].trips[0].endLongitude;
+                }else{ // For route calculating
+                  this.startAddressPositionLat = data[0].startLat;
+                  this.startAddressPositionLong = data[0].startLong;
+                  this.endAddressPositionLat = data[0].endLat;
+                  this.endAddressPositionLong = data[0].endLong;
+                }
                 this.calculateTruckRoute();
 
             })
