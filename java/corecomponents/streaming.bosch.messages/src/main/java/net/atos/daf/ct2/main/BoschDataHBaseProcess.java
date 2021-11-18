@@ -14,6 +14,7 @@ import net.atos.daf.ct2.constant.DAFCT2Constant;
 import net.atos.daf.ct2.exception.DAFCT2Exception;
 import net.atos.daf.ct2.pojo.KafkaRecord;
 import net.atos.daf.ct2.processing.ConsumeSourceStream;
+import net.atos.daf.ct2.processing.KafkaAuditService;
 import net.atos.daf.ct2.processing.ValidateSourceStream;
 import net.atos.daf.ct2.util.MessageParseUtil;
 
@@ -25,6 +26,7 @@ public class BoschDataHBaseProcess {
 
 	public static Properties configuration() throws DAFCT2Exception {
 
+		
 		Properties properties = new Properties();
 
 	
@@ -44,6 +46,8 @@ public class BoschDataHBaseProcess {
 
 		BoschDataHBaseProcess boschMessageProcessing = new BoschDataHBaseProcess();
 		Properties properties = null;
+		
+		
 		try {
 			FILE_PATH = args[0];
 
@@ -51,7 +55,7 @@ public class BoschDataHBaseProcess {
 			System.out.println("properties object ===>" + properties);
 			// boschMessageProcessing.auditBoschJobDetails(properties, "Bosch
 			// streaming job started");
-
+			boschMessageProcessing.auditBoschJobDetails(properties, "Bosch HBase streaming job started");
 			boschMessageProcessing.flinkConnection();
 			boschMessageProcessing.processing(properties);
 			boschMessageProcessing.startExecution(properties);
@@ -59,11 +63,22 @@ public class BoschDataHBaseProcess {
 		} catch (DAFCT2Exception e) {
 			log.error("Exception: ", e);
 			System.out.println(e.getMessage());
-			// boschMessageProcessing.auditBoschJobDetails(properties, "Bosch
-			// streaming job failed :: "+e.getMessage());
+			boschMessageProcessing.auditBoschJobDetails(properties, "Bosch streaming job failed :: "+e.getMessage());
 			e.printStackTrace();
 		}
 	}
+
+	 public void auditBoschJobDetails(Properties properties, String message) {
+	        try {
+	            new KafkaAuditService().auditTrail(
+	                    properties.getProperty(DAFCT2Constant.GRPC_SERVER),
+	                    properties.getProperty(DAFCT2Constant.GRPC_PORT),
+	                    properties.getProperty(DAFCT2Constant.BOSCH_JOB_NAME),
+	                    message);
+	        } catch (Exception e) {
+	            log.error("Issue while auditing streaming Bosch job ");
+	        }
+	    }
 
 	public void flinkConnection() {
 
@@ -136,13 +151,13 @@ public class BoschDataHBaseProcess {
 		}
 	}
 
-	public void auditBoschJobDetails(Properties properties, String message) {
+	/*public void auditBoschJobDetails(Properties properties, String message) {
 		System.out.println("Calling audit service for Bosch :: ");
-		/*
+		
 		 * new KafkaAuditService().auditTrail(
 		 * properties.getProperty(DAFCT2Constant.GRPC_SERVER),
 		 * properties.getProperty(DAFCT2Constant.GRPC_PORT),
 		 * DAFCT2Constant.JOB_NAME, message);
-		 */
-	}
+		 
+	}*/
 }

@@ -1,11 +1,9 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-
+using Microsoft.Extensions.Logging;
+using net.atos.daf.ct2.schedularservice.ServiceSchedular;
+using Grpc.Core;
+using Microsoft.Extensions.DependencyInjection;
 namespace net.atos.daf.ct2.schedularservice
 {
     public class Program
@@ -22,6 +20,19 @@ namespace net.atos.daf.ct2.schedularservice
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+                }).ConfigureLogging(builder =>
+                {
+                    builder.SetMinimumLevel(LogLevel.Trace);
+                    builder.AddLog4Net("log4net.config");
+                }).ConfigureServices((hostcontext, services) =>
+                {
+                    Server server = new Server
+                    {
+                        //Services = { PushNotificationService.BindService(new PushNotificationManagementService().SayHello(h)).Result }
+                    };
+                    services.AddSingleton<Server>(server);
+                    services.AddHostedService<DataCleanupHostedService>();
+                    services.AddSingleton<IHostedService, DataCleanupHostedService>();
                 });
     }
 }
