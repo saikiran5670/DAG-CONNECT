@@ -29,7 +29,7 @@ namespace net.atos.daf.ct2.reports.repository
             parameter.Add("@features", resultFeaturEnum);
             parameter.Add("@days", 90); // return last 3 month of data
             IEnumerable<LogbookTripAlertDetails> tripAlertList;
-            string query = @"select distinct id, tripalert.vin as Vin
+            string query = @"select distinct tripalert.id, tripalert.vin as Vin
                               ,tripalert.trip_id as TripId
                          --   ,tripalert.alert_id as AlertId
                             ,tripalert.alert_generated_time as AlertGeneratedTime
@@ -47,12 +47,13 @@ namespace net.atos.daf.ct2.reports.repository
                           --  left join master.geolocationaddress alertgeoadd
                            -- on TRUNC(CAST(alertgeoadd.latitude as numeric),4)= TRUNC(CAST(tripalert.latitude as numeric),4)
                          --   and TRUNC(CAST(alertgeoadd.longitude as numeric),4) = TRUNC(CAST(tripalert.longitude as numeric),4)
+                            inner join master.vehicle v on tripalert.vin = v.vin 
                             where tripalert.vin= ANY(@vins)
                              and tripalert.type = ANY(@features)
                              and tripalert.category_type <> 'O'
                              and tripalert.type <> 'W'
-                           and ((to_timestamp(tripalert.alert_generated_time/1000)::date) <= (now()::date) and (to_timestamp(tripalert.alert_generated_time/1000)::date) >= (now()::date - @days)) ";
-
+                           and ((to_timestamp(tripalert.alert_generated_time/1000)::date) <= (now()::date) and (to_timestamp(tripalert.alert_generated_time/1000)::date) >= (now()::date - @days)) 
+                            and tripalert.alert_generated_time >= v.reference_date ";
             tripAlertList = await _dataMartdataAccess.QueryAsync<LogbookTripAlertDetails>(query, parameter);
             return tripAlertList.AsList<LogbookTripAlertDetails>();
         }
