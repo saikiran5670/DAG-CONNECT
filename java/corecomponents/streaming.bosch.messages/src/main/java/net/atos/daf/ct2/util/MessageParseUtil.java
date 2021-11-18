@@ -37,6 +37,7 @@ import net.atos.daf.ct2.processing.StoreHistoricalData;
 import net.atos.daf.ct2.utils.JsonMapper;
 
 public class MessageParseUtil {
+	
 	private static final Logger logger = LogManager.getLogger(MessageParseUtil.class);
 
 	public static DataStream<KafkaRecord<String>> filterDataInputStream(

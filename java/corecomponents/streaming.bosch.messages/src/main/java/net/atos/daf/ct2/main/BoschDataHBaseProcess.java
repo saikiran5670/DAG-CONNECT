@@ -26,6 +26,7 @@ public class BoschDataHBaseProcess {
 
 	public static Properties configuration() throws DAFCT2Exception {
 
+		
 		Properties properties = new Properties();
 
 	

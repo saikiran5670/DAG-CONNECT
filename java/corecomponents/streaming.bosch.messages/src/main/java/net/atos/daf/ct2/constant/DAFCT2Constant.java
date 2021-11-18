@@ -97,6 +97,6 @@ public class DAFCT2Constant {
 	public static final String SOURCE_SASL_MECHANISM_CONFIG = "sasl.mechanism";
 	public static final String SOURCE_SASL_JAAS_CONFIG = "sasl.jaas.config";
 	public static final String SINK_HBASE_STORE = "sink.hbase.store";
-	//public static final String DAF2GRPC_SERVER = "DAF2GRPC_SERVER";
+	
 	
 }
