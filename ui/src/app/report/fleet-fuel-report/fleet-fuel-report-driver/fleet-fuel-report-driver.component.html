@@ -71,7 +71,7 @@
                     <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
                       <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" class="timepicker" style='margin-top: 4px;'>
   
-                        <!-- <span class='timeAdjustSpan'>{{ startTimeDisplay }}</span>  -->
+                         <span class='timeAdjustSpan'>{{ startTimeDisplay }}</span> 
   
                         <input [max]='selectedEndTime' [(ngModel)]="selectedStartTime" class='inputBox' [format]="prefTimeFormat" [ngxTimepicker]="toggleStartTimepicker"
                           [disableClick]="true" formControlName="startTime" readonly>
@@ -109,7 +109,7 @@
   
                       <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" class="timepicker" style='margin-top: 4px;'>
   
-                        <!-- <span class='timeAdjustSpan'>{{ endTimeDisplay }}</span> -->
+                          <span class='timeAdjustSpan'>{{ endTimeDisplay }}</span>
   
                         <input [min]='selectedStartTime' [(ngModel)]="selectedEndTime" class='inputBox' [format]="prefTimeFormat" [ngxTimepicker]="toggleEndTimepicker"
                           [disableClick]="true" formControlName="endTime" readonly>
