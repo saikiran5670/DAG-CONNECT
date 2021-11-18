@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using net.atos.daf.ct2.kafkacdc.entity;
 using net.atos.daf.ct2.kafkacdc.repository;
+using net.atos.daf.ct2.visibility;
 
 namespace net.atos.daf.ct2.kafkacdc
 {
@@ -18,14 +19,14 @@ namespace net.atos.daf.ct2.kafkacdc
         private readonly IConfiguration _configuration;
         private readonly entity.KafkaConfiguration _kafkaConfig;
         private readonly IAlertMgmAlertCdcRepository _vehicleAlertRepository;
-
-        public FeatureActivationCdcManager(IFeatureActivationCdcRepository vehicleAlertSubscriptionRepository, IConfiguration configuration, IAlertMgmAlertCdcRepository vehicleAlertRepository)
+        private readonly IVisibilityManager _visibilityManager;
+        public FeatureActivationCdcManager(IFeatureActivationCdcRepository vehicleAlertSubscriptionRepository, IConfiguration configuration, IAlertMgmAlertCdcRepository vehicleAlertRepository, IVisibilityManager visibilityManager)
         {
 
             this._configuration = configuration;
             _kafkaConfig = new entity.KafkaConfiguration();
             configuration.GetSection("KafkaConfiguration").Bind(_kafkaConfig);
-
+            _visibilityManager = visibilityManager;
             _vehicleAlertSubscriptionRepository = vehicleAlertSubscriptionRepository;
             _vehicleAlertRepository = vehicleAlertRepository;
             _kafkaCdcHelper = new KafkaCdcHelper();
@@ -102,6 +103,26 @@ namespace net.atos.daf.ct2.kafkacdc
                 result = false;
             }
             return result;
+        }
+
+        internal async Task<List<VehicleAlertRef>> GetVisibilityVehicleAlertRefByAlertIds(int orgnisationId, List<string> vins)
+        {
+            try
+            {
+                IEnumerable<int> featureIds = await _vehicleAlertSubscriptionRepository.GetAlertFeatureIds();
+
+                var visibilityVehicle = await _visibilityManager.GetVehicleByAccountVisibilityForAlert(0, 0, orgnisationId, featureIds.ToArray());
+
+                List<int> vehicleIds = visibilityVehicle.Where(x => vins.Contains(x.Vin)).Select(x => x.VehicleId).ToList();
+
+                List<VehicleAlertRef> vehicleRef = await _vehicleAlertSubscriptionRepository.GetAlertandVin(vehicleIds);
+
+                return vehicleRef;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }
