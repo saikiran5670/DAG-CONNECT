@@ -59,7 +59,7 @@
                         </mat-select>
                     </mat-form-field>
                 </div>
-                <div fxLayout="column" fxLayoutAlign="space-between">
+                <!-- <div fxLayout="column" fxLayoutAlign="space-between">
                     <mat-label>{{ translationData.lblAlertCategory }} </mat-label>
                     <mat-form-field appearance="outline" class="full-width dropdown-filters">
                         <mat-select [disabled]="vehicleListData.length == 0 || categoryList.length ==0"
@@ -71,42 +71,73 @@
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
+                </div> -->
+
+                <div fxLayout="column" fxLayoutAlign="space-between">
+                    <mat-label>{{ translationData.lblAlertCategory }} </mat-label>
+                    <mat-form-field appearance="outline" class="full-width dropdown-filters">
+                        <mat-select #select1 [disabled]="vehicleListData.length == 0 || categoryList.length == 0"
+                            placeholder="Alert Category" [(ngModel)]="selection1"
+                            formControlName="category" multiple>
+                            <div class="select-all">
+                                <mat-checkbox [(ngModel)]="allSelectedAlertCategory" [ngModelOptions]="{standalone: true}"
+                                    (change)="toggleAllSelectionAlertCategory()">{{translationData.lblAll }}</mat-checkbox>
+                            </div>
+                            <mat-option (click)="onChangeCategory()" *ngFor="let item of categoryList" [value]="item.value">
+                                <span *ngIf="item.value != 0">{{item.name}}</span>
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
                 </div>
 
 
 
                 <!-- <div fxLayout="column" fxLayoutAlign="space-between" >
-   <mat-label>{{ translationData.lblHealthStatus }} </mat-label>   
-    <mat-form-field appearance="outline" class="full-width dropdown-filters">
-    <mat-select [disabled]="vehicleListData.length == 0" placeholder="Health Status" 
-    [(ngModel)]="selection2" formControlName="status" multiple>
-		<mat-option *ngFor="let item of healthList" [value]="item.value" (click)="onChangHealthStatus(allSelected.viewValue,item.value)">
-			{{item.name}}
-		</mat-option>
-		<mat-option #allSelected (click)="toggleAllSelectionHealth()" [value]="0">All</mat-option>
-	</mat-select>
-</mat-form-field> 
-    </div> -->
+                   <mat-label>{{ translationData.lblHealthStatus }} </mat-label>   
+                    <mat-form-field appearance="outline" class="full-width dropdown-filters">
+                    <mat-select [disabled]="vehicleListData.length == 0" placeholder="Health Status" 
+                    [(ngModel)]="selection2" formControlName="status" multiple>
+                		<mat-option *ngFor="let item of healthList" [value]="item.value" (click)="onChangHealthStatus(allSelected.viewValue,item.value)">
+                			{{item.name}}
+                		</mat-option>
+                		<mat-option #allSelected (click)="toggleAllSelectionHealth()" [value]="0">All</mat-option>
+                	</mat-select>
+                </mat-form-field> 
+                    </div> -->
+                
+                <div fxLayout="column" fxLayoutAlign="space-between" style="padding-top:5px;">
+                    <mat-label>{{ translationData.lblHealthStatus }} </mat-label>
+                    <mat-form-field appearance="outline" class="full-width dropdown-filters">
+                        <mat-select #select2 [disabled]="vehicleListData.length == 0" placeholder="Health Status"
+                            [(ngModel)]="selection2" formControlName="status" multiple>
+                            <div class="select-all">
+                                <mat-checkbox [(ngModel)]="allSelectedHealthStatus" [ngModelOptions]="{standalone: true}"
+                                    (change)="toggleAllSelectionHealth()">{{translationData.lblAll }}</mat-checkbox>
+                            </div>
+                            <mat-option (click)="onChangeHealthStatus()" *ngFor="let item of healthList" [value]="item.value">
+                                {{item.name}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                
+                <div fxLayout="column" fxLayoutAlign="space-between">
+                    <mat-label>{{ translationData.lblOtherFilter }} </mat-label>
+                    <mat-form-field appearance="outline" class="full-width dropdown-filters">
+                        <mat-select #select4 [disabled]="vehicleListData.length == 0" placeholder="Other Filter"
+                            [(ngModel)]="selection4" formControlName="otherFilter" multiple>
+                            <div class="select-all">
+                                <mat-checkbox [(ngModel)]="allSelectedOther" [ngModelOptions]="{standalone: true}"
+                                    (change)="toggleAllSelectionOther()">{{translationData.lblAll }}</mat-checkbox>
+                            </div>
+                            <mat-option (click)="onChangeOtherFilter()" *ngFor="let item of otherList" [value]="item.value">
+                                {{item.name}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
 
-<div fxLayout="column" fxLayoutAlign="space-between" style="padding-top:5px;">
-    <mat-label>{{ translationData.lblHealthStatus }} </mat-label>
-    <mat-form-field appearance="outline" class="full-width dropdown-filters">
-        <mat-select #select [disabled]="vehicleListData.length == 0" placeholder="Health Status"
-            [(ngModel)]="selection2" formControlName="status" multiple>
-            <div class="select-all">
-                <mat-checkbox [(ngModel)]="allSelected" [ngModelOptions]="{standalone: true}"
-                    (change)="toggleAllSelectionHealth()">All</mat-checkbox>
-            </div>
-            <mat-option (click)="onChangHealthStatus()" *ngFor="let item of healthList" [value]="item.value">
-                {{item.name}}
-            </mat-option>
-        </mat-select>
-    </mat-form-field>
-</div>
-
-
-
-<div fxLayout="column" fxLayoutAlign="space-between">
+<!-- <div fxLayout="column" fxLayoutAlign="space-between">
     <mat-label>{{ translationData.lblOtherFilter }} </mat-label>
     <mat-form-field appearance="outline" class="full-width dropdown-filters">
         <mat-select [disabled]="vehicleListData.length == 0" placeholder="Other Filter"
@@ -117,7 +148,7 @@
             </mat-option>
         </mat-select>
     </mat-form-field>
-</div>
+</div> -->
 
     </form>
 </div>
