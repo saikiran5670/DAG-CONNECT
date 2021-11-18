@@ -1,3 +1,14 @@
+<div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+  <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+    <span>{{ breadcumMsg }}</span>
+  </div>
+  <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-lg'>
+    <span class='custom-font' (click)="toBack()">
+      <span><&nbsp;</span>
+      <span class='backBtnCss'>{{ translationData.lblBack}}</span></span>
+  </div>
+</div>
+
 <div *ngIf='grpTitleVisible' fxLayout="row" fxLayoutAlign="center center"
   style='padding:10px; color:#fff; background: #5dc24e;'>
   <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center" style='width:95%;'>
