@@ -24,7 +24,7 @@ namespace net.atos.daf.ct2.reports.repository
                               FROM tripdetail.trip_statistics ts
                               Join Master.vehicle V on ts.vin = v.vin
                               WHERE  ts.end_time_stamp >= v.reference_date and end_time_stamp >= @fromdate AND end_time_stamp <= @todate AND 
-                                     vin = Any(@vins) group by v.vin";
+                                     ts.vin = Any(@vins) group by v.vin";
                 return _dataMartdataAccess.QueryAsync<VehicleFromTripDetails>(query, parameter);
             }
             catch (Exception)
