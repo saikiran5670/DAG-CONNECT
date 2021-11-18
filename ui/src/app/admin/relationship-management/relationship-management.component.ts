@@ -64,7 +64,12 @@ export class RelationshipManagementComponent implements OnInit {
     }
 
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
-    this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
+    if(localStorage.getItem('contextOrgId')){
+      this.organizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
+    }
+    else{
+      this.organizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    }
     // if(this.organizationId == 1 || this.organizationId == 2)
     if(this.userType == 'Admin#Platform' || this.userType == 'Admin#Global')
     {
@@ -98,7 +103,7 @@ export class RelationshipManagementComponent implements OnInit {
   loadInitData() {
     this.showLoadingIndicator = true;
      let objData = {
-        Organizationid : this.organizationId,
+      Organizationid : this.organizationId
      };
 
     //  this.mockData(); //temporary

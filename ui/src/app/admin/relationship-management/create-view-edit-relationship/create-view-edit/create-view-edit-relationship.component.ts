@@ -56,7 +56,13 @@ export class CreateViewEditRelationshipComponent implements OnInit {
   ngAfterViewInit() {}
 
   ngOnInit() {
-    this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
+    if(localStorage.getItem('contextOrgId')){
+      this.organizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
+    }
+    else{
+      this.organizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    }
+ 
     this.userType = localStorage.getItem("userType");
     this.relationshipFormGroup = this._formBuilder.group({
       relationshipName: ['', [Validators.required, Validators.maxLength(50),CustomValidators.noWhitespaceValidator]],

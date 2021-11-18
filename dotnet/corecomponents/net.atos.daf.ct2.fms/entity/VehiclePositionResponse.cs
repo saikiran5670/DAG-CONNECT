@@ -17,7 +17,7 @@ namespace net.atos.daf.ct2.fms.entity
         public double Latitude { get; set; }
         public double Longitude { get; set; }
         public long GPSTimestamp { get; set; }
-        public decimal Speed { get; set; }
+        public double Speed { get; set; }
     }
 }
 

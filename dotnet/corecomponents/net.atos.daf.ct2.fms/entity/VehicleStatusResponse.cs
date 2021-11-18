@@ -13,17 +13,17 @@ namespace net.atos.daf.ct2.fms.entity
     {
         public string VIN { get; set; }
         public VehiclePositionForStatus VehiclePosition { get; set; }
-        public decimal CatalystFuelLevel { get; set; }
+        public double CatalystFuelLevel { get; set; }
         public string Driver1Id { get; set; }
         public string Driver1WorkingState { get; set; }
-        public long EngineTotalFuelUsed { get; set; }
+        public double EngineTotalFuelUsed { get; set; }
         public long EventTimestamp { get; set; }
-        public decimal FuelLevel1 { get; set; }
+        public double FuelLevel1 { get; set; }
         public long GrossCombinationVehicleWeight { get; set; }
-        public long HRTotalVehicleDistance { get; set; }
-        public decimal TachographSpeed { get; set; }
-        public long TotalEngineHours { get; set; }
-        public decimal WheelBasedSpeed { get; set; }
+        public double HRTotalVehicleDistance { get; set; }
+        public double TachographSpeed { get; set; }
+        public double TotalEngineHours { get; set; }
+        public double WheelBasedSpeed { get; set; }
     }
     public class VehiclePositionForStatus
     {
@@ -32,7 +32,7 @@ namespace net.atos.daf.ct2.fms.entity
         public double Latitude { get; set; }
         public double Longitude { get; set; }
         public long GPSTimestamp { get; set; }
-        public decimal Speed { get; set; }
+        public double Speed { get; set; }
     }
 }
 

@@ -616,7 +616,7 @@ checkForPreference(fieldKey) {
 
 checkForVehiclePreference(fieldKey) {
   if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences.length > 2 && this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.length != 0) {
-    let filterData = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_'+fieldKey));
+    let filterData = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes(`rp_db_dashboard_vehicleutilization_${fieldKey}`));
     if (filterData.length > 0) {
       if (filterData[0].state == 'A') {
         return true;
