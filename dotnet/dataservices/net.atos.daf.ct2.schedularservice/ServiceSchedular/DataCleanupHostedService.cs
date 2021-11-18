@@ -31,7 +31,7 @@ namespace net.atos.daf.ct2.schedularservice.ServiceSchedular
             this._configuration = configuration;
 
             _dataCleanupConfiguration = new DataCleanupConfiguration();
-            // configuration.GetSection("DataCleanupConfiguration").Bind(_dataCleanupConfiguration);
+            configuration.GetSection("DataCleanupConfiguration").Bind(_dataCleanupConfiguration);
 
         }
         public async Task StartAsync(CancellationToken cancellationToken)
