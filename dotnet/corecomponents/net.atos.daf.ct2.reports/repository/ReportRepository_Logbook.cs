@@ -95,7 +95,8 @@ namespace net.atos.daf.ct2.reports.repository
                                 and TRUNC(CAST(alertgeoadd.longitude as numeric),4) = TRUNC(CAST(ta.longitude as numeric),4)
                                 where  (ta.alert_generated_time >= @start_time_stamp and ta.alert_generated_time <= @end_time_stamp)
                                 and ta.category_type <> 'O'
-                				and ta.type <> 'W' ";
+                				and ta.type <> 'W' 
+                                and ta.alert_generated_time >= v.reference_date ";
                 parameter.Add("@featureIds", logbookFilter.FeatureIds);
                 var queryStatementFeature = @"select enum from translation.enumtranslation where feature_id = ANY(@featureIds)";
                 List<string> resultFeaturEnum = (List<string>)await _dataAccess.QueryAsync<string>(queryStatementFeature, parameter);

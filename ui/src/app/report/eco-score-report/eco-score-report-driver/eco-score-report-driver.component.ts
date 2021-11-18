@@ -788,6 +788,15 @@ titleStyle: any = { name: 'sans-serif', family: 4, size: 11, bold: true };
         this.columnPerformance.push({columnId: 'driver_'+i});
         // this.columnGeneral.push({columnId: 'driverG_'+i});
       }
+      this.driverDetails.sort((col1, col2) => {
+        let vin1 = col1.vin.toLowerCase();
+        let vin2 = col2.vin.toLowerCase();
+        if(vin1 < vin2)
+          return -1;
+        if(vin1 > vin2)
+          return 1;
+        return 0;
+      });
       this.driverDetailsGen.forEach((element, index) => {
         let vin = this.driverDetailsGen[index].vin;
         if(vin == '' && this.driverDetailsGen[index].headerType.indexOf("Overall") !== -1) vin= this.translationData.lblOverall || "Overall";
@@ -934,8 +943,19 @@ titleStyle: any = { name: 'sans-serif', family: 4, size: 11, bold: true };
   
   getScore: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
     if(value !== undefined && value !== null && value.length > 0){
+      value.sort( (col1: any, col2: any) =>{
+        // if(col1.columnGroup && col2.columnGroup){
+          let vin1 = col1.vin.toLowerCase();
+          let vin2 = col2.vin.toLowerCase();
+          if(vin1 < vin2)
+            return -1;
+          if(vin1 > vin2)
+            return 1;
+        // }
+        return 0;
+      });
       let val = (columnDef.id).toString().split("_");
-      let index = Number.parseInt(val[1]);
+      let index = Number.parseInt(val[1]);      
       if(value && value.length>index){
         let color = this.getColor(dataContext, value[index].value);
         return '<span style="color:' + color + '">' + this.formatValues(dataContext, value[index].value) + "</span>";

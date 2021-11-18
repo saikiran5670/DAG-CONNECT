@@ -497,11 +497,11 @@ namespace net.atos.daf.ct2.reports.repository
                                  SELECT dr.first_name, dr.last_name, eco.driver1_id, eco.trip_distance,
                                  eco.dpa_braking_score, eco.dpa_braking_count, eco.dpa_anticipation_score, eco.dpa_anticipation_count
                                  FROM tripdetail.ecoscoredata eco
-                                 JOIN master.driver dr 
-                                 	ON dr.driver_id = eco.driver1_id
+                                 JOIN master.driver dr ON dr.driver_id = eco.driver1_id
+                                 JOIN master.vehicle veh ON eco.vin = veh.vin AND eco.start_time >= veh.reference_date
                                  WHERE eco.start_time >= @FromDate
                                  	AND eco.end_time <= @ToDate
-                                 	AND eco.vin = ANY( @Vins )
+                                 	AND eco.vin = ANY(@Vins)
                                  	AND (eco.trip_distance >= @MinTripDistance OR @MinTripDistance IS NULL)
                                     AND dr.organization_id=@OrgId
                                  ),
@@ -1006,8 +1006,8 @@ namespace net.atos.daf.ct2.reports.repository
                                     eco.heavy_throttle_pedal_duration,eco.idle_duration,eco.harsh_brake_duration,eco.brake_duration,
                                     eco.cruise_control_usage , eco.cruise_control_usage_30_50,eco.cruise_control_usage_50_75,eco.cruise_control_usage_75
                                     FROM tripdetail.ecoscoredata eco
-                                    JOIN master.driver dr 
-                                    ON dr.driver_id = eco.driver1_id
+                                    JOIN master.driver dr  ON dr.driver_id = eco.driver1_id
+                                    JOIN master.vehicle veh ON eco.vin = veh.vin AND eco.start_time >= veh.reference_date
                                     WHERE eco.start_time >= @FromDate --1204336888377
                                     AND eco.end_time <= @ToDate --1820818919744
                                     AND eco.vin = ANY(@Vins) -- AND eco.vin = ANY('{XLR0998HGFFT76657,XLR0998HGFFT74600}')
@@ -1334,8 +1334,8 @@ namespace net.atos.daf.ct2.reports.repository
                                     eco.heavy_throttle_pedal_duration,eco.idle_duration,eco.harsh_brake_duration,eco.brake_duration,
                                     eco.cruise_control_usage , eco.cruise_control_usage_30_50,eco.cruise_control_usage_50_75,eco.cruise_control_usage_75
                                     FROM tripdetail.ecoscoredata eco
-                                    JOIN master.driver dr 
-                                    ON dr.driver_id = eco.driver1_id
+                                    JOIN master.driver dr ON dr.driver_id = eco.driver1_id
+                                    JOIN master.vehicle veh ON eco.vin = veh.vin AND eco.start_time >= veh.reference_date
                                     WHERE eco.start_time >= @FromDate --1204336888377
                                     AND eco.end_time <= @ToDate --1820818919744
                                     AND eco.vin = ANY(@Vins) --ANY('{XLR0998HGFFT76666,5A37265,XLR0998HGFFT76657,XLRASH4300G1472w0,XLR0998HGFFT74600}')
@@ -1626,8 +1626,8 @@ namespace net.atos.daf.ct2.reports.repository
                                     eco.heavy_throttle_pedal_duration,eco.idle_duration,eco.harsh_brake_duration,eco.brake_duration,
 									eco.cruise_control_usage , eco.cruise_control_usage_30_50,eco.cruise_control_usage_50_75,eco.cruise_control_usage_75
                                     FROM tripdetail.ecoscoredata eco
-                                    JOIN master.driver dr 
-                                    ON dr.driver_id = eco.driver1_id
+                                    JOIN master.driver dr ON dr.driver_id = eco.driver1_id
+                                    JOIN master.vehicle veh ON eco.vin = veh.vin AND eco.start_time >= veh.reference_date
                                     WHERE eco.start_time >= @FromDate --1204336888377
                                     AND eco.end_time <= @ToDate --1820818919744
                                     AND eco.vin = ANY(@Vins) --ANY('{XLR0998HGFFT76666,5A37265,XLR0998HGFFT76657,XLRASH4300G1472w0,XLR0998HGFFT74600}')
@@ -1920,10 +1920,8 @@ namespace net.atos.daf.ct2.reports.repository
 									eco.cruise_control_usage , eco.cruise_control_usage_30_50,eco.cruise_control_usage_50_75,eco.cruise_control_usage_75
 									,ve.registration_no,ve.name
                                     FROM tripdetail.ecoscoredata eco
-									JOIN master.vehicle ve 
-									ON eco.vin = ve.vin
-                                    JOIN master.driver dr 
-                                    ON dr.driver_id = eco.driver1_id
+									JOIN master.vehicle ve ON eco.vin = ve.vin AND eco.start_time >= ve.reference_date
+                                    JOIN master.driver dr ON dr.driver_id = eco.driver1_id
                                     WHERE eco.start_time >= @FromDate --1204336888377
                                     AND eco.end_time <= @ToDate --1820818919744
                                     AND eco.vin = ANY(@Vins) --ANY('{XLR0998HGFFT76666,5A37265,XLR0998HGFFT76657,XLRASH4300G1472w0,XLR0998HGFFT74600}')
@@ -2217,11 +2215,9 @@ namespace net.atos.daf.ct2.reports.repository
 									eco.cruise_control_usage , eco.cruise_control_usage_30_50,eco.cruise_control_usage_50_75,eco.cruise_control_usage_75
 									,ve.registration_no,ve.name
                                     FROM tripdetail.ecoscoredata eco
-									JOIN master.vehicle ve 
-									ON eco.vin = ve.vin
-                                    JOIN master.driver dr 
-                                    ON dr.driver_id = eco.driver1_id
-                                   WHERE eco.start_time >= @FromDate --1204336888377
+									JOIN master.vehicle ve ON eco.vin = ve.vin AND eco.start_time >= ve.reference_date
+                                    JOIN master.driver dr ON dr.driver_id = eco.driver1_id
+                                    WHERE eco.start_time >= @FromDate --1204336888377
                                     AND eco.end_time <= @ToDate --1820818919744
                                     AND eco.vin = ANY(@Vins) --ANY('{XLR0998HGFFT76666,5A37265,XLR0998HGFFT76657,XLRASH4300G1472w0,XLR0998HGFFT74600}')
                                     --AND eco.driver1_id = @DriverId --ANY('{NL B000384974000000}')
@@ -2510,8 +2506,8 @@ namespace net.atos.daf.ct2.reports.repository
                                 	select eco.driver1_id, eco.vin, eco.trip_id, cast(eco.gross_weight_combination_total/1000 as decimal(18,4)) as AGW, 
                                 	eco.trip_distance as Distance
                                 	from tripdetail.ecoscoredata eco
-                                	JOIN master.driver dr 
-                                	ON dr.driver_id = eco.driver1_id
+                                	JOIN master.driver dr ON dr.driver_id = eco.driver1_id
+                                    JOIN master.vehicle veh ON eco.vin = veh.vin AND eco.start_time >= veh.reference_date
                                 	WHERE eco.start_time >= @FromDate --1204336888377
                                 	AND eco.end_time <= @ToDate --1820818919744
                                 	AND eco.vin = ANY(@Vins)--ANY('{XLR0998HGFFT76666,5A37265,XLR0998HGFFT76657,XLRASH4300G1472w0,XLR0998HGFFT74600}')
@@ -2611,8 +2607,8 @@ namespace net.atos.daf.ct2.reports.repository
                                   eco.trip_distance as Distance,
 	                              CASE WHEN 'metric' = @Unit THEN 3.6 ELSE 2.237 END as unit --Metric/Imperial conversion
                                   from tripdetail.ecoscoredata eco
-                                  JOIN master.driver dr 
-                                  ON dr.driver_id = eco.driver1_id
+                                  JOIN master.driver dr ON dr.driver_id = eco.driver1_id
+                                  JOIN master.vehicle veh ON eco.vin = veh.vin AND eco.start_time >= veh.reference_date
                                   WHERE eco.start_time >= @FromDate --1204336888377
                                   AND eco.end_time <= @ToDate --1820818919744
                                   AND eco.vin = ANY (@Vins)  --ANY('{XLR0998HGFFT76666,5A37265,XLR0998HGFFT76657,XLRASH4300G1472w0,XLR0998HGFFT74600}')
@@ -2737,8 +2733,8 @@ namespace net.atos.daf.ct2.reports.repository
                                     eco.cruise_control_usage , eco.cruise_control_usage_30_50,eco.cruise_control_usage_50_75,eco.cruise_control_usage_75
                                    ,date_trunc('day', to_timestamp(eco.end_time/1000)) as Day
                                     FROM tripdetail.ecoscoredata eco
-                                    JOIN master.driver dr 
-                                    ON dr.driver_id = eco.driver1_id
+                                    JOIN master.driver dr ON dr.driver_id = eco.driver1_id
+                                    JOIN master.vehicle veh ON eco.vin = veh.vin AND eco.start_time >= veh.reference_date
                                     WHERE eco.start_time >= @FromDate --1204336888377
                                     AND eco.end_time <= @ToDate --1820818919744
                                     AND eco.vin = ANY(@Vins) --ANY('{XLR0998HGFFT76666,5A37265,XLR0998HGFFT76657,XLRASH4300G1472w0,XLR0998HGFFT74600}')
@@ -2993,8 +2989,8 @@ namespace net.atos.daf.ct2.reports.repository
                                     eco.dpa_Braking_score, eco.dpa_Braking_count, eco.dpa_anticipation_score, eco.dpa_anticipation_count
                                     ,date_trunc('day', to_timestamp(eco.end_time/1000)) as Day
                                     FROM tripdetail.ecoscoredata eco
-                                    JOIN master.driver dr 
-                                    ON dr.driver_id = eco.driver1_id
+                                    JOIN master.driver dr ON dr.driver_id = eco.driver1_id
+                                    JOIN master.vehicle veh ON eco.vin = veh.vin AND eco.start_time >= veh.reference_date
                                     WHERE eco.start_time >= @FromDate --1204336888377
                                     AND eco.end_time <= @ToDate --1820818919744
                                     AND eco.vin = ANY(@Vins) --ANY('{XLR0998HGFFT76666,5A37265,XLR0998HGFFT76657,XLRASH4300G1472w0,XLR0998HGFFT74600}')
@@ -3066,10 +3062,8 @@ namespace net.atos.daf.ct2.reports.repository
                                     eco.dpa_Braking_score, eco.dpa_Braking_count, eco.dpa_anticipation_score, eco.dpa_anticipation_count, 
                                     eco.vin ,ve.registration_no,ve.name as VehicleName,date_trunc('day', to_timestamp(eco.end_time/1000)) as Day
                                     FROM tripdetail.ecoscoredata eco
-									JOIN master.vehicle ve 
-									ON eco.vin = ve.vin
-                                    JOIN master.driver dr 
-                                    ON dr.driver_id = eco.driver1_id
+									JOIN master.vehicle ve ON eco.vin = ve.vin AND eco.start_time >= ve.reference_date
+                                    JOIN master.driver dr ON dr.driver_id = eco.driver1_id
                                     WHERE eco.start_time >= @FromDate --1204336888377
                                     AND eco.end_time <= @ToDate --1820818919744
                                     AND eco.vin = ANY(@Vins) --ANY('{XLR0998HGFFT76666,5A37265,XLR0998HGFFT76657,XLRASH4300G1472w0,XLR0998HGFFT74600}')
@@ -3143,10 +3137,8 @@ namespace net.atos.daf.ct2.reports.repository
 									eco.cruise_control_usage , eco.cruise_control_usage_30_50,eco.cruise_control_usage_50_75,eco.cruise_control_usage_75
 									,ve.registration_no,ve.name,date_trunc('day', to_timestamp(eco.end_time/1000)) as Day
                                     FROM tripdetail.ecoscoredata eco
-									JOIN master.vehicle ve 
-									ON eco.vin = ve.vin
-                                    JOIN master.driver dr 
-                                    ON dr.driver_id = eco.driver1_id
+									JOIN master.vehicle ve ON eco.vin = ve.vin AND eco.start_time >= ve.reference_date
+                                    JOIN master.driver dr ON dr.driver_id = eco.driver1_id
                                     WHERE eco.start_time >= @FromDate --1204336888377
                                     AND eco.end_time <= @ToDate --1820818919744
                                     AND eco.vin = ANY(@Vins) --ANY('{XLR0998HGFFT76666,5A37265,XLR0998HGFFT76657,XLRASH4300G1472w0,XLR0998HGFFT74600}')
@@ -3414,6 +3406,7 @@ namespace net.atos.daf.ct2.reports.repository
                                     END as aggregation_type
 	                    FROM tripdetail.ecoscoredata eco
 	                    INNER JOIN master.driver dr ON dr.driver_id = eco.driver1_id
+                        INNER JOIN master.vehicle veh ON eco.vin = veh.vin AND eco.start_time >= veh.reference_date
 	                    WHERE eco.start_time >= @StartTimestamp     --1623325980000
 	                    AND eco.end_time <= @EndTimestamp           --1627051411000
 	                    AND eco.vin = @VIN                          --'XLR0998HGFFT76657'
@@ -3716,6 +3709,7 @@ namespace net.atos.daf.ct2.reports.repository
 								END as aggregation_type
 	                    FROM tripdetail.ecoscoredata eco
 	                    INNER JOIN master.driver dr ON dr.driver_id = eco.driver1_id
+                        INNER JOIN master.vehicle veh ON eco.vin = veh.vin AND eco.start_time >= veh.reference_date
 	                    WHERE eco.start_time >= @StartTimestamp         --1623325980000
 	                    AND eco.end_time <= @EndTimestamp               --1627051411000
 	                    AND eco.vin = @VIN                              --'XLR0998HGFFT76657'
