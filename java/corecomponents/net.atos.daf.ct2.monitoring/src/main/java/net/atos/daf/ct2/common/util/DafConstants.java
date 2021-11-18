@@ -116,6 +116,19 @@ public class DafConstants {
 	public static final String STORE_HISTORICAL_DATA="store.historical.data";
 	public static final String MONITOR_PROCESS="monitor.process";
 	public static final String MONITOR_HBASE_PROCESS="monitor.hbase.process";
+	
+	
+	public static final String LIVEFLEET_WARNING_INSERT = "INSERT INTO livefleet.livefleet_warning_statistics(trip_id , vin   , warning_time_stamp,	warning_class,	warning_number,	latitude,	longitude,	heading,	vehicle_health_status_type,	vehicle_driving_status_type,	driver1_id,	warning_type,	distance_until_next_service,	odometer_val,	lastest_processed_message_time_stamp,	created_at, modified_at,	message_type) VALUES ( ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+	public static final String LIVEFLEET_CURRENT_TRIP_STATISTICS_UPDATE_TEN = "UPDATE livefleet.livefleet_current_trip_statistics  SET latest_received_position_lattitude = ? , latest_received_position_longitude = ? , latest_received_position_heading = ? , latest_processed_message_time_stamp = ? , vehicle_health_status_type = ? , latest_warning_class = ? ,latest_warning_number = ? , latest_warning_type = ? , latest_warning_timestamp = ? , latest_warning_position_latitude = ? , latest_warning_position_longitude = ? WHERE trip_id = ( SELECT trip_id FROM livefleet.livefleet_current_trip_statistics WHERE vin = ? ORDER BY id DESC LIMIT 1 )";
+
+	public static final String REPAITM_MAINTENANCE_WARNING_READ = "select warning_type from livefleet.livefleet_warning_statistics where message_type=? and vin = ? and warning_class = ? and warning_number= ? AND vin IS NOT NULL order by warning_time_stamp DESC limit 1";
+
+	public static final String LIVEFLEET_WARNING_READLIST = "select id, warning_class,	warning_number, vin from livefleet.livefleet_warning_statistics where vin = ? AND  message_type=10 and warning_type='A'  order by id DESC";
+	public static final String LIVEFLEET_WARNING_UPDATELIST = "UPDATE livefleet.livefleet_warning_statistics set warning_type='D' where id = ANY (?)";
+	
+	///update query
+	public static final String LIVEFLEET_WARNING_DEACTIVATE="UPDATE livefleet.livefleet_warning_statistics set warning_type='D' where vin = ? and warning_class=? and warning_number=? and warning_type='A'";
+	
 		
 		
 	
