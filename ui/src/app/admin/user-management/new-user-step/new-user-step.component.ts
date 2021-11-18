@@ -230,26 +230,7 @@ export class NewUserStepComponent implements OnInit {
     ${(this.fromCreate == 'Create') ? (this.translationData.lblCreate ? 'Create '+ this.translationData.lblNewUser : 'New Account') :'Create New Account'}`;
     // ${this.translationData.lblAccountDetails ? this.translationData.lblAccountDetails : 'Account Details'}`;
   }
-  toBack(){
-       let obj: any = {
-          accountId: 0,
-          organizationId: this.accountOrganizationId,
-          accountGroupId: 0,
-          vehicleGroupGroupId: 0,
-          roleId: 0,
-          name: ""
-        }
-    this.accountService.getAccountDetails(obj).subscribe((data)=>{
-      let emitObj = {
-        stepFlag: false,
-        msg: "",
-        tableData: data
-      }
-      this.userCreate.emit(emitObj);
-    });
-    this.router.navigate([]);
-    sessionStorage.clear();
-  }
+ 
   setDefaultOrgVal(){
     this.orgDefaultFlag = {
       language: true,
