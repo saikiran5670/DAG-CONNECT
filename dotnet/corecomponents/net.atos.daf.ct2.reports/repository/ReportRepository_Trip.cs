@@ -313,17 +313,17 @@ namespace net.atos.daf.ct2.reports.repository
                                                 TA.trip_id TripId, 
                                                 TA.vin as VIN, 
                                                 category_type as CategoryType, 
-                                                type AlertType,
-                                                name as AlertName,                                                
+                                                ta.type AlertType,
+                                                ta.name as AlertName,                                                
                                                 latitude as AlertLatitude, 
                                                 longitude as AlertLongitude,
                                                 alert_generated_time as AlertTime,   
                                                 processed_message_time_stamp ProcessedMessageTimeStamp, 
                                                 urgency_level_type as UrgencyLevelType
 	                                FROM tripdetail.tripalert TA
-	                                     join tripdetail.trip_statistics TS on TA.VIN=TS.VIN
-                                           and TA.trip_id = TS.trip_id
-	                                 where  TS.vin =ANY (@vin)
+	                                     join tripdetail.trip_statistics TS on TA.VIN=TS.VIN and TA.trip_id = TS.trip_id
+                                         join master.vehicle v on  v.vin=ta.vin                                           
+	                                 where TA.alert_generated_time >= v.reference_date and  TS.vin =ANY (@vin)
 	                                 AND (
 		                                    TS.end_time_stamp >= @StartDateTime and
 		                                    TS.end_time_stamp <= @EndDateTime
