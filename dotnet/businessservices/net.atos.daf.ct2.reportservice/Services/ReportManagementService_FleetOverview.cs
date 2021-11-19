@@ -176,7 +176,8 @@ namespace net.atos.daf.ct2.reportservice.Services
                     vehicleDeatilsWithAccountVisibility.Select(x => x.Vin).Distinct().ToList() :
                     vehicleDeatilsWithAccountVisibility.Where(x => request.GroupIds.ToList().Contains(x.VehicleGroupId.ToString())).Select(x => x.Vin).Distinct().ToList(),
                     Days = request.Days,
-                    UnknownDrivingStateCheckInterval = Convert.ToInt32(_configuration["UnknownDrivingStateCheckInterval"])
+                    UnknownDrivingStateCheckInterval = Convert.ToInt32(_configuration["UnknownDrivingStateCheckInterval"]),
+                    Org_Id = request.OrganizationId
                 };
                 var result = await _reportManager.GetFleetOverviewDetails(fleetOverviewFilter);
                 //remove the alerts dont have visibility for user
