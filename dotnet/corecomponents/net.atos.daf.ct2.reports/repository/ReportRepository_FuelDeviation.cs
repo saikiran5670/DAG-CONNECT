@@ -55,7 +55,7 @@ namespace net.atos.daf.ct2.reports.repository
 		                                            AND trpst.end_time_stamp <= @EndDateTime
 		                                            )
 	                     JOIN master.vehicle as v 
-	 	                    ON v.vin = trpst.vin and trpst.end_time_stamp >= vh.reference_date
+	 	                    ON v.vin = trpst.vin and trpst.end_time_stamp >= v.reference_date
                          left JOIN master.geolocationaddress as geoaddr
                             on TRUNC(CAST(geoaddr.latitude as numeric),4)= TRUNC(CAST(fueldev.latitude as numeric),4) 
                                and TRUNC(CAST(geoaddr.longitude as numeric),4) = TRUNC(CAST(fueldev.longitude as numeric),4)
