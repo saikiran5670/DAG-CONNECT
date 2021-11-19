@@ -1584,6 +1584,7 @@ export class ReportMapService {
     if(startTime != 0){
       sTime = this.formStartendDate(Util.convertUtcToDate(startTime, timeZone), dateFormat, timeFormat, addTime, onlyTime);
     }
+    
     return sTime;
   }
 
@@ -1756,6 +1757,7 @@ export class ReportMapService {
     let sTime: any = 0;
     if(startTime != 0){
       sTime = this.formStartEndDate(Util.convertUtcToDate(startTime, timeZone), dateFormat, timeFormat, addTime, onlyTime);
+      console.log("sTime", sTime);
     }
     return sTime;
   }
@@ -1948,7 +1950,7 @@ export class ReportMapService {
     let _date: any;
     let _time: any;
     if(timeFormat == 12){
-      _time = (h > 12 || (h == 12 && m > 0)) ? `${h == 12 ? 12 : h-12}:${m} PM` : `${(h == 0) ? 12 : h}:${m} AM`;
+      _time = (h > 12 || (h == 12 && m > 0)) ? `${h == 12 ? 12 : h-12}:${m}:${s} PM` : `${(h == 0) ? 12 : h}:${m}:${s} AM`;
     }else{
       _time = `${h}:${m}:${s}`;
     }
