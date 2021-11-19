@@ -63,7 +63,6 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     objSubs.OrganizationId = objsubscriptionActivation.SubscribeEvent.OrganizationId;
                     objSubs.PackageId = objsubscriptionActivation.SubscribeEvent.PackageId;
                     objSubs.VINs = new List<string>();
-
                     if (objsubscriptionActivation.SubscribeEvent.VINs != null && objsubscriptionActivation.SubscribeEvent.VINs.Count > 0)
                     {
                         if (objsubscriptionActivation.SubscribeEvent.VINs
@@ -103,7 +102,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     {
                         //Triggering subscription cdc 
                         int subscriptionId = Convert.ToInt32(order.Item2.Response.OrderId);
-                        await _featureActivationCdcHelper.TriggerSubscriptionCdc(subscriptionId, "I");
+                        //await _featureActivationCdcHelper.TriggerSubscriptionCdc(subscriptionId, "I", Convert.ToInt32(objSubs.OrganizationId), objSubs.VINs);
                     }
 
                     _logger.LogInformation($"Subscription data has been Inserted, order ID - {order.Item2.Response.OrderId}");
@@ -164,7 +163,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     {
                         //Triggering subscription cdc 
                         int subscriptionId = Convert.ToInt32(objUnsubs.OrderID);
-                        await _featureActivationCdcHelper.TriggerSubscriptionCdc(subscriptionId, "U");
+                        //await _featureActivationCdcHelper.TriggerSubscriptionCdc(subscriptionId, "U", Convert.ToInt32(objUnsubs.OrganizationID), objUnsubs.VINs);
                     }
 
                     _logger.LogInformation($"UnSubscription data has been Inserted, order ID - {objUnsubs.OrderID}");

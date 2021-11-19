@@ -41,7 +41,7 @@ namespace net.atos.daf.ct2.schedularservice.ServiceSchedular
             while (true)
             {
                 await DeleteDataFromTable();
-                Thread.Sleep(_dataCleanupConfiguration.ThreadSleepTimeInSec); // 10 sec sleep mode
+                Thread.Sleep(10000);// _dataCleanupConfiguration.ThreadSleepTimeInSec); // 10 sec sleep mode
             }
         }
         public Task StopAsync(CancellationToken cancellationToken) => throw new NotImplementedException();

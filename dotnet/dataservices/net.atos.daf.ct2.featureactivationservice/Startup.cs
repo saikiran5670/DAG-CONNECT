@@ -21,6 +21,8 @@ using net.atos.daf.ct2.translation;
 using net.atos.daf.ct2.translation.repository;
 using net.atos.daf.ct2.vehicle;
 using net.atos.daf.ct2.vehicle.repository;
+using net.atos.daf.ct2.visibility;
+using net.atos.daf.ct2.visibility.repository;
 using AccountComponent = net.atos.daf.ct2.account;
 using Identity = net.atos.daf.ct2.identity;
 using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
@@ -65,7 +67,8 @@ namespace net.atos.daf.ct2.featureactivationservice
             services.AddTransient<IDriverManager, DriverManager>();
             services.AddTransient<IVehicleManager, VehicleManager>();
             services.AddTransient<IVehicleRepository, VehicleRepository>();
-
+            services.AddTransient<IVisibilityRepository, VisibilityRepository>();
+            services.AddTransient<IVisibilityManager, VisibilityManager>();
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.SuppressModelStateInvalidFilter = true;
