@@ -64,6 +64,6 @@ public class KafkaProducerString {
                     return outJson;
                 }).count();
 
-        logger.trace("Total message pushed: {}",messgePushCount);
+        logger.info("Total message pushed: {}"+messgePushCount);
     }
 }
