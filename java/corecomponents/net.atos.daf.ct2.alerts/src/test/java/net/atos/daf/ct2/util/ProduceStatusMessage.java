@@ -31,7 +31,8 @@ public class ProduceStatusMessage {
         env.getConfig().setGlobalJobParameters(propertiesParamTool);
         Properties kafkaTopicProp = Utils.getKafkaConnectProperties(propertiesParamTool);
         logger.info("kafkaTopicProp :: {}" , kafkaTopicProp.entrySet());
-        kafkaTopicProp.put("sasl.jaas.config",propertiesParamTool.get("status.object.sasl.jaas.config"));
+        kafkaTopicProp.put("sasl.jaas.config",propertiesParamTool.get("" +
+                "status.object.sasl.jaas.config"));
         kafkaTopicProp.put("bootstrap.servers",propertiesParamTool.get("status.object.bootstrap.servers"));
 
         String initData = "{ \"receivedTimestamp\": null, \"EvtDateTime\": \"1628163993562\", \"Increment\": null, \"ROProfil\": null, \"TenantID\": null, \"TransID\": \"s03bf625a-cce7-42b8-a712-7a5a161b1d003\", \"VID\": \"abc\", \"VIN\": \"abc\", \"kafkaProcessingTS\": null, \"EventDateTimeFirstIndex\": null, \"Jobname\": null, \"NumberOfIndexMessage\": null, \"NumSeq\": null, \"VEvtID\": null, \"ROmodel\": null, \"ROName\": null, \"ROrelease\": null, \"DriverID\": \"driver1\", \"GPSStartDateTime\": \"2021-03-28T02:38:15.000Z\", \"GPSEndDateTime\": \"2021-04-28T02:49:47.000Z\", \"GPSStartLatitude\": null, \"GPSEndLatitude\": null, \"GPSStartLongitude\": null, \"GPSEndLongitude\": null, \"GPSStartVehDist\": 23456, \"GPSStopVehDist\": 33456, \"VBrakeDuration\": null, \"VCruiseControlDist\": null, \"VHarshBrakeDuration\": null, \"VIdleDuration\": \"459\", \"VPosAltitudeVariation\": null, \"VNegAltitudeVariation\": null, \"VPTOCnt\": null, \"VPTODuration\": null, \"VPTODist\": null, \"VStartFuel\": null, \"VStopFuel\": null, \"VStartTankLevel\": null, \"VStopTankLevel\": null, \"VUsedFuel\": null, \"VIdleDurationDistr\": null, \"DocFormat\": \"json\", \"DocVersion\": \"0.0.1\", \"Document\": null }";
