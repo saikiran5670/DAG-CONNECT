@@ -391,8 +391,8 @@ proceedStep(prefData: any, preference: any){
         this.selectedApplyOn = this.selectedRowData.applyOn;
         this.setDefaultValue();
         if(this.selectedRowData.notifications.length != 0)
-          this.panelOpenState= true;
-      }
+        this.panelOpenState= true;
+    }
       else if(this.actionType == 'view'){
         this.alert_category_selected = this.selectedRowData.category;
         this.selectedApplyOn = this.selectedRowData.applyOn;
@@ -499,6 +499,7 @@ proceedStep(prefData: any, preference: any){
 
     if(flag){ // default selection after alert type change
       this.alertForm.get('vehicleGroup').setValue('ALL');
+      this.onChangeVehicleGroup('ALL');
     }
     //----------------------------------------------------------------------------------------------------------
 
@@ -1853,6 +1854,7 @@ convertToFromTime(milliseconds: any){
       this.getVehicleGroupsForAlertType(this.alertTypeObject);
     }else{
       this.alertForm.get('vehicleGroup').setValue('ALL');
+      this.onChangeVehicleGroup('ALL');
     }
   }
 
