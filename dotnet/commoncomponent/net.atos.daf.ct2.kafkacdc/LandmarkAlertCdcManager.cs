@@ -44,12 +44,12 @@ namespace net.atos.daf.ct2.kafkacdc
         public Task<bool> LandmarkAlertRefFromAlertConfiguration(int landmarkId, string operation, string landmarktype) => ExtractAndSyncVehicleAlertRefByAlertIds(landmarkId, operation, landmarktype);
         internal async Task<bool> ExtractAndSyncVehicleAlertRefByAlertIds(int landmarkId, string operation, string landmarktype)
         {
-            bool result = false;
             List<int> alertIds = new List<int>();
             List<VehicleAlertRef> unmodifiedMapping = new List<VehicleAlertRef>();
             List<VehicleAlertRef> insertionMapping = new List<VehicleAlertRef>();
             List<VehicleAlertRef> deletionMapping = new List<VehicleAlertRef>();
             List<VehicleAlertRef> finalmapping = new List<VehicleAlertRef>();
+            bool result;
             try
             {
                 var alerts = await _landmarkAlertCdcRepository.GetAlertsbyLandmarkId(landmarkId, landmarktype);

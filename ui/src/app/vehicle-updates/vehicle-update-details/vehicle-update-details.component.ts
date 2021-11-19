@@ -441,7 +441,7 @@ showConfirmDailog(schedulerData: any) {
 
         }, (error) => {
           this.hideloader();
-          // let successMsg =`${this.schedulerData.campaignId} ${this.formattedDate} ${this.scheduledTime} scheduled successfully.`
+          // let successMsg =`${this.schedulerData.campaignID} ${this.formattedDate} ${this.scheduledTime} scheduled successfully.`
           // this.successMsgBlink(successMsg);
           console.log("error:: ", error);
         });
