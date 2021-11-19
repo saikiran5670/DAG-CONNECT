@@ -479,13 +479,6 @@ export class AlertsComponent implements OnInit {
       this.initData = this.getNewTagData(data);
     }
     this.dataSource = new MatTableDataSource(this.initData);
-    // this.dataSource.filterPredicate = function(data: any, filter: string): boolean {
-    //   return (
-    //     data.name.toString().toLowerCase().includes(filter) ||
-    //     data.poiCount.toString().toLowerCase().includes(filter) ||
-    //     data.geofenceCount.toString().toLowerCase().includes(filter)
-    //   );
-    // };
     setTimeout(()=>{
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
@@ -504,14 +497,14 @@ export class AlertsComponent implements OnInit {
       //     return this.compare(a1, b1, isAsc);
       //   });
       //  }
-    //   this.dataSource.filterPredicate = function(data: any, filter: string): boolean {
-    //     return (
-    //     data.name.toString().toLowerCase().includes(filter) ||
-    //     data.category.toString().toLowerCase().includes(filter) ||
-    //      data.type.toString().toLowerCase().includes(filter) ||
-    //     data.highThresholdValue.toString().includes(filter)
-    //   );
-    // };
+      this.dataSource.filterPredicate = function(data: any, filter: string): boolean {
+        return (
+        data.name.toString().toLowerCase().includes(filter) ||
+        data.category.toString().toLowerCase().includes(filter) ||
+         data.type.toString().toLowerCase().includes(filter) ||
+        data.highThresholdValue.toString().includes(filter)
+      );
+    };
       this.dataSource.sortData = (data : String[], sort: MatSort) => {
         const isAsc = sort.direction === 'asc';
         let columnName = this.sort.active;
@@ -520,7 +513,7 @@ export class AlertsComponent implements OnInit {
         });
       }
     });
-    Util.applySearchFilter(this.dataSource, this.displayedColumns , this.filterValue );
+    // Util.applySearchFilter(this.dataSource, this.displayedColumns , this.filterValue );
   }
   compare(a: Number | String, b: Number | String, isAsc: boolean, columnName: any) {
     if(columnName == "name" || columnName =="category"){
