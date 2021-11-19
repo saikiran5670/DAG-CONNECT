@@ -72,7 +72,7 @@ namespace net.atos.daf.ct2.kafkacdc.test
         [TestMethod]
         public void UpdateVehcle()
         {
-            var result = _vehicleMgmAlertCdcManager.GetVehicleAlertRefFromVehicleId(new List<int> { 27 }, "N", 36).Result;
+            var result = _vehicleMgmAlertCdcManager.GetVehicleAlertRefFromVehicleId(new List<int> { 27 }, "N", 36, 36, 120, new List<int> { 0 }).Result;
             Assert.IsTrue(result);
         }
         [TestMethod]
