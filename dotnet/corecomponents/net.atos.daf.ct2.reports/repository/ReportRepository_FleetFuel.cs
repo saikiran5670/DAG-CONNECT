@@ -92,7 +92,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                                   , sum(trip_idle_pto_fuel_consumed) as tripidleptofuelconsumed
                                                                   , sum(idling_consumption_with_pto) as idlingconsumptionwithpto
                                                          		  , count(trip_id)                                                         as numberoftrips
-                                                         		  , count(distinct date_trunc('day', to_timestamp(start_time_stamp/1000))) as totalworkingdays
+                                                         		  , count(distinct date_trunc('day', to_timestamp(end_time_stamp/1000))) as totalworkingdays
                                                          		  , SUM(etl_gps_distance)                                                  as etl_gps_distance
                                                          		  , SUM(etl_gps_distance)                                                  as veh_message_distance
                                                          		  , SUM(etl_gps_distance)/case when SUM(etl_gps_trip_time) >0 then SUM(etl_gps_trip_time) else 1 end as average_speed
@@ -264,7 +264,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                           , sum(idling_consumption_with_pto) as idlingconsumptionwithpto
                                                   		  , driver1_id                                                             as tripDriverId
                                                   		  , count(trip_id)                                                         as numberoftrips
-                                                  		  , count(distinct date_trunc('day', to_timestamp(start_time_stamp/1000))) as totalworkingdays
+                                                  		  , count(distinct date_trunc('day', to_timestamp(end_time_stamp/1000))) as totalworkingdays
                                                   		  , SUM(etl_gps_distance)                                                  as etl_gps_distance
                                                   		  , SUM(etl_gps_distance)                                                  as veh_message_distance
                                                   		  , SUM(etl_gps_distance)/case when SUM(etl_gps_trip_time) >0 then SUM(etl_gps_trip_time) else 1 end                          as average_speed
