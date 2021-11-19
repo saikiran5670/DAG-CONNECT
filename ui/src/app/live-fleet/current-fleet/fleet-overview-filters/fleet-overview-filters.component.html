@@ -108,7 +108,7 @@
                 <div fxLayout="column" fxLayoutAlign="space-between" style="padding-top:5px;">
                     <mat-label>{{ translationData.lblHealthStatus }} </mat-label>
                     <mat-form-field appearance="outline" class="full-width dropdown-filters">
-                        <mat-select #select2 [disabled]="vehicleListData.length == 0" placeholder="Health Status"
+                        <mat-select #select2 [disabled]="healthList.length < 1" placeholder="Health Status"
                             [(ngModel)]="selection2" formControlName="status" multiple>
                             <div class="select-all">
                                 <mat-checkbox [(ngModel)]="allSelectedHealthStatus" [ngModelOptions]="{standalone: true}"
@@ -124,7 +124,7 @@
                 <div fxLayout="column" fxLayoutAlign="space-between">
                     <mat-label>{{ translationData.lblOtherFilter }} </mat-label>
                     <mat-form-field appearance="outline" class="full-width dropdown-filters">
-                        <mat-select #select4 [disabled]="vehicleListData.length == 0" placeholder="Other Filter"
+                        <mat-select #select4 [disabled]="otherList.length < 1" placeholder="Other Filter"
                             [(ngModel)]="selection4" formControlName="otherFilter" multiple>
                             <div class="select-all">
                                 <mat-checkbox [(ngModel)]="allSelectedOther" [ngModelOptions]="{standalone: true}"

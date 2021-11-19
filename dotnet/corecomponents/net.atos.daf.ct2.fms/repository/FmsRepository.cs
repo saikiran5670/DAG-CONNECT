@@ -280,7 +280,7 @@ namespace net.atos.daf.ct2.fms.repository
                 objVehicleStatus.EngineTotalFuelUsed = decimal.ToDouble(item.enginetotalfuelused) ?? 0.0;
                 objVehicleStatus.EventTimestamp = item.eventtimestamp ?? 0;
                 objVehicleStatus.FuelLevel1 = decimal.ToDouble(item.fuellevel1) ?? 0;
-                objVehicleStatus.TachographSpeed = decimal.ToDouble(item.tachographspeed) ?? 0; ;
+                objVehicleStatus.TachographSpeed = decimal.ToDouble(item.tachographspeed) ?? 0;
                 objVehicleStatus.TotalEngineHours = item.totalenginehours ?? 0;
                 objVehicleStatus.HRTotalVehicleDistance = item.hrtotalvehicledistance ?? 0;
                 objVehicleStatus.GrossCombinationVehicleWeight = item.grosscombinationvehicleweight ?? 0;
