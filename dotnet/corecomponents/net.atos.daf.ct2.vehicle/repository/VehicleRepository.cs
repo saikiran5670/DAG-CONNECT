@@ -591,6 +591,8 @@ namespace net.atos.daf.ct2.vehicle.repository
                                         ,is_ota=@is_ota
                                         ,tcu_id=@tcu_id
                                         ,is_tcu_register=@is_tcu_register
+                                        ,name=@name
+                                        ,license_plate_number=@license_plate_number
                                          WHERE id = @id
                                          RETURNING id;";
 
@@ -606,6 +608,8 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@is_ota", vehicle.Is_Ota);
                 parameter.Add("@tcu_id", vehicle.Tcu_Id);
                 parameter.Add("@is_tcu_register", vehicle.Is_Tcu_Register);
+                parameter.Add("@name", vehicle.Name);
+                parameter.Add("@license_plate_number", vehicle.License_Plate_Number);
 
                 int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
 
