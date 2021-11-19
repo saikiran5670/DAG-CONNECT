@@ -1,6 +1,7 @@
 package net.atos.daf.ct2.kafka;
 
 import net.atos.daf.ct2.pojo.KafkaRecord;
+import net.atos.daf.ct2.pojo.standard.Index;
 import net.atos.daf.ct2.pojo.standard.Monitor;
 import net.atos.daf.ct2.pojo.standard.Status;
 import net.atos.daf.ct2.serde.KafkaMessageSerializeSchema;
@@ -47,6 +48,60 @@ public class KafkaProducer implements Serializable {
                         new FlinkKafkaProducer<KafkaRecord<Monitor>>(
                                 destinationTopic,
                                 new KafkaMessageSerializeSchema<Monitor>(destinationTopic),
+                                kafkaTopicProp,
+                                FlinkKafkaProducer.Semantic.EXACTLY_ONCE));
+    }
+
+    public static void transferStatusMsg(DataStream<KafkaRecord<Status>> statusStream,
+                                          ParameterTool propertiesParamTool,
+                                          final StreamExecutionEnvironment env){
+        String destinationTopic = propertiesParamTool.get(KAFKA_STATUS_TOPIC_DESTINATION);
+        Properties kafkaTopicProp = Utils.getKafkaConnectProperties(propertiesParamTool);
+        kafkaTopicProp.put("bootstrap.servers",propertiesParamTool.get(KAFKA_STATUS_BOOTSTRAP_SERVER_DESTINATION));
+        kafkaTopicProp.put("sasl.jaas.config",propertiesParamTool.get(KAFKA_STATUS_JAAS_CONFIG_DESTINATION));
+        statusStream
+                .map(record -> {
+                    logger.info("Status message received for transfer {}",record.getValue());
+                    return record;
+                }).returns(TypeInformation.of(new TypeHint<KafkaRecord<Status>>() {
+                    @Override
+                    public TypeInformation<KafkaRecord<Status>> getTypeInfo() {
+                        return super.getTypeInfo();
+                    }
+                }))
+                .keyBy(record -> Objects.nonNull(record.getValue().getVin()) ?
+                        record.getValue().getVin() : record.getValue().getVid())
+                .addSink(
+                        new FlinkKafkaProducer<KafkaRecord<Status>>(
+                                destinationTopic,
+                                new KafkaMessageSerializeSchema<Status>(destinationTopic),
+                                kafkaTopicProp,
+                                FlinkKafkaProducer.Semantic.EXACTLY_ONCE));
+    }
+
+    public static void transferIndexMsg(DataStream<KafkaRecord<Index>> indexStream,
+                                         ParameterTool propertiesParamTool,
+                                         final StreamExecutionEnvironment env){
+        String destinationTopic = propertiesParamTool.get(KAFKA_INDEX_TOPIC_DESTINATION);
+        Properties kafkaTopicProp = Utils.getKafkaConnectProperties(propertiesParamTool);
+        kafkaTopicProp.put("bootstrap.servers",propertiesParamTool.get(KAFKA_INDEX_BOOTSTRAP_SERVER_DESTINATION));
+        kafkaTopicProp.put("sasl.jaas.config",propertiesParamTool.get(KAFKA_INDEX_JAAS_CONFIG_DESTINATION));
+        indexStream
+                .map(record -> {
+                    logger.info("Index message received for transfer {}",record.getValue());
+                    return record;
+                }).returns(TypeInformation.of(new TypeHint<KafkaRecord<Index>>() {
+                    @Override
+                    public TypeInformation<KafkaRecord<Index>> getTypeInfo() {
+                        return super.getTypeInfo();
+                    }
+                }))
+                .keyBy(record -> Objects.nonNull(record.getValue().getVin()) ?
+                        record.getValue().getVin() : record.getValue().getVid())
+                .addSink(
+                        new FlinkKafkaProducer<KafkaRecord<Index>>(
+                                destinationTopic,
+                                new KafkaMessageSerializeSchema<Index>(destinationTopic),
                                 kafkaTopicProp,
                                 FlinkKafkaProducer.Semantic.EXACTLY_ONCE));
     }

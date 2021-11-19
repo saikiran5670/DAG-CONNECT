@@ -27,8 +27,8 @@ public class KafkaConnectionService implements Serializable {
         KafkaService<KafkaRecord<Status>> kafkaService = new KafkaService<>();
         KafkaDeserializationSchema deserializationSchema= new KafkaMessageDeSerializeSchema<Status>();
         Properties kafkaConnectProperties = Utils.getKafkaConnectProperties(parameterTool);
-        kafkaConnectProperties.put("sasl.jaas.config",parameterTool.get("status.object.sasl.jaas.config"));
-        kafkaConnectProperties.put("bootstrap.servers",parameterTool.get("status.object.bootstrap.servers"));
+        kafkaConnectProperties.put("sasl.jaas.config",parameterTool.get(KAFKA_STATUS_JAAS_CONFIG_SOURCE));
+        kafkaConnectProperties.put("bootstrap.servers",parameterTool.get(KAFKA_STATUS_BOOTSTRAP_SERVER_SOURCE));
 
         return  kafkaService.connectKafkaTopic(
                 topicName,
@@ -41,8 +41,8 @@ public class KafkaConnectionService implements Serializable {
         KafkaService<KafkaRecord<Index>> kafkaService = new KafkaService<>();
         KafkaDeserializationSchema deserializationSchema= new KafkaMessageDeSerializeSchema<Index>();
         Properties kafkaConnectProperties = Utils.getKafkaConnectProperties(parameterTool);
-        kafkaConnectProperties.put("sasl.jaas.config",parameterTool.get(KAFKA_INDEX_SASL_JAAS_CONFIG));
-        kafkaConnectProperties.put("bootstrap.servers",parameterTool.get(KAFKA_INDEX_BOOTSTRAP_SERVER));
+        kafkaConnectProperties.put("sasl.jaas.config",parameterTool.get(KAFKA_INDEX_JAAS_CONFIG_SOURCE));
+        kafkaConnectProperties.put("bootstrap.servers",parameterTool.get(KAFKA_INDEX_BOOTSTRAP_SERVER_SOURCE));
         return  kafkaService.connectKafkaTopic(
                 topicName,
                 kafkaConnectProperties,
