@@ -145,12 +145,19 @@ namespace net.atos.daf.ct2.reports.repository
             MapperRepo repositoryMapper = new MapperRepo();
             try
             {
+                var parameterAlert = new DynamicParameters();
+                parameterAlert.Add("@Org_Id", fleetOverviewFilter.Org_Id);
+                string queryAlert = @"select id from master.alert where organization_id = @Org_Id and state in ('I','A') ";
+                var alertids = await _dataAccess.QueryAsync<int>(queryAlert, parameterAlert);
+
                 var parameterFleetOverview = new DynamicParameters();
                 parameterFleetOverview.Add("@vins", fleetOverviewFilter.VINIds);
                 //filter trip data by n days
                 //parameterFleetOverview.Add("@days", string.Concat("'", fleetOverviewFilter.Days.ToString(), "d", "'"));
                 parameterFleetOverview.Add("@days", fleetOverviewFilter.Days, System.Data.DbType.Int32);
                 parameterFleetOverview.Add("@drivinginterval", fleetOverviewFilter.UnknownDrivingStateCheckInterval, System.Data.DbType.Int32);
+                parameterFleetOverview.Add("@alert_ids", alertids);
+
                 string queryFleetOverview = @"with CTE_vehicle as 
                 (
                 select id,vin,vid,registration_no,name,reference_date 
@@ -266,7 +273,7 @@ namespace net.atos.daf.ct2.reports.repository
                 livefleet.livefleet_position_statistics lps
                 on lcts.trip_id = lps.trip_id and lcts.vin = lps.vin                 
                 left join tripdetail.tripalert tripal
-                on lcts.vin=tripal.vin and  lcts.trip_id=tripal.trip_id 
+                on lcts.vin=tripal.vin and  lcts.trip_id=tripal.trip_id and tripal.alert_id = Any(@alert_ids)
                 -- where row_num=1
                 ) 
                 --select * from CTE_fleetOverview 
@@ -356,11 +363,18 @@ namespace net.atos.daf.ct2.reports.repository
             MapperRepo repositoryMapper = new MapperRepo();
             try
             {
+                var parameterAlert = new DynamicParameters();
+                parameterAlert.Add("@Org_Id", fleetOverviewFilter.Org_Id);
+                string queryAlert = @"select id from master.alert where organization_id = @Org_Id and state in ('I','A') ";
+                var alertids = await _dataAccess.QueryAsync<int>(queryAlert, parameterAlert);
+
                 var parameterFleetOverview = new DynamicParameters();
                 parameterFleetOverview.Add("@vins", fleetOverviewFilter.VINIds);
                 //filter trip data by n days
                 //parameterFleetOverview.Add("@days", string.Concat("'", fleetOverviewFilter.Days.ToString(), "d", "'"));
                 parameterFleetOverview.Add("@days", fleetOverviewFilter.Days, System.Data.DbType.Int32);
+                parameterFleetOverview.Add("@alert_ids", alertids);
+
                 string queryFleetOverview = @"With CTE_vehicle as 
                     (
                     select id,vin,vid,registration_no,name,reference_date 
@@ -428,7 +442,7 @@ namespace net.atos.daf.ct2.reports.repository
                     coalesce(alertgeoadd.address,'') as alertgeoadd_LatestAlertGeolocationAddress
                     from tripdetail.tripalert tripal
                     join CTE_vehicle veh
-                    on tripal.vin = veh.vin and tripal.alert_generated_time >= veh.reference_date
+                    on tripal.vin = veh.vin and tripal.alert_generated_time >= veh.reference_date and tripal.alert_id = Any(@alert_ids)
                     left join master.geolocationaddress alertgeoadd
                     on TRUNC(CAST(tripal.latitude as numeric),4)= TRUNC(CAST(alertgeoadd.latitude as numeric),4) 
                     and TRUNC(CAST(tripal.longitude as numeric),4) = TRUNC(CAST(alertgeoadd.longitude as numeric),4)
