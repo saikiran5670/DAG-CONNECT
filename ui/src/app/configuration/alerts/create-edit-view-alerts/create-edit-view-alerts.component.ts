@@ -391,8 +391,8 @@ proceedStep(prefData: any, preference: any){
         this.selectedApplyOn = this.selectedRowData.applyOn;
         this.setDefaultValue();
         if(this.selectedRowData.notifications.length != 0)
-          this.panelOpenState= true;
-      }
+        this.panelOpenState= true;
+    }
       else if(this.actionType == 'view'){
         this.alert_category_selected = this.selectedRowData.category;
         this.selectedApplyOn = this.selectedRowData.applyOn;
@@ -499,6 +499,7 @@ proceedStep(prefData: any, preference: any){
 
     if(flag){ // default selection after alert type change
       this.alertForm.get('vehicleGroup').setValue('ALL');
+      this.onChangeVehicleGroup('ALL');
     }
     //----------------------------------------------------------------------------------------------------------
 
@@ -1845,6 +1846,10 @@ convertToFromTime(milliseconds: any){
     this.backToPage.emit(emitObj);
   }
 
+  onClosePanel(evt){
+    this.panelOpenState = evt;
+  }
+
   onApplyOnChange(event){   
     this.selectedApplyOn = event.value;
     if(this.selectedApplyOn != 'G'){
@@ -1853,6 +1858,7 @@ convertToFromTime(milliseconds: any){
       this.getVehicleGroupsForAlertType(this.alertTypeObject);
     }else{
       this.alertForm.get('vehicleGroup').setValue('ALL');
+      this.onChangeVehicleGroup('ALL');
     }
   }
 
@@ -2763,20 +2769,22 @@ convertToFromTime(milliseconds: any){
   }
 
   onDeleteNotification(){
-    const options = {
-      title: this.translationData.lblDeleteAlertNotification,
-      message: this.translationData.lblAreousureyouwanttodeleteNotification,
-      cancelText: this.translationData.lblCancel,
-      confirmText: this.translationData.lblDelete
-    };
-    let name = this.selectedRowData.name;
-    this.dialogService.DeleteModelOpen(options, name);
-    this.dialogService.confirmedDel().subscribe((res) => {
-    if (res) {
-      this.notifications= [];
-      this.panelOpenState = !this.panelOpenState;    
-    }
-   });
+    this.notifications= [];
+    this.panelOpenState = !this.panelOpenState; 
+  //   const options = {
+  //     title: this.translationData.lblDeleteAlertNotification,
+  //     message: this.translationData.lblAreousureyouwanttodeleteNotification,
+  //     cancelText: this.translationData.lblCancel,
+  //     confirmText: this.translationData.lblDelete
+  //   };
+  //   let name = this.selectedRowData.name;
+  //   this.dialogService.DeleteModelOpen(options, name);
+  //   this.dialogService.confirmedDel().subscribe((res) => {
+  //   if (res) {
+  //     this.notifications= [];
+  //     this.panelOpenState = !this.panelOpenState;    
+  //   }
+  //  });
   }
 
   sliderChanged(){

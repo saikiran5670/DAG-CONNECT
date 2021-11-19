@@ -366,17 +366,17 @@ export class UserManagementComponent implements OnInit {
       this.initData = this.makeRoleAccountGrpList(usrlist);
       this.initData = this.getNewTagData(this.initData);
       this.dataSource = new MatTableDataSource(this.initData);
-      this.dataSource.filterPredicate = function(data: any, filter: string): boolean {
-        return (
-          data.roleList.toString().toLowerCase().includes(filter) ||
-          data.firstName.toLowerCase().includes(filter) ||
-          data.emailId.toString().toLowerCase().includes(filter)
-
-        );
-      };
       setTimeout(()=>{
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
+        this.dataSource.filterPredicate = function(data: any, filter: string): boolean {
+          return (
+            data.roleList.toString().toLowerCase().includes(filter) ||
+            data.firstName.toLowerCase().includes(filter) ||
+            data.emailId.toString().toLowerCase().includes(filter)
+
+          );
+        };
         this.dataSource.sortData = (data: String[], sort: MatSort) => {
           const isAsc = sort.direction === 'asc';
           return data.sort((a: any, b: any) => {
@@ -529,9 +529,6 @@ export class UserManagementComponent implements OnInit {
   }
 
   getFilteredValues(dataSource){
-    this.dataSource = dataSource;
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
     let val = JSON.parse(dataSource.filter);
     this.dataSource = this.dataSource.data.filter((item)=>{
       let isGroup = false;
@@ -561,6 +558,11 @@ export class UserManagementComponent implements OnInit {
         isName = true;
       }
       return isGroup && isRole && isName;
+    });
+    setTimeout(()=>{
+      this.dataSource = new MatTableDataSource(this.initData);
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
     });
   }
 

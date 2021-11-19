@@ -7,6 +7,6 @@ namespace net.atos.daf.ct2.kafkacdc
 {
     public interface IFeatureActivationCdcManager
     {
-        Task<bool> GetVehiclesAndAlertFromSubscriptionConfiguration(int subscriptionId, string operation);
+        Task<bool> GetVehiclesAndAlertFromSubscriptionConfiguration(int subscriptionId, string operation, int orgnisationId, List<string> vins);
     }
 }

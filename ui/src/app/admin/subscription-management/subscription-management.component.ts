@@ -389,7 +389,7 @@ export class SubscriptionManagementComponent implements OnInit {
     this.subscriptionService.getSubscriptionByType(this.changedOrgId ? this.changedOrgId : this.accountOrganizationId, type).subscribe((data : any) => {
       this.initData = data["subscriptionList"];
       this.filterData = this.initData;
-      // this.updatedTableData(this.initData);
+      this.updatedTableData(this.initData);
     });
   }
 

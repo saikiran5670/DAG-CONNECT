@@ -11,10 +11,15 @@ namespace net.atos.daf.ct2.reports.repository
     public partial class ReportRepository : IReportRepository
     {
         #region Fuel Deviation Report Table Details        
-        public Task<IEnumerable<FuelDeviation>> GetFilteredFuelDeviation(FuelDeviationFilter fuelDeviationFilters)
+        public async Task<IEnumerable<FuelDeviation>> GetFilteredFuelDeviation(FuelDeviationFilter fuelDeviationFilters)
         {
             try
             {
+                var parameterAlert = new DynamicParameters();
+                parameterAlert.Add("@Org_Id", fuelDeviationFilters.Org_Id);
+                string queryAlert = @"select id from master.alert where organization_id = @Org_Id and state in ('I','A') ";
+                var alertids = await _dataAccess.QueryAsync<int>(queryAlert, parameterAlert);
+
                 string query = @"SELECT distinct
                            trpst .trip_id as TripId
                         --,  fueldev.id as FuelDeviationId
@@ -38,7 +43,7 @@ namespace net.atos.daf.ct2.reports.repository
                         , coalesce(endgeoaddr.address,'') AS EndPosition
 	                    , trpst.etl_gps_fuel_consumed as FuelConsumed
 	                    , trpst.etl_gps_driving_time as DrivingTime
-	                    , (select count(1) from tripdetail.tripalert where trip_id = trpst .trip_id and type in ('P','L','T') ) as Alerts
+	                    , (select count(1) from tripdetail.tripalert where alert_id=ANY(@alert_ids) and trip_id = trpst .trip_id and type in ('P','L','T') ) as Alerts
 	                    , trpst.vin as VIN
 	                    , CASE WHEN v.registration_no IS NULL THEN '' ELSE v.registration_no END as RegistrationNo
 	                    , CASE WHEN v.name IS NULL THEN '' ELSE v.name END as VehicleName
@@ -55,7 +60,7 @@ namespace net.atos.daf.ct2.reports.repository
 		                                            AND trpst.end_time_stamp <= @EndDateTime
 		                                            )
 	                     JOIN master.vehicle as v 
-	 	                    ON v.vin = trpst.vin and trpst.end_time_stamp >= vh.reference_date
+	 	                    ON v.vin = trpst.vin and trpst.end_time_stamp >= v.reference_date
                          left JOIN master.geolocationaddress as geoaddr
                             on TRUNC(CAST(geoaddr.latitude as numeric),4)= TRUNC(CAST(fueldev.latitude as numeric),4) 
                                and TRUNC(CAST(geoaddr.longitude as numeric),4) = TRUNC(CAST(fueldev.longitude as numeric),4)
@@ -71,7 +76,8 @@ namespace net.atos.daf.ct2.reports.repository
                 parameter.Add("@StartDateTime", fuelDeviationFilters.StartDateTime);
                 parameter.Add("@EndDateTime", fuelDeviationFilters.EndDateTime);
                 parameter.Add("@vins", fuelDeviationFilters.VINs.ToArray());
-                return _dataMartdataAccess.QueryAsync<FuelDeviation>(query, parameter);
+                parameter.Add("@alert_ids", alertids);
+                return await _dataMartdataAccess.QueryAsync<FuelDeviation>(query, parameter);
             }
             catch (Exception)
             {
