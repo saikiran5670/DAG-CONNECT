@@ -708,9 +708,9 @@ namespace net.atos.daf.ct2.reports
         #endregion
 
         #region Fuel Deviation Report Table Details        
-        public Task<IEnumerable<FuelDeviation>> GetFilteredFuelDeviation(FuelDeviationFilter fuelDeviationFilters)
+        public async Task<IEnumerable<FuelDeviation>> GetFilteredFuelDeviation(FuelDeviationFilter fuelDeviationFilters)
         {
-            return _reportRepository.GetFilteredFuelDeviation(fuelDeviationFilters);
+            return await _reportRepository.GetFilteredFuelDeviation(fuelDeviationFilters);
         }
 
         public Task<IEnumerable<FuelDeviationCharts>> GetFuelDeviationCharts(FuelDeviationFilter fuelDeviationFilters)

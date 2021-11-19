@@ -1426,8 +1426,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (request.StartDateTime > request.EndDateTime) return BadRequest(ReportConstants.VALIDATION_DATEMISMATCH_MSG);
 
                 _logger.Info("GetFilteredFuelDeviationAsync method in Report (Fuel Deviation Report) API called.");
+                Metadata headers = new Metadata();
+                headers.Add("context_orgId", Convert.ToString(GetContextOrgId()));
                 string filters = JsonConvert.SerializeObject(request);
-                var response = await _reportServiceClient.GetFilteredFuelDeviationAsync(JsonConvert.DeserializeObject<FuelDeviationFilterRequest>(filters));
+                var response = await _reportServiceClient.GetFilteredFuelDeviationAsync(JsonConvert.DeserializeObject<FuelDeviationFilterRequest>(filters), headers);
 
                 foreach (var item in response.FuelDeviationDetails)
                 {
