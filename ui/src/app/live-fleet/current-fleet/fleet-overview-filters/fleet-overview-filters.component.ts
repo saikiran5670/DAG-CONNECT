@@ -671,6 +671,8 @@ removeDuplicates(originalArray, prop) {
       this.noRecordFlag = (helthStatusData.length > 0) ? false : true;
     }
 
+    this.filterVINonMap();
+
   }
 
   toggleAllSelectionHealth() {
@@ -684,6 +686,7 @@ removeDuplicates(originalArray, prop) {
         this.onChangeOtherFilter();  
       }else{
         this.vehicleListData = [];  
+        this.filterVINonMap();
       } 
     }
   }
@@ -738,6 +741,7 @@ removeDuplicates(originalArray, prop) {
         this.onChangeHealthStatus();  
       }else{
         this.vehicleListData = [];  
+        this.filterVINonMap();
       }
     }
   }
@@ -806,7 +810,17 @@ removeDuplicates(originalArray, prop) {
       this.noRecordFlag = (otherFilterData.length > 0) ? false : true;
     }
     
+    this.filterVINonMap();
   }
+
+  filterVINonMap(){
+    let _dataObj: any = {
+      vehicleDetailsFlag: this.isVehicleDetails,
+      data: this.vehicleListData
+    }
+    this.dataInterchangeService.getVehicleData(_dataObj);//change as per filter data
+  }
+
   // onChangeOtherFilter(id: any){
   //   this.filterVehicleForm.get("otherFilter").setValue(id);
   //   // this.loadVehicleData();
