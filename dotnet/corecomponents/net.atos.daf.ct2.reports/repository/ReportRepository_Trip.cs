@@ -128,7 +128,7 @@ namespace net.atos.daf.ct2.reports.repository
                 {
                     List<string> vins = new List<string>();
                     vins.Add(tripFilters.AlertVIN);
-                    List<TripAlert> lstTripAlert = await GetTripAlertDetails(tripFilters.StartDateTime, tripFilters.EndDateTime, vins, tripFilters.FeatureIds);
+                    List<TripAlert> lstTripAlert = await GetTripAlertDetails(tripFilters.StartDateTime, tripFilters.EndDateTime, vins, tripFilters.FeatureIds, tripFilters.OrganizationId);
                     if (lstTripAlert.Count() > 0)
                     {
                         foreach (TripDetails trip in data)
@@ -300,10 +300,15 @@ namespace net.atos.daf.ct2.reports.repository
 
         }
 
-        private async Task<List<TripAlert>> GetTripAlertDetails(double startDate, double endDate, List<string> vin, List<int> featureIds)
+        private async Task<List<TripAlert>> GetTripAlertDetails(double startDate, double endDate, List<string> vin, List<int> featureIds, int organizationId)
         {
             try
             {
+                var parameterOrg = new DynamicParameters();
+                parameterOrg.Add("@Org_Id", organizationId);
+                string queryAlertIds = @"select id from master.alert where organization_id = @Org_Id and state in ('I','A') ";
+                var alertids = await _dataAccess.QueryAsync<int>(queryAlertIds, parameterOrg);
+
                 var parameterAlert = new DynamicParameters();
                 parameterAlert.Add("@featureIds", featureIds);
                 var queryStatementFeature = @"select enum from translation.enumtranslation where feature_id = ANY(@featureIds)";
@@ -331,6 +336,7 @@ namespace net.atos.daf.ct2.reports.repository
                                         AND TA.type = ANY (@resultFeaturEnum)
                                         and TA.category_type <> 'O'
                 				        and TA.type <> 'W'
+                                        and TA.alert_id = Any(@alert_ids)
                                          order by TS.end_time_stamp desc";
 
                 var parameter = new DynamicParameters();
@@ -338,6 +344,7 @@ namespace net.atos.daf.ct2.reports.repository
                 parameter.Add("@EndDateTime", endDate);
                 parameter.Add("@vin", vin);
                 parameter.Add("@resultFeaturEnum", resultFeaturEnum);
+                parameter.Add("@alert_ids", alertids.ToArray());
                 List<TripAlert> lstTripAlert = (List<TripAlert>)await _dataMartdataAccess.QueryAsync<TripAlert>(queryAlert, parameter);
 
                 if (lstTripAlert.Count() > 0)

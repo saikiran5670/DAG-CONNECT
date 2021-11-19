@@ -38,7 +38,7 @@ namespace net.atos.daf.ct2.kafkacdc.test
             var vehicleCdcrepository = new VehicleCdcRepository(_dataAccess, _datamartDataacess);
             _vehicleCdcManager = new VehicleCdcManager(vehicleCdcrepository);
             var vehicleManagementAlertCDCRepository = new VehicleManagementAlertCDCRepository(_dataAccess, _datamartDataacess);
-            _vehicleMgmAlertCdcManager = new VehicleManagementAlertCDCManager(_vehicleAlertRepository, vehicleManagementAlertCDCRepository, _configuration);
+            //_vehicleMgmAlertCdcManager = new VehicleManagementAlertCDCManager(_vehicleAlertRepository, vehicleManagementAlertCDCRepository, _configuration);
             _landmarkrefrepo = new LandmarkAlertCdcRepository(_dataAccess, _datamartDataacess);
             _landmarkrefmanager = new LandmarkAlertCdcManager(_landmarkrefrepo, _vehicleAlertRepository, _configuration);
         }
@@ -69,12 +69,12 @@ namespace net.atos.daf.ct2.kafkacdc.test
             Assert.IsTrue(result);
         }
 
-        [TestMethod]
-        public void UpdateVehcle()
-        {
-            var result = _vehicleMgmAlertCdcManager.GetVehicleAlertRefFromVehicleId(new List<int> { 27 }, "N", 36).Result;
-            Assert.IsTrue(result);
-        }
+        //[TestMethod]
+        //public void UpdateVehcle()
+        //{
+        //    var result = _vehicleMgmAlertCdcManager.GetVehicleAlertRefFromVehicleId(new List<int> { 27 }, "N", 36, 36, 120, new List<int> { 0 }).Result;
+        //    Assert.IsTrue(result);
+        //}
         [TestMethod]
         public async Task VehicleCdcProducer()
         {

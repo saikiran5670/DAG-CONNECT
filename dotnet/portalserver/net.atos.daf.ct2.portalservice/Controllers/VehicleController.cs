@@ -43,7 +43,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 _logger.Info("Update method in vehicle API called.");
-
                 // Validation 
                 if (request.ID <= 0)
                 {
@@ -59,7 +58,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var vehicleRequest = new VehicleBusinessService.VehicleRequest();
                 vehicleRequest = _mapper.ToVehicle(request);
                 vehicleRequest.UserOrgId = GetUserSelectedOrgId();
-                VehicleBusinessService.VehicleResponce vehicleResponse = await _vehicleClient.UpdateAsync(vehicleRequest);
+                var featureIds = GetMappedFeatureIdByStartWithName(net.atos.daf.ct2.portalservice.Entity.Alert.AlertConstants.ALERT_FEATURE_STARTWITH);
+                Metadata headers = new Metadata();
+                headers.Add("logged_in_accid", Convert.ToString(_userDetails.AccountId));
+                headers.Add("report_feature_ids", JsonConvert.SerializeObject(featureIds));
+                VehicleBusinessService.VehicleResponce vehicleResponse = await _vehicleClient.UpdateAsync(vehicleRequest, headers);
 
                 if (vehicleResponse.Code == VehicleBusinessService.Responcecode.Failed
                      && vehicleResponse.Message == "There is an error updating vehicle.")
@@ -1085,7 +1088,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var vehicleSettings = _mapper.ToUpdateVehicleConnection(request);
                 vehicleSettings.OrganizationId = GetUserSelectedOrgId();
                 vehicleSettings.OrgContextId = GetContextOrgId();
-                VehicleBusinessService.VehicleConnectResponse vehicleConnectResponse = _vehicleClient.UpdateVehicleConnection(vehicleSettings);
+                var featureIds = GetMappedFeatureIdByStartWithName(net.atos.daf.ct2.portalservice.Entity.Alert.AlertConstants.ALERT_FEATURE_STARTWITH);
+                Metadata headers = new Metadata();
+                headers.Add("logged_in_accid", Convert.ToString(_userDetails.AccountId));
+                headers.Add("report_feature_ids", JsonConvert.SerializeObject(featureIds));
+                VehicleBusinessService.VehicleConnectResponse vehicleConnectResponse = _vehicleClient.UpdateVehicleConnection(vehicleSettings, headers);
                 if (vehicleConnectResponse != null && vehicleConnectResponse.Code == VehicleBusinessService.Responcecode.Failed
                      && vehicleConnectResponse.Message == "There is an error updating vehicle opt in status.")
                 {

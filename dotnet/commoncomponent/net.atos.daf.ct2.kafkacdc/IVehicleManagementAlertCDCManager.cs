@@ -7,6 +7,6 @@ namespace net.atos.daf.ct2.kafkacdc
 {
     public interface IVehicleManagementAlertCDCManager
     {
-        Task<bool> GetVehicleAlertRefFromVehicleId(IEnumerable<int> vehicleIds, string operation, int organizationId);
+        Task<bool> GetVehicleAlertRefFromVehicleId(IEnumerable<int> vehicleIds, string operation, int contextOrgId, int userOrgId, int accountId, IEnumerable<int> featureIds);
     }
 }
