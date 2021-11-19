@@ -121,6 +121,7 @@ displayPOIList: any = [];
 internalSelection: boolean = false;
 fromMoreAlertsFlag: boolean = false;
 herePOIArr: any = [];
+getLogbookDetailsAPICall: any;
 prefMapData: any = [
   {
     key: 'rp_lb_logbook_details_alertlevel',
@@ -228,6 +229,7 @@ defaultTranslation(){
 }
 
 ngOnDestroy(){
+  this.getLogbookDetailsAPICall.unsubscribe();
   this.globalSearchFilterData["vehicleGroupDropDownValue"] = this.logBookForm.controls.vehicleGroup.value;
   this.globalSearchFilterData["vehicleDropDownValue"] = this.logBookForm.controls.vehicle.value;
   this.globalSearchFilterData["timeRangeSelection"] = this.selectionTab;
@@ -245,6 +247,7 @@ ngOnDestroy(){
     this.globalSearchFilterData["endTimeStamp"] = this.endTimeDisplay;
   }
   this.setGlobalSearchData(this.globalSearchFilterData);
+  
 }
 
   ngOnInit() {
@@ -815,7 +818,7 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
         }, 0);
       }
       this.showLoadingIndicator = true;
-      this.reportService.getLogbookDetails(objData).subscribe((logbookData: any) => {
+      this.getLogbookDetailsAPICall = this.reportService.getLogbookDetails(objData).subscribe((logbookData: any) => {
         this.hideloader();
         let newLogbookData = [];
         logbookData.forEach(element => {

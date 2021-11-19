@@ -23,3 +23,22 @@ enum ResponseCode{
 message CleanDataResponse {
   ResponseCode Code = 2;
 }
+
+    message DataPurgingTableLog 
+    {      
+         int32 Id =1;
+         int32 DataPurgingServiceLogId =2;
+         int32 DataPurgingTableId =3;
+         int64 PurgingStartTime =4;
+         int64 PurgingEndTime =5;
+         int32 NoOfDeletedRecords=6;
+         int64 CreatedAt =7;
+    }
+      message DataPurgingServiceLog
+    {
+         int32 Id =1;
+         string ServiceName =2;
+         int64 ExecutionStartTime =3;
+         int64 ExecutionEndTime =4;
+         int64 CreatedAt =5;
+    }
