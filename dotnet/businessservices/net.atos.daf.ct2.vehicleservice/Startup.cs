@@ -18,6 +18,8 @@ using net.atos.daf.ct2.translation.repository;
 using net.atos.daf.ct2.vehicle;
 using net.atos.daf.ct2.vehicle.repository;
 using net.atos.daf.ct2.vehicleservice.Services;
+using net.atos.daf.ct2.visibility;
+using net.atos.daf.ct2.visibility.repository;
 using Identity = net.atos.daf.ct2.identity;
 
 namespace net.atos.daf.ct2.vehicleservice
@@ -80,6 +82,8 @@ namespace net.atos.daf.ct2.vehicleservice
             services.AddTransient<IVehicleGroupAlertCdcManager, VehicleGroupAlertCdcManager>();
             services.AddTransient<IVehicleGroupAlertCdcRepository, VehicleGroupAlertCdcRepository>();
             services.AddTransient<IAlertMgmAlertCdcRepository, AlertMgmAlertCdcRepository>();
+            services.AddTransient<IVisibilityManager, VisibilityManager>();
+            services.AddTransient<IVisibilityRepository, VisibilityRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
