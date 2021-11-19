@@ -1846,6 +1846,10 @@ convertToFromTime(milliseconds: any){
     this.backToPage.emit(emitObj);
   }
 
+  onClosePanel(evt){
+    this.panelOpenState = evt;
+  }
+
   onApplyOnChange(event){   
     this.selectedApplyOn = event.value;
     if(this.selectedApplyOn != 'G'){
@@ -2765,20 +2769,22 @@ convertToFromTime(milliseconds: any){
   }
 
   onDeleteNotification(){
-    const options = {
-      title: this.translationData.lblDeleteAlertNotification,
-      message: this.translationData.lblAreousureyouwanttodeleteNotification,
-      cancelText: this.translationData.lblCancel,
-      confirmText: this.translationData.lblDelete
-    };
-    let name = this.selectedRowData.name;
-    this.dialogService.DeleteModelOpen(options, name);
-    this.dialogService.confirmedDel().subscribe((res) => {
-    if (res) {
-      this.notifications= [];
-      this.panelOpenState = !this.panelOpenState;    
-    }
-   });
+    this.notifications= [];
+    this.panelOpenState = !this.panelOpenState; 
+  //   const options = {
+  //     title: this.translationData.lblDeleteAlertNotification,
+  //     message: this.translationData.lblAreousureyouwanttodeleteNotification,
+  //     cancelText: this.translationData.lblCancel,
+  //     confirmText: this.translationData.lblDelete
+  //   };
+  //   let name = this.selectedRowData.name;
+  //   this.dialogService.DeleteModelOpen(options, name);
+  //   this.dialogService.confirmedDel().subscribe((res) => {
+  //   if (res) {
+  //     this.notifications= [];
+  //     this.panelOpenState = !this.panelOpenState;    
+  //   }
+  //  });
   }
 
   sliderChanged(){
