@@ -221,6 +221,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                // Fetch Feature Ids of the alert for visibility
+                var featureIds = GetMappedFeatureIdByStartWithName(VehcileConstants.VEHICLE_FEATURE_STARTWITH);
+                Metadata headers = new Metadata();
+                headers.Add("report_feature_ids", JsonConvert.SerializeObject(featureIds));
+                headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+                headers.Add("logged_in_accId", Convert.ToString(_userDetails.AccountId));
+
                 _logger.Info("Update Group method in vehicle API called.");
 
                 if (group.Id == 0)
@@ -285,6 +292,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             VehicleBusinessService.VehicleGroupIdRequest request = new VehicleBusinessService.VehicleGroupIdRequest();
             try
             {
+                // Fetch Feature Ids of the alert for visibility
+                var featureIds = GetMappedFeatureIdByStartWithName(VehcileConstants.VEHICLE_FEATURE_STARTWITH);
+                Metadata headers = new Metadata();
+                headers.Add("report_feature_ids", JsonConvert.SerializeObject(featureIds));
+                headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+                headers.Add("logged_in_accId", Convert.ToString(_userDetails.AccountId));
+
                 _logger.Info("Can delete Group method in vehicle API called.");
 
                 if ((Convert.ToInt32(groupId) <= 0))
@@ -325,6 +339,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             VehicleBusinessService.VehicleGroupIdRequest request = new VehicleBusinessService.VehicleGroupIdRequest();
             try
             {
+                // Fetch Feature Ids of the alert for visibility
+                var featureIds = GetMappedFeatureIdByStartWithName(VehcileConstants.VEHICLE_FEATURE_STARTWITH);
+                Metadata headers = new Metadata();
+                headers.Add("report_feature_ids", JsonConvert.SerializeObject(featureIds));
+                headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+                headers.Add("logged_in_accId", Convert.ToString(_userDetails.AccountId));
+
                 _logger.Info("Delete Group method in vehicle API called.");
 
                 if ((Convert.ToInt32(groupId) <= 0))
