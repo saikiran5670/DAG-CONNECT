@@ -762,6 +762,8 @@ namespace net.atos.daf.ct2.organization.repository
                 objVehicle.Tcu_Serial_Number = null;
                 objVehicle.Tcu_Version = null;
                 objVehicle.Organization_Id = organizationId;
+                objVehicle.Name = keyHandOver.VIN.Substring(keyHandOver.VIN.Length - 8);
+                objVehicle.License_Plate_Number = string.Empty;
                 await _vehicelManager.UpdateOrgVehicleDetails(objVehicle);
             }
             catch (Exception ex)
