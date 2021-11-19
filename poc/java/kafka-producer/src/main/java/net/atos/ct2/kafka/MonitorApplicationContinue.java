@@ -31,15 +31,15 @@ public class MonitorApplicationContinue {
 
     public static void main(String[] args) throws Exception {
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        if(args.length < 0 )
+        if (args.length < 0)
             throw new Exception("property or json file not provided");
         String prop = args[0];
         String jsonFile = args[1];
         String jsonFile2 = args[2];
-        run(prop,jsonFile,jsonFile2);
+        run(prop, jsonFile, jsonFile2);
     }
 
-    public static void run(String prop,String jsonFile,String jsonFile2) throws Exception {
+    public static void run(String prop, String jsonFile, String jsonFile2) throws Exception {
         System.out.println("Command liner runner............!");
         Properties kafkaTopicProp = new Properties();
         Properties env = new Properties();
@@ -47,28 +47,28 @@ public class MonitorApplicationContinue {
         env.load(iStream);
 
 
-        kafkaTopicProp.put("request.timeout.ms", env.getProperty("request.timeout.ms","60000"));
+        kafkaTopicProp.put("request.timeout.ms", env.getProperty("request.timeout.ms", "60000"));
         kafkaTopicProp.put("client.id", env.getProperty("client.id"));
         kafkaTopicProp.put("auto.offset.reset", env.getProperty("auto.offset.reset"));
         kafkaTopicProp.put("group.id", env.getProperty("group.id"));
         kafkaTopicProp.put("bootstrap.servers", env.getProperty("bootstrap.servers"));
-        if(Objects.nonNull(env.getProperty("security.protocol")))
+        if (Objects.nonNull(env.getProperty("security.protocol")))
             kafkaTopicProp.put("security.protocol", env.getProperty("security.protocol"));
-        if(Objects.nonNull(env.getProperty("sasl.jaas.config")))
+        if (Objects.nonNull(env.getProperty("sasl.jaas.config")))
             kafkaTopicProp.put("sasl.jaas.config", env.getProperty("sasl.jaas.config"));
-        if(Objects.nonNull(env.getProperty("sasl.mechanism")))
+        if (Objects.nonNull(env.getProperty("sasl.mechanism")))
             kafkaTopicProp.put("sasl.mechanism", env.getProperty("sasl.mechanism"));
 
         kafkaTopicProp.put("value.serializer", "net.atos.ct2.kafka.serde.Serializastion");
         kafkaTopicProp.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 
-        String sinkTopicName=env.getProperty("daf.produce.topic");
+        String sinkTopicName = env.getProperty("daf.produce.topic");
         KafkaProducer<String, Monitor> producer = new KafkaProducer<>(kafkaTopicProp);
 
         Monitor monitor1 = Files.readAllLines(Paths.get(jsonFile))
                 .stream()
                 .map(json -> {
-                	Monitor monitor = new Monitor();
+                    Monitor monitor = new Monitor();
                     try {
                         monitor = mapper.readValue(json, Monitor.class);
                     } catch (Exception e) {
@@ -78,11 +78,11 @@ public class MonitorApplicationContinue {
                 })
                 .filter(monitor -> monitor.getVin() != null)
                 .collect(Collectors.toList()).get(0);
-        
+
         Monitor monitor2 = Files.readAllLines(Paths.get(jsonFile2))
                 .stream()
                 .map(json -> {
-                	Monitor monitor = new Monitor();
+                    Monitor monitor = new Monitor();
                     try {
                         monitor = mapper.readValue(json, Monitor.class);
                     } catch (Exception e) {
@@ -92,70 +92,57 @@ public class MonitorApplicationContinue {
                 })
                 .filter(monitor -> monitor.getVin() != null)
                 .collect(Collectors.toList()).get(0);
-        System.out.println("Init data ::"+mapper.writeValueAsString(monitor1));
-        System.out.println("Init data ::"+mapper.writeValueAsString(monitor2));
+        System.out.println("Init data ::" + mapper.writeValueAsString(monitor1));
+        System.out.println("Init data ::" + mapper.writeValueAsString(monitor2));
 
-        Integer msgLimit = Integer.valueOf(env.getProperty("index.set.msg.limit", "30"));
-   MonitorDocument doc= new MonitorDocument();
-   WarningObject warObj= new WarningObject();
-   List<Warning> warningList = new ArrayList<Warning>();
-  Warning war = new Warning();
-  Warning war1 = new Warning();
-  war.setWarningClass(4);
-  war.setWarningNumber(4);
-  
-  war1.setWarningClass(5);
-  war1.setWarningNumber(5);
-  
-  warningList.add(war);
-  warningList.add(war1);
-  warObj.setWarningList(warningList);
+        Integer msgLimit = Integer.valueOf(env.getProperty("monitor.set.msg.limit"));
+        MonitorDocument doc = new MonitorDocument();
+        WarningObject warObj = new WarningObject();
+        List<Warning> warningList = new ArrayList<Warning>();
+        Warning war = new Warning();
+        Warning war1 = new Warning();
+        war.setWarningClass(4);
+        war.setWarningNumber(4);
 
-        int warningclass=1;
-        int warningNumber=2;
-        logger.info("start time-->"+ System.currentTimeMillis());
-        for(int i=0; i < msgLimit; i++){
-        	System.out.println("current mesage count-->"+ i);
+        war1.setWarningClass(5);
+        war1.setWarningNumber(5);
+
+        warningList.add(war);
+        warningList.add(war1);
+        warObj.setWarningList(warningList);
+
+        int warningclass = 1;
+        int warningNumber = 2;
+        System.out.println("start time-->" + System.currentTimeMillis());
+        for (int i = 0; i < msgLimit; i++) {
+            System.out.println("current message count-->" + i);
             long timeMillis = System.currentTimeMillis();
             monitor1.setEvtDateTime(Utils.convertMillisecondToDateTime(timeMillis));
-            if(i % 5==0) {
-            	monitor1.setVEvtID(63);
-            	//doc.setVWarningClass((int)Math.floor(Math.random() * 11));
-            	//doc.setVWarningNumber((int)Math.floor(Math.random() * 11));
-            	doc.setWarningObject(warObj);
-            	monitor2.setDocument(doc);
-            	 producer.send(new ProducerRecord<String, Monitor>(sinkTopicName, "Monitor2", monitor2));
+            if (i % 5 == 0) {
+                monitor1.setVEvtID(63);
+                //doc.setVWarningClass((int)Math.floor(Math.random() * 11));
+                //doc.setVWarningNumber((int)Math.floor(Math.random() * 11));
+                doc.setWarningObject(warObj);
+                monitor2.setDocument(doc);
+                producer.send(new ProducerRecord<String, Monitor>(sinkTopicName, "Monitor2", monitor2));
+            } else {
+                monitor1.setVEvtID(44);
+                MonitorDocument doc1 = new MonitorDocument();
+                doc1.setVWarningClass(warningclass);
+                doc1.setVWarningNumber(warningNumber);
+                monitor1.setDocument(doc1);
+                producer.send(new ProducerRecord<String, Monitor>(sinkTopicName, "Monitor", monitor1));
             }
-            
-            else {
-            	monitor1.setVEvtID(44);
-            	 MonitorDocument doc1= new MonitorDocument();
-            	doc1.setVWarningClass(warningclass);
-            	doc1.setVWarningNumber(warningNumber);
-            	monitor1.setDocument(doc1);
-            	producer.send(new ProducerRecord<String, Monitor>(sinkTopicName, "Monitor", monitor1));
-            }
-            
-            //monitor1.setVDist(inival);
-           // monitor1.getDocument().setVTachographSpeed(inival.intValue());
-           // producer.send(new ProducerRecord<String, Monitor>(sinkTopicName, "Monitor", monitor1));
-            //producer.send(new ProducerRecord<String, Monitor>(sinkTopicName, "Monitor2", monitor2));
-			/*
-			 * if(i % 5==0) {
-			 * logger.info("Data Send ::"+mapper.writeValueAsString(monitor2));
-			 * 
-			 * } else { logger.info("Data Send ::"+mapper.writeValueAsString(monitor1)); }
-			 */
-            
-            long sleepTime = Long.valueOf(env.getProperty("index.set.system.event.time.sleep", "100000"));
+
+            long sleepTime = Long.valueOf(env.getProperty("monitor.set.system.event.time.sleep"));
             Thread.sleep(sleepTime);
-            warningclass = warningclass+1;
-            warningNumber = warningNumber+1;
-            if(warningclass==10) {
-            	warningclass=1;
-            	warningNumber=1;
+            warningclass = warningclass + 1;
+            warningNumber = warningNumber + 1;
+            if (warningclass == 10) {
+                warningclass = 1;
+                warningNumber = 1;
             }
         }
-        logger.info("end time-->"+ System.currentTimeMillis());
+        System.out.println("end time-->" + System.currentTimeMillis());
     }
 }
