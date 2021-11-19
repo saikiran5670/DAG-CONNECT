@@ -95,7 +95,7 @@ public class MonitorApplicationContinue {
         System.out.println("Init data ::"+mapper.writeValueAsString(monitor1));
         System.out.println("Init data ::"+mapper.writeValueAsString(monitor2));
 
-        Integer msgLimit = Integer.valueOf(env.getProperty("index.set.msg.limit", "30"));
+        Integer msgLimit = Integer.valueOf(env.getProperty("monitor.set.msg.limit"));
    MonitorDocument doc= new MonitorDocument();
    WarningObject warObj= new WarningObject();
    List<Warning> warningList = new ArrayList<Warning>();
@@ -113,8 +113,11 @@ public class MonitorApplicationContinue {
 
         int warningclass=1;
         int warningNumber=2;
-        logger.info("start time-->"+ System.currentTimeMillis());
+        System.out.println("start time-->"+ System.currentTimeMillis());
         for(int i=0; i < msgLimit; i++){
+        	String vinNo= "abcd" + (int)Math.floor(Math.random() * 100);
+        	monitor2.setVin(vinNo);
+        	monitor1.setVin(vinNo);
         	System.out.println("current mesage count-->"+ i);
             long timeMillis = System.currentTimeMillis();
             monitor1.setEvtDateTime(Utils.convertMillisecondToDateTime(timeMillis));
@@ -140,14 +143,16 @@ public class MonitorApplicationContinue {
            // monitor1.getDocument().setVTachographSpeed(inival.intValue());
            // producer.send(new ProducerRecord<String, Monitor>(sinkTopicName, "Monitor", monitor1));
             //producer.send(new ProducerRecord<String, Monitor>(sinkTopicName, "Monitor2", monitor2));
+			
 			/*
 			 * if(i % 5==0) {
-			 * logger.info("Data Send ::"+mapper.writeValueAsString(monitor2));
+			 * System.out.println("Data Send ::"+mapper.writeValueAsString(monitor2));
 			 * 
-			 * } else { logger.info("Data Send ::"+mapper.writeValueAsString(monitor1)); }
+			 * } else {
+			 * System.out.println("Data Send ::"+mapper.writeValueAsString(monitor1)); }
 			 */
             
-            long sleepTime = Long.valueOf(env.getProperty("index.set.system.event.time.sleep", "100000"));
+            long sleepTime = Long.valueOf(env.getProperty("monitor.set.system.event.time.sleep"));
             Thread.sleep(sleepTime);
             warningclass = warningclass+1;
             warningNumber = warningNumber+1;
@@ -156,6 +161,6 @@ public class MonitorApplicationContinue {
             	warningNumber=1;
             }
         }
-        logger.info("end time-->"+ System.currentTimeMillis());
+        System.out.println("end time-->"+ System.currentTimeMillis());
     }
 }
