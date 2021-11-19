@@ -38,6 +38,7 @@ namespace net.atos.daf.ct2.reports.repository
                                          		  , TO_TIMESTAMP(da.duration)
                                          		FROM livefleet.livefleet_trip_driver_activity da
                                          				JOIN master.driver dr ON dr.driver_id = da.driver_id
+                                                        join master.vehicle v on v.vin=da.vin and da.activity_date >= v.reference_date
                                          			WHERE
                                          				da.activity_date     >= @FromDate
                                          				AND da.activity_date <= @ToDate

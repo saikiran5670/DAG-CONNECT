@@ -391,8 +391,8 @@ proceedStep(prefData: any, preference: any){
         this.selectedApplyOn = this.selectedRowData.applyOn;
         this.setDefaultValue();
         if(this.selectedRowData.notifications.length != 0)
-          this.panelOpenState= true;
-      }
+        this.panelOpenState= true;
+    }
       else if(this.actionType == 'view'){
         this.alert_category_selected = this.selectedRowData.category;
         this.selectedApplyOn = this.selectedRowData.applyOn;
@@ -477,7 +477,7 @@ proceedStep(prefData: any, preference: any){
     this.alertTypeByCategoryList = this.alertTypeByCategoryList.filter(item => item.enum != 'Y');
   }
 
-  onChangeAlertType(value){
+  onChangeAlertType(value: any, flag?: boolean){
     this.vehicleGroupList= [];
     this.vehicleByVehGroupList= [];
     this.vehicleListForTable= [];
@@ -497,7 +497,10 @@ proceedStep(prefData: any, preference: any){
       this.getVehicleGroupsForAlertType(alertTypeObj);
     }
 
-    
+    if(flag){ // default selection after alert type change
+      this.alertForm.get('vehicleGroup').setValue('ALL');
+      this.onChangeVehicleGroup('ALL');
+    }
     //----------------------------------------------------------------------------------------------------------
 
     if(this.alert_category_selected === 'L' && (this.alert_type_selected === 'N' || this.alert_type_selected === 'X' || this.alert_type_selected === 'C' ||this.alert_type_selected === 'S')){
@@ -741,9 +744,9 @@ proceedStep(prefData: any, preference: any){
          let itemSplit = item.split("~");
          if(itemSplit[2] != 'S') {
           let vehicleGroupObj= {
-            "vehicleGroupId" : itemSplit[0],
+            "vehicleGroupId" : parseInt(itemSplit[0]),
             "vehicleGroupName" : itemSplit[1],
-            "vehicleId" : element.vehicleId
+            "vehicleId" : parseInt(element.vehicleId)
           }
           this.vehicleGroupList.push(vehicleGroupObj);
           console.log("vehicleGroupList 1", this.vehicleGroupList);
@@ -763,13 +766,15 @@ proceedStep(prefData: any, preference: any){
   }
  
   resetVehicleGroupFilter(){
-		this.filteredVehicleGroups.next(this.vehicleGroupList.slice());
-	  }
- resetVehiclesFilter(){
-   this.filteredVehicles.next(this.vehicleByVehGroupList.slice());
- }
+    this.filteredVehicleGroups.next(this.vehicleGroupList.slice());
+	}
+
+  resetVehiclesFilter(){
+    this.filteredVehicles.next(this.vehicleByVehGroupList.slice());
+  }
   getVehiclesForAlertType(alertTypeObj: any){
-    this.vehicleByVehGroupList= [];
+    this.vehicleByVehGroupList = [];
+    this.vehicleListForTable = [];
     let featuresData= this.alertCategoryTypeFilterData.filter(item => item.featureKey == alertTypeObj.key);
     if(featuresData.length == 1 && featuresData[0].subscriptionType == 'O'){
       this.associatedVehicleData.forEach(element => {        
@@ -890,9 +895,14 @@ proceedStep(prefData: any, preference: any){
     this.updateVehiclesDataSource(vehicleSelected);
   }
 
-  onChangeUnitType(value){
-    this.unitForThreshold= this.unitTypes.filter(item => item.enum == value)[0].value;
-    this.unitTypeEnum= value;
+  onChangeUnitType(value: any){
+    let _s = this.unitTypes.filter(item => item.enum == value);
+    if(_s && _s.length > 0){
+      this.unitForThreshold = _s[0].value;
+    }else{
+      this.unitForThreshold = '';
+    }
+    this.unitTypeEnum = value;
   }
 
   loadMap() {
@@ -1291,8 +1301,10 @@ PoiCheckboxClicked(event: any, row: any) {
     this.onChangeAlertCategory(this.selectedRowData.category);
     
     this.alertForm.get('alertType').setValue(this.selectedRowData.type);
-    this.alert_type_selected= this.selectedRowData.type;
+    this.onChangeAlertType(this.selectedRowData.type);
+    this.alert_type_selected = this.selectedRowData.type;
     this.alertForm.get('applyOn').setValue(this.selectedRowData.applyOn);
+    this.selectedApplyOn = this.selectedRowData.applyOn;
     if(this.selectedRowData.alertLandmarkRefs.length > 0){
     this.poiWidth =this.selectedRowData.alertLandmarkRefs[0].distance;
     this.sliderChanged();
@@ -1308,7 +1320,7 @@ PoiCheckboxClicked(event: any, row: any) {
     }
     
     this.alertForm.get('statusMode').setValue(this.selectedRowData.state);
-    this.onChangeAlertType(this.selectedRowData.type);
+    // this.onChangeAlertType(this.selectedRowData.type);
     this.convertValuesToPrefUnit();
     this.selectedApplyOnPeriod = this.selectedRowData.alertUrgencyLevelRefs[0].periodType;
     if(this.selectedApplyOnPeriod == 'C'){
@@ -1834,12 +1846,19 @@ convertToFromTime(milliseconds: any){
     this.backToPage.emit(emitObj);
   }
 
+  onClosePanel(evt){
+    this.panelOpenState = evt;
+  }
+
   onApplyOnChange(event){   
     this.selectedApplyOn = event.value;
     if(this.selectedApplyOn != 'G'){
       // this.updateVehiclesList(this.alertTypeObject);
       this.getVehiclesForAlertType(this.alertTypeObject);
       this.getVehicleGroupsForAlertType(this.alertTypeObject);
+    }else{
+      this.alertForm.get('vehicleGroup').setValue('ALL');
+      this.onChangeVehicleGroup('ALL');
     }
   }
 
@@ -2750,20 +2769,22 @@ convertToFromTime(milliseconds: any){
   }
 
   onDeleteNotification(){
-    const options = {
-      title: this.translationData.lblDeleteAlertNotification,
-      message: this.translationData.lblAreousureyouwanttodeleteNotification,
-      cancelText: this.translationData.lblCancel,
-      confirmText: this.translationData.lblDelete
-    };
-    let name = this.selectedRowData.name;
-    this.dialogService.DeleteModelOpen(options, name);
-    this.dialogService.confirmedDel().subscribe((res) => {
-    if (res) {
-      this.notifications= [];
-      this.panelOpenState = !this.panelOpenState;    
-    }
-   });
+    this.notifications= [];
+    this.panelOpenState = !this.panelOpenState; 
+  //   const options = {
+  //     title: this.translationData.lblDeleteAlertNotification,
+  //     message: this.translationData.lblAreousureyouwanttodeleteNotification,
+  //     cancelText: this.translationData.lblCancel,
+  //     confirmText: this.translationData.lblDelete
+  //   };
+  //   let name = this.selectedRowData.name;
+  //   this.dialogService.DeleteModelOpen(options, name);
+  //   this.dialogService.confirmedDel().subscribe((res) => {
+  //   if (res) {
+  //     this.notifications= [];
+  //     this.panelOpenState = !this.panelOpenState;    
+  //   }
+  //  });
   }
 
   sliderChanged(){

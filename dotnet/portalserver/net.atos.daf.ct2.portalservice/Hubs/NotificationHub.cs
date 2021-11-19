@@ -147,16 +147,17 @@ namespace net.atos.daf.ct2.portalservice.hubs
         //            };
         //            _accountSignalRClientsMappingList._accountClientMapperList.Add(accountSignalRClientMapper);
         //        }
+        //        int pkId = 0;
         //        while (true)
         //        {
         //            NotificationAlertMessages notificationAlertMessages = new NotificationAlertMessages
         //            {
-        //                TripAlertId = _pkId,
+        //                TripAlertId = pkId,
         //                TripId = Dns.GetHostName(),
         //                Vin = "XLR0998HGFFT76657",
         //                AlertCategory = "L",
         //                AlertType = "G",
-        //                AlertId = _pkId * 2,
+        //                AlertId = pkId * 2,
         //                AlertGeneratedTime = DateTime.Now.Millisecond,
         //                VehicleGroupId = 185,
         //                VehicleGroupName = "Fleet",
@@ -167,13 +168,13 @@ namespace net.atos.daf.ct2.portalservice.hubs
         //                UrgencyTypeKey = Context.ConnectionId,
         //                UrgencyLevel = "C"
         //            };
-        //            IReadOnlyList<string> connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Where(clients => clients.AccountId == accountId).Select(clients => clients.HubClientId).ToList();
-        //            await Clients.Clients(connectionIds).SendAsync("TestAlertResponse", JsonConvert.SerializeObject(JsonConvert.SerializeObject(notificationAlertMessages, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() })));
-        //            if (_pkId > 1000)
+        //            //IReadOnlyList<string> connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Where(clients => clients.AccountId == accountId).Select(clients => clients.HubClientId).ToList();
+        //            await Clients.All.SendAsync("TestAlertResponse", JsonConvert.SerializeObject(JsonConvert.SerializeObject(notificationAlertMessages, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() })));
+        //            if (pkId > 1000)
         //            {
-        //                _pkId = 1;
+        //                pkId = 1;
         //            }
-        //            _pkId = _pkId + 1;
+        //            pkId = pkId + 1;
         //            Thread.Sleep(60000);//1 minute 
         //        }
         //    }

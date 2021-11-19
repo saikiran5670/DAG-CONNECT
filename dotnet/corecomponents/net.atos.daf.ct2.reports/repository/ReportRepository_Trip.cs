@@ -24,7 +24,7 @@ namespace net.atos.daf.ct2.reports.repository
                               FROM tripdetail.trip_statistics ts
                               Join Master.vehicle V on ts.vin = v.vin
                               WHERE  ts.end_time_stamp >= v.reference_date and end_time_stamp >= @fromdate AND end_time_stamp <= @todate AND 
-                                     vin = Any(@vins) group by v.vin";
+                                     ts.vin = Any(@vins) group by v.vin";
                 return _dataMartdataAccess.QueryAsync<VehicleFromTripDetails>(query, parameter);
             }
             catch (Exception)
@@ -79,7 +79,7 @@ namespace net.atos.daf.ct2.reports.repository
                          left JOIN master.geolocationaddress as endgeoaddr
                             on TRUNC(CAST(endgeoaddr.latitude as numeric),4)= TRUNC(CAST(TS.end_position_lattitude as numeric),4) 
                                and TRUNC(CAST(endgeoaddr.longitude as numeric),4) = TRUNC(CAST(TS.end_position_longitude as numeric),4)
-                        where  TS.vin = @vin
+                        where  TS.vin = @vin and ts.end_time_stamp >= vh.reference_date
 	                        AND (
 		                        end_time_stamp >= @StartDateTime
 		                        AND end_time_stamp <= @EndDateTime
@@ -313,17 +313,17 @@ namespace net.atos.daf.ct2.reports.repository
                                                 TA.trip_id TripId, 
                                                 TA.vin as VIN, 
                                                 category_type as CategoryType, 
-                                                type AlertType,
-                                                name as AlertName,                                                
+                                                ta.type AlertType,
+                                                ta.name as AlertName,                                                
                                                 latitude as AlertLatitude, 
                                                 longitude as AlertLongitude,
                                                 alert_generated_time as AlertTime,   
                                                 processed_message_time_stamp ProcessedMessageTimeStamp, 
                                                 urgency_level_type as UrgencyLevelType
 	                                FROM tripdetail.tripalert TA
-	                                     join tripdetail.trip_statistics TS on TA.VIN=TS.VIN
-                                           and TA.trip_id = TS.trip_id
-	                                 where  TS.vin =ANY (@vin)
+	                                     join tripdetail.trip_statistics TS on TA.VIN=TS.VIN and TA.trip_id = TS.trip_id
+                                         join master.vehicle v on  v.vin=ta.vin                                           
+	                                 where TA.alert_generated_time >= v.reference_date and  TS.vin =ANY (@vin)
 	                                 AND (
 		                                    TS.end_time_stamp >= @StartDateTime and
 		                                    TS.end_time_stamp <= @EndDateTime

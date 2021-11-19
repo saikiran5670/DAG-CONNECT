@@ -46,12 +46,12 @@ public class EcoScoreSink extends RichSinkFunction<EcoScore> implements Serializ
 					queue.clear();
 					for (EcoScore tripData : synchronizedCopy) {
 						ecoScoreDao.insert(tripData, ecoScoreQryStmt);
-						logger.info("EcoScore records inserted to ecoscore table :: "+tripData.getTripId());
+						logger.info("EcoScore records inserted to ecoscore table ::{} ",tripData.getTripId());
 					}
 				}
 			}
 		} catch (Exception e) {
-			logger.error("Issue while calling invoke() in EcoScoreSink :: " + e);
+			logger.error("Issue while calling invoke() in EcoScoreSink :: {}", e.getMessage());
 			e.printStackTrace();
 		}
 
@@ -87,7 +87,7 @@ public class EcoScoreSink extends RichSinkFunction<EcoScore> implements Serializ
 			logger.error("Issue while establishing Postgre connection in Trip streaming Job EcoScore Sink ::{} ", e);
 			logger.error("serverNm ::{}, port ::{} ",envParams.get(ETLConstants.DATAMART_POSTGRE_SERVER_NAME), Integer.parseInt(envParams.get(ETLConstants.DATAMART_POSTGRE_PORT)));
 			logger.error("databaseNm ::{}, user ::{}, pwd ::{} ",envParams.get(ETLConstants.DATAMART_POSTGRE_DATABASE_NAME), envParams.get(ETLConstants.DATAMART_POSTGRE_USER), envParams.get(ETLConstants.DATAMART_POSTGRE_PASSWORD));
-			logger.error("connection :: " + connection);
+			logger.error("connection :: {}", connection);
 			throw e;
 		}
 	}
@@ -99,7 +99,7 @@ public class EcoScoreSink extends RichSinkFunction<EcoScore> implements Serializ
 		if (ecoScoreQryStmt != null) {
 			ecoScoreQryStmt.close();
 		}
-		logger.info("In close() of EcoScoreSink :: ");
+		logger.debug("In close() of EcoScoreSink :: ");
 
 		if (connection != null) {
 			logger.info("Releasing connection from EcoScoreSink ETL Job");

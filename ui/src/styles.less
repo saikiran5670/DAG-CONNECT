@@ -30,7 +30,7 @@ body {
    /* font-family: Roboto,Helvetica Neue,sans-serif; */
     /* background-color: #f1f6fa;
     color: rgba(0, 0, 0, 1); */
-    font-family:Helvetica Neue,Arial;
+    font-family: Roboto,Helvetica Neue,sans-serif;
     font-style: normal;
     font-size: 14px;
     line-height: 21px;
@@ -232,6 +232,21 @@ Refer : https://styleguide.daf.com/en/guidelines-for-developers/use-of-colors
 }
 //----------------------------------------------------//
 
+@media screen and (min-width: 1360px), (min-height: 768px) {
+    .loginPageContainer {
+        height: 92.3vh !important;
+    }
+}
+@media screen and (min-width: 1366px), (min-height: 768px) {
+    .loginPageContainer {
+        height: 92.7vh !important;
+    }
+}
+@media screen and (min-width: 1920px), (min-height: 1080px) {
+    .loginPageContainer {
+        height: 93.7vh !important;
+    }
+}
 //----------- login style----------//
 .loginPageContainer{
     // height: 610px;
@@ -341,7 +356,10 @@ Refer : https://styleguide.daf.com/en/guidelines-for-developers/use-of-colors
                     }
                     mat-form-field {
                         .pwdVisibleIcon{
-                            top: 0.5em;
+                            // top: 0.5em;
+                            position: absolute;
+                            margin-left: -30px;
+                            margin-top: -22px;
                         }
                     }
                 }
@@ -467,7 +485,7 @@ footer{
         }
         .pdfLink{
             margin-left: .4em;
-            margin-bottom: 0.3em;
+            //margin-bottom: 0.3em;
         }
         a{
             color: #fff;

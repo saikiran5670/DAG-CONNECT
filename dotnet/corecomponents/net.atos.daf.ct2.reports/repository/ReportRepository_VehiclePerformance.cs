@@ -137,18 +137,19 @@ namespace net.atos.daf.ct2.reports.repository
             {
 
                 case "E":
-                    query = @"SELECT trip_id as TripId, vin as Vin, 
+                    query = @"SELECT trip_id as TripId, ts.vin as Vin, 
                                 abs_rpm_torque as AbsRpmtTrque, ord_rpm_torque as OrdRpmTorque,
                                 array_to_string(nonzero_matrix_val_rpm_torque, ',', '*') as MatrixValue,
                                 array_to_string(num_val_rpm_torque, ',', '*') as CountPerIndex,
                                 array_to_string(col_index_rpm_torque, ',', '*') as ColumnIndex,
                                 etl_gps_driving_time as TripDuration
-                                FROM tripdetail.trip_statistics 
-                                where vin = @vin and
+                                FROM tripdetail.trip_statistics ts
+                                Join master.vehicle v on ts.vin=v.vin                                                                    
+                                WHERE ts.end_time_stamp >= v.reference_date and ts.vin = @vin and
                                is_ongoing_trip = false AND start_time_stamp >= @StartDateTime  and end_time_stamp<= @EndDateTime";
                     break;
                 case "S":
-                    query = @"SELECT id as Id, trip_id as TripId, vin as Vin, 
+                    query = @"SELECT id as Id, trip_id as TripId, ts.vin as Vin, 
                                
                                 abs_speed_rpm as AbsRpmtTrque,
                                 ord_speed_rpm as OrdRpmTorque,
@@ -156,12 +157,13 @@ namespace net.atos.daf.ct2.reports.repository
                                 array_to_string(num_val_speed_rpm, ',', '*') as CountPerIndex, 
                                 array_to_string(col_index_speed_rpm, ',', '*') as ColumnIndex,
                                 etl_gps_driving_time as TripDuration
-                                FROM tripdetail.trip_statistics 
-                                where vin = @vin and
+                                FROM tripdetail.trip_statistics ts
+                                Join master.vehicle v on ts.vin=v.vin                                                                    
+                                WHERE ts.end_time_stamp >= v.reference_date and ts.vin = @vin and
                                is_ongoing_trip = false AND start_time_stamp >= @StartDateTime  and end_time_stamp<= @EndDateTime";
                     break;
                 case "B":
-                    query = @"SELECT id as Id, trip_id as TripId, vin as Vin, 
+                    query = @"SELECT id as Id, trip_id as TripId, ts.vin as Vin, 
                                     abs_acceleration_speed as AbsRpmtTrque,
                                     ord_acceleration_speed as OrdRpmTorque, 
                                     array_to_string(nonzero_matrix_val_acceleration_speed, ',', '*') as MatrixValue,
@@ -169,8 +171,9 @@ namespace net.atos.daf.ct2.reports.repository
                                     array_to_string(num_val_acceleration_speed, ',', '*') as CountPerIndex, 
                                     array_to_string(col_index_acceleration_speed, ',', '*') as ColumnIndex,
                                     etl_gps_driving_time as TripDuration
-                                    FROM tripdetail.trip_statistics 
-                                    where vin = @vin and
+                                    FROM tripdetail.trip_statistics ts
+                                    Join master.vehicle v on ts.vin=v.vin                                                                    
+                                WHERE ts.end_time_stamp >= v.reference_date and ts.vin = @vin and
                                     is_ongoing_trip = false AND start_time_stamp >= @StartDateTime  and end_time_stamp<= @EndDateTime";
                     break;
                 default:

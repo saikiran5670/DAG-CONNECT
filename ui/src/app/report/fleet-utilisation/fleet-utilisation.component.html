@@ -399,10 +399,10 @@
           <mat-table matTableExporter [dataSource]="dataSource" class="table-items"
           matSort #exporter="matTableExporter">
           <ng-container matColumnDef="vehiclename">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleName || 'Vehicle Name' }}
+            <mat-header-cell [ngClass]="{'text-truncate': displayedColumns.length > 7}" *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleName || 'Vehicle Name' }}
             </mat-header-cell>
-            <mat-cell *matCellDef="let row">
-              <span class='navigatePoint' matTooltip='{{ translationData.lbltooltipMsg || "Click to view details"}}' (click)='gotoTrip(row)'>{{ row.vehicleName != '' ? row.vehicleName : '-' }}</span>
+            <mat-cell [ngClass]="{'text-truncate': displayedColumns.length > 7}" matTooltip='{{ row.vehicleName }}' *matCellDef="let row">
+              <span class='navigatePoint' (click)='gotoTrip(row)'>{{ row.vehicleName != '' ? row.vehicleName : '-' }}</span>
             </mat-cell>
           </ng-container>
           <ng-container matColumnDef="vin">
@@ -450,7 +450,7 @@
             <mat-cell *matCellDef="let row">{{ row.convertedStopTime != '' ? row.convertedStopTime : '-' }}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="averageDistancePerDay">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageDistanceWeightperDay || 'Average Distance per Day' }} <span style="font-weight: normal;">({{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmperday || 'km/day') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmilesperday || 'miles/day') : (translationData.lblmilesperday || 'miles/day')  }})</span>
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageDistanceperDay || 'Average Distance per Day' }} <span style="font-weight: normal;">({{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmperday || 'km/day') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmilesperday || 'miles/day') : (translationData.lblmilesperday || 'miles/day')  }})</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let row">{{ row.convertedAverageDistance != '' ? row.convertedAverageDistance : '-' }}</mat-cell>
           </ng-container>

@@ -1,5 +1,8 @@
 package net.atos.daf.ct2.common.realtime.postgresql;
 
+import static net.atos.daf.ct2.common.util.Utils.convertDateToMillis;
+import static net.atos.daf.ct2.common.util.Utils.getCurrentTimeInUTC;
+
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -36,7 +39,14 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 	private WarningStatisticsDao warningDao;
 	private PreparedStatement updateWarningCommonTrip;
 	private DTCWarningMasterDao DTCWarning;
-
+	private PreparedStatement statement;
+	private PreparedStatement updateStatementCurrentTrip;
+	private PreparedStatement updateStatementList;
+	private PreparedStatement readStatementList;
+	private PreparedStatement readStatement;
+	//private PreparedStatement deactivateWarningStatement;
+	
+//convertDateToMillis(indexData.getEvtDateTime())
 	@Override
 	public void open(org.apache.flink.configuration.Configuration parameters) throws Exception {
 		ParameterTool envParams = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
@@ -52,6 +62,13 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 					envParams.get(DafConstants.DATAMART_POSTGRE_PASSWORD));
 
 			warningDao.setConnection(connection);
+			statement = connection.prepareStatement(DafConstants.LIVEFLEET_WARNING_INSERT);
+			updateStatementCurrentTrip=connection.prepareStatement(DafConstants.LIVEFLEET_CURRENT_TRIP_STATISTICS_UPDATE_TEN);
+			updateStatementList=connection.prepareStatement(DafConstants.LIVEFLEET_WARNING_UPDATELIST);
+			readStatementList=connection.prepareStatement(DafConstants.LIVEFLEET_WARNING_READLIST);
+			readStatement=connection.prepareStatement(DafConstants.REPAITM_MAINTENANCE_WARNING_READ);
+			//deactivateWarningStatement=connection.prepareStatement(DafConstants.LIVEFLEET_WARNING_DEACTIVATE);
+			
 
 		} catch (Exception e) {
 
@@ -70,7 +87,7 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 		if ((messageTen.equals(row.getMessageType()) || messageFour.equals(row.getMessageType()))
 				&& (row.getVEvtID() == 44 || row.getVEvtID() == 45 || row.getVEvtID() == 46 || row.getVEvtID() == 63)) {
 
-			queue = new ArrayList<Monitor>();
+		/*	queue = new ArrayList<Monitor>();
 			synchronizedCopy = new ArrayList<Monitor>();
 
 			try {
@@ -83,7 +100,7 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 						synchronizedCopy = new ArrayList<Monitor>(queue);
 						queue.clear();
 
-						for (Monitor moniterData : synchronizedCopy) {
+						for (Monitor moniterData : synchronizedCopy) {*/
 							// String tripID = "NOT AVAILABLE";
 
 							/*
@@ -95,27 +112,55 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 							} else {
 								vin = row.getVid();
 							}
-							if (messageTen.equals(row.getMessageType()) && row.getVEvtID() != 63) {
+							
+							
+							if (messageTen.equals(row.getMessageType()) && (row.getVEvtID()==44 || row.getVEvtID()==45)) {
 
-								WarningStatisticsPojo warningDetail = WarningStatisticsCalculation(moniterData,
+								WarningStatisticsPojo warningDetail = WarningStatisticsCalculation(row,
 										messageTen, 
 										row.getDocument().getVWarningClass(), row.getDocument().getVWarningNumber());
 
-								warningDao.warning_insert(warningDetail);
+								warningDao.warning_insertMonitor(warningDetail,statement);
 								logger.debug("warning inserted in warning table for VEvtId not 63 :{)", warningDetail);
-								warningDao.warningUpdateMessageTenCommonTrip(warningDetail);
+								warningDao.warningUpdateMessageTenCommonTripMonitor(warningDetail,updateStatementCurrentTrip);
 								logger.info("Warning records inserted to warning table :: {}",warningDetail);
 								logger.debug("Warning records updated in current trip table:: ", warningDetail);
+							}
+							
+						/*	if(messageTen.equals(row.getMessageType()) && row.getVEvtID() == 45) {
+								
+								WarningStatisticsPojo warningDetail = WarningStatisticsCalculation(row,
+										messageTen, 
+										row.getDocument().getVWarningClass(), row.getDocument().getVWarningNumber());
+								
+								warningDao.DeactivatSingleWarning(row, deactivateWarningStatement);
+								warningDao.warningUpdateMessageTenCommonTripMonitor(warningDetail,updateStatementCurrentTrip);
+								
+							}*/
+							if(messageTen.equals(row.getMessageType()) && row.getVEvtID() == 46) {
+								boolean warningStatus = warningDao.readRepairMaintenamceMonitor(row.getMessageType(), vin,row.getDocument().getVWarningClass(),row.getDocument().getVWarningNumber(),readStatement);
+								if(warningStatus) {
+									WarningStatisticsPojo warningDetail = WarningStatisticsCalculation(row,
+											messageTen, 
+											row.getDocument().getVWarningClass(), row.getDocument().getVWarningNumber());
+									warningDao.warning_insertMonitor(warningDetail,statement);
+									logger.debug("warning inserted in warning table for VEvtId not 63 :{)", warningDetail);
+									warningDao.warningUpdateMessageTenCommonTripMonitor(warningDetail,updateStatementCurrentTrip);
+									logger.info("Warning records inserted to warning table :: {}",warningDetail);
+									logger.debug("Warning records updated in current trip table:: ", warningDetail);
+								}
+								
 							}
 
 							if (messageTen.equals(row.getMessageType()) && row.getVEvtID() == 63) {
 								
-								List<WarningStatisticsPojo> activeWarnings=warningDao.readReturnListofActiveMsg(row.getMessageType(), row.getVin());
+								List<WarningStatisticsPojo> activeWarnings=warningDao.readReturnListofActiveMsg(row.getMessageType(), row.getVin(),readStatementList);
 								List<Warning> warningList63 = row.getDocument().getWarningObject().getWarningList();
+								//List<WarningStatisticsPojo> toAddWaringList= new ArrayList<>();
 								
 								//To insert missed rows in db for message 63
 								boolean warningInDB=false; 
-								List<WarningStatisticsPojo> toInsert= new ArrayList<>();
+								//List<WarningStatisticsPojo> toInsert= new ArrayList<>();
 								
 								for(Warning warning63 : warningList63) {
 									int activeWarningClass=	warning63.getWarningClass();
@@ -134,7 +179,9 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 										WarningStatisticsPojo warningRowToInsert = WarningStatisticsCalculation(row,
 												messageTen, warning63.getWarningClass(),
 												warning63.getWarningNumber());
-										warningDao.warning_insert(warningRowToInsert);
+										warningDao.warning_insertMonitor(warningRowToInsert,statement);
+										warningDao.warningUpdateMessageTenCommonTripMonitor(warningRowToInsert,updateStatementCurrentTrip);
+										
 										logger.info("warning inserted in warning table for VEvtId--63 :{}",
 												warningRowToInsert);
 									}
@@ -148,6 +195,7 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 								//opposite side to update in DB for EVTId =45
 								boolean warningPresent=false;
 								List<Integer> toDeactivate= new ArrayList<>();
+								
 								
 								if(activeWarnings!=null && !activeWarnings.isEmpty() && warningList63!=null && !warningList63.isEmpty()) {
 								logger.debug("activeWarnings list size " + activeWarnings.size());
@@ -178,18 +226,18 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 								} }
 								logger.debug("toDeactivate list size " + toDeactivate.size());
 								
-								warningDao.DeactivatWarningUpdate(toDeactivate);
+								warningDao.DeactivatWarningUpdate(toDeactivate,updateStatementList);
 								logger.debug("update done-sink class ");
 							}
 
 						}
-					}
+		/*}
 				}
 			} catch (Exception e) {
 				logger.error("Error in Warning statistics Invoke method {}" , e.getMessage());
 			}
 
-		}
+		}*/
 	}
 
 	public WarningStatisticsPojo WarningStatisticsCalculation(Monitor row, Integer messageType, Integer warningClass, Integer warningNumber) {
@@ -199,12 +247,12 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 			warningDetail.setTripId(null);
 			warningDetail.setVin(row.getVin());
 			warningDetail.setVid(row.getVid());
-			try {
-				warningDetail.setWarningTimeStamp(TimeFormatter.getInstance()
-						.convertUTCToEpochMilli(row.getEvtDateTime().toString(), DafConstants.DTM_TS_FORMAT));
-			} catch (ParseException e) {
-				logger.error("Error while parsing date time {}",e.getMessage());
-			}
+			
+				/*warningDetail.setWarningTimeStamp(TimeFormatter.getInstance()
+						.convertUTCToEpochMilli(row.getEvtDateTime().toString(), DafConstants.DTM_TS_FORMAT));*/
+				
+				warningDetail.setWarningTimeStamp(convertDateToMillis(row.getEvtDateTime()));
+			
 
 			warningDetail.setWarningClass(warningClass);
 			warningDetail.setWarningNumber(warningNumber);
@@ -281,7 +329,10 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 				warningDetail.setLastestProcessedMessageTimeStamp(0L);
 			//}
 
-			warningDetail.setCreatedAt(TimeFormatter.getInstance().getCurrentUTCTime());
+			//warningDetail.setCreatedAt(TimeFormatter.getInstance().getCurrentUTCTime());
+			
+			warningDetail.setCreatedAt(getCurrentTimeInUTC());
+			
 			if (row.getMessageType() != null) {
 				warningDetail.setMessageType(row.getMessageType());
 			} else {
@@ -299,7 +350,27 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 	public void close() throws Exception {
 
 		super.close();
-
+		if (statement != null) {
+			statement.close();
+		}
+		
+		if (updateStatementCurrentTrip != null) {
+			updateStatementCurrentTrip.close();
+		}
+		
+		if (updateStatementList != null) {
+			updateStatementList.close();
+		}
+		
+		if (readStatementList != null) {
+			readStatementList.close();
+		}
+		
+		if (readStatement != null) {
+			readStatement.close();
+		}
+		
+		
 		logger.info("In close() of Warning :: ");
 
 		if (connection != null) {

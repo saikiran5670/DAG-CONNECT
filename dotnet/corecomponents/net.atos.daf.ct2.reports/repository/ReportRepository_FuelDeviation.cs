@@ -54,8 +54,8 @@ namespace net.atos.daf.ct2.reports.repository
 		                                            trpst.end_time_stamp >= @StartDateTime
 		                                            AND trpst.end_time_stamp <= @EndDateTime
 		                                            )
-	                     Left JOIN master.vehicle as v 
-	 	                    ON v.vin = trpst.vin
+	                     JOIN master.vehicle as v 
+	 	                    ON v.vin = trpst.vin and trpst.end_time_stamp >= v.reference_date
                          left JOIN master.geolocationaddress as geoaddr
                             on TRUNC(CAST(geoaddr.latitude as numeric),4)= TRUNC(CAST(fueldev.latitude as numeric),4) 
                                and TRUNC(CAST(geoaddr.longitude as numeric),4) = TRUNC(CAST(fueldev.longitude as numeric),4)
@@ -96,8 +96,8 @@ namespace net.atos.daf.ct2.reports.repository
                                 FROM livefleet.livefleet_trip_fuel_deviation ld
                                 join tripdetail.trip_statistics as trpst
                                 on trpst.trip_id=ld.trip_id
-                                --Join Master.vehicle v
-                                --on ld.vin=v.vin
+                                Join Master.vehicle v
+                                on ld.vin=v.vin and trpst.end_time_stamp >= v.reference_date
                                 where (end_time_stamp >= @StartDateTime 
 	                                 and end_time_stamp<= @EndDateTime) and 
 	                                 trpst.vin = Any(@vins)

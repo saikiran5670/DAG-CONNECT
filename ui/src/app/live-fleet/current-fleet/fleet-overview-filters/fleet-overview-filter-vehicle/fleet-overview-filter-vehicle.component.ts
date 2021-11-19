@@ -26,7 +26,7 @@ export class FleetOverviewFilterVehicleComponent implements OnInit {
 @Output() vehicleDetailsInfoEmit =  new EventEmitter<object>();
 @Output() tabvisibility : EventEmitter<boolean> =  new EventEmitter<boolean>()
 vehicleFilterComponentEmitFlag: boolean =false;
-todayFlagClicked : boolean = true;
+@Input() todayFlagClicked : boolean;
 isVehicleDetails : boolean = false;
 selectedElementData: any = [];
 

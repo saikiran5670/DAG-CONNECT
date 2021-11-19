@@ -178,7 +178,7 @@ public class MessageProcessing<U,R, T> {
 						try {
 							//vid mapped to vin
 							String vin = ctx.getCurrentKey();
-							logger.debug("History Record for VID: {}" , vin);
+							logger.info("History Record for VID: {}" , vin);
 							
 							ReadOnlyBroadcastState<Message<U>, KafkaRecord<R>> mapBrodcast = ctx.getBroadcastState(broadcastStateDescriptor);
 							Message<U> keyMessage = new Message<>((U) vin);
@@ -192,7 +192,7 @@ public class MessageProcessing<U,R, T> {
 									+ TimeFormatter.getInstance().getCurrentUTCTime());
 							
 							historyRec.setValue(JsonMapper.configuring().writeValueAsString(inputRec.getValue().f2));
-							logger.debug("Final History Record key :: {} ",historyRec.getKey());
+							logger.info("Final History Record key :: {} ",historyRec.getKey());
 
 						} catch (Exception e) {
 							historyRec.setKey("UnknownMessage" + "_" + TimeFormatter.getInstance().getCurrentUTCTime());

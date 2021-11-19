@@ -216,10 +216,16 @@ export class EditUserRoleDetailsComponent implements OnInit {
   }
 
   getBreadcum() {
+    
+    var address = (this.createStatus) ? (this.translationData.lblCreateNewUserRole ? this.translationData.lblCreateNewUserRole : 'Create New Account Role') 
+    : (this.viewFlag) ?  (this.translationData.lblViewUserRole ? this.translationData.lblViewUserRole : 'View Account Role')
+    :  (this.translationData.lblEdit ? this.translationData.lblEdit +' '+ this.translationData.lblAccountRoleDetails : 'Edit Account Role Details') ;
+   // ${this.translationData.lblAccountRoleDetails ? this.translationData.lblAccountRoleDetails : 'Account Role Details'}`;
+
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} /
     ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} /
     ${this.translationData.lblAccountRoleManagement ? this.translationData.lblAccountRoleManagement : "Account Role Management"} /
-    ${this.translationData.lblAccountRoleDetails ? this.translationData.lblAccountRoleDetails : 'Account Role Details'}`;
+    ${address}`;
   }
 
   onCancel() {
