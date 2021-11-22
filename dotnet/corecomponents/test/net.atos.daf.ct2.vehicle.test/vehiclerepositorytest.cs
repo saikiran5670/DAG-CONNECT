@@ -229,17 +229,7 @@ namespace net.atos.daf.ct2.vehicle.test
             bool isnumeric = true;
             string contenttype = "text/csv";
             var results = await _vehiclemanager.GetVehicleMileage(since, isnumeric, contenttype, 1, 1);
-            if (contenttype == "text/csv")
-            {
-                Assert.IsNotNull(results.VehiclesCSV);
-                Assert.IsTrue(results.VehiclesCSV != null);
-            }
-            else
-            {
-                Assert.IsNotNull(results.Vehicles);
-                Assert.IsTrue(results.Vehicles != null);
-            }
-
+            Assert.IsTrue(results != null);
         }
         #endregion
 
