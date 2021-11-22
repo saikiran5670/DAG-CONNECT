@@ -721,7 +721,7 @@ namespace net.atos.daf.ct2.reports.repository
 				  , 1 as totalworkingdays
 				  , (etl_gps_distance)                                                  as etl_gps_distance
 				  , (etl_gps_distance)                                              as veh_message_distance
-				  , (etl_gps_distance)/case when (etl_gps_trip_time) >0 then (etl_gps_trip_time) else 1 end as average_speed
+				  , (etl_gps_distance::numeric)/case when (etl_gps_trip_time::numeric) >0 then (etl_gps_trip_time) else 1 end as average_speed
 				  , (max_speed)                                                         as max_speed
 				  , (average_gross_weight_comb)                                      as average_gross_weight_comb
 				  , (etl_gps_fuel_consumed)                                                  as fuel_consumed
