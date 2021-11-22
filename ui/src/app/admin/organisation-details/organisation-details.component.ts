@@ -42,8 +42,9 @@ export class OrganisationDetailsComponent implements OnInit {
   vehicleStatusDropdownData: any = [];
   driverStatusDropdownData:any = [];
   vehicleDisplayDropdownData: any = [];
-  adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
-  userType: any = localStorage.getItem("userType");
+  adminAccessType: any;
+  userType: any;
+  userLevel: any;
   languageHolder: string;
   timezoneHolder: string;
   currencyHolder: string;
@@ -86,6 +87,9 @@ export class OrganisationDetailsComponent implements OnInit {
   // }
 
   ngOnInit() {
+    this.adminAccessType = JSON.parse(localStorage.getItem("accessType"));
+    this.userType = localStorage.getItem("userType");
+    this.userLevel = localStorage.getItem("userLevel") ? parseInt(localStorage.getItem("userLevel")) : 40;
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountDetails = JSON.parse(localStorage.getItem('accountInfo'));
     this.organisationList = this.accountDetails["organization"];

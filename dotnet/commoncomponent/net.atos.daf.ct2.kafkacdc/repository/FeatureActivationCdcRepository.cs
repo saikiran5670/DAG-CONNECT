@@ -355,24 +355,22 @@ namespace net.atos.daf.ct2.kafkacdc.repository
             }
         }
 
-        public async Task<IEnumerable<int>> GetAlertFeatureIds(int orgnisationId, int subscriptionId, List<string> vins)
+        public async Task<IEnumerable<int>> GetAlertFeatureIds(int orgnisationId, int subscriptionId)
         {
             try
             {
-                string queryVehicleId = @"select id from master.vehicle where vin = ANY(@vins);";
                 var parameter = new DynamicParameters();
-                parameter.Add("@vins", vins);
                 parameter.Add("@orgnisationId", orgnisationId);
                 parameter.Add("@subscriptionId", subscriptionId);
-                IEnumerable<int> vehicleIds = await _dataAccess.QueryAsync<int>(queryVehicleId, parameter);
+
                 string query = @"SELECT f.id 
 		                    FROM master.Package pkg
-		                    INNER JOIN master.Subscription s ON s.package_id = pkg.id AND s.id =@subscriptionId AND s.vehicle_id=ANY(@vehicleids)
+		                    INNER JOIN master.Subscription s ON s.package_id = pkg.id AND s.id =@subscriptionId
 							AND s.organization_id = @orgnisationId AND s.state = 'A' AND pkg.state = 'A'
 							INNER JOIN master.FeatureSet fset ON pkg.feature_set_id = fset.id AND fset.state = 'A'
 	                    	INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
 	                    	INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.state = 'A' AND f.type <> 'D' AND f.name like 'Alerts%';";
-                parameter.Add("@vehicleIds", vehicleIds);
+
                 IEnumerable<int> featureids = await _dataAccess.QueryAsync<int>(query, parameter);
                 return featureids;
             }
@@ -393,12 +391,28 @@ namespace net.atos.daf.ct2.kafkacdc.repository
                 parameter.Add("@featureEnums", resultFeaturEnum);
                 parameter.Add("@groupIds", groupIds);
                 string query = @"SELECT ale.id as Alertid,ale.vehicle_group_id as GroupId
-								FROM master.alert ale ON ale.vehicle_group_id=grp.id
-								WHERE vehicle_group_id.id=ANY(@groupIds) AND ale.type = ANY(@featureEnums) AND ale.state<>'D';";
+								FROM master.alert ale
+								WHERE ale.vehicle_group_id=ANY(@groupIds) AND ale.type = ANY(@featureEnums) AND ale.state<>'D';";
 
                 IEnumerable<AlertGroupId> vehicleAlertRefs = await _dataAccess.QueryAsync<AlertGroupId>(query, parameter);
 
                 return vehicleAlertRefs.AsList();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<int> GetOrganisationId(string org_id)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@org_id", org_id);
+                var query = @"select id from master.organization where org_id = @org_id";
+                int organisationId = await _dataAccess.QueryFirstOrDefaultAsync<int>(query, parameter);
+                return organisationId;
             }
             catch (Exception)
             {

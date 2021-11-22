@@ -16,7 +16,7 @@
                 </div>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start" class='areaWidth'>
                  <mat-form-field appearance="outline">
-                    <mat-select [(value)]="selectedOrganisationId" [disabled]="organisationList.length == 1" (selectionChange)="selectionChanged($event.value)">
+                    <mat-select [(value)]="selectedOrganisationId" [disabled]="organisationList.length == 1 || userLevel == 40" (selectionChange)="selectionChanged($event.value)">
                         <mat-option>
                             <ngx-mat-select-search (keyup)="filterOrgList(orgListSearch.value)" #orgListSearch>
                                 <mat-icon (click)="resetOrgListFilter()" ngxMatSelectSearchClear>close</mat-icon>
@@ -106,7 +106,7 @@
                         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
                             <span style='display: flex; align-items: center; font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblPreferencesSettings }}
                                 <!-- <mat-icon *ngIf='!editPrefereneceFlag && !adminAccessType.adminReadOnlyAccess' (click)="onPreferenceEdit()" style="cursor: pointer; margin: 0px 0px 5px 5px;">edit</mat-icon> -->
-                                <mat-icon *ngIf="!editPrefereneceFlag && userType != 'Admin#Account'" (click)="onPreferenceEdit()" style="cursor: pointer; margin: 0px 0px 5px 5px;">edit</mat-icon>
+                                <mat-icon *ngIf="!editPrefereneceFlag && userLevel == 10" (click)="onPreferenceEdit()" style="cursor: pointer; margin: 0px 0px 5px 5px;">edit</mat-icon>
                             </span>
                         </div>
                     </div>

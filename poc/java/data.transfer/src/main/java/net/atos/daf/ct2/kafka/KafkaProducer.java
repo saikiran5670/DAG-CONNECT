@@ -35,6 +35,9 @@ public class KafkaProducer implements Serializable {
         monitorStream
                 .map(record -> {
                     logger.info("Monitor message received for transfer {}",record.getValue());
+                    String key =Objects.nonNull(record.getValue().getVin()) ?
+                            record.getValue().getVin() : record.getValue().getVid();
+                    record.setKey(key);
                     return record;
                 }).returns(TypeInformation.of(new TypeHint<KafkaRecord<Monitor>>() {
                     @Override
@@ -62,6 +65,9 @@ public class KafkaProducer implements Serializable {
         statusStream
                 .map(record -> {
                     logger.info("Status message received for transfer {}",record.getValue());
+                    String key =Objects.nonNull(record.getValue().getVin()) ?
+                            record.getValue().getVin() : record.getValue().getVid();
+                    record.setKey(key);
                     return record;
                 }).returns(TypeInformation.of(new TypeHint<KafkaRecord<Status>>() {
                     @Override
@@ -89,6 +95,9 @@ public class KafkaProducer implements Serializable {
         indexStream
                 .map(record -> {
                     logger.info("Index message received for transfer {}",record.getValue());
+                    String key =Objects.nonNull(record.getValue().getVin()) ?
+                            record.getValue().getVin() : record.getValue().getVid();
+                    record.setKey(key);
                     return record;
                 }).returns(TypeInformation.of(new TypeHint<KafkaRecord<Index>>() {
                     @Override
