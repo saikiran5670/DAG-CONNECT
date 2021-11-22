@@ -111,7 +111,8 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
                     StartPosition = trip.StartPosition,
                     StartLatitude = trip.StartLatitude,
                     StartLongitude = trip.StartLongitude,
-                    TripId = CheckNull(trip.TripId)
+                    TripId = CheckNull(trip.TripId),
+                    Id = trip.Id
                 };
 
                 foreach (var node in trip.NodePoints)
