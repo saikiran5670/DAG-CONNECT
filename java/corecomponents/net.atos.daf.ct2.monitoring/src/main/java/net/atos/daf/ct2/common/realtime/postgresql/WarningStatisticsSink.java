@@ -114,11 +114,11 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 							}
 							
 							
-							if (messageTen.equals(row.getMessageType()) && (row.getVEvtID()==44 || row.getVEvtID()==45)) {
+							if (messageTen.equals(row.getMessageType()) && (row.getVEvtID()==44 )) {
 
 								WarningStatisticsPojo warningDetail = WarningStatisticsCalculation(row,
 										messageTen, 
-										row.getDocument().getVWarningClass(), row.getDocument().getVWarningNumber());
+										row.getDocument().getVWarningClass(), row.getDocument().getVWarningNumber(),"A");
 
 								warningDao.warning_insertMonitor(warningDetail,statement);
 								logger.debug("warning inserted in warning table for VEvtId not 63 :{)", warningDetail);
@@ -127,22 +127,24 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 								logger.debug("Warning records updated in current trip table:: ", warningDetail);
 							}
 							
-						/*	if(messageTen.equals(row.getMessageType()) && row.getVEvtID() == 45) {
-								
+							if(messageTen.equals(row.getMessageType()) && row.getVEvtID() == 45) {
+
 								WarningStatisticsPojo warningDetail = WarningStatisticsCalculation(row,
 										messageTen, 
-										row.getDocument().getVWarningClass(), row.getDocument().getVWarningNumber());
-								
-								warningDao.DeactivatSingleWarning(row, deactivateWarningStatement);
+										row.getDocument().getVWarningClass(), row.getDocument().getVWarningNumber(),"D");
+
+								warningDao.warning_insertMonitor(warningDetail,statement);
+								logger.debug("warning inserted in warning table for VEvtId not 63 :{)", warningDetail);
 								warningDao.warningUpdateMessageTenCommonTripMonitor(warningDetail,updateStatementCurrentTrip);
-								
-							}*/
+								logger.info("Warning records inserted to warning table :: {}",warningDetail);
+								logger.debug("Warning records updated in current trip table:: ", warningDetail);
+							}
 							if(messageTen.equals(row.getMessageType()) && row.getVEvtID() == 46) {
 								boolean warningStatus = warningDao.readRepairMaintenamceMonitor(row.getMessageType(), vin,row.getDocument().getVWarningClass(),row.getDocument().getVWarningNumber(),readStatement);
 								if(warningStatus) {
 									WarningStatisticsPojo warningDetail = WarningStatisticsCalculation(row,
 											messageTen, 
-											row.getDocument().getVWarningClass(), row.getDocument().getVWarningNumber());
+											row.getDocument().getVWarningClass(), row.getDocument().getVWarningNumber(),"A");
 									warningDao.warning_insertMonitor(warningDetail,statement);
 									logger.debug("warning inserted in warning table for VEvtId not 63 :{)", warningDetail);
 									warningDao.warningUpdateMessageTenCommonTripMonitor(warningDetail,updateStatementCurrentTrip);
@@ -160,8 +162,9 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 								
 								//To insert missed rows in db for message 63
 								boolean warningInDB=false; 
-								//List<WarningStatisticsPojo> toInsert= new ArrayList<>();
-								
+								List<WarningStatisticsPojo> toInsertList= new ArrayList<>();
+								if(warningList63!=null && !warningList63.isEmpty()) {
+									
 								for(Warning warning63 : warningList63) {
 									int activeWarningClass=	warning63.getWarningClass();
 									int activeWarningNumber= warning63.getWarningNumber();
@@ -174,13 +177,13 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 										}
 										
 									}
-
 									if(warningInDB==false) { //update database to insert warning
 										WarningStatisticsPojo warningRowToInsert = WarningStatisticsCalculation(row,
 												messageTen, warning63.getWarningClass(),
-												warning63.getWarningNumber());
-										warningDao.warning_insertMonitor(warningRowToInsert,statement);
-										warningDao.warningUpdateMessageTenCommonTripMonitor(warningRowToInsert,updateStatementCurrentTrip);
+												warning63.getWarningNumber(),"A");
+										toInsertList.add(warningRowToInsert);
+										//warningDao.warning_insertMonitor(warningRowToInsert,statement);
+										//warningDao.warningUpdateMessageTenCommonTripMonitor(warningRowToInsert,updateStatementCurrentTrip);
 										
 										logger.info("warning inserted in warning table for VEvtId--63 :{}",
 												warningRowToInsert);
@@ -188,16 +191,19 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 									warningInDB=false;
 
 								}
-									
-									
-									
-									
+								}	
+								
+								if(!toInsertList.isEmpty() && toInsertList.size()>0) {
+								warningDao.warning_insertMonitorList(toInsertList,statement);
+								warningDao.warningUpdateMessageTenCommonTripList(toInsertList,updateStatementCurrentTrip);
+								}
+								
 								//opposite side to update in DB for EVTId =45
 								boolean warningPresent=false;
 								List<Integer> toDeactivate= new ArrayList<>();
 								
 								
-								if(activeWarnings!=null && !activeWarnings.isEmpty() && warningList63!=null && !warningList63.isEmpty()) {
+							/*	if(activeWarnings!=null && !activeWarnings.isEmpty() && warningList63!=null && !warningList63.isEmpty()) {
 								logger.debug("activeWarnings list size " + activeWarnings.size());
 								logger.debug("warningList63 list size "  + warningList63.size());
 								for(WarningStatisticsPojo activeWarning :activeWarnings) {
@@ -210,9 +216,7 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 											if(war63.getWarningClass().equals(warningClass) && war63.getWarningNumber().equals(warningNumber)) {
 												warningPresent=true;
 												break;
-											} /*
-												 * else { //update toDeactivate.add(warning.getId()); }
-												 */ 
+											} 
 											 
 									 }
 										 if(warningPresent==false) { //update database here to deactivate warning for
@@ -223,12 +227,50 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 									
 										 warningPresent=false; 
 									
+								} } */
+								
+								
+								List<WarningStatisticsPojo> insertDEactivatedList = new ArrayList<>();
+								if(activeWarnings!=null && !activeWarnings.isEmpty()) {
+								logger.debug("activeWarnings list size " + activeWarnings.size());
+								logger.debug("warningList63 list size "  + warningList63.size());
+								for(WarningStatisticsPojo activeWarning :activeWarnings) {
+
+
+									int warningClass= activeWarning.getWarningClass();
+									int warningNumber= activeWarning.getWarningNumber();
+										for( Warning war63 : warningList63) {
+										 
+											if(war63.getWarningClass().equals(warningClass) && war63.getWarningNumber().equals(warningNumber)) {
+												warningPresent=true;
+												break;
+											} 
+											 
+									 }
+										 if(warningPresent==false) { //update database here to deactivate warning for
+											 WarningStatisticsPojo warningRowToInsertForDeactivation = WarningStatisticsCalculation(row,
+														messageTen, activeWarning.getWarningClass(),
+														activeWarning.getWarningNumber(),"D");
+											 insertDEactivatedList.add(warningRowToInsertForDeactivation);
+											// warningDao.warning_insertMonitor(warningRowToInsertForDeactivation,statement);
+											// warningDao.warningUpdateMessageTenCommonTripMonitor(warningRowToInsertForDeactivation,updateStatementCurrentTrip);
+											 //insertDEactivatedList.add(warningRowToInsert);
+											// toDeactivate.add(activeWarning.getId());
+											 
+											 
+									 }
+									
+										 warningPresent=false; 
+									
 								} }
 								logger.debug("toDeactivate list size " + toDeactivate.size());
 								
-								warningDao.DeactivatWarningUpdate(toDeactivate,updateStatementList);
+								//warningDao.DeactivatWarningUpdate(toDeactivate,updateStatementList);
+								if(!insertDEactivatedList.isEmpty() && insertDEactivatedList.size()>0) {
+								warningDao.warning_insertMonitorList(insertDEactivatedList,statement);
+								warningDao.warningUpdateMessageTenCommonTripList(insertDEactivatedList,updateStatementCurrentTrip);
 								logger.debug("update done-sink class ");
-							}
+							} }
 
 						}
 		/*}
@@ -240,7 +282,7 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 		}*/
 	}
 
-	public WarningStatisticsPojo WarningStatisticsCalculation(Monitor row, Integer messageType, Integer warningClass, Integer warningNumber) {
+	public WarningStatisticsPojo WarningStatisticsCalculation(Monitor row, Integer messageType, Integer warningClass, Integer warningNumber, String warningType) {
 
 		WarningStatisticsPojo warningDetail = new WarningStatisticsPojo();
 		if (messageType == 10) {
@@ -312,14 +354,14 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 			warningDetail.setDriverID(null);
 
 			// Warning Type
-			if (row.getVEvtID() != null) {
-				if (row.getVEvtID() == 44 || row.getVEvtID() == 46 || row.getVEvtID() == 63) {
-					warningDetail.setWarningType("A");
-				} else if (row.getVEvtID() == 45) {
-					warningDetail.setWarningType("D");
-				} 
-			} 
-
+			/*
+			 * if (row.getVEvtID() != null) { if (row.getVEvtID() == 44 || row.getVEvtID()
+			 * == 46 || row.getVEvtID() == 63) { warningDetail.setWarningType("A"); } else
+			 * if (row.getVEvtID() == 45) { warningDetail.setWarningType("D"); } }
+			 */
+			warningDetail.setWarningType(warningType);
+			
+			
 			warningDetail.setDistanceUntilNextService(null);
 			warningDetail.setOdometerVal(null);
 

@@ -13,12 +13,14 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 import net.atos.daf.common.ct2.exception.TechnicalException;
 import net.atos.daf.ct2.pojo.standard.Monitor;
 import net.atos.daf.ct2.pojo.standard.Warning;
 import net.atos.daf.postgre.bo.IndexTripData;
 import net.atos.daf.postgre.bo.WarningStatisticsPojo;
 import net.atos.daf.postgre.util.DafConstants;
+import net.atos.daf.postgre.util.Utils;
 
 public class WarningStatisticsDao implements Serializable {
 
@@ -40,6 +42,7 @@ public class WarningStatisticsDao implements Serializable {
 	private static final String LIVEFLEET_WARNING_READLIST = "select id, warning_class,	warning_number, vin from livefleet.livefleet_warning_statistics where vin = ? AND  message_type=10 and warning_type='A'  order by id DESC";
 	private static final String LIVEFLEET_WARNING_UPDATELIST = "UPDATE livefleet.livefleet_warning_statistics set warning_type='D' where id = ANY (?)";
 	private static final String LIVEFLEET_WARNING_DEACTIVATE="UPDATE livefleet.livefleet_warning_statistics set warning_type='D' where vin = ? ORDER BY id DESC LIMIT 1";
+	private long timeMillis = System.currentTimeMillis();
 	/*
 	 * private static final String LIVEFLEET_WARNING_STATUS_FOR_CURR_TRIP_STATS =
 	 * "select distinct on (trip_id, vin) vehicle_health_status_type, warning_class, warning_number, warning_type, warning_time_stamp, latitude, longitude, trip_id, vin "
@@ -76,7 +79,7 @@ public class WarningStatisticsDao implements Serializable {
 
 	}
 	
-/*	public void warning_insertMonitorList(List <WarningStatisticsPojo> warningDetailList,PreparedStatement stmt_insert_warning_statistics) throws TechnicalException, SQLException {
+	public void warning_insertMonitorList(List <WarningStatisticsPojo> warningDetailList,PreparedStatement stmt_insert_warning_statistics) throws TechnicalException, SQLException {
 		//PreparedStatement stmt_insert_warning_statistics=null;
 
 		try {
@@ -105,7 +108,7 @@ public class WarningStatisticsDao implements Serializable {
 			e.printStackTrace();
 		}
 
-	} */
+	} 
 	
 	public void warning_insert(WarningStatisticsPojo warningDetail) throws TechnicalException, SQLException {
 		PreparedStatement stmt_insert_warning_statistics=null;
@@ -140,7 +143,7 @@ public class WarningStatisticsDao implements Serializable {
 
 	}
 
-/*	public void warningUpdateMessageTenCommonTripList(List<WarningStatisticsPojo> warningDetailList,PreparedStatement updateWarningCommonTrip)
+	public void warningUpdateMessageTenCommonTripList(List<WarningStatisticsPojo> warningDetailList,PreparedStatement updateWarningCommonTrip)
 			throws TechnicalException, SQLException {
 		//PreparedStatement updateWarningCommonTrip = null;
 		// System.out.println("warning dao udate for message ten before try in message
@@ -153,7 +156,7 @@ public class WarningStatisticsDao implements Serializable {
 				// warningDetail);
 
 				for(WarningStatisticsPojo warningData: warningDetailList) {
-					logger.info("Warning class update started --vin-{}  time {}",  warningData.getVin(), java.time.LocalTime.now());
+					logger.info("Warning class update started --vin-{}  time {}",  warningData.getVin(), Utils.convertMillisecondToDateTime(timeMillis));
 					
 					updateWarningCommonTrip.setDouble(1, warningData.getLatitude());
 					updateWarningCommonTrip.setDouble(2, warningData.getLongitude());
@@ -182,7 +185,7 @@ public class WarningStatisticsDao implements Serializable {
 					}
 
 					updateWarningCommonTrip.executeUpdate();
-					logger.info("Warning class update finished --vin-{}  time {}",  warningData.getVin(), java.time.LocalTime.now());
+					logger.info("Warning class update finished --vin-{}  time {}",  warningData.getVin(), Utils.convertMillisecondToDateTime(timeMillis));
 					
 				}
 				
@@ -203,7 +206,7 @@ public class WarningStatisticsDao implements Serializable {
 			e.printStackTrace();
 		}
 
-	} */
+	} 
 	
 	
 	public void warningUpdateMessageTenCommonTripMonitor(WarningStatisticsPojo warningDetail,PreparedStatement updateWarningCommonTrip)
@@ -214,7 +217,7 @@ public class WarningStatisticsDao implements Serializable {
 		try {
 			if(Objects.nonNull(warningDetail)) {
 				// System.out.println("warning dao udate for message ten");
-				logger.info("Warning class update started --vin-{}  time {}",  warningDetail.getVin(), java.time.LocalTime.now());
+				logger.info("Warning class update started --vin-{}  time {}",  warningDetail.getVin(), Utils.convertMillisecondToDateTime(timeMillis));
 				/*
 				 * updateWarningCommonTrip =
 				 * connection.prepareStatement(LIVEFLEET_CURRENT_TRIP_STATISTICS_UPDATE_TEN,
@@ -259,7 +262,7 @@ public class WarningStatisticsDao implements Serializable {
 				updateWarningCommonTrip.executeUpdate();
 				// System.out.println("warning dao --updated for another table for message 10");
 				//logger.info("warning dao --updated for another table for message 10--" + warningDetail.getVin());
-				logger.info("Warning class update finished --vin-{}  time {}",  warningDetail.getVin(), java.time.LocalTime.now());
+				logger.info("Warning class update finished --vin-{}  time {}",  warningDetail.getVin(), Utils.convertMillisecondToDateTime(timeMillis));
 			} else {
 				if(connection == null) {
 					logger.error(" Issue -- Warning connection is null  while update: " + connection);
@@ -288,7 +291,7 @@ public class WarningStatisticsDao implements Serializable {
 
 			if (null != warningDetail && null != (connection = getConnection())) {
 				// System.out.println("warning dao udate for message ten");
-				logger.info("Warning class update started --vin-{}  time {}",  warningDetail.getVin(), java.time.LocalTime.now());
+				logger.info("Warning class update started --vin-{}  time {}",  warningDetail.getVin(), Utils.convertMillisecondToDateTime(timeMillis));
 				updateWarningCommonTrip = connection.prepareStatement(LIVEFLEET_CURRENT_TRIP_STATISTICS_UPDATE_TEN,
 						ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 				// updateWarningCommonTrip = fillStatement(updateWarningCommonTrip,
@@ -330,7 +333,7 @@ public class WarningStatisticsDao implements Serializable {
 				updateWarningCommonTrip.executeUpdate();
 				// System.out.println("warning dao --updated for another table for message 10");
 				//logger.info("warning dao --updated for another table for message 10--" + warningDetail.getVin());
-				logger.info("Warning class update finished --vin-{}  time {}",  warningDetail.getVin(), java.time.LocalTime.now());
+				logger.info("Warning class update finished --vin-{}  time {}",  warningDetail.getVin(), Utils.convertMillisecondToDateTime(timeMillis));
 			} else {
 				if(connection == null) {
 					logger.error(" Issue -- Warning connection is null  while update: " + connection);
@@ -406,7 +409,7 @@ public class WarningStatisticsDao implements Serializable {
 
 	private PreparedStatement fillStatement(PreparedStatement stmt_insert_warning_statistics,
 			WarningStatisticsPojo warningDetail) throws SQLException {
-		 System.out.println("warning dao fill statement");
+		 //System.out.println("warning dao fill statement");
 
 		if (warningDetail.getTripId() != null)
 			stmt_insert_warning_statistics.setString(1, warningDetail.getTripId());
@@ -519,7 +522,7 @@ public class WarningStatisticsDao implements Serializable {
 		try {
 			if(Objects.nonNull(messageType)) {
 				
-				logger.info("Warning class read for repairMaintenance started --vin-{}  time {}",  vin, java.time.LocalTime.now());
+				logger.info("Warning class read for repairMaintenance started --vin-{}  time {}",  vin, Utils.convertMillisecondToDateTime(timeMillis));
 
 				//stmt_read_warning_statistics = connection.prepareStatement(REPAITM_MAINTENANCE_WARNING_READ);
 
@@ -560,7 +563,7 @@ public class WarningStatisticsDao implements Serializable {
 				}
 			}
 		}
-		logger.info("Warning class read finished, before return --vin-{}  time {}",  vin, java.time.LocalTime.now());
+		logger.info("Warning class read finished, before return --vin-{}  time {}",  vin, Utils.convertMillisecondToDateTime(timeMillis));
 		return warningStatus;
 
 	}
@@ -577,7 +580,7 @@ public class WarningStatisticsDao implements Serializable {
 
 			if (null != messageType && null != (connection = getConnection())) {
 				
-				logger.info("Warning class read for repairMaintenance started --vin-{}  time {}",  vin, java.time.LocalTime.now());
+				logger.info("Warning class read for repairMaintenance started --vin-{}  time {}",  vin, Utils.convertMillisecondToDateTime(timeMillis));
 
 				stmt_read_warning_statistics = connection.prepareStatement(REPAITM_MAINTENANCE_WARNING_READ);
 
@@ -619,7 +622,7 @@ public class WarningStatisticsDao implements Serializable {
 				}
 			}
 		}
-		logger.info("Warning class read finished, before return --vin-{}  time {}",  vin, java.time.LocalTime.now());
+		logger.info("Warning class read finished, before return --vin-{}  time {}",  vin, Utils.convertMillisecondToDateTime(timeMillis) );
 		return lastestProcessedMessageTimeStamp;
 
 	}
@@ -635,7 +638,7 @@ public class WarningStatisticsDao implements Serializable {
 
 		try {
 			if(Objects.nonNull(messageType)) {
-				logger.info("Warning class read list for active messages started --vin {}  time {}",  vin, java.time.LocalTime.now());
+				logger.info("Warning class read list for active messages started --vin {}  time {}",  vin, Utils.convertMillisecondToDateTime(timeMillis));
 				//stmt_read_warning_statistics = connection.prepareStatement(LIVEFLEET_WARNING_READLIST);
 
 				stmt_read_warning_statistics.setString(1, vin);
@@ -655,7 +658,7 @@ public class WarningStatisticsDao implements Serializable {
 					// rs_position.getInt(0)
 
 					// lastestProcessedMessageTimeStamp = rs_position.getLong("warning_time_stamp");
-					logger.info("Warning class reading list finished for active messages  --vin {} , time {}, listSize {}",  vin, java.time.LocalTime.now(), warningActiveList.size());
+					logger.info("Warning class reading list finished for active messages  --vin {} , time {}, listSize {}",  vin, Utils.convertMillisecondToDateTime(timeMillis), warningActiveList.size());
 					
 				}
 
@@ -720,12 +723,12 @@ public class WarningStatisticsDao implements Serializable {
 		
 		try {
 			if(Objects.nonNull(warningList) && !warningList.isEmpty()) {
-				logger.info("Warning class update started for list readed --listsize-{}  time {}",warningList.size(), java.time.LocalTime.now());
+				logger.info("Warning class update started for list readed --listsize-{}  time {}",warningList.size(), Utils.convertMillisecondToDateTime(timeMillis));
 				updateWarningCommonTrip.setArray(1, connection.createArrayOf("integer", warningList.toArray()));
 
 				logger.info("query prepared for deactivate update " + updateWarningCommonTrip);
 				updateWarningCommonTrip.executeUpdate();
-				logger.info("Warning class update finished for list readed --listsize-{}  time {}",  warningList.size(), java.time.LocalTime.now());
+				logger.info("Warning class update finished for list readed --listsize-{}  time {}",  warningList.size(), Utils.convertMillisecondToDateTime(timeMillis));
 			}
 		} catch (SQLException e) {
 			logger.error("Sql Issue while updating list in warning statistics : " + updateWarningCommonTrip);
