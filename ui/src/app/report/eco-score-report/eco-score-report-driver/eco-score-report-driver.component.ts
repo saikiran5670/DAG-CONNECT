@@ -994,7 +994,7 @@ titleStyle: any = { name: 'sans-serif', family: 4, size: 11, bold: true };
             return (valTemp * 1.10231).toFixed(2);
           } else if(dataContext.key && (dataContext.key === 'rp_distance' || dataContext.key === 'rp_averagedistanceperday'
                     || dataContext.key === 'rp_averagedrivingspeed' || dataContext.key === 'rp_averagespeed')){
-            return (valTemp * 0.621371).toFixed(2);
+            return (valTemp * 0.6213711899416732).toFixed(2);
           } else if(dataContext.key && dataContext.key === 'rp_fuelconsumption'){
             let num = Number(val);
             if(num > 0) {
