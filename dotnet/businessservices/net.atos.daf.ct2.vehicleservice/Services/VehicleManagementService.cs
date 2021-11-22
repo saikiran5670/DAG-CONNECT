@@ -162,7 +162,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                     var loggedInAccId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_accid")).FirstOrDefault()?.Value ?? "0");
                     IEnumerable<int> featureIds = JsonConvert.DeserializeObject<IEnumerable<int>>(context.RequestHeaders.Where(x => x.Key.Equals("report_feature_ids")).FirstOrDefault()?.Value ?? null);
                     //Triggering alert cdc 
-                    if (featureIds.Count() > 0)
+                    if (featureIds != null && featureIds.Count() > 0)
                         await _alertCdcHelper.TriggerAlertCdc(new List<int> { Objvehicle.ID }, "N", request.OrganizationId, request.UserOrgId, loggedInAccId, featureIds);
                 }
                 return await Task.FromResult(new VehicleResponce
@@ -939,8 +939,11 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 }
                 if (result)
                 {
+                    var loggedInAccId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_accid")).FirstOrDefault()?.Value ?? "0");
+                    IEnumerable<int> featureIds = JsonConvert.DeserializeObject<IEnumerable<int>>(context.RequestHeaders.Where(x => x.Key.Equals("report_feature_ids")).FirstOrDefault()?.Value ?? null);
                     //Triggering alert cdc 
-                    await _alertCdcHelper.TriggerAlertCdc(new List<int> { request.VehicleId }, "N", request.OrgContextId, request.OrganizationId, 0, new List<int> { 0 });
+                    if (featureIds != null && featureIds.Count() > 0)
+                        await _alertCdcHelper.TriggerAlertCdc(new List<int> { request.VehicleId }, "N", request.OrgContextId, request.OrganizationId, loggedInAccId, featureIds);
                 }
                 return await Task.FromResult(new VehicleGroupDeleteResponce
                 {
@@ -971,8 +974,11 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 }
                 if (result)
                 {
+                    var loggedInAccId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_accid")).FirstOrDefault()?.Value ?? "0");
+                    IEnumerable<int> featureIds = JsonConvert.DeserializeObject<IEnumerable<int>>(context.RequestHeaders.Where(x => x.Key.Equals("report_feature_ids")).FirstOrDefault()?.Value ?? null);
                     //Triggering alert cdc 
-                    await _alertCdcHelper.TriggerAlertCdc(new List<int> { request.VehicleId }, "N", request.OrgContextId, request.OrganizationId, 0, new List<int> { 0 });
+                    if (featureIds != null && featureIds.Count() > 0)
+                        await _alertCdcHelper.TriggerAlertCdc(new List<int> { request.VehicleId }, "N", request.OrgContextId, request.OrganizationId, loggedInAccId, featureIds);
                 }
                 return await Task.FromResult(new VehicleGroupDeleteResponce
                 {
@@ -1004,8 +1010,11 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 }
                 if (result)
                 {
+                    var loggedInAccId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_accid")).FirstOrDefault()?.Value ?? "0");
+                    IEnumerable<int> featureIds = JsonConvert.DeserializeObject<IEnumerable<int>>(context.RequestHeaders.Where(x => x.Key.Equals("report_feature_ids")).FirstOrDefault()?.Value ?? null);
                     //Triggering alert cdc 
-                    await _alertCdcHelper.TriggerAlertCdc(new List<int> { request.VehicleId }, "N", request.OrgContextId, request.OrganizationId, 0, new List<int> { 0 });
+                    if (featureIds != null && featureIds.Count() > 0)
+                        await _alertCdcHelper.TriggerAlertCdc(new List<int> { request.VehicleId }, "N", request.OrgContextId, request.OrganizationId, loggedInAccId, featureIds);
                 }
                 return await Task.FromResult(new VehicleGroupDeleteResponce
                 {
@@ -1286,7 +1295,8 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                     var loggedInAccId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_accid")).FirstOrDefault()?.Value ?? "0");
                     IEnumerable<int> featureIds = JsonConvert.DeserializeObject<IEnumerable<int>>(context.RequestHeaders.Where(x => x.Key.Equals("report_feature_ids")).FirstOrDefault()?.Value ?? null);
                     //Triggering alert cdc 
-                    await _alertCdcHelper.TriggerAlertCdc(result.VehicleConnectedList.Select(s => s.VehicleId), "N", request.OrgContextId, request.OrganizationId, loggedInAccId, featureIds);
+                    if (featureIds != null && featureIds.Count() > 0)
+                        await _alertCdcHelper.TriggerAlertCdc(result.VehicleConnectedList.Select(s => s.VehicleId), "N", request.OrgContextId, request.OrganizationId, loggedInAccId, featureIds);
                 }
                 _logger.Info("VehicleConnectAll method in Vehicle service called.");
                 return await Task.FromResult(response);
