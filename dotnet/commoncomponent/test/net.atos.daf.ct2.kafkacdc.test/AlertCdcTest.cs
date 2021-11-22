@@ -7,6 +7,12 @@ using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using net.atos.daf.ct2.confluentkafka;
+using net.atos.daf.ct2.visibility;
+using net.atos.daf.ct2.visibility.repository;
+using net.atos.daf.ct2.vehicle;
+using net.atos.daf.ct2.vehicle.repository;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace net.atos.daf.ct2.kafkacdc.test
 {
@@ -38,7 +44,11 @@ namespace net.atos.daf.ct2.kafkacdc.test
             var vehicleCdcrepository = new VehicleCdcRepository(_dataAccess, _datamartDataacess);
             _vehicleCdcManager = new VehicleCdcManager(vehicleCdcrepository);
             var vehicleManagementAlertCDCRepository = new VehicleManagementAlertCDCRepository(_dataAccess, _datamartDataacess);
-            //_vehicleMgmAlertCdcManager = new VehicleManagementAlertCDCManager(_vehicleAlertRepository, vehicleManagementAlertCDCRepository, _configuration);
+            var provider = new ServiceCollection().AddMemoryCache().BuildServiceProvider();
+            _vehicleMgmAlertCdcManager = new VehicleManagementAlertCDCManager(_vehicleAlertRepository, vehicleManagementAlertCDCRepository, _configuration,
+                new VisibilityManager(new VisibilityRepository(_dataAccess),
+                new VehicleManager(new VehicleRepository(_dataAccess, _datamartDataacess), provider.GetService<IMemoryCache>(), _configuration)
+                , provider.GetService<IMemoryCache>(), _configuration));
             _landmarkrefrepo = new LandmarkAlertCdcRepository(_dataAccess, _datamartDataacess);
             _landmarkrefmanager = new LandmarkAlertCdcManager(_landmarkrefrepo, _vehicleAlertRepository, _configuration);
         }
@@ -69,12 +79,12 @@ namespace net.atos.daf.ct2.kafkacdc.test
             Assert.IsTrue(result);
         }
 
-        //[TestMethod]
-        //public void UpdateVehcle()
-        //{
-        //    var result = _vehicleMgmAlertCdcManager.GetVehicleAlertRefFromVehicleId(new List<int> { 27 }, "N", 36, 36, 120, new List<int> { 0 }).Result;
-        //    Assert.IsTrue(result);
-        //}
+        [TestMethod]
+        public void UpdateVehcle()
+        {
+            var result = _vehicleMgmAlertCdcManager.GetVehicleAlertRefFromVehicleId(new List<int> { 41 }, "N", 73, 73, 15, new List<int> { 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 412, 411, 413, 414, 415 }).Result;
+            Assert.IsTrue(result);
+        }
         [TestMethod]
         public async Task VehicleCdcProducer()
         {
