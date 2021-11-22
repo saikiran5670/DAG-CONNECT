@@ -98,5 +98,9 @@ public class DAFCT2Constant {
 	public static final String SOURCE_SASL_JAAS_CONFIG = "sasl.jaas.config";
 	public static final String SINK_HBASE_STORE = "sink.hbase.store";
 	
+	public static final String INDEX_KEY_CYCLE_END_TRANSID = "index.key.cycle.end.transid";
+	public static final String INDEX_DM1_TRANSID = "index.dm1.transid";
+	public static final String INDEX_TELLTALES_TRANSID = "index.tell.tales.transid";
+	public static final String INDEX_WARNING_TRANSID = "index.warning.transid";
 	
 }
