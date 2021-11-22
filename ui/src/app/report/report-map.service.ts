@@ -1776,6 +1776,7 @@ export class ReportMapService {
   getFuelConsumedUnits(fuelConsumed: any, unitFormat: any, getFuelConsumtionFlag?: boolean){
      //getFuelConsumtionFlag = true to get fuel Consumption Conversion ; false to get fuel Consumed conversion
     let _fuelConsumed: any = 0;
+    if(fuelConsumed != 0){
     switch(unitFormat){
       case 'dunit_Metric': { 
         _fuelConsumed = getFuelConsumtionFlag ? this.convertFuelConsumptionMlmToLtr100km(fuelConsumed) : this.miliLitreToLitre(fuelConsumed); //-- Ltr/100Km / ltr
@@ -1789,6 +1790,7 @@ export class ReportMapService {
         _fuelConsumed = getFuelConsumtionFlag ? this.convertFuelConsumptionMlmToLtr100km(fuelConsumed) : this.miliLitreToLitre(fuelConsumed); // Ltr/100Km / ltr
       }
     }
+   }  
     return _fuelConsumed; 
   }
 
