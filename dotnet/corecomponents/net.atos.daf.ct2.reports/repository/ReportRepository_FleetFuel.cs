@@ -105,7 +105,8 @@ namespace net.atos.daf.ct2.reports.repository
                                                          		  , case when SUM(etl_gps_trip_time)>0 then ((SUM(idle_duration)/(SUM(etl_gps_trip_time)/1000))*100) else 0 end               as idle_duration_percentage
                                                       		      , case when SUM(etl_gps_trip_time)>0 then ((SUM(pto_duration)/(SUM(etl_gps_trip_time)/1000))*100)   else 0 end              as pto_duration
                                                       		      , SUM(harsh_brake_duration)                                              as harsh_brake_duration
-                                                      		      , case when SUM(etl_gps_trip_time)>0 then ((SUM(heavy_throttle_duration)/(SUM(etl_gps_trip_time)/1000))*100)  else 0 end    as heavy_throttle_duration
+                                                      		      --, case when SUM(etl_gps_trip_time)>0 then ((SUM(heavy_throttle_duration)/(SUM(etl_gps_trip_time)/1000))*100)  else 0 end    as heavy_throttle_duration
+                                                                  , SUM(heavy_throttle_duration)  as heavy_throttle_duration
                                                       		      , case when SUM(etl_gps_distance)>0 then ((SUM(cruise_control_distance_30_50)/SUM(etl_gps_distance)) * 100)  else 0 end     as cruise_control_distance_30_50
                                                       		      , case when SUM(etl_gps_distance)>0 then ((SUM(cruise_control_distance_50_75)/SUM(etl_gps_distance)) * 100)    else 0 end   as cruise_control_distance_50_75
                                                       		      , case when SUM(etl_gps_distance)>0 then ((SUM(cruise_control_distance_more_than_75)/SUM(etl_gps_distance)) * 100)  else 0 end as     cruise_control_distance_more_than_75
@@ -277,8 +278,9 @@ namespace net.atos.daf.ct2.reports.repository
                                                   		  , case when SUM(etl_gps_trip_time)>0 then ((SUM(idle_duration)/(SUM(etl_gps_trip_time)/1000))*100) else 0 end                   as idle_duration_percentage
                                                   		  , case when SUM(etl_gps_trip_time)>0 then ((SUM(pto_duration)/(SUM(etl_gps_trip_time)/1000))*100)   else 0 end                  as pto_duration
                                                   		  , SUM(harsh_brake_duration)                                              as harsh_brake_duration
-                                                  		  , case when SUM(etl_gps_trip_time)>0 then ((SUM(heavy_throttle_duration)/(SUM(etl_gps_trip_time)/1000))*100)  else 0 end        as heavy_throttle_duration
-                                                  		  , case when SUM(etl_gps_distance)>0 then ((SUM(cruise_control_distance_30_50)/SUM(etl_gps_distance)) * 100)  else 0 end        as cruise_control_distance_30_50
+                                                  		  --, case when SUM(etl_gps_trip_time)>0 then ((SUM(heavy_throttle_duration)/(SUM(etl_gps_trip_time)/1000))*100)  else 0 end        as heavy_throttle_duration
+                                                  		  , SUM(heavy_throttle_duration)  as heavy_throttle_duration
+                                                          , case when SUM(etl_gps_distance)>0 then ((SUM(cruise_control_distance_30_50)/SUM(etl_gps_distance)) * 100)  else 0 end        as cruise_control_distance_30_50
                                                   		  , case when SUM(etl_gps_distance)>0 then ((SUM(cruise_control_distance_50_75)/SUM(etl_gps_distance)) * 100)    else 0 end      as cruise_control_distance_50_75
                                                   		  , case when SUM(etl_gps_distance)>0 then ((SUM(cruise_control_distance_more_than_75)/SUM(etl_gps_distance)) * 100)  else 0 end  as cruise_control_distance_more_than_75
                                                   		  , MAX(average_traffic_classification)                                    as average_traffic_classification
@@ -438,8 +440,8 @@ namespace net.atos.daf.ct2.reports.repository
 
                 string query = @"WITH cte_workingdays AS(
                         select
-                        date_trunc('day', to_timestamp(start_time_stamp/1000)) as startdate,
-                        count(distinct date_trunc('day', to_timestamp(start_time_stamp/1000))) as totalworkingdays,
+                        date_trunc('day', to_timestamp(end_time_stamp/1000)) as startdate,
+                        count(distinct date_trunc('day', to_timestamp(end_time_stamp/1000))) as totalworkingdays,
 						Count(distinct v.vin)                               as vehiclecount,
 						Count(distinct trip_id)                             as tripcount,
                         sum(etl_gps_distance)                               as totaldistance,
@@ -450,10 +452,10 @@ namespace net.atos.daf.ct2.reports.repository
                         FROM tripdetail.trip_statistics CT
 						Join master.vehicle v
 						on CT.vin = v.vin and CT.end_time_stamp >= v.reference_date
-                        where (start_time_stamp >= @FromDate 
+                        where (end_time_stamp >= @FromDate 
 							   and end_time_stamp<= @ToDate) 
 						and CT.vin=ANY(@vins)
-                        group by date_trunc('day', to_timestamp(start_time_stamp/1000))
+                        group by date_trunc('day', to_timestamp(end_time_stamp/1000))
                         )
                         select
                         '' as VIN,
@@ -490,8 +492,8 @@ namespace net.atos.daf.ct2.reports.repository
 
                 string query = @"WITH cte_workingdays AS(
                         select
-                        date_trunc('day', to_timestamp(start_time_stamp/1000)) as startdate,
-                        count(distinct date_trunc('day', to_timestamp(start_time_stamp/1000))) as totalworkingdays,
+                        date_trunc('day', to_timestamp(end_time_stamp/1000)) as startdate,
+                        count(distinct date_trunc('day', to_timestamp(end_time_stamp/1000))) as totalworkingdays,
 						Count(distinct v.vin)                                   as vehiclecount,
 						Count(distinct trip_id)                                 as tripcount,
                         sum(etl_gps_distance)                                   as totaldistance,
@@ -504,10 +506,10 @@ namespace net.atos.daf.ct2.reports.repository
 						on CT.vin = v.vin and CT.end_time_stamp >= v.reference_date
                         Left join master.driver dr on
 						dr.driver_id = CT.driver1_id
-                        where (start_time_stamp >= @FromDate 
+                        where (end_time_stamp >= @FromDate 
 							   and end_time_stamp<= @ToDate) 
 						and CT.vin=ANY(@vins)
-                        group by date_trunc('day', to_timestamp(start_time_stamp/1000))  
+                        group by date_trunc('day', to_timestamp(end_time_stamp/1000))  
                         )
                         select
                         '' as VIN,
@@ -545,7 +547,7 @@ namespace net.atos.daf.ct2.reports.repository
                 string queryFleetUtilization = @"WITH CTE_FleetDeatils as
 			(
 				Select distinct
-					v.VIN				  
+					ts.VIN				  
                   , ts.id as Id
 				  , trip_id  as tripid
 				  , 1 as numberoftrips 
@@ -562,7 +564,8 @@ namespace net.atos.daf.ct2.reports.repository
 				  , case when (((end_time_stamp - start_time_stamp)/1000)::numeric)>0 then ((idle_duration/((end_time_stamp - start_time_stamp)/1000)::numeric) *100) else 0 end as idle_duration_percentage
 				  , case when (((end_time_stamp - start_time_stamp)/1000)::numeric)>0 then ((pto_duration/((end_time_stamp - start_time_stamp)/1000)::numeric) *100)  else 0 end   as pto_duration
 				  , harsh_brake_duration as harsh_brake_duration
-				  , case when (((end_time_stamp - start_time_stamp)/1000)::numeric)>0 then ((heavy_throttle_duration/((end_time_stamp - start_time_stamp)/1000)::numeric) *100)  else 0 end as heavy_throttle_duration
+				  --, case when (((end_time_stamp - start_time_stamp)/1000)::numeric)>0 then ((heavy_throttle_duration/((end_time_stamp - start_time_stamp)/1000)::numeric) *100)  else 0 end as heavy_throttle_duration
+                  , (heavy_throttle_duration)  as heavy_throttle_duration
 				  , case when etl_gps_distance>0 then ((cruise_control_distance_30_50 / etl_gps_distance) * 100) else 0 end         as cruise_control_distance_30_50
 				  , case when etl_gps_distance>0 then ((cruise_control_distance_50_75  / etl_gps_distance) * 100)  else 0 end         as cruise_control_distance_50_75
 				  , case when etl_gps_distance>0 then ((cruise_control_distance_more_than_75  / etl_gps_distance) * 100)  else 0 end  as cruise_control_distance_more_than_75
@@ -728,7 +731,8 @@ namespace net.atos.daf.ct2.reports.repository
 				  , case when (((end_time_stamp - start_time_stamp)/1000)::numeric)>0 then ((idle_duration/((end_time_stamp - start_time_stamp)/1000)::numeric) *100) else 0 end as idle_duration_percentage
 				  , case when (((end_time_stamp - start_time_stamp)/1000)::numeric)>0 then ((pto_duration/((end_time_stamp - start_time_stamp)/1000)::numeric) *100)  else 0 end   as pto_duration
 				  , case when (((end_time_stamp - start_time_stamp)/1000)::numeric)>0 then ((harsh_brake_duration/((end_time_stamp - start_time_stamp)/1000)::numeric) *100)  else 0 end as harsh_brake_duration
-				  , case when (((end_time_stamp - start_time_stamp)/1000)::numeric)>0 then ((heavy_throttle_duration/((end_time_stamp - start_time_stamp)/1000)::numeric) *100)  else 0 end as heavy_throttle_duration
+				  --, case when (((end_time_stamp - start_time_stamp)/1000)::numeric)>0 then ((heavy_throttle_duration/((end_time_stamp - start_time_stamp)/1000)::numeric) *100)  else 0 end as heavy_throttle_duration
+                  , (heavy_throttle_duration)  as heavy_throttle_duration
 				  , case when etl_gps_distance>0 then ((cruise_control_distance_30_50 / etl_gps_distance) * 100) else 0 end         as cruise_control_distance_30_50
 				  , case when etl_gps_distance>0 then ((cruise_control_distance_50_75  / etl_gps_distance) * 100)  else 0 end         as cruise_control_distance_50_75
 				  , case when etl_gps_distance>0 then ((cruise_control_distance_more_than_75  / etl_gps_distance) * 100)  else 0 end  as cruise_control_distance_more_than_75

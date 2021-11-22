@@ -846,6 +846,7 @@ removeDuplicates(originalArray, prop) {
     this.showLoadingIndicator=true;
     this.initData =this.detailsData;
     let newAlertCat=[];
+    let otherList= [];
     let status=this.filterVehicleForm.controls.status.value;
     let health_status:any;
     if(status.length == 0 || status == 'all'){
@@ -860,6 +861,20 @@ removeDuplicates(originalArray, prop) {
       }     
       health_status =status;
     }
+
+    if(this.filterVehicleForm.controls.otherFilter.value.length == 0){
+     otherList =['all'];
+    }
+    else {
+      let newOtherList = this.filterVehicleForm.controls.otherFilter.value.filter(i=>i != 0 && i != undefined);       
+      if(this.filterVehicleForm.controls.otherFilter.value.includes(0))
+      {        
+        newOtherList.push('all');
+        
+      }     
+      otherList = newOtherList;
+    }
+
     let d = this.filterVehicleForm.controls.category.value;
     if(d == 'all')
     {
@@ -877,7 +892,7 @@ removeDuplicates(originalArray, prop) {
         "alertLevel": this.filterVehicleForm.controls.level.value,
         "alertCategory": this.filterVehicleForm.controls.category.value,
         "healthStatus": health_status,
-        "otherFilter": [this.filterVehicleForm.controls.otherFilter.value.toString()],
+        "otherFilter": otherList,
         "driverId": ["all"],
         "days": 90,
         "languagecode":this.localStLanguage ? this.localStLanguage.code : "EN-GB"
@@ -889,7 +904,7 @@ removeDuplicates(originalArray, prop) {
         "alertLevel":this.filterVehicleForm.controls.level.value,
         "alertCategory": this.filterVehicleForm.controls.category.value,
         "healthStatus": health_status,
-        "otherFilter": [this.filterVehicleForm.controls.otherFilter.value.toString()],
+        "otherFilter": otherList,
         "driverId": ["all"],
         "days": 0,
         "languagecode":this.localStLanguage ? this.localStLanguage.code : "EN-GB"

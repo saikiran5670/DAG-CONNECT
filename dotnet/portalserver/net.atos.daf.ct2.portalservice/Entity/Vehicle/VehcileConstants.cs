@@ -7,6 +7,6 @@ namespace net.atos.daf.ct2.portalservice.Entity.Vehicle
 {
     public static class VehcileConstants
     {
-        public const string VEHICLE_FEATURE_STARTWITH = "Alerts";
+        public const string VEHICLE_FEATURE_STARTWITH = "Alerts.";
     }
 }

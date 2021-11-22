@@ -49,7 +49,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         Task<string> GetVehicleAssociatedGroup(int vehicleId, int organizationId);
 
         #region Vehicle Mileage Data
-        Task<IEnumerable<DtoVehicleMileage>> GetVehicleMileage(long startDate, long endDate, bool noFilter);
+        Task<IEnumerable<DtoVehicleMileage>> GetVehicleMileage(long startDate, long endDate, bool noFilter, string contentType, List<string> vins);
 
         #endregion
 

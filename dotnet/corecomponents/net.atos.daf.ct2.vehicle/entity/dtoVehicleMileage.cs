@@ -2,12 +2,10 @@
 {
     public class DtoVehicleMileage
     {
-        public int Id { get; set; }
-        public long Evt_timestamp { get; set; }
-        public decimal Odo_mileage { get; set; }
-        public decimal Odo_distance { get; set; }
-        public decimal Real_distance { get; set; }
-        public string Vin { get; set; }
-        public long Modified_at { get; set; }
+        public string EvtDateTime { get; set; }
+        public string VIN { get; set; }
+        public decimal? TachoMileage { get; set; }
+        public decimal? GPSMileage { get; set; }
+        public string RealMileageAlgorithmVersion { get; set; }
     }
 }

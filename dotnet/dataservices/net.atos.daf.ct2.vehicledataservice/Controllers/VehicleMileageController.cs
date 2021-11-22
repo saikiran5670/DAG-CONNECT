@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -69,28 +70,16 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
 
                         var orgs = await _accountManager.GetAccountOrg(account.Id);
 
-                        VehicleMileage vehicleMileage = new VehicleMileage();
-                        vehicleMileage = await _vehicleManager.GetVehicleMileage(since, isNumeric, selectedType, account.Id, orgs.First().Id);
+                        var vehicleMileage = await _vehicleManager.GetVehicleMileage(since, isNumeric, selectedType, account.Id, orgs.First().Id);
 
                         if (selectedType.Equals(VehicleMileageResponseTypeConstants.CSV))
                         {
-                            return new VehicleMileageCSVResult(vehicleMileage.VehiclesCSV); //, "mileagedata.csv"
+                            return new VehicleMileageCSVResult(vehicleMileage);
                         }
                         else
                         {
-                            VehicleMileageResponse vehicleMileageResponse = new VehicleMileageResponse();
-                            vehicleMileageResponse.Vehicles = new List<Entity.Vehicles>();
-                            foreach (var item in vehicleMileage.Vehicles)
-                            {
-                                Entity.Vehicles vehiclesobj = new Entity.Vehicles();
-                                vehiclesobj.EvtDateTime = item.EvtDateTime.ToString();
-                                vehiclesobj.VIN = item.VIN;
-                                vehiclesobj.TachoMileage = item.TachoMileage;
-                                vehiclesobj.GPSMileage = item.GPSMileage;
-                                vehicleMileageResponse.Vehicles.Add(vehiclesobj);
-                            }
-                            vehicleMileageResponse.RequestTimestamp = currentdatetime;
-                            return Ok(vehicleMileageResponse);
+                            return new JsonResult(new { RequestTimestamp = currentdatetime, Vehicles = vehicleMileage },
+                                new JsonSerializerOptions() { IgnoreNullValues = true });
                         }
                     }
 
