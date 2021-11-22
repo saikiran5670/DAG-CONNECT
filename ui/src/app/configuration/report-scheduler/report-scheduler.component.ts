@@ -390,7 +390,7 @@ getUnique(arr, comp) {
       if(this.translationData.lblReportSchedulerDelete)
         return this.translationData.lblReportSchedulerDelete.replace('$', reportSchedulerName);
       else
-        return ("Report scheduler '$' was successfully deleted").replace('$', reportSchedulerName);
+        return ("Schedule '$' deleted successfully ").replace('$', reportSchedulerName);
   }
 
   onViewReportScheduler(row: any, action: any) {
