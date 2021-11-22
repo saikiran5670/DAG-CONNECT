@@ -31,8 +31,8 @@ namespace net.atos.daf.ct2.kafkacdc
             _vehicleAlertRepository = vehicleAlertRepository;
             _kafkaCdcHelper = new KafkaCdcHelper();
         }
-        public Task<bool> GetVehiclesAndAlertFromSubscriptionConfiguration(int subscriptionId, string operation, int orgnisationId, List<string> vins) => ExtractAndSyncVehicleAlertRefBySubscriptionId(subscriptionId, operation, orgnisationId, vins);
-        internal async Task<bool> ExtractAndSyncVehicleAlertRefBySubscriptionId(int subscriptionId, string operation, int orgnisationId, List<string> vins)
+        public Task<bool> GetVehiclesAndAlertFromSubscriptionConfiguration(int subscriptionId, string operation, string orgnisationId, List<string> vins) => ExtractAndSyncVehicleAlertRefBySubscriptionId(subscriptionId, operation, orgnisationId, vins);
+        internal async Task<bool> ExtractAndSyncVehicleAlertRefBySubscriptionId(int subscriptionId, string operation, string orgnisationId, List<string> vins)
         {
             bool result = false;
             List<int> alertIds = new List<int>();
@@ -106,11 +106,12 @@ namespace net.atos.daf.ct2.kafkacdc
             return result;
         }
 
-        internal async Task<List<VehicleAlertRef>> GetVisibilityVehicleAlertRefByAlertIds(int orgnisationId, int subscriptionId, List<string> vins)
+        internal async Task<List<VehicleAlertRef>> GetVisibilityVehicleAlertRefByAlertIds(string org_Id, int subscriptionId, List<string> vins)
         {
             try
             {
-                IEnumerable<int> featureIds = await _vehicleAlertSubscriptionRepository.GetAlertFeatureIds(orgnisationId, subscriptionId, vins);
+                int orgnisationId = await _vehicleAlertSubscriptionRepository.GetOrganisationId(org_Id);
+                IEnumerable<int> featureIds = await _vehicleAlertSubscriptionRepository.GetAlertFeatureIds(orgnisationId, subscriptionId);
 
                 var visibilityVehicle = await _visibilityManager.GetVehicleByAccountVisibilityForAlert(0, 0, orgnisationId, featureIds.ToArray());
                 List<int> vehicleIds = null;
@@ -122,7 +123,17 @@ namespace net.atos.daf.ct2.kafkacdc
                 {
                     vehicleIds = visibilityVehicle.Select(x => x.VehicleId).ToList();
                 }
-                var groupIds = visibilityVehicle.Where(x => vehicleIds.Contains(x.VehicleId)).Select(x => (int)x.VehicleGroupDetails.Split(new[] { '~' }, 3).GetValue(0)).ToList();
+                var vehgroupIds = visibilityVehicle.Where(x => vehicleIds.Contains(x.VehicleId)).Select(x => x.VehicleGroupIds).ToArray();
+
+                List<int> groupIds = new List<int>();
+                foreach (var item in vehgroupIds)
+                {
+                    for (int i = 0; i < item.Length; i++)
+                    {
+                        var grpId = item[i];
+                        groupIds.Add(grpId);
+                    }
+                }
 
                 List<AlertGroupId> alertVehicleGroup = await _vehicleAlertSubscriptionRepository.GetAlertIdsandVGIds(groupIds, featureIds.ToList());
 
@@ -130,7 +141,7 @@ namespace net.atos.daf.ct2.kafkacdc
 
                 foreach (var item in alertVehicleGroup)
                 {
-                    var vinDetails = visibilityVehicle.Where(x => (int)x.VehicleGroupDetails.Split(new[] { '~' }, 3).GetValue(0) == item.GroupId && vehicleIds.Contains(x.VehicleId)).Select(x => x.Vin).ToList();
+                    var vinDetails = visibilityVehicle.Where(x => x.VehicleGroupIds.Contains(item.GroupId) && vehicleIds.Contains(x.VehicleId)).Select(x => x.Vin).ToList();
                     if (vinDetails.Any())
                     {
                         foreach (var vin in vinDetails)
