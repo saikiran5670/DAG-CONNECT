@@ -258,7 +258,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 VehicleBusinessService.VehicleGroupRequest vehicleGroupRequest = new VehicleBusinessService.VehicleGroupRequest();
                 vehicleGroupRequest = _mapper.ToVehicleGroup(group);
-                VehicleBusinessService.VehicleGroupResponce response = await _vehicleClient.UpdateGroupAsync(vehicleGroupRequest);
+                VehicleBusinessService.VehicleGroupResponce response = await _vehicleClient.UpdateGroupAsync(vehicleGroupRequest, headers);
                 if (response != null && response.Code == VehicleBusinessService.Responcecode.Success)
                 {
                     await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
@@ -308,7 +308,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 //Add the organizationId for Vehicle group CDC ogranization filter
                 request.OrganizationId = GetContextOrgId();
                 request.GroupId = Convert.ToInt32(groupId);
-                VehicleBusinessService.VehicleGroupDeleteResponce response = await _vehicleClient.CanDeleteGroupAsync(request);
+                VehicleBusinessService.VehicleGroupDeleteResponce response = await _vehicleClient.CanDeleteGroupAsync(request, headers);
                 if (response != null && response.Code == VehicleBusinessService.Responcecode.Success)
                 {
                     await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
@@ -355,7 +355,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 //Add the organizationId for Vehicle group CDC ogranization filter
                 request.OrganizationId = GetContextOrgId();
                 request.GroupId = Convert.ToInt32(groupId);
-                VehicleBusinessService.VehicleGroupDeleteModifiedResponce response = await _vehicleClient.DeleteGroupAsync(request);
+                VehicleBusinessService.VehicleGroupDeleteModifiedResponce response = await _vehicleClient.DeleteGroupAsync(request, headers);
                 if (response != null && response.Code == VehicleBusinessService.Responcecode.Success)
                 {
                     await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
