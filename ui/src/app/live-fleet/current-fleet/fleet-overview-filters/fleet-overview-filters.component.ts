@@ -486,10 +486,9 @@ removeDuplicates(originalArray, prop) {
       const driverId = value.driver1Id.toLowerCase().toString().includes(searchStr);
       return vin || driver || drivingStatus ||healthStatus || driverId;
     }​​​​​​​​);
-  
-  
+
     this.vehicleListData = filteredData;
-    
+    this.filterVINonMap(); // VIN's on map
   }
 
   applyFilterDriver(filterValue: string) {
@@ -813,7 +812,7 @@ removeDuplicates(originalArray, prop) {
     this.filterVINonMap();
   }
 
-  filterVINonMap(){
+  filterVINonMap(){ // VIN on map
     let _dataObj: any = {
       vehicleDetailsFlag: this.isVehicleDetails,
       data: this.vehicleListData

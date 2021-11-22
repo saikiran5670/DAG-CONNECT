@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Objects;
 
 import org.apache.logging.log4j.LogManager;
 
@@ -59,21 +60,23 @@ public class LiveFleetDriverActivityDao implements Serializable {
 		return result;
 	}
 
-	public boolean driver_insert(DriverActivityPojo DriverDetails) throws TechnicalException, SQLException {
-		PreparedStatement stmt_insert_driver_activity=null;
+	public boolean driver_insert(DriverActivityPojo DriverDetails,PreparedStatement stmt_insert_driver_activity) throws TechnicalException, SQLException {
+		//PreparedStatement stmt_insert_driver_activity=null;
 
 		boolean result = false;
 		try {
-			log.info("inside insert for Driver management ");
-			if (null != DriverDetails && null != (connection = getConnection())) {
+			if(Objects.nonNull(DriverDetails)){
 
-				stmt_insert_driver_activity = connection.prepareStatement(LIVEFLEET_DRIVER_INSERT,
-						ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+				/*
+				 * stmt_insert_driver_activity =
+				 * connection.prepareStatement(LIVEFLEET_DRIVER_INSERT,
+				 * ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+				 */
 				stmt_insert_driver_activity = fillStatement(stmt_insert_driver_activity, DriverDetails);
 				log.info("Insert Driver query--" + stmt_insert_driver_activity);
-				stmt_insert_driver_activity.addBatch();
-				stmt_insert_driver_activity.executeBatch();
-				log.info("data inserted for driver-->" + DriverDetails.getDriverID());
+				//stmt_insert_driver_activity.addBatch();
+				stmt_insert_driver_activity.execute();
+				log.info("data inserted for driver--> {} trip_id {}" , DriverDetails.getDriverID(), DriverDetails.getTripId());
 			}else {
 				if(connection == null) {
 					log.error(" Issue in Driver connection is null : " + connection);
