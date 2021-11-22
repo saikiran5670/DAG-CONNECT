@@ -37,7 +37,6 @@ import net.atos.daf.ct2.processing.StoreHistoricalData;
 import net.atos.daf.ct2.utils.JsonMapper;
 
 public class MessageParseUtil {
-	
 	private static final Logger logger = LogManager.getLogger(MessageParseUtil.class);
 
 	public static DataStream<KafkaRecord<String>> filterDataInputStream(
@@ -54,7 +53,8 @@ public class MessageParseUtil {
 						String transId = getTransIdValue(message.getValue());
 						System.out.println("filter Trans ID    " + transId + " message type ::" + messageType);
 						logger.info("filter Trans ID " + transId + " message type ::" + messageType);
-						if (transId != null && messageType != null && transId.trim().contains(messageType.trim())) {
+						//if (transId != null && messageType != null && transId.trim().contains(messageType.trim())) {
+						if (transId != null && messageType != null && -1 != messageType.trim().indexOf(transId.trim())) {
 							return true;
 						}
 
@@ -1351,8 +1351,22 @@ public class MessageParseUtil {
 		if (transId != null) {
 			if (properties.getProperty(DAFCT2Constant.INDEX_TRANSID).trim().equalsIgnoreCase(transId)) {
 				return properties.getProperty(DAFCT2Constant.CONTI_INDEX_TRANSID);
-			} else if (properties.getProperty(DAFCT2Constant.MONITOR_TRANSID).trim().equalsIgnoreCase(transId)) {
+				
+			}else if (properties.getProperty(DAFCT2Constant.INDEX_KEY_CYCLE_END_TRANSID).trim().equalsIgnoreCase(transId)) {
+				return properties.getProperty(DAFCT2Constant.CONTI_INDEX_TRANSID);
+				
+			}else if (properties.getProperty(DAFCT2Constant.INDEX_DM1_TRANSID).trim().equalsIgnoreCase(transId)) {
+				return properties.getProperty(DAFCT2Constant.CONTI_INDEX_TRANSID);
+				
+			}else if (properties.getProperty(DAFCT2Constant.INDEX_TELLTALES_TRANSID).trim().equalsIgnoreCase(transId)) {
+				return properties.getProperty(DAFCT2Constant.CONTI_INDEX_TRANSID);
+				
+			}else if (properties.getProperty(DAFCT2Constant.INDEX_WARNING_TRANSID).trim().equalsIgnoreCase(transId)) {
+				return properties.getProperty(DAFCT2Constant.CONTI_INDEX_TRANSID);
+				
+			}else if (properties.getProperty(DAFCT2Constant.MONITOR_TRANSID).trim().equalsIgnoreCase(transId)) {
 				return properties.getProperty(DAFCT2Constant.CONTI_MONITOR_TRANSID);
+				
 			} else if (properties.getProperty(DAFCT2Constant.STATUS_TRANSID).trim().equalsIgnoreCase(transId)) {
 				return properties.getProperty(DAFCT2Constant.CONTI_STATUS_TRANSID);
 			}
@@ -1525,7 +1539,7 @@ public class MessageParseUtil {
 
 					if (source != null && source.toLowerCase()
 							.contains(properties.getProperty(DAFCT2Constant.INDEXKEY).toLowerCase())) {
-						source = properties.getProperty(DAFCT2Constant.INDEXKEY);
+						source = source.toUpperCase();//properties.getProperty(DAFCT2Constant.INDEXKEY);
 					} else if (source != null && source.toLowerCase()
 							.contains(properties.getProperty(DAFCT2Constant.MONITORKEY).toLowerCase())) {
 						source = properties.getProperty(DAFCT2Constant.MONITORKEY);
