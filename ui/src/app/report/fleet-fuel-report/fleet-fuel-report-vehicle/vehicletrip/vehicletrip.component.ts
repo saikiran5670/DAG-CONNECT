@@ -2589,9 +2589,9 @@ setVehicleGroupAndVehiclePreSelection() {
     })    
     this.initData.forEach(item => {
       worksheet.addRow([ item.vehicleName,item.vin, item.vehicleRegistrationNo,item.convertedStartTime,item.convertedEndTime,item.convertedAverageSpeed,
-        item.convertedMaxSpeed,item.convertedDistance,item.startPosition,item.endPosition,item.convertedFuelConsumed100Km,item.convertedFuelConsumption,item.cO2Emission,item.idleDurationPercentage,
+        item.convertedMaxSpeed,item.convertedDistance,item.startPosition,item.endPosition,item.convertedFuelConsumed100Km,item.convertedTripFuelConsumption,item.cO2Emission,item.idleDurationPercentage,
         item.ptoDuration.toFixed(2),item.cruiseControlDistance3050,item.cruiseControlDistance5075,item.cruiseControlDistance75,
-        item.heavyThrottleDuration,item.harshBrakeDuration,item.convertedAverageGrossWeightComb,item.averageTrafficClassification,
+        item.heavyThrottleDuration,item.harshBrakeDuration,item.convertedAverageGrossWeightComb,item.averageTrafficClassificationValue,
         item.ccFuelConsumption,item.convertedFuelConsumptionCCNonActive,item.idlingConsumptionValue,item.dpaScore,item.convertedIdlingPTOScore,
         item.idlingPTO,item.convertedIdlingWithoutPTO,item.idlingWithoutPTOpercent,item.footBrake,item.cO2Emmision,item.convertedIdlingConsumptionWithPto]);
     });
@@ -2849,7 +2849,7 @@ setVehicleGroupAndVehiclePreSelection() {
               break;
             }
             case 'fuelConsumption' :{
-              tempObj.push(e.convertedFuelConsumption);
+              tempObj.push(e.convertedTripFuelConsumption);
               break;
             }
             case 'cO2Emission' :{

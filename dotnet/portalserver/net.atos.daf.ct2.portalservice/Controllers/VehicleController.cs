@@ -258,7 +258,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 VehicleBusinessService.VehicleGroupRequest vehicleGroupRequest = new VehicleBusinessService.VehicleGroupRequest();
                 vehicleGroupRequest = _mapper.ToVehicleGroup(group);
-                VehicleBusinessService.VehicleGroupResponce response = await _vehicleClient.UpdateGroupAsync(vehicleGroupRequest);
+                VehicleBusinessService.VehicleGroupResponce response = await _vehicleClient.UpdateGroupAsync(vehicleGroupRequest, headers);
                 if (response != null && response.Code == VehicleBusinessService.Responcecode.Success)
                 {
                     await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
@@ -308,7 +308,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 //Add the organizationId for Vehicle group CDC ogranization filter
                 request.OrganizationId = GetContextOrgId();
                 request.GroupId = Convert.ToInt32(groupId);
-                VehicleBusinessService.VehicleGroupDeleteResponce response = await _vehicleClient.CanDeleteGroupAsync(request);
+                VehicleBusinessService.VehicleGroupDeleteResponce response = await _vehicleClient.CanDeleteGroupAsync(request, headers);
                 if (response != null && response.Code == VehicleBusinessService.Responcecode.Success)
                 {
                     await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
@@ -355,7 +355,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 //Add the organizationId for Vehicle group CDC ogranization filter
                 request.OrganizationId = GetContextOrgId();
                 request.GroupId = Convert.ToInt32(groupId);
-                VehicleBusinessService.VehicleGroupDeleteModifiedResponce response = await _vehicleClient.DeleteGroupAsync(request);
+                VehicleBusinessService.VehicleGroupDeleteModifiedResponce response = await _vehicleClient.DeleteGroupAsync(request, headers);
                 if (response != null && response.Code == VehicleBusinessService.Responcecode.Success)
                 {
                     await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
@@ -618,7 +618,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 request.OrganizationId = GetUserSelectedOrgId();
                 request.OrgContextId = GetContextOrgId();
-                VehicleBusinessService.VehicleGroupDeleteResponce vehicleResponse = await _vehicleClient.SetOptInStatusAsync(request);
+                var featureIds = GetMappedFeatureIdByStartWithName(net.atos.daf.ct2.portalservice.Entity.Alert.AlertConstants.ALERT_FEATURE_STARTWITH);
+                Metadata headers = new Metadata();
+                headers.Add("logged_in_accid", Convert.ToString(_userDetails.AccountId));
+                headers.Add("report_feature_ids", JsonConvert.SerializeObject(featureIds));
+                VehicleBusinessService.VehicleGroupDeleteResponce vehicleResponse = await _vehicleClient.SetOptInStatusAsync(request, headers);
 
                 if (vehicleResponse != null && vehicleResponse.Code == VehicleBusinessService.Responcecode.Failed
                      && vehicleResponse.Message == "There is an error updating vehicle opt in status.")
@@ -674,7 +678,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 request.OrganizationId = GetUserSelectedOrgId();
                 request.OrgContextId = GetContextOrgId();
-                VehicleBusinessService.VehicleGroupDeleteResponce vehicleResponse = await _vehicleClient.SetOTAStatusAsync(request);
+                var featureIds = GetMappedFeatureIdByStartWithName(net.atos.daf.ct2.portalservice.Entity.Alert.AlertConstants.ALERT_FEATURE_STARTWITH);
+                Metadata headers = new Metadata();
+                headers.Add("logged_in_accid", Convert.ToString(_userDetails.AccountId));
+                headers.Add("report_feature_ids", JsonConvert.SerializeObject(featureIds));
+                VehicleBusinessService.VehicleGroupDeleteResponce vehicleResponse = await _vehicleClient.SetOTAStatusAsync(request, headers);
 
                 if (vehicleResponse != null && vehicleResponse.Code == VehicleBusinessService.Responcecode.Failed
                      && vehicleResponse.Message == "There is an error updating vehicle ota status.")
@@ -729,7 +737,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 request.OrganizationId = GetUserSelectedOrgId();
                 request.OrgContextId = GetContextOrgId();
-                VehicleBusinessService.VehicleGroupDeleteResponce vehicleResponse = await _vehicleClient.TerminateAsync(request);
+                var featureIds = GetMappedFeatureIdByStartWithName(net.atos.daf.ct2.portalservice.Entity.Alert.AlertConstants.ALERT_FEATURE_STARTWITH);
+                Metadata headers = new Metadata();
+                headers.Add("logged_in_accid", Convert.ToString(_userDetails.AccountId));
+                headers.Add("report_feature_ids", JsonConvert.SerializeObject(featureIds));
+                VehicleBusinessService.VehicleGroupDeleteResponce vehicleResponse = await _vehicleClient.TerminateAsync(request, headers);
 
                 if (vehicleResponse != null && vehicleResponse.Code == VehicleBusinessService.Responcecode.Failed
                      && vehicleResponse.Message == "There is an error updating vehicle terminate status.")
