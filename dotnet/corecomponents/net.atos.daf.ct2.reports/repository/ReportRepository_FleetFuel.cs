@@ -438,8 +438,8 @@ namespace net.atos.daf.ct2.reports.repository
 
                 string query = @"WITH cte_workingdays AS(
                         select
-                        date_trunc('day', to_timestamp(start_time_stamp/1000)) as startdate,
-                        count(distinct date_trunc('day', to_timestamp(start_time_stamp/1000))) as totalworkingdays,
+                        date_trunc('day', to_timestamp(end_time_stamp/1000)) as startdate,
+                        count(distinct date_trunc('day', to_timestamp(end_time_stamp/1000))) as totalworkingdays,
 						Count(distinct v.vin)                               as vehiclecount,
 						Count(distinct trip_id)                             as tripcount,
                         sum(etl_gps_distance)                               as totaldistance,
@@ -450,10 +450,10 @@ namespace net.atos.daf.ct2.reports.repository
                         FROM tripdetail.trip_statistics CT
 						Join master.vehicle v
 						on CT.vin = v.vin and CT.end_time_stamp >= v.reference_date
-                        where (start_time_stamp >= @FromDate 
+                        where (end_time_stamp >= @FromDate 
 							   and end_time_stamp<= @ToDate) 
 						and CT.vin=ANY(@vins)
-                        group by date_trunc('day', to_timestamp(start_time_stamp/1000))
+                        group by date_trunc('day', to_timestamp(end_time_stamp/1000))
                         )
                         select
                         '' as VIN,
@@ -490,8 +490,8 @@ namespace net.atos.daf.ct2.reports.repository
 
                 string query = @"WITH cte_workingdays AS(
                         select
-                        date_trunc('day', to_timestamp(start_time_stamp/1000)) as startdate,
-                        count(distinct date_trunc('day', to_timestamp(start_time_stamp/1000))) as totalworkingdays,
+                        date_trunc('day', to_timestamp(end_time_stamp/1000)) as startdate,
+                        count(distinct date_trunc('day', to_timestamp(end_time_stamp/1000))) as totalworkingdays,
 						Count(distinct v.vin)                                   as vehiclecount,
 						Count(distinct trip_id)                                 as tripcount,
                         sum(etl_gps_distance)                                   as totaldistance,
@@ -504,10 +504,10 @@ namespace net.atos.daf.ct2.reports.repository
 						on CT.vin = v.vin and CT.end_time_stamp >= v.reference_date
                         Left join master.driver dr on
 						dr.driver_id = CT.driver1_id
-                        where (start_time_stamp >= @FromDate 
+                        where (end_time_stamp >= @FromDate 
 							   and end_time_stamp<= @ToDate) 
 						and CT.vin=ANY(@vins)
-                        group by date_trunc('day', to_timestamp(start_time_stamp/1000))  
+                        group by date_trunc('day', to_timestamp(end_time_stamp/1000))  
                         )
                         select
                         '' as VIN,

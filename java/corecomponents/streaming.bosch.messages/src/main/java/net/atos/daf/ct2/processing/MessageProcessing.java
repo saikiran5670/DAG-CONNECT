@@ -10,8 +10,6 @@ import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import net.atos.daf.common.ct2.util.DAFConstants;
-import net.atos.daf.ct2.constant.DAFCT2Constant;
 import net.atos.daf.ct2.pojo.KafkaRecord;
 import net.atos.daf.ct2.pojo.standard.Index;
 import net.atos.daf.ct2.pojo.standard.Monitor;
@@ -22,11 +20,11 @@ import net.atos.daf.ct2.utils.JsonMapper;
 
 public class MessageProcessing<U, T> implements Serializable {
 
-	
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = LogManager.getLogger(MessageProcessing.class);
-/* kafka topic data consuming as stream */
-	public void consumeBoschMessage(DataStream<KafkaRecord<U>> messageDataStream, String messageType, String key,
+
+	/* kafka topic data consuming as stream */
+	public void consumeBoschMessage(DataStream<KafkaRecord<U>> messageDataStream, String messageType1, String key,
 			String sinkTopicName, Properties properties, Class<T> tClass) {
 		System.out.println("message parsing start here");
 		logger.info("consume Bosch Message message parsing start here");
@@ -79,10 +77,10 @@ public class MessageProcessing<U, T> implements Serializable {
 							KafkaRecord<T> kafkaRecord = new KafkaRecord<T>();
 							kafkaRecord.setKey(monitorObj.getVin().toString());
 							kafkaRecord.setValue(record);
-							logger.info("Before Bosch Monitor message publishing  kafka record :: Message TYpe:"
-									+ messageType + " Kafka Key =>" + monitorObj.getVin().toString() + ", Extracted Message is::" + record);
-							System.out.println("before Bosch Monitor message publishing indexObj.toString() record :: "
-									+ messageType  + " Kafka Key =>" + monitorObj.getVin().toString() + " Extracted Message is::" + monitorObj.toString());
+							logger.info("Before Bosch Monitor message publishing  kafka record :: TransId:"
+									+ monitorObj.getTransID() + " Kafka Key =>" + monitorObj.getVin().toString() + ", Extracted Message is::" + record);
+							System.out.println("before Bosch Monitor message publishing  record :: TransId: "
+									+  monitorObj.getTransID()  + " Kafka Key =>" + monitorObj.getVin().toString() + " Extracted Message is::" + monitorObj.toString());
 							logger.info("Bosch Monitor message Data extraction is  successfully done.");
 							return kafkaRecord;
 						} else {
@@ -106,10 +104,10 @@ public class MessageProcessing<U, T> implements Serializable {
 							KafkaRecord<T> kafkaRecord = new KafkaRecord<T>();
 							kafkaRecord.setKey(statusObj.getVin().toString());
 							kafkaRecord.setValue(record);
-							logger.info("Before Bosch Status message publishing  kafka record :: Message TYpe:"
-									+ messageType  + " Kafka Key =>" + statusObj.getVin().toString() + " Extracted Message is::" + record);
-							System.out.println("Before Bosch Status publishing indexObj.toString() record :: "
-									+ messageType + "  Kafka Key =>  "+ statusObj.getVin().toString() +" Extracted Message is::" + statusObj.toString());
+							logger.info("Before Bosch Status message publishing  kafka record :: TransId :"
+									+ statusObj.getTransID()  + " Kafka Key =>" + statusObj.getVin().toString() + " Extracted Message is::" + record);
+							System.out.println("Before Bosch Status publishing  record :: TransId :"
+									+  statusObj.getTransID()  + "  Kafka Key =>  "+ statusObj.getVin().toString() +" Extracted Message is::" + statusObj.toString());
 							logger.info("Bosch Status Data extraction is  successfully done.");
 							return kafkaRecord;
 						} else {
