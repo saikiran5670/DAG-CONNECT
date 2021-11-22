@@ -2221,27 +2221,26 @@ namespace net.atos.daf.ct2.vehicle.repository
         #endregion
 
         #region Vehicle Mileage Data
-        public async Task<IEnumerable<DtoVehicleMileage>> GetVehicleMileage(long startDate, long endDate, bool noFilter)
+        public async Task<IEnumerable<DtoVehicleMileage>> GetVehicleMileage(long startDate, long endDate, bool noFilter, string contentType, List<string> vins)
         {
             try
             {
-                var queryStatement = @"select 
-                                         id                                       
-                                        ,modified_at 
-                                        ,evt_timestamp
-                                        ,odo_mileage
-                                        ,odo_distance
-                                        ,real_distance
-                                        ,vin
-                                        from mileage.vehiclemileage";
+                var queryStatement = @"select                                         
+                                        to_char(to_timestamp(evt_timestamp::double precision / 1000), 'YYYY-MM-DD""T""HH24:MI:SS.MS+0') as EvtDateTime
+                                        ,GREATEST(odo_distance, 0) as TachoMileage
+                                        ,GREATEST(real_distance, 0) as GPSMileage
+                                        ,VIN
+                                        ,CASE WHEN @content_type = 'text/csv' THEN '1.2' ELSE NULL END as RealMileageAlgorithmVersion
+                                        from mileage.vehiclemileage where vin = ANY(@vins)";
 
-                DynamicParameters parameter = null;
+                DynamicParameters parameter = new DynamicParameters();
+                parameter.Add("@content_type", contentType);
+                parameter.Add("@vins", vins.ToArray());
                 if (!noFilter)
                 {
-                    parameter = new DynamicParameters();
                     parameter.Add("@start_at", startDate);
                     parameter.Add("@end_at", endDate);
-                    queryStatement += " where modified_at >= @start_at AND modified_at <= @end_at";
+                    queryStatement += " and modified_at >= @start_at AND modified_at <= @end_at";
                 }
 
                 IEnumerable<DtoVehicleMileage> mileageData = await _dataMartdataAccess.QueryAsync<DtoVehicleMileage>(queryStatement, parameter);
