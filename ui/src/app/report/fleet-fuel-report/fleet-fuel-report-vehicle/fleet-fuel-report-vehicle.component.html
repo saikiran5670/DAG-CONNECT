@@ -876,7 +876,7 @@
 
             <ng-container matColumnDef="idlingPTOScore">
               <mat-header-cell *matHeaderCellDef mat-sort-header
-                [hidden]="!checkForPreference('vehicledetails_idlingwithpto')">{{ translationData.lblIdlingwithPTOscore
+                [hidden]="!checkForPreference('vehicledetails_idlingwithpto')">{{ translationData.lblIdlingwithPTOscore || 'Idling with PTO (hh:mm:ss) score'
                 }}
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingwithpto')">
@@ -886,7 +886,7 @@
 
             <ng-container matColumnDef="idlingPTO">
               <mat-header-cell *matHeaderCellDef mat-sort-header
-                [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingWithoutPTO
+                [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingWithoutPTO || 'Idling with PTO %'
                 }}
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">
@@ -896,7 +896,7 @@
 
             <ng-container matColumnDef="idlingWithoutPTO">
               <mat-header-cell *matHeaderCellDef mat-sort-header
-                [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingwithoutPTO
+                [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingwithoutPTO || 'Idling without PTO (hh:mm:ss)'
                 }}
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">
@@ -906,7 +906,7 @@
 
             <ng-container matColumnDef="idlingWithoutPTOpercent">
               <mat-header-cell *matHeaderCellDef mat-sort-header
-                [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingWithoutPTO
+                [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingWithoutPTOPercent || 'Idling without  PTO %'
                 }}
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">
