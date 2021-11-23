@@ -161,6 +161,7 @@ export class RouteCalculatingComponent implements OnInit {
   activeEndList : boolean = false;
   poiLocalCollection = [];
   sampledGpsCoordinates: any =[];
+  gpsLineString: any =[];
 
   constructor(private hereService: HereService,private formBuilder: FormBuilder, private corridorService : CorridorService,
     private completerService: CompleterService, private config: ConfigService,private landmarkCategoryService: LandmarkCategoryService) {
@@ -302,18 +303,27 @@ export class RouteCalculatingComponent implements OnInit {
 
       this.plotStartPoint();
       this.plotEndPoint();
+      _selectedElementData.viaAddressDetail.forEach(element => {
+        this.gpsLineString.push(element.latitude, element.longitude, 0);
+      });
       if(_selectedElementData.viaAddressDetail.length > 0){
         this.viaRouteCount = true;
-        this.viaRoutePlottedPoints = _selectedElementData.viaAddressDetail;
-        _selectedElementData.viaAddressDetail.forEach(element => {
-          this.viaRoutesList.push(element.viaRoutName);
+        this.viaRoutePlottedPoints = _selectedElementData.viaAddressDetail.filter( e => e.type == "V");
+        this.viaRoutePlottedPoints.forEach(element => {
+            element["viaRoutName"] = element.viaStopName;
+          this.viaRoutesList.push(element.viaStopName);
+          this.viaRouteObj.push({
+            'label':element.viaStopName,
+            'id':element.viaStopName
+          })
           
         });
        // this.plotViaPoint(this.viaRoutesList);
         this.plotSeparateVia();
 
       }
-      this.calculateTruckRoute()
+      this.addTruckRouteShapeToMapEdit();
+      // this.calculateTruckRoute()
     }
   }
 
@@ -628,8 +638,8 @@ export class RouteCalculatingComponent implements OnInit {
       "endLongitude": this.endAddressPositionLong,
       "width": this.corridorWidth,
       "distance":this.routeDistance,
-      "viaAddressDetails": this.viaRoutePlottedPoints,
-      // "viaAddressDetails": this.sampledGpsCoordinates,
+    //   "viaAddressDetails": this.viaRoutePlottedPoints,
+      "viaAddressDetails": this.sampledGpsCoordinates,
       "transportData": this.transportDataChecked,
       "trafficFlow": this.trafficFlowChecked,
       "state": "A",
@@ -1251,32 +1261,19 @@ export class RouteCalculatingComponent implements OnInit {
     this.sampledGpsCoordinates = [];
     let pathWidth= this.corridorWidthKm * 10;
     let threshold = this.corridorWidthKm * 0.75;
+    // let thres1 = this.corridorFormGroup.get("widthInput");
     if(threshold < 1) threshold =1;
-    // let sampledGpsCoordinate: any;
     this.routeDistance = 0;
     if(this.routePoints.sections){
     this.routePoints.sections.forEach((section, index) => {
       // decode LineString from the flexible polyline
       this.routeDistance += section.travelSummary.length;
       let linestring = H.geo.LineString.fromFlexiblePolyline(section.polyline);
-     var coordinates = decode(section.polyline);//polylinePlugin.decode(section.polyline);
-      // var coordinates = this.mapFunctionsService.decode(section.polyline);
+     var coordinates = decode(section.polyline);
       console.log(coordinates);
-      // console.log(Object.values(coordinates));
       let polyl = coordinates.polyline;
       let counter=0;
       let sampledLineString: any =[];
-      // if(index > 0){
-      //   let origLocation = this.routePoints.sections[index-1].arrival.place.originalLocation;
-      //   let viaRoute = this.viaRoutePlottedPoints.filter( e => e.latitude == origLocation.lat && e.longitude == origLocation.lng);
-      //   // sampledGpsCoordinate = {
-      //   //   type: 'V',
-      //   //   viaStopName: viaRoute[0].viaRoutName,
-      //   //   latitude: origLocation.lat,
-      //   //   longitude: origLocation.lng
-      //   // };
-      //   this.sampledGpsCoordinates.push(sampledGpsCoordinate);
-      // }
       for(var i=0; i<polyl.length-1;i++){
         var polylc=polyl[i];
         var polylc5=polyl[i+1];
@@ -1284,42 +1281,22 @@ export class RouteCalculatingComponent implements OnInit {
         if(i==0 || i==polyl.length-1){
           sampledLineString.push(polylc[0], polylc[1], 0);
           this.appendGpsCoordinates('R', '', polylc[0], polylc[1]);
-          // sampledGpsCoordinate = {
-          //   type: 'R',
-          //   viaStopName: '',
-          //   latitude: polylc[0],
-          //   longitude: polylc[1]
-          // };
-          // this.sampledGpsCoordinates.push(sampledGpsCoordinate);
         }
+        console.log(counter);
         if(counter > threshold){
-          // console.log(this.distanceInKmBetweenEarthCoordinates(polylc[0], polylc[1], polylc5[0], polylc5[1]));
+            console.log("counter "+counter);
           sampledLineString.push(polylc5[0], polylc5[1], 0);
           this.appendGpsCoordinates('R', '', polylc5[0], polylc5[1]);
-          // sampledGpsCoordinate = {
-          //   type: 'R',
-          //   viaStopName: '',
-          //   latitude: polylc5[0],
-          //   longitude: polylc5[1]
-          // };
-          // this.sampledGpsCoordinates.push(sampledGpsCoordinate);
           counter = 0;
         }
       }
       if(this.viaRoutePlottedPoints && this.viaRoutePlottedPoints.length > 0 && this.viaRoutePlottedPoints[index]){
         this.appendGpsCoordinates('V', this.viaRoutePlottedPoints[index].viaRoutName, this.viaRoutePlottedPoints[index].latitude, this.viaRoutePlottedPoints[index].longitude);
-        // sampledGpsCoordinate = {
-        //   type: 'V',
-        //   viaStopName: this.viaRoutePlottedPoints[index].viaRoutName,
-        //   latitude: this.viaRoutePlottedPoints[index].latitude,
-        //   longitude: this.viaRoutePlottedPoints[index].longitude
-        // };
       }
-      console.log(this.distanceInKmBetweenEarthCoordinates(19.14045, 72.88235, 12.96618, 77.5869)*1000+' Meters');
+      // console.log(this.distanceInKmBetweenEarthCoordinates(19.14045, 72.88235, 12.96618, 77.5869)*1000+' Meters');
       console.log(linestring);
       linestring.Y = sampledLineString;
       console.log(linestring);
-      // console.log(this.sampledGpsCoordinates);
        // Create a corridor width to display the route:
         this.corridorPath = new H.map.Polyline(linestring, {
         style:  {
@@ -1349,34 +1326,52 @@ export class RouteCalculatingComponent implements OnInit {
   }
 
   //Added as part of #19807
-//   addTruckRouteShapeToMapEdit(){
-//     if(this.routePoints.sections){
-//       this.routePoints.sections.forEach((section, index) => {
-//     // Create a corridor width to display the route:
-//     this.corridorPath = new H.map.Polyline(linestring, {
-//       style:  {
-//         lineWidth: pathWidth,
-//         strokeColor: 'rgba(181, 199, 239, 0.6)'
-//       }
-//     });
-//     // Create a polyline to display the route:
-//     let polylinePath = new H.map.Polyline(linestring, {
-//       style:  {
-//         lineWidth: 3,
-//         strokeColor: '#436ddc'
-//       }
-//     });
+  addTruckRouteShapeToMapEdit(){
+    // if(this.viaRoutePlottedPoints.length>0){
+    //   let waypoints = [];
+    //   for(var i in this.viaRoutePlottedPoints){
+    //     waypoints.push(`${this.viaRoutePlottedPoints[i]["latitude"]},${this.viaRoutePlottedPoints[i]["longitude"]}`)
+    //   }
+    //   routeRequestParams['via'] = new H.service.Url.MultiValueQueryParameter( waypoints );
+    // }
+    // if(this.routePoints.sections){
+    //     this.routePoints.sections.forEach((section, index) => {
+        // Create a corridor width to display the route:
+        //Sample data to create object and get the HereMap linestring format
+        let co = [[19.14012, 72.88097, 0], [12.96779999999997, 77.58812000000155, 0]];
+        let ob = {
+          precision : 5,
+          thirdDim : 0,
+          thirdDimPrecision: 0,
+          polyline: co
+        };
+        let lineVal = encode(ob);
+        let linestring = H.geo.LineString.fromFlexiblePolyline(lineVal);
+        linestring.Y = this.gpsLineString;
+        this.corridorPath = new H.map.Polyline(linestring, {
+          style:  {
+            lineWidth: this.corridorWidthKm * 10,
+            strokeColor: 'rgba(181, 199, 239, 0.6)'
+          }
+        });
+        // Create a polyline to display the route:
+        let polylinePath = new H.map.Polyline(linestring, {
+          style:  {
+            lineWidth: 3,
+            strokeColor: '#436ddc'
+          }
+        });
 
-//     // Add the polyline to the map
-//     this.mapGroup.addObjects([this.corridorPath,polylinePath]);
-//     this.hereMap.addObject(this.mapGroup);
-//     // And zoom to its bounding rectangle
-//     this.hereMap.getViewModel().setLookAtData({
-//       bounds: this.mapGroup.getBoundingBox()
-//     });
-//   });
-// }
-//   }
+        // Add the polyline to the map
+        this.mapGroup.addObjects([this.corridorPath,polylinePath]);
+        this.hereMap.addObject(this.mapGroup);
+        // And zoom to its bounding rectangle
+        this.hereMap.getViewModel().setLookAtData({
+          bounds: this.mapGroup.getBoundingBox()
+        });
+    //   });
+    // }
+  }
 
   appendGpsCoordinates(type: any, location: any, lat: any, long: any){
     this.sampledGpsCoordinates.push({
