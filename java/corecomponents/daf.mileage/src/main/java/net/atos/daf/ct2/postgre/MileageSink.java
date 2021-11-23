@@ -3,6 +3,7 @@ package net.atos.daf.ct2.postgre;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Objects;
 
 import org.apache.flink.api.java.utils.ParameterTool;
@@ -33,23 +34,33 @@ public class MileageSink extends RichSinkFunction<TripMileage> implements Serial
 	@Override			  
 	public void invoke(TripMileage rec) throws Exception {
 
-		statement.setString(1, rec.getVin());
-		statement.setLong(2, rec.getEvtDateTime());
-		statement.setLong(3, rec.getOdoMileage());
-		statement.setDouble(4, rec.getOdoDistance());
-		statement.setDouble(5, rec.getRealDistance());
-		statement.setDouble(6, rec.getGpsDistance());
-		statement.setLong(7, rec.getModifiedAt());
-		
-		statement.setLong(8, rec.getEvtDateTime());
-		statement.setLong(9, rec.getOdoMileage());
-		statement.setDouble(10, rec.getOdoDistance());
-		statement.setDouble(11, rec.getRealDistance());
-		statement.setDouble(12, rec.getGpsDistance());
-		statement.setLong(13, rec.getModifiedAt());
+		try {
+			statement.setString(1, rec.getVin());
+			statement.setLong(2, rec.getEvtDateTime());
+			statement.setLong(3, rec.getOdoMileage());
+			statement.setDouble(4, rec.getOdoDistance());
+			statement.setDouble(5, rec.getRealDistance());
+			statement.setDouble(6, rec.getGpsDistance());
+			statement.setLong(7, rec.getModifiedAt());
+			
+			statement.setLong(8, rec.getEvtDateTime());
+			statement.setLong(9, rec.getOdoMileage());
+			statement.setDouble(10, rec.getOdoDistance());
+			statement.setDouble(11, rec.getRealDistance());
+			statement.setDouble(12, rec.getGpsDistance());
+			statement.setLong(13, rec.getModifiedAt());
 
-		logger.info("mileage data for veh "+rec);
-		statement.execute();
+			logger.info("mileage data calculated for veh ::{} ",rec);
+			statement.execute();
+		} catch (SQLException e) {
+			logger.error("Sql Issue while inserting data to vehiclemileage table ::{} ", e.getMessage());
+			logger.error("Sql Issue while inserting vehiclemileage record :: {}", statement);
+			throw e;
+		} catch (Exception e) {
+			logger.error("Issue while inserting data to vehiclemileage table ::{} ", e.getMessage());
+			logger.error("Issue while inserting vehiclemileage record ::{} ", statement);
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -69,35 +80,40 @@ public class MileageSink extends RichSinkFunction<TripMileage> implements Serial
 					envParams.get(MileageConstants.DATAMART_POSTGRE_USER),
 					envParams.get(MileageConstants.DATAMART_POSTGRE_PASSWORD),envParams.get(MileageConstants.POSTGRE_SQL_DRIVER));
 			
-			logger.info("In Mileage sink connection done" + connection);
+			logger.info("In Mileage sink connection done::{}" , connection);
 			statement = connection.prepareStatement(query);
 		} catch (Exception e) {
 			// TODO: handle exception both logger and throw is not required
-			logger.error("Issue while establishing Postgre connection in Mileage streaming Job :: " + e);
-			logger.error("serverNm :: " + envParams.get(MileageConstants.DATAMART_POSTGRE_SERVER_NAME) + " port :: "
-					+ Integer.parseInt(envParams.get(MileageConstants.DATAMART_POSTGRE_PORT)));
-			logger.error("databaseNm :: " + envParams.get(MileageConstants.DATAMART_POSTGRE_DATABASE_NAME) + " user :: "
-					+ envParams.get(MileageConstants.DATAMART_POSTGRE_USER) + " pwd :: "
-					+ envParams.get(MileageConstants.DATAMART_POSTGRE_PASSWORD));
-			logger.error("connection :: " + connection);
+			logger.error("Issue while establishing Postgre connection in Mileage streaming Job :: {}" , e);
+			logger.error("serverNm ::{} , port ::{}  ", envParams.get(MileageConstants.DATAMART_POSTGRE_SERVER_NAME) 
+					, Integer.parseInt(envParams.get(MileageConstants.DATAMART_POSTGRE_PORT)));
+			logger.error("databaseNm :: {},  user ::{},  pwd :: {} ", envParams.get(MileageConstants.DATAMART_POSTGRE_DATABASE_NAME) 
+					, envParams.get(MileageConstants.DATAMART_POSTGRE_USER) 
+					, envParams.get(MileageConstants.DATAMART_POSTGRE_PASSWORD));
+			logger.error("connection :: {}" , connection);
 			throw e;
 		}
 
 	}
 
 	@Override
-    public void close() throws Exception {
-		super.close(); 
-		if (Objects.nonNull(statement)) {
-        	statement.close();
-        }
-        logger.info("In close() of mileageSink :: ");
-        
-        if (Objects.nonNull(connection)) {
-        	logger.info("Releasing connection from Mileage Job");
-            connection.close();
-        }
-    	
-    }
+	public void close() throws Exception {
+		try {
+			super.close();
+			if (Objects.nonNull(statement)) {
+				statement.close();
+			}
+			logger.debug("In close() of mileageSink :: ");
+
+			if (Objects.nonNull(connection)) {
+				logger.info("Releasing connection from Mileage Job");
+				connection.close();
+			}
+		} catch (Exception e) {
+			logger.error("Issue while calling MileageSink close :: {}", e);
+			throw e;
+		}
+
+	}
 	
 }

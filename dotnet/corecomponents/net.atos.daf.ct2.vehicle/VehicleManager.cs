@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
@@ -365,7 +366,7 @@ namespace net.atos.daf.ct2.vehicle
         public async Task<string> GetVehicleAssociatedGroup(int vehicleId, int organizationId) => await _vehicleRepository.GetVehicleAssociatedGroup(vehicleId, organizationId);
 
         #region Vehicle Mileage Data
-        public async Task<VehicleMileage> GetVehicleMileage(string since, bool isnumeric, string contentType, int accountId, int orgid)
+        public async Task<IEnumerable<DtoVehicleMileage>> GetVehicleMileage(string since, bool isnumeric, string contentType, int accountId, int orgid)
         {
             try
             {
@@ -381,48 +382,18 @@ namespace net.atos.daf.ct2.vehicle
 
                 endDate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
 
-                IEnumerable<DtoVehicleMileage> vehicleMileageList = await _vehicleRepository.GetVehicleMileage(startDate, endDate, string.IsNullOrEmpty(since));
+                //Fetch visibility vehicles for the account
+                var result = await GetVisibilityVehicles(accountId, orgid);
+                var vins = result.Values.SelectMany(x => x).Distinct(new ObjectComparer()).Select(x => x.VIN).ToList();
 
-                if (vehicleMileageList.Count() > 0)
+                IEnumerable<DtoVehicleMileage> vehicleMileageList = Enumerable.Empty<DtoVehicleMileage>();
+                if (vins.Count() > 0)
                 {
-                    //Fetch visibility vehicles for the account
-                    var result = await GetVisibilityVehicles(accountId, orgid);
-                    var vehicles = result.Values.SelectMany(x => x).Distinct(new ObjectComparer()).ToList();
-
-                    vehicleMileageList = vehicleMileageList.Where(mil => vehicles.Any(veh => veh.VIN == mil.Vin)).AsEnumerable();
+                    vehicleMileageList = await _vehicleRepository.GetVehicleMileage(startDate, endDate, string.IsNullOrEmpty(since), contentType, vins);
+                    vehicleMileageList = vehicleMileageList.ToList().Where(mil => vins.Any(vin => vin == mil.VIN)).AsEnumerable();
                 }
 
-                VehicleMileage vehicleMileage = new VehicleMileage();
-                vehicleMileage.Vehicles = new List<entity.Vehicles>();
-                vehicleMileage.VehiclesCSV = new List<VehiclesCSV>();
-                string targetdateformat = "yyyy-MM-ddTHH:mm:ss.fffz";
-
-                if (vehicleMileageList != null)
-                {
-                    foreach (var item in vehicleMileageList)
-                    {
-                        if (contentType == "text/csv")
-                        {
-                            VehiclesCSV vehiclesCSV = new VehiclesCSV();
-                            vehiclesCSV.EvtDateTime = item.Evt_timestamp > 0 ? UTCHandling.GetConvertedDateTimeFromUTC(item.Evt_timestamp, "UTC", targetdateformat) : string.Empty;
-                            vehiclesCSV.VIN = item.Vin;
-                            vehiclesCSV.TachoMileage = item.Odo_distance > 0 ? item.Odo_distance : 0;
-                            vehiclesCSV.RealMileage = item.Real_distance > 0 ? item.Real_distance : 0;
-                            vehiclesCSV.RealMileageAlgorithmVersion = "1.2";
-                            vehicleMileage.VehiclesCSV.Add(vehiclesCSV);
-                        }
-                        else
-                        {
-                            entity.Vehicles vehiclesobj = new entity.Vehicles();
-                            vehiclesobj.EvtDateTime = item.Evt_timestamp > 0 ? UTCHandling.GetConvertedDateTimeFromUTC(item.Evt_timestamp, "UTC", targetdateformat) : string.Empty;
-                            vehiclesobj.VIN = item.Vin;
-                            vehiclesobj.TachoMileage = item.Odo_distance > 0 ? item.Odo_distance : 0;
-                            vehiclesobj.GPSMileage = item.Real_distance > 0 ? item.Real_distance : 0;
-                            vehicleMileage.Vehicles.Add(vehiclesobj);
-                        }
-                    }
-                }
-                return vehicleMileage;
+                return vehicleMileageList;
             }
             catch (Exception)
             {
@@ -530,7 +501,7 @@ namespace net.atos.daf.ct2.vehicle
                             vehiclesOwned = vehiclesVisible = new List<VisibilityVehicle>();
 
                             // In-Memory cache implementation
-                            var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(Convert.ToInt32(_configuration["CacheIntervals:VehicleVisiblityInSeconds"])));
+                            var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromSeconds(Convert.ToInt32(_configuration["CacheIntervals:VehicleVisiblityInSeconds"])));
                             if (_memoryCache.TryGetValue(string.Format(CacheConstants.DynamicOwnedGroupVisiblityVehicleKey, orgId), out IEnumerable<VisibilityVehicle> owned))
                                 vehiclesOwned = owned;
                             if (_memoryCache.TryGetValue(string.Format(CacheConstants.DynamicVisibleGroupVisiblityVehicleKey, orgId), out IEnumerable<VisibilityVehicle> visible))
@@ -632,7 +603,7 @@ namespace net.atos.daf.ct2.vehicle
                             vehiclesOwned = vehiclesVisible = new List<VisibilityVehicle>();
 
                             // In-Memory cache implementation
-                            var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(Convert.ToInt32(_configuration["CacheIntervals:VehicleVisiblityInSeconds"])));
+                            var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromSeconds(Convert.ToInt32(_configuration["CacheIntervals:VehicleVisiblityInSeconds"])));
                             if (_memoryCache.TryGetValue(string.Format(CacheConstants.DynamicOwnedGroupVisiblityVehicleKey, orgId), out IEnumerable<VisibilityVehicle> owned))
                                 vehiclesOwned = owned;
                             if (_memoryCache.TryGetValue(string.Format(CacheConstants.DynamicVisibleGroupVisiblityVehicleKey, orgId), out IEnumerable<VisibilityVehicle> visible))
@@ -734,7 +705,7 @@ namespace net.atos.daf.ct2.vehicle
                             vehiclesOwned = vehiclesVisible = new List<VisibilityVehicle>();
 
                             // In-Memory cache implementation
-                            var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(Convert.ToInt32(_configuration["CacheIntervals:VehicleVisiblityInSeconds"])));
+                            var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromSeconds(Convert.ToInt32(_configuration["CacheIntervals:VehicleVisiblityInSeconds"])));
                             if (_memoryCache.TryGetValue(string.Format(CacheConstants.DynamicOwnedGroupVisiblityVehicleKey, orgId), out IEnumerable<VisibilityVehicle> owned))
                                 vehiclesOwned = owned;
                             if (_memoryCache.TryGetValue(string.Format(CacheConstants.DynamicVisibleGroupVisiblityVehicleKey, orgId), out IEnumerable<VisibilityVehicle> visible))

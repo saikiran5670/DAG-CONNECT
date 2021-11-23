@@ -17,13 +17,16 @@ namespace net.atos.daf.ct2.reportservice.Services
         {
             try
             {
+                var contextOrgId = Convert.ToInt32(context.RequestHeaders.Get("context_orgId")?.Value);
+
                 var result = await _reportManager
                                             .GetFilteredFuelDeviation(
                                                                         new FuelDeviationFilter
                                                                         {
                                                                             StartDateTime = request.StartDateTime,
                                                                             EndDateTime = request.EndDateTime,
-                                                                            VINs = request.VINs
+                                                                            VINs = request.VINs,
+                                                                            Org_Id = contextOrgId
                                                                         }
                                                                      );
                 var response = new FuelDeviationResponse();

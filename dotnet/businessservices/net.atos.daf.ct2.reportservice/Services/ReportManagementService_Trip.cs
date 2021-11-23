@@ -130,6 +130,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                     EndDateTime = request.EndDateTime,
                     FeatureIds = alertFeatureIds,
                     AlertVIN = vehicleDetailsAccountVisibilty.Where(x => x.Vin == request.VIN).Select(x => x.Vin).FirstOrDefault(),
+                    OrganizationId = request.OrganizationId
                 };
 
                 var result = await _reportManager.GetFilteredTripDetails(objTripFilter);

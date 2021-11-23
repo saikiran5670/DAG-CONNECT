@@ -1,8 +1,8 @@
-<div *ngIf="actionType != 'create'" fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+<div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
   <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
     <span>{{ breadcumMsg }}</span>
   </div>
-  <div *ngIf="actionType == 'view'" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+  <div *ngIf="actionType == 'view' || actionType == 'create'" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
     <span class='custom-font' (click)="onCancel()">
       <span><&nbsp;</span>
       <span class='backBtnCss'>{{ translationData.lblBack}}</span></span>

@@ -33,13 +33,9 @@ public class DriverCalculationCountWindow extends ProcessWindowFunction<Monitor,
     public void process(String s, ProcessWindowFunction<Monitor, Monitor, String, GlobalWindow>.Context context, Iterable<Monitor> values, Collector<Monitor> collector) throws Exception {
         Monitor monitor = new Monitor();
         try {
-            logger.info("Monitor driver activity Window data:: {}", values);
+            logger.debug("Monitor driver activity Window data:: {}", values);
             List<Monitor> monitorList = new ArrayList();
             values.forEach(monitorList::add);
-            //sort on received timestamp
-            //monitorList.sort(Comparator.comparing(Monitor::getReceivedTimestamp));
-            
-            
             Comparator<Monitor> eventTimeComparator = Comparator.comparing(
             		Monitor::getEvtDateTime, (m1, m2) -> {
             			Long recieveDateTime1	=	convertDateToMillis(m1);

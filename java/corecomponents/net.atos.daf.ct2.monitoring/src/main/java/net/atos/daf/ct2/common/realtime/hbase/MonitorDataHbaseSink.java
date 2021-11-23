@@ -25,7 +25,7 @@ import net.atos.daf.hbase.connection.HbaseConnectionPool;
 public class MonitorDataHbaseSink extends RichSinkFunction<KafkaRecord<Monitor>> {
 
 	private static final long serialVersionUID = 3842371782145886991L;
-	Logger log = LoggerFactory.getLogger(MonitorDataProcess.class);
+	private static final Logger log = LoggerFactory.getLogger(MonitorDataProcess.class);
 
 	private Table table = null;
 	private HbaseConnection conn = null;
@@ -57,18 +57,18 @@ public class MonitorDataHbaseSink extends RichSinkFunction<KafkaRecord<Monitor>>
 			TableName tabName = TableName.valueOf(tableName);
 			table = conn.getConnection().getTable(tabName);
 
-			log.info("table_name -- " + tableName);
+			log.debug("table_name -- {}" , tableName);
 
 		} catch (IOException e) {
-			log.error("create connection failed from the configuration" + e.getMessage());
+			log.error("create connection failed from the configuration {}" , e.getMessage());
 			throw e;
 		} catch (Exception e) {
 
-			log.error("there is an exception" + e.getMessage());
+			log.error("there is an exception {}" , e.getMessage());
 			throw e;
 		}
 
-		log.info("Monitoring table name - " + tableName);
+		log.debug("Monitoring table name - {}" , tableName);
 	}
 
 	public void invoke(KafkaRecord<Monitor> value, Context context) throws Exception {
@@ -91,9 +91,6 @@ public class MonitorDataHbaseSink extends RichSinkFunction<KafkaRecord<Monitor>>
 			    		  + "_" + currentTimeStamp));
 			
 			log.info("Monitoring Data Row_Key :: "
-					+ (value.getValue().getTransID() + "_" + value.getValue().getDocument().getTripID() + "_"
-							+ value.getValue().getVid() + "_" + currentTimeStamp));
-			System.out.println("Monitoring Data Row_Key :: "
 					+ (value.getValue().getTransID() + "_" + value.getValue().getDocument().getTripID() + "_"
 							+ value.getValue().getVid() + "_" + currentTimeStamp));
 			
@@ -312,13 +309,11 @@ public class MonitorDataHbaseSink extends RichSinkFunction<KafkaRecord<Monitor>>
 
 			table.put(put);
 		} catch (ParseException e) {
-			System.out.println("Moniter input message--" +value);
-			e.printStackTrace();
+			log.error("Moniter input message-- {} and error {}" ,value,e);
 		} catch (IOException e) {
-			System.out.println("Moniter input message--" +value);
-			e.printStackTrace();
+			log.error("Moniter input message-- {} and error {}" ,value,e);
 		} catch (Exception e) {
-			System.out.println("Moniter input message--" +value);
+			log.error("Moniter input message-- {} and error" ,value,e);
 		}
 
 	}

@@ -14,9 +14,9 @@ namespace net.atos.daf.ct2.featureactivationservice.Common
         {
             _featureActivationCdcManager = featureActivationCdcManager;
         }
-        public async Task TriggerSubscriptionCdc(int subscriptionid, string subscriptionState)
+        public async Task TriggerSubscriptionCdc(int subscriptionid, string subscriptionState, string organisationId, List<string> vins)
         {
-            _ = await Task.Run(() => _featureActivationCdcManager.GetVehiclesAndAlertFromSubscriptionConfiguration(subscriptionid, subscriptionState));
+            _ = await Task.Run(() => _featureActivationCdcManager.GetVehiclesAndAlertFromSubscriptionConfiguration(subscriptionid, subscriptionState, organisationId, vins));
         }
     }
 }

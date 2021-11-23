@@ -13,7 +13,7 @@ namespace net.atos.daf.ct2.fms.entity
     {
         public string VIN { get; set; }
         public int Altitude { get; set; }
-        public double Heading { get; set; }
+        public int Heading { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
         public long GPSTimestamp { get; set; }

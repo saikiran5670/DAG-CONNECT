@@ -42,8 +42,9 @@ export class OrganisationDetailsComponent implements OnInit {
   vehicleStatusDropdownData: any = [];
   driverStatusDropdownData:any = [];
   vehicleDisplayDropdownData: any = [];
-  adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
-  userType: any = localStorage.getItem("userType");
+  adminAccessType: any;
+  userType: any;
+  userLevel: any;
   languageHolder: string;
   timezoneHolder: string;
   currencyHolder: string;
@@ -86,10 +87,13 @@ export class OrganisationDetailsComponent implements OnInit {
   // }
 
   ngOnInit() {
+    this.adminAccessType = JSON.parse(localStorage.getItem("accessType"));
+    this.userType = localStorage.getItem("userType");
+    this.userLevel = localStorage.getItem("userLevel") ? parseInt(localStorage.getItem("userLevel")) : 40;
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountDetails = JSON.parse(localStorage.getItem('accountInfo'));
     this.organisationList = this.accountDetails["organization"];
-    console.log("organizationList", this.organisationList);
+    //console.log("organizationList", this.organisationList);
     this.organisationList.sort(this.compare);
     this.resetOrgListFilter();
     this.accountId = parseInt(localStorage.getItem('accountId'));
@@ -172,7 +176,7 @@ compareHere(a, b) {
     this.translationService.getPreferences(languageCode).subscribe((data: any) => {
       let dropDownData = data;
       this.languageDropdownData = dropDownData.language;
-      console.log("languageDropdownData 1", this.languageDropdownData);
+      //console.log("languageDropdownData 1", this.languageDropdownData);
       this.languageDropdownData.sort(this.compareHere);
       this.resetOrgLangFilter();
       this.timezoneDropdownData = dropDownData.timezone;
@@ -202,7 +206,7 @@ compareHere(a, b) {
       this.updateBrandIcon();
       
     }, (error) => {
-      console.log("data not found...");
+      //console.log("data not found...");
       this.hideloader();
     });
   }
@@ -217,7 +221,7 @@ compareHere(a, b) {
 
   updatePrefDefault(orgData: any){
     let lng: any = this.languageDropdownData.filter(i=>i.id == parseInt(orgData.languageName));
-    console.log("languageDropdownData 2", this.languageDropdownData);
+    //console.log("languageDropdownData 2", this.languageDropdownData);
     let tz: any = this.timezoneDropdownData.filter(i=>i.id == parseInt(orgData.timezone));
     let unit: any = this.unitDropdownData.filter(i=>i.id == parseInt(orgData.unit));
     let cur: any = this.currencyDropdownData.filter(i=>i.id == parseInt(orgData.currency));
@@ -324,7 +328,7 @@ compareHere(a, b) {
       }
     }, (error) => {
       this.showLoadingIndicator=false;
-      console.log("Error in updateOrganization API...");
+      //console.log("Error in updateOrganization API...");
     });
   }
 
@@ -478,7 +482,7 @@ compareHere(a, b) {
 
   }
   filterTimezones(timesearch){
-    console.log("filterTimezones called");
+    //console.log("filterTimezones called");
     if(!this.timezoneDropdownData){
       return;
     }
@@ -491,7 +495,7 @@ compareHere(a, b) {
      this.filteredTimezones.next(
        this.timezoneDropdownData.filter(item=> item.value.toLowerCase().indexOf(timesearch) > -1)
      );
-     console.log("this.filteredTimezones", this.filteredTimezones);
+     //console.log("this.filteredTimezones", this.filteredTimezones);
   }
 
   brandLogoLoaded() {

@@ -38,7 +38,7 @@ public class FuelDeviationDuringStopCalculation extends ProcessWindowFunction<Fu
 				if(vFuelStopPrevVal == null){
 					fuelStopDeviationState.put(key, vFuelObj.getVFuelLevel());
 				}else{
-					logger.info(" vFuelStopPrevVal:{},  vFuelObj.getVFuelLevel() :{}", vFuelStopPrevVal, vFuelObj.getVFuelLevel());
+					logger.info(" vFuelStopPrevVal ::{},  vFuelObj.getVFuelLevel() ::{}", vFuelStopPrevVal, vFuelObj.getVFuelLevel());
 					//1st cond is not required cross check 
 					if(Objects.nonNull(vFuelStopPrevVal) && Objects.nonNull(vFuelObj.getVFuelLevel())){
 					
@@ -73,7 +73,7 @@ public class FuelDeviationDuringStopCalculation extends ProcessWindowFunction<Fu
 			}
 
 		} catch (Exception e) {
-			logger.error("Issue while processing Fuel Deviation Data for key : " + key + "  error :: " + e.getMessage());
+			logger.error("Issue while processing Fuel Deviation Data for key ::{},  error :: {} ", key , e.getMessage());
 			e.printStackTrace();
 		}
 	}

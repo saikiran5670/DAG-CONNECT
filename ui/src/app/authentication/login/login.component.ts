@@ -64,9 +64,9 @@ export class LoginComponent implements OnInit {
     this.showLoadingIndicator = true;
     this.errorMsg= '';
     this.invalidUserMsg = false;
-    if (this.loginForm.valid) {
+    if (this.loginForm.valid) { 
       //console.log("values:: ", values)
-      if(this.loginClicks == 0){
+      // if(this.loginClicks == 0){//commenting this for facing issue multiple times login ,popup is not getting displayed.
         this.loginClicks = 1;
        this.authService.signIn(this.loginForm.value).subscribe((data:any) => {
         this.hideLoader();
@@ -198,7 +198,7 @@ export class LoginComponent implements OnInit {
             this.router.navigate(['/auth/resetpassword/'+error.error.processToken]);
           }
         })
-      }
+      // }
 
        //--------- For Mock------//
       //  if(this.loginForm.value.username === 'testuser@atos.net' && this.loginForm.value.password === '123456'){
@@ -288,7 +288,12 @@ export class LoginComponent implements OnInit {
           });
         }
         else{
+          if(this.result){
           this.gotoDashBoard();
+          }
+          else{
+            this.dialogRefLogin.close();
+          }
         }
       }, (error) => {
         this.gotoDashBoard();
@@ -401,6 +406,7 @@ export class LoginComponent implements OnInit {
       // this.dialogRefLogin.afterClosed().subscribe(res => {
       //   this.loginClicks = 0;
       // });
+     
       this.dialogRefLogin.disableClose = true;//disable default close operation
       this.dialogRefLogin.beforeClosed().subscribe(result => {
         this.result = result;

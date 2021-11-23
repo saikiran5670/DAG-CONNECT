@@ -63,6 +63,9 @@ namespace net.atos.daf.ct2.applications
                             services.AddSingleton<IDriverManager, DriverManager>();
                             services.AddSingleton<IAccountManager, AccountManager>();
                             services.AddSingleton<IAccountRepository, AccountRepository>();
+                            services.AddTransient<IVehicleManager, VehicleManager>();
+                            services.AddTransient<IVehicleRepository, VehicleRepository>();
+                            services.AddTransient<ITemplateManager, TemplateManager>();
                             services.AddHostedService<PasswordExpiryWorker>();
                         }
                         else if (args[0] == "ReportCreationScheduler")

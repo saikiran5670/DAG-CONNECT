@@ -51,7 +51,7 @@ namespace net.atos.daf.ct2.visibility
             if (orgId != contextOrgId)
             {
                 // In-Memory cache implementation
-                var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(Convert.ToInt32(_configuration["CacheIntervals:VehicleVisiblityInSeconds"])));
+                var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromSeconds(Convert.ToInt32(_configuration["CacheIntervals:VehicleVisiblityInSeconds"])));
                 if (_memoryCache.TryGetValue(string.Format(CacheConstants.ContextOrgVisiblityKey, contextOrgId), out Dictionary<VehicleGroupDetails, List<VisibilityVehicle>> result))
                     resultDict = result;
                 else
@@ -92,7 +92,7 @@ namespace net.atos.daf.ct2.visibility
             if (reportFeatureId > 0 && vehicles.Count() > 0)
             {
                 // In-Memory cache implementation
-                var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(Convert.ToInt32(_configuration["CacheIntervals:SubscriptionOrgRelFeaturesInSeconds"])));
+                var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromSeconds(Convert.ToInt32(_configuration["CacheIntervals:SubscriptionOrgRelFeaturesInSeconds"])));
                 IEnumerable<VehiclePackage> vehiclePackages;
                 if (_memoryCache.TryGetValue(string.Format(CacheConstants.SubscribedVehicleByFeatureKey, reportFeatureId, contextOrgId), out IEnumerable<VehiclePackage> result))
                     vehiclePackages = result;
@@ -197,7 +197,7 @@ namespace net.atos.daf.ct2.visibility
             if (vehicles.Count() > 0)
             {
                 // In-Memory cache implementation
-                var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(Convert.ToInt32(_configuration["CacheIntervals:SubscriptionOrgRelFeaturesInSeconds"])));
+                var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromSeconds(Convert.ToInt32(_configuration["CacheIntervals:SubscriptionOrgRelFeaturesInSeconds"])));
                 IEnumerable<VehiclePackageForAlert> vehiclePackages;
                 if (_memoryCache.TryGetValue(string.Format(CacheConstants.SubscribedVehicleByFeatureForAlertKey, string.Join(',', featureIds), contextOrgId), out IEnumerable<VehiclePackageForAlert> result))
                     vehiclePackages = result;

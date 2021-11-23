@@ -120,8 +120,8 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
                     var result = await _landmarkGroupManager.UpdateGroup(obj);
                     if (result != null)
                     {
-                        //Trigger for alert cdc
-                        await _landmarkAlertCdcHelper.TriggerAlertCdc(request.Id, "G");
+                        ////Trigger for alert cdc
+                        //await _landmarkAlertCdcHelper.TriggerAlertCdc(request.Id, "G");
                         response.Message = "Updated successfully : " + result.Id.ToString();
                         response.Code = Responcecodes.Success;
                     }
@@ -154,8 +154,8 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
                 var result = await _landmarkGroupManager.DeleteGroup(request.Id, request.Modifiedby);
                 if (result > 0)
                 {
-                    //Trigger for alert cdc
-                    await _landmarkAlertCdcHelper.TriggerAlertCdc(request.Id, "G");
+                    ////Trigger for alert cdc
+                    //await _landmarkAlertCdcHelper.TriggerAlertCdc(request.Id, "G");
                     response.Message = "Deleted successfully : " + result.ToString();
                     response.Code = Responcecodes.Success;
                 }

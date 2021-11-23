@@ -1,6 +1,7 @@
 package net.atos.daf.ct2.main;
 
 import java.time.Duration;
+import java.util.Objects;
 
 import org.apache.flink.api.common.eventtime.SerializableTimestampAssigner;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
@@ -25,14 +26,14 @@ import net.atos.daf.ct2.util.MileageAuditService;
 import net.atos.daf.ct2.util.MileageConstants;
 
 public class MileageStreamingJob {
-	private static Logger logger = LoggerFactory.getLogger(MileageStreamingJob.class);
+	private static final Logger logger = LoggerFactory.getLogger(MileageStreamingJob.class);
 
 	public static void main(String[] args) throws Exception {
 
 		ParameterTool envParams = null;
 		MileageStreamingJob mileageStreamingJob = null;
 		try {
-			logger.info(" In MileageStreamingJob :: ");
+			logger.debug(" In MileageStreamingJob :: ");
 			mileageStreamingJob = new MileageStreamingJob();
 			ParameterTool params = ParameterTool.fromArgs(args);
 			if (params.get("input") != null)
@@ -84,31 +85,13 @@ public class MileageStreamingJob {
 			SingleOutputStreamOperator<TripMileage> tripMileageData = mileageProcessing.mileageDataProcessing(
 					statusDataStream,
 					Long.parseLong(envParams.get(MileageConstants.MILEAGE_TIME_WINDOW_SECONDS)));
-			
-			
-			/*SingleOutputStreamOperator<VehicleMileage> statusDataStream = FlinkKafkaMileageMsgConsumer
-					.consumeStatusMsgs(envParams, env).map(new MapFunction<KafkaRecord<Status>, VehicleMileage>() {
-					
-						private static final long serialVersionUID = 1L;
-
-						@Override
-						public VehicleMileage map(KafkaRecord<Status> kafkaRec) {
-							return fetchMileageData(kafkaRec.getValue());
-						}
-					});
-
-			MileageProcessing mileageProcessing = new MileageProcessing();
-			SingleOutputStreamOperator<TripMileage> tripMileageData = mileageProcessing.mileageDataProcessing(
-					statusDataStream,
-					Long.parseLong(envParams.get(MileageConstants.MILEAGE_WATERMARK_TIME_WINDOW_SECONDS)),
-					Long.parseLong(envParams.get(MileageConstants.MILEAGE_TIME_WINDOW_SECONDS)));*/
-
+		
 			tripMileageData.addSink(new MileageSink());
 			env.execute(envParams.get(MileageConstants.MILEAGE_STREAMING_JOB_NAME));
 
 		} catch (Exception e) {
 			mileageStreamingJob.auditMileageJobDetails(envParams, "Mileage streaming job failed ::" + e.getMessage());
-			logger.error(" MileageStreamingJob failed, reason :: " + e);
+			logger.error(" MileageStreamingJob failed, reason ::{} ", e);
 			e.printStackTrace();
 		}
 
@@ -120,33 +103,33 @@ public class MileageStreamingJob {
 		try {
 
 			vMileageObj.setVid(stsMsg.getVid());
-			if(stsMsg.getVin() != null)
+			if(Objects.nonNull(stsMsg.getVin()))
 				vMileageObj.setVin(stsMsg.getVin());
 			else
 				vMileageObj.setVin(stsMsg.getVid());
 			
-			if (stsMsg.getGpsStopVehDist() != null) {
+			if (Objects.nonNull(stsMsg.getGpsStopVehDist())) {
 				vMileageObj.setOdoMileage(Long.valueOf(stsMsg.getGpsStopVehDist()));
 			} else
 				vMileageObj.setOdoMileage(MileageConstants.ZERO_VAL);
 
-			if (stsMsg.getGpsStopVehDist() != null && stsMsg.getGpsStartVehDist() != null) {
+			if (Objects.nonNull(stsMsg.getGpsStopVehDist()) && Objects.nonNull(stsMsg.getGpsStartVehDist())) {
 				vMileageObj.setOdoDistance(Long.valueOf(stsMsg.getGpsStopVehDist() - stsMsg.getGpsStartVehDist()));
-			} else if (stsMsg.getGpsStopVehDist() != null) {
+			} else if (Objects.nonNull(stsMsg.getGpsStopVehDist())) {
 				vMileageObj.setOdoDistance(Long.valueOf(stsMsg.getGpsStopVehDist()));
 			} else
 				vMileageObj.setOdoDistance(MileageConstants.ZERO_VAL);
 
-			if (stsMsg.getDocument() != null) {
+			if (Objects.nonNull(stsMsg.getDocument())) {
 				vMileageObj.setGpsDistance(stsMsg.getDocument().getGpsTripDist());
 			} else
 				vMileageObj.setGpsDistance(MileageConstants.ZERO_VAL);
 
-			if (stsMsg.getEvtDateTime() != null) {
+			if (Objects.nonNull(stsMsg.getEvtDateTime())) {
 				vMileageObj.setEvtDateTime(TimeFormatter.getInstance()
 						.convertUTCToEpochMilli(stsMsg.getEvtDateTime().toString(), MileageConstants.DATE_FORMAT));
 			} else {
-				if (stsMsg.getGpsEndDateTime() != null) {
+				if (Objects.nonNull(stsMsg.getGpsEndDateTime())) {
 					vMileageObj.setEvtDateTime(TimeFormatter.getInstance().convertUTCToEpochMilli(
 							stsMsg.getGpsEndDateTime().toString(), MileageConstants.DATE_FORMAT));
 				} else {
@@ -156,14 +139,14 @@ public class MileageStreamingJob {
 
 			logger.info("vMileageObj ::{} ",vMileageObj);
 		} catch (Exception e) {
-			logger.error("Issue while mapping deserialized status object to trip mileage object :: " + e);
-			logger.error("Issue while processing mileage record :: " + stsMsg);
+			logger.error("Issue while mapping deserialized status object to trip mileage object :: {}" , e);
+			logger.error("Issue while processing mileage record ::{} ", stsMsg);
 		}
 		return vMileageObj;
 	}
 
 	public void auditMileageJobDetails(ParameterTool properties, String message) {
-		logger.info("Calling audit service for Mileage Job :: ");
+		logger.debug("Calling audit service for Mileage Job :: ");
 		try {
 			new MileageAuditService().auditTrail(properties.get(MileageConstants.GRPC_SERVER),
 					properties.get(MileageConstants.GRPC_PORT), MileageConstants.MILEAGE_JOB_NAME, message);

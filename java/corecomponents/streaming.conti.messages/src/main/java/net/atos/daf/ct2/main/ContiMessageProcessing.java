@@ -328,7 +328,7 @@ public class ContiMessageProcessing implements Serializable {
 						
 						kafkaRec.setValue(Tuple3.of(vid,transId, monitorObj));
 					}else{
-						logger.info("Issue received different transId type :{}",value.getValue() );
+						logger.debug("Issue received different transId type :{}",value.getValue() );
 						kafkaRec.setValue(Tuple3.of(vid, transId, value.getValue()));
 					}
 					logger.info("KafkaRecord entry :{}",kafkaRec.getValue());

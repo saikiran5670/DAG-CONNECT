@@ -722,6 +722,7 @@ export class AccountInfoSettingsComponent implements OnInit {
 
    deleteBrandLogo(){
      this.uploadLogo = "";
+     this.userSettingsForm.get('uploadBrandLogo').setValue('');
    }
 
    filterLanguages(search){

@@ -121,6 +121,7 @@ displayPOIList: any = [];
 internalSelection: boolean = false;
 fromMoreAlertsFlag: boolean = false;
 herePOIArr: any = [];
+getLogbookDetailsAPICall: any;
 prefMapData: any = [
   {
     key: 'rp_lb_logbook_details_alertlevel',
@@ -228,6 +229,7 @@ defaultTranslation(){
 }
 
 ngOnDestroy(){
+  this.getLogbookDetailsAPICall.unsubscribe();
   this.globalSearchFilterData["vehicleGroupDropDownValue"] = this.logBookForm.controls.vehicleGroup.value;
   this.globalSearchFilterData["vehicleDropDownValue"] = this.logBookForm.controls.vehicle.value;
   this.globalSearchFilterData["timeRangeSelection"] = this.selectionTab;
@@ -245,6 +247,7 @@ ngOnDestroy(){
     this.globalSearchFilterData["endTimeStamp"] = this.endTimeDisplay;
   }
   this.setGlobalSearchData(this.globalSearchFilterData);
+  
 }
 
   ngOnInit() {
@@ -815,7 +818,7 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
         }, 0);
       }
       this.showLoadingIndicator = true;
-      this.reportService.getLogbookDetails(objData).subscribe((logbookData: any) => {
+      this.getLogbookDetailsAPICall = this.reportService.getLogbookDetails(objData).subscribe((logbookData: any) => {
         this.hideloader();
         let newLogbookData = [];
         logbookData.forEach(element => {
@@ -1024,7 +1027,7 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
     if(!this.internalSelection && this.globalSearchFilterData.modifiedFrom !== ""){
       if(this._state){
         if(this.vehicleDD.length > 0){
-          if(this.fromAlertsNotifications == false  && this.fromMoreAlertsFlag == false){
+          if(this.fromAlertsNotifications == false  && this.fromMoreAlertsFlag == false && this._state.vehicleData){
             let _v = this.vehicleDD.filter(i => i.vin == this._state.vehicleData.vin);
             if(_v.length > 0){
               let id =_v[0].vehicleId;
@@ -1044,7 +1047,6 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
 
     }
     if(this._state && this._state.fromVehicleDetails){
-
       if(this._state.data.vehicleGroupId != 0) {
         this.onVehicleGroupChange(this._state.data.vehicleGroupId);
          this.logBookForm.get('vehicleGroup').setValue(this._state.data.vehicleGroupId);

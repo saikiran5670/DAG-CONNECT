@@ -78,7 +78,7 @@ public class MonitorDataProcess {
 			final StreamExecutionEnvironment env = envParams.get("flink.streaming.evn").equalsIgnoreCase("default") ?
 					StreamExecutionEnvironment.getExecutionEnvironment() : FlinkUtil.createStreamExecutionEnvironment(envParams,envParams.get(DafConstants.MONITOR_JOB));
 
-			log.info("env :: " + env);
+			log.debug("env :: " + env);
 			FlinkKafkaMonitorDataConsumer flinkKafkaConsumer = new FlinkKafkaMonitorDataConsumer();
 			env.getConfig().setGlobalJobParameters(envParams);
 
@@ -106,7 +106,7 @@ public class MonitorDataProcess {
 			consumerKeyedStream.addSink(new WarningStatisticsSink()); 
 			
 
-			log.info("after addsink");
+			log.debug("after addsink");
 			try {
 
 				

@@ -162,6 +162,13 @@ jobs:
         publishJUnitResults: false
         goals: clean install
 
+    - task: Maven@3
+      displayName: 'Maven java/commoncomponent/data.transfer/pom.xml'
+      inputs:
+        mavenPomFile: java/commoncomponent/data.transfer/pom.xml
+        publishJUnitResults: false
+        goals: clean install
+
     - task: CopyFiles@2
       displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
       inputs:

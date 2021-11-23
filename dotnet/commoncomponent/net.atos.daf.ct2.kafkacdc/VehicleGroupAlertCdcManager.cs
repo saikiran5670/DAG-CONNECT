@@ -7,6 +7,8 @@ using net.atos.daf.ct2.kafkacdc.entity;
 using net.atos.daf.ct2.kafkacdc.repository;
 using Microsoft.Extensions.Configuration;
 using System.Linq;
+using Newtonsoft.Json;
+using net.atos.daf.ct2.visibility;
 
 namespace net.atos.daf.ct2.kafkacdc
 {
@@ -19,19 +21,20 @@ namespace net.atos.daf.ct2.kafkacdc
         private readonly IConfiguration _configuration;
         private readonly entity.KafkaConfiguration _kafkaConfig;
         private readonly IAlertMgmAlertCdcRepository _vehicleAlertRepository;
+        private readonly IVisibilityManager _visibilityManager;
 
-        public VehicleGroupAlertCdcManager(IAlertMgmAlertCdcRepository vehicleAlertRepository, IVehicleGroupAlertCdcRepository vehicleGroupAlertCdcRepository, IConfiguration configuration)
+        public VehicleGroupAlertCdcManager(IAlertMgmAlertCdcRepository vehicleAlertRepository, IVehicleGroupAlertCdcRepository vehicleGroupAlertCdcRepository, IConfiguration configuration, IVisibilityManager visibilityManager)
         {
             this._configuration = configuration;
             _kafkaConfig = new entity.KafkaConfiguration();
             configuration.GetSection("KafkaConfigurationAlertCDC").Bind(_kafkaConfig);
-
+            _visibilityManager = visibilityManager;
             _vehicleGroupAlertCdcRepository = vehicleGroupAlertCdcRepository;
             _vehicleAlertRepository = vehicleAlertRepository;
             _kafkaCdcHelper = new KafkaCdcHelper();
         }
-        public Task<bool> GetVehicleGroupAlertConfiguration(int vehicleGroupId, string operation, int organizationId) => ExtractAndSyncVehicleGroupAlertRefByVehicleGroupIds(vehicleGroupId, operation, organizationId);
-        internal async Task<bool> ExtractAndSyncVehicleGroupAlertRefByVehicleGroupIds(int vehicleGroupId, string operation, int organizationId)
+        public Task<bool> GetVehicleGroupAlertConfiguration(int vehicleGroupId, string operation, int organizationId, int accountId, int loggedInOrgId, int[] featureIds) => ExtractAndSyncVehicleGroupAlertRefByVehicleGroupIds(vehicleGroupId, operation, organizationId, accountId, loggedInOrgId, featureIds);
+        internal async Task<bool> ExtractAndSyncVehicleGroupAlertRefByVehicleGroupIds(int vehicleGroupId, string operation, int organizationId, int accountId, int loggedInOrgId, int[] featureIds)
         {
             bool result = false;
             List<int> alertIds = new List<int>();
@@ -43,7 +46,8 @@ namespace net.atos.daf.ct2.kafkacdc
             {
                 //alertIds.Add(vehicleGroupId);
                 // get all the vehicles & alert mapping under the vehicle group for given alert id
-                List<VehicleAlertRef> masterDBVehicleGroupAlerts = await _vehicleGroupAlertCdcRepository.GetVehiclesGroupFromAlertConfiguration(vehicleGroupId, organizationId);
+                // List<VehicleAlertRef> masterDBVehicleGroupAlerts = await _vehicleGroupAlertCdcRepository.GetVehiclesGroupFromAlertConfiguration(vehicleGroupId, organizationId);
+                List<VehicleAlertRef> masterDBVehicleGroupAlerts = await GetVisibilityVehicleGroupAlertRefByGroupIds(vehicleGroupId, organizationId, accountId, loggedInOrgId, featureIds);
                 alertIds = masterDBVehicleGroupAlerts.Select(x => x.AlertId).ToList();
                 List<VehicleAlertRef> datamartVehicleGroupAlerts = await _vehicleGroupAlertCdcRepository.GetVehicleGroupAlertRefByAlertIds(alertIds);
                 // Preparing data for sending to kafka topic
@@ -103,5 +107,45 @@ namespace net.atos.daf.ct2.kafkacdc
             }
             return result;
         }
+        internal async Task<List<VehicleAlertRef>> GetVisibilityVehicleGroupAlertRefByGroupIds(int vehicleGroupId, int organisationId, int accountId, int loggedInOrgId, int[] featureIds)
+        {
+            try
+            {
+                List<visibility.entity.VehicleDetailsAccountVisibilityForAlert> vehicleDetailsAccountVisibilty = new List<visibility.entity.VehicleDetailsAccountVisibilityForAlert>();
+
+                var visibilityVehicle = await _visibilityManager.GetVehicleByAccountVisibilityForAlert(accountId, loggedInOrgId, organisationId, featureIds.ToArray());
+
+                var vehgroupIds = visibilityVehicle.Where(x => x.VehicleGroupIds.Contains(vehicleGroupId));
+                List<VehicleAlertRef> vehicleRefList = new List<VehicleAlertRef>();
+                if (vehgroupIds.Any())
+                {
+                    List<AlertGroupId> alertVehicleGroup = await _vehicleGroupAlertCdcRepository.GetAlertIdsandVGIds(vehicleGroupId, featureIds.ToList());
+
+                    foreach (var item in alertVehicleGroup)
+                    {
+                        var vinDetails = visibilityVehicle.Where(x => x.VehicleGroupIds.Contains(item.GroupId)).Select(x => x.Vin).ToList();
+                        if (vinDetails.Any())
+                        {
+                            foreach (var vin in vinDetails)
+                            {
+                                VehicleAlertRef vehicleRef = new VehicleAlertRef();
+                                vehicleRef.AlertId = item.Alertid;
+                                vehicleRef.VIN = vin;
+                                vehicleRefList.Add(vehicleRef);
+                            }
+
+                        }
+                    }
+                }
+
+                return vehicleRefList;
+            }
+            catch (Exception)
+            {
+                throw;
+
+            }
+        }
     }
 }
+

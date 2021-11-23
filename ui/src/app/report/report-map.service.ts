@@ -1471,7 +1471,7 @@ export class ReportMapService {
  }
 
  convertKmphToMph(_data:any){
-  let data = _data * 0.621371;
+  let data = _data *  0.6213711899416732;
   return data.toFixed(2);
 }
 
@@ -1502,7 +1502,7 @@ export class ReportMapService {
   }
 
   meterToMile(_data: any){
-    let data=_data * 0.000621371;
+    let data=_data * 0.0006213711899416;   
     return data.toFixed(2);
   }
 
@@ -1584,6 +1584,7 @@ export class ReportMapService {
     if(startTime != 0){
       sTime = this.formStartendDate(Util.convertUtcToDate(startTime, timeZone), dateFormat, timeFormat, addTime, onlyTime);
     }
+    
     return sTime;
   }
 
@@ -1656,8 +1657,9 @@ export class ReportMapService {
       element.convertedIdleDuration = this.getHhMmTime(element.idleDuration);
       element.convetedCCFuelConsumption = this.getFuelConsumedUnits(element.ccFuelConsumption, unitFormat,true);
       element.convertedFuelConsumptionCCNonActive = this.getFuelConsumedUnits(element.fuelconsumptionCCnonactive, unitFormat,true);
+      element.convertedidlingconsumptionwithpto = this.getFuelConsumptionUnits(element.idlingConsumptionWithPto,unitFormat,true)
       //element.convertedIdleDuration =element.idleDuration
-      element.convertedIdlingConsumptionWithPto =element.idlingConsumptionWithPto != 0 ? unitFormat == 'dunit_Metric' ? this.convertFuelConsumptionMlmToLtr100km(element.idlingConsumptionWithPto) : this.convertFuelConsumptionMlmToMpg(element.idlingConsumptionWithPto):'-';
+      //element.convertedIdlingConsumptionWithPto =element.idlingConsumptionWithPto != 0 ? unitFormat == 'dunit_Metric' ? this.convertFuelConsumptionMlmToLtr100km(element.idlingConsumptionWithPto) : this.convertFuelConsumptionMlmToMpg(element.idlingConsumptionWithPto):'-';
       element.dpaScore = parseFloat(element.dpaScore);
       element.dpaScore = element.dpaScore.toFixed(2)*1;
       element.dpaScore = element.dpaScore.toFixed(2);
@@ -1756,6 +1758,7 @@ export class ReportMapService {
     let sTime: any = 0;
     if(startTime != 0){
       sTime = this.formStartEndDate(Util.convertUtcToDate(startTime, timeZone), dateFormat, timeFormat, addTime, onlyTime);
+      console.log("sTime", sTime);
     }
     return sTime;
   }
@@ -1774,6 +1777,7 @@ export class ReportMapService {
   getFuelConsumedUnits(fuelConsumed: any, unitFormat: any, getFuelConsumtionFlag?: boolean){
      //getFuelConsumtionFlag = true to get fuel Consumption Conversion ; false to get fuel Consumed conversion
     let _fuelConsumed: any = 0;
+    if(fuelConsumed != 0){
     switch(unitFormat){
       case 'dunit_Metric': { 
         _fuelConsumed = getFuelConsumtionFlag ? this.convertFuelConsumptionMlmToLtr100km(fuelConsumed) : this.miliLitreToLitre(fuelConsumed); //-- Ltr/100Km / ltr
@@ -1787,6 +1791,7 @@ export class ReportMapService {
         _fuelConsumed = getFuelConsumtionFlag ? this.convertFuelConsumptionMlmToLtr100km(fuelConsumed) : this.miliLitreToLitre(fuelConsumed); // Ltr/100Km / ltr
       }
     }
+   }  
     return _fuelConsumed; 
   }
 
@@ -1948,7 +1953,7 @@ export class ReportMapService {
     let _date: any;
     let _time: any;
     if(timeFormat == 12){
-      _time = (h > 12 || (h == 12 && m > 0)) ? `${h == 12 ? 12 : h-12}:${m} PM` : `${(h == 0) ? 12 : h}:${m} AM`;
+      _time = (h > 12 || (h == 12 && m > 0)) ? `${h == 12 ? 12 : h-12}:${m}:${s} PM` : `${(h == 0) ? 12 : h}:${m}:${s} AM`;
     }else{
       _time = `${h}:${m}:${s}`;
     }

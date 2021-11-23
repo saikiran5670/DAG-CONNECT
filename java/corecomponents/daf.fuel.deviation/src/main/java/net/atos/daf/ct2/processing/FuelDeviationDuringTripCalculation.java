@@ -44,7 +44,7 @@ public class FuelDeviationDuringTripCalculation
 					FuelMeasurement fuelMeasurementAtStart = createFuelMeasurementObj(vFuelTripObj);
 					fuelDeviationMeasurementState.put(vFuelTripObj.getVin(), fuelMeasurementAtStart);
 					
-					logger.info("fuelMeasurementAtStart Obj :" + fuelMeasurementAtStart);
+					logger.info("fuelMeasurementAtStart Obj ::{}", fuelMeasurementAtStart);
 				} else {
 
 					if (vFuelPrevTripRecData != null) {
@@ -55,15 +55,14 @@ public class FuelDeviationDuringTripCalculation
 							// 5 mins measurement
 							fuelDeviationMeasurementState.put(vFuelTripObj.getVin(), createFuelMeasurementObj(vFuelTripObj));
 							
-							logger.info("fuelMeasurementAfterUpdate Obj :"+ fuelDeviationMeasurementState.get(vFuelTripObj.getVin()));
+							logger.info("fuelMeasurementAfterUpdate Obj ::{}", fuelDeviationMeasurementState.get(vFuelTripObj.getVin()));
 							
 							if (vFuelTripObj.getVFuelLevel() != null && vFuelPrevTripRecData.getVFuelLevel() != null) {
 								BigDecimal fuelIncreaseDiff = vFuelTripObj.getVFuelLevel()
 										.subtract(vFuelPrevTripRecData.getVFuelLevel());
 								
-								logger.info("Fuel Increase during Trip, tripStartFuel : " + vFuelTripObj.getVFuelLevel()
-										+ " vFuelPrevTripRecData : " + vFuelPrevTripRecData.getVFuelLevel()
-										+ " fuelIncreaseDeviation : " + fuelIncreaseDiff);
+								logger.info("Fuel Increase during Trip, tripStartFuel ::{} , vFuelPrevTripRecData ::{}, fuelIncreaseDeviation ::{}", vFuelTripObj.getVFuelLevel()
+										, vFuelPrevTripRecData.getVFuelLevel(), fuelIncreaseDiff);
 
 								if (fuelIncreaseDiff.compareTo(BigDecimal.ZERO) > 0
 										&& fuelIncreaseDiff.compareTo(tripIncreaseThresholdVal) > 0) {
@@ -78,9 +77,8 @@ public class FuelDeviationDuringTripCalculation
 
 									BigDecimal fuelDecreaseDiff = (vFuelPrevTripRecData.getVFuelLevel()
 											.subtract(vFuelTripObj.getVFuelLevel()));
-									logger.info("Fuel Loss during Trip, tripStartFuel : " + vFuelTripObj.getVFuelLevel()
-											+ " vFuelPrevTripRecData : " + vFuelPrevTripRecData.getVFuelLevel()
-											+ " fuelLossDeviation : " + fuelDecreaseDiff);
+									logger.info("Fuel Loss during Trip, tripStartFuel ::{}, vFuelPrevTripRecData ::{}, fuelLossDeviation ::{} ", vFuelTripObj.getVFuelLevel()
+											, vFuelPrevTripRecData.getVFuelLevel(), fuelDecreaseDiff);
 
 									BigDecimal fuelDecreaseDiffAbsVal = fuelDecreaseDiff.abs();
 									if (fuelDecreaseDiffAbsVal.compareTo(tripDecreaseThresholdVal) > 0) {
@@ -108,7 +106,7 @@ public class FuelDeviationDuringTripCalculation
 			}
 
 		} catch (Exception e) {
-			logger.error("Issue while processing FuelDeviation Data for key : " + key + "  error :: " + e.getMessage());
+			logger.error("Issue while processing FuelDeviation Data for key ::{}, error ::{} ", key , e.getMessage());
 			e.printStackTrace();
 		}
 	}

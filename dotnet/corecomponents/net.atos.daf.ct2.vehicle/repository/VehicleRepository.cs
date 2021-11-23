@@ -151,7 +151,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@tcu_brand", string.IsNullOrEmpty(vehicle.Tcu_Brand) ? null : vehicle.Tcu_Brand);
                 parameter.Add("@tcu_version", string.IsNullOrEmpty(vehicle.Tcu_Version) ? null : vehicle.Tcu_Version);
                 parameter.Add("@is_tcu_register", vehicle.Is_Tcu_Register);
-                parameter.Add("@reference_date", vehicle.Reference_Date != null ? UTCHandling.GetUTCFromDateTime(vehicle.Reference_Date.ToString()) : (long?)null);
+                parameter.Add("@reference_date", vehicle.Reference_Date != new DateTime() ? UTCHandling.GetUTCFromDateTime(vehicle.Reference_Date) : 0);
                 parameter.Add("@vehicle_property_id", vehicle.VehiclePropertiesId != 0 ? vehicle.VehiclePropertiesId : null);
                 parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 parameter.Add("@model_id", string.IsNullOrEmpty(vehicle.ModelId) ? null : vehicle.ModelId);
@@ -175,11 +175,12 @@ namespace net.atos.daf.ct2.vehicle.repository
                     vehicleDataMart.Registration_No = vehicle.License_Plate_Number;
                     vehicleDataMart.Vid = vehicle.Vid;
                     vehicleDataMart.IsIPPS = false;
+                    vehicleDataMart.ReferenceDate = vehicle.Reference_Date;
                     await CreateAndUpdateVehicleInDataMart(vehicleDataMart);
                 }
 
-                return vehicle;
                 _log.Info("VehicleCreate Newly Created vehicle object" + Newtonsoft.Json.JsonConvert.SerializeObject(vehicle) + " Vehicle DataMart Insert ");
+                return vehicle;
             }
             catch (Exception)
             {
@@ -363,7 +364,6 @@ namespace net.atos.daf.ct2.vehicle.repository
                                       ,tcu_brand=@tcu_brand
                                       ,tcu_version=@tcu_version
                                       ,is_tcu_register=@is_tcu_register
-                                      ,reference_date=@reference_date
                                       ,modified_at=@modified_at
                                        WHERE vin = @vin
                                        RETURNING vin;";
@@ -591,6 +591,8 @@ namespace net.atos.daf.ct2.vehicle.repository
                                         ,is_ota=@is_ota
                                         ,tcu_id=@tcu_id
                                         ,is_tcu_register=@is_tcu_register
+                                        ,name=@name
+                                        ,license_plate_number=@license_plate_number
                                          WHERE id = @id
                                          RETURNING id;";
 
@@ -602,13 +604,21 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@modified_by", vehicle.Modified_By);
                 parameter.Add("@status", (char)vehicle.Status);
                 parameter.Add("@status_changed_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-                parameter.Add("@reference_date", vehicle.Reference_Date != null ? UTCHandling.GetUTCFromDateTime(vehicle.Reference_Date.ToString()) : 0);
+                parameter.Add("@reference_date", vehicle.Reference_Date != new DateTime() ? UTCHandling.GetUTCFromDateTime(vehicle.Reference_Date) : 0);
                 parameter.Add("@is_ota", vehicle.Is_Ota);
                 parameter.Add("@tcu_id", vehicle.Tcu_Id);
                 parameter.Add("@is_tcu_register", vehicle.Is_Tcu_Register);
-
+                parameter.Add("@name", vehicle.Name);
+                parameter.Add("@license_plate_number", vehicle.License_Plate_Number);
 
                 int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
+
+                // create data into data mart
+                VehicleDataMart vehicleDataMart = new VehicleDataMart();
+                vehicleDataMart.VIN = vehicle.VIN;
+                vehicleDataMart.IsKeyhandover = true;
+                vehicleDataMart.ReferenceDate = vehicle.Reference_Date;
+                await CreateAndUpdateVehicleInDataMart(vehicleDataMart);
 
                 if (vehicle.Organization_Id != vehicleDetails.OrganizationId)
                 {
@@ -1499,6 +1509,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                     vehicleDataMart.Type = vehicleproperty.Classification_Type_Id;
                     vehicleDataMart.Model_Type = vehicleproperty.Classification_Model_Id;
                     vehicleDataMart.IsIPPS = true;
+                    vehicleDataMart.ReferenceDate = objVeh.Reference_Date;
                     await CreateAndUpdateVehicleInDataMart(vehicleDataMart);
                 }
 
@@ -2094,6 +2105,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@model_type", string.IsNullOrEmpty(vehicledatamart.Model_Type) ? "" : vehicledatamart.Model_Type);
                 parameter.Add("@vid", string.IsNullOrEmpty(vehicledatamart.Vid) ? "" : vehicledatamart.Vid);
                 parameter.Add("@created_modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                parameter.Add("@reference_date", vehicledatamart.ReferenceDate != new DateTime() ? UTCHandling.GetUTCFromDateTime(vehicledatamart.ReferenceDate) : 0);
 
                 if (VehicleDataMartID == 0)
                 {
@@ -2107,7 +2119,8 @@ namespace net.atos.daf.ct2.vehicle.repository
                                        ,engine_type
                                        ,model_type
                                        ,created_at
-                                       ,modified_at) 
+                                       ,modified_at
+                                       ,reference_date) 
                             	VALUES(
                                        @vin
                                        ,@name
@@ -2118,6 +2131,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                                        ,@model_type
                                        ,@created_modified_at
                                        ,@created_modified_at
+                                       ,@reference_date
                                       ) RETURNING id";
                     _log.Info("VehicleUpdateDataMart Created object " + Newtonsoft.Json.JsonConvert.SerializeObject(vehicledatamart));
 
@@ -2140,8 +2154,9 @@ namespace net.atos.daf.ct2.vehicle.repository
                                         ,type=@type
                                         ,engine_type=@engine_type
                                         ,model_type=@model_type
-                                            WHERE id = @id
-                                            RETURNING id;";
+                                        ,reference_date=@reference_date
+                                        WHERE id = @id
+                                        RETURNING id;";
                     _log.Info("VehicleUpdateDataMart Update " + Newtonsoft.Json.JsonConvert.SerializeObject(vehicledatamart));
 
                 }
@@ -2166,6 +2181,13 @@ namespace net.atos.daf.ct2.vehicle.repository
                     queryStatement = @"UPDATE master.vehicle
                                         SET registration_no=@registration_no, name=@name
                                         WHERE id = @id RETURNING id;";
+                }
+                else if (VehicleDataMartID > 0 && vehicledatamart.IsKeyhandover)
+                {
+                    //Update Reference date from key handover event
+                    queryStatement = @"UPDATE master.vehicle
+                                        SET reference_date=@reference_date
+                                        WHERE vin = @vin RETURNING id";
                 }
                 else
                 {
@@ -2199,27 +2221,26 @@ namespace net.atos.daf.ct2.vehicle.repository
         #endregion
 
         #region Vehicle Mileage Data
-        public async Task<IEnumerable<DtoVehicleMileage>> GetVehicleMileage(long startDate, long endDate, bool noFilter)
+        public async Task<IEnumerable<DtoVehicleMileage>> GetVehicleMileage(long startDate, long endDate, bool noFilter, string contentType, List<string> vins)
         {
             try
             {
-                var queryStatement = @"select 
-                                         id                                       
-                                        ,modified_at 
-                                        ,evt_timestamp
-                                        ,odo_mileage
-                                        ,odo_distance
-                                        ,real_distance
-                                        ,vin
-                                        from mileage.vehiclemileage";
+                var queryStatement = @"select                                         
+                                        to_char(to_timestamp(evt_timestamp::double precision / 1000), 'YYYY-MM-DD""T""HH24:MI:SS.MS+0') as EvtDateTime
+                                        ,GREATEST(odo_distance, 0) as TachoMileage
+                                        ,GREATEST(real_distance, 0) as GPSMileage
+                                        ,VIN
+                                        ,CASE WHEN @content_type = 'text/csv' THEN '1.2' ELSE NULL END as RealMileageAlgorithmVersion
+                                        from mileage.vehiclemileage where vin = ANY(@vins)";
 
-                DynamicParameters parameter = null;
+                DynamicParameters parameter = new DynamicParameters();
+                parameter.Add("@content_type", contentType);
+                parameter.Add("@vins", vins.ToArray());
                 if (!noFilter)
                 {
-                    parameter = new DynamicParameters();
                     parameter.Add("@start_at", startDate);
                     parameter.Add("@end_at", endDate);
-                    queryStatement += " where modified_at >= @start_at AND modified_at <= @end_at";
+                    queryStatement += " and modified_at >= @start_at AND modified_at <= @end_at";
                 }
 
                 IEnumerable<DtoVehicleMileage> mileageData = await _dataMartdataAccess.QueryAsync<DtoVehicleMileage>(queryStatement, parameter);

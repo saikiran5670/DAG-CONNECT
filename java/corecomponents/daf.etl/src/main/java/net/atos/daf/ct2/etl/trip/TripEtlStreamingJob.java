@@ -48,7 +48,7 @@ public class TripEtlStreamingJob {
 
 		ParameterTool envParams = null;
 		try {
-			logger.info(" In TripStreamingJob :: ");
+			logger.debug(" In TripStreamingJob :: ");
 			ParameterTool params = ParameterTool.fromArgs(args);
 			if (params.get("input") != null)
 				envParams = ParameterTool.fromPropertiesFile(params.get("input"));
@@ -67,7 +67,7 @@ public class TripEtlStreamingJob {
 			// Map to status data
 			SingleOutputStreamOperator<TripStatusData> statusDataStream = FlinkKafkaStatusMsgConsumer
 					.consumeStatusMsgs(envParams, env)
-					.rebalance()
+					.keyBy(rec ->rec.getValue().getVin()!=null ? rec.getValue().getVin() : rec.getValue().getVid())
 					.map(new MapFunction<KafkaRecord<Status>, TripStatusData>() {
 						/**
 						 * 
@@ -153,9 +153,9 @@ public class TripEtlStreamingJob {
 						try {
 							kafkaRec.setValue(mapper.writeValueAsString(rec));
 						} catch (JsonProcessingException e) {
-							logger.error("Issue while parsing Trip into JSON: " + e.getMessage());
+							logger.error("Issue while parsing Trip into JSON::{} ", e.getMessage());
 						}
-						logger.info("Aggregated Json trip structure :: "+kafkaRec);
+						logger.info("Aggregated Json trip structure ::{} ",kafkaRec);
 
 						return kafkaRec;
 					
@@ -174,7 +174,7 @@ public class TripEtlStreamingJob {
 			TripAuditTrail.auditTrail(envParams, ETLConstants.AUDIT_EVENT_STATUS_FAIL, ETLConstants.TRIP_STREAMING_JOB_NAME,
 					"Trip Streaming Job Failed" + e.getMessage(), ETLConstants.AUDIT_CREATE_EVENT_TYPE);
 
-			logger.error(" TripStreamingJob failed, reason :: " + e);
+			logger.error(" TripStreamingJob failed, reason ::{} ", e.getMessage());
 			e.printStackTrace();
 		}
 
@@ -499,8 +499,8 @@ public class TripEtlStreamingJob {
 			logger.info("On load tripStsData : {}",tripStsData);
 		} catch (Exception e) {
 			logger.error(
-					"Issue while mapping deserialized status object to trip status object :: " + e);
-			logger.error("Issue while processing record :: "+stsMsg);
+					"Issue while mapping deserialized status object to trip status object :: {}", e.getMessage());
+			logger.error("Issue while processing record :: ",stsMsg);
 		}
 		return tripStsData;
 	}
@@ -509,7 +509,7 @@ public class TripEtlStreamingJob {
 		try {
 			return jsonMapper.writeValueAsString(obj);
 		} catch (JsonProcessingException e) {
-			logger.error("Issue while parsing Trip into JSON: " +obj  +"  Exception: "+ e.getMessage() );
+			logger.error("Issue while parsing Trip into JSON::{}, error::{} ", obj, e.getMessage() );
 			return null;
 		}
 		
@@ -524,7 +524,7 @@ public class TripEtlStreamingJob {
 				return 0;
 			}
 		} catch (Exception e) {
-			logger.error("Issue while converting Date String to epoch milli : "+dateStr + " message :"+ stsMsg  +"  Exception: "+ e.getMessage() );
+			logger.error("Issue while converting Date String to epoch milli ::{}, message ::{}, error::{} ",dateStr, stsMsg, e.getMessage() );
 			return 0;
 		}
 	}

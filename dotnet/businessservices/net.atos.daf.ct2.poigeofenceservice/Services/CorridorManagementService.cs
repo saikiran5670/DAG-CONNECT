@@ -354,7 +354,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 var result = await _corridorManger.DeleteCorridor(request.CorridorID);
                 if (result.Id >= 0)
                 {
-                    await _landmarkAlertCdcHelper.TriggerAlertCdc(request.CorridorID, "");
+                    //await _landmarkAlertCdcHelper.TriggerAlertCdc(request.CorridorID, "");
                     response.Message = "Delete successfully";
                     response.Code = Responsecode.Success;
                     response.CorridorID = request.CorridorID;
@@ -451,7 +451,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                     var isTransactionDone = result.ExistingTrips.Any(x => x.Id != 0);
                     if (isTransactionDone)
                     {
-                        await _landmarkAlertCdcHelper.TriggerAlertCdc(request.Id, "");
+                        //await _landmarkAlertCdcHelper.TriggerAlertCdc(request.Id, "");
                         response.Message = "Update successfully";
                         response.Code = Responsecode.Success;
                         response.CorridorID = result.Id;
@@ -560,7 +560,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 }
                 else if (result != null && result.Id > 0)
                 {
-                    await _landmarkAlertCdcHelper.TriggerAlertCdc(objRequest.Request.Id, "");
+                    //await _landmarkAlertCdcHelper.TriggerAlertCdc(objRequest.Request.Id, "");
                     objResponse.Response.Message = "Updated successfully";
                     objResponse.Response.Code = Responsecode.Success;
                     objResponse.Response.CorridorID = result.Id;

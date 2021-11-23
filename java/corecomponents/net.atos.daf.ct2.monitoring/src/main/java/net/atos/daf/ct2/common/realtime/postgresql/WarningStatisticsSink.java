@@ -1,5 +1,8 @@
 package net.atos.daf.ct2.common.realtime.postgresql;
 
+import static net.atos.daf.ct2.common.util.Utils.convertDateToMillis;
+import static net.atos.daf.ct2.common.util.Utils.getCurrentTimeInUTC;
+
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -27,7 +30,7 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 
 	private static final long serialVersionUID = 1L;
 
-	Logger logger = LoggerFactory.getLogger(WarningStatisticsSink.class);
+	private static final Logger logger = LoggerFactory.getLogger(WarningStatisticsSink.class);
 	Connection connection = null;
 
 	private List<Monitor> queue;
@@ -36,11 +39,16 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 	private WarningStatisticsDao warningDao;
 	private PreparedStatement updateWarningCommonTrip;
 	private DTCWarningMasterDao DTCWarning;
-
+	private PreparedStatement statement;
+	private PreparedStatement updateStatementCurrentTrip;
+	private PreparedStatement updateStatementList;
+	private PreparedStatement readStatementList;
+	private PreparedStatement readStatement;
+	//private PreparedStatement deactivateWarningStatement;
+	
+//convertDateToMillis(indexData.getEvtDateTime())
 	@Override
 	public void open(org.apache.flink.configuration.Configuration parameters) throws Exception {
-
-		// log.info("########## In LiveFleet Drive Time Management ##############");
 		ParameterTool envParams = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
 
 		warningDao = new WarningStatisticsDao();
@@ -54,7 +62,13 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 					envParams.get(DafConstants.DATAMART_POSTGRE_PASSWORD));
 
 			warningDao.setConnection(connection);
-			// System.out.println("warning connection created");
+			statement = connection.prepareStatement(DafConstants.LIVEFLEET_WARNING_INSERT);
+			updateStatementCurrentTrip=connection.prepareStatement(DafConstants.LIVEFLEET_CURRENT_TRIP_STATISTICS_UPDATE_TEN);
+			updateStatementList=connection.prepareStatement(DafConstants.LIVEFLEET_WARNING_UPDATELIST);
+			readStatementList=connection.prepareStatement(DafConstants.LIVEFLEET_WARNING_READLIST);
+			readStatement=connection.prepareStatement(DafConstants.REPAITM_MAINTENANCE_WARNING_READ);
+			//deactivateWarningStatement=connection.prepareStatement(DafConstants.LIVEFLEET_WARNING_DEACTIVATE);
+			
 
 		} catch (Exception e) {
 
@@ -73,7 +87,7 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 		if ((messageTen.equals(row.getMessageType()) || messageFour.equals(row.getMessageType()))
 				&& (row.getVEvtID() == 44 || row.getVEvtID() == 45 || row.getVEvtID() == 46 || row.getVEvtID() == 63)) {
 
-			queue = new ArrayList<Monitor>();
+		/*	queue = new ArrayList<Monitor>();
 			synchronizedCopy = new ArrayList<Monitor>();
 
 			try {
@@ -86,7 +100,7 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 						synchronizedCopy = new ArrayList<Monitor>(queue);
 						queue.clear();
 
-						for (Monitor moniterData : synchronizedCopy) {
+						for (Monitor moniterData : synchronizedCopy) {*/
 							// String tripID = "NOT AVAILABLE";
 
 							/*
@@ -98,60 +112,59 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 							} else {
 								vin = row.getVid();
 							}
-							//Long lastestProcessedMessageTimeStamp = warningDao.read(row.getMessageType(), vin);
-							// System.out.println("lastestProcessedMessageTimeStamp value --" +
-							// lastestProcessedMessageTimeStamp);
+							
+							
+							if (messageTen.equals(row.getMessageType()) && (row.getVEvtID()==44 )) {
 
-							if (messageTen.equals(row.getMessageType()) && row.getVEvtID() != 63) {
-
-								WarningStatisticsPojo warningDetail = WarningStatisticsCalculation(moniterData,
+								WarningStatisticsPojo warningDetail = WarningStatisticsCalculation(row,
 										messageTen, 
-										row.getDocument().getVWarningClass(), row.getDocument().getVWarningNumber());
+										row.getDocument().getVWarningClass(), row.getDocument().getVWarningNumber(),"A");
 
-								warningDao.warning_insert(warningDetail);
-								logger.info("warning inserted in warning table for VEvtId not 63 :{)", warningDetail);
-								// System.out.println("warning message 10 Inserted");
-								warningDao.warningUpdateMessageTenCommonTrip(warningDetail);
-								// System.out.println("warning updated for message 10 in another table");
-								logger.info("Warning records inserted to warning table :: ");
-								logger.info("Warning records updated in current trip table:: ", warningDetail);
+								warningDao.warning_insertMonitor(warningDetail,statement);
+								logger.debug("warning inserted in warning table for VEvtId not 63 :{)", warningDetail);
+								warningDao.warningUpdateMessageTenCommonTripMonitor(warningDetail,updateStatementCurrentTrip);
+								logger.info("Warning records inserted to warning table :: {}",warningDetail);
+								logger.debug("Warning records updated in current trip table:: ", warningDetail);
+							}
+							
+							if(messageTen.equals(row.getMessageType()) && row.getVEvtID() == 45) {
+
+								WarningStatisticsPojo warningDetail = WarningStatisticsCalculation(row,
+										messageTen, 
+										row.getDocument().getVWarningClass(), row.getDocument().getVWarningNumber(),"D");
+
+								warningDao.warning_insertMonitor(warningDetail,statement);
+								logger.debug("warning inserted in warning table for VEvtId not 63 :{)", warningDetail);
+								warningDao.warningUpdateMessageTenCommonTripMonitor(warningDetail,updateStatementCurrentTrip);
+								logger.info("Warning records inserted to warning table :: {}",warningDetail);
+								logger.debug("Warning records updated in current trip table:: ", warningDetail);
+							}
+							if(messageTen.equals(row.getMessageType()) && row.getVEvtID() == 46) {
+								boolean warningStatus = warningDao.readRepairMaintenamceMonitor(row.getMessageType(), vin,row.getDocument().getVWarningClass(),row.getDocument().getVWarningNumber(),readStatement);
+								if(warningStatus) {
+									WarningStatisticsPojo warningDetail = WarningStatisticsCalculation(row,
+											messageTen, 
+											row.getDocument().getVWarningClass(), row.getDocument().getVWarningNumber(),"A");
+									warningDao.warning_insertMonitor(warningDetail,statement);
+									logger.debug("warning inserted in warning table for VEvtId not 63 :{)", warningDetail);
+									warningDao.warningUpdateMessageTenCommonTripMonitor(warningDetail,updateStatementCurrentTrip);
+									logger.info("Warning records inserted to warning table :: {}",warningDetail);
+									logger.debug("Warning records updated in current trip table:: ", warningDetail);
+								}
+								
 							}
 
 							if (messageTen.equals(row.getMessageType()) && row.getVEvtID() == 63) {
-
-							/*	List<Warning> warningList = row.getDocument().getWarningObject().getWarningList();
-
-								for (Warning warning : warningList) {
-
-									boolean warningStatus = warningDao.readRepairMaintenamce(row.getMessageType(),
-											vin, warning.getWarningClass(), warning.getWarningNumber());
-									if (warningStatus) {
-										// System.out.println("warning not present in warning table");
-
-										WarningStatisticsPojo warningNewRowDetail = WarningStatisticsCalculation(row,
-												messageTen, warning.getWarningClass(),
-												warning.getWarningNumber());
-										warningDao.warning_insert(warningNewRowDetail);
-										logger.info("warning inserted in warning table for VEvtId--63 :{)",
-												warningNewRowDetail);
-										// System.out.println("warning message 10 Inserted for evtId-63");
-										warningDao.warningUpdateMessageTenCommonTrip(warningNewRowDetail);
-										// System.out.println("warning updated for message 10 in another table for
-										// evtId-63");
-										logger.info("Warning records updated in current trip table:: ",
-												warningNewRowDetail);
-
-									}
-
-								}*/
 								
-								List<WarningStatisticsPojo> activeWarnings=warningDao.readReturnListofActiveMsg(row.getMessageType(), row.getVin());
+								List<WarningStatisticsPojo> activeWarnings=warningDao.readReturnListofActiveMsg(row.getMessageType(), row.getVin(),readStatementList);
 								List<Warning> warningList63 = row.getDocument().getWarningObject().getWarningList();
+								//List<WarningStatisticsPojo> toAddWaringList= new ArrayList<>();
 								
 								//To insert missed rows in db for message 63
 								boolean warningInDB=false; 
-								List<WarningStatisticsPojo> toInsert= new ArrayList<>();
-								
+								List<WarningStatisticsPojo> toInsertList= new ArrayList<>();
+								if(warningList63!=null && !warningList63.isEmpty()) {
+									
 								for(Warning warning63 : warningList63) {
 									int activeWarningClass=	warning63.getWarningClass();
 									int activeWarningNumber= warning63.getWarningNumber();
@@ -164,29 +177,35 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 										}
 										
 									}
-
 									if(warningInDB==false) { //update database to insert warning
 										WarningStatisticsPojo warningRowToInsert = WarningStatisticsCalculation(row,
 												messageTen, warning63.getWarningClass(),
-												warning63.getWarningNumber());
-										warningDao.warning_insert(warningRowToInsert);
-										logger.info("warning inserted in warning table for VEvtId--63 :{)",
+												warning63.getWarningNumber(),"A");
+										toInsertList.add(warningRowToInsert);
+										//warningDao.warning_insertMonitor(warningRowToInsert,statement);
+										//warningDao.warningUpdateMessageTenCommonTripMonitor(warningRowToInsert,updateStatementCurrentTrip);
+										
+										logger.info("warning inserted in warning table for VEvtId--63 :{}",
 												warningRowToInsert);
 									}
 									warningInDB=false;
 
 								}
-									
-									
-									
-									
+								}	
+								
+								if(!toInsertList.isEmpty() && toInsertList.size()>0) {
+								warningDao.warning_insertMonitorList(toInsertList,statement);
+								warningDao.warningUpdateMessageTenCommonTripList(toInsertList,updateStatementCurrentTrip);
+								}
+								
 								//opposite side to update in DB for EVTId =45
 								boolean warningPresent=false;
 								List<Integer> toDeactivate= new ArrayList<>();
 								
-								if(activeWarnings!=null && !activeWarnings.isEmpty() && warningList63!=null && !warningList63.isEmpty()) {
-								logger.info("activeWarnings list size " + activeWarnings.size());
-								logger.info("warningList63 list size "  + warningList63.size());
+								
+							/*	if(activeWarnings!=null && !activeWarnings.isEmpty() && warningList63!=null && !warningList63.isEmpty()) {
+								logger.debug("activeWarnings list size " + activeWarnings.size());
+								logger.debug("warningList63 list size "  + warningList63.size());
 								for(WarningStatisticsPojo activeWarning :activeWarnings) {
 
 
@@ -197,9 +216,7 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 											if(war63.getWarningClass().equals(warningClass) && war63.getWarningNumber().equals(warningNumber)) {
 												warningPresent=true;
 												break;
-											} /*
-												 * else { //update toDeactivate.add(warning.getId()); }
-												 */ 
+											} 
 											 
 									 }
 										 if(warningPresent==false) { //update database here to deactivate warning for
@@ -210,46 +227,74 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 									
 										 warningPresent=false; 
 									
-								} }
-								logger.info("toDeactivate list size " + toDeactivate.size());
+								} } */
 								
-								warningDao.DeactivatWarningUpdate(toDeactivate);
-								logger.info("update done-sink class ");
-							}
+								
+								List<WarningStatisticsPojo> insertDEactivatedList = new ArrayList<>();
+								if(activeWarnings!=null && !activeWarnings.isEmpty()) {
+								logger.debug("activeWarnings list size " + activeWarnings.size());
+								logger.debug("warningList63 list size "  + warningList63.size());
+								for(WarningStatisticsPojo activeWarning :activeWarnings) {
+
+
+									int warningClass= activeWarning.getWarningClass();
+									int warningNumber= activeWarning.getWarningNumber();
+										for( Warning war63 : warningList63) {
+										 
+											if(war63.getWarningClass().equals(warningClass) && war63.getWarningNumber().equals(warningNumber)) {
+												warningPresent=true;
+												break;
+											} 
+											 
+									 }
+										 if(warningPresent==false) { //update database here to deactivate warning for
+											 WarningStatisticsPojo warningRowToInsertForDeactivation = WarningStatisticsCalculation(row,
+														messageTen, activeWarning.getWarningClass(),
+														activeWarning.getWarningNumber(),"D");
+											 insertDEactivatedList.add(warningRowToInsertForDeactivation);
+											// warningDao.warning_insertMonitor(warningRowToInsertForDeactivation,statement);
+											// warningDao.warningUpdateMessageTenCommonTripMonitor(warningRowToInsertForDeactivation,updateStatementCurrentTrip);
+											 //insertDEactivatedList.add(warningRowToInsert);
+											// toDeactivate.add(activeWarning.getId());
+											 
+											 
+									 }
+									
+										 warningPresent=false; 
+									
+								} }
+								logger.debug("toDeactivate list size " + toDeactivate.size());
+								
+								//warningDao.DeactivatWarningUpdate(toDeactivate,updateStatementList);
+								if(!insertDEactivatedList.isEmpty() && insertDEactivatedList.size()>0) {
+								warningDao.warning_insertMonitorList(insertDEactivatedList,statement);
+								warningDao.warningUpdateMessageTenCommonTripList(insertDEactivatedList,updateStatementCurrentTrip);
+								logger.debug("update done-sink class ");
+							} }
 
 						}
-					}
+		/*}
 				}
 			} catch (Exception e) {
-				logger.error("Error in Warning statistics Invoke method" + e.getMessage());
-				e.printStackTrace();
+				logger.error("Error in Warning statistics Invoke method {}" , e.getMessage());
 			}
 
-		}
-		// System.out.println("Invoke Finish Warning");
+		}*/
 	}
 
-	public WarningStatisticsPojo WarningStatisticsCalculation(Monitor row, Integer messageType, Integer warningClass, Integer warningNumber) {
+	public WarningStatisticsPojo WarningStatisticsCalculation(Monitor row, Integer messageType, Integer warningClass, Integer warningNumber, String warningType) {
 
 		WarningStatisticsPojo warningDetail = new WarningStatisticsPojo();
-		// ,Long lastestProcessedMessageTimeStamp-----add in parameter
 		if (messageType == 10) {
-
-			// System.out.println("Inside warning calculation type 10");
-
 			warningDetail.setTripId(null);
 			warningDetail.setVin(row.getVin());
 			warningDetail.setVid(row.getVid());
-			try {
-				warningDetail.setWarningTimeStamp(TimeFormatter.getInstance()
-						.convertUTCToEpochMilli(row.getEvtDateTime().toString(), DafConstants.DTM_TS_FORMAT));
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-			// warningDetail.setWarningClass(row.getDocument().getVWarningClass());
-			// warningDetail.setWarningNumber(row.getDocument().getVWarningNumber());
+			
+				/*warningDetail.setWarningTimeStamp(TimeFormatter.getInstance()
+						.convertUTCToEpochMilli(row.getEvtDateTime().toString(), DafConstants.DTM_TS_FORMAT));*/
+				
+				warningDetail.setWarningTimeStamp(convertDateToMillis(row.getEvtDateTime()));
+			
 
 			warningDetail.setWarningClass(warningClass);
 			warningDetail.setWarningNumber(warningNumber);
@@ -309,14 +354,14 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 			warningDetail.setDriverID(null);
 
 			// Warning Type
-			if (row.getVEvtID() != null) {
-				if (row.getVEvtID() == 44 || row.getVEvtID() == 46 || row.getVEvtID() == 63) {
-					warningDetail.setWarningType("A");
-				} else if (row.getVEvtID() == 45) {
-					warningDetail.setWarningType("D");
-				} 
-			} 
-
+			/*
+			 * if (row.getVEvtID() != null) { if (row.getVEvtID() == 44 || row.getVEvtID()
+			 * == 46 || row.getVEvtID() == 63) { warningDetail.setWarningType("A"); } else
+			 * if (row.getVEvtID() == 45) { warningDetail.setWarningType("D"); } }
+			 */
+			warningDetail.setWarningType(warningType);
+			
+			
 			warningDetail.setDistanceUntilNextService(null);
 			warningDetail.setOdometerVal(null);
 
@@ -326,18 +371,15 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 				warningDetail.setLastestProcessedMessageTimeStamp(0L);
 			//}
 
-			warningDetail.setCreatedAt(TimeFormatter.getInstance().getCurrentUTCTime());
+			//warningDetail.setCreatedAt(TimeFormatter.getInstance().getCurrentUTCTime());
+			
+			warningDetail.setCreatedAt(getCurrentTimeInUTC());
+			
 			if (row.getMessageType() != null) {
 				warningDetail.setMessageType(row.getMessageType());
 			} else {
 				warningDetail.setMessageType(null);
 			}
-
-			// warningDetail.setModifiedAt(null);
-
-			// System.out.println("in vehicle warning class message 10---" + row.getVin());
-			// System.out.println("warning calculation Finished message 10");
-
 			logger.info("warning calculation finished {}", warningDetail);
 
 		}
@@ -350,11 +392,31 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 	public void close() throws Exception {
 
 		super.close();
-
+		if (statement != null) {
+			statement.close();
+		}
+		
+		if (updateStatementCurrentTrip != null) {
+			updateStatementCurrentTrip.close();
+		}
+		
+		if (updateStatementList != null) {
+			updateStatementList.close();
+		}
+		
+		if (readStatementList != null) {
+			readStatementList.close();
+		}
+		
+		if (readStatement != null) {
+			readStatement.close();
+		}
+		
+		
 		logger.info("In close() of Warning :: ");
 
 		if (connection != null) {
-			logger.info("Releasing connection from Warning job");
+			logger.debug("Releasing connection from Warning job");
 			connection.close();
 		}
 

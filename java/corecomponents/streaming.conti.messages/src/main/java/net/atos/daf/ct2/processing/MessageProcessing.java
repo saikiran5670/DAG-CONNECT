@@ -85,7 +85,7 @@ public class MessageProcessing<U,R, T> {
 
 				@Override
 	              public KafkaRecord<T> map(KafkaRecord<Tuple3<String, String, Object>> value) throws Exception {
-	              // logger.info("KafkaRecord before converting to object : {}", value);
+	               logger.debug("KafkaRecord before converting to object : {}", value);
 	                try{
 	                
 	                     KafkaRecord<T> kafkaRecord = new KafkaRecord<T>();
@@ -138,7 +138,7 @@ public class MessageProcessing<U,R, T> {
 					} catch (JsonProcessingException e) {
 						logger.error("Issue while converting Raw Object to String:{} " ,e.getMessage());
 					}
-					logger.info("Raw Json data structure ::{} ",kafkaRec);
+					logger.debug("Raw Json data structure ::{} ",kafkaRec);
 
 					return kafkaRec;
 				}
@@ -205,7 +205,7 @@ public class MessageProcessing<U,R, T> {
 					public void processBroadcastElement(KafkaRecord<R> value,
 							KeyedBroadcastProcessFunction<String, KafkaRecord<Tuple3<String, String, Object>>, KafkaRecord<R>, KafkaRecord<String>>.Context ctx,
 							Collector<KafkaRecord<String>> out) throws Exception {
-						logger.info("Broadcast updated from history :" + value);
+						logger.debug("Broadcast updated from history :" + value);
 						ctx.getBroadcastState(broadcastStateDescriptor).put(new Message<U>((U) value.getKey()), value);
 					}
 					
