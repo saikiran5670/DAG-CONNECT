@@ -368,7 +368,7 @@ getUnique(arr, comp) {
   onDeleteReportScheduler(item: any) {
     const options = {
       title: this.translationData.lblDeleteReportScheduler || "Delete Report Scheduler",
-      message: this.translationData.lblAreousureyouwanttodeletescheduledreport || "Are you sure you want to delete this scheduled report '$' ? ",
+      message: this.translationData.lblAreousureyouwanttodeletescheduledreport || "Are you sure you want to delete this scheduled report  '$' ? ",
       cancelText: this.translationData.lblCancel || "Cancel",
       confirmText: this.translationData.lblDelete || "Delete"
     };
@@ -390,7 +390,7 @@ getUnique(arr, comp) {
       if(this.translationData.lblReportSchedulerDelete)
         return this.translationData.lblReportSchedulerDelete.replace('$', reportSchedulerName);
       else
-        return ("Schedule '$' deleted successfully ").replace('$', reportSchedulerName);
+        return ("Scheduled '$' deleted successfully ").replace('$', reportSchedulerName);
   }
 
   onViewReportScheduler(row: any, action: any) {
