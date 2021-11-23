@@ -1393,8 +1393,14 @@ this.barChartOptionsPerformance = {
         let key=element.key;
         genObj.push(this.appendUnits(key, this.translationData[key]));
         element.score.forEach(score => {
-          if(score.headerType === 'Overall_Driver' || score.headerType === 'VIN_Driver'){
-            genObj.push(this.formatValues(element, score.value));
+          if(score.headerType === 'Overall_Driver' || score.headerType === 'VIN_Driver'){            
+             if(key === 'rp_numberofvehicles' && score.headerType === 'VIN_Driver')
+            {
+              genObj.push('-');
+            }
+            else{
+              genObj.push(this.formatValues(element, score.value));
+            }         
           }
         });
       let row=worksheet.addRow(genObj);
@@ -1564,7 +1570,13 @@ this.barChartOptionsPerformance = {
           genObj.push(this.appendUnits(key, this.translationData[key]));
           element.score.forEach(score => {
             if(score.headerType === 'Overall_Driver' || score.headerType === 'VIN_Driver'){
-              genObj.push(this.formatValues(element, score.value));
+              if(key === 'rp_numberofvehicles' && score.headerType === 'VIN_Driver')
+              {
+                genObj.push('-');
+              }
+              else{
+                genObj.push(this.formatValues(element, score.value));
+              }                
             }
           });
           pdfgenObj.push(genObj);

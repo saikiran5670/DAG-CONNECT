@@ -162,9 +162,9 @@ namespace net.atos.daf.ct2.reports.repository
                                                          		  , round(fd.idle_duration,2)                            					as IdleDuration
                                                                   , round(fd.idle_duration_percentage,2)                 					as IdleDurationPercentage
                                                          		  , round(fd.pto_duration,2)                             					as PTODuration
-                                                         		  ,case when numoftripswithharshbreak>0 then round (fd.harsh_brake_duration/numoftripswithharshbreak, 2) 
-													  			      else round (fd.harsh_brake_duration,2) end  						    as HarshBrakeDuration
-                                                         		  , round(fd.heavy_throttle_duration,2)                  					as HeavyThrottleDuration
+                                                         		  ,case when numoftripswithharshbreak>0 then round (fd.harsh_brake_duration/numberoftrips, 2) 
+													  			      else round (fd.harsh_brake_duration/numberoftrips,2) end  						    as HarshBrakeDuration
+                                                         		  , round(fd.heavy_throttle_duration/numberoftrips,2)                  					as HeavyThrottleDuration
                                                          		  , round(fd.cruise_control_distance_30_50,2)            					as CruiseControlDistance3050
                                                          		  , round(fd.cruise_control_distance_50_75,2)            					as CruiseControlDistance5075
                                                          		  , round(fd.cruise_control_distance_more_than_75,2)     					as CruiseControlDistance75
@@ -335,9 +335,9 @@ namespace net.atos.daf.ct2.reports.repository
                                                   		  , round(fd.idle_duration_percentage,2)                   					as IdleDurationPercentage
                                                          , round(fd.idle_duration,2)                               					as IdleDuration
                                                   		  , round(fd.pto_duration,2)                               					as PTODuration
-                                                  		  ,case when numoftripswithharshbreak>0 then round (fd.harsh_brake_duration/numoftripswithharshbreak, 2) 
-													  			      else round (fd.harsh_brake_duration,2) end  				    as HarshBrakeDuration
-                                                  		  , round(fd.heavy_throttle_duration,2)                    					as HeavyThrottleDuration
+                                                  		  ,case when numoftripswithharshbreak>0 then round (fd.harsh_brake_duration/numberoftrips, 2) 
+													  			      else round (fd.harsh_brake_duration/numberoftrips,2) end  				    as HarshBrakeDuration
+                                                  		  , round(fd.heavy_throttle_duration/numberoftrips,2)                    					as HeavyThrottleDuration
                                                   		  , round(fd.cruise_control_distance_30_50,2)              					as CruiseControlDistance3050
                                                   		  , round(fd.cruise_control_distance_50_75,2)              					as CruiseControlDistance5075
                                                   		  , round(fd.cruise_control_distance_more_than_75,2)       					as CruiseControlDistance75
@@ -730,7 +730,8 @@ namespace net.atos.daf.ct2.reports.repository
                   , idle_duration as idle_duration
 				  , case when (((end_time_stamp - start_time_stamp)/1000)::numeric)>0 then ((idle_duration/((end_time_stamp - start_time_stamp)/1000)::numeric) *100) else 0 end as idle_duration_percentage
 				  , case when (((end_time_stamp - start_time_stamp)/1000)::numeric)>0 then ((pto_duration/((end_time_stamp - start_time_stamp)/1000)::numeric) *100)  else 0 end   as pto_duration
-				  , case when (((end_time_stamp - start_time_stamp)/1000)::numeric)>0 then ((harsh_brake_duration/((end_time_stamp - start_time_stamp)/1000)::numeric) *100)  else 0 end as harsh_brake_duration
+				  , harsh_brake_duration     as harsh_brake_duration
+                  --, case when (((end_time_stamp - start_time_stamp)/1000)::numeric)>0 then ((harsh_brake_duration/((end_time_stamp - start_time_stamp)/1000)::numeric) *100)  else 0 end as harsh_brake_duration
 				  --, case when (((end_time_stamp - start_time_stamp)/1000)::numeric)>0 then ((heavy_throttle_duration/((end_time_stamp - start_time_stamp)/1000)::numeric) *100)  else 0 end as heavy_throttle_duration
                   , (heavy_throttle_duration)  as heavy_throttle_duration
 				  , case when etl_gps_distance>0 then ((cruise_control_distance_30_50 / etl_gps_distance) * 100) else 0 end         as cruise_control_distance_30_50
