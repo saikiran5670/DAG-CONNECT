@@ -64,9 +64,9 @@ export class LoginComponent implements OnInit {
     this.showLoadingIndicator = true;
     this.errorMsg= '';
     this.invalidUserMsg = false;
-    if (this.loginForm.valid) {
+    if (this.loginForm.valid) { 
       //console.log("values:: ", values)
-      if(this.loginClicks == 0){
+      // if(this.loginClicks == 0){//commenting this for facing issue multiple times login ,popup is not getting displayed.
         this.loginClicks = 1;
        this.authService.signIn(this.loginForm.value).subscribe((data:any) => {
         this.hideLoader();
@@ -198,7 +198,7 @@ export class LoginComponent implements OnInit {
             this.router.navigate(['/auth/resetpassword/'+error.error.processToken]);
           }
         })
-      }
+      // }
 
        //--------- For Mock------//
       //  if(this.loginForm.value.username === 'testuser@atos.net' && this.loginForm.value.password === '123456'){
