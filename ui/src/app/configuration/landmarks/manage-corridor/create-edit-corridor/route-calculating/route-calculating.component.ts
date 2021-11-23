@@ -9,10 +9,7 @@ import {
 import { ConfigService } from '@ngx-config/core';
 import { Options } from '@angular-slider/ngx-slider';
 import { LandmarkCategoryService } from '../../.../../../../../services/landmarkCategory.service'
-import { decode, encode } from '../../../../../services/flexible-polyline';
-// import { decode } from './index';
 declare var H: any;
-
 
 @Component({
   selector: 'app-route-calculating',
@@ -55,7 +52,7 @@ export class RouteCalculatingComponent implements OnInit {
   transportDataChecked : boolean= false;
   trafficFlowChecked : boolean = false;
   corridorWidth : number = 100;
-  corridorWidthKm : number = 0.5;
+  corridorWidthKm : number = 0.1;
   sliderValue : number = 0;
   min : number = 0;
   max : number = 10000;
@@ -113,7 +110,7 @@ export class RouteCalculatingComponent implements OnInit {
 
   value: number = 100;
   options: Options = {
-    floor: 500,
+    floor: 0,
     ceil: 10000
   };
   searchStrError : boolean = false;
@@ -160,7 +157,6 @@ export class RouteCalculatingComponent implements OnInit {
   activeSearchList : boolean = false;
   activeEndList : boolean = false;
   poiLocalCollection = [];
-  sampledGpsCoordinates: any =[];
 
   constructor(private hereService: HereService,private formBuilder: FormBuilder, private corridorService : CorridorService,
     private completerService: CompleterService, private config: ConfigService,private landmarkCategoryService: LandmarkCategoryService) {
@@ -629,7 +625,6 @@ export class RouteCalculatingComponent implements OnInit {
       "width": this.corridorWidth,
       "distance":this.routeDistance,
       "viaAddressDetails": this.viaRoutePlottedPoints,
-      // "viaAddressDetails": this.sampledGpsCoordinates,
       "transportData": this.transportDataChecked,
       "trafficFlow": this.trafficFlowChecked,
       "state": "A",
@@ -767,7 +762,7 @@ export class RouteCalculatingComponent implements OnInit {
     this.transportDataChecked = false;
     this.trafficFlowChecked = false;
     this.corridorWidth = 100;
-    this.corridorWidthKm = 0.5;
+    this.corridorWidthKm = 0.1;
     this.corridorFormGroup.controls.vehicleHeight.setValue("");
     this.corridorFormGroup.controls.vehicleLength.setValue("");
     this.corridorFormGroup.controls.vehicleWidth.setValue("");
@@ -1139,7 +1134,7 @@ export class RouteCalculatingComponent implements OnInit {
     this.plotStartPoint();
     this.plotEndPoint();
     this.corridorWidth = 100;
-    this.corridorFormGroup.controls.widthInput.setValue(0.5);
+    this.corridorFormGroup.controls.widthInput.setValue(0.1);
   }
 
   calculateTruckRoute(){
@@ -1210,116 +1205,15 @@ export class RouteCalculatingComponent implements OnInit {
   }
 
   corridorPath;
-  //commented as part of #19807
-  // addTruckRouteShapeToMap(lineWidth?){
-  //   let pathWidth= this.corridorWidthKm * 10;
-  //   this.routeDistance = 0;
-  //   if(this.routePoints.sections){
-  //   this.routePoints.sections.forEach((section) => {
-  //     // decode LineString from the flexible polyline
-  //     this.routeDistance += section.travelSummary.length;
-  //     let linestring = H.geo.LineString.fromFlexiblePolyline(section.polyline);
-  
-  //      // Create a corridor width to display the route:
-  //       this.corridorPath = new H.map.Polyline(linestring, {
-  //       style:  {
-  //         lineWidth: pathWidth,
-  //         strokeColor: 'rgba(181, 199, 239, 0.6)'
-  //       }
-  //     });
-  //     // Create a polyline to display the route:
-  //     let polylinePath = new H.map.Polyline(linestring, {
-  //       style:  {
-  //         lineWidth: 3,
-  //         strokeColor: '#436ddc'
-  //       }
-  //     });
-  
-  //     // Add the polyline to the map
-  //     this.mapGroup.addObjects([this.corridorPath,polylinePath]);
-  //     this.hereMap.addObject(this.mapGroup);
-  //     // And zoom to its bounding rectangle
-  //     this.hereMap.getViewModel().setLookAtData({
-  //        bounds: this.mapGroup.getBoundingBox()
-  //     });
-  //   });
-  // }
-  // }
-
-  //Added as part of #19807
   addTruckRouteShapeToMap(lineWidth?){
-    this.sampledGpsCoordinates = [];
     let pathWidth= this.corridorWidthKm * 10;
-    let threshold = this.corridorWidthKm * 0.75;
-    if(threshold < 1) threshold =1;
-    // let sampledGpsCoordinate: any;
     this.routeDistance = 0;
     if(this.routePoints.sections){
-    this.routePoints.sections.forEach((section, index) => {
+    this.routePoints.sections.forEach((section) => {
       // decode LineString from the flexible polyline
       this.routeDistance += section.travelSummary.length;
       let linestring = H.geo.LineString.fromFlexiblePolyline(section.polyline);
-     var coordinates = decode(section.polyline);//polylinePlugin.decode(section.polyline);
-      // var coordinates = this.mapFunctionsService.decode(section.polyline);
-      console.log(coordinates);
-      // console.log(Object.values(coordinates));
-      let polyl = coordinates.polyline;
-      let counter=0;
-      let sampledLineString: any =[];
-      // if(index > 0){
-      //   let origLocation = this.routePoints.sections[index-1].arrival.place.originalLocation;
-      //   let viaRoute = this.viaRoutePlottedPoints.filter( e => e.latitude == origLocation.lat && e.longitude == origLocation.lng);
-      //   // sampledGpsCoordinate = {
-      //   //   type: 'V',
-      //   //   viaStopName: viaRoute[0].viaRoutName,
-      //   //   latitude: origLocation.lat,
-      //   //   longitude: origLocation.lng
-      //   // };
-      //   this.sampledGpsCoordinates.push(sampledGpsCoordinate);
-      // }
-      for(var i=0; i<polyl.length-1;i++){
-        var polylc=polyl[i];
-        var polylc5=polyl[i+1];
-        counter += this.distanceInKmBetweenEarthCoordinates(polylc[0], polylc[1], polylc5[0], polylc5[1]);
-        if(i==0 || i==polyl.length-1){
-          sampledLineString.push(polylc[0], polylc[1], 0);
-          this.appendGpsCoordinates('R', '', polylc[0], polylc[1]);
-          // sampledGpsCoordinate = {
-          //   type: 'R',
-          //   viaStopName: '',
-          //   latitude: polylc[0],
-          //   longitude: polylc[1]
-          // };
-          // this.sampledGpsCoordinates.push(sampledGpsCoordinate);
-        }
-        if(counter > threshold){
-          // console.log(this.distanceInKmBetweenEarthCoordinates(polylc[0], polylc[1], polylc5[0], polylc5[1]));
-          sampledLineString.push(polylc5[0], polylc5[1], 0);
-          this.appendGpsCoordinates('R', '', polylc5[0], polylc5[1]);
-          // sampledGpsCoordinate = {
-          //   type: 'R',
-          //   viaStopName: '',
-          //   latitude: polylc5[0],
-          //   longitude: polylc5[1]
-          // };
-          // this.sampledGpsCoordinates.push(sampledGpsCoordinate);
-          counter = 0;
-        }
-      }
-      if(this.viaRoutePlottedPoints && this.viaRoutePlottedPoints.length > 0 && this.viaRoutePlottedPoints[index]){
-        this.appendGpsCoordinates('V', this.viaRoutePlottedPoints[index].viaRoutName, this.viaRoutePlottedPoints[index].latitude, this.viaRoutePlottedPoints[index].longitude);
-        // sampledGpsCoordinate = {
-        //   type: 'V',
-        //   viaStopName: this.viaRoutePlottedPoints[index].viaRoutName,
-        //   latitude: this.viaRoutePlottedPoints[index].latitude,
-        //   longitude: this.viaRoutePlottedPoints[index].longitude
-        // };
-      }
-      console.log(this.distanceInKmBetweenEarthCoordinates(19.14045, 72.88235, 12.96618, 77.5869)*1000+' Meters');
-      console.log(linestring);
-      linestring.Y = sampledLineString;
-      console.log(linestring);
-      // console.log(this.sampledGpsCoordinates);
+  
        // Create a corridor width to display the route:
         this.corridorPath = new H.map.Polyline(linestring, {
         style:  {
@@ -1343,48 +1237,7 @@ export class RouteCalculatingComponent implements OnInit {
          bounds: this.mapGroup.getBoundingBox()
       });
     });
-
-    console.log(this.sampledGpsCoordinates);
   }
-  }
-
-  //Added as part of #19807
-//   addTruckRouteShapeToMapEdit(){
-//     if(this.routePoints.sections){
-//       this.routePoints.sections.forEach((section, index) => {
-//     // Create a corridor width to display the route:
-//     this.corridorPath = new H.map.Polyline(linestring, {
-//       style:  {
-//         lineWidth: pathWidth,
-//         strokeColor: 'rgba(181, 199, 239, 0.6)'
-//       }
-//     });
-//     // Create a polyline to display the route:
-//     let polylinePath = new H.map.Polyline(linestring, {
-//       style:  {
-//         lineWidth: 3,
-//         strokeColor: '#436ddc'
-//       }
-//     });
-
-//     // Add the polyline to the map
-//     this.mapGroup.addObjects([this.corridorPath,polylinePath]);
-//     this.hereMap.addObject(this.mapGroup);
-//     // And zoom to its bounding rectangle
-//     this.hereMap.getViewModel().setLookAtData({
-//       bounds: this.mapGroup.getBoundingBox()
-//     });
-//   });
-// }
-//   }
-
-  appendGpsCoordinates(type: any, location: any, lat: any, long: any){
-    this.sampledGpsCoordinates.push({
-      type: type,
-      viaStopName: location,
-      latitude: lat,
-      longitude: long
-    });
   }
 
   updateWidth(){
@@ -1402,25 +1255,6 @@ export class RouteCalculatingComponent implements OnInit {
   hideloader() {
     // Setting display of spinner
     this.showLoadingIndicator = false;
-  }
-
- degreesToRadians(degrees) {
-    return degrees * Math.PI / 180;
-  }
-  
-   distanceInKmBetweenEarthCoordinates(lat1, lon1, lat2, lon2) {
-    var earthRadiusKm = 6371;
-  
-    var dLat = this.degreesToRadians(lat2-lat1);
-    var dLon = this.degreesToRadians(lon2-lon1);
-  
-    lat1 = this.degreesToRadians(lat1);
-    lat2 = this.degreesToRadians(lat2);
-  
-    var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-            Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2); 
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-    return earthRadiusKm * c;
   }
 
 
