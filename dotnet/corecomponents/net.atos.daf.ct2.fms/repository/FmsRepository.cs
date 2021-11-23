@@ -101,7 +101,7 @@ namespace net.atos.daf.ct2.fms.repository
                         case "yesterday"://yesterday
                             parameter.Add("@yesterdaytimestamp", GetDate(1));
                             parameter.Add("@timestamp", GetDate(0));
-                            queryStatement = string.Format("{0} {1}", queryStatement, "and (received_datetime >= @yesterdaytimestamp and received_datetime < @timestamp)");
+                            queryStatement = string.Format("{0} {1}", queryStatement, "and (received_datetime >= @yesterdaytimestamp)");
                             break;
                         case "today"://today
                             parameter.Add("@timestamp", GetDate(0));
@@ -133,11 +133,11 @@ namespace net.atos.daf.ct2.fms.repository
                 VehiclePosition objVehiclePosition = new VehiclePosition();
                 objVehiclePosition.VIN = item.vin ?? string.Empty;
                 objVehiclePosition.Altitude = item.altitude ?? 0;
-                objVehiclePosition.Heading = item.heading ?? 0;
+                objVehiclePosition.Heading = Convert.ToInt32(item.heading ?? 0);
                 objVehiclePosition.Latitude = item.latitude ?? 0;
                 objVehiclePosition.Longitude = item.longitude ?? 0;
                 objVehiclePosition.GPSTimestamp = item.gpstimestamp ?? 0;
-                objVehiclePosition.Speed = decimal.ToDouble(item.speed) ?? 0;
+                objVehiclePosition.Speed = item.speed ?? 0;
                 objVehiclePositionResponse.VehiclePosition.Add(objVehiclePosition);
             }
             return objVehiclePositionResponse;
