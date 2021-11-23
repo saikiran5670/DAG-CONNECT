@@ -101,7 +101,7 @@ namespace net.atos.daf.ct2.fms.repository
                         case "yesterday"://yesterday
                             parameter.Add("@yesterdaytimestamp", GetDate(1));
                             parameter.Add("@timestamp", GetDate(0));
-                            queryStatement = string.Format("{0} {1}", queryStatement, "and (received_datetime >= @yesterdaytimestamp and received_datetime < @timestamp)");
+                            queryStatement = string.Format("{0} {1}", queryStatement, "and (received_datetime >= @yesterdaytimestamp)");
                             break;
                         case "today"://today
                             parameter.Add("@timestamp", GetDate(0));
