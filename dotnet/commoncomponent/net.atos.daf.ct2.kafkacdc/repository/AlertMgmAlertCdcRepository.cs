@@ -442,5 +442,45 @@ namespace net.atos.daf.ct2.kafkacdc.repository
             }
             return isSucceed;
         }
+
+        public async Task<List<AlertGroupId>> GetAlertIdsandVGIds(IEnumerable<int> groupIds, List<int> featureIds)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@featureIds", featureIds);
+                var queryStatementFeature = @"select enum from translation.enumtranslation where feature_id = ANY(@featureIds)";
+                List<string> resultFeaturEnum = (List<string>)await _dataAccess.QueryAsync<string>(queryStatementFeature, parameter);
+                parameter.Add("@featureEnums", resultFeaturEnum);
+                parameter.Add("@groupIds", groupIds);
+                string query = @"SELECT ale.id as Alertid,ale.vehicle_group_id as GroupId
+								FROM master.alert ale ON ale.vehicle_group_id=grp.id
+								WHERE vehicle_group_id.id=ANY(@groupIds) AND ale.type = ANY(@featureEnums) AND ale.state<>'D';";
+
+                IEnumerable<AlertGroupId> vehicleAlertRefs = await _dataAccess.QueryAsync<AlertGroupId>(query, parameter);
+
+                return vehicleAlertRefs.AsList();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<int> GetAlertVehicleGroupId(int alertIds)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@alertids", alertIds);
+                string queryAlertLevelPull = @"select vehicle_group_id from master.alert where id=@alertids ";
+                int alertVehicleGroupId = await _dataAccess.ExecuteScalarAsync<int>(queryAlertLevelPull, parameter);
+                return alertVehicleGroupId;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }
