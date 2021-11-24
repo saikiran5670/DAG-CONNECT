@@ -429,15 +429,10 @@ namespace net.atos.daf.ct2.vehicle
 
                 endDate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
 
-                Stopwatch sw = new Stopwatch();
-                sw.Start();
                 IEnumerable<VehicleRelations> vehicleNameList = await _vehicleRepository.GetVehicleNamelist(startDate, endDate, string.IsNullOrEmpty(since));
-                sw.Stop();
-                Console.WriteLine("GetVehicleNamelist - " + sw.ElapsedMilliseconds);
+
                 if (vehicleNameList.Count() > 0)
                 {
-                    sw = new Stopwatch();
-                    sw.Start();
                     //Fetch visibility vehicles for the account, org or only org based on context value
                     Dictionary<VehicleGroupDetails, List<VisibilityVehicle>> resultDict;
                     if (context == VehicleNamelistSSOContext.Org)
@@ -450,27 +445,16 @@ namespace net.atos.daf.ct2.vehicle
                     }
 
                     var vehicles = resultDict.Values.SelectMany(x => x).Distinct(new ObjectComparer()).ToList();
-                    sw.Stop();
-                    Console.WriteLine("GetVisibilityVehicles - " + sw.ElapsedMilliseconds);
 
-                    sw = new Stopwatch();
-                    sw.Start();
-                    if (vehicleNameList.Count() > 0)
-                    {
-                        var vehicleNameList1 = vehicleNameList.Where(nl => vehicles.Any(veh => veh.VIN == nl.VIN)).AsEnumerable();
-                    }
-                    sw.Stop();
-                    Console.WriteLine("Where - " + sw.ElapsedMilliseconds);
+                    vehicleNameList = vehicleNameList.Where(nl => vehicles.Any(veh => veh.VIN == nl.VIN)).AsEnumerable();
                 }
-                sw = new Stopwatch();
-                sw.Start();
+
                 VehicleNamelistResponse vehicleNamelistResponse = new VehicleNamelistResponse();
                 vehicleNamelistResponse.VehicleRelations =
                         context == VehicleNamelistSSOContext.None
                                     ? vehicleNameList.ToList()
                                     : (await _vehicleRepository.GetVehicleRelations(vehicleNameList, orgId)).ToList();
-                sw.Stop();
-                Console.WriteLine("Response - " + sw.ElapsedMilliseconds);
+
                 return vehicleNamelistResponse;
             }
             catch (Exception)

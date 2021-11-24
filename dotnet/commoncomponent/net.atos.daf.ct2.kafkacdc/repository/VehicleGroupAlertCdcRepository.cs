@@ -347,7 +347,7 @@ namespace net.atos.daf.ct2.kafkacdc.repository
             }
         }
 
-        public async Task<List<AlertGroupId>> GetAlertIdsandVGIds(IEnumerable<int> groupIds, List<int> featureIds)
+        public async Task<List<AlertGroupId>> GetAlertIdsandVGIds(int groupIds, List<int> featureIds)
         {
             try
             {
@@ -358,8 +358,8 @@ namespace net.atos.daf.ct2.kafkacdc.repository
                 parameter.Add("@featureEnums", resultFeaturEnum);
                 parameter.Add("@groupIds", groupIds);
                 string query = @"SELECT ale.id as Alertid,ale.vehicle_group_id as GroupId
-								FROM master.alert ale ON ale.vehicle_group_id=grp.id
-								WHERE vehicle_group_id.id=ANY(@groupIds) AND ale.type = ANY(@featureEnums) AND ale.state<>'D';";
+								FROM master.alert ale
+								WHERE ale.vehicle_group_id= @groupIds AND ale.type = ANY(@featureEnums) AND ale.state<>'D';";
 
                 IEnumerable<AlertGroupId> vehicleAlertRefs = await _dataAccess.QueryAsync<AlertGroupId>(query, parameter);
 

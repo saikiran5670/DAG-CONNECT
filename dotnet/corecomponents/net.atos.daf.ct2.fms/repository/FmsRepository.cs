@@ -101,7 +101,7 @@ namespace net.atos.daf.ct2.fms.repository
                         case "yesterday"://yesterday
                             parameter.Add("@yesterdaytimestamp", GetDate(1));
                             parameter.Add("@timestamp", GetDate(0));
-                            queryStatement = string.Format("{0} {1}", queryStatement, "and (received_datetime >= @yesterdaytimestamp and received_datetime < @timestamp)");
+                            queryStatement = string.Format("{0} {1}", queryStatement, "and (received_datetime >= @yesterdaytimestamp)");
                             break;
                         case "today"://today
                             parameter.Add("@timestamp", GetDate(0));
@@ -133,11 +133,11 @@ namespace net.atos.daf.ct2.fms.repository
                 VehiclePosition objVehiclePosition = new VehiclePosition();
                 objVehiclePosition.VIN = item.vin ?? string.Empty;
                 objVehiclePosition.Altitude = item.altitude ?? 0;
-                objVehiclePosition.Heading = item.heading ?? 0;
+                objVehiclePosition.Heading = Convert.ToInt32(item.heading ?? 0);
                 objVehiclePosition.Latitude = item.latitude ?? 0;
                 objVehiclePosition.Longitude = item.longitude ?? 0;
                 objVehiclePosition.GPSTimestamp = item.gpstimestamp ?? 0;
-                objVehiclePosition.Speed = decimal.ToDouble(item.speed) ?? 0;
+                objVehiclePosition.Speed = item.speed ?? 0;
                 objVehiclePositionResponse.VehiclePosition.Add(objVehiclePosition);
             }
             return objVehiclePositionResponse;
@@ -272,26 +272,27 @@ namespace net.atos.daf.ct2.fms.repository
             objVehicleStatusResponse.RequestTimestamp = DateTime.Now.ToUnixMiliSecTime();
             foreach (var item in data)
             {
+
                 VehicleStatus objVehicleStatus = new VehicleStatus();
                 objVehicleStatus.VIN = item.vin ?? string.Empty;
                 objVehicleStatus.Driver1Id = item.driver1id ?? string.Empty;
-                objVehicleStatus.CatalystFuelLevel = decimal.ToDouble(item.catalystfuellevel) ?? 0.0;
+                objVehicleStatus.CatalystFuelLevel = item.catalystfuellevel ?? 0;
                 objVehicleStatus.Driver1WorkingState = item.driver1workingstate != null ? DriverWorkingState.driverWorkingState[item.driver1workingstate] : string.Empty;
-                objVehicleStatus.EngineTotalFuelUsed = decimal.ToDouble(item.enginetotalfuelused) ?? 0.0;
+                objVehicleStatus.EngineTotalFuelUsed = item.enginetotalfuelused ?? 0;
                 objVehicleStatus.EventTimestamp = item.eventtimestamp ?? 0;
-                objVehicleStatus.FuelLevel1 = decimal.ToDouble(item.fuellevel1) ?? 0;
-                objVehicleStatus.TachographSpeed = decimal.ToDouble(item.tachographspeed) ?? 0;
+                objVehicleStatus.FuelLevel1 = item.fuellevel1 ?? 0;
+                objVehicleStatus.TachographSpeed = item.tachographspeed ?? 0; ;
                 objVehicleStatus.TotalEngineHours = item.totalenginehours ?? 0;
                 objVehicleStatus.HRTotalVehicleDistance = item.hrtotalvehicledistance ?? 0;
                 objVehicleStatus.GrossCombinationVehicleWeight = item.grosscombinationvehicleweight ?? 0;
-                objVehicleStatus.WheelBasedSpeed = decimal.ToDouble(item.wheelbasedspeed) ?? 0;
+                objVehicleStatus.WheelBasedSpeed = item.wheelbasedspeed ?? 0;
                 objVehicleStatus.VehiclePosition = new VehiclePositionForStatus();
                 objVehicleStatus.VehiclePosition.Altitude = item.altitude ?? 0;
-                objVehicleStatus.VehiclePosition.Heading = item.heading ?? 0;
+                objVehicleStatus.VehiclePosition.Heading = Convert.ToInt32(item.heading ?? 0);
                 objVehicleStatus.VehiclePosition.Latitude = item.latitude ?? 0;
                 objVehicleStatus.VehiclePosition.Longitude = item.longitude ?? 0;
                 objVehicleStatus.VehiclePosition.GPSTimestamp = item.gpstimestamp ?? 0;
-                objVehicleStatus.VehiclePosition.Speed = decimal.ToDouble(item.speed) ?? 0.0;
+                objVehicleStatus.VehiclePosition.Speed = item.speed ?? 0;
                 objVehicleStatusResponse.VehicleStatus.Add(objVehicleStatus);
             }
             return objVehicleStatusResponse;

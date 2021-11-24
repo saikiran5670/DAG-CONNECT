@@ -24,6 +24,8 @@ message ViaAddressDetail{
     double Latitude = 2;
     double Longitude = 3;
     string CorridorViaStopName = 4;
+    string Type = 5;
+    int32 SeqNo = 6;
 }
 
 message CorridorGridViewResponse{
@@ -184,9 +186,11 @@ enum Responsecode{
 
  message ViaDetails
 {
-double Latitude=1;
-double Longitude=2;
-string ViaName =3;
+    double Latitude=1;
+    double Longitude=2;
+    string ViaName =3;
+    string Type = 4;
+    int32 SeqNo = 5;
 }
 
     

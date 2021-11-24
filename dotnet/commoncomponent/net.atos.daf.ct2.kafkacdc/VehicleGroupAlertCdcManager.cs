@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using System.Linq;
 using Newtonsoft.Json;
 using net.atos.daf.ct2.visibility;
+using net.atos.daf.ct2.visibility.entity;
 
 namespace net.atos.daf.ct2.kafkacdc
 {
@@ -112,30 +113,34 @@ namespace net.atos.daf.ct2.kafkacdc
             try
             {
                 List<visibility.entity.VehicleDetailsAccountVisibilityForAlert> vehicleDetailsAccountVisibilty = new List<visibility.entity.VehicleDetailsAccountVisibilityForAlert>();
-
-                var visibilityVehicle = await _visibilityManager.GetVehicleByAccountVisibilityForAlert(accountId, loggedInOrgId, organisationId, featureIds.ToArray());
-
-                var vehicleGroupdIds = visibilityVehicle.Where(x => (int)x.VehicleGroupDetails.Split(new[] { '~' }, 3).GetValue(0) == vehicleGroupId).Select(x => (int)x.VehicleGroupDetails.Split(new[] { '~' }, 3).GetValue(0)).ToList();
-
-                List<AlertGroupId> alertVehicleGroup = await _vehicleGroupAlertCdcRepository.GetAlertIdsandVGIds(vehicleGroupdIds, featureIds.ToList());
-
-                List<VehicleAlertRef> vehicleRefList = new List<VehicleAlertRef>();
-
-                foreach (var item in alertVehicleGroup)
+                IEnumerable<VehicleDetailsAccountVisibilityForAlert> visibilityVehicle = null;
+                if (featureIds.Count() > 0)
                 {
-                    var vinDetails = visibilityVehicle.Where(x => (int)x.VehicleGroupDetails.Split(new[] { '~' }, 3).GetValue(0) == vehicleGroupId).Select(x => x.Vin).ToList();
-                    if (vinDetails.Any())
-                    {
-                        foreach (var vin in vinDetails)
-                        {
-                            VehicleAlertRef vehicleRef = new VehicleAlertRef();
-                            vehicleRef.AlertId = item.Alertid;
-                            vehicleRef.VIN = vin;
-                            vehicleRefList.Add(vehicleRef);
-                        }
+                    visibilityVehicle = await _visibilityManager.GetVehicleByAccountVisibilityForAlert(accountId, loggedInOrgId, organisationId, featureIds.ToArray());
+                }
+                var vehgroupIds = visibilityVehicle.Where(x => x.VehicleGroupIds.Contains(vehicleGroupId));
+                List<VehicleAlertRef> vehicleRefList = new List<VehicleAlertRef>();
+                if (vehgroupIds.Any())
+                {
+                    List<AlertGroupId> alertVehicleGroup = await _vehicleGroupAlertCdcRepository.GetAlertIdsandVGIds(vehicleGroupId, featureIds.ToList());
 
+                    foreach (var item in alertVehicleGroup)
+                    {
+                        var vinDetails = visibilityVehicle.Where(x => x.VehicleGroupIds.Contains(item.GroupId)).Select(x => x.Vin).ToList();
+                        if (vinDetails.Any())
+                        {
+                            foreach (var vin in vinDetails)
+                            {
+                                VehicleAlertRef vehicleRef = new VehicleAlertRef();
+                                vehicleRef.AlertId = item.Alertid;
+                                vehicleRef.VIN = vin;
+                                vehicleRefList.Add(vehicleRef);
+                            }
+
+                        }
                     }
                 }
+
                 return vehicleRefList;
             }
             catch (Exception)

@@ -431,7 +431,7 @@ titleStyle: any = { name: 'sans-serif', family: 4, size: 11, bold: true };
   }
  
   getSeriesData() {
-    let dataSeries=[];
+    let dataSeries=[];   
     this.ecoScoreDriverDetailsTrendLine.trendlines.forEach((vehicle, index) => {
       // if(index == 0){
       for (var key in vehicle.kpiInfo) {
@@ -1327,8 +1327,8 @@ this.barChartOptionsPerformance = {
       this.showPerformancePie=true;
     }
   }
-
-  exportAsExcelFile(){
+  
+   exportAsExcelFile(){
     //Create workbook and worksheet
     let workbook = new Workbook();
     let worksheet = workbook.addWorksheet(this.translationData.lblEcoScoreReport || 'Eco-Score Report');
@@ -1386,15 +1386,33 @@ this.barChartOptionsPerformance = {
         perfVinList.push(col.columnId);
       }
     });
-    let tableHeaderGen=worksheet.addRow(genColList);
+    let newGenColList:any=[]; 
+    perfVinList.forEach(element => { 
+      if(element==''||element=='Overall'){
+      newGenColList.push(element)
+      }
+    });    
+    this.driverDetails.forEach(element => {
+      if(element.vin !=''){       
+          newGenColList.push(element.vin);
+      }
+    });
+     perfVinList = newGenColList;
+     let tableHeaderGen=worksheet.addRow(genColList);
     
     this.datasetGen.forEach(element =>{
       let genObj=[];
         let key=element.key;
         genObj.push(this.appendUnits(key, this.translationData[key]));
         element.score.forEach(score => {
-          if(score.headerType === 'Overall_Driver' || score.headerType === 'VIN_Driver'){
-            genObj.push(this.formatValues(element, score.value));
+          if(score.headerType === 'Overall_Driver' || score.headerType === 'VIN_Driver'){            
+             if(key === 'rp_numberofvehicles' && score.headerType === 'VIN_Driver')
+            {
+              genObj.push('-');
+            }
+            else{
+              genObj.push(this.formatValues(element, score.value));
+            }         
           }
         });
       let row=worksheet.addRow(genObj);
@@ -1557,6 +1575,18 @@ this.barChartOptionsPerformance = {
           perfVinList.push(col.columnId);
         }
       });
+      let newGenColList:any=[]; 
+      perfVinList.forEach(element => { 
+        if(element==''||element=='Overall'){
+        newGenColList.push(element)
+        }
+      });    
+      this.driverDetails.forEach(element => {
+        if(element.vin !=''){       
+            newGenColList.push(element.vin);
+        }
+      });
+       perfVinList = newGenColList;
       let pdfgenObj=[];
       this.datasetGen.forEach(element =>{
         let genObj=[];
@@ -1564,7 +1594,13 @@ this.barChartOptionsPerformance = {
           genObj.push(this.appendUnits(key, this.translationData[key]));
           element.score.forEach(score => {
             if(score.headerType === 'Overall_Driver' || score.headerType === 'VIN_Driver'){
-              genObj.push(this.formatValues(element, score.value));
+              if(key === 'rp_numberofvehicles' && score.headerType === 'VIN_Driver')
+              {
+                genObj.push('-');
+              }
+              else{
+                genObj.push(this.formatValues(element, score.value));
+              }                
             }
           });
           pdfgenObj.push(genObj);

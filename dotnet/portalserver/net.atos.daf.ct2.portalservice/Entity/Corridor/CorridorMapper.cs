@@ -58,9 +58,10 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
 
             if (request != null && request.ViaAddressDetails != null)
             {
+                int i = 0;
                 foreach (var item in request.ViaAddressDetails)
                 {
-                    obj.ViaAddressDetails.Add(new ViaDetails() { ViaName = item.ViaRoutName, Latitude = item.Latitude, Longitude = item.Longitude });
+                    obj.ViaAddressDetails.Add(new ViaDetails() { ViaName = item.ViaRoutName ?? string.Empty, Latitude = item.Latitude, Longitude = item.Longitude, SeqNo = ++i, Type = item.Type });
                 }
             }
             return obj;
@@ -111,7 +112,8 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
                     StartPosition = trip.StartPosition,
                     StartLatitude = trip.StartLatitude,
                     StartLongitude = trip.StartLongitude,
-                    TripId = CheckNull(trip.TripId)
+                    TripId = CheckNull(trip.TripId),
+                    Id = trip.Id
                 };
 
                 foreach (var node in trip.NodePoints)

@@ -237,26 +237,29 @@ Refer : https://styleguide.daf.com/en/guidelines-for-developers/use-of-colors
         height: 92.3vh !important;
     }
 }
-@media screen and (min-width: 1366px), (min-height: 768px) {
-    .loginPageContainer {
-        height: 92.7vh !important;
-    }
-}
+// @media screen and (min-width: 1366px), (min-height: 768px) {
+//     .loginPageContainer {
+//         height: 93.7vh !important;
+//     }
+// }
 @media screen and (min-width: 1920px), (min-height: 1080px) {
     .loginPageContainer {
-        height: 93.7vh !important;
+        height: 95.6vh !important;
     }
 }
 //----------- login style----------//
 .loginPageContainer{
     // height: 610px;
-    height: 94.8vh;
+    height: 93.8vh;
     width: 100%;
     .loginPageBg{
         background-image: url(assets/images/DAF-login-background.jpg); 
         background-repeat: no-repeat; 
-        //background-size: 100% 100%;
-        background-size:cover;
+        background-size: 100% 100%;
+        //background-size:cover;
+        background-position: fixed !important;
+        background-attachment: fixed !important;
+
         .logo-icon{
             padding: 20px 30px;
         }

@@ -10,6 +10,7 @@ using net.atos.daf.ct2.kafkacdc;
 using net.atos.daf.ct2.package;
 using net.atos.daf.ct2.package.entity;
 using net.atos.daf.ct2.packageservice.Common;
+using Newtonsoft.Json;
 
 namespace net.atos.daf.ct2.packageservice
 {
@@ -79,6 +80,11 @@ namespace net.atos.daf.ct2.packageservice
         {
             try
             {
+                var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_orgid")).FirstOrDefault()?.Value ?? "0");
+                var accountId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_accid")).FirstOrDefault()?.Value ?? "0");
+                var orgContextId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("loggedd_in_orgContxtID")).FirstOrDefault()?.Value ?? "0");
+
+
                 var package = new Package();
                 package.Id = request.Id;
                 package.Code = request.Code;
@@ -103,7 +109,8 @@ namespace net.atos.daf.ct2.packageservice
                 else if (package.Id > 0)
                 {
                     //Triggering package cdc 
-                    await _packageCdcHelper.TriggerPackageCdc(package.Id, "U");
+                    if (request.FeatureIds != null && request.FeatureIds.Count() > 0)
+                        await _packageCdcHelper.TriggerPackageCdc(package.Id, "U", accountId, loggedInOrgId, orgContextId, request.FeatureIds.ToArray());
                     return await Task.FromResult(new PackageResponse
                     {
                         Message = "Package Updated ",
@@ -133,12 +140,19 @@ namespace net.atos.daf.ct2.packageservice
         {
             try
             {
+                var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_orgid")).FirstOrDefault()?.Value ?? "0");
+                var accountId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_accid")).FirstOrDefault()?.Value ?? "0");
+                var orgContextId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("loggedd_in_orgContxtID")).FirstOrDefault()?.Value ?? "0");
+                IEnumerable<int> featureIds = JsonConvert.DeserializeObject<IEnumerable<int>>(context.RequestHeaders.Where(x => x.Key.Equals("report_feature_ids")).FirstOrDefault()?.Value ?? null);
+
+
                 var result = _packageManager.Delete(request.Id).Result;
                 var response = new PackageResponse();
                 if (result)
                 {
                     //Triggering package cdc 
-                    await _packageCdcHelper.TriggerPackageCdc(request.Id, "D");
+                    if (featureIds != null && featureIds.Count() > 0)
+                        await _packageCdcHelper.TriggerPackageCdc(request.Id, "D", accountId, loggedInOrgId, orgContextId, featureIds.ToArray());
                     response.Code = Responsecode.Success;
                     response.Message = "Package Deleted.";
                 }
@@ -261,6 +275,12 @@ namespace net.atos.daf.ct2.packageservice
         {
             try
             {
+                var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_orgid")).FirstOrDefault()?.Value ?? "0");
+                var accountId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_accid")).FirstOrDefault()?.Value ?? "0");
+                var orgContextId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("loggedd_in_orgContxtID")).FirstOrDefault()?.Value ?? "0");
+                IEnumerable<int> featureIds = JsonConvert.DeserializeObject<IEnumerable<int>>(context.RequestHeaders.Where(x => x.Key.Equals("report_feature_ids")).FirstOrDefault()?.Value ?? null);
+
+
                 var package = new Package();
                 package.Id = request.PackageId;
                 package.State = request.State;
@@ -268,7 +288,8 @@ namespace net.atos.daf.ct2.packageservice
                 if (package.Id > 0)
                 {
                     //Triggering package cdc 
-                    await _packageCdcHelper.TriggerPackageCdc(package.Id, "U");
+                    if (featureIds != null && featureIds.Count() > 0)
+                        await _packageCdcHelper.TriggerPackageCdc(package.Id, "U", accountId, loggedInOrgId, orgContextId, featureIds.ToArray());
                     return await Task.FromResult(new UpdatePackageStateResponse
                     {
                         Message = "Package state Updated ",

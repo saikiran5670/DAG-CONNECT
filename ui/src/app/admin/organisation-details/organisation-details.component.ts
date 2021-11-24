@@ -104,7 +104,7 @@ export class OrganisationDetailsComponent implements OnInit {
     else{ 
       this.selectedOrganisationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     }
-
+   
     this.orgDetailsPreferenceForm = this._formBuilder.group({
       language: ['', [Validators.required]],
       timeZone: ['', [Validators.required]],
@@ -333,7 +333,8 @@ compareHere(a, b) {
   }
 
   deleteBrandLogo(){
-    this.uploadLogo = "";
+    this.uploadLogo = "";    
+    this.orgDetailsPreferenceForm.get('uploadBrandLogo').setValue('');
   }
 
   keyPressNumbers(event: any){
