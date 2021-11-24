@@ -395,5 +395,56 @@ namespace net.atos.daf.ct2.kafkacdc.repository
                 throw;
             }
         }
+
+        public async Task<List<AlertGroupId>> GetAlertIdsandVGIds(List<int> groupIds, List<int> featureIds)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@featureIds", featureIds);
+                var queryStatementFeature = @"select enum from translation.enumtranslation where feature_id = ANY(@featureIds)";
+                List<string> resultFeaturEnum = (List<string>)await _dataAccess.QueryAsync<string>(queryStatementFeature, parameter);
+                parameter.Add("@featureEnums", resultFeaturEnum);
+                parameter.Add("@groupIds", groupIds);
+                string query = @"SELECT ale.id as Alertid,ale.vehicle_group_id as GroupId
+								FROM master.alert ale
+								WHERE ale.vehicle_group_id= @groupIds AND ale.type = ANY(@featureEnums) AND ale.state<>'D';";
+
+                IEnumerable<AlertGroupId> vehicleAlertRefs = await _dataAccess.QueryAsync<AlertGroupId>(query, parameter);
+
+                return vehicleAlertRefs.AsList();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<int>> GetAlertPackageIds(int orgContextId, int packageId, List<int> featureIds)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@packageId", packageId);
+                parameter.Add("@featureIds", featureIds);
+                parameter.Add("@organisationId", orgContextId);
+
+                string query = @"SELECT distinct f.id
+                                    FROM master.Package pkg
+                                    INNER JOIN master.Subscription s ON s.package_id = pkg.id AND pkg.id =@packageId
+                                    AND s.organization_id = @organisationId AND s.state = 'A' AND pkg.state = 'A'
+                                    INNER JOIN master.FeatureSet fset ON pkg.feature_set_id = fset.id AND fset.state = 'A'
+                                    INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
+                                    INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.state = 'A' AND f.type <> 'D' AND f.name like 'Alerts%'
+                                    WHERE f.id =ANY(@featureIds);";
+
+                IEnumerable<int> featureids = await _dataAccess.QueryAsync<int>(query, parameter);
+                return featureids;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }
