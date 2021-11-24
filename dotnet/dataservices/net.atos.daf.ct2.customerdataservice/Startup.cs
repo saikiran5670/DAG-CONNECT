@@ -25,6 +25,8 @@ using net.atos.daf.ct2.translation;
 using net.atos.daf.ct2.translation.repository;
 using net.atos.daf.ct2.vehicle;
 using net.atos.daf.ct2.vehicle.repository;
+using net.atos.daf.ct2.visibility;
+using net.atos.daf.ct2.visibility.repository;
 using AccountComponent = net.atos.daf.ct2.account;
 using AccountPreference = net.atos.daf.ct2.accountpreference;
 using Identity = net.atos.daf.ct2.identity;
@@ -105,7 +107,8 @@ namespace net.atos.daf.ct2.customerdataservice
             services.AddTransient<IAlertMgmAlertCdcRepository, AlertMgmAlertCdcRepository>();
             services.AddTransient<IDriverRepository, DriverRepository>();
             services.AddTransient<IDriverManager, DriverManager>();
-
+            services.AddTransient<IVisibilityRepository, VisibilityRepository>();
+            services.AddTransient<IVisibilityManager, VisibilityManager>();
             services.AddAuthentication(BasicAuthenticationDefaults.AUTHENTICATION_SCHEME)
             .AddBasic<BasicAuthenticationService>(options =>
             {

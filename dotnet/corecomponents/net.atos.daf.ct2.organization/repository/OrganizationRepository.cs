@@ -893,6 +893,21 @@ namespace net.atos.daf.ct2.organization.repository
             return keyHandOver;
         }
 
+        public async Task<int> GetOrgId(string vin)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@vin", vin);
+                string query = @"SELECT organization_id FROM master.vehicle WHERE vin = @vin;";
+                return await _dataAccess.QueryFirstOrDefaultAsync<int>(query, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         // public async Task<int> CreateVehicleParty(List<Customer> customers)
         // {
         //     int count = 0;
