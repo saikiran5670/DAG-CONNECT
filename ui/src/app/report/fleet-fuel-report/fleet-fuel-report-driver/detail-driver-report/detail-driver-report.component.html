@@ -678,7 +678,7 @@
                     <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_ccfuelconsumption')">{{ translationData.lblCCFuelConsumption || 'CC Fuel
                       Consumption' }}
                       <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || ' Ltrs/100km') : (prefUnitFormat ==
-                    'dunit_Imperial') ? (translationData.lblgallonmile || 'mpg') : (translationData.lblgallonmile
+                    'dunit_Imperial') ? (translationData.lblmpg || 'mpg') : (translationData.lblmpg
                     || ' mpg') }})</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_ccfuelconsumption')">
@@ -691,7 +691,7 @@
                       'Fuel
                       Consumption CC non active' }}
                       <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || ' Ltrs/100km') : (prefUnitFormat ==
-                        'dunit_Imperial') ? (translationData.lblgallonmile || 'mpg') : (translationData.lblgallonmile
+                        'dunit_Imperial') ? (translationData.lblmpg || 'mpg') : (translationData.lblmpg
                         || ' mpg') }})</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_fuelconsumptionccnonactive')">
