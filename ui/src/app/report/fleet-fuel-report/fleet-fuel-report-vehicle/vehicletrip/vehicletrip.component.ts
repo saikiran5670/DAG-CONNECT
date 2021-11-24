@@ -2544,12 +2544,12 @@ setVehicleGroupAndVehiclePreSelection() {
     let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmileh || 'mph') : (this.translationData.lblmileh || 'mph');
     let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile || 'mile');
     let unitValkg1 = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 't') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lbltons || 'Ton') : (this.translationData.lbltons|| 'Ton');
-    let unitValkmhr = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h(%)') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.translationData.lblkmh || 'km/h(%)') : (this.translationData.translationData.lblkmh || 'km/h(%)');
+    //let unitValkmhr = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h(%)') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.translationData.lblkmh || 'km/h(%)') : (this.translationData.translationData.lblkmh || 'km/h(%)');
 
     const header =  ['Vehicle Name', 'VIN', 'Vehicle Registration No', 'Start Date', 'End Date', 'Average Speed('+unitValkmh+')','Max Speed('+unitValkmh+')', 'Distance('+unitValkm+')','Start Position', 'End Position',
-    'Fuel Consumed('+unitValuekm+')', 'Fuel Consumption('+unitVal100km+')','CO2 Emission('+unitValkg1+')',  'Idle Duration(%)','PTO Duration(%)','Cruise Control Distance 30-50('+unitValkmhr+')',
-    'Cruise Control Distance 50-75('+unitValkmhr+')','Cruise Control Distance>75('+unitValkmhr+')','Heavy Throttle Duration(%)','Harsh Brake Duration(%)', 'Gross Weight Combination(Ton)', 'Average Traffic Classification',
-    'CC Fuel Consumption('+unitVal100km+')','Fuel Consumption CC non active('+unitVal100km+')','Idling Consumption','DPA Score','Idling with PTO (hh:mm:ss) score','Idling with PTO(%)','Idling without PTO (hh:mm:ss)','Idling with PTO(%)','Foot Brake','CO2 emmision gr/km','Idling Consumption With PTO ('+unitVal100km+')'];
+    'Fuel Consumed('+unitValuekm+')', 'Fuel Consumption('+unitVal100km+')','CO2 Emission('+unitValkg1+')',  'Idle Duration(%)','PTO Duration(%)','Cruise Control Distance 30-50(km/hr)%',
+    'Cruise Control Distance 50-75(km/hr)%','Cruise Control Distance>75(km/hr)%','Heavy Throttle Duration(%)','Harsh Brake Duration(%)', 'Average Gross Weight Combination(Ton)', 'Average Traffic Classification',
+    'CC Fuel Consumption('+unitValuekm+')','Fuel Consumption CC non active('+unitValuekm+')','Idling Consumption','DPA Score','Idling with PTO (hh:mm:ss) score','Idling with PTO(%)','Idling without PTO (hh:mm:ss)','Idling with PTO(%)','Foot Brake','CO2 emmision gr/km','Idling Consumption With PTO ('+unitVal100km+')'];
     const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Number Of Trips', 'Distance('+unitValkm+')', 'Fuel Consumed('+unitValuekm+')', 'Idle Duration(hh:mm)', 'Fuel Consumption('+unitVal100km+')','CO2 Emission('+ unitValkg1+')'];
     const summaryData= this.summaryNewObj;
     //Create workbook and worksheet

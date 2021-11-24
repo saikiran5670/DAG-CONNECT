@@ -83,16 +83,26 @@ export class CreateEditViewVehicleGroupComponent implements OnInit {
     if(this.actionType == 'view' || this.actionType == 'edit'){
       this.showHideVehicleList();
       this.breadcumMsg = this.getBreadcum();
+    } else {
+      this.breadcumMsg = this.getBreadcum();
     }
     this.loadGridData(this.vehicleListData);
     this.getVehicleGroupDataForCheckDuplicate();
   }
 
   getBreadcum() {
+    let lastBreadCumValue : any;
+    if(this.actionType == 'create') {
+      lastBreadCumValue = this.translationData.lblNewVehicleGroupDetails ? this.translationData.lblNewVehicleGroupDetails : 'New Vehicle Group Details';
+    } else if(this.actionType == 'edit') {
+      lastBreadCumValue = this.translationData.lblEditVehicleGroupDetails ? this.translationData.lblEditVehicleGroupDetails : 'Edit Vehicle Group Details';
+    } else {
+      lastBreadCumValue = this.translationData.lblViewVehicleGroupDetails ? this.translationData.lblViewVehicleGroupDetails : 'View Vehicle Group Details'
+    }
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} /
     ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} /
-    ${this.translationData.lblVehicleGroupManagement ? this.translationData.lblVehicleGroupManagement : "Vehicle Group Management"} /
-    ${(this.actionType == 'edit') ? (this.translationData.lblEditVehicleGroupDetails ? this.translationData.lblEditVehicleGroupDetails : 'Edit Vehicle Group Details') : (this.translationData.lblViewVehicleGroupDetails ? this.translationData.lblViewVehicleGroupDetails : 'View Vehicle Group Details') }`;
+    ${this.translationData.lblVehicleGroupManagement ? this.translationData.lblVehicleGroupManagement : "Vehicle Group Management"} /`+lastBreadCumValue;
+    // ${(this.actionType == 'edit') ? (this.translationData.lblEditVehicleGroupDetails ? this.translationData.lblEditVehicleGroupDetails : 'Edit Vehicle Group Details') : (this.translationData.lblViewVehicleGroupDetails ? this.translationData.lblViewVehicleGroupDetails : 'View Vehicle Group Details') }`;
   }
 
   setDefaultValue(){
