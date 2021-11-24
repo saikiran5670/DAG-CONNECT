@@ -58,9 +58,10 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
 
             if (request != null && request.ViaAddressDetails != null)
             {
+                int i = 0;
                 foreach (var item in request.ViaAddressDetails)
                 {
-                    obj.ViaAddressDetails.Add(new ViaDetails() { ViaName = item.ViaRoutName, Latitude = item.Latitude, Longitude = item.Longitude });
+                    obj.ViaAddressDetails.Add(new ViaDetails() { ViaName = item.ViaRoutName ?? string.Empty, Latitude = item.Latitude, Longitude = item.Longitude, SeqNo = ++i, Type = item.Type });
                 }
             }
             return obj;
