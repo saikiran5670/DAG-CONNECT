@@ -21,6 +21,7 @@ import net.atos.daf.ct2.service.realtime.ExcessiveUnderUtilizationProcessor;
 import net.atos.daf.ct2.service.realtime.FuelDuringStopProcessor;
 import net.atos.daf.ct2.service.realtime.IndexKeyBasedSubscription;
 import net.atos.daf.ct2.service.realtime.IndexMessageAlertService;
+import net.atos.daf.ct2.starter.AlertProcessStarter;
 import net.atos.daf.ct2.util.IndexGenerator;
 import net.atos.daf.ct2.util.Utils;
 import org.apache.flink.api.common.functions.MapFunction;
@@ -71,6 +72,16 @@ public class TripBasedTest implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(TripBasedTest.class);
     private static final long serialVersionUID = 1L;
 
+    /**
+     * RealTime functions defined
+     * for geofence
+     */
+    private static final Map<Object, Object> geofenceFunConfigMap = new HashMap() {{
+        put("functions", Arrays.asList(
+                exitCorridorFun
+        ));
+    }};
+
 
     public static void main(String[] args) throws Exception {
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -78,16 +89,11 @@ public class TripBasedTest implements Serializable {
         logger.info("TripBasedTest started with properties :: {}", parameterTool.getProperties());
         ParameterTool propertiesParamTool = ParameterTool.fromPropertiesFile(parameterTool.get("prop"));
         logger.info("PropertiesParamTool :: {}", propertiesParamTool.getProperties());
+        env.getConfig().setGlobalJobParameters(propertiesParamTool);
 
-        /**
-         * RealTime functions defined
-         * for geofence
-         */
-        Map<Object, Object> geofenceFunConfigMap = new HashMap() {{
-            put("functions", Arrays.asList(
-                    exitCorridorFun
-            ));
-        }};
+
+        AlertProcessStarter alertProcessStarter = new AlertProcessStarter(propertiesParamTool,env);
+
         /**
          *  Booting cache
          */
@@ -97,13 +103,16 @@ public class TripBasedTest implements Serializable {
         AlertConfigProp.vehicleAlertRefSchemaBroadcastStream = bootCache.f0;
         AlertConfigProp.alertUrgencyLevelRefSchemaBroadcastStream = bootCache.f1;
 
+        /**
+         * Index stream reader
+         */
+
         SingleOutputStreamOperator<Index> indexStringStream = KafkaConnectionService.connectIndexObjectTopic(
                         propertiesParamTool.get(KAFKA_EGRESS_INDEX_MSG_TOPIC),
                         propertiesParamTool, env)
                 .map(indexKafkaRecord -> indexKafkaRecord.getValue())
                 .returns(Index.class)
-                .filter(index -> index.getVid() != null && index.getVin() != null
-                        && index.getVin().equalsIgnoreCase("XLR0998HGFFT75550"))
+                .filter(index -> index.getVid() != null)
                 .returns(Index.class)
                 .map(idx -> {
                     idx.setJobName(UUID.randomUUID().toString());
@@ -111,14 +120,17 @@ public class TripBasedTest implements Serializable {
                     return idx;})
                 .returns(Index.class);
 
+
+//        indexStringStream.print();
+
         /**
          * Entering and exiting zone
          */
         KeyedStream<Index, String> geofenceEnteringZoneStream = indexStringStream.keyBy(index -> index.getVin() != null ? index.getVin() : index.getVid());
-//
+
         IndexMessageAlertService.processIndexKeyStream(geofenceEnteringZoneStream,
-                env,propertiesParamTool,geofenceFunConfigMap);
-        indexStringStream.print();
+                env, propertiesParamTool, geofenceFunConfigMap);
+
         env.execute("TripBasedTest");
 
 

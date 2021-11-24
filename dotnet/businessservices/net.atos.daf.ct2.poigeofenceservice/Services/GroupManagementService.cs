@@ -121,7 +121,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
                     if (result != null)
                     {
                         ////Trigger for alert cdc
-                        //await _landmarkAlertCdcHelper.TriggerAlertCdc(request.Id, "G");
+                        await _landmarkAlertCdcHelper.TriggerAlertCdc(request.Id, "G");
                         response.Message = "Updated successfully : " + result.Id.ToString();
                         response.Code = Responcecodes.Success;
                     }
@@ -155,7 +155,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
                 if (result > 0)
                 {
                     ////Trigger for alert cdc
-                    //await _landmarkAlertCdcHelper.TriggerAlertCdc(request.Id, "G");
+                    await _landmarkAlertCdcHelper.TriggerAlertCdc(request.Id, "G");
                     response.Message = "Deleted successfully : " + result.ToString();
                     response.Code = Responcecodes.Success;
                 }

@@ -420,11 +420,23 @@ public class IndexBasedAlertFunctions implements Serializable {
                 List<Target> targetList = alertMapExistingRoute.entrySet()
                         .stream()
                         .map(entries -> entries.getValue())
-                        .map(schemaList -> checkExitCorridor(index, schemaList))
+                        .map(schemaList -> checkExitCorridor(index, schemaList,"E"))
                         .filter(target -> target.getAlert().isPresent())
                         .collect(Collectors.toList());
                 if(!targetList.isEmpty()){
-                    logger.info("Exit corridor alert generated for  vin: {} , {}",index.getVin(),String.format(INCOMING_MESSAGE_UUID,index.getJobName()));
+                    logger.info("Exit corridor trip based alert generated for  vin: {} , {}",index.getVin(),String.format(INCOMING_MESSAGE_UUID,index.getJobName()));
+                    return  targetList.get(0);
+                }
+            }
+            if(!alertMapNewRoute.isEmpty()){
+                List<Target> targetList = alertMapNewRoute.entrySet()
+                        .stream()
+                        .map(entries -> entries.getValue())
+                        .map(schemaList -> checkExitCorridor(index, schemaList,"R"))
+                        .filter(target -> target.getAlert().isPresent())
+                        .collect(Collectors.toList());
+                if(!targetList.isEmpty()){
+                    logger.info("Exit corridor route based alert generated for  vin: {} , {}",index.getVin(),String.format(INCOMING_MESSAGE_UUID,index.getJobName()));
                     return  targetList.get(0);
                 }
             }
@@ -562,7 +574,7 @@ public class IndexBasedAlertFunctions implements Serializable {
         }
     }
 
-    public static Target checkExitCorridor(Index index, List<AlertUrgencyLevelRefSchema> urgencyLevelRefSchemas){
+    public static Target checkExitCorridor(Index index, List<AlertUrgencyLevelRefSchema> urgencyLevelRefSchemas,String landMarkType){
         List<String> priorityList = Arrays.asList("C", "W", "A");
         String messageUUID = String.format(INCOMING_MESSAGE_UUID,index.getJobName());
         Double [] point = new Double[]{ index.getGpsLatitude(), index.getGpsLongitude() };
@@ -571,9 +583,14 @@ public class IndexBasedAlertFunctions implements Serializable {
              * sort lat lon based not node seq
              */
             //group the schema by landmark id
+            Comparator<AlertUrgencyLevelRefSchema> seqComprator = Comparator.comparing(AlertUrgencyLevelRefSchema::getLandmarkId)
+                    .thenComparing((o1, o2) -> landMarkType.equalsIgnoreCase("E") ?
+                            o1.getNodeSeq().compareTo(o2.getNodeSeq()) :
+                            o1.getCorriSeq().compareTo(o2.getCorriSeq()));
+
             Map<Integer, List<AlertUrgencyLevelRefSchema>> groupSchema= urgencyLevelRefSchemas.stream()
                     .filter(alertUrgencyLevelRefSchema -> alertUrgencyLevelRefSchema.getUrgencyLevelType().equalsIgnoreCase(priority))
-                    .sorted(Comparator.comparing(AlertUrgencyLevelRefSchema::getLandmarkId).thenComparing(AlertUrgencyLevelRefSchema::getNodeSeq))
+                    .sorted(seqComprator)
                     .collect(Collectors.groupingBy(AlertUrgencyLevelRefSchema::getLandmarkId));
 
             AlertUrgencyLevelRefSchema tempSchema = new AlertUrgencyLevelRefSchema();
@@ -585,8 +602,8 @@ public class IndexBasedAlertFunctions implements Serializable {
                 Map.Entry<Integer, List<AlertUrgencyLevelRefSchema>> next = iterator.next();
                 List<AlertUrgencyLevelRefSchema> schemasOrdered = next.getValue();
                 for (AlertUrgencyLevelRefSchema schema : schemasOrdered) {
-                    routePointList.add(schema.getLatitude());
-                    routePointList.add(schema.getLongitude());
+                    routePointList.add(landMarkType.equalsIgnoreCase("E") ? schema.getLatitude() : schema.getCorriLatitude());
+                    routePointList.add(landMarkType.equalsIgnoreCase("E") ? schema.getLongitude() : schema.getCorriLatitude());
                     tempSchema = schema;
                 }
                 if(! routePointList.isEmpty()){
