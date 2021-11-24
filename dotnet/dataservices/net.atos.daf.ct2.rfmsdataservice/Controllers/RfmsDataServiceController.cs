@@ -26,7 +26,7 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
 {
 
     [ApiController]
-    [Route("rfms")]
+    [Route("rfms3")]
     public class RfmsDataServiceController : ControllerBase
     {
         #region Constructor & Initialization Variables

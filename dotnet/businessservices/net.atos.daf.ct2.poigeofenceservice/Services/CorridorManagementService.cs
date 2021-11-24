@@ -110,6 +110,8 @@ namespace net.atos.daf.ct2.poigeofenceservice
                             objViaAddressDetail.CorridorViaStopName = CheckNull(item.ViaAddressDetails[i].CorridorViaStopName);
                             objViaAddressDetail.Latitude = item.ViaAddressDetails[i].Latitude;
                             objViaAddressDetail.Longitude = item.ViaAddressDetails[i].Longitude;
+                            objViaAddressDetail.SeqNo = item.ViaAddressDetails[i].Seq_no;
+                            objViaAddressDetail.Type = item.ViaAddressDetails[i].Type;
                             objCorridorEditViewResponse.ViaAddressDetail.Add(objViaAddressDetail);
                         }
                         objCorridorEditViewResponse.CorridorProperties = new CorridorProperties();
@@ -222,6 +224,8 @@ namespace net.atos.daf.ct2.poigeofenceservice
                                 objViaAddressDetail.CorridorViaStopName = CheckNull(item.ViaAddressDetails[i].CorridorViaStopName);
                                 objViaAddressDetail.Latitude = item.ViaAddressDetails[i].Latitude;
                                 objViaAddressDetail.Longitude = item.ViaAddressDetails[i].Longitude;
+                                objViaAddressDetail.SeqNo = item.ViaAddressDetails[i].Seq_no;
+                                objViaAddressDetail.Type = item.ViaAddressDetails[i].Type;
                                 objCorridorGridViewResponse.ViaAddressDetail.Add(objViaAddressDetail);
                             }
                         }
@@ -303,13 +307,15 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 obj.ViaRoutDetails = new List<poigeofence.entity.ViaRoute>();
 
                 if (request != null && request.ViaAddressDetails != null)
-                {
+                { 
                     foreach (var item in request.ViaAddressDetails)
                     {
                         var trans = new poigeofence.entity.ViaRoute();
                         trans.ViaStopName = item.ViaName;
                         trans.Latitude = item.Latitude;
                         trans.Longitude = item.Longitude;
+                        trans.SeqNo = item.SeqNo;
+                        trans.Type = item.Type;
                         obj.ViaRoutDetails.Add(trans);
 
                     }
@@ -544,6 +550,8 @@ namespace net.atos.daf.ct2.poigeofenceservice
                         trans.ViaStopName = item.ViaName;
                         trans.Latitude = item.Latitude;
                         trans.Longitude = item.Longitude;
+                        trans.SeqNo = item.SeqNo;
+                        trans.Type = item.Type;
                         obj.ViaRoutDetails.Add(trans);
                     }
                 }
