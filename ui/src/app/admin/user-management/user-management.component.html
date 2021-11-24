@@ -57,7 +57,7 @@
           <mat-cell *matCellDef="let row">{{ row.emailId }}</mat-cell>
         </ng-container>
         <ng-container matColumnDef="roles">
-          <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRole }}</mat-header-cell>
+          <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUserRole }}</mat-header-cell>
           <mat-cell *matCellDef="let row" matTooltip="{{ row.roleList }}"><span class="text-truncate">{{ row.roles.length > 0 ? row.roleList : '&nbsp; &nbsp; -' }}</span></mat-cell>
         </ng-container>
         <ng-container matColumnDef="accountGroups">
