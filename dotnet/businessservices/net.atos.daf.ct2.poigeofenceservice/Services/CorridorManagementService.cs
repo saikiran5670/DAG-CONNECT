@@ -225,7 +225,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                                 objViaAddressDetail.Latitude = item.ViaAddressDetails[i].Latitude;
                                 objViaAddressDetail.Longitude = item.ViaAddressDetails[i].Longitude;
                                 objViaAddressDetail.SeqNo = item.ViaAddressDetails[i].Seq_no;
-                                objViaAddressDetail.Type = item.ViaAddressDetails[i].Type;
+                                objViaAddressDetail.Type = item.ViaAddressDetails[i].Type ?? string.Empty;
                                 objCorridorGridViewResponse.ViaAddressDetail.Add(objViaAddressDetail);
                             }
                         }
