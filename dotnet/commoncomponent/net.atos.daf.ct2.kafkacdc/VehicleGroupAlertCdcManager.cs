@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using System.Linq;
 using Newtonsoft.Json;
 using net.atos.daf.ct2.visibility;
+using net.atos.daf.ct2.visibility.entity;
 
 namespace net.atos.daf.ct2.kafkacdc
 {
@@ -112,9 +113,11 @@ namespace net.atos.daf.ct2.kafkacdc
             try
             {
                 List<visibility.entity.VehicleDetailsAccountVisibilityForAlert> vehicleDetailsAccountVisibilty = new List<visibility.entity.VehicleDetailsAccountVisibilityForAlert>();
-
-                var visibilityVehicle = await _visibilityManager.GetVehicleByAccountVisibilityForAlert(accountId, loggedInOrgId, organisationId, featureIds.ToArray());
-
+                IEnumerable<VehicleDetailsAccountVisibilityForAlert> visibilityVehicle = null;
+                if (featureIds.Count() > 0)
+                {
+                    visibilityVehicle = await _visibilityManager.GetVehicleByAccountVisibilityForAlert(accountId, loggedInOrgId, organisationId, featureIds.ToArray());
+                }
                 var vehgroupIds = visibilityVehicle.Where(x => x.VehicleGroupIds.Contains(vehicleGroupId));
                 List<VehicleAlertRef> vehicleRefList = new List<VehicleAlertRef>();
                 if (vehgroupIds.Any())

@@ -102,7 +102,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     {
                         //Triggering subscription cdc 
                         int subscriptionId = Convert.ToInt32(order.Item2.Response.OrderId);
-                        //await _featureActivationCdcHelper.TriggerSubscriptionCdc(subscriptionId, "N", Convert.ToInt32(objSubs.OrganizationId), objSubs.VINs);
+                        await _featureActivationCdcHelper.TriggerSubscriptionCdc(subscriptionId, "N", objSubs.OrganizationId, objSubs.VINs);
                     }
 
                     _logger.LogInformation($"Subscription data has been Inserted, order ID - {order.Item2.Response.OrderId}");
@@ -163,7 +163,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     {
                         //Triggering subscription cdc 
                         int subscriptionId = Convert.ToInt32(objUnsubs.OrderID);
-                        //await _featureActivationCdcHelper.TriggerSubscriptionCdc(subscriptionId, "N", Convert.ToInt32(objUnsubs.OrganizationID), objUnsubs.VINs);
+                        await _featureActivationCdcHelper.TriggerSubscriptionCdc(subscriptionId, "N", objUnsubs.OrganizationID, objUnsubs.VINs);
                     }
 
                     _logger.LogInformation($"UnSubscription data has been Inserted, order ID - {objUnsubs.OrderID}");

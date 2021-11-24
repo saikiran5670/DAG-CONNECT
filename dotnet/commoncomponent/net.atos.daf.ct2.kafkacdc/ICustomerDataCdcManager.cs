@@ -7,6 +7,6 @@ namespace net.atos.daf.ct2.kafkacdc
 {
     public interface ICustomerDataCdcManager
     {
-        Task<bool> GetVehiclesAndAlertFromCustomerDataConfiguration(int subscriptionId, string operation);
+        Task<bool> GetVehiclesAndAlertFromCustomerDataConfiguration(int orgId, string operation, string vin);
     }
 }

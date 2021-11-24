@@ -363,7 +363,7 @@ namespace net.atos.daf.ct2.kafkacdc.repository
                 parameter.Add("@orgnisationId", orgnisationId);
                 parameter.Add("@subscriptionId", subscriptionId);
 
-                string query = @"SELECT f.id 
+                string query = @"SELECT distinct f.id 
 		                    FROM master.Package pkg
 		                    INNER JOIN master.Subscription s ON s.package_id = pkg.id AND s.id =@subscriptionId
 							AND s.organization_id = @orgnisationId AND s.state = 'A' AND pkg.state = 'A'

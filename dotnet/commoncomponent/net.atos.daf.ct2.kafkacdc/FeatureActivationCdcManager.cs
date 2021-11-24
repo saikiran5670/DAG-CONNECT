@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using net.atos.daf.ct2.kafkacdc.entity;
 using net.atos.daf.ct2.kafkacdc.repository;
 using net.atos.daf.ct2.visibility;
+using net.atos.daf.ct2.visibility.entity;
 
 namespace net.atos.daf.ct2.kafkacdc
 {
@@ -112,48 +113,55 @@ namespace net.atos.daf.ct2.kafkacdc
             {
                 int orgnisationId = await _vehicleAlertSubscriptionRepository.GetOrganisationId(org_Id);
                 IEnumerable<int> featureIds = await _vehicleAlertSubscriptionRepository.GetAlertFeatureIds(orgnisationId, subscriptionId);
-
-                var visibilityVehicle = await _visibilityManager.GetVehicleByAccountVisibilityForAlert(0, 0, orgnisationId, featureIds.ToArray());
-                List<int> vehicleIds = null;
-                if (vins.Any())
+                IEnumerable<VehicleDetailsAccountVisibilityForAlert> visibilityVehicle = null;
+                if (featureIds.Count() > 0)
                 {
-                    vehicleIds = visibilityVehicle.Where(x => vins.Contains(x.Vin)).Select(x => x.VehicleId).ToList();
+                    visibilityVehicle = await _visibilityManager.GetVehicleByAccountVisibilityForAlert(0, 0, orgnisationId, featureIds.ToArray());
                 }
-                else
-                {
-                    vehicleIds = visibilityVehicle.Select(x => x.VehicleId).ToList();
-                }
-                var vehgroupIds = visibilityVehicle.Where(x => vehicleIds.Contains(x.VehicleId)).Select(x => x.VehicleGroupIds).ToArray();
-
-                List<int> groupIds = new List<int>();
-                foreach (var item in vehgroupIds)
-                {
-                    for (int i = 0; i < item.Length; i++)
-                    {
-                        var grpId = item[i];
-                        groupIds.Add(grpId);
-                    }
-                }
-
-                List<AlertGroupId> alertVehicleGroup = await _vehicleAlertSubscriptionRepository.GetAlertIdsandVGIds(groupIds, featureIds.ToList());
 
                 List<VehicleAlertRef> vehicleRefList = new List<VehicleAlertRef>();
-
-                foreach (var item in alertVehicleGroup)
+                List<int> vehicleIds = null;
+                if (visibilityVehicle != null)
                 {
-                    var vinDetails = visibilityVehicle.Where(x => x.VehicleGroupIds.Contains(item.GroupId) && vehicleIds.Contains(x.VehicleId)).Select(x => x.Vin).ToList();
-                    if (vinDetails.Any())
+                    if (vins.Any())
                     {
-                        foreach (var vin in vinDetails)
-                        {
-                            VehicleAlertRef vehicleRef = new VehicleAlertRef();
-                            vehicleRef.AlertId = item.Alertid;
-                            vehicleRef.VIN = vin;
-                            vehicleRefList.Add(vehicleRef);
-                        }
+                        vehicleIds = visibilityVehicle.Where(x => vins.Contains(x.Vin)).Select(x => x.VehicleId).ToList();
+                    }
+                    else
+                    {
+                        vehicleIds = visibilityVehicle.Select(x => x.VehicleId).ToList();
+                    }
+                    var vehgroupIds = visibilityVehicle.Where(x => vehicleIds.Contains(x.VehicleId)).Select(x => x.VehicleGroupIds).ToArray();
 
+                    List<int> groupIds = new List<int>();
+                    foreach (var item in vehgroupIds)
+                    {
+                        for (int i = 0; i < item.Length; i++)
+                        {
+                            var grpId = item[i];
+                            groupIds.Add(grpId);
+                        }
+                    }
+
+                    List<AlertGroupId> alertVehicleGroup = await _vehicleAlertSubscriptionRepository.GetAlertIdsandVGIds(groupIds, featureIds.ToList());
+
+                    foreach (var item in alertVehicleGroup)
+                    {
+                        var vinDetails = visibilityVehicle.Where(x => x.VehicleGroupIds.Contains(item.GroupId) && vehicleIds.Contains(x.VehicleId)).Select(x => x.Vin).ToList();
+                        if (vinDetails.Any())
+                        {
+                            foreach (var vin in vinDetails)
+                            {
+                                VehicleAlertRef vehicleRef = new VehicleAlertRef();
+                                vehicleRef.AlertId = item.Alertid;
+                                vehicleRef.VIN = vin;
+                                vehicleRefList.Add(vehicleRef);
+                            }
+
+                        }
                     }
                 }
+
                 return vehicleRefList;
             }
             catch (Exception)
