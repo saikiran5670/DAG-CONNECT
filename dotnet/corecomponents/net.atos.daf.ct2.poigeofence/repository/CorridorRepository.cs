@@ -243,14 +243,14 @@ namespace net.atos.daf.ct2.poigeofence.repository
                         await _dataAccess.ExecuteScalarAsync<int>(insertIntoCorridorProperties, parameter);
 
                         ViaRoute routeObj = new ViaRoute();
-                        foreach (var item in routeCorridor.ViaRoutDetails)
+                        for (int i = 0; i < routeCorridor.ViaRoutDetails.Count(); i++)
                         {
                             var temp = new ViaRoute();
-                            temp.ViaStopName = item.ViaStopName;
-                            temp.Latitude = item.Latitude;
-                            temp.Longitude = item.Longitude;
-                            temp.SeqNo = item.SeqNo;
-                            temp.Type = item.Type;
+                            temp.ViaStopName = routeCorridor.ViaRoutDetails[i].ViaStopName;
+                            temp.Latitude = routeCorridor.ViaRoutDetails[i].Latitude;
+                            temp.Longitude = routeCorridor.ViaRoutDetails[i].Longitude;
+                            temp.SeqNo = routeCorridor.ViaRoutDetails[i].SeqNo;
+                            temp.Type = routeCorridor.ViaRoutDetails[i].Type;
 
                             parameter.Add("@Latitude", temp.Latitude);
                             parameter.Add("@Longitude", temp.Longitude);
@@ -263,13 +263,9 @@ namespace net.atos.daf.ct2.poigeofence.repository
                                             VALUES (@LandmarkId, @Latitude, @Longitude ,@ViaStopName, @state, @seq_no, @intermediate_stop) RETURNING id";
 
                             await _dataAccess.ExecuteScalarAsync<int>(insertIntoCorridorViaStop, parameter);
-
                         }
-
                     }
-
                     transactionScope.Complete();
-
                 }
             }
             catch (Exception ex)
@@ -1166,17 +1162,19 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
                     ViaRoute routeObj = new ViaRoute();
                     var updateViaStopparameter = new DynamicParameters();
-                    updateViaStopparameter.Add("@state", "I");
+                    updateViaStopparameter.Add("@state", "D");
                     updateViaStopparameter.Add("@landmark_id", routeCorridor.Id);
                     string querytoUpdateViaStop = @"UPDATE master.corridorviastop set state=@state 
                                            where landmark_id=@landmark_id";
                     await _dataAccess.ExecuteAsync(querytoUpdateViaStop, updateViaStopparameter);
-                    foreach (var item in routeCorridor.ViaRoutDetails)
+                    for (int i = 0; i < routeCorridor.ViaRoutDetails.Count(); i++)
                     {
                         var temp = new ViaRoute();
-                        temp.ViaStopName = item.ViaStopName;
-                        temp.Latitude = item.Latitude;
-                        temp.Longitude = item.Longitude;
+                        temp.ViaStopName = routeCorridor.ViaRoutDetails[i].ViaStopName;
+                        temp.Latitude = routeCorridor.ViaRoutDetails[i].Latitude;
+                        temp.Longitude = routeCorridor.ViaRoutDetails[i].Longitude;
+                        temp.SeqNo = routeCorridor.ViaRoutDetails[i].SeqNo;
+                        temp.Type = routeCorridor.ViaRoutDetails[i].Type;
                         var updateViaRoutparameter = new DynamicParameters();
                         updateViaRoutparameter.Add("@latitude", temp.Latitude);
                         updateViaRoutparameter.Add("@longitude", temp.Longitude);
@@ -1185,8 +1183,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                         updateViaRoutparameter.Add("@landmark_id", routeCorridor.Id);
                         updateViaRoutparameter.Add("@seq_no", temp.SeqNo);
                         updateViaRoutparameter.Add("@intermediate_stop", temp.Type);
-                        string queryInsertViaStop = string.Empty;
-                        queryInsertViaStop = @"INSERT INTO master.corridorviastop(
+                        string queryInsertViaStop = @"INSERT INTO master.corridorviastop(
                                   landmark_id, latitude, longitude, name, state, seq_no, intermediate_stop)
                                   VALUES (@landmark_id, @latitude, @longitude ,@name, @state, @seq_no, @intermediate_stop)";
 
