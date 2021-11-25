@@ -84,7 +84,6 @@ namespace net.atos.daf.ct2.packageservice
                 var accountId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_accid")).FirstOrDefault()?.Value ?? "0");
                 var orgContextId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("loggedd_in_orgContxtID")).FirstOrDefault()?.Value ?? "0");
 
-
                 var package = new Package();
                 package.Id = request.Id;
                 package.Code = request.Code;
@@ -140,6 +139,7 @@ namespace net.atos.daf.ct2.packageservice
         {
             try
             {
+
                 var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_orgid")).FirstOrDefault()?.Value ?? "0");
                 var accountId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_accid")).FirstOrDefault()?.Value ?? "0");
                 var orgContextId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("loggedd_in_orgContxtID")).FirstOrDefault()?.Value ?? "0");
@@ -275,6 +275,7 @@ namespace net.atos.daf.ct2.packageservice
         {
             try
             {
+
                 var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_orgid")).FirstOrDefault()?.Value ?? "0");
                 var accountId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_accid")).FirstOrDefault()?.Value ?? "0");
                 var orgContextId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("loggedd_in_orgContxtID")).FirstOrDefault()?.Value ?? "0");

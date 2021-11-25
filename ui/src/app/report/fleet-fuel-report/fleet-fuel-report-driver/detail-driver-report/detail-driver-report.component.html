@@ -589,7 +589,7 @@
                         </ng-container>              
                         <ng-container matColumnDef="fuelConsumption">              
                           <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_fuelconsumption')">{{ translationData.lblFuelConsumption || ' Fuel Consumption' }}             
-                            <span style="font-weight: normal;">{{sumOfColumns('fuelConsumption')}}({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || '
+                            <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || '
                               Ltrs/100km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmpg || 'mpg') :
                               (translationData.lblmpg || ' mpg') }})</span>              
                           </mat-header-cell>              
