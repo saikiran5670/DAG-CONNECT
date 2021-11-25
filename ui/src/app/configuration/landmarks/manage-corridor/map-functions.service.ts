@@ -2,6 +2,7 @@ import { Injectable, Component, ElementRef, EventEmitter, Input, OnInit, Output,
 import { HereService } from 'src/app/services/here.service';
 import { CorridorService } from 'src/app/services/corridor.service';
 import { ConfigService } from '@ngx-config/core';
+import { decode, encode } from '../../../services/flexible-polyline';
 
 declare var H: any;
 
@@ -133,8 +134,9 @@ export class MapFunctionsService {
   group = new H.map.Group();
 
   viaRoutePlottedPoints = [];
+  gpsLineString:any = [];
 
-  viewSelectedRoutes(_selectedRoutes, accountOrganizationId?) {
+  viewSelectedRoutes(_selectedRoutes, accountOrganizationId?, isRCorridor?) {
     let corridorName = '';
     let startAddress = '';
     let endAddress = '';
@@ -143,6 +145,8 @@ export class MapFunctionsService {
     this.hereMap.removeLayer(this.defaultLayers.vector.normal.truck);
     this.transportOnceChecked = false;
     this.trafficOnceChecked = false;
+    this.gpsLineString = [];
+    this.viaRoutePlottedPoints = [];
  // var group = new H.map.Group();
  this.mapGroup.removeAll();
  this.hereMap.removeObjects(this.hereMap.getObjects())
@@ -233,6 +237,20 @@ export class MapFunctionsService {
         }, false);
       }
         //this.group.addObjects([this.startMarker, this.endMarker]);
+        if(isRCorridor && _selectedRoutes[i].corridorType && _selectedRoutes[i].corridorType == 'R'){
+          _selectedRoutes[i].viaAddressDetail.forEach(element => {
+            this.gpsLineString.push(element.latitude, element.longitude, 0);
+          });
+          if(_selectedRoutes[i].viaAddressDetail.length > 0){
+            // this.viaRouteCount = true;
+            this.viaRoutePlottedPoints = _selectedRoutes[i].viaAddressDetail.filter( e => e.type == "V");
+            this.viaRoutePlottedPoints.forEach(element => {
+              element["viaRoutName"] = element.corridorViaStopName;
+            });
+            this.plotViaStopPoints();
+          }
+          this.addTruckRouteShapeToMapEdit();
+        } else {
         if (accountOrganizationId) {
           if (_selectedRoutes[i].id) {
             this.corridorService.getCorridorFullList(accountOrganizationId, _selectedRoutes[i].id).subscribe((data) => {
@@ -277,6 +295,7 @@ export class MapFunctionsService {
           this.calculateTruckRoute();
 
         }
+      }
         //this.removeBubble();
 
         // this.hereMap.getViewModel().setLookAtData({ bounds: group.getBoundingBox()});
@@ -284,6 +303,46 @@ export class MapFunctionsService {
       }
      
     }
+  }
+
+  viewSelectedRoutesCorridor(_selectedRoutes, accountOrganizationId?){
+        this.viewSelectedRoutes(_selectedRoutes, accountOrganizationId, true);
+  }
+
+  addTruckRouteShapeToMapEdit(){
+        let co = [[19.14012, 72.88097, 0], [12.96779999999997, 77.58812000000155, 0]];
+        let ob = {
+          precision : 5,
+          thirdDim : 0,
+          thirdDimPrecision: 0,
+          polyline: co
+        };
+        let lineVal = encode(ob);
+        let linestring = H.geo.LineString.fromFlexiblePolyline(lineVal);
+        linestring.Y = this.gpsLineString;
+        this.corridorPath = new H.map.Polyline(linestring, {
+          style:  {
+            lineWidth: this.corridorWidthKm * 10,
+            strokeColor: 'rgba(181, 199, 239, 0.6)'
+          }
+        });
+        // Create a polyline to display the route:
+        let polylinePath = new H.map.Polyline(linestring, {
+          style:  {
+            lineWidth: 3,
+            strokeColor: '#436ddc'
+          }
+        });
+
+        // Add the polyline to the map
+        this.mapGroup.addObjects([this.corridorPath,polylinePath]);
+        this.hereMap.addObject(this.mapGroup);
+        // And zoom to its bounding rectangle
+        this.hereMap.getViewModel().setLookAtData({
+          bounds: this.mapGroup.getBoundingBox()
+        });
+    //   });
+    // }
   }
 
   removeBubble(){
