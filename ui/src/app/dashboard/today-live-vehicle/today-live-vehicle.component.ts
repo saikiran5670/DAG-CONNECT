@@ -41,6 +41,7 @@ export class TodayLiveVehicleComponent implements OnInit {
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   accountPrefObj: any;
   distanceRate : any;
+  todayLiveVehicalAPI: any;
 
   //threshold 
   activeThreshold=0;
@@ -273,29 +274,29 @@ doughnutDistanceColors: Color[] = [
         
       // ]
     }
-   this.dashboardService.getTodayLiveVehicleData(_vehiclePayload).subscribe((vehicleData)=>{
-       //console.log(vehicleData);
-    this.dataError = false;
-
-      if(vehicleData){
-          this.liveVehicleData = vehicleData;
-          this.totalVehicles =  this.finalVinList.length;
-          this.setValues();
-          this.updateCharts();
-
+    if(!this.todayLiveVehicalAPI){
+      this.todayLiveVehicalAPI =this.dashboardService.getTodayLiveVehicleData(_vehiclePayload).subscribe((vehicleData)=>{
+        //console.log(vehicleData);
+     this.dataError = false;
+ 
+       if(vehicleData){
+           this.liveVehicleData = vehicleData;
+           this.totalVehicles =  this.finalVinList.length;
+           this.setValues();
+           this.updateCharts();
+ 
+        }
+     },(error)=>{
+       if(error.status === 400){
+         this.dataError = true;
+         this.errorMessage = error.error.message;
        }
-    },(error)=>{
-      if(error.status === 400){
-        this.dataError = true;
-        this.errorMessage = error.error.message;
-      }
-      else if(error.status === 404){
-        this.dataError = true;
-        this.errorMessage = this.translationData.lblTodaysLiveVehicleError || 'No data found for Today live vehicle details'
-      }
-    });
-    
-    
+       else if(error.status === 404){
+         this.dataError = true;
+         this.errorMessage = this.translationData.lblTodaysLiveVehicleError || 'No data found for Today live vehicle details'
+       }
+     });
+    } 
   }
 
   setValues(){
