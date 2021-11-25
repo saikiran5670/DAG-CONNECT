@@ -20,7 +20,7 @@ namespace net.atos.daf.ct2.reports.repository
                 string queryAlert = @"select id from master.alert where organization_id = @Org_Id and state in ('I','A') ";
                 var alertids = await _dataAccess.QueryAsync<int>(queryAlert, parameterAlert);
 
-                string query = @"SELECT distinct
+                string query = @"SELECT 
                            trpst .trip_id as TripId
                         --,  fueldev.id as FuelDeviationId
 	                    , fueldev.fuel_event_type as FuelEventType

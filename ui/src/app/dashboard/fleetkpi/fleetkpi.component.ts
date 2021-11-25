@@ -48,6 +48,7 @@ export class FleetkpiComponent implements OnInit {
    //CO2 Emission Chart
    currentC02Value : any =  0;
    cutOffC02Value : any =  0;
+   getFleetKPIDataAPI: any;
    dataError : boolean = false;
    doughnutChartLabels: Label[] = [('Target'), '', ''];
    doughnutChartData: MultiDataSet = [ [0, 100] ];
@@ -544,6 +545,7 @@ export class FleetkpiComponent implements OnInit {
         this.totalDays = 7;
         this.startDateValue = this.setStartEndDateTime(this.getLastWeekDate(), this.selectedStartTime, 'start');
         this.endDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
+        this.getFleetKPIDataAPI = undefined;
         break;
       }
       case 'lastmonth': {
@@ -551,6 +553,7 @@ export class FleetkpiComponent implements OnInit {
         this.totalDays = 30;
         this.startDateValue = this.setStartEndDateTime(this.getLastMonthDate(), this.selectedStartTime, 'start');
         this.endDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
+        this.getFleetKPIDataAPI = undefined;
         break;
       }
       case 'last3month': {
@@ -559,6 +562,7 @@ export class FleetkpiComponent implements OnInit {
         this.showLastChange = false;
         this.startDateValue = this.setStartEndDateTime(this.getLast3MonthDate(), this.selectedStartTime, 'start');
         this.endDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
+        this.getFleetKPIDataAPI = undefined;
         break;
       }
     }
@@ -594,19 +598,21 @@ export class FleetkpiComponent implements OnInit {
       //   "XLR0998HGFFT75550"
       // ]
     }
-    this.dashboardService.getFleetKPIData(_kpiPayload).subscribe((kpiData: any)=>{
-      //console.log(kpiData);
-      this.dataError = false;
-      this.kpiData = kpiData;
-      this.activeVehicles = kpiData['fleetKpis']?.vehicleCount;
-      this.updateCharts();
-      this.dataInterchangeService.getFleetData(kpiData);
-
-    },(error)=>{
-      if(error.status === 404){
-        this.dataError = true;
-      }
-    })
+    if(!this.getFleetKPIDataAPI){
+      this.getFleetKPIDataAPI = this.dashboardService.getFleetKPIData(_kpiPayload).subscribe((kpiData: any)=>{
+        //console.log(kpiData);
+        this.dataError = false;
+        this.kpiData = kpiData;
+        this.activeVehicles = kpiData['fleetKpis']?.vehicleCount;
+        this.updateCharts();
+        this.dataInterchangeService.getFleetData(kpiData);
+  
+      },(error)=>{
+        if(error.status === 404){
+          this.dataError = true;
+        }
+      })
+    } 
   }
 
   updateCharts(){

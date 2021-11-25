@@ -846,7 +846,8 @@ removeDuplicates(originalArray, prop) {
     this.showLoadingIndicator=true;
     this.initData =this.detailsData;
     let newAlertCat=[];
-    let otherList= [];
+    // let otherList= [];
+    let otherList= this.filterVehicleForm.controls.otherFilter.value;
     let status=this.filterVehicleForm.controls.status.value;
     let health_status:any;
     if(status.length == 0 || status == 'all'){
@@ -862,7 +863,7 @@ removeDuplicates(originalArray, prop) {
       health_status =status;
     }
 
-    if(this.filterVehicleForm.controls.otherFilter.value.length == 0){
+    if(this.filterVehicleForm.controls.otherFilter.value.length == 0 || this.filterVehicleForm.controls.otherFilter.value == 'all'){
      otherList =['all'];
     }
     else {
