@@ -589,7 +589,8 @@
                         </ng-container>              
                         <ng-container matColumnDef="fuelConsumption">              
                           <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_fuelconsumption')">{{ translationData.lblFuelConsumption || ' Fuel Consumption' }}             
-                            <span style="font-weight: normal;">{{sumOfColumns('fuelConsumption')}}({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || '
+                            <!-- <span style="font-weight: normal;">{{sumOfColumns('fuelConsumption')}}({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || ' -->
+                              <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || '
                               Ltrs/100km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmpg || 'mpg') :
                               (translationData.lblmpg || ' mpg') }})</span>              
                           </mat-header-cell>              
@@ -713,7 +714,7 @@
                   </mat-cell>      
                 </ng-container>
                 <ng-container matColumnDef="idlingPTOScore">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idlingwithpto')">{{ translationData.lblIdlingwithPTOscore || 'Idling with PTO (hh:mm:ss) score' }}
+                  <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idlingwithpto')">{{ translationData.lblIdlingwithPTOscore || 'Idling with PTO score (hh:mm:ss)' }}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingwithpto')">
                     <span>{{ row.convertedIdlingPTOScore }}</span>
