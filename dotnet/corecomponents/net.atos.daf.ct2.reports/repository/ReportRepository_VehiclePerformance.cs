@@ -149,7 +149,7 @@ namespace net.atos.daf.ct2.reports.repository
                                is_ongoing_trip = false AND start_time_stamp >= @StartDateTime  and end_time_stamp<= @EndDateTime";
                     break;
                 case "S":
-                    query = @"SELECT id as Id, trip_id as TripId, ts.vin as Vin, 
+                    query = @"SELECT ts.id as Id, trip_id as TripId, ts.vin as Vin, 
                                
                                 abs_speed_rpm as AbsRpmtTrque,
                                 ord_speed_rpm as OrdRpmTorque,
@@ -163,7 +163,7 @@ namespace net.atos.daf.ct2.reports.repository
                                is_ongoing_trip = false AND start_time_stamp >= @StartDateTime  and end_time_stamp<= @EndDateTime";
                     break;
                 case "B":
-                    query = @"SELECT id as Id, trip_id as TripId, ts.vin as Vin, 
+                    query = @"SELECT ts.id as Id, trip_id as TripId, ts.vin as Vin, 
                                     abs_acceleration_speed as AbsRpmtTrque,
                                     ord_acceleration_speed as OrdRpmTorque, 
                                     array_to_string(nonzero_matrix_val_acceleration_speed, ',', '*') as MatrixValue,
