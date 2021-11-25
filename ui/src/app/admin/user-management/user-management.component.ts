@@ -517,6 +517,13 @@ export class UserManagementComponent implements OnInit {
       this.dataSource = new MatTableDataSource(this.initData);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+      this.dataSource.sortData = (data: String[], sort: MatSort) => {
+        const isAsc = sort.direction === 'asc';
+        return data.sort((a: any, b: any) => {
+            let columnName = sort.active;
+          return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
+        });
+       }
     });
   }
 
@@ -563,6 +570,13 @@ export class UserManagementComponent implements OnInit {
       this.dataSource = new MatTableDataSource(this.initData);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+      this.dataSource.sortData = (data: String[], sort: MatSort) => {
+        const isAsc = sort.direction === 'asc';
+        return data.sort((a: any, b: any) => {
+            let columnName = sort.active;
+          return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
+        });
+       }
     });
   }
 
