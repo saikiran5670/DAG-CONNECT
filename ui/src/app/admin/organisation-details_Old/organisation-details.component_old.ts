@@ -61,7 +61,19 @@ export class OrganisationDetailsComponent implements OnInit {
       this.dataSource = new MatTableDataSource(data);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+      this.dataSource.sortData = (data: String[], sort: MatSort) => {
+        const isAsc = sort.direction === 'asc';
+        return data.sort((a: any, b: any) => {
+            let columnName = sort.active;
+          return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
+        });
+      }
     });
+  }
+  compare(a: any, b: any, isAsc: boolean, columnName:any) {
+    if(!(a instanceof Number)) a = a.toString().toUpperCase();
+    if(!(b instanceof Number)) b = b.toString().toUpperCase();
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 
   ngOnInit() {
@@ -101,7 +113,7 @@ export class OrganisationDetailsComponent implements OnInit {
     const colsList = ['firstName','emailId','roles'];
     const colsName = [this.translationData.lblUserName || 'User Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblUserRole || 'User Role'];
     const tableTitle = `${row.vehicleGroupName} - ${this.translationData.lblUsers || 'Users'}`;
-    
+
     let obj: any = {
       accountId: 0,
       organizationId: this.organizationId,
@@ -157,10 +169,10 @@ export class OrganisationDetailsComponent implements OnInit {
         accGrpTxt = accGrpTxt.slice(0, -2);
       }
 
-      initdata[index].roleList = roleTxt; 
+      initdata[index].roleList = roleTxt;
       initdata[index].accountGroupList = accGrpTxt;
     });
-    
+
     return initdata;
   }
 

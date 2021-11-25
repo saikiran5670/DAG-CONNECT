@@ -956,7 +956,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     this.selectedDriverId = this.driverListData.filter(item => (item.driverID).toString() == (this.ecoScoreForm.controls.driver.value))[0]["driverID"];
     let driverFirstName = this.driverListData.filter(item => (item.driverID).toString() == (this.ecoScoreForm.controls.driver.value))[0]["firstName"];
     let driverLastName = this.driverListData.filter(item => (item.driverID).toString() == (this.ecoScoreForm.controls.driver.value))[0]["lastName"];
-    this.selectedDriverName = driverFirstName +" "+ driverLastName;
+    this.selectedDriverName = (driverFirstName !== undefined) ? driverFirstName : '' +" "+ (driverLastName !== undefined) ? driverLastName : '';
     this.selectedDriverOption='';
     this.selectedDriverOption += (this.ecoScoreForm.controls.minTripCheck.value === true) ? (this.translationData.lblInclude ) : (this.translationData.lblExclude );
     this.selectedDriverOption += ' ' + (this.translationData.lblShortTrips ) + ' ';

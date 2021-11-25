@@ -2652,9 +2652,9 @@ setVehicleGroupAndVehiclePreSelection() {
         const header =  ['Vehicle Name', 'VIN', 'Vehicle Registration No', 'Start Date', 'End Date', 'Average Speed('+unitValkmh+')','Max Speed('+unitValkmh+')', 'Distance('+unitValkm+')','StartPosition', 'EndPosition',
         'FuelConsumed('+unitValuekm+')', 'FuelConsumption('+unitVal100km+')','CO2Emission('+ unitValkg2+')',  'Idle Duration(%)','PTO Duration(%)','Cruise Control Distance 30-50(km/hr)%',
         'Cruise Control Distance 50-75(km/hr)%','Cruise Control Distance>75(km/hr)%','Heavy Throttle Duration(%)','HarshBrakeDuration(%)', 'GrossWeightCombination('+unitValkg2+')', 'AverageTrafficClassification',
-        'CCFuelConsumption('+unitValuekm+')','FuelConsumptionCCnonactive('+unitValuekm+')','IdlingConsumption','DPAScore', 
-        'Idling PTO (hh:mm:ss) Score','Idling with PTO%','Idling Without PTO (hh:mm:ss)','Idling Without PTO%','Foot Brake',
-        'CO2 Emmision(gr/km)','Idling Consumption With PTO('+unitValkg+')'];
+        'CCFuelConsumption('+unitVal100km+')','FuelConsumptionCCnonactive('+unitVal100km+')','IdlingConsumption','DPAScore', 
+        'Idling PTO Score (hh:mm:ss)','Idling with PTO%','Idling Without PTO (hh:mm:ss)','Idling Without PTO%','Foot Brake',
+        'CO2 Emmision(gr/km)','Idling Consumption With PTO('+unitVal100km+')'];
         const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name','Driver Name','Driver ID', 'Number Of Trips', 'Distance('+unitValkm+')', 'Fuel Consumed('+unitValuekm+')', 'Idle Duration(hh:mm)','Fuel Consumption('+unitVal100km+')', 'CO2 Emission('+ unitValkg1+')'];
         const summaryData= this.summaryNewObj;
         //Create workbook and worksheet

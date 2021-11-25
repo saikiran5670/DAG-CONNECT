@@ -112,12 +112,12 @@ export class CreateEditViewFeaturesComponent implements OnInit {
     setTimeout(()=>{
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
-      // this.dataSource.sortData = (data: String[], sort: MatSort) => {
-      //   const isAsc = sort.direction === 'asc';
-      //   return data.sort((a: any, b: any) => {
-      //     return this.compare(a[sort.active], b[sort.active], isAsc);
-      //   });
-      //  }
+      this.dataSource.sortData = (data: String[], sort: MatSort) => {
+        const isAsc = sort.direction === 'asc';
+        return data.sort((a: any, b: any) => {
+          return this.compare(a[sort.active], b[sort.active], isAsc);
+        });
+       }
     });
     Util.applySearchFilter(this.dataSource, this.displayedColumns ,this.filterValue );
   }
