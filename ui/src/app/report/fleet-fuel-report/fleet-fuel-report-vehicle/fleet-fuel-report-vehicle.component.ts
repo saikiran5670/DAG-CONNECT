@@ -2057,8 +2057,8 @@ setVehicleGroupAndVehiclePreSelection() {
    let distance = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm ||'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile || 'mile');
    let speed =(this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh ||'km/h') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmileh || 'mph') : (this.translationData.lblmileh || 'mph');
    let ton= (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton || 't') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lbltons || 'Ton') : (this.translationData.lbltons || 'Ton');
-   let fuel =(this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || ' l') : (this.prefUnitFormat =='dunit_Imperial') ? (this.translationData.lblgallonmile || 'gal') : (this.translationData.lblgallonmile || ' gal');
-   let fuelCons=  (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || ' Ltrs/100km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblgallonmile || 'mpg') : (this.translationData.lblgallonmile || ' mpg');
+   let fuel =(this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr || ' l') : (this.prefUnitFormat =='dunit_Imperial') ? (this.translationData.lblgallonmile || 'gal') : (this.translationData.lblgallonmile || ' gal');
+   let fuelCons=  (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || ' Ltrs/100km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmilepergal || 'mpg') : (this.translationData.lblmilepergal || ' mpg');
    let idlingPTO= (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 'kg') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblpound || 'pound') : (this.translationData.lblpound ||  'pound');
    
    let rankingPdfColumns = [];
@@ -2265,7 +2265,7 @@ setVehicleGroupAndVehiclePreSelection() {
         break;
       }      
       case 'idlingConsumptionWithPTO' :{
-        pdfColumnHeads.push('Idling Consumption With PTO('+idlingPTO+')');
+        pdfColumnHeads.push('Idling Consumption With PTO('+fuelCons+')');
         break;
       }
     }
@@ -2413,7 +2413,7 @@ setVehicleGroupAndVehiclePreSelection() {
           //   break;
           // }
           case 'idlingConsumptionWithPTO' :{
-            tempObj.push(e.idlingConsumptionValue);
+            tempObj.push(e.convertedidlingconsumptionwithpto);
             break;
           }
         }
