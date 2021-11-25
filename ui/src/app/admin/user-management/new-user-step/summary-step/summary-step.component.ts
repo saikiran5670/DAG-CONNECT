@@ -39,7 +39,7 @@ export class SummaryStepComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit() { 
+  ngOnInit() {
     this.userTypeList = [
       {
         name: this.translationData.lblPortalUser ,
@@ -51,25 +51,39 @@ export class SummaryStepComponent implements OnInit {
       }
     ];
     if(this.profilePath == ''){
-      this.profilePath='../../assets/images/Account_pic.png';    
+      this.profilePath='../../assets/images/Account_pic.png';
     }
   }
-  
+
   loadRoleData(){
     this.selectedRoleDataSource = new MatTableDataSource(this.confirmRoleData);
-    setTimeout(()=>{                     
+    setTimeout(()=>{
       this.selectedRoleDataSource.paginator = this.paginator.toArray()[0];
       this.selectedRoleDataSource.sort = this.sort.toArray()[0];
     });
   }
-  
+
   loadUserGrpData(){
     this.selecteUserGrpDataSource = new MatTableDataSource(this.confirmUserGrpData);
-    setTimeout(()=>{                     
+    setTimeout(()=>{
       this.selecteUserGrpDataSource.paginator = this.paginator.toArray()[1];
       this.selecteUserGrpDataSource.sort = this.sort.toArray()[1];
+      this.selecteUserGrpDataSource.sortData = (data: String[], sort: MatSort) => {
+        const isAsc = sort.direction === 'asc';
+        return data.sort((a: any, b: any) => {
+            let columnName = sort.active;
+          return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
+        });
+
+    }
     });
   }
+  compare(a: any, b: any, isAsc: boolean, columnName:any) {
+    if(!(a instanceof Number)) a = a.toString().toUpperCase();
+    if(!(b instanceof Number)) b = b.toString().toUpperCase();
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  }
+
 
   getDefaultSetting(accountPreferenceData: any){
     let respData: any = {};
@@ -87,7 +101,7 @@ export class SummaryStepComponent implements OnInit {
     if(accountPreferenceData.userType && accountPreferenceData.userType.value != ''){
       userTypeVal = this.userTypeList.filter(res => res.value.toLowerCase() === accountPreferenceData.userType.value.toLowerCase());
     }
-    
+
     respData = {
       salutationData: accountPreferenceData.salutation ? accountPreferenceData.salutation.value : '--',
       firstNameData: accountPreferenceData.firstName ? accountPreferenceData.firstName.value : '--',
@@ -104,7 +118,7 @@ export class SummaryStepComponent implements OnInit {
       vehicleDisplayData: this.defaultSetting.vehicleDisplayDropdownData.filter(resp => resp.id === (accountPreferenceData.vehDisplay.value ? accountPreferenceData.vehDisplay.value : 2)),
       landingPageDisplayData: this.defaultSetting.landingPageDisplayDropdownData.filter(resp => resp.id === (accountPreferenceData.landingPage.value ? accountPreferenceData.landingPage.value : 2)),
       pageRefreshTime: accountPreferenceData.pageRefreshTime.value ? parseInt(accountPreferenceData.pageRefreshTime.value) : 1
-      
+
     }
     return respData;
   }
