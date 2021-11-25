@@ -2023,6 +2023,10 @@ setVehicleGroupAndVehiclePreSelection() {
       cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
     })    
     this.initData.forEach(item => {
+      if(item.driverID.includes('~*')) {
+        item.driverName = 'Unknown';
+        item.driverID = '*';
+      }
       worksheet.addRow([item.driverName, item.driverID, item.vehicleName,item.vin, item.vehicleRegistrationNo, item.convertedDistance,
       item.convertedAverageDistance, item.convertedAverageSpeed, item.convertedMaxSpeed, item.numberOfTrips,
       item.convertedAverageGrossWeightComb, item.convertedFuelConsumed100Km, item.convertedFuelConsumption,item.cO2Emission, item.idleDurationPercentage, item.ptoDuration.toFixed(2),
@@ -2210,6 +2214,10 @@ setVehicleGroupAndVehiclePreSelection() {
   pdfColumns.push(pdfColumnHeads);  
   let prepare = []
     this.displayData.forEach(e=>{
+      if(e.driverID.includes('~*')) {
+        e.driverName = 'Unknown';
+        e.driverID = '*';
+      }
       var tempObj =[];
       this.displayedColumns.forEach(element => {
         switch(element){
