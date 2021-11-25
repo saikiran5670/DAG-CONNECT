@@ -1384,11 +1384,17 @@ export class ReportMapService {
   }
 
   convertFuelConsumptionMpgToMlm(_data: any){ // convert from mpg to L/100Km
+    if(_data == 0){
+      return (_data);
+    }
     let data: any = (282.481/_data)/100;
     return (data).toFixed(2); 
   }
 
-  convertFuelConsumptionMlmToMpg(_data: any){
+  convertFuelConsumptionMlmToMpg(_data: any){  
+    if(_data == 0){
+      return (_data);
+    }
     let data: any = 282.481/(_data*100);
     return (data).toFixed(2); // as inverted division results in very low value upto 6 places shown // 16044
   }
@@ -1814,6 +1820,9 @@ export class ReportMapService {
     return _fuelConsumption; 
   }
   convertFuelConsumptionLtr100kmToMpg(_data:any){
+   if(_data==0){
+      return (_data);
+    }
     let data: any = (282.481/_data);
     return (data).toFixed(2);
   }
