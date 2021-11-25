@@ -329,7 +329,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                   		 ,case when numoftripswithavgweight>0 then round (fd.average_gross_weight_comb/numoftripswithavgweight, 3) 
 													                 else round (fd.average_gross_weight_comb,3) end  as AverageGrossWeightComb
                                                           , round(fd.fuel_consumed,2)                              					as FuelConsumed
-                                                  		  , round((fd.fuel_consumed/fd.etl_gps_distance),5)                         as FuelConsumption
+                                                  		  , round((fd.fuel_consumed/case when fd.etl_gps_distance > 0 then fd.etl_gps_distance else 1 end),5)                         as FuelConsumption
                                                   		  , round(fd.co2_emission,2)                               					as CO2Emission
                                                           , round(((fd.etl_gps_distance * 2640)/100)/1000,4) as CO2Emmision
                                                   		  , round(fd.idle_duration_percentage,2)                   					as IdleDurationPercentage
