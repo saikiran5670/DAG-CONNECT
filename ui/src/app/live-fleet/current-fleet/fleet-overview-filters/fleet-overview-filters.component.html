@@ -30,7 +30,7 @@
                 <div fxLayout="column" fxLayoutAlign="space-between">
                     <mat-label>{{ translationData.lblSelectGroup }} </mat-label>
                     <mat-form-field appearance="outline" class="full-width dropdown-filters">
-                        <mat-select [disabled]="vehicleListData.length == 0" placeholder="Select Group"
+                        <mat-select placeholder="Select Group" [disabled]="filteredSelectGroups.length < 1"
                             (selectionChange)="onChangeGroup($event.value)" formControlName="group">
                             <mat-option>
                                 <ngx-mat-select-search (keyup)="filterSelectGroups(groupsearch.value)"
@@ -63,7 +63,7 @@
                 <div fxLayout="column" fxLayoutAlign="space-between">
                     <mat-label>{{ translationData.lblAlertLevel }} </mat-label>
                     <mat-form-field appearance="outline" class="full-width dropdown-filters">
-                        <mat-select #select3 [disabled]="vehicleListData.length == 0 || levelList.length ==0" placeholder="Alert Level"
+                        <mat-select #select3 [disabled]="levelList.length < 1" placeholder="Alert Level"
                             [(ngModel)]="selection3" formControlName="level" multiple>
                             <div class="select-all">
                                 <mat-checkbox [(ngModel)]="allSelectedAlertLevel" [ngModelOptions]="{standalone: true}"
@@ -93,7 +93,7 @@
                 <div fxLayout="column" fxLayoutAlign="space-between">
                     <mat-label>{{ translationData.lblAlertCategory }} </mat-label>
                     <mat-form-field appearance="outline" class="full-width dropdown-filters">
-                        <mat-select #select1 [disabled]="vehicleListData.length == 0 || categoryList.length == 0"
+                        <mat-select #select1 [disabled]="categoryList.length < 1 "
                             placeholder="Alert Category" [(ngModel)]="selection1"
                             formControlName="category" multiple>
                             <div class="select-all">
@@ -125,7 +125,7 @@
                 <div fxLayout="column" fxLayoutAlign="space-between" style="padding-top:5px;">
                     <mat-label>{{ translationData.lblHealthStatus }} </mat-label>
                     <mat-form-field appearance="outline" class="full-width dropdown-filters">
-                        <mat-select #select2 [disabled]="healthList.length < 1" placeholder="Health Status"
+                        <mat-select #select2 [disabled]="healthList.length < 1 " placeholder="Health Status"
                             [(ngModel)]="selection2" formControlName="status" multiple>
                             <div class="select-all">
                                 <mat-checkbox [(ngModel)]="allSelectedHealthStatus" [ngModelOptions]="{standalone: true}"

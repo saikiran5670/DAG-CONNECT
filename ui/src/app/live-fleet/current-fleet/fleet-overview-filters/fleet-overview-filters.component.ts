@@ -135,13 +135,19 @@ ngAfterViewInit(){
   }
 
   setDefaultDropValue(){
-    let healthStatusList = [], otherFilterList = [];
+    let healthStatusList = [], otherFilterList = [], alertLevelList = [], alertCategoryList = [];
     healthStatusList = this.healthList.map(i => i.value);
     otherFilterList = this.otherList.map(i => i.value);
+    alertLevelList = this.levelList.map(i => i.value);
+    alertCategoryList = this.categoryList.map(i => i.value);
     healthStatusList.unshift(0);
     otherFilterList.unshift(0);
+    alertLevelList.unshift(0);
+    alertCategoryList.unshift(0);
     this.filterVehicleForm.get("status").setValue(healthStatusList);
     this.filterVehicleForm.get("otherFilter").setValue(otherFilterList);
+    this.filterVehicleForm.get("level").setValue(alertLevelList);
+    this.filterVehicleForm.get("category").setValue(alertCategoryList)
   }
     
   tabVisibilityHandler(tabVisibility: boolean){
@@ -449,7 +455,7 @@ ngAfterViewInit(){
   getFilterData() {
     this.showLoadingIndicator = true;
     this.reportService.getFilterDetails().subscribe((data: any) => {
-      this.filterData = data;
+       this.filterData = data;    
       if(this.selectedIndex == 0){
         this.updateVehicleFilter();
         }
@@ -536,13 +542,13 @@ removeDuplicates(originalArray, prop) {
       this.vehicleListData = this.fleetData;
     } else {
       this.select3.options.forEach((item: MatOption) => item.deselect());
-      this.vehicleListData = [];
     }
   }
 
   onChangeLevel() {
     let newStatus = true;
     this.noRecordFlag = true;
+    this.vehicleListData = [];
 
     this.select3.options.forEach((item: MatOption) => {
       if (!item.selected) {
@@ -550,15 +556,21 @@ removeDuplicates(originalArray, prop) {
       }
     });
     this.allSelectedAlertLevel = newStatus;
-    if (this.fleetData?.fleetOverviewAlert && this.fleetData?.fleetOverviewAlert?.length > 0) {
+    if (this.fleetData && this.fleetData.length > 0) {
       this.fleetData.forEach(e => {
-        for (let i of this.filterVehicleForm.controls.level.value) {
-          if (i == e.fleetOverviewAlert.level) {
-            this.vehicleListData = this.fleetData[e];
+        if (e.fleetOverviewAlert && e.fleetOverviewAlert.length > 0) {
+          for (let i of this.filterVehicleForm.controls.level.value) {
+            let alertlevelcheck = e.fleetOverviewAlert.filter(l => l.level == i);
+            if (alertlevelcheck.length > 0) {
+              this.vehicleListData.push(e);
+              this.noRecordFlag = false;
+              break;
+            }
           }
         }
       });
     }
+    this.filterVINonMap();
   }
   // onChangeLevel(id: any){
   //   this.filterVehicleForm.get("level").setValue(id);
@@ -591,13 +603,13 @@ removeDuplicates(originalArray, prop) {
       this.select1.options.forEach((item: MatOption) => item.select());
       this.vehicleListData = this.fleetData;
     } else {
-      this.select1.options.forEach((item: MatOption) => item.deselect());   
-      this.vehicleListData = [];  
+      this.select1.options.forEach((item: MatOption) => item.deselect());
     }
   }
   onChangeCategory(){
     let newStatus = true;
     this.noRecordFlag =true;
+    this.vehicleListData = [];
   
     this.select1.options.forEach((item: MatOption) => {
       if (!item.selected) {
@@ -606,15 +618,22 @@ removeDuplicates(originalArray, prop) {
     });
     this.allSelectedAlertCategory = newStatus;
 
-    if(this.fleetData?.fleetOverviewAlert && this.fleetData?.fleetOverviewAlert?.length > 0){
+    if(this.fleetData && this.fleetData.length > 0){
       this.fleetData.forEach(e => {
+        if(e.fleetOverviewAlert && e.fleetOverviewAlert.length > 0)
+        {
         for(let i of this.filterVehicleForm.controls.category.value) {
-        if (i == e.fleetOverviewAlert.categoryType) {
-         this.vehicleListData = this.fleetData[e];         
-        }
-      }      
+        let alertcategorycheck = e.fleetOverviewAlert.filter(l => l.level == i);
+        if(alertcategorycheck.length >0){
+          this.vehicleListData.push(e);
+          this.noRecordFlag = false;
+          break;
+        }     
+      }   
+      }   
     });
     }
+    this.filterVINonMap();
   }
   
   // onChangHealthStatus(all, id: any) {
@@ -880,7 +899,9 @@ removeDuplicates(originalArray, prop) {
     let newAlertCat=[];
     // let otherList= [];
     let otherList= this.filterVehicleForm.controls.otherFilter.value;
+    let levelList = this.filterVehicleForm.controls.level.value;
     let status=this.filterVehicleForm.controls.status.value;
+    let categoryList = this.filterVehicleForm.controls.category.value;
     let health_status:any;
     if(status.length == 0 || status == 'all'){
       health_status =['all'];
@@ -908,22 +929,49 @@ removeDuplicates(originalArray, prop) {
       otherList = newOtherList;
     }
 
-    let d = this.filterVehicleForm.controls.category.value;
-    if(d == 'all')
-    {
-      this.filterVehicleForm.get("category").setValue(['all']);
-    }
-    let levelVal = this.filterVehicleForm.controls.level.value;
-    if(levelVal == 'all')
-    {
-      this.filterVehicleForm.get("level").setValue(['all']);
-    }
+    // let d = this.filterVehicleForm.controls.category.value;
+    // if(d == 'all')
+    // {
+    //   this.filterVehicleForm.get("category").setValue(['all']);
+    // }
+
+    if(this.filterVehicleForm.controls.category.value.length == 0 || this.filterVehicleForm.controls.category.value == 'all'){
+      categoryList = ['all'];
+     }
+     else {
+       let newCategoryList = this.filterVehicleForm.controls.category.value.filter(i=>i != 0 && i != undefined);       
+       if(this.filterVehicleForm.controls.category.value.includes(0))
+       {        
+         newCategoryList.push('all');
+         
+       }     
+       categoryList = newCategoryList;
+     }
+
+    // let levelVal = this.filterVehicleForm.controls.level.value;
+     // if(levelVal == 'all')
+    // {
+    //   this.filterVehicleForm.get("level").setValue(['all']);
+    // }
+
+    if(this.filterVehicleForm.controls.level.value.length == 0 || this.filterVehicleForm.controls.level.value == 'all'){
+      levelList = ['all'];
+     }
+     else {
+       let newLevelList = this.filterVehicleForm.controls.level.value.filter(i=>i != 0 && i != undefined);       
+       if(this.filterVehicleForm.controls.level.value.includes(0))
+       {        
+         newLevelList.push('all');      
+       }     
+       levelList = newLevelList;
+     }
+  
     if(!this.todayFlagClicked  && this.selectedIndex == 0)
     {
       this.objData = {
         "groupId": [this.filterVehicleForm.controls.group.value.toString()],
-        "alertLevel": this.filterVehicleForm.controls.level.value,
-        "alertCategory": this.filterVehicleForm.controls.category.value,
+        "alertLevel": levelList,
+        "alertCategory": categoryList,
         "healthStatus": health_status,
         "otherFilter": otherList,
         "driverId": ["all"],
@@ -934,8 +982,8 @@ removeDuplicates(originalArray, prop) {
     {
       this.objData = {
         "groupId": [this.filterVehicleForm.controls.group.value.toString()],
-        "alertLevel":this.filterVehicleForm.controls.level.value,
-        "alertCategory": this.filterVehicleForm.controls.category.value,
+        "alertLevel": levelList,
+        "alertCategory": categoryList,
         "healthStatus": health_status,
         "otherFilter": otherList,
         "driverId": ["all"],
@@ -949,8 +997,8 @@ removeDuplicates(originalArray, prop) {
     if(this.getFleetOverviewDetails){
       this.getFleetOverviewDetails.unsubscribe();
     }
-    this.getFleetOverviewDetails = this.reportService.getFleetOverviewDetails(this.objData).subscribe((fleetdata:any) => {
-    let data = this.fleetMapService.processedLiveFLeetData(fleetdata);
+    this.getFleetOverviewDetails = this.reportService.getFleetOverviewDetails(this.objData).subscribe((fleetdata:any) => {      
+      let data = this.fleetMapService.processedLiveFLeetData(fleetdata);
     this.fleetData = data;
 
     let val = [{vehicleGroup : vehicleGroupSel.vehicleGroupName, data : data}];
