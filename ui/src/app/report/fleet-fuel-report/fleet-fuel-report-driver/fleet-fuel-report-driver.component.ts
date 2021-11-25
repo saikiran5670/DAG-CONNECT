@@ -2206,7 +2206,7 @@ setVehicleGroupAndVehiclePreSelection() {
         break;
       }     
       case 'idlingConsumptionWithPTO' :{
-        pdfColumnHeads.push('Idling Consumption With PTO');
+        pdfColumnHeads.push('Idling Consumption With PTO('+fuelCons+')');
         break;
       }
     }
@@ -2358,7 +2358,7 @@ setVehicleGroupAndVehiclePreSelection() {
             break;
           }
           case 'idlingConsumptionWithPTO' :{
-            tempObj.push(e.idlingConsumptionValue);
+            tempObj.push(e.convertedidlingconsumptionwithpto);
             break;
           }          
         }
