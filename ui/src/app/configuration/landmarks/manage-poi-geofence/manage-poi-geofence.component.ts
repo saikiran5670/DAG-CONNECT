@@ -463,6 +463,13 @@ export class ManagePoiGeofenceComponent implements OnInit {
     setTimeout(() => {
       this.poidataSource.paginator = this.paginator.toArray()[0];
       this.poidataSource.sort = this.sort.toArray()[0];
+      this.poidataSource.sortData = (data: String[], sort: MatSort) => {
+        const isAsc = sort.direction === 'asc';
+        return data.sort((a: any, b: any) => {
+            let columnName = sort.active;
+          return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
+        });
+      }
     });
     Util.applySearchFilter(this.poidataSource, this.displayedColumnsPoi ,this.filterValue );
   }
@@ -488,9 +495,23 @@ export class ManagePoiGeofenceComponent implements OnInit {
     setTimeout(() => {
       this.geofencedataSource.paginator = this.paginator.toArray()[1];
       this.geofencedataSource.sort = this.sort.toArray()[1];
+      this.geofencedataSource.sortData = (data: String[], sort: MatSort) => {
+        const isAsc = sort.direction === 'asc';
+        return data.sort((a: any, b: any) => {
+            let columnName = sort.active;
+            return this.compare(a[sort.active], b[sort.active], isAsc , columnName);
+        });
+      }
     }, 1000);
-   Util.applySearchFilter(this.geofencedataSource, this.displayedColumnsGeo ,this.filterValue );
+    Util.applySearchFilter(this.geofencedataSource, this.displayedColumnsGeo ,this.filterValue );
   }
+  compare(a: Number | String, b: Number | String, isAsc: boolean, columnName: any) {
+
+    if(!(a instanceof Number)) a = a.toString().toUpperCase();
+    if(!(b instanceof Number)) b = b.toString().toUpperCase();
+
+  return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+}
 
   getNewTagData(data: any) {
     let currentDate = new Date().getTime();
