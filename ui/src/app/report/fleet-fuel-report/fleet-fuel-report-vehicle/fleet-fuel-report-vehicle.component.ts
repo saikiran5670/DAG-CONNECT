@@ -2413,7 +2413,7 @@ setVehicleGroupAndVehiclePreSelection() {
           //   break;
           // }
           case 'idlingConsumptionWithPTO' :{
-            tempObj.push(e.idlingConsumptionValue);
+            tempObj.push(e.convertedidlingconsumptionwithpto);
             break;
           }
         }
