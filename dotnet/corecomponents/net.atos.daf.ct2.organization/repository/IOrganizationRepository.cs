@@ -17,6 +17,7 @@ namespace net.atos.daf.ct2.organization.repository
         //Task<Organization> UpdateCustomer(Organization organization);
         Task<CustomerRequest> UpdateCustomer(CustomerRequest customer);
         Task<HandOver> KeyHandOverEvent(HandOver keyHandOver);
+        Task<int> GetOrgId(string vin);
         //   Task<int> CreateVehicleParty(List<Customer> customers);
 
         Task<int> CreateOwnerRelationship(RelationshipMapping relationshipMapping);

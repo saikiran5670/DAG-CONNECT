@@ -110,6 +110,8 @@ namespace net.atos.daf.ct2.poigeofenceservice
                             objViaAddressDetail.CorridorViaStopName = CheckNull(item.ViaAddressDetails[i].CorridorViaStopName);
                             objViaAddressDetail.Latitude = item.ViaAddressDetails[i].Latitude;
                             objViaAddressDetail.Longitude = item.ViaAddressDetails[i].Longitude;
+                            objViaAddressDetail.SeqNo = item.ViaAddressDetails[i].Seq_no;
+                            objViaAddressDetail.Type = item.ViaAddressDetails[i].Type;
                             objCorridorEditViewResponse.ViaAddressDetail.Add(objViaAddressDetail);
                         }
                         objCorridorEditViewResponse.CorridorProperties = new CorridorProperties();
@@ -222,6 +224,8 @@ namespace net.atos.daf.ct2.poigeofenceservice
                                 objViaAddressDetail.CorridorViaStopName = CheckNull(item.ViaAddressDetails[i].CorridorViaStopName);
                                 objViaAddressDetail.Latitude = item.ViaAddressDetails[i].Latitude;
                                 objViaAddressDetail.Longitude = item.ViaAddressDetails[i].Longitude;
+                                objViaAddressDetail.SeqNo = item.ViaAddressDetails[i].Seq_no;
+                                objViaAddressDetail.Type = item.ViaAddressDetails[i].Type ?? string.Empty;
                                 objCorridorGridViewResponse.ViaAddressDetail.Add(objViaAddressDetail);
                             }
                         }
@@ -303,13 +307,15 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 obj.ViaRoutDetails = new List<poigeofence.entity.ViaRoute>();
 
                 if (request != null && request.ViaAddressDetails != null)
-                {
+                { 
                     foreach (var item in request.ViaAddressDetails)
                     {
                         var trans = new poigeofence.entity.ViaRoute();
                         trans.ViaStopName = item.ViaName;
                         trans.Latitude = item.Latitude;
                         trans.Longitude = item.Longitude;
+                        trans.SeqNo = item.SeqNo;
+                        trans.Type = item.Type;
                         obj.ViaRoutDetails.Add(trans);
 
                     }
@@ -354,7 +360,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 var result = await _corridorManger.DeleteCorridor(request.CorridorID);
                 if (result.Id >= 0)
                 {
-                    //await _landmarkAlertCdcHelper.TriggerAlertCdc(request.CorridorID, "");
+                    await _landmarkAlertCdcHelper.TriggerAlertCdc(request.CorridorID, "");
                     response.Message = "Delete successfully";
                     response.Code = Responsecode.Success;
                     response.CorridorID = request.CorridorID;
@@ -451,7 +457,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                     var isTransactionDone = result.ExistingTrips.Any(x => x.Id != 0);
                     if (isTransactionDone)
                     {
-                        //await _landmarkAlertCdcHelper.TriggerAlertCdc(request.Id, "");
+                        await _landmarkAlertCdcHelper.TriggerAlertCdc(request.Id, "");
                         response.Message = "Update successfully";
                         response.Code = Responsecode.Success;
                         response.CorridorID = result.Id;
@@ -544,6 +550,8 @@ namespace net.atos.daf.ct2.poigeofenceservice
                         trans.ViaStopName = item.ViaName;
                         trans.Latitude = item.Latitude;
                         trans.Longitude = item.Longitude;
+                        trans.SeqNo = item.SeqNo;
+                        trans.Type = item.Type;
                         obj.ViaRoutDetails.Add(trans);
                     }
                 }
@@ -560,7 +568,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 }
                 else if (result != null && result.Id > 0)
                 {
-                    //await _landmarkAlertCdcHelper.TriggerAlertCdc(objRequest.Request.Id, "");
+                    await _landmarkAlertCdcHelper.TriggerAlertCdc(objRequest.Request.Id, "");
                     objResponse.Response.Message = "Updated successfully";
                     objResponse.Response.Code = Responsecode.Success;
                     objResponse.Response.CorridorID = result.Id;

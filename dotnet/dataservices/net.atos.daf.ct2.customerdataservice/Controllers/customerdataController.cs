@@ -71,12 +71,7 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                 };
 
                 var customerData = await _organizationManager.UpdateCustomer(customerRequest);
-                if (!string.IsNullOrEmpty(customerData.SubscriptionId) && customerData.SubscriptionId != "0")
-                {
-                    //Triggering subscription cdc 
-                    int subscriptionId = Convert.ToInt32(customerRequest.SubscriptionId);
-                    await _customerDataCdcManager.GetVehiclesAndAlertFromCustomerDataConfiguration(subscriptionId, "I");
-                }
+
                 await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Data Service", "Customer data service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Customer Update dataservice modified object", 0, 0, JsonConvert.SerializeObject(customerData), 0, 0);
                 _logger.LogInformation("Customer data has been updated, company ID -" + customerRequest.CustomerID);
                 return Ok();
@@ -134,8 +129,13 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                     City = keyHandOver.KeyHandOverEvent.EndCustomer.Address?.City?.Trim(),
                     CountryCode = keyHandOver.KeyHandOverEvent.EndCustomer.Address?.CountryCode?.Trim()
                 };
-
-                await _organizationManager.KeyHandOverEvent(objHandOver);
+                int orgId = await _organizationManager.GetOrgId(keyHandOver.KeyHandOverEvent.VIN.Trim());
+                objHandOver = await _organizationManager.KeyHandOverEvent(objHandOver);
+                if (!string.IsNullOrEmpty(objHandOver.OEMRelationship))
+                {
+                    //Triggering KeyHandover cdc 
+                    await _customerDataCdcHelper.TriggerKeyHandOverCdc(orgId, "N", keyHandOver.KeyHandOverEvent.VIN.Trim());
+                }
                 await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Data Service", "Customer data service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Customer dataservice Keyhandover modified object", 0, 0, JsonConvert.SerializeObject(objHandOver), 0, 0);
                 return Ok();
             }

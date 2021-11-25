@@ -37,6 +37,9 @@ public class AlertUrgencyLevelRefSchema implements Comparable<AlertUrgencyLevelR
     private Double circleLongitude;
     private Double circleRadius;
     private Integer width;
+    private Double corriLatitude;
+    private Double corriLongitude;
+    private Integer corriSeq;
 
     private Long timestamp = System.currentTimeMillis();
 
@@ -46,13 +49,13 @@ public class AlertUrgencyLevelRefSchema implements Comparable<AlertUrgencyLevelR
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        AlertUrgencyLevelRefSchema schema = (AlertUrgencyLevelRefSchema) o;
-        return Objects.equals(alertId, schema.alertId) && Objects.equals(urgencyLevelType, schema.urgencyLevelType) && Objects.equals(thresholdValue, schema.thresholdValue) && Objects.equals(unitType, schema.unitType) && Objects.equals(alertCategory, schema.alertCategory) && Objects.equals(alertType, schema.alertType) && Objects.equals(alertState, schema.alertState) && Objects.equals(periodType, schema.periodType) && Objects.equals(dayTypeArray, schema.dayTypeArray) && Objects.equals(startTime, schema.startTime) && Objects.equals(endTime, schema.endTime) && Objects.equals(nodeSeq, schema.nodeSeq) && Objects.equals(latitude, schema.latitude) && Objects.equals(longitude, schema.longitude) && Objects.equals(landmarkId, schema.landmarkId) && Objects.equals(landMarkType, schema.landMarkType) && Objects.equals(circleLatitude, schema.circleLatitude) && Objects.equals(circleLongitude, schema.circleLongitude) && Objects.equals(circleRadius, schema.circleRadius) && Objects.equals(width, schema.width);
+        AlertUrgencyLevelRefSchema that = (AlertUrgencyLevelRefSchema) o;
+        return Objects.equals(alertId, that.alertId) && Objects.equals(urgencyLevelType, that.urgencyLevelType) && Objects.equals(thresholdValue, that.thresholdValue) && Objects.equals(unitType, that.unitType) && Objects.equals(alertCategory, that.alertCategory) && Objects.equals(alertType, that.alertType) && Objects.equals(alertState, that.alertState) && Objects.equals(periodType, that.periodType) && Objects.equals(dayTypeArray, that.dayTypeArray) && Objects.equals(startTime, that.startTime) && Objects.equals(endTime, that.endTime) && Objects.equals(nodeSeq, that.nodeSeq) && Objects.equals(latitude, that.latitude) && Objects.equals(longitude, that.longitude) && Objects.equals(landmarkId, that.landmarkId) && Objects.equals(landMarkType, that.landMarkType) && Objects.equals(circleLatitude, that.circleLatitude) && Objects.equals(circleLongitude, that.circleLongitude) && Objects.equals(circleRadius, that.circleRadius) && Objects.equals(width, that.width) && Objects.equals(corriLatitude, that.corriLatitude) && Objects.equals(corriLongitude, that.corriLongitude) && Objects.equals(corriSeq, that.corriSeq);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(alertId, urgencyLevelType, thresholdValue, unitType, alertCategory, alertType, alertState, periodType, dayTypeArray, startTime, endTime, nodeSeq, latitude, longitude, landmarkId, landMarkType, circleLatitude, circleLongitude, circleRadius, width);
+        return Objects.hash(alertId, urgencyLevelType, thresholdValue, unitType, alertCategory, alertType, alertState, periodType, dayTypeArray, startTime, endTime, nodeSeq, latitude, longitude, landmarkId, landMarkType, circleLatitude, circleLongitude, circleRadius, width, corriLatitude, corriLongitude, corriSeq);
     }
 
     @Override

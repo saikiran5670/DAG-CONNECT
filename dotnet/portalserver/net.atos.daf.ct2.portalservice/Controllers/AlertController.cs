@@ -50,7 +50,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 if (alertId == 0) return BadRequest(AlertConstants.ALERT_ID_NON_ZERO_MSG);
-                var response = await _alertServiceClient.ActivateAlertAsync(new IdRequest { AlertId = alertId });
+                /*For alert CDC - visibility */
+                var featureIds = GetMappedFeatureIdByStartWithName(AlertConstants.ALERT_FEATURE_STARTWITH);
+                Metadata headers = new Metadata();
+                headers.Add("report_feature_ids", JsonConvert.SerializeObject(featureIds));
+                headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+                headers.Add("context_orgid", Convert.ToString(GetContextOrgId()));
+                headers.Add("account_id", Convert.ToString(_userDetails.AccountId));
+                /*For alert CDC - visibility */
+                var response = await _alertServiceClient.ActivateAlertAsync(new IdRequest { AlertId = alertId }, headers);
                 if (response == null)
                     return StatusCode(500, String.Format(AlertConstants.INTERNAL_SERVER_ERROR_MSG, 1));
                 if (response.Code == ResponseCode.Success)
@@ -83,7 +91,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 if (alertId == 0) return BadRequest(AlertConstants.ALERT_ID_NON_ZERO_MSG);
-                var response = await _alertServiceClient.SuspendAlertAsync(new IdRequest { AlertId = alertId });
+                /*For alert CDC - visibility */
+                var featureIds = GetMappedFeatureIdByStartWithName(AlertConstants.ALERT_FEATURE_STARTWITH);
+                Metadata headers = new Metadata();
+                headers.Add("report_feature_ids", JsonConvert.SerializeObject(featureIds));
+                headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+                headers.Add("context_orgid", Convert.ToString(GetContextOrgId()));
+                headers.Add("account_id", Convert.ToString(_userDetails.AccountId));
+                /*For alert CDC - visibility */
+                var response = await _alertServiceClient.SuspendAlertAsync(new IdRequest { AlertId = alertId }, headers);
                 if (response == null)
                     return StatusCode(500, String.Format(AlertConstants.INTERNAL_SERVER_ERROR_MSG, 1));
                 if (response.Code == ResponseCode.Success)
@@ -117,7 +133,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 if (alertId == 0) return BadRequest(AlertConstants.ALERT_ID_NON_ZERO_MSG);
-                var response = await _alertServiceClient.DeleteAlertAsync(new IdRequest { AlertId = alertId });
+                /*For alert CDC - visibility */
+                var featureIds = GetMappedFeatureIdByStartWithName(AlertConstants.ALERT_FEATURE_STARTWITH);
+                Metadata headers = new Metadata();
+                headers.Add("report_feature_ids", JsonConvert.SerializeObject(featureIds));
+                headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+                headers.Add("context_orgid", Convert.ToString(GetContextOrgId()));
+                headers.Add("account_id", Convert.ToString(_userDetails.AccountId));
+                /*For alert CDC - visibility */
+                var response = await _alertServiceClient.DeleteAlertAsync(new IdRequest { AlertId = alertId }, headers);
                 if (response == null)
                     return StatusCode(500, string.Format(AlertConstants.INTERNAL_SERVER_ERROR_MSG, 1));
                 if (response.Code == ResponseCode.Success)
@@ -267,8 +291,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         }
                     }
                 }
-
-                alertservice.AlertResponse alertResponse = await _alertServiceClient.CreateAlertAsync(alertRequest);
+                /*For alert CDC - visibility */
+                var featureIds = GetMappedFeatureIdByStartWithName(AlertConstants.ALERT_FEATURE_STARTWITH);
+                Metadata headers = new Metadata();
+                headers.Add("report_feature_ids", JsonConvert.SerializeObject(featureIds));
+                headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+                headers.Add("context_orgid", Convert.ToString(GetContextOrgId()));
+                headers.Add("account_id", Convert.ToString(_userDetails.AccountId));
+                /*For alert CDC - visibility */
+                alertservice.AlertResponse alertResponse = await _alertServiceClient.CreateAlertAsync(alertRequest, headers);
 
                 if (alertResponse != null && alertResponse.Code == ResponseCode.Failed)
                 {
@@ -344,7 +375,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     vehicleservice.VehicleGroupResponce response = await _vehicleClient.CreateGroupAsync(vehicleGroupRequest);
                     alertRequest.VehicleGroupId = response.VehicleGroup.Id;
                 }
-                alertservice.AlertResponse alertResponse = await _alertServiceClient.UpdateAlertAsync(alertRequest);
+                /*For alert CDC - visibility */
+                var featureIds = GetMappedFeatureIdByStartWithName(AlertConstants.ALERT_FEATURE_STARTWITH);
+                Metadata headers = new Metadata();
+                headers.Add("report_feature_ids", JsonConvert.SerializeObject(featureIds));
+                headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+                headers.Add("context_orgid", Convert.ToString(GetContextOrgId()));
+                headers.Add("account_id", Convert.ToString(_userDetails.AccountId));
+                /*For alert CDC - visibility */
+                alertservice.AlertResponse alertResponse = await _alertServiceClient.UpdateAlertAsync(alertRequest, headers);
 
                 if (alertResponse != null && alertResponse.Code == ResponseCode.Failed)
                 {

@@ -45,8 +45,14 @@ namespace net.atos.daf.ct2.alertservice.Services
                 var id = await _alertManager.ActivateAlert(request.AlertId, ((char)AlertState.Active), ((char)AlertState.Suspend));
                 if (id > 0)
                 {
+                    /*For alert CDC - visibility */
+                    List<int> featureIds = JsonConvert.DeserializeObject<List<int>>(context.RequestHeaders.Where(x => x.Key.Equals("report_feature_ids")).FirstOrDefault()?.Value ?? "0");
+                    var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_orgid")).FirstOrDefault()?.Value ?? "0");
+                    var contextOrgId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("context_orgid")).FirstOrDefault()?.Value ?? "0");
+                    var accountId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("account_id")).FirstOrDefault()?.Value ?? "0");
+                    /*For alert CDC - visibility */
                     //Triggering alert cdc 
-                    await _alertCdcHelper.TriggerAlertCdc(request.AlertId, "A");
+                    await _alertCdcHelper.TriggerAlertCdc(request.AlertId, "A", accountId, loggedInOrgId, contextOrgId, featureIds);
                 }
                 return await Task.FromResult(new AlertResponse
                 {
@@ -73,8 +79,14 @@ namespace net.atos.daf.ct2.alertservice.Services
                 var id = await _alertManager.SuspendAlert(request.AlertId, ((char)AlertState.Suspend), ((char)AlertState.Active));
                 if (id > 0)
                 {
+                    /*For alert CDC - visibility */
+                    List<int> featureIds = JsonConvert.DeserializeObject<List<int>>(context.RequestHeaders.Where(x => x.Key.Equals("report_feature_ids")).FirstOrDefault()?.Value ?? "0");
+                    var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_orgid")).FirstOrDefault()?.Value ?? "0");
+                    var contextOrgId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("context_orgid")).FirstOrDefault()?.Value ?? "0");
+                    var accountId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("account_id")).FirstOrDefault()?.Value ?? "0");
+                    /*For alert CDC - visibility */
                     //Triggering alert cdc 
-                    await _alertCdcHelper.TriggerAlertCdc(request.AlertId, "I");
+                    await _alertCdcHelper.TriggerAlertCdc(request.AlertId, "I", accountId, loggedInOrgId, contextOrgId, featureIds);
                 }
                 return await Task.FromResult(new AlertResponse
                 {
@@ -110,8 +122,14 @@ namespace net.atos.daf.ct2.alertservice.Services
                 var id = await _alertManager.DeleteAlert(request.AlertId, ((char)AlertState.Delete));
                 if (id > 0)
                 {
+                    /*For alert CDC - visibility */
+                    List<int> featureIds = JsonConvert.DeserializeObject<List<int>>(context.RequestHeaders.Where(x => x.Key.Equals("report_feature_ids")).FirstOrDefault()?.Value ?? "0");
+                    var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_orgid")).FirstOrDefault()?.Value ?? "0");
+                    var contextOrgId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("context_orgid")).FirstOrDefault()?.Value ?? "0");
+                    var accountId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("account_id")).FirstOrDefault()?.Value ?? "0");
+                    /*For alert CDC - visibility */
                     //Triggering alert cdc 
-                    await _alertCdcHelper.TriggerAlertCdc(request.AlertId, "D");
+                    await _alertCdcHelper.TriggerAlertCdc(request.AlertId, "D", accountId, loggedInOrgId, contextOrgId, featureIds);
                 }
                 return await Task.FromResult(new AlertResponse
                 {
@@ -195,8 +213,14 @@ namespace net.atos.daf.ct2.alertservice.Services
                 }
                 if (alert.Id > 0)
                 {
+                    /*For alert CDC - visibility */
+                    List<int> featureIds = JsonConvert.DeserializeObject<List<int>>(context.RequestHeaders.Where(x => x.Key.Equals("report_feature_ids")).FirstOrDefault()?.Value ?? "0");
+                    var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_orgid")).FirstOrDefault()?.Value ?? "0");
+                    var contextOrgId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("context_orgid")).FirstOrDefault()?.Value ?? "0");
+                    var accountId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("account_id")).FirstOrDefault()?.Value ?? "0");
+                    /*For alert CDC - visibility */
                     //Triggering alert cdc 
-                    await _alertCdcHelper.TriggerAlertCdc(alert.Id, "U");
+                    await _alertCdcHelper.TriggerAlertCdc(alert.Id, "U", accountId, loggedInOrgId, contextOrgId, featureIds);
                 }
                 return await Task.FromResult(new AlertResponse
                 {
@@ -249,8 +273,14 @@ namespace net.atos.daf.ct2.alertservice.Services
                 }
                 if (alert.Id > 0)
                 {
+                    /*For alert CDC - visibility */
+                    List<int> featureIds = JsonConvert.DeserializeObject<List<int>>(context.RequestHeaders.Where(x => x.Key.Equals("report_feature_ids")).FirstOrDefault()?.Value ?? "0");
+                    var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("logged_in_orgid")).FirstOrDefault()?.Value ?? "0");
+                    var contextOrgId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("context_orgid")).FirstOrDefault()?.Value ?? "0");
+                    var accountId = Convert.ToInt32(context.RequestHeaders.Where(x => x.Key.Equals("account_id")).FirstOrDefault()?.Value ?? "0");
+                    /*For alert CDC - visibility */
                     //Triggering alert cdc 
-                    await _alertCdcHelper.TriggerAlertCdc(alert.Id, "A");
+                    await _alertCdcHelper.TriggerAlertCdc(alert.Id, "A", accountId, loggedInOrgId, contextOrgId, featureIds);
                 }
                 return await Task.FromResult(new AlertResponse
                 {

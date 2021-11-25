@@ -46,7 +46,7 @@
                         </mat-select>
                     </mat-form-field>
                 </div>
-                <div fxLayout="column" fxLayoutAlign="space-between">
+                <!-- <div fxLayout="column" fxLayoutAlign="space-between">
                     <mat-label>{{ translationData.lblAlertLevel }} </mat-label>
                     <mat-form-field appearance="outline" class="full-width dropdown-filters">
                         <mat-select [disabled]="vehicleListData.length == 0 || levelList.length ==0"
@@ -58,7 +58,24 @@
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
+                </div> -->
+
+                <div fxLayout="column" fxLayoutAlign="space-between">
+                    <mat-label>{{ translationData.lblAlertLevel }} </mat-label>
+                    <mat-form-field appearance="outline" class="full-width dropdown-filters">
+                        <mat-select #select3 [disabled]="vehicleListData.length == 0 || levelList.length ==0" placeholder="Alert Level"
+                            [(ngModel)]="selection3" formControlName="level" multiple>
+                            <div class="select-all">
+                                <mat-checkbox [(ngModel)]="allSelectedAlertLevel" [ngModelOptions]="{standalone: true}"
+                                    (change)="toggleAllSelectionAlertLevel()">{{translationData.lblAll }}</mat-checkbox>
+                            </div>
+                            <mat-option (click)="onChangeLevel()" *ngFor="let item of levelList" [value]="item.value">
+                                <span *ngIf="item.value != 0">{{item.name}}</span>
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
                 </div>
+
                 <!-- <div fxLayout="column" fxLayoutAlign="space-between">
                     <mat-label>{{ translationData.lblAlertCategory }} </mat-label>
                     <mat-form-field appearance="outline" class="full-width dropdown-filters">

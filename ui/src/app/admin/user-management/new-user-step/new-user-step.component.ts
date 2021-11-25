@@ -104,6 +104,20 @@ export class NewUserStepComponent implements OnInit {
       this.roleDataSource.sort = this.sort.toArray()[0];
       this.userGrpDataSource.paginator = this.paginator.toArray()[1];
       this.userGrpDataSource.sort = this.sort.toArray()[1];
+      this.userGrpDataSource.sortData = (data: String[], sort: MatSort) => {
+        const isAsc = sort.direction === 'asc';
+        return data.sort((a: any, b: any) => {
+            let columnName = sort.active;
+          return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
+        });
+       }
+      this.roleDataSource.sortData = (data: String[], sort: MatSort) => {
+        const isAsc = sort.direction === 'asc';
+        return data.sort((a: any, b: any) => {
+            let columnName = sort.active;
+          return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
+        });
+       }
     });
       this.solutationList = [
       {
@@ -230,7 +244,7 @@ export class NewUserStepComponent implements OnInit {
     ${(this.fromCreate == 'Create') ? (this.translationData.lblCreate ? 'Create '+ this.translationData.lblNewUser : 'New Account') :'Create New Account'}`;
     // ${this.translationData.lblAccountDetails ? this.translationData.lblAccountDetails : 'Account Details'}`;
   }
- 
+
   setDefaultOrgVal(){
     this.orgDefaultFlag = {
       language: true,
@@ -546,7 +560,7 @@ export class NewUserStepComponent implements OnInit {
       this.accountService.addAccountGroups(grpObj).subscribe((data: any)=>{
         this.updateTableData(false);
         this.showLoadingIndicator=false;
-      }, (error) => { 
+      }, (error) => {
         this.showLoadingIndicator=false;
        });
     }else{
