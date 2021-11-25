@@ -12,5 +12,3 @@
         public long ModifiedAt { get; set; }
     }
 }
-
-
