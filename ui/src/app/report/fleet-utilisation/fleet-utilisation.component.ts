@@ -1762,8 +1762,8 @@ getAllSummaryData(unitValkm, unitKmperday){
       }
     });
 
-    let tempObj: any=[];
     this.initData.forEach(e => {
+      let tempObj: any=[];
       this.displayedColumns.forEach(element => {
         switch(element){
           case 'vehiclename' :{
@@ -1821,6 +1821,7 @@ getAllSummaryData(unitValkm, unitKmperday){
         }
       });
       this.exportDetailTableData.push(tempObj);
+      console.log(this.exportDetailTableData);
     });
   }
 
