@@ -180,7 +180,7 @@
                 fxFlex.lt-sm="100%">
                   <span
                     style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;padding-top: 20px'>{{
-                    translationData.lblCo2Emission || 'Co2Emission' }}</span>
+                    translationData.lblCO2Emission || 'Co2Emission' }}</span>
                   <div *ngIf="Co2ChartType =='Line'" class="chart-wrapper">
                     <canvas baseChart [datasets]="lineChartData3" [labels]="lineChartLabels" [options]="lineChartOptions4"
                       [colors]="lineChartColors" [legend]="lineChartLegend" [chartType]="lineChartType"
@@ -577,7 +577,7 @@
                 </mat-cell>      
               </ng-container>
               <ng-container matColumnDef="idlingPTOScore">
-                <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idlingwithpto')">{{ translationData.lblIdlingwithPTOscore || 'Idling with PTO (hh:mm:ss) score' }}
+                <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idlingwithpto')">{{ translationData.lblIdlingwithPTOscore || 'Idling with PTO score (hh:mm:ss)' }}
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingwithpto')">
                   <span>{{ row.convertedIdlingPTOScore }}</span>
