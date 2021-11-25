@@ -28,7 +28,7 @@ namespace net.atos.daf.ct2.Schedular.test
         [TestMethod]
         public void GeDataCleanupConfigurationTest()
         {
-            var result = _dataCleanupRepository.DataPurging().Result;
+            var result = _dataCleanupRepository.DataPurging(new schedular.entity.DataCleanupConfiguration()).Result;
             // var purgingConfigdata = result.GroupBy(u => u.ColumnName).Select(grp => grp.ToList()).ToList();
             Assert.IsTrue(result != null);
         }

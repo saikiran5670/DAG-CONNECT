@@ -172,7 +172,7 @@ namespace net.atos.daf.ct2.schedularservice.ServiceSchedular
             bool doneEnqueueing = true;
             do
             {
-                DataCleanupConfiguration op;
+                DataCleanupConfiguration op = new DataCleanupConfiguration();
                 while (_purgingTables.TryDequeue(out op))
                 {
                     Console.WriteLine("Worker {0} is processing item {1}", workerId, op.ColumnName);

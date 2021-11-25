@@ -77,7 +77,7 @@ namespace net.atos.daf.ct2.schedular
             bool doneEnqueueing = true;
             do
             {
-                DataCleanupConfiguration op;
+                DataCleanupConfiguration op = new DataCleanupConfiguration();
                 while (_dataCleanupConfigurations.TryDequeue(out op))
                 {
                     Console.WriteLine("Worker {0} is processing item {1}", workerId, op.ColumnName);
