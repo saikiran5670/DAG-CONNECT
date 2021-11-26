@@ -392,7 +392,7 @@
     </button>
 </span>
 <span *ngIf="actionType === 'edit'">
-    <button mat-button  color="primary" (click)="createCorridorClicked()"><!--(!corridorFormGroup.valid || !strPresentStart || !strPresentEnd)-->
+    <button mat-button  color="primary" (click)="createCorridorClicked()" [disabled]="!onSearchClicked"><!--(!corridorFormGroup.valid || !strPresentStart || !strPresentEnd)-->
         <span>{{ translationData.lblSave || 'Save' }}</span>
     </button>
 </span>
