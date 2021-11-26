@@ -547,23 +547,29 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     // this.driverListData = this.finalDriverList;
     // this.vehicleListData = this.finalVehicleList;
 
-    if(parseInt(event.value) == 0){ //-- all group
+    if(parseInt(event.value) == 0){ //-- all group     
+      this.driverDD = this.driverListData;
+      this.vehicleDD = this.vehicleListData;
       this.ecoScoreForm.get('vehicle').setValue(0);
       this.ecoScoreForm.get('driver').setValue(0);
-      let vehicleData = this.vehicleGroupListData.slice();
-      this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
-      console.log("vehicleDD 1", this.vehicleDD);
+    //  let vehicleData = this.vehicleGroupListData.slice();
+    //  this.vehicleDD = this.getUniqueVINs([ ...vehicleData,...this.singleVehicle]);
+    //   console.log("vehicleDD 1", this.vehicleDD);
     }else{
       let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
       if(search.length > 0){
         this.vehicleDD = [];
         search.forEach(element => {
           this.vehicleDD.push(element);
-          console.log("vehicleDD 2", this.vehicleDD);
+          //console.log("vehicleDD 2", this.vehicleDD);
         });
-      }
+      }  
+      this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll  });   
       // this.vehicleListData = this.finalVehicleList.filter(i => i.vehicleGroupId == parseInt(event.value));
-    }
+    }   
+    this.resetVehicleFilter();
+    this.resetDriverFilter();
+    
   // }else {
   //   this.ecoScoreForm.get('vehicleGroup').setValue(parseInt(this.searchFilterpersistData.vehicleGroupDropDownValue));
   //   this.ecoScoreForm.get('vehicle').setValue(parseInt(this.searchFilterpersistData.vehicleDropDownValue));
@@ -590,16 +596,17 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     }else{
       // let selectedVin = this.vehicleListData.filter(i=>i.vehicleId === parseInt(event.value))[0]['vin'];
       // this.driverListData = this.finalDriverList.filter(i => i.vin == selectedVin);
-      let search = this.driverListData.filter(i => i.driverID == parseInt(event.value));
+      let newVin:any = this.vehicleDD.filter(item => item.vehicleId == parseInt(event.value))
+      let search = this.driverListData.filter(i => i.vin == newVin[0].vin);
       if(search.length > 0){
         this.driverDD = [];
         search.forEach(element => {
           this.driverDD.push(element);
-          console.log("driverDD 2", this.driverDD);
+         // console.log("driverDD 2", this.driverDD);
         });
       }
-    }
-
+    }   
+    this.resetDriverFilter();
     this.searchFilterpersistData["vehicleDropDownValue"] = event.value;
     this.setGlobalSearchData(this.searchFilterpersistData)
     this.internalSelection = true;
@@ -847,7 +854,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
         }
       }
 
-   
+      
       this.driverListData = filteredDriverList;
       this.vehicleListData = filteredVehicleList;
       this.vehicleGroupListData = finalVehicleList;
@@ -1664,7 +1671,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     this.filteredVehicleGroups.next(
       this.vehicleGroupListData.filter(item => item.vehicleGroupName.toLowerCase().indexOf(vehicleSearch) > -1)
     );
-    console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
+   // console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
 
   }
 
@@ -1682,7 +1689,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     this.filteredVehicle.next(
       this.vehicleDD.filter(item => item.vin?.toLowerCase()?.indexOf(search) > -1)
     );
-    console.log("filtered vehicles", this.filteredVehicle);
+    //console.log("filtered vehicles", this.filteredVehicle);
   }
 
   filterDriver(DriverSearch){
@@ -1696,10 +1703,10 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     }else{
       DriverSearch = DriverSearch.toLowerCase();
     }
-    this.filteredVehicle.next(
+    this.filteredDriver.next(
       this.driverDD.filter(item => item.firstName.toLowerCase().indexOf(DriverSearch) > -1)
     );
-    console.log("filtered vehicles", this.filteredVehicle);
+    //console.log("filteredDriver vehicles", this.filteredDriver);
   }
 
   resetVehicleFilter(){

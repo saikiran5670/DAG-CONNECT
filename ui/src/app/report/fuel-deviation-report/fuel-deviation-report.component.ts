@@ -1,4 +1,4 @@
-import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, Inject, OnInit, ViewChild } from '@angular/core';
 import { MultiDataSet, Label, Color, SingleDataSet} from 'ng2-charts';
 import { ChartOptions, ChartType, ChartDataSets } from 'chart.js';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -455,8 +455,16 @@ export class FuelDeviationReportComponent implements OnInit {
     this.matIconRegistry.addSvgIcon("fuel-incr-stop", this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/icons/fuelDeviationIcons/fuel-increase-stop.svg"));
   }
 
-  
   ngOnDestroy() {
+    this.setFilterValues();
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  reloadWindow($event: any) {
+    this.setFilterValues();
+  }
+  
+  setFilterValues(){
     this.globalSearchFilterData["vehicleGroupDropDownValue"] = this.fuelDeviationForm.controls.vehicleGroup.value;
     this.globalSearchFilterData["vehicleDropDownValue"] = this.fuelDeviationForm.controls.vehicle.value;
     this.globalSearchFilterData["timeRangeSelection"] = this.selectionTab;
@@ -475,7 +483,7 @@ export class FuelDeviationReportComponent implements OnInit {
     }
     this.setGlobalSearchData(this.globalSearchFilterData);
   }
-
+  
   setGlobalSearchData(globalSearchFilterData: any) {
     this.globalSearchFilterData["modifiedFrom"] = "TripReport";
     localStorage.setItem("globalSearchFilterData", JSON.stringify(globalSearchFilterData));
@@ -718,7 +726,7 @@ export class FuelDeviationReportComponent implements OnInit {
     }
     let vehicleData = this.vehicleListData.slice();
         this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
-        console.log("vehicleDD 1", this.vehicleDD);
+        //console.log("vehicleDD 1", this.vehicleDD);
         this.vehicleDD.sort(this.compareVin);
         this.resetVehicleFilter();
 
@@ -743,7 +751,7 @@ export class FuelDeviationReportComponent implements OnInit {
 
   setVehicleGroupAndVehiclePreSelection() {
     if(!this.internalSelection && this.globalSearchFilterData.modifiedFrom !== "") {
-      this.onVehicleGroupChange(this.globalSearchFilterData.vehicleGroupDropDownValue || { value : 0 });
+      this.onVehicleGroupChange(this.globalSearchFilterData.vehicleGroupDropDownValue, false);
     }
   }
 
@@ -1065,9 +1073,9 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     return date;
   }
 
-  onVehicleGroupChange(event: any){
+  onVehicleGroupChange(event: any, flag?: any){
     let _val: any;
-    if(event.value || event.value == 0){ // from internal veh-grp DD event
+    if(flag && (event.value || event.value == 0)){ // from internal veh-grp DD event
       this.internalSelection = true; 
       _val = parseInt(event.value); 
       this.fuelDeviationForm.get('vehicle').setValue(_val == 0 ? 0 : '');
@@ -1081,8 +1089,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
       this.vehicleDD = [];
       let vehicleData = this.vehicleListData.slice();
       this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
-      console.log("vehicleDD 2", this.vehicleDD);
-        
+      //console.log("vehicleDD 2", this.vehicleDD);
       this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll , registrationNo: this.translationData.lblAll , vin: this.translationData.lblAll  });
       this.resetVehicleFilter();
     }else{
@@ -1091,8 +1098,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
         this.vehicleDD = [];
         search.forEach(element => {
           this.vehicleDD.push(element); 
-          console.log("vehicleDD 3", this.vehicleDD);
-         
+          //console.log("vehicleDD 3", this.vehicleDD);
         });
       }
     }
@@ -1154,7 +1160,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
         }, (error) => {
           this.hideloader();
           this.resetChartData();
-          console.log("No charts data available...");
+          //console.log("No charts data available...");
         });
       }, (error)=>{
         //console.log(error);
@@ -1844,7 +1850,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     this.filteredVehicleGroups.next(this.vehicleGrpDD.slice());
   }
   filterVehicleGroups(vehicleSearch){
-    console.log("filterVehicleGroups called");
+    //console.log("filterVehicleGroups called");
     if(!this.vehicleGrpDD){
       return;
     }
@@ -1857,12 +1863,12 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     this.filteredVehicleGroups.next(
       this.vehicleGrpDD.filter(item => item.vehicleGroupName.toLowerCase().indexOf(vehicleSearch) > -1)
     );
-    console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
+    //console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
 
   }
 
   filterVehicle(VehicleSearch){
-    console.log("vehicle dropdown called");
+    //console.log("vehicle dropdown called");
     if(!this.vehicleDD){
       return;
     }
@@ -1875,7 +1881,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     this.filteredVehicle.next(
       this.vehicleDD.filter(item => item.vin.toLowerCase().indexOf(VehicleSearch) > -1)
     );
-    console.log("filtered vehicles", this.filteredVehicle);
+    //console.log("filtered vehicles", this.filteredVehicle);
   }
   
   resetVehicleFilter(){
