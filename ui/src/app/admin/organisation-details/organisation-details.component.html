@@ -97,10 +97,10 @@
                     </div>
                 </div>
             </div>
-            <div style='padding: 20px; position: relative;'>
+            <div *ngIf="organisationData && userLevel == 10" style='padding: 20px; position: relative;'>
                 <mat-divider></mat-divider>
             </div>
-            <div *ngIf="organisationData">
+            <div *ngIf="organisationData && userLevel == 10">
                 <form [formGroup]="orgDetailsPreferenceForm">
                     <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
                         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
