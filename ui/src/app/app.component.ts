@@ -1065,8 +1065,17 @@ export class AppComponent {
     }
   }
 
-  navigateToPage(pageName) {
+  navigateToPage(menu) {
     //this.currentTitle = this.pageTitles[pageName];
+    if(menu.externalLink) {
+      if(menu.url == "information") {
+        let selectedLanguage = JSON.parse(localStorage.getItem("language"));
+        if(selectedLanguage.code == "nl-NL") {
+          menu.link = menu.link.replace('/en/','/de-de/');
+        }
+      }
+      window.open(menu.link, '_blank');
+    }
     if (this.menuCollapsed) {
       this.hideAllOpenMenus();
     }

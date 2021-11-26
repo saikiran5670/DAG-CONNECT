@@ -1,5 +1,5 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { Component, ElementRef, Inject, Input, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, ElementRef, Inject, Input, OnInit, OnDestroy, ViewChild, HostListener } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -567,17 +567,25 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
         this.tripReportId = repoId[0].id; 
         this.getFleetUtilPreferences();
       }else{
-        console.error("No report id found!")
+        //console.error("No report id found!")
       }
     }, (error)=>{
-      console.log('Report not found...', error);
+      //console.log('Report not found...', error);
       reportListData = [{name: 'Fleet Utilisation Report', id: this.tripReportId}];
       // this.getFleetUtilPreferences();
     });
   }
 
   ngOnDestroy(){
-    console.log("component destroy...");
+    this.setFilterValues();
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  reloadWindow($event: any) {
+    this.setFilterValues();
+  }
+
+  setFilterValues(){
     this.fleetUtilizationSearchData["vehicleGroupDropDownValue"] = this.tripForm.controls.vehicleGroup.value;
     this.fleetUtilizationSearchData["vehicleDropDownValue"] = this.tripForm.controls.vehicle.value;
     this.fleetUtilizationSearchData["timeRangeSelection"] = this.selectionTab;
@@ -927,7 +935,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
     let vehicleData = this.vehicleListData.slice();
     this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
-    console.log("vehicleDD 1", this.vehicleDD);
+    //console.log("vehicleDD 1", this.vehicleDD);
     this.vehicleDD.sort(this.compareVin);
     this.resetVehicleFilter();
 
@@ -1280,7 +1288,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
   }
 
   updateDataSource(tableData: any) {
-    console.log("tableData", tableData);
+    //console.log("tableData", tableData);
     this.initData = tableData;
     this.showMap = false;
     this.selectedTrip.clear();
@@ -1294,23 +1302,22 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
   setVehicleGroupAndVehiclePreSelection() {
     if(!this.internalSelection && this.fleetUtilizationSearchData.modifiedFrom !== "") {
       // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
-      this.onVehicleGroupChange(this.fleetUtilizationSearchData.vehicleGroupDropDownValue || { value : 0 });
+      this.onVehicleGroupChange(this.fleetUtilizationSearchData.vehicleGroupDropDownValue, false);
     }
     // else if(this.fleetUtilizationSearchData.vehicleDropDownValue !== "") {
     //   // this.tripForm.get('vehicle').setValue(this.fleetUtilizationSearchData.vehicleDropDownValue);
     // }
   }
 
-  onVehicleGroupChange(event: any){
-   if(event.value || event.value == 0){
+  onVehicleGroupChange(event: any, flag?: any){
+   if(flag && (event.value || event.value == 0)){
       this.internalSelection = true; 
       this.tripForm.get('vehicle').setValue(0); //- reset vehicle dropdown
       if(parseInt(event.value) == 0){ //-- all group
         //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
         let vehicleData = this.vehicleListData.slice();
         this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
-        console.log("vehicleDD 2", this.vehicleDD);
-    
+        //console.log("vehicleDD 2", this.vehicleDD);
       }else{
       //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
       let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
@@ -1318,7 +1325,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
           this.vehicleDD = [];
           search.forEach(element => {
             this.vehicleDD.push(element); 
-            console.log("vehicleDD 3", this.vehicleDD);
+            //console.log("vehicleDD 3", this.vehicleDD);
      
           });
         }
@@ -1716,7 +1723,7 @@ getAllSummaryData(){
   })
 
  this.initData.forEach(item => {     
-   console.log("initData", this.initData);
+   //console.log("initData", this.initData);
     worksheet.addRow([item.vehicleName,item.vin, item.registrationNumber,item.convertedDistance,
       item.numberOfTrips,item.convertedTripTime, item.convertedDrivingTime, item.convertedIdleDuration,
       item.convertedStopTime, item.convertedAverageDistance, item.convertedAverageSpeed, item.convertedAverageWeight, 
@@ -1888,7 +1895,7 @@ getAllSummaryData(){
   }
 
   filterVehicleGroups(vehicleSearch){
-    console.log("filterVehicleGroups called");
+    //console.log("filterVehicleGroups called");
     if(!this.vehicleGrpDD){
       return;
     }
@@ -1901,12 +1908,12 @@ getAllSummaryData(){
     this.filteredVehicleGroups.next(
       this.vehicleGrpDD.filter(item => item.vehicleGroupName.toLowerCase().indexOf(vehicleSearch) > -1)
     );
-    console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
+    //console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
 
   }
 
   filterVehicle(VehicleSearch){
-    console.log("vehicle dropdown called");
+    //console.log("vehicle dropdown called");
     if(!this.vehicleDD){
       return;
     }
@@ -1919,7 +1926,7 @@ getAllSummaryData(){
     this.filteredVehicle.next(
       this.vehicleDD.filter(item => item.vin?.toLowerCase()?.indexOf(VehicleSearch) > -1)
     );
-    console.log("filtered vehicles", this.filteredVehicle);
+    //console.log("filtered vehicles", this.filteredVehicle);
   }
   
   resetVehicleFilter(){
