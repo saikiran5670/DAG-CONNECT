@@ -434,6 +434,7 @@ export class RouteCalculatingComponent implements OnInit {
   public ngAfterViewInit() {
     this.initMap();
     if((this.actionType === 'edit' || this.actionType === 'view') && this.selectedElementData){
+      this.onSearchClicked = true;
       this.setCorridorData();
       this.createFlag = false;
       this.strPresentStart = true;
@@ -468,7 +469,7 @@ export class RouteCalculatingComponent implements OnInit {
   onSearchClicked : boolean = false;
   sliderChanged(){
      // this.corridorWidth = _event.value;
-     
+     this.onSearchClicked = false;
       this.corridorWidthKm = this.corridorWidth / 1000;
       if(this.corridorWidthKm > 10)
       {
@@ -490,6 +491,7 @@ export class RouteCalculatingComponent implements OnInit {
     }
   }
   changeSliderInput(){
+    this.onSearchClicked = false;
     this.corridorWidthKm = this.corridorFormGroup.controls.widthInput.value;
     this.corridorWidth = this.corridorWidthKm * 1000;
   }
