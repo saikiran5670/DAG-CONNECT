@@ -89,7 +89,7 @@ export class CreateEditViewGroupComponent implements OnInit {
     this.landmarkCategoryService.getLandmarkCategoryDetails().subscribe((categoryData: any) => {
       this.fillDropdown(categoryData.categories); // fill dropdown
     }, (error) => {
-    }); 
+    });
   }
 
   fillDropdown(categoryData: any){
@@ -106,7 +106,7 @@ export class CreateEditViewGroupComponent implements OnInit {
             organizationId: element.organizationId
           });
         });
-      } 
+      }
       if(subCatDD && subCatDD.length > 0){ // sub-category dropdown
         subCatDD.forEach(elem => {
           this.subCategoryList.push({
@@ -139,9 +139,9 @@ export class CreateEditViewGroupComponent implements OnInit {
   }
 
   getBreadcum() {
-    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / 
-    ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} / 
-    ${this.translationData.lblLandmarks ? this.translationData.lblLandmarks : "Landmarks"} / 
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} /
+    ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} /
+    ${this.translationData.lblLandmarks ? this.translationData.lblLandmarks : "Landmarks"} /
     ${(this.actionType == 'edit') ? (this.translationData.lblEditGroupDetails ? this.translationData.lblEditGroupDetails : 'Edit Group Details') : (this.actionType == 'view') ? (this.translationData.lblViewGroupDetails ? this.translationData.lblViewGroupDetails : 'View Group Details') : (this.translationData.lblAddNewGroup ? this.translationData.lblAddNewGroup : 'Add New Group')}`;
   }
 
@@ -164,7 +164,7 @@ export class CreateEditViewGroupComponent implements OnInit {
           this.loadPOISelectedData(this.poiGridData);
         }
       }
-      
+
     });
   }
 
@@ -239,15 +239,30 @@ export class CreateEditViewGroupComponent implements OnInit {
       return (
         data.name.toString().toLowerCase().includes(filter) ||
         data.categoryName.toString().toLowerCase().includes(filter) ||
-        data.subCategoryName.toString().toLowerCase().includes(filter) || 
+        data.subCategoryName.toString().toLowerCase().includes(filter) ||
         data.address.toString().toLowerCase().includes(filter)
       );
     };
     setTimeout(()=>{
       this.poiDataSource.paginator = this.paginator.toArray()[0];
       this.poiDataSource.sort = this.sort.toArray()[0];
+      this.poiDataSource.sortData = (data: String[], sort: MatSort) => {
+        const isAsc = sort.direction === 'asc';
+        return data.sort((a: any, b: any) => {
+            let columnName = sort.active;
+            return this.compare(a[sort.active], b[sort.active], isAsc , columnName);
+        });
+      }
     });
+
   }
+  compare(a: Number | String, b: Number | String, isAsc: boolean, columnName: any) {
+
+    if(!(a instanceof Number)) a = a.toString().toUpperCase();
+    if(!(b instanceof Number)) b = b.toString().toUpperCase();
+
+  return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+}
 
   updateGeofenceDataSource(tableData: any){
     this.geofenceDataSource = new MatTableDataSource(tableData);
@@ -261,6 +276,13 @@ export class CreateEditViewGroupComponent implements OnInit {
     setTimeout(()=>{
       this.geofenceDataSource.paginator = this.paginator.toArray()[1];
       this.geofenceDataSource.sort = this.sort.toArray()[1];
+      this.geofenceDataSource.sortData = (data: String[], sort: MatSort) => {
+        const isAsc = sort.direction === 'asc';
+        return data.sort((a: any, b: any) => {
+            let columnName = sort.active;
+            return this.compare(a[sort.active], b[sort.active], isAsc , columnName);
+        });
+      }
     });
   }
 
@@ -280,7 +302,7 @@ export class CreateEditViewGroupComponent implements OnInit {
     let emitObj = {
       stepFlag: false,
       successMsg: ""
-    }  
+    }
     this.backToPage.emit(emitObj);
   }
 
@@ -307,9 +329,9 @@ export class CreateEditViewGroupComponent implements OnInit {
           modifiedBy: 0,
           poilist: landmarkList
         }
-        
+
         this.landmarkGroupService.createLandmarkGroup(createGrpObj).subscribe((response) => {
-          let objData = { 
+          let objData = {
               organizationid : this.OrgId,
           };
           this.landmarkGroupService.getLandmarkGroups(objData).subscribe((landmarkGrpData: any) => {
@@ -348,7 +370,7 @@ export class CreateEditViewGroupComponent implements OnInit {
           roleId: 0,
           name: ""
         }
-        let objData = { 
+        let objData = {
           organizationid : this.OrgId,
         };
         this.landmarkGroupService.getLandmarkGroups(objData).subscribe((landmarkGrpData: any) => {

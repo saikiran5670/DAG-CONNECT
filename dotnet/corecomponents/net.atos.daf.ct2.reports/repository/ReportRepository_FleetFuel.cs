@@ -498,7 +498,7 @@ namespace net.atos.daf.ct2.reports.repository
 						Count(distinct trip_id)                                 as tripcount,
                         sum(etl_gps_distance)                                   as totaldistance,
                         sum(idle_duration)                                      as totalidleduration,
-						(SUM(etl_gps_fuel_consumed)/SUM(etl_gps_distance))     as fuelconsumption,
+						(SUM(etl_gps_fuel_consumed)/case when SUM(etl_gps_distance) >0 then SUM(etl_gps_distance) else 1 end) as fuelconsumption,
                         sum(etl_gps_fuel_consumed)                              as fuelconsumed,
 						sum(co2_emission)                                       as co2emission	
                         FROM tripdetail.trip_statistics CT
