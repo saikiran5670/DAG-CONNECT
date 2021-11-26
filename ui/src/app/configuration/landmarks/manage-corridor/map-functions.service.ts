@@ -132,9 +132,7 @@ export class MapFunctionsService {
   // }
 
   group = new H.map.Group();
-
   viaRoutePlottedPoints = [];
-  gpsLineString:any = [];
 
   viewSelectedRoutes(_selectedRoutes, accountOrganizationId?, isRCorridor?) {
     let corridorName = '';
@@ -145,7 +143,6 @@ export class MapFunctionsService {
     this.hereMap.removeLayer(this.defaultLayers.vector.normal.truck);
     this.transportOnceChecked = false;
     this.trafficOnceChecked = false;
-    this.gpsLineString = [];
     this.viaRoutePlottedPoints = [];
  // var group = new H.map.Group();
  this.mapGroup.removeAll();
@@ -238,8 +235,9 @@ export class MapFunctionsService {
       }
         //this.group.addObjects([this.startMarker, this.endMarker]);
         if(isRCorridor && _selectedRoutes[i].corridorType && _selectedRoutes[i].corridorType == 'R'){
+          let gpsLineString:any = [];
           _selectedRoutes[i].viaAddressDetail.forEach(element => {
-            this.gpsLineString.push(element.latitude, element.longitude, 0);
+            gpsLineString.push(element.latitude, element.longitude, 0);
           });
           if(_selectedRoutes[i].viaAddressDetail.length > 0){
             // this.viaRouteCount = true;
@@ -249,7 +247,7 @@ export class MapFunctionsService {
             });
             this.plotViaStopPoints();
           }
-          this.addTruckRouteShapeToMapEdit();
+          this.addTruckRouteShapeToMapEdit(gpsLineString);
         } else {
         if (accountOrganizationId) {
           if (_selectedRoutes[i].id) {
@@ -309,8 +307,8 @@ export class MapFunctionsService {
         this.viewSelectedRoutes(_selectedRoutes, accountOrganizationId, true);
   }
 
-  addTruckRouteShapeToMapEdit(){
-        let co = [[19.14012, 72.88097, 0], [12.96779999999997, 77.58812000000155, 0]];
+  addTruckRouteShapeToMapEdit(gpsLineString){
+        let co = [[19.14012, 72.88097, 0], [19.14012, 72.88097, 0]];
         let ob = {
           precision : 5,
           thirdDim : 0,
@@ -319,7 +317,7 @@ export class MapFunctionsService {
         };
         let lineVal = encode(ob);
         let linestring = H.geo.LineString.fromFlexiblePolyline(lineVal);
-        linestring.Y = this.gpsLineString;
+        linestring.Y = gpsLineString;
         this.corridorPath = new H.map.Polyline(linestring, {
           style:  {
             lineWidth: this.corridorWidthKm * 10,
