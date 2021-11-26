@@ -1275,7 +1275,6 @@ export class RouteCalculatingComponent implements OnInit {
     this.sampledGpsCoordinates = [];
     let pathWidth= this.corridorWidthKm * 10;
     let threshold = this.corridorWidthKm * 0.75;
-    // let thres1 = this.corridorFormGroup.get("widthInput");
     if(threshold < 1) threshold =1;
     this.routeDistance = 0;
     if(this.routePoints.sections){
@@ -1296,9 +1295,8 @@ export class RouteCalculatingComponent implements OnInit {
           sampledLineString.push(polylc[0], polylc[1], 0);
           this.appendGpsCoordinates('R', '', polylc[0], polylc[1]);
         }
-        console.log(counter);
+        // console.log(counter);
         if(counter > threshold){
-            console.log("counter "+counter);
           sampledLineString.push(polylc5[0], polylc5[1], 0);
           this.appendGpsCoordinates('R', '', polylc5[0], polylc5[1]);
           counter = 0;
@@ -1311,45 +1309,14 @@ export class RouteCalculatingComponent implements OnInit {
       console.log(linestring);
       linestring.Y = sampledLineString;
       console.log(linestring);
-       // Create a corridor width to display the route:
-        this.corridorPath = new H.map.Polyline(linestring, {
-        style:  {
-          lineWidth: pathWidth,
-          strokeColor: 'rgba(181, 199, 239, 0.6)'
-        }
-      });
-      // Create a polyline to display the route:
-      let polylinePath = new H.map.Polyline(linestring, {
-        style:  {
-          lineWidth: 3,
-          strokeColor: '#436ddc'
-        }
-      });
-  
-      // Add the polyline to the map
-      this.mapGroup.addObjects([this.corridorPath,polylinePath]);
-      this.hereMap.addObject(this.mapGroup);
-      // And zoom to its bounding rectangle
-      this.hereMap.getViewModel().setLookAtData({
-         bounds: this.mapGroup.getBoundingBox()
-      });
+      this.renderGpsCoordinatesInMap(linestring);
     });
-
     console.log(this.sampledGpsCoordinates);
   }
   }
 
   //Added as part of #19807
   addTruckRouteShapeToMapEdit(){
-    // if(this.viaRoutePlottedPoints.length>0){
-    //   let waypoints = [];
-    //   for(var i in this.viaRoutePlottedPoints){
-    //     waypoints.push(`${this.viaRoutePlottedPoints[i]["latitude"]},${this.viaRoutePlottedPoints[i]["longitude"]}`)
-    //   }
-    //   routeRequestParams['via'] = new H.service.Url.MultiValueQueryParameter( waypoints );
-    // }
-    // if(this.routePoints.sections){
-    //     this.routePoints.sections.forEach((section, index) => {
         // Create a corridor width to display the route:
         //Sample data to create object and get the HereMap linestring format
         let co = [[19.14012, 72.88097, 0], [12.96779999999997, 77.58812000000155, 0]];
@@ -1362,29 +1329,53 @@ export class RouteCalculatingComponent implements OnInit {
         let lineVal = encode(ob);
         let linestring = H.geo.LineString.fromFlexiblePolyline(lineVal);
         linestring.Y = this.gpsLineString;
-        this.corridorPath = new H.map.Polyline(linestring, {
-          style:  {
-            lineWidth: this.corridorWidthKm * 10,
-            strokeColor: 'rgba(181, 199, 239, 0.6)'
-          }
-        });
-        // Create a polyline to display the route:
-        let polylinePath = new H.map.Polyline(linestring, {
-          style:  {
-            lineWidth: 3,
-            strokeColor: '#436ddc'
-          }
-        });
+        this.renderGpsCoordinatesInMap(linestring);
+        // this.corridorPath = new H.map.Polyline(linestring, {
+        //   style:  {
+        //     lineWidth: this.corridorWidthKm * 10,
+        //     strokeColor: 'rgba(181, 199, 239, 0.6)'
+        //   }
+        // });
+        // // Create a polyline to display the route:
+        // let polylinePath = new H.map.Polyline(linestring, {
+        //   style:  {
+        //     lineWidth: 3,
+        //     strokeColor: '#436ddc'
+        //   }
+        // });
 
-        // Add the polyline to the map
-        this.mapGroup.addObjects([this.corridorPath,polylinePath]);
-        this.hereMap.addObject(this.mapGroup);
-        // And zoom to its bounding rectangle
-        this.hereMap.getViewModel().setLookAtData({
-          bounds: this.mapGroup.getBoundingBox()
-        });
-    //   });
-    // }
+        // // Add the polyline to the map
+        // this.mapGroup.addObjects([this.corridorPath,polylinePath]);
+        // this.hereMap.addObject(this.mapGroup);
+        // // And zoom to its bounding rectangle
+        // this.hereMap.getViewModel().setLookAtData({
+        //   bounds: this.mapGroup.getBoundingBox()
+        // });
+  }
+
+  renderGpsCoordinatesInMap(linestring: any){
+    // Create a corridor width to display the route:
+    this.corridorPath = new H.map.Polyline(linestring, {
+      style:  {
+        lineWidth: this.corridorWidthKm * 10,
+        strokeColor: 'rgba(181, 199, 239, 0.6)'
+      }
+    });
+    // Create a polyline to display the route:
+    let polylinePath = new H.map.Polyline(linestring, {
+      style:  {
+        lineWidth: 3,
+        strokeColor: '#436ddc'
+      }
+    });
+
+    // Add the polyline to the map
+    this.mapGroup.addObjects([this.corridorPath,polylinePath]);
+    this.hereMap.addObject(this.mapGroup);
+    // And zoom to its bounding rectangle
+    this.hereMap.getViewModel().setLookAtData({
+      bounds: this.mapGroup.getBoundingBox()
+    });
   }
 
   appendGpsCoordinates(type: any, location: any, lat: any, long: any){
