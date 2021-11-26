@@ -26,7 +26,7 @@
                 <!-- <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} <span class='mandatoryColor'>*</span></mat-label> -->
                 <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} </mat-label>
                 <mat-form-field appearance="outline">
-                  <mat-select [disabled]="vehicleGrpDD.length == 0" (selectionChange)="onVehicleGroupChange($event)" placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}"  formControlName="vehicleGroup">
+                  <mat-select [disabled]="vehicleGrpDD.length == 0" (selectionChange)="onVehicleGroupChange($event, true)" placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}"  formControlName="vehicleGroup">
                       <mat-option>
                           <ngx-mat-select-search (keyup)="filterVehicleGroups(vehicleSearch.value)" placeholderLabel="{{ translationData.lblSearch|| 'Search' }}" #vehicleSearch>
                             <mat-icon (click)="resetVehicleGroupFilter()" ngxMatSelectSearchClear>close</mat-icon>

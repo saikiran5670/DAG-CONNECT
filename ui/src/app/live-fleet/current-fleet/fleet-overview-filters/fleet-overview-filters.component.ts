@@ -623,7 +623,7 @@ removeDuplicates(originalArray, prop) {
         if(e.fleetOverviewAlert && e.fleetOverviewAlert.length > 0)
         {
         for(let i of this.filterVehicleForm.controls.category.value) {
-        let alertcategorycheck = e.fleetOverviewAlert.filter(l => l.level == i);
+        let alertcategorycheck = e.fleetOverviewAlert.filter(l => l.categoryType == i);
         if(alertcategorycheck.length >0){
           this.vehicleListData.push(e);
           this.noRecordFlag = false;

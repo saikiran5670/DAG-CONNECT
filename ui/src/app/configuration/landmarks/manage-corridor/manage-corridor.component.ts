@@ -316,7 +316,8 @@ export class ManageCorridorComponent implements OnInit {
       let arr = this.markerArray.filter(item => item.id != row.id);
       this.markerArray = arr;
       }
-    this.mapFunctions.viewSelectedRoutes(this.markerArray,this.accountOrganizationId);
+      this.mapFunctions.viewSelectedRoutesCorridor(this.markerArray,this.accountOrganizationId);
+    // this.mapFunctions.viewSelectedRoutes(this.markerArray,this.accountOrganizationId);
 
      // this.addPolylineToMap();
   }
