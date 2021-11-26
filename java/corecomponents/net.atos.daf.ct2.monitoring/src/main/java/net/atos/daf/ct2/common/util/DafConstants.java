@@ -130,7 +130,7 @@ public class DafConstants {
 	
 	///update query
 	public static final String LIVEFLEET_WARNING_DEACTIVATE="UPDATE livefleet.livefleet_warning_statistics set warning_type='D' where vin = ? and warning_class=? and warning_number=? and warning_type='A'";
-	public static final String READ_DTC_WARNING = "select * from master.dtcwarning where class=? and number=?";
+	public static final String READ_DTC_WARNING = "select id from master.dtcwarning where class=? and number=?";
 	
 		
 		
