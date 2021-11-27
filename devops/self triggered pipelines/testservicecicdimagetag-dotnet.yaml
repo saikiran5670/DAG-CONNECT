@@ -10,6 +10,8 @@ trigger:
 #    include:
 #    - dotnet/businessservices/net.atos.daf.ct2.accountservice
 
+name: '1.0.$(Rev:r)'
+
 variables:
  - name: imagerepository
    value: 'testservice-auto'
