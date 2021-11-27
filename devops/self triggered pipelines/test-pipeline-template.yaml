@@ -1,0 +1,97 @@
+parameters:
+- name: containerRegistry
+  type: string
+  default: 'containerRegistry'
+- name: imagerepository
+  type: string
+  default: 'imagerepository'
+- name: variableGroup
+  type: string
+  default: 'variableGroup'
+- name: dockerFile
+  type: string
+  default: 'dockerFile'
+- name: manifestFile
+  type: string
+  default: 'manifestFile'
+- name: appsettingsPath
+  type: string
+  default: 'appsettingsPath'
+- name: log4netConfigPath
+  type: string
+  default: 'log4netConfigPath'
+
+
+
+jobs:
+- job:
+  pool: $(PRIVATEAGENT)
+  variables:
+  - group: ${{ parameters.variableGroup }}
+  steps:
+  - task: replacetokens@3
+    inputs:
+      targetFiles: ${{ parameters.appsettingsPath }}
+      encoding: 'auto'
+      writeBOM: true
+      actionOnMissing: 'warn'
+      keepToken: false
+      tokenPrefix: '#{'
+      tokenSuffix: '}#'
+      useLegacyPattern: false
+      enableTelemetry: true
+
+  - task: CmdLine@2
+    inputs:
+        script: |
+          cat ${{ parameters.appsettingsPath }}
+
+  - task: replacetokens@3
+    inputs:
+      targetFiles: ${{ parameters.log4netConfigPath }}
+      encoding: 'auto'
+      writeBOM: true
+      actionOnMissing: 'warn'
+      keepToken: false
+      tokenPrefix: '#{'
+      tokenSuffix: '}#'
+      useLegacyPattern: false
+      enableTelemetry: true
+      
+  - task: Docker@2
+    displayName: 'Build an image'
+    inputs:
+      containerRegistry:  ${{ parameters.ContainerRegistry }}
+      repository: ${{parameters.imagerepository}}
+      command: 'build'
+      dockerFile: ${{ parameters.dockerFile }}
+      tags: |
+        $(Build.BuildNumber)
+        latest
+
+  - task: Docker@2
+    displayName: 'Push an image'
+    inputs:
+      containerRegistry:  ${{ parameters.ContainerRegistry }}
+      repository: ${{parameters.repository}}
+      command: 'push'
+      tags: |
+        $(Build.BuildNumber)
+        latest
+  
+  - task: CmdLine@2
+    inputs:
+      script: |
+        echo ${{ parameters.manifestFile }}
+
+  - task: CopyFiles@2
+    displayName: 'Copy Kubernetes manifest'
+    inputs:
+      SourceFolder: '$(system.defaultworkingdirectory)'
+      Contents: ${{ parameters.manifestFile }} 
+      TargetFolder: '$(build.artifactstagingdirectory)'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact: Drop'
+    inputs:
+      PathtoPublish: '$(build.artifactstagingdirectory)'
