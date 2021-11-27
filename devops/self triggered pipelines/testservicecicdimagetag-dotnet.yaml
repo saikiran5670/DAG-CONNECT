@@ -28,7 +28,7 @@ variables:
 stages:
   - stage: stage_dev2
     jobs:
-    - template: dotnet-pipeline-template.yaml  # Template reference
+    - template: test-pipeline-template.yaml  # Template reference
       parameters:
         containerRegistry: 'acraksoxvoiq64cpv6y'
         variableGroup: 'DEV02-Build-Variables'
@@ -41,7 +41,7 @@ stages:
 
   - stage: stage_tst1
     jobs:
-    - template: dotnet-pipeline-template.yaml  # Template reference
+    - template: test-pipeline-template.yaml  # Template reference
       parameters:
         containerRegistry: 'acraksoxvoiq64cpv6y'
         variableGroup: 'TEST01-Build-Variables'
