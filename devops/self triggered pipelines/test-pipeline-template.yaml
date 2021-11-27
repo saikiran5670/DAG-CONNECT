@@ -73,7 +73,7 @@ jobs:
     displayName: 'Push an image'
     inputs:
       containerRegistry:  ${{ parameters.ContainerRegistry }}
-      repository: ${{parameters.repository}}
+      repository: ${{parameters.imagerepository}}
       command: 'push'
       tags: |
         $(Build.BuildNumber)
