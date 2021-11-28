@@ -36,7 +36,7 @@ spec:
             topologyKey: "kubernetes.io/hostname"
       containers:
       - name: testservice-auto-grpc-container
-        image: #{acrurl}#/testservice-auto:#{Release.Artifacts.Build.BuildNumber}#
+        image: #{acrurl}#/testservice-auto:#{Build.BuildNumber}#
         imagePullPolicy: "Always"
         volumeMounts:
         - name: tmp
