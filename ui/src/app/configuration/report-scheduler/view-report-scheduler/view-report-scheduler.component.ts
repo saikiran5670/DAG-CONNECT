@@ -78,8 +78,8 @@ export class ViewReportSchedulerComponent implements OnInit {
     });
 
     this.language= this.languageCodeList.filter(item => item.code == (this.selectedRowData[0].code).trim())[0].name;
-    this.vehicleGroupName= this.selectedRowData[0].vehicleGroupAndVehicleList != "" ? "ALL" : (this.selectedRowData[0].scheduledReportVehicleRef.length == 0 ? "ALL" : this.selectedRowData[0].scheduledReportVehicleRef[0].vehicleGroupName)
-    this.vehicleName= this.selectedRowData[0].vehicleGroupAndVehicleList != "" ? "ALL" : (this.selectedRowData[0].scheduledReportVehicleRef.length == 0 ? "ALL" : this.selectedRowData[0].scheduledReportVehicleRef[0].vin)
+    this.vehicleGroupName= this.selectedRowData[0].vehicleGroupAndVehicleList != "" ? (this.selectedRowData[0].scheduledReportVehicleRef.length == 0 ? "ALL" : this.selectedRowData[0].scheduledReportVehicleRef[0].vehicleGroupName): "ALL";
+    this.vehicleName= this.selectedRowData[0].vehicleGroupAndVehicleList != "" ? (this.selectedRowData[0].scheduledReportVehicleRef.length == 0 ? "ALL" : this.selectedRowData[0].scheduledReportVehicleRef[0].vin) : "ALL";
 
     this.scheduledReportList= this.selectedRowData[0].scheduledReport;
     this.scheduledReportList.forEach(element => {
