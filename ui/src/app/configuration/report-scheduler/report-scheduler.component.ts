@@ -214,7 +214,12 @@ export class ReportSchedulerComponent implements OnInit {
        this.schedulerData =this.makeLists(data["reportSchedulerRequest"]);
        this.initData = this.schedulerData;
       //  this.updateDatasource(this.schedulerData);
-
+        this.initData.forEach(element => {
+          if(element.reportName == "Fleet Fuel Report" || element.reportName == "Trip Report"||
+             element.reportName == "Fleet Utilisation Report"||element.reportName == "Fuel Deviation Report"){
+               element.driverList = "";
+             }
+        });
        this.hideloader();
     }, (error) => {
        this.hideloader();
