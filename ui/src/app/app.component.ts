@@ -428,6 +428,11 @@ export class AppComponent {
         }
       }
     });
+
+    this.dataInterchangeService.prefClosedSource$.subscribe((flag: any) => {
+      this.userPreferencesFlag = flag;
+    });
+
   }
 
   @HostListener('window:beforeunload', ['$event'])
