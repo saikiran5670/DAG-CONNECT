@@ -21,6 +21,7 @@ import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import * as moment from 'moment';
 import { FuelBenchmarkingTableComponent } from './fuel-benchmarking-table/fuel-benchmarking-table/fuel-benchmarking-table.component';
 import { ReplaySubject } from 'rxjs';
+import { DataInterchangeService } from '../../services/data-interchange.service';
 
 @Component({
   selector: 'app-fuel-benchmarking',
@@ -247,24 +248,20 @@ export class FuelBenchmarkingComponent implements OnInit {
   fromTripPageBack: boolean = false;
   public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   
-  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private router: Router, private organizationService: OrganizationService) {
-    this.defaultTranslation();
+  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private router: Router, private organizationService: OrganizationService, private dataInterchangeService: DataInterchangeService) {
+    this.dataInterchangeService.prefSource$.subscribe((prefResp: any) => {
+      if(prefResp && (prefResp.type == 'fuel benchmarking report') && prefResp.prefdata){
+        this.reportPrefData = prefResp.prefdata;
+        this.resetPref();
+        this.onSearch(this.selectionValueBenchmarkBY);
+      }
+    });
     const navigation = this.router.getCurrentNavigation();
     const state = navigation.extras.state as {
       fromTripReport: boolean
     };
-    ////console.log(state)
-    // if(state){
-    //   this.fromTripPageBack = true;
-    // }else{
-    //   this.fromTripPageBack = false;
-    // }
   }
-  defaultTranslation() {
-    this.translationData = {
-      lblSearchReportParameters: 'Search Report Parameters'
-    }
-  }
+
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
     setTimeout(() => {
@@ -272,6 +269,7 @@ export class FuelBenchmarkingComponent implements OnInit {
     }, 0);
 
   }
+
   ngOnInit(): void {
     this.fuelBenchmarkingSearchData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
     // //console.log("----globalSearchFilterData---",this.fuelBenchmarkingSearchData)

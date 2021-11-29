@@ -715,7 +715,7 @@
                 <span style="font-weight: normal;"></span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idleduration')">
-                <span>{{idleDurationConverted}}</span>
+                <span>{{row.idleDurationPercentage}}</span>
               </mat-cell>
               <!-- <mat-cell *matCellDef="let row">{{ row.odometer != '' ? row.odometer : '-' }}</mat-cell> -->
 
