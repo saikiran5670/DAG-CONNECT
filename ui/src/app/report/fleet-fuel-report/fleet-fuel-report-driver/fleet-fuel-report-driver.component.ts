@@ -604,6 +604,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
 
   public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  idleDurationConverted: any;
 
   constructor(private _formBuilder: FormBuilder,
               private translationService: TranslationService,
@@ -697,6 +698,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
     this.updateDataSource(this.FuelData);
     this.setTableInfo();
     this.hideloader();
+    this.idleDurationCount();
     }, (error)=>{
       this.hideloader();
     });
@@ -885,6 +887,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+      this.idleDurationCount();
     });
   }
 
@@ -1964,7 +1967,11 @@ setVehicleGroupAndVehiclePreSelection() {
     ];
     }
   }
-
+  idleDurationCount(){
+    this.initData.forEach(item => {
+    this.idleDurationConverted = Util.getHhMmTime(parseFloat(item.idleDuration));
+  })
+}
   exportAsExcelFile() {
     this.getAllSummaryData();
     const title = 'Fleet Fuel Driver Report';

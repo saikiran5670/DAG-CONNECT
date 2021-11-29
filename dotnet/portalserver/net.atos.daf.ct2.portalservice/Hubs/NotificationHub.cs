@@ -287,12 +287,12 @@ namespace net.atos.daf.ct2.portalservice.hubs
                     }
                     catch (RpcException ex)
                     {
-                        _logger.Error($"RpcException Error in ReadKafkaMessages - AlertID: {alertId}", ex);
+                        _logger.Error($"RpcException Error in ReadKafkaMessages - AlertID: {alertId}, Host: : {Dns.GetHostName()}, KafkaConfig: {JsonConvert.SerializeObject(kafkaEntity)}", ex);
                         await Clients.Clients(connectionIds).SendAsync("PushNotificationForAlertError", ex.Message);
                     }
                     catch (Exception ex)
                     {
-                        _logger.Error($"Error in ReadKafkaMessages  - AlertID: {alertId}", ex);
+                        _logger.Error($"Error in ReadKafkaMessages  - AlertID: {alertId}, Host: : {Dns.GetHostName()}, KafkaConfig: {JsonConvert.SerializeObject(kafkaEntity)}", ex);
                         await Clients.Clients(connectionIds).SendAsync("PushNotificationForAlertError", ex.Message);
                     }
                 }
