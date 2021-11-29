@@ -1382,7 +1382,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         //    hs.StartGeolocationAddressId = getMapRequestStart.Id;
                         //    hs.StartGeolocationAddress = getMapRequestStart.Address;
                         //}
-                        if (hs.WarningAddressId == 0 && hs.WarningLat != 0 && hs.WarningLng != 0)
+                        if (hs.WarningAddressId == 0 && hs.WarningLat != 0 && hs.WarningLng != 0 && hs.WarningLat != 255 && hs.WarningLng != 255)
                         {
                             GetMapRequest getMapRequestStart = new GetMapRequest();
                             getMapRequestStart = _hereMapAddressProvider.GetAddressObject(hs.WarningLat, hs.WarningLng);

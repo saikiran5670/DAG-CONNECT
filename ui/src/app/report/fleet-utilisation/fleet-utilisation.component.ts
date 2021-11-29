@@ -30,6 +30,7 @@ import { Workbook } from 'exceljs';
 import * as fs from 'file-saver';
 import { DatePipe } from '@angular/common';
 import { ReplaySubject } from 'rxjs';
+import { DataInterchangeService } from '../../services/data-interchange.service';
 
 @Component({
   selector: 'app-fleet-utilisation',
@@ -80,6 +81,7 @@ export class FleetUtilisationComponent implements OnInit, OnDestroy {
   internalSelection: boolean = false;
   showLoadingIndicator: boolean = false;
   startDateValue: any = 0;
+  calenderCardView: boolean = true;
   endDateValue: any = 0;
   last3MonthDate: any;
   todayDate: any;
@@ -465,8 +467,17 @@ public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String
 public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   idleDurationConverted: any;
 
-  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private router: Router, private organizationService: OrganizationService, private datePipe: DatePipe) {
+  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private router: Router, private organizationService: OrganizationService, private datePipe: DatePipe, private dataInterchangeService: DataInterchangeService) {
     // this.defaultTranslation();
+    this.dataInterchangeService.prefSource$.subscribe((prefResp: any) => {
+      if(prefResp && (prefResp.type == 'fleet utilisation report') && prefResp.prefdata){
+        this.displayedColumns = ['vehiclename', 'vin', 'registrationnumber', 'distance', 'numberOfTrips', 'tripTime', 'drivingTime', 'idleDuration', 'stopTime', 'averageDistancePerDay', 'averageSpeed', 'averageWeight', 'odometer'];
+        this.reportPrefData = prefResp.prefdata;
+        this.resetPref();
+        this.preparePrefData(this.reportPrefData);
+        this.onSearch();
+      }
+    });
     const navigation = this.router.getCurrentNavigation();
     const state = navigation.extras.state as {
       fromTripReport: boolean
@@ -656,7 +667,6 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     });
   }
 
-  calenderCardView: boolean = true;
   preparePrefData(prefData: any){
     if(prefData && prefData.subReportUserPreferences && prefData.subReportUserPreferences.length > 0){
       prefData.subReportUserPreferences.forEach(element => {
