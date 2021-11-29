@@ -22,12 +22,11 @@ import { Util } from '../../shared/util';
 import { Router, NavigationExtras } from '@angular/router';
 import { OrganizationService } from '../../services/organization.service';
 import { CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteData } from 'ng2-completer';
-import { element } from 'protractor';
 import { Workbook } from 'exceljs';
 import * as fs from 'file-saver';
 import html2canvas from 'html2canvas';
-import { single } from 'rxjs/operators';
 import { ReplaySubject } from 'rxjs';
+import { DataInterchangeService } from '../../services/data-interchange.service';
 
 declare var H: any;
 
@@ -39,7 +38,7 @@ declare var H: any;
 
 export class TripReportComponent implements OnInit, OnDestroy {
 
-  accountInfo:any = {};
+  accountInfo: any = {};
   vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   searchStr: string = "";
   suggestionData: any;
@@ -185,12 +184,13 @@ export class TripReportComponent implements OnInit, OnDestroy {
   map_key: any = '';
   platform: any = '';
   alertsChecked: any = false;
+  tripPrefData: any = [];
 
   public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   filterValue: string;
 
-  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private landmarkCategoryService: LandmarkCategoryService, private router: Router, private organizationService: OrganizationService, private completerService: CompleterService, private _configService: ConfigService, private hereService: HereService) {
+  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private landmarkCategoryService: LandmarkCategoryService, private router: Router, private organizationService: OrganizationService, private completerService: CompleterService, private _configService: ConfigService, private hereService: HereService, private dataInterchangeService: DataInterchangeService) {
     this.map_key = _configService.getSettings("hereMap").api_key;
     //Add for Search Fucntionality with Zoom
     this.query = "starbucks";
@@ -199,6 +199,17 @@ export class TripReportComponent implements OnInit, OnDestroy {
     });
     this.configureAutoSuggest();
     const navigation = this.router.getCurrentNavigation();
+
+    this.dataInterchangeService.prefSource$.subscribe((prefResp: any) => {
+      if(prefResp && (prefResp.type == 'trip report') && prefResp.prefdata){
+        this.displayedColumns = ['All', 'vin', 'vehicleName', 'registrationNo', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'odometer', 'startPosition', 'endPosition', 'fuelConsumed', 'drivingTime', 'totalAlerts'];
+        this.resetTripPrefData();
+        this.reportPrefData = prefResp.prefdata;
+        this.getTranslatedColumnName(this.reportPrefData);
+        this.setDisplayColumnBaseOnPref();
+      }
+    });
+
     this._state = navigation.extras.state as {
       fromFleetUtilReport: boolean,
       vehicleData: any
@@ -389,7 +400,6 @@ export class TripReportComponent implements OnInit, OnDestroy {
     this.tripPrefData = [];
   }
 
-  tripPrefData: any = [];
   getTranslatedColumnName(prefData: any) {
     if (prefData && prefData.subReportUserPreferences && prefData.subReportUserPreferences.length > 0) {
       prefData.subReportUserPreferences.forEach(element => {
