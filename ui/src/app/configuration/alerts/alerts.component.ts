@@ -72,6 +72,9 @@ export class AlertsComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   filterValue: any;
+  accountPrefObj: any;
+  prefData: any;
+  vehicleDisplayPreference: any= 'dvehicledisplay_VehicleIdentificationNumber';
 
   constructor(
     private translationService: TranslationService,
@@ -81,7 +84,9 @@ export class AlertsComponent implements OnInit {
     private vehicleService: VehicleService,
     private alertService: AlertService,
     private dialogService: ConfirmDialogService,
-    private reportMapService: ReportMapService ) { }
+    private reportMapService: ReportMapService ) {
+      this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
+     }
 
     ngOnInit() {
       this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -109,7 +114,10 @@ export class AlertsComponent implements OnInit {
         this.processTranslation(data);
         this.loadFiltersData();
       });
-      this.translationService.getPreferences(this.localStLanguage).subscribe((res) => { this.generalPreferences = res; this.getUnits() });
+      this.translationService.getPreferences(this.localStLanguage).subscribe((res) => { 
+        this.generalPreferences = res; this.getUnits();
+        this.prefData = res;
+      });
     }
 
     getUnits() {
@@ -441,8 +449,25 @@ export class AlertsComponent implements OnInit {
           findTest.value === test.value
           )
        );
-      } else {
-        item.vehicleGroupName = item.vehicleName;
+      } else {//according to pref
+        let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
+        if(vehicleDisplayId) {
+          let vehicledisplay = this.prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+          if(vehicledisplay.length != 0) {
+            this.vehicleDisplayPreference = vehicledisplay[0].name;
+          }
+        }  
+        if(this.vehicleDisplayPreference == 'dvehicledisplay_VehicleName'){
+          item.vehicleGroupName = item.vehicleName;
+        }
+        else if(this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber'){
+          item.vehicleGroupName = item.vin;
+        }
+        else{
+          item.vehicleGroupName = item.regNo;
+        }
+        // item.vehicleGroupName = item.vehicleName;
+        
       }
      });
       this.updateDatasource(this.initData);

@@ -19,6 +19,7 @@ export class ViewReportSchedulerComponent implements OnInit {
   @Input() selectedRowData: any;
   @Output() backToPage = new EventEmitter<any>();
 
+  vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   startDate: any;
   endDate: any;
   month: any;
@@ -73,13 +74,26 @@ export class ViewReportSchedulerComponent implements OnInit {
       
       this.timeRangeSelection(this.selectedRowData[0].frequencyType);
 
+      let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
+      if(vehicleDisplayId) {
+        let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+        if(vehicledisplay.length != 0) {
+          this.vehicleDisplayPreference = vehicledisplay[0].name;
+
+          this.vehicleName = this.selectedRowData[0].vehicleGroupAndVehicleList != "" ? this.selectedRowData[0].scheduledReportVehicleRef.length == 0 ? "ALL" : this.vehicleDisplayPreference == 'dvehicledisplay_VehicleName' ? this.selectedRowData[0].scheduledReportVehicleRef[0].vehicleName : this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber' ? this.selectedRowData[0].scheduledReportVehicleRef[0].vin : this.selectedRowData[0].scheduledReportVehicleRef[0].regno : "ALL";
+        }
+      }  
+
     }, error => {
       this.timeRangeSelection(this.selectedRowData[0].frequencyType);
     });
 
     this.language= this.languageCodeList.filter(item => item.code == (this.selectedRowData[0].code).trim())[0].name;
-    this.vehicleGroupName= this.selectedRowData[0].vehicleGroupAndVehicleList != "" ? "ALL" : (this.selectedRowData[0].scheduledReportVehicleRef.length == 0 ? "ALL" : this.selectedRowData[0].scheduledReportVehicleRef[0].vehicleGroupName)
-    this.vehicleName= this.selectedRowData[0].vehicleGroupAndVehicleList != "" ? "ALL" : (this.selectedRowData[0].scheduledReportVehicleRef.length == 0 ? "ALL" : this.selectedRowData[0].scheduledReportVehicleRef[0].vin)
+    this.vehicleGroupName= this.selectedRowData[0].vehicleGroupAndVehicleList != "" ? this.selectedRowData[0].scheduledReportVehicleRef.length == 0 ? "ALL" : this.selectedRowData[0].scheduledReportVehicleRef[0].vehicleGroupName: "ALL";
+
+   
+    // this.vehicleName = this.selectedRowData[0].vehicleGroupAndVehicleList != "" ? this.selectedRowData[0].scheduledReportVehicleRef.length == 0 ? "ALL" : this.vehicleDisplayPreference == 'dvehicledisplay_VehicleName' ? this.selectedRowData[0].scheduledReportVehicleRef[0].vehicleName : this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber' ? this.selectedRowData[0].scheduledReportVehicleRef[0].vin : this.selectedRowData[0].scheduledReportVehicleRef[0].regno : "ALL";
+    
 
     this.scheduledReportList= this.selectedRowData[0].scheduledReport;
     this.scheduledReportList.forEach(element => {
@@ -192,8 +206,8 @@ export class ViewReportSchedulerComponent implements OnInit {
         this.startDate= (_h > 10 ? _h : "0"+_h) + ":" + (_m > 10 ? _m : "0"+_m) + ":" + (_s > 10 ? _s : "0"+_s);
         this.endDate= Util.convertUtcToDateNoFormat(this.selectedRowData[0].endDate, this.prefTimeZone);
         this.endDate= this.endDate.getHours()+":"+this.endDate.getMinutes()+":"+this.endDate.getSeconds();
-        // this.startDate= "00:00:00";
-        // this.endDate= "23:59:59";
+        this.startDate= "00:00:00";
+        this.endDate= "23:59:59";
         break;
       }
       case 'W' : {

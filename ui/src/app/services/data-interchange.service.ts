@@ -16,11 +16,16 @@ export class DataInterchangeService {
     private generalSettingInterfaceSource = new Subject<any>();
     generalSettingInterface$ = this.generalSettingInterfaceSource.asObservable();
     private profilePictureInterfaceSource= new Subject<any>();
-    profilePictureInterface$= this.profilePictureInterfaceSource.asObservable();
+    profilePictureInterface$ = this.profilePictureInterfaceSource.asObservable();
     private detailDataSource = new Subject<any>();
-    detailDataInterface$= this.detailDataSource.asObservable();
+    detailDataInterface$ = this.detailDataSource.asObservable();
     private fleetKpiSource = new Subject<any>();
-    fleetKpiInterface$= this.fleetKpiSource.asObservable();
+    fleetKpiInterface$ = this.fleetKpiSource.asObservable();
+    private prefSource = new Subject<any>();
+    prefSource$ = this.prefSource.asObservable();
+    private prefClosedSource = new Subject<any>();
+    prefClosedSource$ = this.prefClosedSource.asObservable();
+
     constructor(){ }
 
     getDataInterface(data: any) {
@@ -59,5 +64,12 @@ export class DataInterchangeService {
         this.fleetKpiSource.next(data);
     }
 
+    getPrefData(data: any){
+        this.prefSource.next(data);
+    }
+
+    closedPrefTab(flag: any){
+        this.prefClosedSource.next(flag);
+    }
 
 }   

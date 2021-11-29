@@ -16,7 +16,7 @@ import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.atos.daf.common.ct2.utc.TimeFormatter;
+
 import net.atos.daf.ct2.common.util.DafConstants;
 import net.atos.daf.ct2.pojo.KafkaRecord;
 import net.atos.daf.ct2.pojo.standard.Monitor;
@@ -32,18 +32,20 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 
 	private static final Logger logger = LoggerFactory.getLogger(WarningStatisticsSink.class);
 	Connection connection = null;
+	Connection masterConnection=null;
 
 	private List<Monitor> queue;
-	private List<Monitor> synchronizedCopy;
+	//private List<Monitor> synchronizedCopy;
 
 	private WarningStatisticsDao warningDao;
-	private PreparedStatement updateWarningCommonTrip;
+	//private PreparedStatement updateWarningCommonTrip;
 	private DTCWarningMasterDao DTCWarning;
 	private PreparedStatement statement;
 	private PreparedStatement updateStatementCurrentTrip;
 	private PreparedStatement updateStatementList;
 	private PreparedStatement readStatementList;
 	private PreparedStatement readStatement;
+	private PreparedStatement readMasterWarningStatement;
 	//private PreparedStatement deactivateWarningStatement;
 	
 //convertDateToMillis(indexData.getEvtDateTime())
@@ -52,6 +54,7 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 		ParameterTool envParams = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
 
 		warningDao = new WarningStatisticsDao();
+		DTCWarning = new DTCWarningMasterDao();
 		try {
 
 			connection = PostgreDataSourceConnection.getInstance().getDataSourceConnection(
@@ -60,6 +63,14 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 					envParams.get(DafConstants.DATAMART_POSTGRE_DATABASE_NAME),
 					envParams.get(DafConstants.DATAMART_POSTGRE_USER),
 					envParams.get(DafConstants.DATAMART_POSTGRE_PASSWORD));
+			
+			masterConnection = PostgreDataSourceConnection.getInstance().getDataSourceConnection(
+					
+					  envParams.get(DafConstants.MASTER_POSTGRE_SERVER_NAME),
+					  Integer.parseInt(envParams.get(DafConstants.MASTER_POSTGRE_PORT)),
+					  envParams.get(DafConstants.MASTER_POSTGRE_DATABASE_NAME),
+					  envParams.get(DafConstants.MASTER_POSTGRE_USER),
+					  envParams.get(DafConstants.MASTER_POSTGRE_PASSWORD));
 
 			warningDao.setConnection(connection);
 			statement = connection.prepareStatement(DafConstants.LIVEFLEET_WARNING_INSERT);
@@ -67,6 +78,7 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 			updateStatementList=connection.prepareStatement(DafConstants.LIVEFLEET_WARNING_UPDATELIST);
 			readStatementList=connection.prepareStatement(DafConstants.LIVEFLEET_WARNING_READLIST);
 			readStatement=connection.prepareStatement(DafConstants.REPAITM_MAINTENANCE_WARNING_READ);
+			readMasterWarningStatement=masterConnection.prepareStatement(DafConstants.READ_DTC_WARNING);
 			//deactivateWarningStatement=connection.prepareStatement(DafConstants.LIVEFLEET_WARNING_DEACTIVATE);
 			
 
@@ -86,6 +98,10 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 		String vin;
 		if ((messageTen.equals(row.getMessageType()) || messageFour.equals(row.getMessageType()))
 				&& (row.getVEvtID() == 44 || row.getVEvtID() == 45 || row.getVEvtID() == 46 || row.getVEvtID() == 63)) {
+			
+			if (row.getDocument().getVWarningClass() != null && row.getDocument().getVWarningNumber() != null) {
+				boolean warniningInDB = DTCWarning.readMonitor(row.getDocument().getVWarningClass(),
+						row.getDocument().getVWarningNumber(),readMasterWarningStatement);
 
 		/*	queue = new ArrayList<Monitor>();
 			synchronizedCopy = new ArrayList<Monitor>();
@@ -114,7 +130,7 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 							}
 							
 							
-							if (messageTen.equals(row.getMessageType()) && (row.getVEvtID()==44 )) {
+							if (messageTen.equals(row.getMessageType()) && (row.getVEvtID()==44 ) && warniningInDB) {
 
 								WarningStatisticsPojo warningDetail = WarningStatisticsCalculation(row,
 										messageTen, 
@@ -125,9 +141,10 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 								warningDao.warningUpdateMessageTenCommonTripMonitor(warningDetail,updateStatementCurrentTrip);
 								logger.info("Warning records inserted to warning table :: {}",warningDetail);
 								logger.debug("Warning records updated in current trip table:: ", warningDetail);
+								
 							}
 							
-							if(messageTen.equals(row.getMessageType()) && row.getVEvtID() == 45) {
+							if(messageTen.equals(row.getMessageType()) && row.getVEvtID() == 45 && warniningInDB) {
 
 								WarningStatisticsPojo warningDetail = WarningStatisticsCalculation(row,
 										messageTen, 
@@ -139,7 +156,7 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 								logger.info("Warning records inserted to warning table :: {}",warningDetail);
 								logger.debug("Warning records updated in current trip table:: ", warningDetail);
 							}
-							if(messageTen.equals(row.getMessageType()) && row.getVEvtID() == 46) {
+							if(messageTen.equals(row.getMessageType()) && row.getVEvtID() == 46 && warniningInDB) {
 								boolean warningStatus = warningDao.readRepairMaintenamceMonitor(row.getMessageType(), vin,row.getDocument().getVWarningClass(),row.getDocument().getVWarningNumber(),readStatement);
 								if(warningStatus) {
 									WarningStatisticsPojo warningDetail = WarningStatisticsCalculation(row,
@@ -153,8 +170,11 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 								}
 								
 							}
+		}
 
 							if (messageTen.equals(row.getMessageType()) && row.getVEvtID() == 63) {
+								
+								
 								
 								List<WarningStatisticsPojo> activeWarnings=warningDao.readReturnListofActiveMsg(row.getMessageType(), row.getVin(),readStatementList);
 								List<Warning> warningList63 = row.getDocument().getWarningObject().getWarningList();
@@ -166,6 +186,8 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 								if(warningList63!=null && !warningList63.isEmpty()) {
 									
 								for(Warning warning63 : warningList63) {
+									boolean dbWarning = DTCWarning.readMonitor(warning63.getWarningClass(), warning63.getWarningNumber(),readMasterWarningStatement);
+									if (dbWarning) {
 									int activeWarningClass=	warning63.getWarningClass();
 									int activeWarningNumber= warning63.getWarningNumber();
 									
@@ -191,7 +213,8 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 									warningInDB=false;
 
 								}
-								}	
+								}
+							}
 								
 								if(!toInsertList.isEmpty() && toInsertList.size()>0) {
 								warningDao.warning_insertMonitorList(toInsertList,statement);
@@ -396,6 +419,11 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 			statement.close();
 		}
 		
+		
+		if (masterConnection != null) {
+			masterConnection.close();
+		}
+		
 		if (updateStatementCurrentTrip != null) {
 			updateStatementCurrentTrip.close();
 		}
@@ -412,6 +440,10 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 			readStatement.close();
 		}
 		
+		
+		if (readMasterWarningStatement != null) {
+			readMasterWarningStatement.close();
+		}
 		
 		logger.info("In close() of Warning :: ");
 

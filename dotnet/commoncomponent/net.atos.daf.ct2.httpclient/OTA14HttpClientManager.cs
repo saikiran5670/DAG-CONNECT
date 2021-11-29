@@ -49,7 +49,7 @@ namespace net.atos.daf.ct2.httpclientfactory
                     etag = response.Headers.ETag?.ToString();
                     i++;
                 }
-                _logger.Info($"GetSoftwareScheduleUpdate:Calling OTA 14 Get API for sending data {etag}");
+                _logger.Info($"GetSoftwareScheduleUpdate:Calling OTA 14 Get API for sending data ETag: {etag}");
                 client = await GetHttpClient();
                 client.DefaultRequestHeaders.Accept.Clear();
                 if (etag != null)
@@ -71,11 +71,11 @@ namespace net.atos.daf.ct2.httpclientfactory
 
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    _logger.Info(result);
+                    _logger.Info($"GetSoftwareScheduleUpdate:ETag: {etag}, request: {JsonConvert.SerializeObject(request)} , result : {result}");
                 }
                 else
                 {
-                    _logger.Error(result);
+                    _logger.Info($"GetSoftwareScheduleUpdate:ETag: {etag}, request: {JsonConvert.SerializeObject(request)} , result : {result}");
                     return new ScheduleSoftwareUpdateResponse { HttpStatusCode = (int)response.StatusCode, BoashTimesStamp = boashtimestamp };
                 }
                 return new ScheduleSoftwareUpdateResponse { HttpStatusCode = 200, BoashTimesStamp = boashtimestamp };

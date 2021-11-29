@@ -1,5 +1,5 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { Component, ElementRef, Inject, Input, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, ElementRef, Inject, Input, OnInit, OnDestroy, ViewChild, HostListener } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -14,7 +14,7 @@ import { MatTableExporterDirective } from 'mat-table-exporter';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
-import { LandmarkCategoryService } from '../../services/landmarkCategory.service'; 
+import { LandmarkCategoryService } from '../../services/landmarkCategory.service';
 //var jsPDF = require('jspdf');
 import * as moment from 'moment-timezone';
 import { Util } from '../../shared/util';
@@ -30,6 +30,7 @@ import { Workbook } from 'exceljs';
 import * as fs from 'file-saver';
 import { DatePipe } from '@angular/common';
 import { ReplaySubject } from 'rxjs';
+import { DataInterchangeService } from '../../services/data-interchange.service';
 
 @Component({
   selector: 'app-fleet-utilisation',
@@ -46,7 +47,7 @@ export class FleetUtilisationComponent implements OnInit, OnDestroy {
   reportPrefData: any = [];
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
   selectedStartTime: any = '00:00';
-  selectedEndTime: any = '23:59'; 
+  selectedEndTime: any = '23:59';
   tripForm: FormGroup;
   displayedColumns = ['vehiclename', 'vin', 'registrationnumber', 'distance', 'numberOfTrips', 'tripTime', 'drivingTime', 'idleDuration', 'stopTime', 'averageDistancePerDay', 'averageSpeed', 'averageWeight', 'odometer'];
   translationData: any = {};
@@ -80,6 +81,7 @@ export class FleetUtilisationComponent implements OnInit, OnDestroy {
   internalSelection: boolean = false;
   showLoadingIndicator: boolean = false;
   startDateValue: any = 0;
+  calenderCardView: boolean = true;
   endDateValue: any = 0;
   last3MonthDate: any;
   todayDate: any;
@@ -169,7 +171,7 @@ export class FleetUtilisationComponent implements OnInit, OnDestroy {
     }
   ];
   chartsLabelsdefined: any = [];
-  barVarticleData: any = []; 
+  barVarticleData: any = [];
   averageDistanceBarData: any = [];
   lineChartVehicleCount: any = [];
   greaterMileageCount :  any = 0;
@@ -177,10 +179,10 @@ export class FleetUtilisationComponent implements OnInit, OnDestroy {
   calendarpreferenceOption : any = "";
   calendarValue: any = [];
   summaryObj:any=[];
- 
+
 // Bar chart implementation
 
-barChartOptions: any = {  
+barChartOptions: any = {
   responsive: true,
   legend: {
     position: 'bottom',
@@ -195,37 +197,37 @@ barChartOptions: any = {
       },
       scaleLabel: {
         display: true,
-        labelString: (this.prefUnitFormat == 'dunit_Metric') ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm  || 'km' })` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles  || 'miles' })` 
+        labelString: (this.prefUnitFormat == 'dunit_Metric') ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm  || 'km' })` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles  || 'miles' })`
         }} ,{
         id: "y-axis-2",
         position: 'left',
         type: 'linear',
-        ticks: {        
+        ticks: {
           steps: 10,
           stepSize: 1,
           beginAtZero:true,
         },
         scaleLabel: {
-          display: true,       
+          display: true,
           labelString: (this.prefUnitFormat == 'dunit_Metric') ? `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblkmperday  || 'km/day' })` : `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblmilesperday  || 'miles/day' })`
         }
       }
     ],
     xAxes: [{
-      type:'time',       
+      type:'time',
       time:
       {
         tooltipFormat: this.chartLabelDateFormat,
         unit: 'day',
         stepSize:1,
-        displayFormats: {      
-          day:  this.chartLabelDateFormat,            
-         },             
-      },          
+        displayFormats: {
+          day:  this.chartLabelDateFormat,
+         },
+      },
     scaleLabel: {
       display: true,
       labelString: this.translationData.lblDates || 'Dates'
-    }      
+    }
   }]
   }
 };
@@ -252,33 +254,33 @@ distanceLineChartOptions = {
   responsive: true,
   legend: {
     position: 'bottom',
-     },  
+     },
   scales: {
     yAxes: [{
       id: "y-axis-1",
       position: 'right',
-      type: 'linear',     
+      type: 'linear',
        ticks: {
         beginAtZero: true,
       },
       scaleLabel: {
-        display: true, 
-        labelString: (this.prefUnitFormat == 'dunit_Metric') ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm  || 'km' })` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles  || 'miles' })`    
+        display: true,
+        labelString: (this.prefUnitFormat == 'dunit_Metric') ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm  || 'km' })` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles  || 'miles' })`
        }
     },{
       id: "y-axis-2",
       position: 'left',
-      type: 'linear',          
+      type: 'linear',
       ticks: {
         steps: 10,
         stepSize: 1,
         beginAtZero:true,
       },
       scaleLabel: {
-        display: true,    
+        display: true,
         labelString: this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblkmperday  || 'km/day' })` : `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblmilesperday  || 'miles/day' })`
       }
-    }],    
+    }],
     xAxes: [{
       type:'time',
       time:
@@ -286,14 +288,14 @@ distanceLineChartOptions = {
         tooltipFormat:  this.chartLabelDateFormat,
         unit: 'day',
         stepSize:1,
-        displayFormats: {      
-          day:  this.chartLabelDateFormat,            
-         },             
-      },        
+        displayFormats: {
+          day:  this.chartLabelDateFormat,
+         },
+      },
     scaleLabel: {
       display: true,
-      labelString: this.translationData.lblDates || 'Dates'   
-    }      
+      labelString: this.translationData.lblDates || 'Dates'
+    }
   }]
   }
 };
@@ -374,10 +376,10 @@ lineChartOptions = {
       },
       scaleLabel: {
         display: true,
-        labelString: `${this.translationData.lblvalue || 'value'}(${this.translationData.lblnumberofvehicles || 'number of vehicles'})`    
+        labelString: `${this.translationData.lblvalue || 'value'}(${this.translationData.lblnumberofvehicles || 'number of vehicles'})`
       }
     }],
-    
+
     xAxes: [{
       type:'time',
       time:
@@ -385,14 +387,14 @@ lineChartOptions = {
         tooltipFormat: this.chartLabelDateFormat,
         unit: 'day',
         stepSize:1,
-        displayFormats: {      
-          day:  this.chartLabelDateFormat,            
-         },             
-      },           
+        displayFormats: {
+          day:  this.chartLabelDateFormat,
+         },
+      },
     scaleLabel: {
       display: true,
       labelString: this.translationData.lblDates || 'Dates'
-    }      
+    }
   }]
   }
 };
@@ -426,22 +428,22 @@ VehicleBarChartOptions: any = {
         display: true,
         labelString: `${this.translationData.lblvalue || 'value'}(${this.translationData.lblnumberofvehicles || 'number of vehicles'})`
       }}],
-      
-    xAxes: [{    
+
+    xAxes: [{
       type:'time',
       time:
       {
         tooltipFormat: this.chartLabelDateFormat,
         unit: 'day',
         stepSize:1,
-        displayFormats: {      
-          day:  this.chartLabelDateFormat,            
-         },             
-      },                
+        displayFormats: {
+          day:  this.chartLabelDateFormat,
+         },
+      },
     scaleLabel: {
       display: true,
-      labelString: this.translationData.lblDates || 'Dates'  
-    }      
+      labelString: this.translationData.lblDates || 'Dates'
+    }
   }]
   }
 };
@@ -463,9 +465,19 @@ calendarOptions: CalendarOptions = {
 
 public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  idleDurationConverted: any;
 
-  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private router: Router, private organizationService: OrganizationService, private datePipe: DatePipe) {
+  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private router: Router, private organizationService: OrganizationService, private datePipe: DatePipe, private dataInterchangeService: DataInterchangeService) {
     // this.defaultTranslation();
+    this.dataInterchangeService.prefSource$.subscribe((prefResp: any) => {
+      if(prefResp && (prefResp.type == 'fleet utilisation report') && prefResp.prefdata){
+        this.displayedColumns = ['vehiclename', 'vin', 'registrationnumber', 'distance', 'numberOfTrips', 'tripTime', 'drivingTime', 'idleDuration', 'stopTime', 'averageDistancePerDay', 'averageSpeed', 'averageWeight', 'odometer'];
+        this.reportPrefData = prefResp.prefdata;
+        this.resetPref();
+        this.preparePrefData(this.reportPrefData);
+        this.onSearch();
+      }
+    });
     const navigation = this.router.getCurrentNavigation();
     const state = navigation.extras.state as {
       fromTripReport: boolean
@@ -481,7 +493,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
   defaultTranslation(){
     this.translationData = {
       lblSearchReportParameters: 'Search Report Parameters'
-    }    
+    }
   }
 
   ngOnInit(): void {
@@ -528,7 +540,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
           if(vehicledisplay.length != 0) {
             this.vehicleDisplayPreference = vehicledisplay[0].name;
           }
-        }  
+        }
 
       });
     });
@@ -543,7 +555,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
       this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
       this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
-      this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
+      this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;
     }else{
       //this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
       this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
@@ -564,20 +576,28 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       reportListData = reportList.reportDetails;
       let repoId: any = reportListData.filter(i => i.name == 'Fleet Utilisation Report');
       if(repoId.length > 0){
-        this.tripReportId = repoId[0].id; 
+        this.tripReportId = repoId[0].id;
         this.getFleetUtilPreferences();
       }else{
-        console.error("No report id found!")
+        //console.error("No report id found!")
       }
     }, (error)=>{
-      console.log('Report not found...', error);
+      //console.log('Report not found...', error);
       reportListData = [{name: 'Fleet Utilisation Report', id: this.tripReportId}];
       // this.getFleetUtilPreferences();
     });
   }
 
   ngOnDestroy(){
-    console.log("component destroy...");
+    this.setFilterValues();
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  reloadWindow($event: any) {
+    this.setFilterValues();
+  }
+
+  setFilterValues(){
     this.fleetUtilizationSearchData["vehicleGroupDropDownValue"] = this.tripForm.controls.vehicleGroup.value;
     this.fleetUtilizationSearchData["vehicleDropDownValue"] = this.tripForm.controls.vehicle.value;
     this.fleetUtilizationSearchData["timeRangeSelection"] = this.selectionTab;
@@ -591,8 +611,8 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       this.fleetUtilizationSearchData["startTimeStamp"] = `${_splitStartTime[0]}:${_splitStartTime[1]}`;
       this.fleetUtilizationSearchData["endTimeStamp"] = `${_splitEndTime[0]}:${_splitEndTime[1]}`;
     }else{
-      this.fleetUtilizationSearchData["startTimeStamp"] = this.startTimeDisplay;  
-      this.fleetUtilizationSearchData["endTimeStamp"] = this.endTimeDisplay;  
+      this.fleetUtilizationSearchData["startTimeStamp"] = this.startTimeDisplay;
+      this.fleetUtilizationSearchData["endTimeStamp"] = this.endTimeDisplay;
     }
     this.setGlobalSearchData(this.fleetUtilizationSearchData);
   }
@@ -647,7 +667,6 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     });
   }
 
-  calenderCardView: boolean = true;
   preparePrefData(prefData: any){
     if(prefData && prefData.subReportUserPreferences && prefData.subReportUserPreferences.length > 0){
       prefData.subReportUserPreferences.forEach(element => {
@@ -663,7 +682,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
              this.chartsColumnData.push(_data);
            }else if(item.key.includes('rp_fu_report_calendarview_')){
             if(item.key == 'rp_fu_report_calendarview_expensiontype'){
-              this.isCalendarOpen = (item.state == "A") ? true : false; 
+              this.isCalendarOpen = (item.state == "A") ? true : false;
             }else{
               this.calenderColumnData.push(_data);
             }
@@ -866,8 +885,8 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     // let currentStartTime = Util.convertDateToUtc(_last3m); //_last3m.getTime();
     // let currentEndTime = Util.convertDateToUtc(_yesterday); // _yesterday.getTime();
     //console.log(currentStartTime + "<->" + currentEndTime);
-    let currentStartTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
-    let currentEndTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone); 
+    let currentStartTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone);
+    let currentEndTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);
     // let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
     // let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
     if(this.wholeTripData.vinTripList.length > 0){
@@ -886,15 +905,15 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
         ////console.log("distinctVIN:: ", distinctVIN);
         if(distinctVIN.length > 0){
           distinctVIN.forEach(element => {
-            let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element && i.groupType != 'S'); 
+            let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element && i.groupType != 'S');
             if(_item.length > 0){
-              this.vehicleListData.push(_item[0]); //-- unique VIN data added 
+              this.vehicleListData.push(_item[0]); //-- unique VIN data added
               _item.forEach(element => {
                 finalVINDataList.push(element);
               });
             }
           });
-          ////console.log("finalVINDataList:: ", finalVINDataList); 
+          ////console.log("finalVINDataList:: ", finalVINDataList);
         }
       }else{
         // this.fleetUtilizationSearchData["vehicleGroupDropDownValue"] = '';
@@ -927,7 +946,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
     let vehicleData = this.vehicleListData.slice();
     this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
-    console.log("vehicleDD 1", this.vehicleDD);
+    //console.log("vehicleDD 1", this.vehicleDD);
     this.vehicleDD.sort(this.compareVin);
     this.resetVehicleFilter();
 
@@ -956,11 +975,11 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
   onSearch(){
     //this.internalSelection = true;
     this.resetChartData(); // reset chart data
-    let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
-    let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone); 
+    let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone);
+    let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);
 
-    // _startTime = Util.getMillisecondsToUTCDate(_startTime, this.prefTimeZone); 
-    //_endTime = Util.getMillisecondsToUTCDate(_endTime, this.prefTimeZone); 
+    // _startTime = Util.getMillisecondsToUTCDate(_startTime, this.prefTimeZone);
+    //_endTime = Util.getMillisecondsToUTCDate(_endTime, this.prefTimeZone);
 
 
     //  console.log('start:'+ _startTime, 'end:'+_endTime);
@@ -981,7 +1000,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
         "endDateTime":_endTime,
         "viNs":  _vinData,
       }
-      
+
       this.reportService.getFleetDetails(searchDataParam).subscribe((_fleetData: any) => {
 
        this.tripData = this.reportMapService.getConvertedFleetDataBasedOnPref(_fleetData["fleetDetails"], this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
@@ -1005,7 +1024,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       let percentage2 = (this.greaterTimeCount/this.tripData.length)* 100;
       this.doughnutChartDataForTime = [percentage2, 100- percentage2];
       this.timePieChartData = [percentage2, 100- percentage2];
-      
+
       }, (error)=>{
          //console.log(error);
         this.hideloader();
@@ -1018,6 +1037,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
         //this.calendarSelectedValues(calendarData["calenderDetails"]);
       })
     }
+    this.idleDurationCount()
     this.calendarOptions.initialDate = this.startDateValue;
     this.calendarOptions.validRange = { start: `${new Date(this.startDateValue).getFullYear()}-${(new Date(this.startDateValue).getMonth() + 1).toString().padStart(2, '0')}-${new Date(this.startDateValue).getDate().toString().padStart(2, '0')}`, end :  `${new Date(this.endDateValue).getFullYear()}-${(new Date(this.endDateValue).getMonth() + 1).toString().padStart(2, '0')}-${new Date(this.endDateValue).getDate().toString().padStart(2, '0')}`};
   }
@@ -1029,7 +1049,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     this.lineChartVehicleCount = [];
     this.chartsLabelsdefined = [];
     this.averageDistanceBarData = [];
-    //this.calendarValue=[]; 
+    //this.calendarValue=[];
     //this.calendarOptions.events = this.calendarValue;
   }
 
@@ -1047,32 +1067,32 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     this.selectedPOI.clear();
     this.resetTripFormControlValue();
     this.filterDateData(); // extra addded as per discuss with Atul
-    
+
   }
 
   sumOfColumns(columnName : any){
     let sum: any = 0;
     switch(columnName){
-      case 'distance': { 
+      case 'distance': {
         let s = this.tripData.forEach(element => {
          sum += parseFloat(element.convertedDistance);
 
         });
         break;
-      }case 'NumberOfVehicles': { 
+      }case 'NumberOfVehicles': {
         sum = this.tripData.length;
         break;
-      } case 'NumberOfTrips': { 
+      } case 'NumberOfTrips': {
         let s = this.tripData.forEach(element => {
           sum += element.numberOfTrips;
          });
         break;
-      }  case 'AverageDistancePerDay': { 
+      }  case 'AverageDistancePerDay': {
         let s = this.tripData.forEach(element => {
          sum += parseFloat(element.convertedAverageDistance);
         });
         break;
-      } case 'idleDuration': { 
+      } case 'idleDuration': {
         let s = this.tripData.forEach(element => {
           let time: any = 0;
           time += (element.idleDuration);
@@ -1087,16 +1107,16 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
         break;
       }
     }
-    return sum; 
+    return sum;
   }
 
   setChartData(chartData: any){
     this.calendarValue = [];
     chartData.forEach(e => {
       var date = this.reportMapService.getStartTime(e.calenderDate, this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, false); // new Date(e.calenderDate);
-      var resultDate =  this.datePipe.transform(e.calenderDate,'MM/dd/yyyy'); 
+      var resultDate =  this.datePipe.transform(e.calenderDate,'MM/dd/yyyy');
       this.chartsLabelsdefined.push(resultDate);
-    
+
       // this.barVarticleData.push(this.reportMapService.convertDistanceUnits(e.averagedistanceperday, this.prefUnitFormat));
       let averagedistanceperday = (this.reportMapService.convertDistanceUnits(e.averagedistance, this.prefUnitFormat));
       this.barVarticleData.push({ x:resultDate , y: averagedistanceperday});
@@ -1104,27 +1124,27 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       this.averageDistanceBarData.push({ x:resultDate , y: avgDistBarData.toFixed(2) });
 
       this.lineChartVehicleCount.push({ x:resultDate , y: e.vehiclecount });
-      this.calendarSelectedValues(e);   
+      this.calendarSelectedValues(e);
     });
     this.chartsLabelsdefined=[];
     if( this.chartLabelDateFormat=='DD/MM/YYYY'){
-      let startDate = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
-      let endDate = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);      
+      let startDate = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone);
+      let endDate = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);
       this.chartsLabelsdefined=[ startDate, endDate ];
     }
     else if( this.chartLabelDateFormat=='DD-MM-YYYY'){
-      let startDate = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
-      let endDate = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone); 
+      let startDate = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone);
+      let endDate = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);
       this.chartsLabelsdefined=[ startDate, endDate ];
     }
     else if( this.chartLabelDateFormat=='MM-DD-YYYY'){
       let startDate = `${this.startDateValue.getMonth()+1}-${this.startDateValue.getDate()}-${this.startDateValue.getFullYear()}`;;
-      let endDate = `${this.endDateValue.getMonth()+1}-${this.endDateValue.getDate()}-${this.endDateValue.getFullYear()}`;;  
+      let endDate = `${this.endDateValue.getMonth()+1}-${this.endDateValue.getDate()}-${this.endDateValue.getFullYear()}`;;
       this.chartsLabelsdefined=[ startDate, endDate ];
     }
     else{
       let startDate = `${this.startDateValue.getMonth()+1}/${this.startDateValue.getDate()}/${this.startDateValue.getFullYear()}`;;
-      let endDate = `${this.endDateValue.getMonth()+1}/${this.endDateValue.getDate()}/${this.endDateValue.getFullYear()}`;;  
+      let endDate = `${this.endDateValue.getMonth()+1}/${this.endDateValue.getDate()}/${this.endDateValue.getFullYear()}`;;
       this.chartsLabelsdefined=[ startDate, endDate ];
     }
     this.assignChartData();
@@ -1136,19 +1156,19 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     this.VehicleBarChartOptions.scales.yAxes[0].scaleLabel.labelString = `${this.translationData.lblvalue || 'value'}(${this.translationData.lblnumberofvehicles || 'number of vehicles'})`;
     this.VehicleBarChartOptions.scales.xAxes[0].scaleLabel.labelString = this.translationData.lblDates || 'Dates';
     // let startDate =this.startDateValue;
-    // let endDate = this.endDateValue;        
+    // let endDate = this.endDateValue;
     // this.chartsLabelsdefined=[ startDate, endDate ]
-  
+
     this.lineChartLabels = this.chartsLabelsdefined;
-    this.barChartLabels= this.chartsLabelsdefined;   
+    this.barChartLabels= this.chartsLabelsdefined;
     this.barChartData = [
-      { 
+      {
         label: (this.prefUnitFormat == 'dunit_Metric') ? `${this.translationData.lblAveragedistancepervehicle || 'Average distance per vehicle'} (${this.translationData.lblkmperday || 'km/day'})` : `${this.translationData.lblAveragedistancepervehicle || 'Average distance per vehicle'} (${this.translationData.lblmilesperday || 'miles/day'})`,
         type: 'bar',
         backgroundColor: '#7BC5EC',
         hoverBackgroundColor: '#7BC5EC',
         yAxesID: "y-axis-1",
-        data: this.averageDistanceBarData,	    
+        data: this.averageDistanceBarData,
         },
         {
           label:  this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm || 'km'})` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles ||'miles'})`,
@@ -1164,19 +1184,19 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     this.barChartOptions.scales.xAxes[0].time.displayFormats.day = this.chartLabelDateFormat;
     this.barChartOptions.scales.xAxes[0].time.tooltipFormat =  this.chartLabelDateFormat;
     this.barChartOptions.scales.xAxes[0].scaleLabel.labelString = this.translationData.lblDates || 'Dates'
-    
+
     this.distanceLineChartData = [
-      { 
+      {
         data: this.averageDistanceBarData,
         yAxesID: "y-axis-1",
         label: this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblAveragedistancepervehicle || 'Average distance per vehicle'}(${this.translationData.lblkmperday || 'km/day' })` : `${this.translationData.lblAveragedistancepervehicle || 'Average distance per vehicle'}(${this.translationData.lblmilesperday || 'miles/day'})`
       },
-      { 
-        data: this.barVarticleData,        
+      {
+        data: this.barVarticleData,
         yAxesID: "y-axis-2",
         label:  this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm || 'km'})` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles ||'miles'})`,
-             
-          
+
+
       },
     ];
     this.distanceLineChartOptions.scales.yAxes[1].scaleLabel.labelString = this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblkmperday || 'km/day' })` : `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblmilesperday || 'miles/day'})`;
@@ -1184,7 +1204,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     this.distanceLineChartOptions.scales.xAxes[0].time.displayFormats.day = this.chartLabelDateFormat;
     this.distanceLineChartOptions.scales.xAxes[0].time.tooltipFormat =  this.chartLabelDateFormat;
     this.distanceLineChartOptions.scales.xAxes[0].scaleLabel.labelString = this.translationData.lblDates || 'Dates';
-  
+
     this.lineChartData = [
       { data: this.lineChartVehicleCount, label: this.translationData.lblnumberofvehicles || 'Number of Vehicles' },
     ];
@@ -1193,64 +1213,64 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     this.lineChartOptions.scales.yAxes[0].scaleLabel.labelString = `${this.translationData.lblvalue || 'value'}(${this.translationData.lblnumberofvehicles || 'number of vehicles'})`;
     this.lineChartOptions.scales.xAxes[0].scaleLabel.labelString = this.translationData.lblDates || 'Dates';
     this.VehicleBarChartData = [
-      { 
+      {
         label: this.translationData.lblnumberofvehicles || 'Number of Vehicles',
         type: 'bar',
         backgroundColor: '#7BC5EC',
         hoverBackgroundColor: '#7BC5EC',
         yAxesID: "y-axis-1",
-        data: this.lineChartVehicleCount,	    
+        data: this.lineChartVehicleCount,
         },
     ];
     this.lineChartLabels = this.chartsLabelsdefined;
-    this.barChartLabels= this.chartsLabelsdefined;    
+    this.barChartLabels= this.chartsLabelsdefined;
   }
 
   calendarSelectedValues(element: any){
       switch(this.calendarpreferenceOption){
       case "rp_fu_report_calendarview_averageweight": {  // avg weight
-        this.calendarOptions.events =[ {title : `${this.reportMapService.convertWeightUnits(element.averageweight, this.prefUnitFormat, true)}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
+        this.calendarOptions.events =[ {title : `${this.reportMapService.convertWeightUnits(element.averageweight, this.prefUnitFormat, true)}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}];
         //console.log(this.calendarOptions.events);
         break;
       }
       case "rp_fu_report_calendarview_idleduration":{ // idle duration
-        this.calendarOptions.events =[ {title : `${this.reportMapService.getHhMmTime(element.averageidleduration)}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
+        this.calendarOptions.events =[ {title : `${this.reportMapService.getHhMmTime(element.averageidleduration)}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}];
         break;
       }
       case "rp_fu_report_calendarview_distance": { // distance
-        this.calendarOptions.events =[ {title : `${this.reportMapService.convertDistanceUnits(element.averagedistance,  this.prefUnitFormat)}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
+        this.calendarOptions.events =[ {title : `${this.reportMapService.convertDistanceUnits(element.averagedistance,  this.prefUnitFormat)}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}];
         break;
       }
       case "rp_fu_report_calendarview_activevehicles": { // active vehicles
-        this.calendarOptions.events =[ {title : `${element.vehiclecount}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
+        this.calendarOptions.events =[ {title : `${element.vehiclecount}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}];
         break;
       }
       case "rp_fu_report_calendarview_drivingtime": { // driving time
-        this.calendarOptions.events =[ {title : `${this.reportMapService.getHhMmTime(element.averagedrivingtime)}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
+        this.calendarOptions.events =[ {title : `${this.reportMapService.getHhMmTime(element.averagedrivingtime)}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}];
         break;
       }
       case "rp_fu_report_calendarview_timebasedutilization": { // time based utilisation
         var timebasedutilisationvalue =  (this.timebasedThreshold == 0) ? 0 : (((element.averagedrivingtime*1000)/this.timebasedThreshold) * 100).toFixed(2)+' %';  //converting avgdrivingtime to milliseconds
-        this.calendarOptions.events =[ {title : `${timebasedutilisationvalue}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
+        this.calendarOptions.events =[ {title : `${timebasedutilisationvalue}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}];
         break;
       }
       case "rp_fu_report_calendarview_mileagebasedutilization": { // maleage based utilisation
         var mileagebasedutilisationvalue = (this.mileagebasedThreshold == 0) ? 0 : ((element.averagedistance/this.mileagebasedThreshold)*100).toFixed(2)+' %';
-        this.calendarOptions.events =[ {title : `${mileagebasedutilisationvalue}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
+        this.calendarOptions.events =[ {title : `${mileagebasedutilisationvalue}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}];
         break;
       }
-      case "rp_fu_report_calendarview_totaltrips": { // total trip 
-        this.calendarOptions.events =[ {title : `${element.tripcount}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
+      case "rp_fu_report_calendarview_totaltrips": { // total trip
+        this.calendarOptions.events =[ {title : `${element.tripcount}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}];
         break;
       }
       default: {
         this.calendarValue = [];
       }
-    
-    }    
-    this.calendarValue.push(this.calendarOptions.events[0]); 
+
+    }
+    this.calendarValue.push(this.calendarOptions.events[0]);
     this.calendarOptions.events = this.calendarValue;
-    //this.calendarOptions.events;    
+    //this.calendarOptions.events;
   }
 
   resetTripFormControlValue(){
@@ -1267,7 +1287,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
   }
 
   onVehicleChange(event: any){
-    this.internalSelection = true; 
+    this.internalSelection = true;
     // this.fleetUtilizationSearchData["vehicleDropDownValue"] = event.value;
     // this.setGlobalSearchData(this.fleetUtilizationSearchData)
   }
@@ -1280,7 +1300,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
   }
 
   updateDataSource(tableData: any) {
-    console.log("tableData", tableData);
+    //console.log("tableData", tableData);
     this.initData = tableData;
     this.showMap = false;
     this.selectedTrip.clear();
@@ -1288,38 +1308,43 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+      this.idleDurationCount()
     });
   }
+  idleDurationCount(){
+    this.initData.forEach(item => {
+    this.idleDurationConverted = Util.getHhMmTime(parseFloat(item.idleDuration));
+  })
+}
 
   setVehicleGroupAndVehiclePreSelection() {
     if(!this.internalSelection && this.fleetUtilizationSearchData.modifiedFrom !== "") {
       // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
-      this.onVehicleGroupChange(this.fleetUtilizationSearchData.vehicleGroupDropDownValue || { value : 0 });
+      this.onVehicleGroupChange(this.fleetUtilizationSearchData.vehicleGroupDropDownValue, false);
     }
     // else if(this.fleetUtilizationSearchData.vehicleDropDownValue !== "") {
     //   // this.tripForm.get('vehicle').setValue(this.fleetUtilizationSearchData.vehicleDropDownValue);
     // }
   }
 
-  onVehicleGroupChange(event: any){
-   if(event.value || event.value == 0){
-      this.internalSelection = true; 
+  onVehicleGroupChange(event: any, flag?: any){
+   if(flag && (event.value || event.value == 0)){
+      this.internalSelection = true;
       this.tripForm.get('vehicle').setValue(0); //- reset vehicle dropdown
       if(parseInt(event.value) == 0){ //-- all group
         //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
         let vehicleData = this.vehicleListData.slice();
         this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
-        console.log("vehicleDD 2", this.vehicleDD);
-    
+        //console.log("vehicleDD 2", this.vehicleDD);
       }else{
       //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
       let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
         if(search.length > 0){
           this.vehicleDD = [];
           search.forEach(element => {
-            this.vehicleDD.push(element); 
-            console.log("vehicleDD 3", this.vehicleDD);
-     
+            this.vehicleDD.push(element);
+            //console.log("vehicleDD 3", this.vehicleDD);
+
           });
         }
       }
@@ -1332,7 +1357,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       this.tripForm.get('vehicle').setValue(parseInt(this.fleetUtilizationSearchData.vehicleDropDownValue));
     }
   }
-    
+
   setTableInfo(){
     let vehName: any = '';
     let vehGrpName: any = '';
@@ -1373,7 +1398,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       vehicleName: vehName,
       vin: vin,
       regNo: plateNo
-    }    
+    }
   }
 
   formStartDate(date: any){
@@ -1436,7 +1461,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
         this.selectedStartTime = this.fleetUtilizationSearchData.startTimeStamp;
         this.selectedEndTime = this.fleetUtilizationSearchData.endTimeStamp;
         this.startTimeDisplay = (this.prefTimeFormat == 24) ? `${this.fleetUtilizationSearchData.startTimeStamp}:00` : this.fleetUtilizationSearchData.startTimeStamp;
-        this.endTimeDisplay = (this.prefTimeFormat == 24) ? `${this.fleetUtilizationSearchData.endTimeStamp}:59` : this.fleetUtilizationSearchData.endTimeStamp;  
+        this.endTimeDisplay = (this.prefTimeFormat == 24) ? `${this.fleetUtilizationSearchData.endTimeStamp}:59` : this.fleetUtilizationSearchData.endTimeStamp;
       }else{ // different format
         if(this.prefTimeFormat == 12){ // 12
           this.selectedStartTime = this._get12Time(this.fleetUtilizationSearchData.startTimeStamp);
@@ -1446,7 +1471,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
           }else{ // 24
           this.selectedStartTime = this.get24Time(this.fleetUtilizationSearchData.startTimeStamp);
           this.selectedEndTime = this.get24Time(this.fleetUtilizationSearchData.endTimeStamp);
-          this.startTimeDisplay = `${this.selectedStartTime}:00`; 
+          this.startTimeDisplay = `${this.selectedStartTime}:00`;
           this.endTimeDisplay = `${this.selectedEndTime}:59`;
         }
       }
@@ -1463,9 +1488,9 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
         this.selectedEndTime = "11:59 PM";
       }
     }
-  
+
   }
-  
+
   setPrefFormatDate(){
     switch(this.prefDateFormat){
       case 'ddateformat_dd/mm/yyyy': {
@@ -1539,7 +1564,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     this.resetTripFormControlValue(); // extra addded as per discuss with Atul
     this.filterDateData(); // extra addded as per discuss with Atul
   }
-  
+
   setStartEndDateTime(date: any, timeObj: any, type: any){
     return this.reportMapService.setStartEndDateTime(date, timeObj, type, this.prefTimeFormat);
   }
@@ -1592,7 +1617,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
   // getUtcOffset(date) {
   //   return moment(date)
   //     .subtract(
-  //       moment(date).utcOffset(), 
+  //       moment(date).utcOffset(),
   //       'seconds')
   //     .utc()
   // }
@@ -1625,26 +1650,16 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     return date;
   }
 
-  summaryHeader: any=[];
-  exportDetailTableData: any=[];
-  exportDetailTableHeader: any=[];
-getAllSummaryData(unitValkm, unitKmperday){ 
-   this.summaryHeader = [`${this.translationData.lblReportName}`, `${this.translationData.lblReportCreated}`, 
-  `${this.translationData.lblReportStartTime}`, `${this.translationData.lblReportEndTime}`, 
-  `${this.translationData.lblVehicleGroup}`, `${this.translationData.lblVehicleName}` 
-  // `${this.translationData.lblNumberOfVehicles}`, `${this.translationData.lblTotalDistance} (${unitValkm})`, 
-  // `${this.translationData.lblNumberOfTrips}`, `${this.translationData.lblAverageDistanceperDay} (${unitKmperday})`, 
-  // `${this.translationData.lblIdleDuration} (${this.translationData.lblhhmm })`
-];
+getAllSummaryData(){
     if(this.initData.length > 0){
-      let numberOfTrips = 0 ; let distanceDone = 0; let idleDuration = 0; 
+      let numberOfTrips = 0 ; let distanceDone = 0; let idleDuration = 0;
       let averageDistPerDay = 0; let numbeOfVehicles = 0;
-      this.initData.forEach(item => {         
+      this.initData.forEach(item => {
         numberOfTrips += item.numberOfTrips;
         distanceDone += parseFloat(item.convertedDistance);
        // idleDuration += parseFloat(item.idleDuration);
-        averageDistPerDay += parseFloat(item.convertedAverageDistance);   
-        
+        averageDistPerDay += parseFloat(item.convertedAverageDistance);
+
         let time: any = 0;
         time += (item.idleDuration);
         let data: any = "00:00";
@@ -1653,35 +1668,15 @@ getAllSummaryData(unitValkm, unitKmperday){
         let minutes = Math.floor(time / 60);
         let seconds = time % 60;
         data = `${(hours >= 10) ? hours : ('0'+hours)}:${(minutes >= 10) ? minutes : ('0'+minutes)}`;
-        idleDuration = data;    
+        idleDuration = data;
       });
-      numbeOfVehicles = this.initData.length;      
+      numbeOfVehicles = this.initData.length;
       this.summaryObj = [
         [this.translationData.lblFleetUtilizationReport || 'Fleet Utilization Report', this.reportMapService.getStartTime(Date.now(), this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
-          this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName //numbeOfVehicles, distanceDone.toFixed(2),
-          //numberOfTrips, averageDistPerDay.toFixed(2), idleDuration 
+          this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, numbeOfVehicles, distanceDone.toFixed(2),
+          numberOfTrips, averageDistPerDay.toFixed(2), idleDuration
         ]
       ];
-      if(this.noOfVehStatus) {
-        this.summaryHeader.push(`${this.translationData.lblNumberOfVehicles}`);
-        this.summaryObj[0].push(numbeOfVehicles);
-      }
-      if(this.totalDistanceStatus){
-        this.summaryHeader.push(`${this.translationData.lblTotalDistance} (${unitValkm})`);
-        this.summaryObj[0].push(distanceDone.toFixed(2));
-      }
-      if(this.noOfTripsStatus){
-        this.summaryHeader.push(`${this.translationData.lblNumberOfTrips}`);
-        this.summaryObj[0].push(numberOfTrips);
-      }
-      if(this.avgDistanceStatus){
-        this.summaryHeader.push(`${this.translationData.lblAverageDistanceperDay} (${unitKmperday})`);
-        this.summaryObj[0].push(averageDistPerDay.toFixed(2));
-      }
-      if(this.idleDurationStatus){
-        this.summaryHeader.push(`${this.translationData.lblIdleDuration} (${this.translationData.lblhhmm })`);
-        this.summaryObj[0].push(idleDuration);
-      }
     }
   }
 
@@ -1692,151 +1687,22 @@ getAllSummaryData(unitValkm, unitKmperday){
     let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmph || 'mph') : (this.translationData.lblmph || 'mph');
     let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmi || 'mi') : (this.translationData.lblmi || 'mi');
 
-    // col = [`${this.translationData.lblVehicleName || 'Vehicle Name'}`, `${this.translationData.lblVIN || 'VIN'}`, 
-    // `${this.translationData.lblRegistrationNumber || 'Registration Number'}`, `${this.translationData.lblDistance || 'Distance'} (${unitValkm})`,
-    //  `${this.translationData.lblNumberOfTrips || 'Number Of Trips'}`, `${this.translationData.lblTripTime || 'Trip Time'} (${this.translationData.lblhhmm || 'hh:mm'})`, 
-    //  `${this.translationData.lblDrivingTime || 'Driving Time'} (${this.translationData.lblhhmm || 'hh:mm'})`, 
-    //  `${this.translationData.lblIdleDuration || 'Idle Duration'} (${this.translationData.lblhhmm || 'hh:mm'})`, 
-    //  `${this.translationData.lblStopTime || 'Stop Time'} (${this.translationData.lblhhmm || 'hh:mm'})`, 
-    //  `${this.translationData.lblAverageDistanceperDay || 'Average Distance per Day'} (${unitKmperday})`, 
-    //  `${this.translationData.lblAverageSpeed || 'Average Speed'} (${unitValkmh})`, 
-    //  `${this.translationData.lblAverageWeightperTrip || 'Average Weight per Trip'} (${unitValTon})`, 
-    //  `${this.translationData.lblOdometer || 'Odometer'} (${unitValkm})`];
-    // return col;
-    this.exportDetailTableData = [];
-    this.exportDetailTableHeader = [];
-    this.displayedColumns.forEach(element => {
-      switch(element){
-        case 'vehiclename' :{
-          this.exportDetailTableHeader.push(this.translationData.lblVehicleName);
-          break;
-        }
-        case 'vin' :{
-          this.exportDetailTableHeader.push(this.translationData.lblVIN);
-          break;
-        }
-        case 'registrationnumber' :{
-          this.exportDetailTableHeader.push(this.translationData.lblRegistrationNumber);
-          break;
-        }
-        case 'distance' :{
-          this.exportDetailTableHeader.push(`${this.translationData.lblDistance} (${unitValkm})`);
-          break;
-        }
-        case 'numberOfTrips' :{
-          this.exportDetailTableHeader.push(this.translationData.lblNumberOfTrips);
-          break;
-        }
-        case 'tripTime' :{
-          this.exportDetailTableHeader.push(this.translationData.lblTripTime);
-          break;
-        }
-        case 'drivingTime' :{
-          this.exportDetailTableHeader.push(`${this.translationData.lblDrivingTime} (${this.translationData.lblhhmm})`);
-          break;
-        }
-        case 'idleDuration' :{
-          this.exportDetailTableHeader.push(`${this.translationData.lblIdleDuration} (${this.translationData.lblhhmm})`);
-          break;
-        }
-        case 'stopTime' :{
-          this.exportDetailTableHeader.push(`${this.translationData.lblStopTime} (${this.translationData.lblhhmm})`);
-          break;
-        }
-        case 'averageDistancePerDay' :{
-          this.exportDetailTableHeader.push(`${this.translationData.lblAverageDistanceperDay} (${unitKmperday})`);
-          break;
-        }
-        case 'averageSpeed' :{
-          this.exportDetailTableHeader.push(`${this.translationData.lblAverageSpeed} (${unitValkmh})`);
-          break;
-        }
-        case 'averageWeight' :{
-          this.exportDetailTableHeader.push(`${this.translationData.lblAverageWeightperTrip} (${unitValTon})`);
-          break;
-        }
-        case 'odometer' :{
-          this.exportDetailTableHeader.push(`${this.translationData.lblOdometer} (${unitValkm})`);
-          break;
-        }
-      }
-    });
-
-    this.initData.forEach(e => {
-      let tempObj: any=[];
-      this.displayedColumns.forEach(element => {
-        switch(element){
-          case 'vehiclename' :{
-            tempObj.push(e.vehicleName);
-            break;
-          }
-          case 'vin' :{
-            tempObj.push(e.vin);
-            break;
-          }
-          case 'registrationnumber' :{
-            tempObj.push(e.registrationNumber);
-            break;
-          }
-          case 'distance' :{
-            tempObj.push(e.convertedDistance);
-            break;
-          }
-          case 'numberOfTrips' :{
-            tempObj.push(e.numberOfTrips);
-            break;
-          }
-          case 'tripTime' :{
-            tempObj.push(e.convertedTripTime);
-            break;
-          }
-          case 'drivingTime' :{
-            tempObj.push(e.convertedDrivingTime);
-            break;
-          }
-          case 'idleDuration' :{
-            tempObj.push(e.convertedIdleDuration);
-            break;
-          }
-          case 'stopTime' :{
-            tempObj.push(e.convertedStopTime);
-            break;
-          }
-          case 'averageDistancePerDay' :{
-            tempObj.push(e.convertedAverageDistance);
-            break;
-          }
-          case 'averageSpeed' :{
-            tempObj.push(e.convertedAverageSpeed);
-            break;
-          }
-          case 'averageWeight' :{
-            tempObj.push(e.convertedAverageWeight);
-            break;
-          }
-          case 'odometer' :{
-            tempObj.push(e.convertedOdometer);
-            break;
-          }
-        }
-      });
-      this.exportDetailTableData.push(tempObj);
-      console.log(this.exportDetailTableData);
-    });
+    col = [`${this.translationData.lblVehicleName || 'Vehicle Name'}`, `${this.translationData.lblVIN || 'VIN'}`, `${this.translationData.lblRegistrationNumber || 'Registration Number'}`, `${this.translationData.lblDistance || 'Distance'} (${unitValkm})`, `${this.translationData.lblNumberOfTrips || 'Number Of Trips'}`, `${this.translationData.lblTripTime || 'Trip Time'} (${this.translationData.lblhhmm || 'hh:mm'})`, `${this.translationData.lblDrivingTime || 'Driving Time'} (${this.translationData.lblhhmm || 'hh:mm'})`, `${this.translationData.lblIdleDuration || 'Idle Duration'} (${this.translationData.lblhhmm || 'hh:mm'})`, `${this.translationData.lblStopTime || 'Stop Time'} (${this.translationData.lblhhmm || 'hh:mm'})`, `${this.translationData.lblAverageDistanceperDay || 'Average Distance per Day'} (${unitKmperday})`, `${this.translationData.lblAverageSpeed || 'Average Speed'} (${unitValkmh})`, `${this.translationData.lblAverageWeightperTrip || 'Average Weight per Trip'} (${unitValTon})`, `${this.translationData.lblOdometer || 'Odometer'} (${unitValkm})`];
+    return col;
   }
 
-  exportAsExcelFile(){    
+  exportAsExcelFile(){
+  this.getAllSummaryData();
   const title = this.translationData.lblTripFleetUtilisationReport || 'Trip Fleet Utilisation Report';
   const summary = this.translationData.lblSummarySection || 'Summary Section';
   const detail = this.translationData.lblDetailSection || 'Detail Section';
   let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmi || 'mi') : (this.translationData.lblmi || 'mi');
   let unitKmperday = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmperday || 'km/day') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmilesperday || 'miles/day') : (this.translationData.lblmilesperday || 'miles/day');
-  this.getAllSummaryData(unitValkm, unitKmperday);
-  this.getPDFExcelHeader();
-  // const header = this.getPDFExcelHeader();
-  //const summaryHeader = [`${this.translationData.lblReportName || 'Report Name'}`, `${this.translationData.lblReportCreated || 'Report Created'}`, `${this.translationData.lblReportStartTime|| 'Report Start Time'}`, `${this.translationData.lblReportEndTime|| 'Report End Time'}`, `${this.translationData.lblVehicleGroup || 'Vehicle Group'}`, `${this.translationData.lblVehicleName || 'Vehicle Name'}`, `${this.translationData.lblNumberOfVehicles || 'Number Of Vehicles'}`, `${this.translationData.lblTotalDistance || 'Total Distance'} (${unitValkm})`, `${this.translationData.lblNumberOfTrips || 'Number Of Trips'}`, `${this.translationData.lblAverageDistanceperDay || 'Average Distance per Day'} (${unitKmperday})`, `${this.translationData.lblIdleDuration || 'Idle Duration'} (${this.translationData.lblhhmm || 'hh:mm'})`];
-  //const summaryData = this.summaryObj;
-  
+
+  const header = this.getPDFExcelHeader();
+  const summaryHeader = [`${this.translationData.lblReportName || 'Report Name'}`, `${this.translationData.lblReportCreated || 'Report Created'}`, `${this.translationData.lblReportStartTime|| 'Report Start Time'}`, `${this.translationData.lblReportEndTime|| 'Report End Time'}`, `${this.translationData.lblVehicleGroup || 'Vehicle Group'}`, `${this.translationData.lblVehicleName || 'Vehicle Name'}`, `${this.translationData.lblNumberOfVehicles || 'Number Of Vehicles'}`, `${this.translationData.lblTotalDistance || 'Total Distance'} (${unitValkm})`, `${this.translationData.lblNumberOfTrips || 'Number Of Trips'}`, `${this.translationData.lblAverageDistanceperDay || 'Average Distance per Day'} (${unitKmperday})`, `${this.translationData.lblIdleDuration || 'Idle Duration'} (${this.translationData.lblhhmm || 'hh:mm'})`];
+  const summaryData = this.summaryObj;
+
   //Create workbook and worksheet
   let workbook = new Workbook();
   let worksheet = workbook.addWorksheet('Trip Fleet Report');
@@ -1844,26 +1710,26 @@ getAllSummaryData(unitValkm, unitKmperday){
   let titleRow = worksheet.addRow([title]);
   worksheet.addRow([]);
   titleRow.font = { name: 'sans-serif', family: 4, size: 14, underline: 'double', bold: true }
- 
-  worksheet.addRow([]);  
+
+  worksheet.addRow([]);
   let subTitleRow = worksheet.addRow([summary]);
-  let summaryRow = worksheet.addRow(this.summaryHeader);  
-  this.summaryObj.forEach(element => {  
-    worksheet.addRow(element);   
-  });      
+  let summaryRow = worksheet.addRow(summaryHeader);
+  summaryData.forEach(element => {
+    worksheet.addRow(element);
+  });
   worksheet.addRow([]);
   summaryRow.eachCell((cell, number) => {
     cell.fill = {
       type: 'pattern',
       pattern: 'solid',
       fgColor: { argb: 'FFFFFF00' },
-      bgColor: { argb: 'FF0000FF' }      
+      bgColor: { argb: 'FF0000FF' }
     }
     cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
-  })  
-  worksheet.addRow([]);   
+  })
+  worksheet.addRow([]);
   let subTitleDetailRow = worksheet.addRow([detail]);
-  let headerRow = worksheet.addRow(this.exportDetailTableHeader);
+  let headerRow = worksheet.addRow(header);
   headerRow.eachCell((cell, number) => {
     cell.fill = {
       type: 'pattern',
@@ -1873,25 +1739,25 @@ getAllSummaryData(unitValkm, unitKmperday){
     }
     cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
   })
-// worksheet.addRow(this.exportDetailTableData);
- this.exportDetailTableData.forEach(item => {     
-  //  console.log("initData", this.initData);
-    // worksheet.addRow([item.vehicleName,item.vin, item.registrationNumber,item.convertedDistance,
-    //   item.numberOfTrips,item.convertedTripTime, item.convertedDrivingTime, item.convertedIdleDuration,
-    //   item.convertedStopTime, item.convertedAverageDistance, item.convertedAverageSpeed, item.convertedAverageWeight, 
-    //   item.convertedOdometer]);   
-    worksheet.addRow(item);
-  }); 
-  worksheet.mergeCells('A1:D2'); 
+
+  this.initData.forEach(item => {
+  let convertedIdleDurationValue = Util.getHhMmTime(parseFloat(item.idleDuration));
+   //console.log("initData", this.initData);
+  worksheet.addRow([item.vehicleName,item.vin, item.registrationNumber,item.convertedDistance,
+      item.numberOfTrips,item.convertedTripTime, item.convertedDrivingTime, convertedIdleDurationValue,
+      item.convertedStopTime, item.convertedAverageDistance, item.convertedAverageSpeed, item.convertedAverageWeight,
+      item.convertedOdometer]);
+  });
+  worksheet.mergeCells('A1:D2');
   subTitleRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
   subTitleDetailRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
-  for (var i = 0; i < this.exportDetailTableHeader.length; i++) {    
-    worksheet.columns[i].width = 20;      
+  for (var i = 0; i < header.length; i++) {
+    worksheet.columns[i].width = 20;
   }
-  for (var j = 0; j < this.summaryHeader.length; j++) {  
-    worksheet.columns[j].width = 20; 
+  for (var j = 0; j < summaryHeader.length; j++) {
+    worksheet.columns[j].width = 20;
   }
-  worksheet.addRow([]); 
+  worksheet.addRow([]);
   workbook.xlsx.writeBuffer().then((data) => {
     let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     fs.saveAs(blob, 'Trip_Fleet_Utilisation.xlsx');
@@ -1900,10 +1766,9 @@ getAllSummaryData(unitValkm, unitKmperday){
 }
 
   exportAsPDFFile(){
-  var doc = new jsPDF('p', 'mm', 'a4');  
-  this.getPDFExcelHeader();
-  // let pdfColumns = this.getPDFExcelHeader();
-  // let prepare = [];
+  var doc = new jsPDF('p', 'mm', 'a4');
+  let pdfColumns = this.getPDFExcelHeader();
+  let prepare = []
     // this.initData.forEach(e => {
     //   var tempObj = [];
     //   this.displayedColumns.forEach(element => {
@@ -1963,37 +1828,46 @@ getAllSummaryData(unitValkm, unitKmperday){
     //     }
     //   })
 
-    //   prepare.push(tempObj);    
+    //   prepare.push(tempObj);
     // });
-    
-    
+
+    this.initData.forEach(item => {
+      let idleDurations = Util.getHhMmTime(parseFloat(item.idleDuration));
+            // console.log("initData", this.initData);
+       prepare.push([item.vehicleName,item.vin, item.registrationNumber,item.convertedDistance,
+         item.numberOfTrips,item.convertedTripTime, item.convertedDrivingTime, idleDurations,
+         item.convertedStopTime, item.convertedAverageDistance, item.convertedAverageSpeed, item.convertedAverageWeight,
+         item.convertedOdometer]);
+     });
+
+
     let DATA = document.getElementById('charts');
     html2canvas( DATA)
-    .then(canvas => {  
+    .then(canvas => {
       (doc as any).autoTable({
         styles: {
             cellPadding: 0.5,
             fontSize: 12
-        },       
-        didDrawPage: function(data) {     
+        },
+        didDrawPage: function(data) {
             // Header
             doc.setFontSize(16);
             var fileTitle = "Trip Fleet Utilisation Details";
             var img = "/assets/logo.png";
             doc.addImage(img, 'JPEG',10,10,0,0);
-  
-            var img = "/assets/logo_daf.png"; 
+
+            var img = "/assets/logo_daf.png";
             doc.text(fileTitle, 14, 35);
-            doc.addImage(img, 'JPEG',150, 10, 0, 10);            
+            doc.addImage(img, 'JPEG',150, 10, 0, 10);
         },
         margin: {
-            bottom: 30, 
+            bottom: 30,
             top:40
-        }  
+        }
       });
         let fileWidth = 170;
         let fileHeight = canvas.height * fileWidth / canvas.width;
-        
+
         const FILEURI = canvas.toDataURL('image/png')
         // let PDF = new jsPDF('p', 'mm', 'a4');
         let position = 0;
@@ -2001,23 +1875,23 @@ getAllSummaryData(unitValkm, unitKmperday){
         doc.addPage('a2','p');
 
       (doc as any).autoTable({
-      head: [this.exportDetailTableHeader],
-      body: this.exportDetailTableData,
+      head: [pdfColumns],
+      body: prepare,
       theme: 'striped',
       didDrawCell: data => {
         //console.log(data.column.index)
       }
     })
     doc.save('tripFleetUtilisation.pdf');
-       
-    });     
+
+    });
   }
 
   // getPDFHeaders(){
   //   let displayArray =[];
   //   this.displayedColumns.forEach(i => {
   //     let _s = this.prefMapData.filter(item => item.value == i);
-  //     if (_s.length > 0){          
+  //     if (_s.length > 0){
   //         displayArray.push(this.translationData[_s[0].key]);
   //       }
   //   })
@@ -2041,7 +1915,7 @@ getAllSummaryData(unitValkm, unitKmperday){
   }
 
   filterVehicleGroups(vehicleSearch){
-    console.log("filterVehicleGroups called");
+    //console.log("filterVehicleGroups called");
     if(!this.vehicleGrpDD){
       return;
     }
@@ -2054,12 +1928,12 @@ getAllSummaryData(unitValkm, unitKmperday){
     this.filteredVehicleGroups.next(
       this.vehicleGrpDD.filter(item => item.vehicleGroupName.toLowerCase().indexOf(vehicleSearch) > -1)
     );
-    console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
+    //console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
 
   }
 
   filterVehicle(VehicleSearch){
-    console.log("vehicle dropdown called");
+    //console.log("vehicle dropdown called");
     if(!this.vehicleDD){
       return;
     }
@@ -2072,9 +1946,9 @@ getAllSummaryData(unitValkm, unitKmperday){
     this.filteredVehicle.next(
       this.vehicleDD.filter(item => item.vin?.toLowerCase()?.indexOf(VehicleSearch) > -1)
     );
-    console.log("filtered vehicles", this.filteredVehicle);
+    //console.log("filtered vehicles", this.filteredVehicle);
   }
-  
+
   resetVehicleFilter(){
     this.filteredVehicle.next(this.vehicleDD.slice());
   }
@@ -2099,6 +1973,6 @@ getAllSummaryData(unitValkm, unitKmperday){
     }
     return 0;
   }
-  
+
 
 }
