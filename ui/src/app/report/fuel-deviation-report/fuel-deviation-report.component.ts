@@ -1552,7 +1552,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
 
   exportAsPDFFile(){
   //var doc = new jsPDF('p', 'mm', 'a4');
-  var doc = new jsPDF('l', 'mm', 'a4');
+  var doc = new jsPDF('p', 'mm', 'a4');
   let pdfColumns = this.getPDFExcelHeader(); // this.getPDFHeaders()
   let prepare = []
     this.initData.forEach(e=>{
@@ -1657,8 +1657,8 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
             doc.addImage(img, 'JPEG', 10, 10, 0, 0);
   
             var img = "/assets/logo_daf.png";
-            doc.text(fileTitle, 115, 35); // 14, 35
-            doc.addImage(img, 'JPEG', 250, 10, 0, 10); // 150, 10, 0, 10            
+            doc.text(fileTitle, 14, 35);
+            doc.addImage(img, 'JPEG',150, 10, 0, 10);   
         },
         margin: {
             bottom: 20, 
@@ -1670,9 +1670,9 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
         
         const FILEURI = canvas.toDataURL('image/png')
         // let PDF = new jsPDF('p', 'mm', 'a4');
-        let position = 0;
-        doc.addImage(FILEURI, 'PNG', 60, 40, fileWidth, fileHeight); // 10, 40,
-        doc.addPage();
+         let position = 0;
+        doc.addImage(FILEURI, 'PNG', 10, 40, fileWidth, fileHeight) ;
+        doc.addPage('a1','p');
 
       (doc as any).autoTable({
       head: [pdfColumns],
