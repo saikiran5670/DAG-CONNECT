@@ -189,9 +189,10 @@ namespace net.atos.daf.ct2.relationship.repository
                     if (filter.Level != 0)
                     {
                         parameter.Add("@level", filter.Level);
-
+                        parameter.Add("@organization_id", filter.OrganizationId);
                         query = query + " and (relationship.level >= @level and relationship.level < 30) or relationship.organization_id=@organization_id  ";
                     }
+
                     query = query + "ORDER BY id ASC; ";
                     dynamic result = await _dataAccess.QueryAsync<dynamic>(query, parameter);
 

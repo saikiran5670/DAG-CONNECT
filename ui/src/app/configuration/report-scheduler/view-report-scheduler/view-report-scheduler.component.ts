@@ -192,8 +192,8 @@ export class ViewReportSchedulerComponent implements OnInit {
         this.startDate= (_h > 10 ? _h : "0"+_h) + ":" + (_m > 10 ? _m : "0"+_m) + ":" + (_s > 10 ? _s : "0"+_s);
         this.endDate= Util.convertUtcToDateNoFormat(this.selectedRowData[0].endDate, this.prefTimeZone);
         this.endDate= this.endDate.getHours()+":"+this.endDate.getMinutes()+":"+this.endDate.getSeconds();
-        // this.startDate= "00:00:00";
-        // this.endDate= "23:59:59";
+        this.startDate= "00:00:00";
+        this.endDate= "23:59:59";
         break;
       }
       case 'W' : {
