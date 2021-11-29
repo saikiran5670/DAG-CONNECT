@@ -53,12 +53,14 @@ namespace net.atos.daf.ct2.ecoscoredataservice.Controllers
         {
             try
             {
+                _logger.Debug($"EcoScoreData:kpiinfo.started. minDistance : {minDistance} request : {JsonConvert.SerializeObject(request)}");
                 minDistance = minDistance ?? 0;
                 await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Eco-Score Data Service", nameof(GetKPIInfo), AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.PARTIAL, "Get KPI info method Eco-Score data service", 0, 0, JsonConvert.SerializeObject(request), 0, 0);
 
                 if (!ModelState.IsValid)
                 {
                     var modelState = ModelState.Where(x => x.Value.ValidationState == ModelValidationState.Invalid).First();
+                    _logger.Debug($"EcoScoreData:kpiinfo.Not ModelState.IsValid. errorCode: {modelState.Value.Errors.First().ErrorMessage}, parameter: {modelState.Key}");
                     return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: modelState.Value.Errors.First().ErrorMessage, parameter: modelState.Key);
                 }
 
@@ -67,7 +69,7 @@ namespace net.atos.daf.ct2.ecoscoredataservice.Controllers
                 {
                     var orgId = (int)(result as ObjectResult).Value;
                     var response = await _reportManager.GetKPIInfo(MapRequest(request, minDistance, orgId));
-
+                    _logger.Debug($"EcoScoreData:kpiinfo. minDistance : {minDistance} response : {JsonConvert.SerializeObject(response)}");
                     return Ok(response);
                 }
                 else
@@ -77,7 +79,7 @@ namespace net.atos.daf.ct2.ecoscoredataservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error("Error occurred while processing KPI Info data.", ex);
+                _logger.Error($"EcoScoreData:chartinfo.Error occurred while processing KPI Info data. minDistance : {minDistance}", ex);
                 await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Eco-Score Data Service", nameof(GetKPIInfo), AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.FAILED, "Get KPI info method Eco-Score data service", 0, 0, ex.Message, 0, 0);
                 return StatusCode(500, string.Empty);
             }
@@ -89,12 +91,14 @@ namespace net.atos.daf.ct2.ecoscoredataservice.Controllers
         {
             try
             {
+                _logger.Debug($"EcoScoreData:chartinfo.started. minDistance : {minDistance} , request : {JsonConvert.SerializeObject(request)}");
                 minDistance = minDistance ?? 0;
                 await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Eco-Score Data Service", nameof(GetChartInfo), AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.PARTIAL, "Get Chart info method Eco-Score data service", 0, 0, JsonConvert.SerializeObject(request), 0, 0);
 
                 if (!ModelState.IsValid)
                 {
                     var modelState = ModelState.Where(x => x.Value.ValidationState == ModelValidationState.Invalid).First();
+                    _logger.Debug($"EcoScoreData:kpiinfo.Not ModelState.IsValid. errorCode: {modelState.Value.Errors.First().ErrorMessage}, parameter: {modelState.Key}");
                     return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: modelState.Value.Errors.First().ErrorMessage, parameter: modelState.Key);
                 }
 
@@ -103,7 +107,7 @@ namespace net.atos.daf.ct2.ecoscoredataservice.Controllers
                 {
                     var orgId = (int)(result as ObjectResult).Value;
                     var response = await _reportManager.GetChartInfo(MapRequest(request, minDistance, orgId));
-
+                    _logger.Debug($"EcoScoreData:chartinfo. minDistance : {minDistance} , response : {JsonConvert.SerializeObject(response)}");
                     return Ok(response);
                 }
                 else
@@ -113,7 +117,7 @@ namespace net.atos.daf.ct2.ecoscoredataservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error("Error occurred while processing Chart Info data.", ex);
+                _logger.Error($"EcoScoreData:chartinfo.Error occurred while processing Chart Info data.minDistance : {minDistance}", ex);
                 await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Eco-Score Data Service", nameof(GetChartInfo), AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.FAILED, "Get Chart info method Eco-Score data service", 0, 0, ex.Message, 0, 0);
                 return StatusCode(500, string.Empty);
             }

@@ -117,6 +117,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   mode: ProgressBarMode = 'determinate';
   bufferValue = 75;
   chartLabelDateFormat:any ='MM/DD/YYYY';
+  idleDurationConverted:any;
   chartsLabelsdefined: any = [];
   lineChartData1:  ChartDataSets[] = [{ data: [], label: '' },];
   lineChartData2:  ChartDataSets[] = [{ data: [], label: '' },];
@@ -691,6 +692,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
     this.updateRankingDataSource(rankingSortedData);
   }
     this.hideloader();
+    this.idleDurationCount();
     }, (error)=>{
       this.hideloader();
     });
@@ -873,9 +875,15 @@ export class FleetFuelReportVehicleComponent implements OnInit {
     setTimeout(() => {
       this.dataSource.paginator = this.paginator.toArray()[1];
       this.dataSource.sort = this.sort.toArray()[1];
+      this.idleDurationCount();
     });
   }
 
+  idleDurationCount(){
+    this.initData.forEach(item => {
+    this.idleDurationConverted = Util.getHhMmTime(parseFloat(item.idleDuration));
+  })
+}
   updateRankingDataSource(tableData: any) {
     let i =1;
     this.initData = tableData;
