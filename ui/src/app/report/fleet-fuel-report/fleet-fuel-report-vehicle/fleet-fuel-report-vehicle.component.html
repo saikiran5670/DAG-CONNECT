@@ -419,9 +419,9 @@
               </div>
             </div>
             <!-- </div>
-  
-  
-  
+
+
+
           <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px"> -->
             <div *ngIf="checkForPreference('chart_co2emission')" class="areaWidth half-width" fxLayout="column"
               fxLayoutAlign="right" fxFlex="0 1 calc(50% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32px)"
@@ -461,9 +461,9 @@
               </div>
             </div>
             <!-- </div>
-  
-  
-  
+
+
+
           <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px"> -->
             <div *ngIf="checkForPreference('chart_fuelconsumption')" class="areaWidth half-width" fxLayout="column"
               fxLayoutAlign="right" fxFlex="0 1 calc(50% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32px)"
@@ -715,7 +715,7 @@
                 <span style="font-weight: normal;"></span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idleduration')">
-                <span>{{row.idleDurationPercentage}}</span>
+                <span>{{idleDurationConverted}}</span>
               </mat-cell>
               <!-- <mat-cell *matCellDef="let row">{{ row.odometer != '' ? row.odometer : '-' }}</mat-cell> -->
 
@@ -939,7 +939,7 @@
               || 'average TrafficClassification Value' }}
               <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkg || 'kg') :
         (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblpound || 'pound') : (translationData.lblpound ||
-        'pound') }})</span> 
+        'pound') }})</span>
             </mat-header-cell>
 
             <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('averageTrafficClassificationValue')">
