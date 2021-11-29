@@ -26,6 +26,7 @@ import { Workbook } from 'exceljs';
 import * as fs from 'file-saver';
 import { DatePipe } from '@angular/common';
 import { ReplaySubject } from 'rxjs';
+import { DataInterchangeService } from '../../services/data-interchange.service';
 
 declare var H: any;
 
@@ -439,10 +440,19 @@ export class FuelDeviationReportComponent implements OnInit {
   public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   
-  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private organizationService: OrganizationService, private _formBuilder: FormBuilder, private translationService: TranslationService, private reportService: ReportService, private reportMapService: ReportMapService, private completerService: CompleterService, private configService: ConfigService, private hereService: HereService, private matIconRegistry: MatIconRegistry,private domSanitizer: DomSanitizer,private datePipe: DatePipe) { 
+  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private organizationService: OrganizationService, private _formBuilder: FormBuilder, private translationService: TranslationService, private reportService: ReportService, private reportMapService: ReportMapService, private completerService: CompleterService, private configService: ConfigService, private hereService: HereService, private matIconRegistry: MatIconRegistry,private domSanitizer: DomSanitizer,private datePipe: DatePipe, private dataInterchangeService: DataInterchangeService) { 
     this.map_key = this.configService.getSettings("hereMap").api_key;
     this.platform = new H.service.Platform({
       "apikey": this.map_key
+    });
+    this.dataInterchangeService.prefSource$.subscribe((prefResp: any) => {
+      if(prefResp && (prefResp.type == 'fuel deviation report') && prefResp.prefdata){
+        this.displayedColumns = ['All', 'fuelEventType', 'convertedDifference', 'vehicleName', 'vin', 'registrationNo', 'eventTime', 'odometer', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed', 'drivingTime', 'alerts'];
+        this.reportPrefData = prefResp.prefdata;
+        this.resetFuelDeviationPrefData();
+        this.getTranslatedColumnName(this.reportPrefData);
+        this.onSearch();
+      }
     });
     this.configureAutoSuggest();
     this.setIcons();
