@@ -442,7 +442,7 @@
           <ng-container matColumnDef="idleDuration">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblIdleDuration || 'Idle Duration' }} <span style="font-weight: normal;">({{ translationData.lblhhmm || 'hh:mm' }})</span>
             </mat-header-cell>
-            <mat-cell *matCellDef="let row">{{ row.convertedIdleDuration != '' ? idleDurationConverted : '-' }}</mat-cell>
+            <mat-cell *matCellDef="let row">{{ row.convertedIdleDuration != '' ? row.convertedIdleDuration : '-' }}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="stopTime">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStopTime || 'Stop time' }} <span style="font-weight: normal;">({{ translationData.lblhhmm || 'hh:mm' }})</span>

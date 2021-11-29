@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Google.Protobuf;
 using Grpc.Core;
 using net.atos.daf.ct2.reports.entity;
 using net.atos.daf.ct2.reportservice.entity;
@@ -510,7 +511,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                             {
                                 healthStatus.WarningName = warningDetail.WarningName ?? string.Empty;
                                 healthStatus.WarningAdvice = warningDetail.WarningAdvice ?? string.Empty;
-                                healthStatus.Icon = warningDetail.Icon ?? new Byte[] { };
+                                healthStatus.Icon = warningDetail.Icon ?? new byte[0];
                                 healthStatus.IconName = warningDetail.IconName ?? string.Empty;
                                 healthStatus.ColorName = warningDetail.ColorName ?? string.Empty;
                                 healthStatus.IconId = warningDetail?.IconId ?? 0;
@@ -527,10 +528,11 @@ namespace net.atos.daf.ct2.reportservice.Services
                         {
                             healthStatus.DriverName = "Unknown";
                         }
+                        response.HealthStatus.Add(ToHealthStatusData(healthStatus));
                     }
-                    string res = JsonConvert.SerializeObject(result);
-                    response.HealthStatus.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehicleHealthStatusResponse>>(res,
-                        new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
+                    /* string res = JsonConvert.SerializeObject(result);
+                     response.HealthStatus.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehicleHealthStatusResponse>>(res,
+                         new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));*/
                     response.Code = Responsecode.Success;
                     response.Message = Responsecode.Success.ToString();
                 }
@@ -552,7 +554,40 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
         }
 
-
+        private VehicleHealthStatusResponse ToHealthStatusData(VehicleHealthResult healthStatus)
+        {
+            var response = new VehicleHealthStatusResponse()
+            {
+                ColorName = healthStatus.ColorName ?? string.Empty,
+                DriverName = healthStatus.DriverName ?? string.Empty,
+                Icon = healthStatus.Icon != null ? ByteString.CopyFrom(healthStatus.Icon) : ByteString.Empty,
+                IconId = healthStatus.IconId,
+                IconName = healthStatus.IconName ?? string.Empty,
+                VehicleName = healthStatus.VehicleName ?? string.Empty,
+                VehicleRegNo = healthStatus.VehicleRegNo ?? string.Empty,
+                WarningAddress = healthStatus.WarningAddress ?? string.Empty,
+                WarningAddressId = healthStatus.WarningAddressId,
+                WarningAdvice = healthStatus.WarningAdvice ?? string.Empty,
+                WarningClass = healthStatus.WarningClass,
+                WarningDistanceUntilNectService = healthStatus.WarningDistanceUntilNectService,
+                WarningDrivingId = healthStatus.WarningDrivingId ?? string.Empty,
+                WarningHeading = healthStatus.WarningHeading,
+                WarningId = healthStatus.WarningId,
+                WarningLat = healthStatus.WarningLat,
+                WarningLatestProcessedMessageTimestamp = healthStatus.WarningLatestProcessedMessageTimestamp ?? 0,
+                WarningLng = healthStatus.WarningLng,
+                WarningName = healthStatus.WarningName ?? string.Empty,
+                WarningNumber = healthStatus.WarningNumber,
+                WarningOdometerVal = healthStatus.WarningOdometerVal,
+                WarningTimetamp = healthStatus.WarningTimetamp ?? 0,
+                WarningTripId = healthStatus.WarningTripId ?? string.Empty,
+                WarningType = healthStatus.WarningType ?? string.Empty,
+                WarningVehicleDrivingStatusType = healthStatus.WarningVehicleDrivingStatusType ?? string.Empty,
+                WarningVehicleHealthStatusType = healthStatus.WarningVehicleHealthStatusType ?? string.Empty,
+                WarningVin = healthStatus.WarningVin ?? string.Empty
+            };
+            return response;
+        }
 
         private void GetDriverStatus(VehicleHealthResult result, List<DriverDetails> driverDetails)
         {
