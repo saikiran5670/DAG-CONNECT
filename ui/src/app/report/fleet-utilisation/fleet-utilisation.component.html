@@ -406,9 +406,9 @@
             </mat-cell>
           </ng-container>
           <ng-container matColumnDef="vin">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVIN || 'VIN' }}
+            <mat-header-cell [ngClass]="{'text-truncate': displayedColumns.length > 6}" *matHeaderCellDef mat-sort-header>{{ translationData.lblVIN || 'VIN' }}
             </mat-header-cell>
-            <mat-cell *matCellDef="let row">
+            <mat-cell [ngClass]="{'text-truncate': displayedColumns.length > 6}" *matCellDef="let row">
               <span class='navigatePoint' matTooltip='{{ translationData.lbltooltipMsg || "Click to view details"}}' (click)='gotoTrip(row)'>{{ row.vin != '' ? row.vin : '-' }}</span>
             </mat-cell>
           </ng-container>
