@@ -22,6 +22,7 @@ export class CreateEditReportSchedulerComponent implements OnInit {
   @Input() reportSchedulerParameterData: any;
   @Output() backToPage = new EventEmitter<any>();
   
+  vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   breadcumMsg: any = '';
   reportSchedulerForm: FormGroup;
   accountOrganizationId: any;
@@ -151,6 +152,14 @@ export class CreateEditReportSchedulerComponent implements OnInit {
       if(this.actionType == 'edit'){
         this.setDefaultValues();
       }
+
+      let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
+        if(vehicleDisplayId) {
+          let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+          if(vehicledisplay.length != 0) {
+            this.vehicleDisplayPreference = vehicledisplay[0].name;
+          }
+        }  
     });
   }
 
