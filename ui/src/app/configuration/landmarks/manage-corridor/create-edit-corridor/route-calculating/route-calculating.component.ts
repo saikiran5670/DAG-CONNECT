@@ -638,7 +638,7 @@ export class RouteCalculatingComponent implements OnInit {
   }
 
   createCorridorClicked(){
-   
+   this.showLoadingIndicator = true;
     var corridorObj = {
       "id": this.corridorId ? this.corridorId : 0,
       "organizationId": this.organizationId,
@@ -703,7 +703,9 @@ export class RouteCalculatingComponent implements OnInit {
             }  
             this.backToCreate.emit(emitObj);
         }
+        this.hideloader();
       },(error)=>{
+        this.hideloader();
           if(error.status === 409){
             this.duplicateError = true;
             this.duplicateErrorMsg = this.getDuplicateMsg(this.corridorFormGroup.controls.label.value);
@@ -725,7 +727,9 @@ export class RouteCalculatingComponent implements OnInit {
             }  
             this.backToUpdate.emit(emitObj);
         }
+        this.hideloader();
       },(error)=>{
+        this.hideloader();
           if(error.status === 409){
             this.duplicateError = true;
             this.duplicateErrorMsg = this.getDuplicateMsg(this.corridorFormGroup.controls.label.value);
@@ -1167,6 +1171,7 @@ export class RouteCalculatingComponent implements OnInit {
   }
 
   calculateTruckRoute(){
+    this.showLoadingIndicator = true;
     let lineWidth = this.corridorWidthKm;
     let routeRequestParams = {
       'origin':`${this.startAddressPositionLat},${this.startAddressPositionLong}`,
@@ -1228,8 +1233,11 @@ export class RouteCalculatingComponent implements OnInit {
         }
         
         }
+        this.hideloader();
       
-    })
+    }, (error) => {
+      this.hideloader();
+    });
 
   }
 
