@@ -44,7 +44,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
 	                             			left join master.accountpreference ap on ap.id = ac.preference_id
                                  			left join master.timezone tz on tz.id = ap.timezone_id
 ";
-                queryAlert += " where schrep.is_mail_send=false AND date_trunc('hour', (to_timestamp(repsch.next_schedule_run_date/1000) AT TIME ZONE 'UTC')) <= date_trunc('hour', NOW() AT TIME ZONE 'UTC')";
+                queryAlert += " where repsch.status ='A' AND schrep.is_mail_send=false AND date_trunc('hour', (to_timestamp(repsch.next_schedule_run_date/1000) AT TIME ZONE 'UTC')) <= date_trunc('hour', NOW() AT TIME ZONE 'UTC')";
 
                 IEnumerable<ReportSchedulerEmailResult> reportSchedulerResult = await _dataAccess.QueryAsync<ReportSchedulerEmailResult>(queryAlert);
                 return reportSchedulerResult;

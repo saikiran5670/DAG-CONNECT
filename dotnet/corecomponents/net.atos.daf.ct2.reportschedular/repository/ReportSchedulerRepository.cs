@@ -626,7 +626,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
 	                                    LEFT JOIN master.scheduledreportvehicleref as vehref
 	                                    ON repsch.id=vehref.report_schedule_id AND repsch.status <>'D' AND vehref.state='A'
 	                                    LEFT JOIN master.scheduledreport as schrep
-	                                    ON repsch.id=schrep.schedule_report_id AND repsch.status <>'D' 
+	                                    ON repsch.id=schrep.schedule_report_id AND repsch.status <>'D' AND schrep.valid_till > @currentDate
                                         LEFT JOIN master.group grp 
 					                    on vehref.vehicle_group_id=grp.id
 					                    LEFT JOIN master.groupref vgrpref
