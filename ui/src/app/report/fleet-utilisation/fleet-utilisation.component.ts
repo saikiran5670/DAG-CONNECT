@@ -1822,10 +1822,10 @@ getAllSummaryData(){
     // });
 
     this.initData.forEach(item => {
-      let convertedIdleDurationValue = Util.getHhMmTime(parseFloat(item.idleDuration));
-      // console.log("initData", this.initData);
+      let idleDurations = Util.getHhMmTime(parseFloat(item.idleDuration));
+            // console.log("initData", this.initData);
        prepare.push([item.vehicleName,item.vin, item.registrationNumber,item.convertedDistance,
-         item.numberOfTrips,item.convertedTripTime, item.convertedDrivingTime, convertedIdleDurationValue,
+         item.numberOfTrips,item.convertedTripTime, item.convertedDrivingTime, idleDurations,
          item.convertedStopTime, item.convertedAverageDistance, item.convertedAverageSpeed, item.convertedAverageWeight,
          item.convertedOdometer]);
      });
