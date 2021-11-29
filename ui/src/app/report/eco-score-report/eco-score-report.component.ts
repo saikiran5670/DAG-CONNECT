@@ -20,6 +20,7 @@ import { Workbook } from 'exceljs';
 import * as fs from 'file-saver';
 import { MAT_CHECKBOX_CONTROL_VALUE_ACCESSOR } from '@angular/material/checkbox';
 import { ReplaySubject } from 'rxjs';
+import { DataInterchangeService } from '../../services/data-interchange.service';
 
 @Component({
   selector: 'app-eco-score-report',
@@ -62,6 +63,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   startDateValue: any;
   endDateValue: any;
   last3MonthDate: any;
+  allDriversSelected = true;
   todayDate: any;
   onLoadData: any = [];
   tableInfoObj: any = {};
@@ -255,8 +257,16 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   public filteredDriver: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService,
-  private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private organizationService: OrganizationService) {
-
+  private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private organizationService: OrganizationService, private dataInterchangeService: DataInterchangeService) {
+    this.dataInterchangeService.prefSource$.subscribe((prefResp: any) => {
+      if(prefResp && (prefResp.type == 'eco score report') && prefResp.prefdata){
+        this.displayedColumns = ['select', 'ranking', 'driverName', 'driverId', 'ecoScoreRanking'];
+        this.reportPrefData = prefResp.prefdata;
+        this.resetColumnData();
+        this.preparePrefData(this.reportPrefData);
+        this.onSearch();
+      }
+    });
   }
 
   ngOnInit(): void {
@@ -618,8 +628,6 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   }
 
   onDriverChange(event: any){ }
-
-  allDriversSelected = true;
 
   onSearch(){
     this.driverSelected = false;
