@@ -863,10 +863,10 @@ proceedStep(prefData: any, preference: any){
       }
 
       //subscribed vehicles
-      this.vehicleByVehGroupList.forEach(element => {
-        element["subcriptionStatus"] = true;
-        this.vehicleListForTable.push(element);
-      });
+      // this.vehicleByVehGroupList.forEach(element => {
+      //   element["subcriptionStatus"] = true;
+      //   this.vehicleListForTable.push(element);
+      // });
 
       //Commented because only vehicles from that group should be displayed.
       //non-subscribed vehicles
