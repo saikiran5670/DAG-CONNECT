@@ -20,6 +20,7 @@ import { Workbook } from 'exceljs';
 import * as fs from 'file-saver';
 import { MAT_CHECKBOX_CONTROL_VALUE_ACCESSOR } from '@angular/material/checkbox';
 import { ReplaySubject } from 'rxjs';
+import { DataInterchangeService } from '../../services/data-interchange.service';
 
 @Component({
   selector: 'app-eco-score-report',
@@ -62,11 +63,13 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   startDateValue: any;
   endDateValue: any;
   last3MonthDate: any;
+  allDriversSelected = true;
   todayDate: any;
   onLoadData: any = [];
   tableInfoObj: any = {};
   tableDetailsInfoObj: any = {};
   tripTraceArray: any = [];
+  newDriverList: any = [];
   startTimeDisplay: any = '00:00:00';
   endTimeDisplay: any = '23:59:59';
   prefTimeFormat: any;
@@ -255,8 +258,16 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   public filteredDriver: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService,
-  private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private organizationService: OrganizationService) {
-
+  private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private organizationService: OrganizationService, private dataInterchangeService: DataInterchangeService) {
+    this.dataInterchangeService.prefSource$.subscribe((prefResp: any) => {
+      if(prefResp && (prefResp.type == 'eco score report') && prefResp.prefdata){
+        this.displayedColumns = ['select', 'ranking', 'driverName', 'driverId', 'ecoScoreRanking'];
+        this.reportPrefData = prefResp.prefdata;
+        this.resetColumnData();
+        this.preparePrefData(this.reportPrefData);
+        this.onSearch();
+      }
+    });
   }
 
   ngOnInit(): void {
@@ -602,7 +613,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       // let selectedVin = this.vehicleListData.filter(i=>i.vehicleId === parseInt(event.value))[0]['vin'];
       // this.driverListData = this.finalDriverList.filter(i => i.vin == selectedVin);
       let newVin:any = this.vehicleDD.filter(item => item.vehicleId == parseInt(event.value))
-      let search = this.driverListData.filter(i => i.vin == newVin[0].vin);
+      let search = this.newDriverList.filter(i => i.vin == newVin[0].vin);
       if(search.length > 0){
        // this.driverDD = [];
         search.forEach(element => {
@@ -618,8 +629,6 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   }
 
   onDriverChange(event: any){ }
-
-  allDriversSelected = true;
 
   onSearch(){
     this.driverSelected = false;
@@ -860,7 +869,8 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       }
 
       
-      this.driverListData = finalDriverList;//filteredDriverList;
+      this.newDriverList = finalDriverList;
+      this.driverListData = filteredDriverList;
       this.vehicleListData = filteredVehicleList;
       this.vehicleGroupListData = finalVehicleList;
       console.log("vehicleGroupListData 1", this.vehicleGroupListData);

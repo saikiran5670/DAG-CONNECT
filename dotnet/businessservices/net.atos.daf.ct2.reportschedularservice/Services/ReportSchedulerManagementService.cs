@@ -176,7 +176,17 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
         {
             try
             {
-                IEnumerable<ReportSchedulerMap> reportSchedulerList = await _reportSchedulerManager.GetReportSchedulerList(request.OrganizationId);
+                var featureId = Convert.ToInt32(context.RequestHeaders.Get("report_feature_id").Value);
+
+                var vehicleDetailsAccountVisibilty
+                                              = await _visibilityManager
+                                                 .GetVehicleByAccountVisibility(request.AccountId, request.OrganizationId, request.ContextOrgId, featureId);
+
+                IEnumerable<int> vehicleIds = vehicleDetailsAccountVisibilty.Select(x => x.VehicleId).ToList().Distinct();
+
+                var vehgroupIds = vehicleDetailsAccountVisibilty.Select(x => x.VehicleGroupId).ToList().Distinct();
+
+                IEnumerable<ReportSchedulerMap> reportSchedulerList = await _reportSchedulerManager.GetReportSchedulerList(request.OrganizationId, vehicleIds.ToList(), vehgroupIds.ToList());
                 ReportSchedulerListResponse response = new ReportSchedulerListResponse();
                 if (reportSchedulerList.Any())
                 {

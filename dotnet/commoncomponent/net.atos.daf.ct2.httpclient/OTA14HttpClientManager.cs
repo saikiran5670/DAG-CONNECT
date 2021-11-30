@@ -35,7 +35,7 @@ namespace net.atos.daf.ct2.httpclientfactory
             long boashtimestamp;
             try
             {
-                _logger.Info("OTA14HttpClientManager:GetSoftwareScheduleUpdate Started.");
+                _logger.Debug("OTA14HttpClientManager:GetSoftwareScheduleUpdate Started.");
                 var client = await GetHttpClient();
                 request.ApprovalMessage = $"{_oTA14Configurations.Message_Approval} {request?.AccountEmailId}";
                 HttpResponseMessage response = new HttpResponseMessage();
@@ -49,7 +49,7 @@ namespace net.atos.daf.ct2.httpclientfactory
                     etag = response.Headers.ETag?.ToString();
                     i++;
                 }
-                _logger.Info($"GetSoftwareScheduleUpdate:Calling OTA 14 Get API for sending data ETag: {etag}");
+                _logger.Debug($"GetSoftwareScheduleUpdate:Calling OTA 14 Get API for sending data ETag: {etag}");
                 client = await GetHttpClient();
                 client.DefaultRequestHeaders.Accept.Clear();
                 if (etag != null)
@@ -63,19 +63,19 @@ namespace net.atos.daf.ct2.httpclientfactory
                 httpRequest.Content = new StringContent(JsonConvert.SerializeObject(reqObj), Encoding.UTF8, "application/json");
 
                 boashtimestamp = UTCHandling.GetUTCFromDateTime(DateTime.Now);
-                _logger.Info("GetSoftwareScheduleUpdate:Calling OTA 14 Post API for sending data");
+                _logger.Debug("GetSoftwareScheduleUpdate:Calling OTA 14 Post API for sending data");
                 response = await client.SendAsync(httpRequest);
 
-                _logger.Info("GetSoftwareScheduleUpdate:OTA 14 Post respone is " + response.StatusCode);
+                _logger.Debug("GetSoftwareScheduleUpdate:OTA 14 Post respone is " + response.StatusCode);
                 string result = response.Content.ReadAsStringAsync().Result;
 
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    _logger.Info($"GetSoftwareScheduleUpdate:ETag: {etag}, request: {JsonConvert.SerializeObject(request)} , result : {result}");
+                    _logger.Debug($"GetSoftwareScheduleUpdate:ETag: {etag}, request: {JsonConvert.SerializeObject(request)} , result : {result}");
                 }
                 else
                 {
-                    _logger.Info($"GetSoftwareScheduleUpdate:ETag: {etag}, request: {JsonConvert.SerializeObject(request)} , result : {result}");
+                    _logger.Debug($"GetSoftwareScheduleUpdate:ETag: {etag}, request: {JsonConvert.SerializeObject(request)} , result : {result}");
                     return new ScheduleSoftwareUpdateResponse { HttpStatusCode = (int)response.StatusCode, BoashTimesStamp = boashtimestamp };
                 }
                 return new ScheduleSoftwareUpdateResponse { HttpStatusCode = 200, BoashTimesStamp = boashtimestamp };
@@ -107,7 +107,7 @@ namespace net.atos.daf.ct2.httpclientfactory
             if (_token == null)
             {
                 _token = await GetElibilityToken(client);
-                _logger.Info($"GetSoftwareScheduleUpdate:Calling OTA 14 Token API for sending data.");
+                _logger.Debug($"GetSoftwareScheduleUpdate:Calling OTA 14 Token API for sending data.");
             }
             //client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token.AccessToken);
