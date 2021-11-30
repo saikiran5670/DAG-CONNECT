@@ -455,7 +455,7 @@ ngAfterViewInit(){
   getFilterData() {
     this.showLoadingIndicator = true;
     this.reportService.getFilterDetails().subscribe((data: any) => {
-       this.filterData = data;    
+      this.filterData = data;
       if(this.selectedIndex == 0){
         this.updateVehicleFilter();
         }
@@ -547,7 +547,7 @@ removeDuplicates(originalArray, prop) {
 
   onChangeLevel() {
     let newStatus = true;
-    this.noRecordFlag = true;
+    this.noRecordFlag = false;
     this.vehicleListData = [];
 
     this.select3.options.forEach((item: MatOption) => {
@@ -556,19 +556,42 @@ removeDuplicates(originalArray, prop) {
       }
     });
     this.allSelectedAlertLevel = newStatus;
-    if (this.fleetData && this.fleetData.length > 0) {
+    if(this.fleetData && this.fleetData.length > 0) {
       this.fleetData.forEach(e => {
-        if (e.fleetOverviewAlert && e.fleetOverviewAlert.length > 0) {
-          for (let i of this.filterVehicleForm.controls.level.value) {
-            let alertlevelcheck = e.fleetOverviewAlert.filter(l => l.level == i);
-            if (alertlevelcheck.length > 0) {
-              this.vehicleListData.push(e);
-              this.noRecordFlag = false;
+        let critical = 0;
+        let warning = 0;
+        let advisory = 0;
+        if(e.fleetOverviewAlert && e.fleetOverviewAlert.length > 0) {         
+          for(let i of this.filterVehicleForm.controls.level.value) {
+            switch (i) {
+              case 'C': if(e.fleetOverviewAlert.some(c => c.level == 'C')) {
+                critical = 1;
+                this.vehicleListData.push(e);
+              }
+                break;
+              case 'W': if(e.fleetOverviewAlert.some(w => w.level == 'W') && !(e.fleetOverviewAlert.some(c => c.level == 'C'))) {
+                warning = 1;
+                this.vehicleListData.push(e);
+              }
+                break;
+                case 'A': if(e.fleetOverviewAlert.some(a => a.level == 'A') && !(e.fleetOverviewAlert.some(c => c.level == 'C') || e.fleetOverviewAlert.some(w => w.level == 'W'))) {
+                  advisory = 1;
+                  this.vehicleListData.push(e);
+                }
+                  break;
+            }
+            if (critical == 1 || warning == 1 || advisory == 1) {
               break;
             }
           }
         }
+        else{
+          this.noRecordFlag = true;
+        }
       });
+    }
+    else{
+      this.noRecordFlag = true;
     }
     this.filterVINonMap();
   }
@@ -997,7 +1020,7 @@ removeDuplicates(originalArray, prop) {
     if(this.getFleetOverviewDetails){
       this.getFleetOverviewDetails.unsubscribe();
     }
-    this.getFleetOverviewDetails = this.reportService.getFleetOverviewDetails(this.objData).subscribe((fleetdata:any) => {      
+    this.getFleetOverviewDetails = this.reportService.getFleetOverviewDetails(this.objData).subscribe((fleetdata:any) => {
       let data = this.fleetMapService.processedLiveFLeetData(fleetdata);
     this.fleetData = data;
 

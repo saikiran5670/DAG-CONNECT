@@ -437,6 +437,11 @@ namespace net.atos.daf.ct2.reports
             List<FleetOverviewDetails> fleetOverviewDetails = await _reportRepository.GetFleetOverviewDetails(fleetOverviewFilter);
             return fleetOverviewDetails;
         }
+        public async Task<IEnumerable<string>> GetEnumList(IEnumerable<int> alertFeatureIds)
+        {
+            IEnumerable<string> enumList = await _reportRepository.GetEnumList(alertFeatureIds);
+            return enumList;
+        }
         public async Task<List<DriverFilter>> GetDriverList(List<string> vins, int organizationId)
         {
             List<DriverFilter> lstDriver = await _reportRepository.GetDriverList(vins, organizationId);
