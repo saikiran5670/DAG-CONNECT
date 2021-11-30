@@ -466,6 +466,7 @@ calendarOptions: CalendarOptions = {
 public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   idleDurationConverted: any;
+  filterValue: string;
 
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private router: Router, private organizationService: OrganizationService, private datePipe: DatePipe, private dataInterchangeService: DataInterchangeService) {
     // this.defaultTranslation();
@@ -1308,9 +1309,24 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
-      this.idleDurationCount()
-    });
-  }
+      this.dataSource.sortData = (data: String[], sort: MatSort) => {
+        const isAsc = sort.direction === 'asc';
+        return data.sort((a: any, b: any) => {
+            let columnName = sort.active;
+            return this.compareData(a[sort.active], b[sort.active], isAsc, columnName);
+        });
+      }
+      Util.applySearchFilter(this.dataSource, this.displayedColumns ,this.filterValue );
+      });
+    }
+
+    compareData(a: Number | String, b: Number | String, isAsc: boolean, columnName: any) {
+
+        if(!(a instanceof Number)) a = a.toString().toUpperCase();
+        if(!(b instanceof Number)) b = b.toString().toUpperCase();
+
+      return ( a < b ? -1 : 1) * (isAsc ? 1: -1);
+    }
   idleDurationCount(){
     this.initData.forEach(item => {
     this.idleDurationConverted = Util.getHhMmTime(parseFloat(item.idleDuration));

@@ -2694,9 +2694,9 @@ setVehicleGroupAndVehiclePreSelection() {
           cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
         })
         this.initData.forEach(item => {
-          let convertedIdleDurationValue = Util.getHhMmTime(parseFloat(item.idleDuration));
+          let idleDurations = Util.getHhMmTime(parseFloat(item.idleDuration));
           worksheet.addRow([ item.vehicleName,item.vin, item.vehicleRegistrationNo,item.convertedStartTime,item.convertedEndTime,item.convertedAverageSpeed,
-            item.convertedMaxSpeed,item.convertedDistance,item.startPosition,item.endPosition,item.convertedFuelConsumed100Km,item.convertedFuelConsumption,item.cO2Emission,convertedIdleDurationValue,
+            item.convertedMaxSpeed,item.convertedDistance,item.startPosition,item.endPosition,item.convertedFuelConsumed100Km,item.convertedFuelConsumption,item.cO2Emission,idleDurations,
             item.ptoDuration.toFixed(2),item.cruiseControlDistance3050,item.cruiseControlDistance5075,item.cruiseControlDistance75,
             item.heavyThrottleDuration,item.harshBrakeDuration,item.convertedAverageGrossWeightComb,item.averageTrafficClassificationValue,
             item.convetedCCFuelConsumption,item.convertedFuelConsumptionCCNonActive,item.idlingConsumptionValue,item.dpaScore, item.convertedIdlingPTOScore, item.idlingPTO,item.convertedIdlingWithoutPTO,item.idlingWithoutPTOpercent,
