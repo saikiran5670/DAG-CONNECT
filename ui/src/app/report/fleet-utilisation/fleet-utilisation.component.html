@@ -169,47 +169,47 @@
                 </div>
               </div>
             </div>
-            <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="40px">
-                <div *ngIf='noOfVehStatus' style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
-                    <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
-                        <span>{{ translationData.lblNumberOfVehicles || 'Number of vehicles' }} </span>
-                    </div>
-                    <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
-                        <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('NumberOfVehicles')}}</span>
-                    </div>
-                </div>
-                <div *ngIf='totalDistanceStatus' style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
-                    <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
-                        <span>{{ translationData.lblTotalDistance || 'Total distance' }} </span>
-                    </div>
-                    <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
-                        <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('distance').toFixed(2)}} {{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblmile || 'mile')  }}</span>
-                    </div>
-                </div>
-                <div *ngIf='noOfTripsStatus' style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
-                    <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
-                        <span>{{ translationData.lblNumberOfTrips || 'Number of trips' }} </span>
-                    </div>
-                    <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
-                        <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('NumberOfTrips')}}</span>
-                    </div>
-                </div>
-                <div *ngIf='avgDistanceStatus' style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
-                    <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="right">
-                        <span>{{ translationData.lblAverageDistancePerDay || 'Average distance per day' }} </span>
-                    </div>
-                    <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="right">
-                        <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('AverageDistancePerDay').toFixed(2)}} {{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmperday || 'km/day') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmilesperday || 'miles/day') : (translationData.lblmilesperday || 'miles/day')  }}</span>
-                    </div>
-                </div>
-                <div *ngIf='idleDurationStatus' style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
-                    <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="right">
-                        <span>{{ translationData.lblIdleDuration || 'Idle duration' }} </span>
-                    </div>
-                    <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="right">
-                        <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('idleDuration')}} hh:mm</span>
-                    </div>
-                </div>
+            <div fxLayout="row" fxLayoutAlign="center space-between " class="full-width" fxLayoutGap="10px">
+              <div *ngIf='noOfVehStatus' class="areaWidth min-width-19-per padding-20px summary-bg-color" fxLayout="column" fxLayoutAlign="left">
+                  <div>
+                      <span>{{ translationData.lblNumberOfVehicles || 'Number of vehicles' }} </span>
+                  </div>
+                  <div>
+                      <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('NumberOfVehicles')}}</span>
+                  </div>
+              </div>
+              <div *ngIf='totalDistanceStatus' class="areaWidth min-width-19-per padding-20px summary-bg-color" fxLayout="column" fxLayoutAlign="left">
+                  <div>
+                      <span>{{ translationData.lblTotalDistance || 'Total distance' }} </span>
+                  </div>
+                  <div>
+                      <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('distance').toFixed(2)}} {{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblmile || 'mile')  }}</span>
+                  </div>
+              </div>
+              <div *ngIf='noOfTripsStatus' class="areaWidth min-width-19-per padding-20px summary-bg-color" fxLayout="column" fxLayoutAlign="left">
+                  <div>
+                      <span>{{ translationData.lblNumberOfTrips || 'Number of trips' }} </span>
+                  </div>
+                  <div>
+                      <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('NumberOfTrips')}}</span>
+                  </div>
+              </div>
+              <div *ngIf='avgDistanceStatus' class="areaWidth min-width-19-per padding-20px summary-bg-color" fxLayout="column" fxLayoutAlign="left">
+                  <div>
+                      <span>{{ translationData.lblAverageDistancePerDay || 'Average distance per day' }} </span>
+                  </div>
+                  <div>
+                      <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('AverageDistancePerDay').toFixed(2)}} {{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmperday || 'km/day') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmilesperday || 'miles/day') : (translationData.lblmilesperday || 'miles/day')  }}</span>
+                  </div>
+              </div>
+              <div *ngIf='idleDurationStatus' class="areaWidth min-width-19-per padding-20px summary-bg-color" fxLayout="column" fxLayoutAlign="left">
+                  <div>
+                      <span>{{ translationData.lblIdleDuration || 'Idle duration' }} </span>
+                  </div>
+                  <div>
+                      <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('idleDuration')}} hh:mm</span>
+                  </div>
+              </div>
             </div>
 
           </div>
