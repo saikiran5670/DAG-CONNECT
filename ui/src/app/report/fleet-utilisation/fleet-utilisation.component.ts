@@ -57,6 +57,7 @@ export class FleetUtilisationComponent implements OnInit, OnDestroy {
   // ui: any;
   @ViewChild("map")
   public mapElement: ElementRef;
+  dontShow: boolean = false;
   showMap: boolean = false;
   showMapPanel: boolean = false;
   searchExpandPanel: boolean = true;
@@ -1766,6 +1767,7 @@ getAllSummaryData(){
 }
 
   exportAsPDFFile(){
+    this.dontShow = true;
   var doc = new jsPDF('p', 'mm', 'a4');
   let pdfColumns = this.getPDFExcelHeader();
   let prepare = []
@@ -1841,7 +1843,7 @@ getAllSummaryData(){
      });
 
 
-    let DATA = document.getElementById('charts');
+    let DATA = document.getElementById('hideData');
     html2canvas( DATA)
     .then(canvas => {
       (doc as any).autoTable({
