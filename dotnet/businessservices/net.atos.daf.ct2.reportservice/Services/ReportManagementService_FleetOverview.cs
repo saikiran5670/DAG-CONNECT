@@ -181,6 +181,10 @@ namespace net.atos.daf.ct2.reportservice.Services
                     Org_Id = request.OrganizationId
                 };
                 var result = await _reportManager.GetFleetOverviewDetails(fleetOverviewFilter);
+
+                //Get the enum list for the feature                
+                var resultEnum = await _reportManager.GetEnumList(alertFeatureIds);
+
                 //remove the alerts dont have visibility for user
                 foreach (var element in result)
                 {
@@ -249,6 +253,13 @@ namespace net.atos.daf.ct2.reportservice.Services
                             {
                                 result.Remove(element);
                             }
+                        }
+                    }
+                    foreach (var element in result.ToList())
+                    {
+                        if ((element?.FleetOverviewAlert?.Count == 0) || (element?.FleetOverviewAlert?.Count > 0 && !element.FleetOverviewAlert.Any(y => resultEnum.Contains(y.AlertType))))
+                        {
+                            result.Remove(element);
                         }
                     }
                     //fleetOverviewFilter.AlertLevel
@@ -377,6 +388,13 @@ namespace net.atos.daf.ct2.reportservice.Services
                                 {
                                     result.Remove(element);
                                 }
+                            }
+                        }
+                        foreach (var element in result.ToList())
+                        {
+                            if ((element?.FleetOverviewAlert?.Count == 0) || (element?.FleetOverviewAlert?.Count > 0 && !element.FleetOverviewAlert.Any(y => resultEnum.Contains(y.AlertType))))
+                            {
+                                result.Remove(element);
                             }
                         }
                         //fleetOverviewFilter.AlertLevel
