@@ -46,8 +46,9 @@ export class UserDetailTableComponent implements OnInit {
       this.dataSource.sort = this.sort;
       this.dataSource.sortData = (data: String[], sort: MatSort) => {
         const isAsc = sort.direction === 'asc';
+        let columnName = this.sort.active
         return data.sort((a: any, b: any) => {
-          return this.compare(a[sort.active], b[sort.active], isAsc);
+          return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
         });
 
        }
@@ -56,9 +57,9 @@ export class UserDetailTableComponent implements OnInit {
     Util.applySearchFilter(this.dataSource, this.data.colsList ,this.filterValue );
   }
 
-  compare(a: Number | String, b: Number | String, isAsc: boolean) {
-    if(a && !(a instanceof Number)) a = a.toUpperCase();
-    if(b && !(b instanceof Number)) b = b.toUpperCase();
+  compare(a: any, b: any, isAsc: boolean, columnName) {
+    if(!(a instanceof Number)) a = a.toString().toUpperCase();
+    if(!(b instanceof Number)) b = b.toString().toUpperCase();
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 

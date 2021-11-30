@@ -19,6 +19,7 @@ import { OrganizationService } from '../../services/organization.service';
 import { Workbook } from 'exceljs';
 import * as fs from 'file-saver';
 import { ReplaySubject } from 'rxjs';
+import { DataInterchangeService } from '../../services/data-interchange.service';
 
 @Component({
   selector: 'app-driver-time-management',
@@ -239,13 +240,24 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       value: 'specificdetailchart'
     }
   ];
+  allDriversSelected = true;
+  allDriverData : any;
+  graphPayload : any;
   public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredDriver: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, 
-  private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private organizationService: OrganizationService) { 
-
+  private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private organizationService: OrganizationService, private dataInterchangeService: DataInterchangeService) { 
+    this.dataInterchangeService.prefSource$.subscribe((prefResp: any) => {
+      if(prefResp && (prefResp.type == 'drive time report') && prefResp.prefdata){
+        this.displayedColumns = ['driverName', 'driverId', 'startTime', 'endTime', 'driveTime', 'workTime', 'serviceTime', 'restTime', 'availableTime'];
+        this.reportPrefData = prefResp.prefdata;
+        this.resetPref();
+        this.preparePrefData(this.reportPrefData);
+        this.onSearch();
+      }
+    });
   }
 
 
@@ -394,6 +406,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   allDriverPrefData: any = [];
   specificDriverPrefData: any = [];
   chartPrefData: any = [];
+  
   resetPref(){
     this.allDriverPrefData = [];
     this.specificDriverPrefData = [];
@@ -589,9 +602,6 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     this.internalSelection = true; 
   }
 
-  allDriversSelected = true;
-  allDriverData : any;
-  graphPayload : any;
   onSearch(){
     // let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
     // let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();

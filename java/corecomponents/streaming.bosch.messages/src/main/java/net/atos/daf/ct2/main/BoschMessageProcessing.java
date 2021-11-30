@@ -37,7 +37,7 @@ public class BoschMessageProcessing {
 		try {
 			properties.load(new FileReader(FILE_PATH));
 			log.info("Configuration Loaded for Connecting Kafka inorder to Perform Mapping.");
-			System.out.println("Configuration Loaded for Connecting Kafka inorder to Perform Mapping.");
+			//System.out.println("Configuration Loaded for Connecting Kafka inorder to Perform Mapping.");
 
 		} catch (IOException e) {
 			log.error("Unable to Find the File :: " + FILE_PATH, e);
@@ -54,7 +54,7 @@ public class BoschMessageProcessing {
 			FILE_PATH = args[0];
 		
 			properties = configuration();
-			System.out.println("properties object ===>" + properties);
+			//System.out.println("properties object ===>" + properties);
 			//boschMessageProcessing.auditBoschJobDetails(properties, "Bosch streaming job started");
 
 			boschMessageProcessing.flinkConnection();
@@ -63,7 +63,7 @@ public class BoschMessageProcessing {
 			
 		} catch (DAFCT2Exception e) {
 			log.error("Exception: ", e);
-			System.out.println(e.getMessage());
+			log.error(e.getMessage());
 			//boschMessageProcessing.auditBoschJobDetails(properties, "Bosch streaming job failed :: "+e.getMessage());
 			e.printStackTrace();
 		} 
@@ -133,7 +133,7 @@ public class BoschMessageProcessing {
 		
 		log.info("Stage 6.Bosch data parsing and publishing message on kafka topic completed.");
 		
-		System.out.println("Stage 6.Bosch data parsing and publishing message on kafka topic completed.");
+	//	System.out.println("Stage 6.Bosch data parsing and publishing message on kafka topic completed.");
 
 	}
 
@@ -157,7 +157,7 @@ public class BoschMessageProcessing {
 	}
 	
 	public void auditBoschJobDetails(Properties properties, String message){
-		System.out.println("Calling audit service for Bosch :: ");
+		//System.out.println("Calling audit service for Bosch :: ");
 		/*new KafkaAuditService().auditTrail(
 				properties.getProperty(DAFCT2Constant.GRPC_SERVER),
 				properties.getProperty(DAFCT2Constant.GRPC_PORT),

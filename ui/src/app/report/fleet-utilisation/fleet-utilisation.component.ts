@@ -57,6 +57,7 @@ export class FleetUtilisationComponent implements OnInit, OnDestroy {
   // ui: any;
   @ViewChild("map")
   public mapElement: ElementRef;
+  dontShow: boolean = false;
   showMap: boolean = false;
   showMapPanel: boolean = false;
   searchExpandPanel: boolean = true;
@@ -250,55 +251,55 @@ distanceLineChartColors: Color[] = [
   },
 ];
 
-distanceLineChartOptions = {
-  responsive: true,
-  legend: {
-    position: 'bottom',
-     },
-  scales: {
-    yAxes: [{
-      id: "y-axis-1",
-      position: 'right',
-      type: 'linear',
-       ticks: {
-        beginAtZero: true,
-      },
-      scaleLabel: {
-        display: true,
-        labelString: (this.prefUnitFormat == 'dunit_Metric') ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm  || 'km' })` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles  || 'miles' })`
-       }
-    },{
-      id: "y-axis-2",
-      position: 'left',
-      type: 'linear',
-      ticks: {
-        steps: 10,
-        stepSize: 1,
-        beginAtZero:true,
-      },
-      scaleLabel: {
-        display: true,
-        labelString: this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblkmperday  || 'km/day' })` : `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblmilesperday  || 'miles/day' })`
-      }
-    }],
-    xAxes: [{
-      type:'time',
-      time:
-      {
-        tooltipFormat:  this.chartLabelDateFormat,
-        unit: 'day',
-        stepSize:1,
-        displayFormats: {
-          day:  this.chartLabelDateFormat,
-         },
-      },
-    scaleLabel: {
-      display: true,
-      labelString: this.translationData.lblDates || 'Dates'
-    }
-  }]
-  }
-};
+// distanceLineChartOptions = {
+//   responsive: true,
+//   legend: {
+//     position: 'bottom',
+//      },
+//   scales: {
+//     yAxes: [{
+//       id: "y-axis-1",
+//       position: 'right',
+//       type: 'linear',
+//        ticks: {
+//         beginAtZero: true,
+//       },
+//       scaleLabel: {
+//         display: true,
+//         labelString: (this.prefUnitFormat == 'dunit_Metric') ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm  || 'km' })` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles  || 'miles' })`
+//        }
+//     },{
+//       id: "y-axis-2",
+//       position: 'left',
+//       type: 'linear',
+//       ticks: {
+//         steps: 10,
+//         stepSize: 1,
+//         beginAtZero:true,
+//       },
+//       scaleLabel: {
+//         display: true,
+//         labelString: this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblkmperday  || 'km/day' })` : `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblmilesperday  || 'miles/day' })`
+//       }
+//     }],
+//     xAxes: [{
+//       type:'time',
+//       time:
+//       {
+//         tooltipFormat:  this.chartLabelDateFormat,
+//         unit: 'day',
+//         stepSize:1,
+//         displayFormats: {
+//           day:  this.chartLabelDateFormat,
+//          },
+//       },
+//     scaleLabel: {
+//       display: true,
+//       labelString: this.translationData.lblDates || 'Dates'
+//     }
+//   }]
+//   }
+// };
 
 
 // Pie chart for mileage based utilisation
@@ -466,6 +467,7 @@ calendarOptions: CalendarOptions = {
 public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   idleDurationConverted: any;
+  filterValue: string;
 
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private router: Router, private organizationService: OrganizationService, private datePipe: DatePipe, private dataInterchangeService: DataInterchangeService) {
     // this.defaultTranslation();
@@ -546,6 +548,55 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     });
   }
 
+  distanceLineChartOptions = {
+    responsive: true,
+    legend: {
+      position: 'bottom',
+       },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'right',
+        type: 'linear',
+         ticks: {
+          beginAtZero: true,
+        },
+        scaleLabel: {
+          display: true,
+          labelString: (this.prefUnitFormat == 'dunit_Metric') ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm  || 'km' })` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles  || 'miles' })`
+         }
+      },{
+        id: "y-axis-2",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          steps: 10,
+          stepSize: 1,
+          beginAtZero:true,
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblkmperday  || 'km/day' })` : `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblmilesperday  || 'miles/day' })`
+        }
+      }],
+      xAxes: [{
+        type:'time',
+        time:
+        {
+          tooltipFormat:  this.chartLabelDateFormat,
+          unit: 'day',
+          stepSize:1,
+          displayFormats: {
+            day:  this.chartLabelDateFormat,
+           },
+        },
+      scaleLabel: {
+        display: true,
+        labelString: this.translationData.lblDates || 'Dates'
+      }
+    }]
+    }
+  };
 
   proceedStep(prefData: any, preference: any){
     let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
@@ -1308,9 +1359,24 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
-      this.idleDurationCount()
-    });
-  }
+      this.dataSource.sortData = (data: String[], sort: MatSort) => {
+        const isAsc = sort.direction === 'asc';
+        return data.sort((a: any, b: any) => {
+            let columnName = sort.active;
+            return this.compareData(a[sort.active], b[sort.active], isAsc, columnName);
+        });
+      }
+      });
+      Util.applySearchFilter(this.dataSource, this.displayedColumns ,this.filterValue );
+    }
+
+    compareData(a: Number | String, b: Number | String, isAsc: boolean, columnName: any) {
+
+        if(!(a instanceof Number)) a = a.toString().toUpperCase();
+        if(!(b instanceof Number)) b = b.toString().toUpperCase();
+
+      return ( a < b ? -1 : 1) * (isAsc ? 1: -1);
+    }
   idleDurationCount(){
     this.initData.forEach(item => {
     this.idleDurationConverted = Util.getHhMmTime(parseFloat(item.idleDuration));
@@ -1741,10 +1807,10 @@ getAllSummaryData(){
   })
 
   this.initData.forEach(item => {
-  let convertedIdleDurationValue = Util.getHhMmTime(parseFloat(item.idleDuration));
+    let idleDurations = Util.getHhMmTime(parseFloat(item.idleDuration));
    //console.log("initData", this.initData);
   worksheet.addRow([item.vehicleName,item.vin, item.registrationNumber,item.convertedDistance,
-      item.numberOfTrips,item.convertedTripTime, item.convertedDrivingTime, convertedIdleDurationValue,
+      item.numberOfTrips,item.convertedTripTime, item.convertedDrivingTime, idleDurations,
       item.convertedStopTime, item.convertedAverageDistance, item.convertedAverageSpeed, item.convertedAverageWeight,
       item.convertedOdometer]);
   });
@@ -1766,6 +1832,7 @@ getAllSummaryData(){
 }
 
   exportAsPDFFile(){
+    this.dontShow = true;
   var doc = new jsPDF('p', 'mm', 'a4');
   let pdfColumns = this.getPDFExcelHeader();
   let prepare = []
@@ -1832,16 +1899,16 @@ getAllSummaryData(){
     // });
 
     this.initData.forEach(item => {
-      let convertedIdleDurationValue = Util.getHhMmTime(parseFloat(item.idleDuration));
-      // console.log("initData", this.initData);
+      let idleDurations = Util.getHhMmTime(parseFloat(item.idleDuration));
+            // console.log("initData", this.initData);
        prepare.push([item.vehicleName,item.vin, item.registrationNumber,item.convertedDistance,
-         item.numberOfTrips,item.convertedTripTime, item.convertedDrivingTime, convertedIdleDurationValue,
+         item.numberOfTrips,item.convertedTripTime, item.convertedDrivingTime, idleDurations,
          item.convertedStopTime, item.convertedAverageDistance, item.convertedAverageSpeed, item.convertedAverageWeight,
          item.convertedOdometer]);
      });
 
 
-    let DATA = document.getElementById('charts');
+    let DATA = document.getElementById('hideData');
     html2canvas( DATA)
     .then(canvas => {
       (doc as any).autoTable({
