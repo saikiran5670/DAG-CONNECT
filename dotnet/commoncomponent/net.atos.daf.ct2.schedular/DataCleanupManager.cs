@@ -15,19 +15,30 @@ namespace net.atos.daf.ct2.schedular
             _dataCleanupRepository = dataCleanupRepository;
         }
 
-        public async Task<int> DataPurging(DataCleanupConfiguration data)
+        public async Task<DataPurgingTableLog> CreateDataPurgingTableLog(DataPurgingTableLog log)
         {
-            return await _dataCleanupRepository.DataPurging(data);
+            return await _dataCleanupRepository.CreateDataPurgingTableLog(log);
         }
+
+        public int DataPurging(DataCleanupConfiguration data)
+        {
+            return _dataCleanupRepository.DataPurging(data);
+        }
+
+        public async Task<int> DeleteDataFromTables(string connectString, DataCleanupConfiguration dataCleanupConfiguration)
+        {
+            return await _dataCleanupRepository.DeleteDataFromTables(connectString, dataCleanupConfiguration);
+        }
+
         public async Task<List<DataCleanupConfiguration>> GetDataPurgingConfiguration()
         {
             return await _dataCleanupRepository.GetDataPurgingConfiguration();
         }
 
-        public void Worker(int workerId, ConcurrentQueue<DataCleanupConfiguration> _dataCleanupConfigurations)
+        public void Worker(DataCleanupConfiguration op)
         {
 
-            _dataCleanupRepository.Worker(workerId, _dataCleanupConfigurations);
+            _dataCleanupRepository.Worker(op);
         }
     }
 }
