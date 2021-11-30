@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -88,7 +89,9 @@ namespace atos.net.daf.ct2.reportscheduler.test
         public async Task UnT_ReportScheduler_GetReportSchedulerList()
         {
             int orgnisationId = 1;
-            var result = await _reportSchedulerManager.GetReportSchedulerList(orgnisationId);
+            List<int> vehicleids = new List<int> { 28, 77 };
+            List<int> groupids = new List<int> { 28, 77 };
+            var result = await _reportSchedulerManager.GetReportSchedulerList(orgnisationId, vehicleids, groupids);
             Assert.IsNotNull(result);
             Assert.IsTrue(result != null);
         }

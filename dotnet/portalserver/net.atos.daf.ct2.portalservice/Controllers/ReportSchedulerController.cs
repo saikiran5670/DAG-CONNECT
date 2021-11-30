@@ -306,8 +306,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 if (orgnizationid == 0) return BadRequest(ReportSchedulerConstants.REPORTSCHEDULER_ORG_ID_NOT_NULL_MSG);
-                orgnizationid = GetContextOrgId();
-                ReportSchedulerListResponse response = await _reportschedulerClient.GetReportSchedulerListAsync(new ReportParameterRequest { AccountId = accountId, OrganizationId = orgnizationid });
+
+                // Fetch Feature Id of the report for visibility
+                var featureId = GetMappedFeatureId(HttpContext.Request.Path.Value.ToLower());
+                int roleid = _userDetails.RoleId;
+                int contextorgid = GetContextOrgId();
+                accountId = _userDetails.AccountId;
+                Metadata headers = new Metadata();
+                headers.Add("report_feature_id", Convert.ToString(featureId));
+                ReportSchedulerListResponse response = await _reportschedulerClient.GetReportSchedulerListAsync(new ReportParameterRequest { AccountId = accountId, OrganizationId = GetUserSelectedOrgId(), RoleId = roleid, ContextOrgId = contextorgid }, headers);
                 //if (response.ReportSchedulerRequest.Any())
                 //{
                 //    foreach (var item in response.ReportSchedulerRequest)

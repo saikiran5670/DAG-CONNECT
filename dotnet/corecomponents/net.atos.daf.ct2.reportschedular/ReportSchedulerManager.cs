@@ -32,9 +32,9 @@ namespace net.atos.daf.ct2.reportscheduler
             return await _reportSchedulerRepository.UpdateReportScheduler(report);
         }
 
-        public async Task<IEnumerable<ReportSchedulerMap>> GetReportSchedulerList(int organizationid)
+        public async Task<IEnumerable<ReportSchedulerMap>> GetReportSchedulerList(int organizationid, List<int> vehicleIds, List<int> groupIds)
         {
-            return await _reportSchedulerRepository.GetReportSchedulerList(organizationid);
+            return await _reportSchedulerRepository.GetReportSchedulerList(organizationid, vehicleIds, groupIds);
         }
 
         public async Task<int> ManipulateReportSchedular(ReportStatusUpdateDeleteModel objReportStatusUpdateDeleteModel)
