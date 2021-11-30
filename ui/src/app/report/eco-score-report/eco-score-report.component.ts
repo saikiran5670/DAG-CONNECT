@@ -69,6 +69,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   tableInfoObj: any = {};
   tableDetailsInfoObj: any = {};
   tripTraceArray: any = [];
+  newDriverList: any = [];
   startTimeDisplay: any = '00:00:00';
   endTimeDisplay: any = '23:59:59';
   prefTimeFormat: any;
@@ -612,7 +613,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       // let selectedVin = this.vehicleListData.filter(i=>i.vehicleId === parseInt(event.value))[0]['vin'];
       // this.driverListData = this.finalDriverList.filter(i => i.vin == selectedVin);
       let newVin:any = this.vehicleDD.filter(item => item.vehicleId == parseInt(event.value))
-      let search = this.driverListData.filter(i => i.vin == newVin[0].vin);
+      let search = this.newDriverList.filter(i => i.vin == newVin[0].vin);
       if(search.length > 0){
        // this.driverDD = [];
         search.forEach(element => {
@@ -868,7 +869,8 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       }
 
       
-      this.driverListData = finalDriverList;//filteredDriverList;
+      this.newDriverList = finalDriverList;
+      this.driverListData = filteredDriverList;
       this.vehicleListData = filteredVehicleList;
       this.vehicleGroupListData = finalVehicleList;
       console.log("vehicleGroupListData 1", this.vehicleGroupListData);
