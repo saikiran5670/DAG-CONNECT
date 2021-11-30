@@ -202,6 +202,7 @@ export class EditViewUserComponent implements OnInit {
     let filterRoleData = this.filterRoleTableData();
     this.selectedRoleDataSource = new MatTableDataSource(filterRoleData);
     setTimeout(()=>{
+      this.selectedRoleDataSource = new MatTableDataSource(filterRoleData);
       this.selectedRoleDataSource.paginator = this.paginator.toArray()[0];
       this.selectedRoleDataSource.sort = this.sort.toArray()[0];
       this.selectedRoleDataSource.sortData = (data: String[], sort: MatSort) => {
@@ -211,8 +212,8 @@ export class EditViewUserComponent implements OnInit {
           return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
         });
        }
-       Util.applySearchFilter(this.selectedRoleDataSource, this.displayedColumnsRoleConfirm ,this.filterValue );
     });
+    Util.applySearchFilter(this.selectedRoleDataSource, this.displayedColumnsRoleConfirm ,this.filterValue );
   }
 
   compare(a: any, b: any, isAsc: boolean, columnName:any) {
