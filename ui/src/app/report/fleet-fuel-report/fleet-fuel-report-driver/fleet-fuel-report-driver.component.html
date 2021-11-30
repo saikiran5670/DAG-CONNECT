@@ -320,7 +320,7 @@
 
             <div *ngIf="checkForPreference('summary_co2emission')" class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
 
-              <span>{{ translationData.lblCO2Emission || 'CO2 Emission' }}</span>
+              <span>{{ translationData.lblCO2Emission}}</span>
 
               <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('co2emission')}}{{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblton || ' t') :
                 (prefUnitFormat == 'dunit_Imperial') ? (translationData.lbltons || ' Ton') : (translationData.lbltons ||' Ton') }} </span>
@@ -418,7 +418,7 @@
           <div *ngIf="checkForPreference('chart_co2emission')" class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right" fxFlex="0 1 calc(50% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32px)"
           fxFlex.lt-sm="100%">
 
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;padding-top: 20px'>{{ translationData.lblCo2Emission || 'Co2Emission' }}</span>
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;padding-top: 20px'>{{ translationData.lblCO2Emission }}</span>
 
             <div *ngIf="Co2ChartType =='Line'" class="chart-wrapper">
 
@@ -818,7 +818,7 @@
             </ng-container>
 
             <ng-container matColumnDef="cO2Emission" >
-              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_co2emission')">{{ translationData.lblCO2Emission || 'CO2 Emission' }}
+              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_co2emission')">{{ translationData.lblCO2Emission}}
                 <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblton || 't') :
                     (prefUnitFormat == 'dunit_Imperial') ? (translationData.lbltons || 'Ton') : (translationData.lbltons ||
                     'Ton') }})</span>
