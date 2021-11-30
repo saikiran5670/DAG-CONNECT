@@ -143,13 +143,13 @@
           <mat-tab label="{{ translationData.lblVehicle }}">
             <app-fleet-fuel-preferences *ngIf='showFleetFuelPerferences' tabName='Vehicle'
               [editFlag]='editFleetFuelPerferencesFlag' [reportListData]='reportListData'
-              [translationData]='translationData' [generalPreferences]="generalPreferences" (setFuelFleetFlag)="updateFleetFuelPerferencesFlag($event)" #fleetFuelPerferencesVehicle>
+              [translationData]='translationData' [generalPreferences]="generalPreferences" (setFuelFleetFlag)="updateFleetFuelPerferencesFlag($event)" #fleetFuelPerferencesVehicle [tabIndex]='tabIndex'>
             </app-fleet-fuel-preferences>
           </mat-tab>
           <mat-tab label="{{ translationData.lblDriver }}">
             <app-fleet-fuel-preferences *ngIf='showFleetFuelPerferences' tabName='Driver'
               [editFlag]='editFleetFuelPerferencesFlag' [reportListData]='reportListData'
-              [translationData]='translationData' [generalPreferences]="generalPreferences" (setFuelFleetFlag)="updateFleetFuelPerferencesFlag($event)" #fleetFuelPerferencesDriver>
+              [translationData]='translationData' [generalPreferences]="generalPreferences" (setFuelFleetFlag)="updateFleetFuelPerferencesFlag($event)" #fleetFuelPerferencesDriver [tabIndex]='tabIndex'>
             </app-fleet-fuel-preferences>
           </mat-tab>
         </mat-tab-group>
