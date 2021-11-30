@@ -1317,8 +1317,8 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
             return this.compareData(a[sort.active], b[sort.active], isAsc, columnName);
         });
       }
-      Util.applySearchFilter(this.dataSource, this.displayedColumns ,this.filterValue );
       });
+      Util.applySearchFilter(this.dataSource, this.displayedColumns ,this.filterValue );
     }
 
     compareData(a: Number | String, b: Number | String, isAsc: boolean, columnName: any) {
@@ -1758,10 +1758,10 @@ getAllSummaryData(){
   })
 
   this.initData.forEach(item => {
-  let convertedIdleDurationValue = Util.getHhMmTime(parseFloat(item.idleDuration));
+    let idleDurations = Util.getHhMmTime(parseFloat(item.idleDuration));
    //console.log("initData", this.initData);
   worksheet.addRow([item.vehicleName,item.vin, item.registrationNumber,item.convertedDistance,
-      item.numberOfTrips,item.convertedTripTime, item.convertedDrivingTime, convertedIdleDurationValue,
+      item.numberOfTrips,item.convertedTripTime, item.convertedDrivingTime, idleDurations,
       item.convertedStopTime, item.convertedAverageDistance, item.convertedAverageSpeed, item.convertedAverageWeight,
       item.convertedOdometer]);
   });
