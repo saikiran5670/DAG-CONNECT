@@ -48,8 +48,8 @@ import { SignalrAlertNotificationComponent } from './signalr-alert-notification/
 
 
 export function configFactory(httpClient: HttpClient): ConfigLoader {
-//  return new ConfigHttpLoader(httpClient, 'assets/config/default.json');
- return new ConfigHttpLoader(httpClient, 'assets/config/dev-default.json');
+ return new ConfigHttpLoader(httpClient, 'assets/config/default.json');
+//  return new ConfigHttpLoader(httpClient, 'assets/config/dev-default.json');
 }
 
 @NgModule({
