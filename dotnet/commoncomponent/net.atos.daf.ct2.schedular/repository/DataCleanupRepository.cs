@@ -17,7 +17,6 @@ namespace net.atos.daf.ct2.schedular.repository
     {
         private readonly IDataAccess _dataAccess;
         private readonly IDataMartDataAccess _dataMartDataAccess;
-        private string _connectionString;
         public DataCleanupRepository(IDataAccess dataAccess, IDataMartDataAccess dataMartDataAccess)
         {
             _dataAccess = dataAccess;
@@ -43,7 +42,7 @@ namespace net.atos.daf.ct2.schedular.repository
         public async Task<int> DeleteDataFromTables(string connectString, DataCleanupConfiguration dataCleanupConfiguration)
         {
             var rowCount = 0;
-            _connectionString = connectString;
+           
             try
             {
 
@@ -73,7 +72,7 @@ namespace net.atos.daf.ct2.schedular.repository
         {
             try
             {
-                using (NpgsqlConnection conn = new NpgsqlConnection(_connectionString))
+                using (NpgsqlConnection conn = new NpgsqlConnection(connectString))
                 {
                     await conn.OpenAsync();
                     string queryduplicate = string.Empty;
