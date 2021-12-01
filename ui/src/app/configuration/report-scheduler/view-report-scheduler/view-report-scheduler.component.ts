@@ -107,67 +107,6 @@ export class ViewReportSchedulerComponent implements OnInit {
 
   getScheduledReportList(){
     this.reportSchedulerService.getScheduledReportList(this.selectedRowData[0].id).subscribe((_list: any) => {
-      _list = {
-        "code": 200,
-        "message": " Scheduled Report data retrieved",
-        "scheduledReport": [
-          {
-            "id": 426,
-            "scheduleReportId": 102,
-            "startDate": 1634495400038,
-            "endDate": 1634581799039,
-            "downloadedAt": 0,
-            "validTill": 1642530643300,
-            "createdAt": 1634581843300
-          },
-          {
-            "id": 255,
-            "scheduleReportId": 102,
-            "startDate": 1634149800038,
-            "endDate": 1634236199039,
-            "downloadedAt": 0,
-            "validTill": 1642185042801,
-            "createdAt": 1634236242801
-          },
-          {
-            "id": 299,
-            "scheduleReportId": 102,
-            "startDate": 1634236200038,
-            "endDate": 1634322599039,
-            "downloadedAt": 0,
-            "validTill": 1642271446199,
-            "createdAt": 1634322646199
-          },
-          {
-            "id": 340,
-            "scheduleReportId": 102,
-            "startDate": 1634322600038,
-            "endDate": 1634408999039,
-            "downloadedAt": 0,
-            "validTill": 1642357841997,
-            "createdAt": 1634409041997
-          },
-          {
-            "id": 1316,
-            "scheduleReportId": 102,
-            "startDate": 1636223400038,
-            "endDate": 1636309799039,
-            "downloadedAt": 0,
-            "validTill": 1644259103400,
-            "createdAt": 1636310303400
-          },
-          {
-            "id": 382,
-            "scheduleReportId": 102,
-            "startDate": 1634409000038,
-            "endDate": 1634495399039,
-            "downloadedAt": 0,
-            "validTill": 1642444318593,
-            "createdAt": 1634495518593
-          }
-        ]
-      }
-       
       if(_list){
         this.scheduledReportList = _list.scheduledReport;
         this.scheduledReportList.forEach(element => {
