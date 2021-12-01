@@ -307,9 +307,11 @@ export class FleetFuelPreferencesComponent implements OnInit {
 
   getUnits(key) {
   let unitObj = this.generalPreferences.unit.filter(item => item.id == this.unitId);
-  if(key === "rp_ff_report_vehicle_vehicleranking_consumption"){
+  if(key === "rp_ff_report_vehicle_vehicleranking_consumption" 
+    || key === "rp_ff_report_vehicle_vehicledetails_idlingconsumptionwithpto" 
+    || key === "rp_ff_report_driver_vehicledetails_idlingconsumptionwithpto"){
     if(unitObj[0].value == 'Imperial') {
-      return '(mpg(miles per gallon))';
+      return '(mpg)';
     } else {
       return '(lts/100km)';
     }
@@ -409,7 +411,7 @@ export class FleetFuelPreferencesComponent implements OnInit {
       return 'km/h(%)';
     }
   }
-  if(key === "rp_ff_report_driver_vehicledetails_co2emmision"){
+  if(key === "rp_ff_report_driver_vehicledetails_co2emmision" || key === "rp_ff_report_vehicle_vehicledetails_co2emission"){
     if(unitObj[0].value == 'Imperial'){
       return 'gr/km';
     } else {
