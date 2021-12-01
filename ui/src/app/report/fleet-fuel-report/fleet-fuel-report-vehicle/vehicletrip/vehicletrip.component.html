@@ -487,24 +487,27 @@
                         </mat-cell>              
                       </ng-container>
                       <ng-container matColumnDef="cruiseControlDistance3050">      
-                        <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_cruisecontroldistance3050')">{{ translationData.lblCruiseControlDistance3050 || 'Cruise Control Distance 30-50' }} km/h(%)              
-                          <span style="font-weight: normal;"></span>             
+                        <mat-header-cell *matHeaderCellDef mat-sort-header 
+                        [hidden]="!checkForPreference('singlevehicledetails_cruisecontroldistance3050')">{{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblCruiseControlDistance3050 || 'Cruise Control Distance 30-50') : (translationData.lblCruiseControlDistance1530 || 'Cruise Control Distance 15-30') }}             
+                          <span style="font-weight: normal;">{{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh) : (translationData.lblmileh)}} (%)</span>             
                         </mat-header-cell>             
                         <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_cruisecontroldistance3050')">              
                           <span>{{row.cruiseControlDistance3050}}</span>              
                         </mat-cell>              
                       </ng-container>              
                       <ng-container matColumnDef="cruiseControlDistance5075">              
-                        <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_cruisecontroldistance5075')">{{ translationData.lblCruiseControlDistance5075 || 'Cruise Control Distance 50-75' }} km/h(%)             
-                          <span style="font-weight: normal;"></span>  
+                        <mat-header-cell *matHeaderCellDef mat-sort-header 
+                        [hidden]="!checkForPreference('singlevehicledetails_cruisecontroldistance5075')">{{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblCruiseControlDistance5075 || 'Cruise Control Distance 50-75') : (translationData.lblCruiseControlDistance3045 || 'Cruise Control Distance 30-45')}}
+                          <span style="font-weight: normal;">{{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh) : (translationData.lblmileh)}} (%)</span>  
                         </mat-header-cell>             
                         <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_cruisecontroldistance5075')">             
                           <span>{{row.cruiseControlDistance5075}}</span>             
                         </mat-cell>             
                       </ng-container>             
                       <ng-container matColumnDef="cruiseControlDistance75">              
-                        <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_cruisecontroldistance75')">{{ translationData.lblCruiseControlDistance75 || 'Cruise Control Distance >75' }} km/h(%)              
-                          <span style="font-weight: normal;"></span>      
+                        <mat-header-cell *matHeaderCellDef mat-sort-header 
+                        [hidden]="!checkForPreference('singlevehicledetails_cruisecontroldistance75')">{{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblCruiseControlDistance75 || 'Cruise Control Distance > 75') : (translationData.lblCruiseControlDistance45 || 'Cruise Control Distance > 45') }}
+                        <span style="font-weight: normal;">{{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh) : (translationData.lblmileh)}} (%)</span>      
                         </mat-header-cell>              
                         <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_cruisecontroldistance75')">              
                           <span>{{row.cruiseControlDistance75}}</span>              

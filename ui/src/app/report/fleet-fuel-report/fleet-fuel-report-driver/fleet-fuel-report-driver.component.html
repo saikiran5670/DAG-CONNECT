@@ -558,7 +558,7 @@
 
         </div>
 
-        <div *ngIf='displayData.length > 0' [ngClass]="{'reportTable': displayedColumns.length > 7}">
+        <div *ngIf='displayData.length > 0' [ngClass]="{'reportTable': validTableEntry.length > 4}">
 
           <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm' fxLayoutGap="10px">
 
@@ -592,28 +592,28 @@
           <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort #exporter="matTableExporter">
 
             <ng-container matColumnDef="driverName">
-              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_drivername')">{{ translationData.lblDriverName || 'Driver Name' }}
+              <!-- <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_drivername')">{{ translationData.lblDriverName || 'Driver Name' }}
+              </mat-header-cell> -->
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriverName || 'Driver Name' }}
               </mat-header-cell>
-             <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_drivername')">
-              <span class='navigatePoint' (click)='onDriverSelected(row)'>{{ row.unknownDriver ? 'Unknown' : row.driverName}}</span>
-
-            </mat-cell>
-            <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_drivername')">
-              <span (click)='onDriverSelected(row)'>{{row.unknownDriver ? 'Unknown' : row.driverName}} </span>
-            </mat-cell>
+              <mat-cell *matCellDef="let row">
+                <span class='navigatePoint' (click)='onDriverSelected(row)'>{{ row.unknownDriver ? 'Unknown' : row.driverName }}</span>
+              </mat-cell>
+              <!-- <mat-cell *matCellDef="let row">
+                <span (click)='onDriverSelected(row)'>{{ row.unknownDriver ? 'Unknown' : row.driverName }} </span>
+              </mat-cell> -->
           </ng-container>
           <ng-container matColumnDef="driverID">
               <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_driverid')">{{ translationData.lblDriverID || 'Driver ID' }}
               </mat-header-cell>
               <mat-cell *matCellDef="let row">
-              <span *ngIf="!row.unknownDriver" class='navigatePoint' (click)='onDriverSelected(row)'>{{row.driverID }}</span>
-              <span *ngIf="row.unknownDriver" class='navigatePoint' (click)='onDriverSelected(row)'>*</span>
-            </mat-cell>
+                <span *ngIf="!row.unknownDriver" class='navigatePoint' (click)='onDriverSelected(row)'>{{row.driverID }}</span>
+                <span *ngIf="row.unknownDriver" class='navigatePoint' (click)='onDriverSelected(row)'>*</span>
+              </mat-cell>
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_driverid')">
                 <!-- <span >{{row.driverID}}</span> -->
                 <span *ngIf="!row.unknownDriver" class='navigatePoint' (click)='onDriverSelected(row)'>{{ row.driverID }}</span>
                 <span *ngIf="row.unknownDriver" class='navigatePoint' (click)='onDriverSelected(row)'>*</span>
-
               </mat-cell>
           </ng-container>
 
@@ -640,13 +640,13 @@
 
             <ng-container matColumnDef="vin">
 
-              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_vin')">{{ translationData.lblVIN || 'VIN' }}
+              <mat-header-cell class='text-truncate' *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_vin')">{{ translationData.lblVIN || 'VIN' }}
 
               </mat-header-cell>
 
-              <mat-cell class="text-truncate" matTooltip="{{ row.vin }}" *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_vin')">
+              <mat-cell class='text-truncate' matTooltip="{{ row.vin }}" *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_vin')">
 
-                <span>{{row.vin}}</span>
+                <span>{{ row.vin }}</span>
 
               </mat-cell>
 
@@ -660,7 +660,7 @@
 
               </mat-header-cell>
 
-              <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{ row.vehicleRegistrationNo }}" [hidden]="!checkForPreference('vehicledetails_vehicleregistrationno')">
+              <mat-cell *matCellDef="let row" matTooltip="{{ row.vehicleRegistrationNo }}" [hidden]="!checkForPreference('vehicledetails_vehicleregistrationno')">
 
                 <span>{{row.vehicleRegistrationNo}}</span>
 
@@ -896,53 +896,30 @@
             </ng-container>
 
             <ng-container matColumnDef="cruiseControlDistance3050">
-
-              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_cruisecontroldistance3050')">{{ translationData.lblCruiseControlDistance3050 || 'Cruise Control Distance 30-50 ' }} km/h(%)
-
-                <span style="font-weight: normal;"></span>
-
-              </mat-header-cell>
-
+              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_cruisecontroldistance3050')">{{translationData.lblCruiseControlDistance || 'Cruise Control Distance'}} {{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblCruiseControlDistance3050metric || '30-50') : (translationData.lblCruiseControlDistance1530imperial || '15-30')}}
+                <span style="font-weight: normal;">{{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh) : (translationData.lblmileh)}} (%)</span>
+                </mat-header-cell>
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_cruisecontroldistance3050')">
-
                 <span>{{row.cruiseControlDistance3050}}</span>
-
               </mat-cell>
-
             </ng-container>
 
             <ng-container matColumnDef="cruiseControlDistance5075">
-
-              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_cruisecontroldistance5075')">{{ translationData.lblCruiseControlDistance5075 || 'Cruise Control Distance 50-75' }} km/h(%)
-
-                <span style="font-weight: normal;"></span>
-
+              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_cruisecontroldistance5075')">{{translationData.lblCruiseControlDistance || 'Cruise Control Distance'}} {{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblCruiseControlDistance5075metric || '50-75') : (translationData.lblCruiseControlDistance3045imperial || '30-45')}}
+                <span style="font-weight: normal;">{{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh) : (translationData.lblmileh)}} (%)</span>
               </mat-header-cell>
-
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_cruisecontroldistance5075')">
-
                 <span>{{row.cruiseControlDistance5075}}</span>
-
               </mat-cell>
-
             </ng-container>
 
             <ng-container matColumnDef="cruiseControlDistance75">
-
-              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_cruisecontroldistance75')">{{ translationData.lblCruiseControlDistance75 || 'Cruise Control Distance >75' }} km/h(%)
-
-
-
-                <span style="font-weight: normal;"></span>
-
+              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_cruisecontroldistance75')">{{translationData.lblCruiseControlDistance || 'Cruise Control Distance'}} {{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblCruiseControlDistance75metric || '> 75') : (translationData.lblCruiseControlDistance45imperial || '> 45')}}
+                <span style="font-weight: normal;">{{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh) : (translationData.lblmileh)}} (%)</span>
               </mat-header-cell>
-
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_cruisecontroldistance75')">
-
                 <span>{{row.cruiseControlDistance75}}</span>
-
               </mat-cell>
-
             </ng-container>
 
             <ng-container matColumnDef="averageTrafficClassification">
@@ -1125,9 +1102,9 @@
                 </mat-cell>
               </ng-container>
 
-            <mat-header-row *matHeaderRowDef="displayedColumns" class="mat-header-data"></mat-header-row>
+            <mat-header-row *matHeaderRowDef="displayedColumns" [ngStyle]="{'min-width': validTableEntry.length > 20 ? '5000px' : '0px'}" class="mat-header-data"></mat-header-row>
 
-            <mat-row *matRowDef="let row; columns: displayedColumns;" class="mat-row-data">
+            <mat-row *matRowDef="let row; columns: displayedColumns;" [ngStyle]="{'min-width': validTableEntry.length > 20 ? '5000px' : '0px'}" class="mat-row-data">
 
             </mat-row>
 
