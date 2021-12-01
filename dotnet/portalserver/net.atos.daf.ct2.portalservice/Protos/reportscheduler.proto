@@ -17,6 +17,7 @@ service ReportSchedulerService{
   rpc GetPDFBinaryFormatByToken (ReportPDFByTokenRequest) returns (ReportPDFResponse);
   rpc UnSubscribeById (UnSubscribeRequest) returns (UnSubscribeResponse);
   rpc UnSubscribeAllByEmailId (UnSubscribeAllRequest) returns (UnSubscribeAllResponse);
+  rpc GetScheduledReport (ScheduledResponseIdRequest) returns (ScheduledReportResponse);
 }
 
 enum ResponseCode{
@@ -113,17 +114,26 @@ message ReportSchedulerRequest
     repeated ScheduledReportDriverRefRequest ScheduledReportDriverRef=22;
     repeated ScheduledReportVehicleRefRequest ScheduledReportVehicleRef=23;
 }
+message ScheduledReportResponse
+{
+   ResponseCode Code=1;
+   string message = 2;
+   repeated ScheduledReportRequest ScheduledReport=3;
+}
 message ScheduledReportRequest
 {
     int32 Id =1;
-    int32 ScheduleReportId =2;
-    //byteArray Report =3;
-    string Token =3;
-    int64 StartDate =4;
-    int64 EndDate =5;
-    int64 DownloadedAt =6;
-    int64 ValidTill =7;
-    int64 CreatedAt =8;
+    int32 ScheduleReportId =2;    
+    int64 StartDate =3;
+    int64 EndDate =4;
+    int64 DownloadedAt =5;
+    int64 ValidTill =6;
+    int64 CreatedAt =7;
+}
+
+message ScheduledResponseIdRequest
+{
+   int32 ReportSchedulerId=1;
 }
 message ScheduledReportRecipientRequest
 {

@@ -8,7 +8,7 @@ namespace net.atos.daf.ct2.reportschedulerservice.Entity
     public static class ReportSchedulerConstant
     {
         public const string REPORT_SCHEDULER_FEATURE_NAME = "Configuration.ReportScheduler";
-        public const string REPORT_SCHEDULER_GET_SUCCESS_MSG = "Report Scheduler data retrieved";
+        public const string REPORT_SCHEDULER_GET_SUCCESS_MSG = "Report Scheduler data retrieved.";
         public const string REPORT_SCHEDULER_GET_CALLED_MSG = "Get method in report scheduler called.";
         public const string REPORT_SCHEDULER_GET_FAIL_MSG = "Get report scheduler list fail : ";
         public const string REPORT_SCHEDULER_GETFORPDF_SUCCESS_MSG = "Report Scheduler data For PDF retrieved";
@@ -25,5 +25,6 @@ namespace net.atos.daf.ct2.reportschedulerservice.Entity
         public const string UN_SUBCRIBE_ALL_FAIL_MSG2 = "Un-Subscribe to the all the reports failed with error {0}";
         public const string UN_SUBCRIBE_CALLED_MSG = "Un-Subscribe by recipent ID is called.";
         public const string UN_SUBCRIBE_ALL_CALLED_MSG = "Un-Subscribe All by email id is called.";
+        public const string SHEDULED_REPORT_GET_SUCCESS_MSG = "Scheduled Report data retrieved.";
     }
 }
