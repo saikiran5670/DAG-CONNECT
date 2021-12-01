@@ -219,10 +219,10 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
                 var scheduledReportList = await _reportSchedulerManager.GetScheduledReport(request.ReportSchedulerId);
 
                 var res = JsonConvert.SerializeObject(scheduledReportList);
-                response.ScheduledReportRequest.AddRange(
+                response.ScheduledReport.AddRange(
                     JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<ScheduledReportRequest>>(res)
                     );
-                response.Message = ReportSchedulerConstant.REPORT_SCHEDULER_GET_SUCCESS_MSG;
+                response.Message = ReportSchedulerConstant.SHEDULED_REPORT_GET_SUCCESS_MSG;
                 response.Code = ResponseCode.Success;
                 _logger.Info(ReportSchedulerConstant.REPORT_SCHEDULER_GET_CALLED_MSG);
                 return await Task.FromResult(response);
