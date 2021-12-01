@@ -154,10 +154,12 @@ export class RelationshipManagementComponent implements OnInit {
 
   compare(a: any, b: any, isAsc: boolean, columnName: any) {
     if(columnName === 'name'|| columnName === 'code'|| columnName == 'description'||columnName !== 'featureIds'){
-      if(!(a instanceof Number)) a = a.toString().toUpperCase();
-      if(!(b instanceof Number)) b = b.toString().toUpperCase();
+      if(a && !(a instanceof Number)) a = a.toString().toUpperCase();
+      if(a && !(b instanceof Number)) b = b.toString().toUpperCase();
     // tslint:disable-next-line: align
-    }{
+    }
+    if(columnName === 'featureIds')
+    {
         a = a.length;
         b = b.length;
     }

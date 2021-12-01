@@ -506,9 +506,9 @@ export class ManagePoiGeofenceComponent implements OnInit {
     Util.applySearchFilter(this.geofencedataSource, this.displayedColumnsGeo ,this.filterValue );
   }
   compare(a: Number | String, b: Number | String, isAsc: boolean, columnName: any) {
-
-    if(!(a instanceof Number)) a = a.toString().toUpperCase();
-    if(!(b instanceof Number)) b = b.toString().toUpperCase();
+    if(columnName == 'name' || columnName == 'categoryName' || columnName== 'subCategoryName')
+    if(!(a instanceof Number)) a = a.toString().toLowerCase();
+    if(!(b instanceof Number)) b = b.toString().toLowerCase();
 
   return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
 }
