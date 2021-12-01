@@ -54,6 +54,13 @@ export class DetailDriverReportComponent implements OnInit {
   @Input() endDateValue: any;
   @Input() startDateValue: any;
   @Input() _vinData: any;
+  @Input() finalPrefData: any;
+  @Input() prefTimeFormat: any;
+  @Input() prefTimeZone: any;
+  @Input() prefDateFormat: any;
+  @Input() prefUnitFormat: any = 'dunit_Metric';
+  @Input() wholeTripData: any;
+
   public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   graphData: any;
@@ -275,13 +282,8 @@ tripTraceArray: any = [];
   fleetFuelSearchData: any = {};
   localStLanguage: any;
   accountOrganizationId: any;
-  wholeTripData: any = [];
   accountId: any;
   accountPrefObj: any;
-  prefTimeFormat: any; //-- coming from pref setting
-  prefTimeZone: any; //-- coming from pref setting
-  prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
-  prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   vehicleGrpDD: any = [];
   selectionTab: any;
   // startDateValue: any = 0;
@@ -831,7 +833,7 @@ tripTraceArray: any = [];
 
   ngOnInit(): void {
     this.fleetFuelSearchData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
-    console.log("translationData for driver" +this.translationData);
+    //console.log("translationData for driver" +this.translationData);
     // console.log("----globalSearchFilterData---",this.fleetUtilizationSearchData)
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
@@ -859,22 +861,23 @@ tripTraceArray: any = [];
       menuId: 9 //-- for fleet fuel report
     }
 
-    this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
-      if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
-        this.proceedStep(prefData, this.accountPrefObj.accountPreference);
-      }else{ // org pref
-        this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
-          this.proceedStep(prefData, orgPref);
-        }, (error) => { // failed org API
-          let pref: any = {};
-          this.proceedStep(prefData, pref);
-        });
-      }
+    // this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
+    //   if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
+    //     this.proceedStep(prefData, this.accountPrefObj.accountPreference);
+    //   }else{ // org pref
+    //     this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
+    //       this.proceedStep(prefData, orgPref);
+    //     }, (error) => { // failed org API
+    //       let pref: any = {};
+    //       this.proceedStep(prefData, pref);
+    //     });
+    //   }
+      this.callToNext();
       this.loadfleetFuelDetails(this.driverDetails);
       if(this.driverDetails){
         this.onSearch();
       }
-    });
+    // });
 
     // let prefData: any ={};
     // let pref: any = {};
@@ -1538,18 +1541,18 @@ createEndMarker(){
     this.advanceFilterOpen = false;
     this.searchMarker = {};
     this.isChartsOpen = true;
-    if (this.reportPrefData.length != 0) {
-      let filterData = this.reportPrefData.filter(item => item.key.includes('driver_chart_fuelconsumed'));
+    if (this.finalPrefData.length != 0) {
+      let filterData = this.finalPrefData.filter(item => item.key.includes('driver_chart_fuelconsumed'));
       this.ConsumedChartType = filterData[0].chartType == 'L' ? 'Line' : 'Bar';
-      filterData = this.reportPrefData.filter(item => item.key.includes('driver_chart_numberoftrips'));
+      filterData = this.finalPrefData.filter(item => item.key.includes('driver_chart_numberoftrips'));
       this.TripsChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
-      filterData = this.reportPrefData.filter(item => item.key.includes('driver_chart_co2emission'));
+      filterData = this.finalPrefData.filter(item => item.key.includes('driver_chart_co2emission'));
       this.Co2ChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
-      filterData = this.reportPrefData.filter(item => item.key.includes('driver_chart_distance'));
+      filterData = this.finalPrefData.filter(item => item.key.includes('driver_chart_distance'));
       this.DistanceChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
-      filterData = this.reportPrefData.filter(item => item.key.includes('driver_chart_fuelconsumption'));
+      filterData = this.finalPrefData.filter(item => item.key.includes('driver_chart_fuelconsumption'));
       this.ConsumptionChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
-      filterData = this.reportPrefData.filter(item => item.key.includes('driver_chart_idledurationtotaltime'));
+      filterData = this.finalPrefData.filter(item => item.key.includes('driver_chart_idledurationtotaltime'));
       this.DurationChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
     } else {
       this.ConsumedChartType = 'Line';
@@ -2188,6 +2191,13 @@ createEndMarker(){
     this.setPrefFormatDate();
     this.setDefaultTodayDate();
     this.getFleetPreferences();
+  }
+
+  callToNext(){
+    this.setDefaultStartEndTime();
+    this.setPrefFormatDate();
+    this.setDefaultTodayDate();
+    this.filterDateData();
   }
 
   setDefaultStartEndTime()
@@ -3185,8 +3195,8 @@ setVehicleGroupAndVehiclePreSelection() {
   }
 
   checkForPreference(fieldKey) {
-    if (this.reportPrefData.length != 0) {
-      let filterData = this.reportPrefData.filter(item => item.key.includes('driver_'+fieldKey));
+    if (this.finalPrefData.length != 0) {
+      let filterData = this.finalPrefData.filter(item => item.key.includes('driver_'+fieldKey));
       if (filterData.length > 0) {
         if (filterData[0].state == 'A') {
           return true;
