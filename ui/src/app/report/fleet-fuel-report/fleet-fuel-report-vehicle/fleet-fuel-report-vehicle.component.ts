@@ -713,7 +713,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
 
   checkForPreference(fieldKey) {
     if (this.finalPrefData.length != 0) {
-      let filterData = this.finalPrefData.filter(item => item.key.includes('rp_ff_report_vehicle_'+fieldKey)); // rp_ff_report_vehicle_
+      let filterData = this.finalPrefData.filter(item => item.key.includes('rp_ff_report_vehicle_'+fieldKey)); 
       if (filterData.length > 0) {
         if (filterData[0].state == 'A') {
           return true;
