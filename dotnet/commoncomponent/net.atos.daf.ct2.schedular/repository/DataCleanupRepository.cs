@@ -17,7 +17,7 @@ namespace net.atos.daf.ct2.schedular.repository
     {
         private readonly IDataAccess _dataAccess;
         private readonly IDataMartDataAccess _dataMartDataAccess;
-        private  string _connectionString;
+        private string _connectionString;
         public DataCleanupRepository(IDataAccess dataAccess, IDataMartDataAccess dataMartDataAccess)
         {
             _dataAccess = dataAccess;
@@ -51,10 +51,13 @@ namespace net.atos.daf.ct2.schedular.repository
                 {
                     await conn.OpenAsync();
                     var parameter = new DynamicParameters();
-                    parameter.Add("@days", dataCleanupConfiguration.RetentionPeriod, System.Data.DbType.Int32);
-                    var query = String.Format("select count(*) from {0}.{1} where  to_timestamp({2} /1000)::date < (now()::date -  @days)", dataCleanupConfiguration.SchemaName, dataCleanupConfiguration.TableName, dataCleanupConfiguration.ColumnName);
+                    parameter.Add("@days", UTCHandling.GetUTCFromDateTime(DateTime.Now.AddDays((-1) * dataCleanupConfiguration.RetentionPeriod)), System.Data.DbType.Int64);
+                    var query = String.Format("select count(*) from {0}.{1} where  {2}  < @days", dataCleanupConfiguration.SchemaName, dataCleanupConfiguration.TableName, dataCleanupConfiguration.ColumnName);
+                    //var queryStatement = @"WITH deleted AS(" + String.Format("delete from {0}.{1} where  to_timestamp(created_at /1000)::date < (now()::date -  @days)", dataCleanupConfiguration.SchemaName,
+                    //    dataCleanupConfiguration.TableName, dataCleanupConfiguration.ColumnName);
+                    //queryStatement += ") IS TRUE RETURNING *) SELECT count(*) FROM deleted";
+
                     rowCount = await conn.QueryFirstOrDefaultAsync<int>(query, parameter);
-                    Console.Write(rowCount);
                     Console.WriteLine(@"value of rowcount = {0}, tble name {2} , thread = {1}", rowCount, Thread.CurrentThread.ManagedThreadId, dataCleanupConfiguration.TableName);
                 }
 
@@ -65,82 +68,8 @@ namespace net.atos.daf.ct2.schedular.repository
                 throw;
             }
         }
-        public int DataPurging(DataCleanupConfiguration dataCleanupConfiguration)
-        {
 
-            try
-            {
-                var noOfRows = 0;
-                //var purgingConfig = await GetDataPurgingConfiguration();
-                //  foreach (var item in purgingConfig)
-                {
-                    var parameter = new DynamicParameters();
-                    parameter.Add("@days", dataCleanupConfiguration.RetentionPeriod, System.Data.DbType.Int32);
-                    //SELECT extract(epoch from current_timestamp) *1000 + extract(milliseconds from current_timestamp);
-                    //var queryStatement = @"select * from tripdetail.tripalert limit 10"; //String.Format("select count(*) from {0}.{1} where  to_timestamp({2} /1000)::date < (now()::date -  @days)", dataCleanupConfiguration.SchemaName, dataCleanupConfiguration.TableName, dataCleanupConfiguration.ColumnName);
-                    //    dataCleanupConfiguration.TableName, dataCleanupConfiguration.ColumnName);
-                    //queryStatement += ") ";
-                    //var queryStatement = @"WITH deleted AS(" + String.Format("delete from {0}.{1} where  to_timestamp(created_at /1000)::date < (now()::date -  @days)", dataCleanupConfiguration.SchemaName,
-                    //    dataCleanupConfiguration.TableName, dataCleanupConfiguration.ColumnName);
-                    //queryStatement += ") IS TRUE RETURNING *) SELECT count(*) FROM deleted";
-
-                    if (dataCleanupConfiguration.DatabaseName == "dafconnectmasterdatabase")
-                    {
-                        //using (var _dataAccess1 = _dataAccess)
-                        //{
-
-                        //    var queryStatement = @"select  id from master.vehicle limit 10";
-                        //    var result = await _dataAccess1.Query<dynamic>(queryStatement);
-                        //    noOfRows = Convert.ToInt32(result);
-                        Console.Write("Table name " + dataCleanupConfiguration.TableName + noOfRows);
-                        //}
-                    }
-                    else
-                    {
-
-
-                        var queryStatement = @"select id from tripdetail.tripalert limit 10";
-                        var result = _dataMartDataAccess.Query<dynamic>(queryStatement);
-                        //connection.QueryAsync(queryStatement, transaction);
-
-
-                        //}
-                        //  }
-
-
-                        //using (var _dataMartDataAccess1 = _dataMartDataAccess)
-                        //{
-
-
-
-                        //    var purgeSatrtTime = UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString());
-                        //    var queryStatement = @"select id from tripdetail.tripalert limit 10";
-                        //    var result = await _dataMartDataAccess1.Query<dynamic>(queryStatement);
-                        //    //noOfRows = Convert.ToInt32(result);
-                        //    Console.Write("No of rows deleted :  " + noOfRows + " table name " + dataCleanupConfiguration.TableName);
-                        //    //   var log = ToTableLog(dataCleanupConfiguration, purgeSatrtTime);
-                        //    //  await CreateDataPurgingTableLog(log);
-                        //}
-
-                    }
-
-
-                }
-
-
-
-                return noOfRows;
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-
-        }
-
-
-
-        public async Task<DataPurgingTableLog> CreateDataPurgingTableLog(DataPurgingTableLog log)
+        public async Task<DataPurgingTableLog> CreateDataPurgingTableLog(DataPurgingTableLog log, string connectString)
         {
             try
             {
@@ -167,6 +96,8 @@ namespace net.atos.daf.ct2.schedular.repository
 
                     var id = await conn.ExecuteScalarAsync<int>(query, parameter);
                     log.Id = id;
+                    Console.WriteLine(@"log :    tble name {0} , thread = {1}", Thread.CurrentThread.ManagedThreadId, log.TableName);
+
                 }
             }
             catch (Exception)
@@ -174,56 +105,6 @@ namespace net.atos.daf.ct2.schedular.repository
                 throw;
             }
             return log;
-        }
-
-        public void Worker(DataCleanupConfiguration op)
-        {
-            Console.WriteLine("Worker {0} is processing item {1}", op.Id, op.TableName);
-            try
-            {
-
-                {
-                    var tries = 0;
-                    var maxRetryCount = 5;
-                    while (tries < maxRetryCount)
-                    {
-                        try
-                        {
-                            tries++;
-                            var noOfDeletedData = DataPurging(op);
-
-                            //Thread.Sleep(50000);
-                            break;
-                        }
-                        catch (Exception)
-                        {
-                            // if (tries > 3)
-
-                            // StopAsync(new CancellationToken()).ConfigureAwait(true); ;
-                            throw;
-                            //add log
-                        }
-                    }
-                }
-                //  _threadData.TryDequeue(out op);
-                Console.WriteLine("Worker {0} is stopping.", op.Id);
-                //Write a logic to deque
-                //write a logic to add log for success & retires count 
-                //write a table specific logs e
-
-            }
-            catch (Exception ex)
-            {
-                // _log.Info("AddExistingTripCorridor method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(existingTripCorridor.Id));
-                // _log.Error(ex.ToString());
-            }
-            //finally
-            //{
-            //    if (_dataAccess.Connection.State == System.Data.ConnectionState.Open) _dataAccess.Connection.Close();
-            //    if (_dataMartDataAccess.Connection.State == System.Data.ConnectionState.Open) _dataMartDataAccess.Connection.Close();
-            //}
-            //logic to insert data into logtable
-
         }
 
     }

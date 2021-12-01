@@ -27,21 +27,16 @@ namespace net.atos.daf.ct2.schedularservice.ServiceSchedular
         private readonly IHostApplicationLifetime _appLifetime;
         private readonly IConfiguration _configuration;
         private readonly Pugingefiguration _pugingefiguration;
-        private readonly ConcurrentQueue<DataCleanupConfiguration> _purgingTables;
         private readonly List<DataCleanupConfiguration> _dataCleanupConfigurations;
-        private readonly NpgsqlConnection _dbConn;
 
-        //  private readonly DataCleanupQueue _dataCleanupQueue;
         public DataCleanupHostedService(IDataCleanupManager dataCleanupManager, Server server, IHostApplicationLifetime appLifetime, IConfiguration configuration)
         {
             _dataCleanupManager = dataCleanupManager;
-            // _dataCleanupQueue = new DataCleanupQueue(_dataCleanupManager);
             _server = server;
             _appLifetime = appLifetime;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _logger.Info("Construtor called");
             this._configuration = configuration;
-            _purgingTables = new ConcurrentQueue<DataCleanupConfiguration>();
             _dataCleanupConfigurations = new List<DataCleanupConfiguration>();
             _pugingefiguration = new Pugingefiguration();
             configuration.GetSection("DataCleanupConfiguration").Bind(_pugingefiguration);
@@ -55,7 +50,7 @@ namespace net.atos.daf.ct2.schedularservice.ServiceSchedular
             {
 
                 DeleteDataFromTable();
-                Thread.Sleep(_pugingefiguration.ThreadSleepTimeInSec); // 10 sec sleep mode
+                Thread.Sleep(_pugingefiguration.ThreadSleepTimeInSec); // 5 mins sleep mode
             }
         }
         public Task StopAsync(CancellationToken cancellationToken)
@@ -75,19 +70,21 @@ namespace net.atos.daf.ct2.schedularservice.ServiceSchedular
                 {
                     var purgeSatrtTime = UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString());
                     DataPurgingTableLog logData = new DataPurgingTableLog();
+                    //  var connString = string.Empty;
                     while (true)
                     {
+
                         try
                         {
                             var connString = node.DatabaseName != "dafconnectmasterdatabase" ? _configuration.GetConnectionString("DataMartConnectionString") :
-                                                                                               _configuration.GetConnectionString("ConnectionString");
+                                                                                              _configuration.GetConnectionString("ConnectionString");
                             rowCount = await _dataCleanupManager.DeleteDataFromTables(connString, node);
                             if (rowCount >= 0)
                             {
                                 var state = "O";
                                 _logger.Info("RowCount is null");
                                 logData = ToTableLog(node, purgeSatrtTime, rowCount, state);
-                                await _dataCleanupManager.CreateDataPurgingTableLog(logData);
+                                await _dataCleanupManager.CreateDataPurgingTableLog(logData, connString);
                             }
                             break;
                         }
@@ -100,7 +97,7 @@ namespace net.atos.daf.ct2.schedularservice.ServiceSchedular
                             logData = ToTableLog(node, purgeSatrtTime, rowCount, state);
                             if (attempts >= _pugingefiguration.RetryCount)
                             {
-                                await _dataCleanupManager.CreateDataPurgingTableLog(logData);
+                                await _dataCleanupManager.CreateDataPurgingTableLog(logData, string.Empty); //second parameter is not reqired
                                 break;
                             }
                         }
@@ -112,7 +109,7 @@ namespace net.atos.daf.ct2.schedularservice.ServiceSchedular
         private DataPurgingTableLog ToTableLog(DataCleanupConfiguration dataCleanupConfiguration, long purgeSatrtTime, int noOfRows, string state)
         {
 
-            var _logData = new DataPurgingTableLog()
+            var logData = new DataPurgingTableLog()
             {
 
                 PurgingStartTime = purgeSatrtTime,
@@ -121,58 +118,14 @@ namespace net.atos.daf.ct2.schedularservice.ServiceSchedular
                 DatabaseName = dataCleanupConfiguration.DatabaseName,
                 CreatedAt = dataCleanupConfiguration.CreatedAt,
                 NoOfDeletedRecords = noOfRows,
-                PurgingEndTime = UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()),
+                PurgingEndTime = UTCHandling.GetUTCFromDateTime(DateTime.Now),
                 SchemaName = dataCleanupConfiguration.SchemaName,
                 State = state,
-                // Duration
+                Duration = UTCHandling.GetUTCFromDateTime(DateTime.Now) - purgeSatrtTime
             };
 
-            return _logData;
+            return logData;
         }
-
-
-        // public async Task Worker(DataCleanupConfiguration op)
-        public void Worker(DataCleanupConfiguration op)
-        {
-            Console.WriteLine("Worker {0} is processing item {1}", op.Id, op.ColumnName);
-            try
-            {
-                var tries = 0;
-                var maxRetryCount = 5;
-                while (tries < maxRetryCount)
-                {
-                    try
-                    {
-                        tries++;
-                        var noOfDeletedData = _dataCleanupManager.DataPurging(op);
-                        Thread.Sleep(50000);
-                        break;
-                    }
-                    catch (Exception)
-                    {
-                        if (tries > 3)
-
-                            StopAsync(new CancellationToken()).ConfigureAwait(true); ;
-                        throw;
-                        //add log
-                    }
-                }
-                //Write a logic to deque
-                //write a logic to add log for success & retires count 
-                //write a table specific logs e
-            }
-            catch (Exception ex)
-            {
-                // _log.Info("AddExistingTripCorridor method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(existingTripCorridor.Id));
-                // _log.Error(ex.ToString());
-            }
-            finally
-            {
-            }
-            //logic to insert data into logtable
-            Console.WriteLine("Worker {0} is stopping.", op.Id);
-        }
-
 
     }
 }
