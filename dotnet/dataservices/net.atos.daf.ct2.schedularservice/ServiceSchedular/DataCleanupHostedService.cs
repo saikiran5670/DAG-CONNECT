@@ -64,6 +64,9 @@ namespace net.atos.daf.ct2.schedularservice.ServiceSchedular
             var attempts = 0;
             var tokenSource2 = new CancellationTokenSource();
             var dataCleanupConfigurations = _dataCleanupManager.GetDataPurgingConfiguration().Result;
+
+            var masterConnectionString = _configuration.GetConnectionString("ConnectionString");
+            var datamartConnectionString = _configuration.GetConnectionString("DataMartConnectionString");
             Parallel.ForEach(dataCleanupConfigurations, new ParallelOptions() { MaxDegreeOfParallelism = 15, CancellationToken = new CancellationToken() }, async node =>
             {
                 using (CancellationTokenSource cancel = new CancellationTokenSource())
@@ -76,15 +79,15 @@ namespace net.atos.daf.ct2.schedularservice.ServiceSchedular
 
                         try
                         {
-                            var connString = node.DatabaseName != "dafconnectmasterdatabase" ? _configuration.GetConnectionString("DataMartConnectionString") :
-                                                                                              _configuration.GetConnectionString("ConnectionString");
+                            var connString = node.DatabaseName != "dafconnectmasterdatabase" ? datamartConnectionString : masterConnectionString;
+
                             rowCount = await _dataCleanupManager.DeleteDataFromTables(connString, node);
                             if (rowCount >= 0)
                             {
                                 var state = "O";
                                 _logger.Info("RowCount is null");
                                 logData = ToTableLog(node, purgeSatrtTime, rowCount, state);
-                                await _dataCleanupManager.CreateDataPurgingTableLog(logData, connString);
+                                await _dataCleanupManager.CreateDataPurgingTableLog(logData, masterConnectionString);
                             }
                             break;
                         }
@@ -97,7 +100,7 @@ namespace net.atos.daf.ct2.schedularservice.ServiceSchedular
                             logData = ToTableLog(node, purgeSatrtTime, rowCount, state);
                             if (attempts >= _pugingefiguration.RetryCount)
                             {
-                                await _dataCleanupManager.CreateDataPurgingTableLog(logData, string.Empty); //second parameter is not reqired
+                                await _dataCleanupManager.CreateDataPurgingTableLog(logData, masterConnectionString);
                                 break;
                             }
                         }
