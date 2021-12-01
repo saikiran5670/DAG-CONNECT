@@ -109,21 +109,43 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
     this.dataSourceVehicle = new MatTableDataSource(tableData);
     setTimeout(()=>{
             this.dataSourceVehicle.paginator = this.paginator.toArray()[0];
-           this.dataSourceVehicle.sort = this.sort.toArray()[0];
+            this.dataSourceVehicle.sort = this.sort.toArray()[0];
+            this.dataSourceVehicle.sortData = (data: String[], sort: MatSort) => {
+            const isAsc = sort.direction === 'asc';
+            return data.sort((a: any, b: any) => {
+                let columnName = sort.active;
+                return this.compareData(a[sort.active], b[sort.active], isAsc, columnName);
+            });
+          }
           });
-    Util.applySearchFilter(this.dataSourceVehicle, this.vehicleGroupDisplayColumn , this.filterValue );
+    Util.applySearchFilter(this.dataSourceVehicle, this.vehicleGroupDisplayColumn ,this.filterValue );
+        }
 
-  }
+
 
   loadOrgGridData(orgData: any){
     this.dataSourceOrg = new MatTableDataSource(orgData);
     setTimeout(()=>{
             this.dataSourceOrg.paginator = this.paginator.toArray()[1];
            this.dataSourceOrg.sort = this.sort.toArray()[1];
+            this.dataSourceOrg.sortData = (data: String[], sort: MatSort) => {
+            const isAsc = sort.direction === 'asc';
+            return data.sort((a: any, b: any) => {
+                let columnName = sort.active;
+                return this.compareData(a[sort.active], b[sort.active], isAsc, columnName);
+            });
+          }
           });
     Util.applySearchFilter(this.dataSourceOrg, this.organisationNameDisplayColumn , this.filterValue );
 
   }
+  compareData(a: Number | String, b: Number | String, isAsc: boolean, columnName: any) {
+
+    if(!(a instanceof Number)) a = a.toString().toUpperCase();
+    if(!(b instanceof Number)) b = b.toString().toUpperCase();
+
+  return ( a < b ? -1 : 1) * (isAsc ? 1: -1);
+}
 
 
   getBreadcum(){
