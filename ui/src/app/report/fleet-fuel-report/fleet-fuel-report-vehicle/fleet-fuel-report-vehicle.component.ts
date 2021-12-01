@@ -62,6 +62,8 @@ export class FleetFuelReportVehicleComponent implements OnInit {
 
   vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   initData: any = [];
+  finalPrefData: any = [];
+  validTableEntry: any = [];
   FuelData: any;
   graphData: any;
   selectedTrip = new SelectionModel(true, []);
@@ -605,9 +607,10 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   private dataInterchangeService: DataInterchangeService) {
     this.dataInterchangeService.prefSource$.subscribe((prefResp: any) => {
       if(prefResp && (prefResp.type == 'fuel report') && (prefResp.tab == 'Vehicle') && prefResp.prefdata){
-        // this.resetPref();
-        // this.reportPrefData = prefResp.prefdata;
-        // this.onSearch();
+        this.resetPref();
+        this.reportPrefData = prefResp.prefdata;
+        this.preparePrefData(this.reportPrefData);
+        this.onSearch();
       }
     });
   }
@@ -709,8 +712,8 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   }
 
   checkForPreference(fieldKey) {
-    if (this.reportPrefData.length != 0) {
-      let filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_'+fieldKey));
+    if (this.finalPrefData.length != 0) {
+      let filterData = this.finalPrefData.filter(item => item.key.includes('rp_ff_report_vehicle_'+fieldKey)); // rp_ff_report_vehicle_
       if (filterData.length > 0) {
         if (filterData[0].state == 'A') {
           return true;
@@ -742,17 +745,46 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   }
 
   getFleetPreferences(){
-    this.reportService.getUserPreferenceReport(this.fleetFuelReportId, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
-      this.reportPrefData = data["userPreferences"];
+    //this.reportService.getUserPreferenceReport(this.fleetFuelReportId, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
+    this.reportService.getReportUserPreference(this.fleetFuelReportId).subscribe((data: any) => {  
+    this.reportPrefData = data["userPreferences"];
       this.resetPref();
-      // this.preparePrefData(this.reportPrefData);
+      this.preparePrefData(this.reportPrefData);
       this.loadWholeTripData();
     }, (error) => {
       this.reportPrefData = [];
       this.resetPref();
-      // this.preparePrefData(this.reportPrefData);
+      //this.preparePrefData(this.reportPrefData);
       this.loadWholeTripData();
     });
+  }
+
+  preparePrefData(reportPref: any){
+    if(reportPref && reportPref.subReportUserPreferences && reportPref.subReportUserPreferences.length > 0){
+      let vehPrf: any = reportPref.subReportUserPreferences.filter(i => i.key == 'rp_ff_report_vehicle');
+      if(vehPrf.length > 0){ // vehicle pref present
+        if(vehPrf[0].subReportUserPreferences && vehPrf[0].subReportUserPreferences.length > 0){
+          vehPrf[0].subReportUserPreferences.forEach(element => {
+            if(element.subReportUserPreferences && element.subReportUserPreferences.length > 0){
+              element.subReportUserPreferences.forEach(elem => {
+                this.finalPrefData.push(elem);
+              });
+            }
+          });
+        }
+      }
+    }
+    this.calcTableEntry(this.finalPrefData);
+  }
+
+  calcTableEntry(entries: any){
+    let _list = entries.filter(i => i.key.includes('rp_ff_report_vehicle_vehicledetails_'));
+    if(_list && _list.length > 0){
+      let _l = _list.filter(j => j.state == 'A');
+      if(_l && _l.length > 0){
+        this.validTableEntry = _l.slice();
+      }
+    }
   }
 
   loadWholeTripData(){
@@ -776,7 +808,8 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   }
 
   resetPref(){
-
+    this.finalPrefData = [];
+    this.validTableEntry = [];
   }
 
   resetCharts(){
@@ -792,18 +825,18 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   onSearch(){
     this.resetCharts();
     this.isChartsOpen = true;
-    if (this.reportPrefData.length != 0) {
-      let filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_chart_fuelconsumed'));
+    if (this.finalPrefData.length != 0) {
+      let filterData = this.finalPrefData.filter(item => item.key.includes('vehicle_chart_fuelconsumed'));
       this.ConsumedChartType = filterData[0].chartType == 'L' ? 'Line' : 'Bar';
-      filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_chart_numberoftrips'));
+      filterData = this.finalPrefData.filter(item => item.key.includes('vehicle_chart_numberoftrips'));
       this.TripsChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
-      filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_chart_co2emission'));
+      filterData = this.finalPrefData.filter(item => item.key.includes('vehicle_chart_co2emission'));
       this.Co2ChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
-      filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_chart_distance'));
+      filterData = this.finalPrefData.filter(item => item.key.includes('vehicle_chart_distance'));
       this.DistanceChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
-      filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_chart_fuelconsumption'));
+      filterData = this.finalPrefData.filter(item => item.key.includes('vehicle_chart_fuelconsumption'));
       this.ConsumptionChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
-      filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_chart_idledurationtotaltime'));
+      filterData = this.finalPrefData.filter(item => item.key.includes('vehicle_chart_idledurationtotaltime'));
       this.DurationChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
     } else {
       this.ConsumedChartType = 'Line';

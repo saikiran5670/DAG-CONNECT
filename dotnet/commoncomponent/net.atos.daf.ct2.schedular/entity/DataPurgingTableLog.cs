@@ -14,7 +14,7 @@
         public string TableName { get; set; }
         public string ColumnName { get; set; }
 
-        public int Duration { get; set; }
+        public long Duration { get; set; }
         public string State { get; set; } //single char
     }
 }
