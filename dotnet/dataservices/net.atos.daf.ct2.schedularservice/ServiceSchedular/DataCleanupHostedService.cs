@@ -87,6 +87,7 @@ namespace net.atos.daf.ct2.schedularservice.ServiceSchedular
                                 var state = "O";
                                 _logger.Info("RowCount is null");
                                 logData = ToTableLog(node, purgeSatrtTime, rowCount, state);
+                                await _dataCleanupManager.CreateDataPurgingTableLog(logData);
                             }
                             break;
                         }
@@ -99,10 +100,11 @@ namespace net.atos.daf.ct2.schedularservice.ServiceSchedular
                             logData = ToTableLog(node, purgeSatrtTime, rowCount, state);
                             if (attempts >= _pugingefiguration.RetryCount)
                             {
+                                await _dataCleanupManager.CreateDataPurgingTableLog(logData);
                                 break;
                             }
                         }
-                        await _dataCleanupManager.CreateDataPurgingTableLog(logData);
+
                     }
                 }
             });

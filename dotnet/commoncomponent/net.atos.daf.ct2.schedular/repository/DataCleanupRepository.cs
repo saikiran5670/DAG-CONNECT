@@ -17,6 +17,7 @@ namespace net.atos.daf.ct2.schedular.repository
     {
         private readonly IDataAccess _dataAccess;
         private readonly IDataMartDataAccess _dataMartDataAccess;
+        private  string _connectionString;
         public DataCleanupRepository(IDataAccess dataAccess, IDataMartDataAccess dataMartDataAccess)
         {
             _dataAccess = dataAccess;
@@ -42,21 +43,21 @@ namespace net.atos.daf.ct2.schedular.repository
         public async Task<int> DeleteDataFromTables(string connectString, DataCleanupConfiguration dataCleanupConfiguration)
         {
             var rowCount = 0;
+            _connectionString = connectString;
             try
             {
-                if (dataCleanupConfiguration.DatabaseName != "dafconnectmasterdatabase")
+
+                using (NpgsqlConnection conn = new NpgsqlConnection(connectString))
                 {
-                    using (NpgsqlConnection conn = new NpgsqlConnection(connectString))
-                    {
-                        await conn.OpenAsync();
-                        var parameter = new DynamicParameters();
-                        parameter.Add("@days", dataCleanupConfiguration.RetentionPeriod, System.Data.DbType.Int32);
-                        var query = String.Format("select count(*) from {0}.{1} where  to_timestamp({2} /1000)::date < (now()::date -  @days)", dataCleanupConfiguration.SchemaName, dataCleanupConfiguration.TableName, dataCleanupConfiguration.ColumnName);
-                        rowCount = await conn.QueryFirstOrDefaultAsync<int>(query, parameter);
-                        Console.Write(rowCount);
-                        Console.WriteLine(@"value of rowcount = {0}, tble name {2} , thread = {1}", rowCount, Thread.CurrentThread.ManagedThreadId, dataCleanupConfiguration.TableName);
-                    }
+                    await conn.OpenAsync();
+                    var parameter = new DynamicParameters();
+                    parameter.Add("@days", dataCleanupConfiguration.RetentionPeriod, System.Data.DbType.Int32);
+                    var query = String.Format("select count(*) from {0}.{1} where  to_timestamp({2} /1000)::date < (now()::date -  @days)", dataCleanupConfiguration.SchemaName, dataCleanupConfiguration.TableName, dataCleanupConfiguration.ColumnName);
+                    rowCount = await conn.QueryFirstOrDefaultAsync<int>(query, parameter);
+                    Console.Write(rowCount);
+                    Console.WriteLine(@"value of rowcount = {0}, tble name {2} , thread = {1}", rowCount, Thread.CurrentThread.ManagedThreadId, dataCleanupConfiguration.TableName);
                 }
+
                 return rowCount;
             }
             catch (Exception ex)
@@ -143,26 +144,30 @@ namespace net.atos.daf.ct2.schedular.repository
         {
             try
             {
-                string queryduplicate = string.Empty;
+                using (NpgsqlConnection conn = new NpgsqlConnection(_connectionString))
+                {
+                    await conn.OpenAsync();
+                    string queryduplicate = string.Empty;
 
-                var parameter = new DynamicParameters();
-                parameter.Add("@purging_start_time", log.PurgingStartTime);
-                parameter.Add("@purging_end_time", log.PurgingEndTime);
-                parameter.Add("@no_of_deleted_records", log.NoOfDeletedRecords);
-                parameter.Add("@database_name", log.DatabaseName);
-                parameter.Add("@schema_name", log.SchemaName);
-                parameter.Add("@table_name", log.TableName);
-                parameter.Add("@column_name", log.ColumnName);
-                parameter.Add("@duration", log.Duration);
-                parameter.Add("@state", log.State);
-                parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                    var parameter = new DynamicParameters();
+                    parameter.Add("@purging_start_time", log.PurgingStartTime);
+                    parameter.Add("@purging_end_time", log.PurgingEndTime);
+                    parameter.Add("@no_of_deleted_records", log.NoOfDeletedRecords);
+                    parameter.Add("@database_name", log.DatabaseName);
+                    parameter.Add("@schema_name", log.SchemaName);
+                    parameter.Add("@table_name", log.TableName);
+                    parameter.Add("@column_name", log.ColumnName);
+                    parameter.Add("@duration", log.Duration);
+                    parameter.Add("@state", log.State);
+                    parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
 
-                string query = @"INSERT INTO master.datapurgingtablelog(
+                    string query = @"INSERT INTO master.datapurgingtablelog(
 	                             purging_start_time, purging_end_time, no_of_deleted_records, created_at, database_name, schema_name, table_name, column_name, duration, state)
 	                             VALUES (@purging_start_time, @purging_end_time, @no_of_deleted_records, @created_at, @database_name, @schema_name, @table_name, @column_name, @duration, @state) RETURNING id";
 
-                var id = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
-                log.Id = id;
+                    var id = await conn.ExecuteScalarAsync<int>(query, parameter);
+                    log.Id = id;
+                }
             }
             catch (Exception)
             {
