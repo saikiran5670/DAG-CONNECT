@@ -53,6 +53,12 @@ export class VehicletripComponent implements OnInit {
   @Input() endDateValue: any;
   @Input() startDateValue: any;
   @Input() _vinData: any;
+  @Input() finalPrefData: any;
+  @Input() prefTimeFormat: any;
+  @Input() prefTimeZone: any;
+  @Input() prefDateFormat: any;
+  @Input() prefUnitFormat: any = 'dunit_Metric';
+  @Input() wholeTripData: any;
   
   graphData: any;
   fuelConsumptionSummary: any;
@@ -269,13 +275,8 @@ tripTraceArray: any = [];
   fleetFuelSearchData: any = {};
   localStLanguage: any;
   accountOrganizationId: any;
-  wholeTripData: any = [];
   accountId: any;
   accountPrefObj: any;
-  prefTimeFormat: any; //-- coming from pref setting
-  prefTimeZone: any; //-- coming from pref setting
-  prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
-  prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   vehicleGrpDD: any = [];
   selectionTab: any; 
 
@@ -838,30 +839,29 @@ tripTraceArray: any = [];
       this.mapFilterForm.get('trackType').setValue('snail');
       this.mapFilterForm.get('routeType').setValue('C');
       this.makeHerePOIList();
-      this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
-        if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
-          this.proceedStep(prefData, this.accountPrefObj.accountPreference);
-        }else{ // org pref
-          this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
-            this.proceedStep(prefData, orgPref);
-          }, (error) => { // failed org API
-            let pref: any = {};
-            this.proceedStep(prefData, pref);
-          });
-        }
+      // this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
+      //   if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
+      //     this.proceedStep(prefData, this.accountPrefObj.accountPreference);
+      //   }else{ // org pref
+      //     this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
+      //       this.proceedStep(prefData, orgPref);
+      //     }, (error) => { // failed org API
+      //       let pref: any = {};
+      //       this.proceedStep(prefData, pref);
+      //     });
+      //   }
+        this.callToNext();
         this.loadfleetFuelDetails(this.vehicleDetails);
         if(this.vehicleDetails){
           this.onSearch();
          }
-      });
+      // });
     });
-
-   
-
     this.isSummaryOpen = true;
     this.isChartsOpen = true;
     this.isDetailsOpen = true;
   }
+
   detailvehiclereport(){
     const navigationExtras: NavigationExtras = {
       state: {
@@ -1197,7 +1197,6 @@ createEndMarker(){
  
   getFleetPreferences(){
     this.reportService.getUserPreferenceReport(4, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
-      
       this.reportPrefData = data["userPreferences"];
       this.resetPref();
       // this.preparePrefData(this.reportPrefData);
@@ -2085,8 +2084,15 @@ createEndMarker(){
     this.getFleetPreferences();
   }
 
-  setDefaultStartEndTime()
-  {
+  callToNext(){
+    this.setDefaultStartEndTime();
+    this.setPrefFormatDate();
+    this.setDefaultTodayDate();
+    this.filterDateData();
+    this.loadUserPOI();
+  }
+
+  setDefaultStartEndTime(){
   if(!this.internalSelection && this.fleetFuelSearchData.modifiedFrom !== "" &&  ((this.fleetFuelSearchData.startTimeStamp || this.fleetFuelSearchData.endTimeStamp) !== "") ) {
     if(this.prefTimeFormat == this.fleetFuelSearchData.filterPrefTimeFormat){ // same format
       this.selectedStartTime = this.fleetFuelSearchData.startTimeStamp;
@@ -3079,8 +3085,8 @@ setVehicleGroupAndVehiclePreSelection() {
   }
 
   checkForPreference(fieldKey) {
-    if (this.reportPrefData.length != 0) {
-      let filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_'+fieldKey));
+    if (this.finalPrefData.length != 0) {
+      let filterData = this.finalPrefData.filter(item => item.key.includes('rp_ff_report_vehicle_'+fieldKey));
       if (filterData.length > 0) {
         if (filterData[0].state == 'A') {
           return true;
