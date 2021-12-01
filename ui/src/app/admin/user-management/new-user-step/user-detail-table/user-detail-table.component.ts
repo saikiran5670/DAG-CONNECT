@@ -58,6 +58,15 @@ export class UserDetailTableComponent implements OnInit {
   }
 
   compare(a: any, b: any, isAsc: boolean, columnName) {
+    if(columnName == "roles" && (Array.isArray(a) || Array.isArray(b))) {
+      a= Object.keys(a).length > 0 ? a[0].name : "";
+      b= Object.keys(b).length > 0 ? b[0].name : "";
+      a = a.toUpperCase();
+      b = b.toUpperCase();
+      // a.roles.forEach(rolesValue => {
+      //   a = rolesValue.name
+      // });
+    }
     if(!(a instanceof Number)) a = a.toString().toUpperCase();
     if(!(b instanceof Number)) b = b.toString().toUpperCase();
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
