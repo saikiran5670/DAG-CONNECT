@@ -40,6 +40,7 @@ export class ReportSchedulerComponent implements OnInit {
   originalAlertData: any= [];
   rowsData: any;
   accountOrganizationId: any;
+  completePrefData: any;
   accountId: any;
   titleVisible : boolean = false;
   dialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
@@ -86,6 +87,7 @@ export class ReportSchedulerComponent implements OnInit {
       this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
         this.processTranslation(data);
         this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
+          this.completePrefData = prefData;
           if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
             this.proceedStep(prefData, this.accountPrefObj.accountPreference);
           }else{ // org pref
