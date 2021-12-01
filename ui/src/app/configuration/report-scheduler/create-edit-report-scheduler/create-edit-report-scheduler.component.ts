@@ -312,8 +312,8 @@ export class CreateEditReportSchedulerComponent implements OnInit {
       endDate=  this.getTodayDate();
     }
     else{
-      startDate= Util.convertUtcToDateNoFormat(this.selectedRowData[0].startDate, this.prefTimeZone);
-      endDate= Util.convertUtcToDateNoFormat(this.selectedRowData[0].endDate, this.prefTimeZone);
+      startDate= new Date(this.selectedRowData[0].startDate);
+      endDate= new Date(this.selectedRowData[0].endDate);
     }
     this.selectionTab = timeRange;
     switch(timeRange){

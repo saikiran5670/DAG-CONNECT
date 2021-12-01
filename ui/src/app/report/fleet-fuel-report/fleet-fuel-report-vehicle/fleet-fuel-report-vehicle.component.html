@@ -551,18 +551,20 @@
           <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort
             #exporter="matTableExporter">
             <ng-container matColumnDef="vehicleName">
-              <mat-header-cell *matHeaderCellDef mat-sort-header
-                [hidden]="!checkForPreference('vehicleranking_vehiclename')">{{ translationData.lblVehicleName}}
+              <!-- <mat-header-cell *matHeaderCellDef mat-sort-header
+                [hidden]="!checkForPreference('vehicledetails_vehiclename')">{{ translationData.lblVehicleName}}
+              </mat-header-cell> -->
+              <mat-header-cell [ngClass]="{'text-truncate': validTableEntry.length < 20}" *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleName }}
               </mat-header-cell>
-              <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicleranking_vehiclename')">
+              <mat-cell *matCellDef="let row" [ngClass]="{'text-truncate': validTableEntry.length < 20}">
                 <span class='navigatePoint' (click)='onVehicleSelected(row)'>{{ row.vehicleName != '' ? row.vehicleName
                   : '-'
                   }}</span>
               </mat-cell>
-              <mat-cell *matCellDef="let row" [ngClass]="{'text-truncate': validTableEntry.length < 20}" matTooltip="{{ row.vehicleName }}"
-                [hidden]="!checkForPreference('vehicleranking_vehiclename')">
-                <span>{{row.vehicleName}}</span>
-              </mat-cell>
+              <!-- <mat-cell *matCellDef="let row" [ngClass]="{'text-truncate': validTableEntry.length < 20}" matTooltip="{{ row.vehicleName }}"
+                [hidden]="checkForPreference('vehicledetails_vehiclename')">
+                <span>{{ row.vehicleName != '' ? row.vehicleName : '-' }}</span>
+              </mat-cell> -->
             </ng-container>
 
             <ng-container matColumnDef="vin">
@@ -955,7 +957,7 @@
                 <span> {{row.convertedidlingconsumptionwithpto}}</span>
               </mat-cell>
             </ng-container>
-            <mat-header-row *matHeaderRowDef="displayedColumns"  [ngStyle]="{'min-width': validTableEntry.length > 20 ? '5000px' : '0px'}" class="mat-header-data"></mat-header-row>
+            <mat-header-row *matHeaderRowDef="displayedColumns" [ngStyle]="{'min-width': validTableEntry.length > 20 ? '5000px' : '0px'}" class="mat-header-data"></mat-header-row>
             <mat-row *matRowDef="let row; columns: displayedColumns;" [ngStyle]="{'min-width': validTableEntry.length > 20 ? '5000px' : '0px'}" class="mat-row-data">
             </mat-row>
           </mat-table>

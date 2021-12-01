@@ -92,6 +92,8 @@ export class FleetFuelReportDriverComponent implements OnInit {
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   vehicleGrpDD: any = [];
   selectionTab: any;
+  finalPrefData: any = [];
+  validTableEntry: any = [];
   startDateValue: any = 0;
   endDateValue: any = 0;
   last3MonthDate: any;
@@ -617,9 +619,10 @@ export class FleetFuelReportDriverComponent implements OnInit {
     private dataInterchangeService: DataInterchangeService) {
       this.dataInterchangeService.prefSource$.subscribe((prefResp: any) => {
         if(prefResp && (prefResp.type == 'fuel report') && (prefResp.tab == 'Driver') && prefResp.prefdata){
-          // this.resetPref();
-          // this.reportPrefData = prefResp.prefdata;
-          // this.onSearch();
+          this.resetPref();
+          this.reportPrefData = prefResp.prefdata;
+          this.preparePrefData(this.reportPrefData);
+          this.onSearch();
         }
       });
     }
@@ -714,8 +717,8 @@ export class FleetFuelReportDriverComponent implements OnInit {
   }
 
   checkForPreference(fieldKey) {
-    if (this.reportPrefData.length != 0) {
-      let filterData = this.reportPrefData.filter(item => item.key.includes('driver_'+fieldKey));
+    if (this.finalPrefData.length != 0) {
+      let filterData = this.finalPrefData.filter(item => item.key.includes('rp_ff_report_driver_'+fieldKey));
       if (filterData.length > 0) {
         if (filterData[0].state == 'A') {
           return true;
@@ -747,10 +750,11 @@ export class FleetFuelReportDriverComponent implements OnInit {
   }
 
   getFleetPreferences(){
-    this.reportService.getUserPreferenceReport(this.fleetFuelReportId, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
+    //this.reportService.getUserPreferenceReport(this.fleetFuelReportId, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
+    this.reportService.getReportUserPreference(this.fleetFuelReportId).subscribe((data: any) => {    
       this.reportPrefData = data["userPreferences"];
       this.resetPref();
-      // this.preparePrefData(this.reportPrefData);
+      this.preparePrefData(this.reportPrefData);
       this.loadWholeTripData();
     }, (error) => {
       this.reportPrefData = [];
@@ -758,6 +762,34 @@ export class FleetFuelReportDriverComponent implements OnInit {
       // this.preparePrefData(this.reportPrefData);
       this.loadWholeTripData();
     });
+  }
+
+  preparePrefData(reportPref: any){
+    if(reportPref && reportPref.subReportUserPreferences && reportPref.subReportUserPreferences.length > 0){
+      let drvPrf: any = reportPref.subReportUserPreferences.filter(i => i.key == 'rp_ff_report_driver');
+      if(drvPrf.length > 0){ // driver pref present
+        if(drvPrf[0].subReportUserPreferences && drvPrf[0].subReportUserPreferences.length > 0){
+          drvPrf[0].subReportUserPreferences.forEach(element => {
+            if(element.subReportUserPreferences && element.subReportUserPreferences.length > 0){
+              element.subReportUserPreferences.forEach(elem => {
+                this.finalPrefData.push(elem);
+              });
+            }
+          });
+        }
+      }
+    }
+    this.calcTableEntry(this.finalPrefData);
+  }
+
+  calcTableEntry(entries: any){
+    let _list = entries.filter(i => i.key.includes('rp_ff_report_driver_vehicledetails_'));
+    if(_list && _list.length > 0){
+      let _l = _list.filter(j => j.state == 'A');
+      if(_l && _l.length > 0){
+        this.validTableEntry = _l.slice();
+      }
+    }
   }
 
   loadWholeTripData(){
@@ -781,8 +813,10 @@ export class FleetFuelReportDriverComponent implements OnInit {
   }
 
   resetPref(){
-
+    this.finalPrefData = [];
+    this.validTableEntry = [];
   }
+
   resetCharts(){
     this.tripData = [];
     this.vehicleListData = [];
@@ -797,18 +831,18 @@ export class FleetFuelReportDriverComponent implements OnInit {
   onSearch(){
     this.resetCharts();
     this.isChartsOpen = true;
-    if (this.reportPrefData.length != 0) {
-      let filterData = this.reportPrefData.filter(item => item.key.includes('driver_chart_fuelconsumed'));
+    if (this.finalPrefData.length != 0) {
+      let filterData = this.finalPrefData.filter(item => item.key.includes('driver_chart_fuelconsumed'));
       this.ConsumedChartType = filterData[0].chartType == 'L' ? 'Line' : 'Bar';
-      filterData = this.reportPrefData.filter(item => item.key.includes('driver_chart_numberoftrips'));
+      filterData = this.finalPrefData.filter(item => item.key.includes('driver_chart_numberoftrips'));
       this.TripsChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
-      filterData = this.reportPrefData.filter(item => item.key.includes('driver_chart_co2emission'));
+      filterData = this.finalPrefData.filter(item => item.key.includes('driver_chart_co2emission'));
       this.Co2ChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
-      filterData = this.reportPrefData.filter(item => item.key.includes('driver_chart_distance'));
+      filterData = this.finalPrefData.filter(item => item.key.includes('driver_chart_distance'));
       this.DistanceChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
-      filterData = this.reportPrefData.filter(item => item.key.includes('driver_chart_fuelconsumption'));
+      filterData = this.finalPrefData.filter(item => item.key.includes('driver_chart_fuelconsumption'));
       this.ConsumptionChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
-      filterData = this.reportPrefData.filter(item => item.key.includes('driver_chart_idledurationtotaltime'));
+      filterData = this.finalPrefData.filter(item => item.key.includes('driver_chart_idledurationtotaltime'));
       this.DurationChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
     } else {
       this.ConsumedChartType = 'Line';
