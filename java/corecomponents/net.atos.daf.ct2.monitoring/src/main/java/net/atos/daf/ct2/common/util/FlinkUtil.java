@@ -1,15 +1,17 @@
 package net.atos.daf.ct2.common.util;
 
+import java.util.concurrent.TimeUnit;
+
 import org.apache.flink.api.common.restartstrategy.RestartStrategies;
+import org.apache.flink.api.common.time.Time;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.runtime.state.StateBackend;
 import org.apache.flink.runtime.state.filesystem.FsStateBackend;
 import org.apache.flink.streaming.api.CheckpointingMode;
+//import org.apache.flink.streaming.api.environment.CheckpointConfig;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.concurrent.TimeUnit;
-import org.apache.flink.api.common.time.Time;
 
 import net.atos.daf.ct2.common.realtime.dataprocess.MonitorDataProcess;
 
@@ -42,8 +44,13 @@ public class FlinkUtil {
 				env.getCheckpointConfig().setMaxConcurrentCheckpoints(
 						Integer.parseInt(envParams.get(DafConstants.MAX_CONCURRENT_CHECKPOINTS)));
 
-				env.setStateBackend(
-						(StateBackend) new FsStateBackend(envParams.get(DafConstants.CHECKPOINT_DIRECTORY_MONITORING), true));
+			//	env.setStateBackend(
+						//(StateBackend) new FsStateBackend(envParams.get(DafConstants.CHECKPOINT_DIRECTORY_MONITORING), true));
+		
+			 if(DafConstants.MONITOR_JOB.equals(jobName))
+				env.setStateBackend((StateBackend) new FsStateBackend(envParams.get(DafConstants.CHECKPOINT_DIRECTORY_MONITORING), true)); 
+			  else
+				env.setStateBackend((StateBackend) new FsStateBackend(envParams.get(DafConstants.CHECKPOINT_DIRECTORY_WARNING_MONITORING), true));
 
 
 				// TODO  enable only in QA and Prod
