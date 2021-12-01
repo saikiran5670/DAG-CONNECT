@@ -62,5 +62,9 @@ namespace net.atos.daf.ct2.reportscheduler
         {
             return await _reportSchedulerRepository.UnSubscribeAllByEmailId(emailId);
         }
+        public async Task<IEnumerable<ScheduledReport>> GetScheduledReport(int reportschedulerId)
+        {
+            return await _reportSchedulerRepository.GetScheduledReport(reportschedulerId);
+        }
     }
 }

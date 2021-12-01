@@ -314,7 +314,7 @@
           </ng-container>
 
           <ng-container matColumnDef="vehicleName">
-            <mat-header-cell *matHeaderCellDef mat-sort-header
+            <mat-header-cell class="text-truncate" *matHeaderCellDef mat-sort-header
               [hidden]="!checkForPreference('vehicleranking_vehiclename')">{{ translationData.lblVehicleName }}
             </mat-header-cell>
             <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{ row.vehicleName }}"
@@ -324,9 +324,8 @@
           </ng-container>
 
           <ng-container matColumnDef="vin">
-            <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicleranking_vin')">{{
+            <mat-header-cell class="text-truncate" *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicleranking_vin')">{{
               translationData.lblVIN }}
-
             </mat-header-cell>
             <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{ row.vin }}"
               [hidden]="!checkForPreference('vehicleranking_vin')">
@@ -338,7 +337,7 @@
             <mat-header-cell [hidden]="!checkForPreference('vehicleranking_registrationno')" *matHeaderCellDef
               mat-sort-header>{{ translationData.lblPlateNo }}
             </mat-header-cell>
-            <mat-cell class="text-truncate" matTooltip="{{ row.vehicleRegistrationNo }}"
+            <mat-cell matTooltip="{{ row.vehicleRegistrationNo }}"
               [hidden]="!checkForPreference('vehicleranking_registrationno')" *matCellDef="let row">
               <span>{{row.vehicleRegistrationNo}}</span>
             </mat-cell>
@@ -527,7 +526,7 @@
           <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{
             translationData.lblSelectionMessage }}</div>
         </div>
-        <div *ngIf='displayData.length > 0' [ngClass]="{'reportTable': displayedColumns.length > 7}">
+        <div *ngIf='displayData.length > 0' [ngClass]="{'reportTable': validTableEntry.length > 6}">
           <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm' fxLayoutGap="10px">
             <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
               <mat-form-field appearance="outline">
@@ -560,18 +559,18 @@
                   : '-'
                   }}</span>
               </mat-cell>
-              <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{ row.vehicleName }}"
+              <mat-cell *matCellDef="let row" [ngClass]="{'text-truncate': validTableEntry.length < 20}" matTooltip="{{ row.vehicleName }}"
                 [hidden]="!checkForPreference('vehicleranking_vehiclename')">
                 <span>{{row.vehicleName}}</span>
               </mat-cell>
             </ng-container>
 
             <ng-container matColumnDef="vin">
-              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_vin')">{{
+              <mat-header-cell [ngClass]="{'text-truncate': validTableEntry.length < 20}" *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_vin')">{{
                 translationData.lblVIN }}
               </mat-header-cell>
-              <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{row.vin}}"
-                [hidden]="!checkForPreference('vehicledetails_vin')" style="max-width: 145px;">
+              <mat-cell *matCellDef="let row" [ngClass]="{'text-truncate': validTableEntry.length < 20}" matTooltip="{{row.vin}}"
+                [hidden]="!checkForPreference('vehicledetails_vin')">
                 <span>{{row.vin}}</span>
               </mat-cell>
               <!-- <mat-cell *matCellDef="let row">{{ row.vin != '' ? row.vin : '-' }}</mat-cell> -->
@@ -581,7 +580,7 @@
               <mat-header-cell *matHeaderCellDef mat-sort-header
                 [hidden]="!checkForPreference('vehicledetails_vehicleregistrationno')">{{ translationData.lblPlateNo }}
               </mat-header-cell>
-              <mat-cell *matCellDef="let row" class="text-truncate"
+              <mat-cell *matCellDef="let row" [ngClass]="{'text-truncate': validTableEntry.length < 20}" 
                 [hidden]="!checkForPreference('vehicledetails_vehicleregistrationno')">
                 <span>{{row.vehicleRegistrationNo}}</span>
               </mat-cell>
@@ -852,20 +851,20 @@
 
             <ng-container matColumnDef="dpaAnticipationScore">
               <mat-header-cell *matHeaderCellDef mat-sort-header
-                [hidden]="!checkForPreference('vehicledetails_dpaAnticipationScore')">{{
+                [hidden]="!checkForPreference('vehicledetails_dpaanticipationscore')">{{
                 translationData.lbldpaAnticipationScore }}
               </mat-header-cell>
-              <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_dpaAnticipationScore')">
+              <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_dpaanticipationscore')">
                 <span>{{row.dpaAnticipationScore}}</span>
               </mat-cell>
             </ng-container>
 
             <ng-container matColumnDef="dpaBrakingScore">
               <mat-header-cell *matHeaderCellDef mat-sort-header
-                [hidden]="!checkForPreference('vehicledetails_dpaBrakingScore')">{{ translationData.lbldpaBrakingScore
+                [hidden]="!checkForPreference('vehicledetails_dpabrakingscore')">{{ translationData.lbldpaBrakingScore
                 }}
               </mat-header-cell>
-              <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_dpaBrakingScore')">
+              <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_dpabrakingscore')">
                 <span>{{row.dpaBrakingScore}}</span>
               </mat-cell>
             </ng-container>
@@ -956,8 +955,8 @@
                 <span> {{row.convertedidlingconsumptionwithpto}}</span>
               </mat-cell>
             </ng-container>
-            <mat-header-row *matHeaderRowDef="displayedColumns" class="mat-header-data"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: displayedColumns;" class="mat-row-data">
+            <mat-header-row *matHeaderRowDef="displayedColumns"  [ngStyle]="{'min-width': validTableEntry.length > 20 ? '5000px' : '0px'}" class="mat-header-data"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;" [ngStyle]="{'min-width': validTableEntry.length > 20 ? '5000px' : '0px'}" class="mat-row-data">
             </mat-row>
           </mat-table>
           <mat-paginator [pageSizeOptions]="[5, 10, 50, 100, 500]" (page)="pageSizeUpdated($event)"></mat-paginator>
