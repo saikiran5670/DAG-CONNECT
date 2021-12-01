@@ -18,5 +18,6 @@ namespace net.atos.daf.ct2.reportscheduler
         Task<string> UpdatePDFBinaryRecordByToken(string token);
         Task<bool> UnSubscribeById(int recipientId, string emailId);
         Task<bool> UnSubscribeAllByEmailId(string emailId);
+        Task<IEnumerable<ScheduledReport>> GetScheduledReport(int reportschedulerId);
     }
 }
