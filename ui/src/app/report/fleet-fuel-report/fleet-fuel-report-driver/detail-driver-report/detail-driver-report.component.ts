@@ -2640,6 +2640,9 @@ setVehicleGroupAndVehiclePreSelection() {
         const title = 'Fleet Fuel Driver Trip Report';
         const summary = 'Summary Section';
         const detail = 'Detail Section';
+        let ccdOne = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance3050metric || '30-50') : (this.translationData.lblCruiseControlDistance1530imperial || '15-30');
+        let ccdTwo = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance5075metric || '50-75') : (this.translationData.lblCruiseControlDistance3045imperial || '30-45');
+        let ccdThree = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance75metric || '>75') : (this.translationData.lblCruiseControlDistance45imperial || '>45');
         let unitVal100km = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100 || 'Ltrs/100km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblgallonpermile || 'mpg') : (this.translationData.lblgallonpermile || 'mpg');
         let unitValuekm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || 'l') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblgallonmile || 'gal') : (this.translationData.lblgallonmile || 'gal');
         let unitValkg = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 'kg') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblton || 't') : (this.translationData.lblton|| 't');
@@ -2651,8 +2654,8 @@ setVehicleGroupAndVehiclePreSelection() {
        // let unitValkmhr = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h(%)') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.translationData.lblkmh || 'km/h(%)') : (this.translationData.translationData.lblkmh || 'km/h(%)');
 
         const header =  ['Vehicle Name', 'VIN', 'Vehicle Registration No', 'Start Date', 'End Date', 'Average Speed('+unitValkmh+')','Max Speed('+unitValkmh+')', 'Distance('+unitValkm+')','StartPosition', 'EndPosition',
-        'FuelConsumed('+unitValuekm+')', 'FuelConsumption('+unitVal100km+')','CO2Emission('+ unitValkg2+')',  'Idle Duration(%)','PTO Duration(%)','Cruise Control Distance 30-50('+unitValkmh+')%',
-        'Cruise Control Distance 50-75('+unitValkmh+')%','Cruise Control Distance>75('+unitValkmh+')%','Heavy Throttle Duration(%)','HarshBrakeDuration(%)', 'GrossWeightCombination('+unitValkg2+')', 'AverageTrafficClassification',
+        'FuelConsumed('+unitValuekm+')', 'FuelConsumption('+unitVal100km+')','CO2Emission('+ unitValkg2+')',  'Idle Duration(%)','PTO Duration(%)','Cruise Control Distance '+ccdOne+'('+unitValkmh+')%',
+        'Cruise Control Distance '+ccdTwo+'('+unitValkmh+')%','Cruise Control Distance'+ccdThree+'('+unitValkmh+')%','Heavy Throttle Duration(%)','HarshBrakeDuration(%)', 'GrossWeightCombination('+unitValkg2+')', 'AverageTrafficClassification',
         'CCFuelConsumption('+unitVal100km+')','FuelConsumptionCCnonactive('+unitVal100km+')','IdlingConsumption','DPAScore','DPA Anticipation Score%','DPA Breaking Score%',
         'Idling PTO Score (hh:mm:ss)','Idling with PTO%','Idling Without PTO (hh:mm:ss)','Idling Without PTO%','Foot Brake',
         'CO2 Emmision(gr/km)','Idling Consumption With PTO('+unitVal100km+')'];
@@ -2725,6 +2728,9 @@ setVehicleGroupAndVehiclePreSelection() {
    exportAsPDFFile(){
     var doc = new jsPDF('p', 'mm', 'a4');
     //let pdfColumns = [this.displayedColumns];
+    let ccdOne = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance3050metric || '30-50') : (this.translationData.lblCruiseControlDistance1530imperial || '15-30');
+  let ccdTwo = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance5075metric || '50-75') : (this.translationData.lblCruiseControlDistance3045imperial || '30-45');
+  let ccdThree = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance75metric || '>75') : (this.translationData.lblCruiseControlDistance45imperial || '>45');
     let distance = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm ||'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile || 'mile');
     let speed =(this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh ||'km/h') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmileh || 'mph') : (this.translationData.lblmileh || 'mph');
     let ton= (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton || 't') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lbltons || 'Ton') : (this.translationData.lbltons || 'Ton');
@@ -2821,15 +2827,15 @@ setVehicleGroupAndVehiclePreSelection() {
           break;
         }
         case 'cruiseControlDistance3050' :{
-          pdfColumnHeads.push('Cruise Control Distance 30-50('+speed+')');
+          pdfColumnHeads.push('Cruise Control Distance '+ccdOne+'('+speed+')');
           break;
         }
         case 'cruiseControlDistance5075' :{
-          pdfColumnHeads.push('Cruise Control Distance 50-75('+speed+')');
+          pdfColumnHeads.push('Cruise Control Distance '+ccdTwo+'('+speed+')');
           break;
         }
         case 'cruiseControlDistance75' :{
-          pdfColumnHeads.push('Cruise Control Distance 75('+speed+')');
+          pdfColumnHeads.push('Cruise Control Distance '+ccdThree+'('+speed+')');
           break;
         }
         case 'averageTrafficClassification' :{
