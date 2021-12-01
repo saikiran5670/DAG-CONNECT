@@ -542,7 +542,9 @@ removeDuplicates(originalArray, prop) {
       this.vehicleListData = this.fleetData;
     } else {
       this.select3.options.forEach((item: MatOption) => item.deselect());
+      this.vehicleListData = [];
     }
+    this.filterVINonMap();
   }
 
   onChangeLevel() {
@@ -624,7 +626,9 @@ removeDuplicates(originalArray, prop) {
       this.vehicleListData = this.fleetData;
     } else {
       this.select1.options.forEach((item: MatOption) => item.deselect());
+      this.vehicleListData = [];
     }
+    this.filterVINonMap();
   }
   onChangeCategory(){
     let newStatus = true;
