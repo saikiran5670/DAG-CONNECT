@@ -42,11 +42,8 @@ namespace net.atos.daf.ct2.schedular.repository
         public async Task<int> DeleteDataFromTables(string connectString, DataCleanupConfiguration dataCleanupConfiguration)
         {
             var rowCount = 0;
-           
             try
             {
-
-
                 if (dataCleanupConfiguration.DatabaseName != "dafconnectmasterdatabase")
                 {
                     using (NpgsqlConnection conn = new NpgsqlConnection(connectString))
@@ -55,21 +52,17 @@ namespace net.atos.daf.ct2.schedular.repository
                         var parameter = new DynamicParameters();
                         parameter.Add("@days", dataCleanupConfiguration.RetentionPeriod, System.Data.DbType.Int32);
                         var query = String.Format("select count(*) from {0}.{1} where  to_timestamp({2} /1000)::date < (now()::date -  @days)", dataCleanupConfiguration.SchemaName, dataCleanupConfiguration.TableName, dataCleanupConfiguration.ColumnName);
-
                         rowCount = await conn.QueryFirstOrDefaultAsync<int>(query, parameter);
                         Console.Write(rowCount);
                         Console.WriteLine(@"value of rowcount = {0}, tble name {2} , thread = {1}", rowCount, Thread.CurrentThread.ManagedThreadId, dataCleanupConfiguration.TableName);
                     }
                 }
-                 
                 return rowCount;
             }
             catch (Exception ex)
             {
-               
                 throw;
             }
-
         }
         public int DataPurging(DataCleanupConfiguration dataCleanupConfiguration)
         {
@@ -144,7 +137,7 @@ namespace net.atos.daf.ct2.schedular.repository
 
         }
 
-     
+
 
         public async Task<DataPurgingTableLog> CreateDataPurgingTableLog(DataPurgingTableLog log)
         {

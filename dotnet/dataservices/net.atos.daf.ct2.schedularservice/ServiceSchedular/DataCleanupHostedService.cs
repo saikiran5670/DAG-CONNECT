@@ -26,7 +26,7 @@ namespace net.atos.daf.ct2.schedularservice.ServiceSchedular
         private readonly IDataCleanupManager _dataCleanupManager;
         private readonly IHostApplicationLifetime _appLifetime;
         private readonly IConfiguration _configuration;
-        private readonly DataCleanupConfiguration _dataCleanupConfiguration;
+        private readonly Pugingefiguration _pugingefiguration;
         private readonly ConcurrentQueue<DataCleanupConfiguration> _purgingTables;
         private readonly List<DataCleanupConfiguration> _dataCleanupConfigurations;
         private readonly NpgsqlConnection _dbConn;
@@ -43,10 +43,8 @@ namespace net.atos.daf.ct2.schedularservice.ServiceSchedular
             this._configuration = configuration;
             _purgingTables = new ConcurrentQueue<DataCleanupConfiguration>();
             _dataCleanupConfigurations = new List<DataCleanupConfiguration>();
-            _dataCleanupConfiguration = new DataCleanupConfiguration();
-            configuration.GetSection("DataCleanupConfiguration").Bind(_dataCleanupConfiguration);
-            //   _dbConn = new NpgsqlConnection(_configuration.GetConnectionString("DataMartConnectionString"));
-
+            _pugingefiguration = new Pugingefiguration();
+            configuration.GetSection("DataCleanupConfiguration").Bind(_pugingefiguration);
         }
         public async Task StartAsync(CancellationToken cancellationToken)
         {
@@ -57,7 +55,7 @@ namespace net.atos.daf.ct2.schedularservice.ServiceSchedular
             {
 
                 DeleteDataFromTable();
-                Thread.Sleep(50000);// _dataCleanupConfiguration.ThreadSleepTimeInSec); // 10 sec sleep mode
+                Thread.Sleep(_pugingefiguration.ThreadSleepTimeInSec); // 10 sec sleep mode
             }
         }
         public Task StopAsync(CancellationToken cancellationToken)
@@ -65,9 +63,6 @@ namespace net.atos.daf.ct2.schedularservice.ServiceSchedular
             // httpClient.Dispose();
             return Task.CompletedTask;
         }
-
-
-
         public void DeleteDataFromTable()
         {
             int rowCount = 0;
@@ -75,43 +70,42 @@ namespace net.atos.daf.ct2.schedularservice.ServiceSchedular
             var tokenSource2 = new CancellationTokenSource();
             var dataCleanupConfigurations = _dataCleanupManager.GetDataPurgingConfiguration().Result;
             Parallel.ForEach(dataCleanupConfigurations, new ParallelOptions() { MaxDegreeOfParallelism = 15, CancellationToken = new CancellationToken() }, async node =>
-             {
-                 using (CancellationTokenSource cancel = new CancellationTokenSource())
-
-                 {
-                     while (true)
-                     {
-
-                         try
-                         {
-                             var purgeSatrtTime = UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString());
-
-                             var connString = node.DatabaseName != "dafconnectmasterdatabase" ? _configuration.GetConnectionString("DataMartConnectionString") :
-                                                                                                _configuration.GetConnectionString("ConnectionString");
-                             rowCount = await _dataCleanupManager.DeleteDataFromTables(connString, node);
-                             // if (rowCount == null)
-                             {
-                                 var state = "O";
-                                 _logger.Info("RowCount is null");
-                                 var logData = ToTableLog(node, purgeSatrtTime, rowCount, state);
-                                 await _dataCleanupManager.CreateDataPurgingTableLog(logData);
-
-                             }
-                             break;
-
-                         }
-                         catch (Exception e)
-                         {
-                             attempts++;
-                             if (attempts >= 3)
-                             {
-                                 break;
-                             }
-                         }
-                     }
-                 }
-             });
-
+            {
+                using (CancellationTokenSource cancel = new CancellationTokenSource())
+                {
+                    var purgeSatrtTime = UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString());
+                    DataPurgingTableLog logData = new DataPurgingTableLog();
+                    while (true)
+                    {
+                        try
+                        {
+                            var connString = node.DatabaseName != "dafconnectmasterdatabase" ? _configuration.GetConnectionString("DataMartConnectionString") :
+                                                                                               _configuration.GetConnectionString("ConnectionString");
+                            rowCount = await _dataCleanupManager.DeleteDataFromTables(connString, node);
+                            if (rowCount >= 0)
+                            {
+                                var state = "O";
+                                _logger.Info("RowCount is null");
+                                logData = ToTableLog(node, purgeSatrtTime, rowCount, state);
+                            }
+                            break;
+                        }
+                        catch (Exception e)
+                        {
+                            attempts++;
+                            var state = "S";
+                            _logger.Info("Data purge failed");
+                            _logger.Error(null, e);
+                            logData = ToTableLog(node, purgeSatrtTime, rowCount, state);
+                            if (attempts >= _pugingefiguration.RetryCount)
+                            {
+                                break;
+                            }
+                        }
+                        await _dataCleanupManager.CreateDataPurgingTableLog(logData);
+                    }
+                }
+            });
         }
         private DataPurgingTableLog ToTableLog(DataCleanupConfiguration dataCleanupConfiguration, long purgeSatrtTime, int noOfRows, string state)
         {
