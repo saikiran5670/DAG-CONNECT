@@ -136,10 +136,10 @@ export class OrganisationRelationshipComponent implements OnInit {
             Organization_Id: this.organizationId
               }
           this.showLoadingIndicator = true;
-          this.organizationService.GetOrgRelationdetails(objData).subscribe((newdata: any) => {
+        this.organizationService.GetOrgRelationdetails(objData).subscribe((newdata: any) => {
           this.organizationService.getOrgRelationshipDetailsLandingPage().subscribe((data: any) => {
           this.hideloader();
-            if(data)
+          if(data)
             {
               if(this.viewRelationshipName!=undefined)
                {
@@ -150,22 +150,17 @@ export class OrganisationRelationshipComponent implements OnInit {
                 this.organizationList = newdata["organizationData"];
                 this.vehicleList =  newdata["vehicleGroup"];
                 this.initData = data["orgRelationshipMappingList"];
-                this.initData = this.getNewTagData(this.initData)
-                  setTimeout(()=>{
-                    this.dataSource = new MatTableDataSource(this.initData);
+                this.initData = this.getNewTagData(this.initData);
+              this.dataSource = new MatTableDataSource(this.initData);
+
+              setTimeout(()=>{
+                this.dataSource = new MatTableDataSource(this.initData);
                     this.dataSource.paginator = this.paginator;
                     this.dataSource.sort = this.sort;
-                    this.dataSource.sortData = (data: String[], sort: MatSort) => {
-                      const isAsc = sort.direction === 'asc';
-                      return data.sort((a: any, b: any) => {
-                          let columnName = sort.active;
-                        return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
-                      });
-                    }
                     this.dataSource.filterPredicate = function(data, filter: any){
                       let val = JSON.parse(filter);
                       let allowChain = data.allowChain == true && data.endDate == 0 ? 'true' :  'false';
-                        return (val.type === '' || allowChain.toString() === val.type.toString() ) &&
+                      return (val.type === '' || allowChain.toString() === val.type.toString() ) &&
                               (val.relation === '' || data.orgRelationId.toString() === val.relation.toString() ) &&
                               (val.org === '' || data.targetOrgId.toString() === val.org.toString() ) &&
                               (val.vehicleGrp === '' || data.vehicleGroupID.toString() === val.vehicleGrp.toString() ) &&
@@ -176,7 +171,16 @@ export class OrganisationRelationshipComponent implements OnInit {
                                 (getDt(data.endDate)).toString().toLowerCase().indexOf(val.search.toLowerCase()) !== -1 ||
                                 getChaining(data.allowChain).indexOf(val.search.toLowerCase())) !== -1);
                       };
+                    this.dataSource.sortData = (data: String[], sort: MatSort) => {
+                      const isAsc = sort.direction === 'asc';
+                      return data.sort((a: any, b: any) => {
+                          let columnName = sort.active;
+                          return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
+                      });
+                    }
+
                     });
+
              }
 
             },(error)=>{
@@ -187,9 +191,11 @@ export class OrganisationRelationshipComponent implements OnInit {
           );
 
   }
-  compare(a: any, b: any, isAsc: boolean, columnName:any) {
-    if(!(a instanceof Number)) a = a.toString().toUpperCase();
-    if(!(b instanceof Number)) b = b.toString().toUpperCase();
+  compare(a: Number | String, b: Number | String, isAsc: boolean, columnName: any) {
+
+      if(!(a instanceof Number)) a = a.toString().toUpperCase();
+      if(!(b instanceof Number)) b = b.toString().toUpperCase();
+
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
   getEditSuccessMsg(editText: any, name: any){
