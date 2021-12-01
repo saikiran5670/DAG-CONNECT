@@ -1033,8 +1033,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetRelationshipVehicles)}: With Error:-", ex);
+                return StatusCode(500, VehcileConstants.INTERNAL_SERVER_MSG);
             }
         }
 

@@ -45,13 +45,13 @@ public class MessageParseUtil {
 			@Override
 			public boolean filter(KafkaRecord<String> message) {
 				try {
-					System.out.println("filter Bosch message for mapping ::" + message.getValue());
+					//System.out.println("filter Bosch message for mapping ::" + message.getValue());
 					logger.info("INFO : filter Bosch message for mapping ::" + message.getValue());
 					JsonNode jsonNodeRec = JsonMapper.configuring().readTree(message.getValue());
 					if (jsonNodeRec != null) {
 						// TODO
 						String transId = getTransIdValue(message.getValue());
-						System.out.println("filter Trans ID    " + transId + " message type ::" + messageType);
+					//	System.out.println("filter Trans ID    " + transId + " message type ::" + messageType);
 						logger.info("filter Trans ID " + transId + " message type ::" + messageType);
 						//if (transId != null && messageType != null && transId.trim().contains(messageType.trim())) {
 						if (transId != null && messageType != null && -1 != messageType.trim().indexOf(transId.trim())) {
@@ -73,7 +73,7 @@ public class MessageParseUtil {
 
 	public static Index processIndexBoschMessage(String value, Properties properties, String kafkaProcessingTimeStamp) {
 		logger.info("Index Raw Message processing start ::====>" + value.toString());
-		System.out.println("Index Raw Message processing start ::====>" + value.toString());
+		//System.out.println("Index Raw Message processing start ::====>" + value.toString());
 
 		Index indexobj = new Index();
 		IndexDocument indexDocument = new IndexDocument();
@@ -115,7 +115,7 @@ public class MessageParseUtil {
 					indexobj.setTransID(getContiTransId(transId, properties));
 				}
 
-				System.out.println(" Trans id :" + transId + " , trip id ==>" + tripid);
+			//	System.out.println(" Trans id :" + transId + " , trip id ==>" + tripid);
 				logger.info(" Trans id :" + tripid + " , trip id ==>" + tripid);
 
 				indexDocument.setTripID(tripid);
@@ -337,7 +337,7 @@ public class MessageParseUtil {
 						indexDocument.setStartEltsTime(convertDateStringToTS(strStartEltsTime));
 
 					} catch (Exception ex) {
-						System.err.println("startEtltTIme parsing date failed ==>" + ex.getMessage());
+						logger.error("startEtltTIme parsing date failed ==>" + ex.getMessage());
 					}
 				}
 				Double[] adBlueLevel = getDoubleResult(
@@ -393,15 +393,12 @@ public class MessageParseUtil {
 			logger.error(
 					"Index type message - error while parsing the message for prepare index obj for publish on kafka . Error is :"
 							+ ex.getMessage());
-			System.out.println(
-					"Index type messaeg -error while parsing the message for prepare index obj for publish on kafka. Error is:"
-							+ ex.getMessage());
+		//	System.out.println("Index type messaeg -error while parsing the message for prepare index obj for publish on kafka. Error is:"+ ex.getMessage());
 
 		}
 		logger.error(
 				"Bosch-INFO Level: Index message after parse ready for publising message is " + indexobj.toString());
-		System.out.println(
-				"Bosch-INFO Level: Index message after parse ready for publising message is " + indexobj.toString());
+		//System.out.println("Bosch-INFO Level: Index message after parse ready for publising message is " + indexobj.toString());
 		indexobj.setDocument(indexDocument);
 		return indexobj;
 
@@ -411,7 +408,7 @@ public class MessageParseUtil {
 			String kafkaProcessingTimeStamp) {
 		// logger.info("Monitor Raw Message processing start ::====>" +
 		// value.toString());
-		System.out.println("Monitor Raw Message processing start ::====>" + value.toString());
+		logger.info("Monitor Raw Message processing start ::====>" + value.toString());
 
 		Monitor monitorObj = new Monitor();
 		MonitorDocument monitorDocument = new MonitorDocument();
@@ -446,7 +443,7 @@ public class MessageParseUtil {
 				}
 
 				monitorDocument.setTripID(tripid);
-				System.out.println(" Trans id :" + transId + " , trip id ==>" + tripid);
+			//	System.out.println(" Trans id :" + transId + " , trip id ==>" + tripid);
 				logger.info(" Trans id :" + tripid + " , trip id ==>" + tripid);
 
 				if (vin != null && !vin.isEmpty()) {
@@ -469,7 +466,7 @@ public class MessageParseUtil {
 				Integer vEvtID = getVEvtIdByMonitorMessage(reasonData);
 				monitorObj.setVEvtID(vEvtID);
 
-				System.out.println("After changed Trans id :" + monitorObj.getTransID() + " , trip id ==>" + tripid);
+				logger.info("After changed Trans id :" + monitorObj.getTransID() + " , trip id ==>" + tripid);
 
 				Long receivedTimestamp = System.currentTimeMillis();
 				Long storedTimestamp = null;
@@ -669,14 +666,12 @@ public class MessageParseUtil {
 			logger.error(
 					"Monitor type message - error while parsing the message for prepare index obj for publish on kafka"
 							+ ex.getMessage());
-			System.out.println(
-					"Monitor type messaeg -error while parsing the message for prepare index obj for publish on kafka"
-							+ ex.getMessage());
+			//System.out.println("Monitor type messaeg -error while parsing the message for prepare index obj for publish on kafka"+ ex.getMessage());
 
 		}
 		monitorObj.setDocument(monitorDocument);
 
-		System.out.println("Bosch-Monitor -  before publishing kafka record :: " + monitorObj.toString());
+	//	System.out.println("Bosch-Monitor -  before publishing kafka record :: " + monitorObj.toString());
 		logger.info("Bosch-Monitor -  before publishing kafka record :: " + monitorObj.toString());
 		logger.error("Bosch-INFO Level:Monitor -  before publishing kafka record :: " + monitorObj.toString());
 		return monitorObj;
@@ -685,7 +680,7 @@ public class MessageParseUtil {
 
 	public static Status processStatusBoschMessage(String value, Properties properties, String kafkaProcessingTS) {
 		logger.info("Status Raw Message processing start ::====>" + value.toString());
-		System.out.println("Status Raw Message processing start ::====>" + value.toString());
+	//	System.out.println("Status Raw Message processing start ::====>" + value.toString());
 		Status statusObj = new Status();
 		StatusDocument statusDocument = new StatusDocument();
 
@@ -714,14 +709,14 @@ public class MessageParseUtil {
 
 				String vehicleId = (String) getValueByAttributeKey("vehicleId", jsonNode);
 				String transId = (String) getValueByAttributeKey("TransID", document);
-				System.out.println("transId ==>" + transId);
+				logger.info("transId ==>" + transId);
 
 				if (transId != null && transId.contains(".")) {
 					transId = transId.substring(0, transId.indexOf("."));
 				}
 
 				statusDocument.setTripID(tripid);
-				System.out.println(" Trans id :" + transId + " , trip id ==>" + tripid);
+				//logger.info(" Trans id :" + transId + " , trip id ==>" + tripid);
 				logger.info(" Trans id :" + tripid + " , trip id ==>" + tripid);
 				if (vid != null && !vid.isEmpty()) {
 					statusObj.setVid(vid);
@@ -953,16 +948,14 @@ public class MessageParseUtil {
 			logger.error(
 					"Status type message - error while parsing the message for prepare index obj for publish on kafka"
 							+ ex.getMessage());
-			System.out.println(
-					"Status type messaeg -error while parsing the message for prepare index obj for publish on kafka"
-							+ ex.getMessage());
+			//System.out.println("Status type messaeg -error while parsing the message for prepare index obj for publish on kafka"+ ex.getMessage());
 		}
 
 		statusObj.setDocument(statusDocument);
 
 		logger.error("Bosch-INFO Level: Status type message - before publishing monitoringObj.toString() record :: "
 				+ statusObj.toString());
-		System.out.println(" Status type message - before publishing kafka record :: " + statusObj.toString());
+		//System.out.println(" Status type message - before publishing kafka record :: " + statusObj.toString());
 
 		return statusObj;
 	}
@@ -1039,7 +1032,7 @@ public class MessageParseUtil {
 		} catch (Exception e) {
 			logger.error("issue while data parsing in tranformation " + ExceptionUtils.getFullStackTrace(e));
 			logger.error("data parsing failed " + e.getMessage());
-			System.out.println("Error while parsing the message failed " + e.getMessage() + "\n" + ", Raw  Message is :"
+			logger.error("Error while parsing the message failed " + e.getMessage() + "\n" + ", Raw  Message is :"
 					+ message);
 			e.printStackTrace();
 			throw new DAFCT2Exception("issue while data parsing in tranformation. Error is: " + e.getMessage(), e);
@@ -1121,7 +1114,7 @@ public class MessageParseUtil {
 		} catch (Exception e) {
 			logger.error("issue while data parsing in tranformation " + ExceptionUtils.getFullStackTrace(e));
 			logger.error("data parsing failed " + e.getMessage());
-			System.out.println("Error while parsing the message failed " + e.getMessage() + "\n" + ", Raw  Message is :"
+			logger.error("Error while parsing the message failed " + e.getMessage() + "\n" + ", Raw  Message is :"
 					+ message);
 			e.printStackTrace();
 			throw new DAFCT2Exception("issue while data parsing in tranformation. Error is: " + e.getMessage(), e);
@@ -1149,7 +1142,7 @@ public class MessageParseUtil {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			logger.error("Error while getting the value from key = " + key + "from Json." + ex.getMessage());
-			System.err.println("Error while getting the value from key =" + key + "from Json." + ex.getMessage());
+		//	System.err.println("Error while getting the value from key =" + key + "from Json." + ex.getMessage());
 			throw new DAFCT2Exception("Error while getting the value from key =" + key + "from Json." + ex.getMessage(),
 					ex);
 		}
@@ -1210,7 +1203,7 @@ public class MessageParseUtil {
 
 		}
 
-		System.out.println(" tranid value extracing" + transId);
+		//System.out.println(" tranid value extracing" + transId);
 		logger.info(" tranid value extracing" + transId);
 		return transId;
 
@@ -1294,7 +1287,7 @@ public class MessageParseUtil {
 				JsonNode startNode = (JsonNode) reasonData.get("start");
 				if (startNode != null && startNode.get("triggerElements") != null) {
 					JsonNode triggerElementNode = startNode.get("triggerElements");
-					System.out.println(triggerElementNode);
+					//System.out.println(triggerElementNode);
 					Iterator<JsonNode> triggerElementNodes = triggerElementNode.elements();
 
 					if (triggerElementNodes != null) {
@@ -1316,8 +1309,7 @@ public class MessageParseUtil {
 		} catch (Exception ex) {
 			logger.error("Error while extracting VEvtid field value for start trip: VEvtid :" + vEvtid + " Error is "
 					+ ex.getMessage());
-			System.out.println("Error while extracting VEvtid field value for start trip: VEvtid :" + vEvtid
-					+ " Error is " + ex.getMessage());
+			//System.out.println("Error while extracting VEvtid field value for start trip: VEvtid :" + vEvtid+ " Error is " + ex.getMessage());
 		}
 
 		return vEvtid;
@@ -1340,8 +1332,7 @@ public class MessageParseUtil {
 		} catch (Exception ex) {
 			logger.error("Error while extracting VEvtid field value for End trip: VEvtid :" + vEvtid + " Error is "
 					+ ex.getMessage());
-			System.out.println("Error while extracting VEvtid field value for End trip: VEvtid :" + vEvtid
-					+ " Error is " + ex.getMessage());
+			//System.out.println("Error while extracting VEvtid field value for End trip: VEvtid :" + vEvtid+ " Error is " + ex.getMessage());
 		}
 
 		return vEvtid;
@@ -1422,8 +1413,7 @@ public class MessageParseUtil {
 		} catch (Exception ex) {
 
 			ex.printStackTrace();
-			System.out
-					.println("Error while getting sparkmatrix value for key =>" + key + " ,ERROR =>" + ex.getMessage());
+			//System.out.println("Error while getting sparkmatrix value for key =>" + key + " ,ERROR =>" + ex.getMessage());
 			logger.error("Error while getting sparkmatrix value for key =>" + key + ", ERROR =>" + ex.getMessage());
 		}
 		return matrix;
@@ -1432,7 +1422,7 @@ public class MessageParseUtil {
 	private static Distribution getDistributedValuteByKey(String key, JsonNode document) {
 		Distribution distribute = new Distribution();
 		try {
-			System.out.println("NdArray jons obj ==>" + document);
+			//System.out.println("NdArray jons obj ==>" + document);
 			if (key != null && document != null) {
 				if (document.get(key) != null) {
 					JsonNode innerJsonNode = document.get(key);
@@ -1440,7 +1430,7 @@ public class MessageParseUtil {
 					if (innerJsonNode.get("ndArray") != null) {
 
 						Long[] distrArrayInt = getSparkDistributedAttributeValue("ndArray", innerJsonNode);
-						System.out.println("ndArray for Distribued ==>" + distrArrayInt);
+						//System.out.println("ndArray for Distribued ==>" + distrArrayInt);
 						distribute.setDistrArrayInt(distrArrayInt);
 					}
 
@@ -1448,8 +1438,7 @@ public class MessageParseUtil {
 			}
 		} catch (Exception ex) {
 			logger.error("Error while parsing distributed vlaue for key =>" + key + " , Error is " + ex.getMessage());
-			System.err.println(
-					"Error while parsing distributed vlaue for key =>" + key + " , Error is " + ex.getMessage());
+			//System.err.println("Error while parsing distributed vlaue for key =>" + key + " , Error is " + ex.getMessage());
 		}
 		return distribute;
 	}
@@ -1556,7 +1545,7 @@ public class MessageParseUtil {
 						if (transId != null && transId.contains(".")) {
 							transId = transId.substring(0, transId.indexOf("."));// 1000.0
 						}
-						System.out.println(transId);
+						logger.info(transId);
 						if (transId != null && !transId.isEmpty()) {
 
 							transId = MessageParseUtil.getContiTransId(transId, properties);
@@ -1566,7 +1555,7 @@ public class MessageParseUtil {
 
 				} catch (Exception ex) {
 					logger.error("Error while preparing rowkey for Hbase row key  Error :" + ex.getMessage());
-					System.err.println("Error while preparing rowkey for Hbase row key Error :" + ex.getMessage());
+					//System.err.println("Error while preparing rowkey for Hbase row key Error :" + ex.getMessage());
 				}
 
 				if (vid == null) {
@@ -1586,7 +1575,7 @@ public class MessageParseUtil {
 						.append(rowkeyAppender).append(tripid).append(rowkeyAppender)
 						.append(TimeFormatter.getInstance().getCurrentUTCTime());
 				message.setKey(rowKey.toString());
-				System.out.println(rowKey.toString());
+				logger.info("Row key is :" + rowKey.toString());
 
 				return message;
 			}
@@ -1629,7 +1618,7 @@ public class MessageParseUtil {
 					// if (triggerElementsNode != null) {
 					while (triggerElementsNode != null && triggerElementsNode.hasNext()) {
 						JsonNode triggerInnerElementNode = triggerElementsNode.next();
-						System.out.println(" testing outer name " + triggerInnerElementNode.get("name").asText());
+						//System.out.println(" testing outer name " + triggerInnerElementNode.get("name").asText());
 						JsonNode oneLevelInnerTrgerNode = triggerInnerElementNode.get("triggerElements");
 						Iterator<JsonNode> oneLevelInnerElementsNode = oneLevelInnerTrgerNode.elements();
 						while (oneLevelInnerElementsNode != null && oneLevelInnerElementsNode.hasNext()) {
@@ -1639,7 +1628,7 @@ public class MessageParseUtil {
 								String vEvtidTempValue = oneLevelInnerVEvtIdNode.get("name").asText();
 								String[] arrVEvTId = vEvtidTempValue.split("_");
 								if (arrVEvTId != null && arrVEvTId.length > 1) {
-									System.out.println("parsing VEVtid is :" + arrVEvTId[0]);
+								//	System.out.println("parsing VEVtid is :" + arrVEvTId[0]);
 									vEvtid = Integer.parseInt(arrVEvTId[0]);
 									break;
 								}
@@ -1652,7 +1641,7 @@ public class MessageParseUtil {
 			}
 		} catch (Exception ex) {
 			logger.error("Error while parsing VEVtid of monitoring " + ex.getMessage());
-			System.out.println("Error while parsing VEVtid of monitoring " + ex.getMessage());
+			//System.out.println("Error while parsing VEVtid of monitoring " + ex.getMessage());
 		}
 		return vEvtid;
 	}

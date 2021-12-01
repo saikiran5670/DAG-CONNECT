@@ -2,6 +2,7 @@
 {
     public static class ReportConstants
     {
+        public const string INTERNAL_SERVER_MSG = "Error occured, Please check with DAF IT team for more info.";
         public const string USER_PREFERENCE_SUCCESS_MSG = "User preferences fetched successfully for account Id:- {0} and for report Id:- {1}.";
         public const string USER_PREFERENCE_FAILURE_MSG = "User preferences fetched failed for account Id:- {0} and for report Id:- {1}. Error: {2}";
         public const string USER_PREFERENCE_FAILURE_MSG2 = "No records found for reprot data columns.";

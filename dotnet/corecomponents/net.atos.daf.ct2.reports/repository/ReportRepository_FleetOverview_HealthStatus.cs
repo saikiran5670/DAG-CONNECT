@@ -137,7 +137,7 @@ namespace net.atos.daf.ct2.reports.repository
                         where lws.vin =@vin  
                         and ((@tripId <> '' and lws.trip_id=@tripId) OR (@tripId=''))  
                         and to_timestamp(lws.warning_time_stamp/1000)::date >= (now()::date -  @days )
-                        and message_type=10 and vehicle_health_status_type !='N' ";
+                        and message_type=10 ";
 
             if (!string.IsNullOrEmpty(vehicleHealthStatusRequest.WarningType))
             {
