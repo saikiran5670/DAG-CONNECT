@@ -547,7 +547,7 @@ removeDuplicates(originalArray, prop) {
 
   onChangeLevel() {
     let newStatus = true;
-    this.noRecordFlag = false;
+    this.noRecordFlag = true;
     this.vehicleListData = [];
 
     this.select3.options.forEach((item: MatOption) => {
@@ -567,16 +567,19 @@ removeDuplicates(originalArray, prop) {
               case 'C': if(e.fleetOverviewAlert.some(c => c.level == 'C')) {
                 critical = 1;
                 this.vehicleListData.push(e);
+                this.noRecordFlag = false;
               }
                 break;
               case 'W': if(e.fleetOverviewAlert.some(w => w.level == 'W') && !(e.fleetOverviewAlert.some(c => c.level == 'C'))) {
                 warning = 1;
                 this.vehicleListData.push(e);
+                this.noRecordFlag = false;
               }
                 break;
                 case 'A': if(e.fleetOverviewAlert.some(a => a.level == 'A') && !(e.fleetOverviewAlert.some(c => c.level == 'C') || e.fleetOverviewAlert.some(w => w.level == 'W'))) {
                   advisory = 1;
                   this.vehicleListData.push(e);
+                  this.noRecordFlag = false;
                 }
                   break;
             }
@@ -585,13 +588,7 @@ removeDuplicates(originalArray, prop) {
             }
           }
         }
-        else{
-          this.noRecordFlag = true;
-        }
       });
-    }
-    else{
-      this.noRecordFlag = true;
     }
     this.filterVINonMap();
   }

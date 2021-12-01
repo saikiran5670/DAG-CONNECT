@@ -1244,11 +1244,11 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetRelationshipVehicles)}: With Error:-", ex);
                 return await Task.FromResult(new VehiclesResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Get failed due to with reason : " + ex.Message
+                    Message = $"{nameof(GetRelationshipVehicles)}: {VehcileConstants.INTERNAL_SERVER_MSG}."
                 });
             }
 

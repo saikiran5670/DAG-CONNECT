@@ -529,8 +529,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
                                 "Report service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED, ReportConstants.GET_ECOSCORE_PROFILE_SUCCESS_MSG, 0, 0, Convert.ToString(isGlobal),
                                  _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetEcoScoreProfiles)}: With Error:-", ex);
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
             }
         }
 

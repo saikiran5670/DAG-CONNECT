@@ -30,8 +30,7 @@ import * as fs from 'file-saver';
 import { Workbook } from 'exceljs';
 import { DatePipe } from '@angular/common';
 import { ReplaySubject } from 'rxjs';
-
-
+import { DataInterchangeService } from '../../../services/data-interchange.service';
 
 @Component({
   selector: 'app-fleet-fuel-report-vehicle',
@@ -596,15 +595,22 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
   constructor(private _formBuilder: FormBuilder,
-              private translationService: TranslationService,
-              private organizationService: OrganizationService,
-              private reportService: ReportService,
-              private router: Router,
-              @Inject(MAT_DATE_FORMATS) private dateFormats,
-              private reportMapService: ReportMapService, private datePipe: DatePipe) {}
-               defaultTranslation(){
-                this.translationData = { }
-               }
+  private translationService: TranslationService,
+  private organizationService: OrganizationService,
+  private reportService: ReportService,
+  private router: Router,
+  @Inject(MAT_DATE_FORMATS) private dateFormats,
+  private reportMapService: ReportMapService, 
+  private datePipe: DatePipe,
+  private dataInterchangeService: DataInterchangeService) {
+    this.dataInterchangeService.prefSource$.subscribe((prefResp: any) => {
+      if(prefResp && (prefResp.type == 'fuel report') && (prefResp.tab == 'Vehicle') && prefResp.prefdata){
+        // this.resetPref();
+        // this.reportPrefData = prefResp.prefdata;
+        // this.onSearch();
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.fleetFuelSearchData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
