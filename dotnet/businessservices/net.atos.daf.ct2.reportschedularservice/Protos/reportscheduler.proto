@@ -118,7 +118,7 @@ message ScheduledReportResponse
 {
    ResponseCode Code=1;
    string message = 2;
-   repeated ScheduledReportRequest ScheduledReportRequest=3;
+   repeated ScheduledReportRequest ScheduledReport=3;
 }
 message ScheduledReportRequest
 {
