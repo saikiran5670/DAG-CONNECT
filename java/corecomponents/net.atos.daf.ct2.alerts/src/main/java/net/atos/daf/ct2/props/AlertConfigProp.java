@@ -124,6 +124,23 @@ public class AlertConfigProp {
     public  static final MapStateDescriptor<String, Payload> vinAlertMapStateDescriptor = new MapStateDescriptor("vinAlertMapStateDescriptor", String.class,Payload.class);
     public  static final MapStateDescriptor<String, Payload> VIN_ALERT_MAP_STATE = new MapStateDescriptor("vinAlertMappingState",String.class,Payload.class);
     public  static final OutputTag<Alert> OUTPUT_TAG = new OutputTag<Alert>("side-output") {};
+
+    //Checkout config property
+    public static final String ALERT_FLINK_JOB_NAME = "alert.flink.job.name";
+    public static final String MAX_CONCURRENT_CHECKPOINTS = "max_concurrent_checkpoints";
+    public static final String CHECKPOINT_DIRECTORY_ALERT = "alert.checkpoint.directory";
+    public static final String RESTART_FLAG = "fixed.restart.flag";
+    public static final String FIXED_RESTART_FLAG = "fixed.restart.flag";
+    public static final String RESTART_ATTEMPS = "restart_attempts";
+    public static final String RESTART_INTERVAL = "restart_interval";
+    public static final String RESTART_FAILURE_RATE = "restart.failure.rate";
+    public static final String RESTART_FAILURE_INTERVAL = "restart.failure.interval";
+    public static final String RESTART_FAILURE_DELAY = "restart.failure.delay";
+    public static final String PARALLELISM = "parallelism";
+    public static final String CHECKPOINT_INTERVAL = "checkpoint_interval";
+    public static final String MINIMUM_PAUSE_BETWEEN_CHECKPOINTS = "min_checkpoint_pause";
+    public static final String CHECKPOINT_TIMEOUT = "checkpoint_timeout";
+
     public static BroadcastStream<VehicleAlertRefSchema> vehicleAlertRefSchemaBroadcastStream;
     public static BroadcastStream<Payload<Object>> alertUrgencyLevelRefSchemaBroadcastStream;
     

@@ -10,6 +10,7 @@ import net.atos.daf.ct2.pojo.standard.Status;
 import net.atos.daf.ct2.props.AlertConfigProp;
 import net.atos.daf.ct2.service.kafka.KafkaConnectionService;
 import net.atos.daf.ct2.starter.AlertProcessStarter;
+import net.atos.daf.ct2.util.FlinkUtil;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.BroadcastStream;
@@ -25,6 +26,7 @@ import static net.atos.daf.ct2.props.AlertConfigProp.INCOMING_MESSAGE_UUID;
 import static net.atos.daf.ct2.props.AlertConfigProp.KAFKA_DAF_STATUS_MSG_TOPIC;
 import static net.atos.daf.ct2.props.AlertConfigProp.KAFKA_EGRESS_INDEX_MSG_TOPIC;
 import static net.atos.daf.ct2.props.AlertConfigProp.KAFKA_EGRESS_MONITERING_MSG_TOPIC;
+import static net.atos.daf.ct2.util.FlinkUtil.*;
 
 public class AlertProcessing implements Serializable {
 
@@ -34,13 +36,15 @@ public class AlertProcessing implements Serializable {
 
 
     public static void main(String[] args) throws Exception{
-        final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         ParameterTool parameterTool = ParameterTool.fromArgs(args);
         logger.info("AlertProcessing started with properties :: {}", parameterTool.getProperties());
         /**
          * Creating param tool from given property
          */
         ParameterTool propertiesParamTool = ParameterTool.fromPropertiesFile(parameterTool.get("prop"));
+
+        //Getting execution env
+        final StreamExecutionEnvironment env = getFlinkUtil(propertiesParamTool).createStreamExecutionEnvironment();
         env.getConfig().setGlobalJobParameters(propertiesParamTool);
         logger.info("PropertiesParamTool :: {}", parameterTool.getProperties());
 

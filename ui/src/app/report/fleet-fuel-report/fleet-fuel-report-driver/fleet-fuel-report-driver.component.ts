@@ -49,7 +49,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
    detaildisplayedColumns = ['All','vehicleName','vin','vehicleRegistrationNo','startDate','endDate','averageSpeed', 'maxSpeed',  'distance', 'startPosition', 'endPosition',
    'fuelConsumed', 'fuelConsumption', 'cO2Emission',  'idleDuration','ptoDuration','cruiseControlDistance3050','cruiseControlDistance5075','cruiseControlDistance75','heavyThrottleDuration',
    'harshBrakeDuration','averageGrossWeightComb', 'averageTrafficClassification',
-   'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore','idlingPTOScore','idlingPTO','idlingWithoutPTO','idlingWithoutPTOpercent','footBrake',
+   'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore','dpaAnticipationScore','dpaBrakingScore','idlingPTOScore','idlingPTO','idlingWithoutPTO','idlingWithoutPTOpercent','footBrake',
    'cO2Emmision','idlingConsumptionWithPTO'];
   tripForm: FormGroup;
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
@@ -92,6 +92,8 @@ export class FleetFuelReportDriverComponent implements OnInit {
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   vehicleGrpDD: any = [];
   selectionTab: any;
+  finalPrefData: any = [];
+  validTableEntry: any = [];
   startDateValue: any = 0;
   endDateValue: any = 0;
   last3MonthDate: any;
@@ -617,9 +619,10 @@ export class FleetFuelReportDriverComponent implements OnInit {
     private dataInterchangeService: DataInterchangeService) {
       this.dataInterchangeService.prefSource$.subscribe((prefResp: any) => {
         if(prefResp && (prefResp.type == 'fuel report') && (prefResp.tab == 'Driver') && prefResp.prefdata){
-          // this.resetPref();
-          // this.reportPrefData = prefResp.prefdata;
-          // this.onSearch();
+          this.resetPref();
+          this.reportPrefData = prefResp.prefdata;
+          this.preparePrefData(this.reportPrefData);
+          this.onSearch();
         }
       });
     }
@@ -714,8 +717,8 @@ export class FleetFuelReportDriverComponent implements OnInit {
   }
 
   checkForPreference(fieldKey) {
-    if (this.reportPrefData.length != 0) {
-      let filterData = this.reportPrefData.filter(item => item.key.includes('driver_'+fieldKey));
+    if (this.finalPrefData.length != 0) {
+      let filterData = this.finalPrefData.filter(item => item.key.includes('rp_ff_report_driver_'+fieldKey));
       if (filterData.length > 0) {
         if (filterData[0].state == 'A') {
           return true;
@@ -747,10 +750,11 @@ export class FleetFuelReportDriverComponent implements OnInit {
   }
 
   getFleetPreferences(){
-    this.reportService.getUserPreferenceReport(this.fleetFuelReportId, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
+    //this.reportService.getUserPreferenceReport(this.fleetFuelReportId, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
+    this.reportService.getReportUserPreference(this.fleetFuelReportId).subscribe((data: any) => {    
       this.reportPrefData = data["userPreferences"];
       this.resetPref();
-      // this.preparePrefData(this.reportPrefData);
+      this.preparePrefData(this.reportPrefData);
       this.loadWholeTripData();
     }, (error) => {
       this.reportPrefData = [];
@@ -758,6 +762,34 @@ export class FleetFuelReportDriverComponent implements OnInit {
       // this.preparePrefData(this.reportPrefData);
       this.loadWholeTripData();
     });
+  }
+
+  preparePrefData(reportPref: any){
+    if(reportPref && reportPref.subReportUserPreferences && reportPref.subReportUserPreferences.length > 0){
+      let drvPrf: any = reportPref.subReportUserPreferences.filter(i => i.key == 'rp_ff_report_driver');
+      if(drvPrf.length > 0){ // driver pref present
+        if(drvPrf[0].subReportUserPreferences && drvPrf[0].subReportUserPreferences.length > 0){
+          drvPrf[0].subReportUserPreferences.forEach(element => {
+            if(element.subReportUserPreferences && element.subReportUserPreferences.length > 0){
+              element.subReportUserPreferences.forEach(elem => {
+                this.finalPrefData.push(elem);
+              });
+            }
+          });
+        }
+      }
+    }
+    this.calcTableEntry(this.finalPrefData);
+  }
+
+  calcTableEntry(entries: any){
+    let _list = entries.filter(i => i.key.includes('rp_ff_report_driver_vehicledetails_'));
+    if(_list && _list.length > 0){
+      let _l = _list.filter(j => j.state == 'A');
+      if(_l && _l.length > 0){
+        this.validTableEntry = _l.slice();
+      }
+    }
   }
 
   loadWholeTripData(){
@@ -781,8 +813,10 @@ export class FleetFuelReportDriverComponent implements OnInit {
   }
 
   resetPref(){
-
+    this.finalPrefData = [];
+    this.validTableEntry = [];
   }
+
   resetCharts(){
     this.tripData = [];
     this.vehicleListData = [];
@@ -797,18 +831,18 @@ export class FleetFuelReportDriverComponent implements OnInit {
   onSearch(){
     this.resetCharts();
     this.isChartsOpen = true;
-    if (this.reportPrefData.length != 0) {
-      let filterData = this.reportPrefData.filter(item => item.key.includes('driver_chart_fuelconsumed'));
+    if (this.finalPrefData.length != 0) {
+      let filterData = this.finalPrefData.filter(item => item.key.includes('driver_chart_fuelconsumed'));
       this.ConsumedChartType = filterData[0].chartType == 'L' ? 'Line' : 'Bar';
-      filterData = this.reportPrefData.filter(item => item.key.includes('driver_chart_numberoftrips'));
+      filterData = this.finalPrefData.filter(item => item.key.includes('driver_chart_numberoftrips'));
       this.TripsChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
-      filterData = this.reportPrefData.filter(item => item.key.includes('driver_chart_co2emission'));
+      filterData = this.finalPrefData.filter(item => item.key.includes('driver_chart_co2emission'));
       this.Co2ChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
-      filterData = this.reportPrefData.filter(item => item.key.includes('driver_chart_distance'));
+      filterData = this.finalPrefData.filter(item => item.key.includes('driver_chart_distance'));
       this.DistanceChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
-      filterData = this.reportPrefData.filter(item => item.key.includes('driver_chart_fuelconsumption'));
+      filterData = this.finalPrefData.filter(item => item.key.includes('driver_chart_fuelconsumption'));
       this.ConsumptionChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
-      filterData = this.reportPrefData.filter(item => item.key.includes('driver_chart_idledurationtotaltime'));
+      filterData = this.finalPrefData.filter(item => item.key.includes('driver_chart_idledurationtotaltime'));
       this.DurationChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
     } else {
       this.ConsumedChartType = 'Line';
@@ -1982,6 +2016,9 @@ setVehicleGroupAndVehiclePreSelection() {
     const title = 'Fleet Fuel Driver Report';
     const summary = 'Summary Section';
     const detail = 'Detail Section';
+    let ccdOne = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance3050metric || '30-50') : (this.translationData.lblCruiseControlDistance1530imperial || '15-30');
+  let ccdTwo = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance5075metric || '50-75') : (this.translationData.lblCruiseControlDistance3045imperial || '30-45');
+  let ccdThree = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance75metric || '>75') : (this.translationData.lblCruiseControlDistance45imperial || '>45');
     let unitVal100km = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltrper100 || 'Ltrs/100km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblgallonpermile || 'mpg') : (this.translationData.lblgallonpermile || 'mpg');
     let unitValuekm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || 'l') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblgallonmile || 'gal') : (this.translationData.lblgallonmile || 'gal');
     let unitValkg = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton || 't') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblt || 'Ton') : (this.translationData.lblt|| 'Ton');
@@ -1992,8 +2029,8 @@ setVehicleGroupAndVehiclePreSelection() {
 
     const header =  ['Driver Name','Driver ID','Vehicle Name', 'VIN', 'Vehicle Registration No', 'Distance('+unitValkm+')', 'Average Distance Per Day('+unitValkm+')', 'Average Speed('+unitValkmh+')',
     'Max Speed('+unitValkmh+')', 'Number Of Trips', 'Average Gross Weight Comb('+unitValkg2+')','FuelConsumed('+unitValuekm+')', 'FuelConsumption('+unitVal100km+')',  'CO2 Emission('+unitValkg2+')',
-    'Idle Duration','PTO Duration%','HarshBrakeDuration%','Heavy Throttle Duration%','Cruise Control Distance 30-50(km/hr)%',
-    'Cruise Control Distance 50-75(km/hr)%','Cruise Control Distance>75(km/hr)%', 'Average Traffic Classification',
+    'Idle Duration','PTO Duration%','HarshBrakeDuration%','Heavy Throttle Duration%','Cruise Control Distance '+ccdOne+'('+unitValkmh+')%',
+    'Cruise Control Distance '+ccdTwo+'('+unitValkmh+')%','Cruise Control Distance'+ccdThree+'('+unitValkmh+')%', 'Average Traffic Classification',
     'CC Fuel Consumption('+unitVal100km+')','fuel Consumption CC Non Active('+unitVal100km+')','Idling Consumption','Dpa Score','DPA Anticipation Score%','DPA Breaking Score%', 'Idling PTO Score (hh:mm:ss)','Idling With PTO%','Idling Without PTO (hh:mm:ss)','Idling Without PTO%','Foot Brake',
     'CO2 Emmision(gr/km)', 'Idling Consumption With PTO('+unitVal100km+')'];
     const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Number Of Trips', 'Distance('+unitValkm+')', 'Fuel Consumed('+unitValuekm+')', 'Idle Duration(hh:mm)', 'Fuel Consumption('+unitVal100km+')',  'CO2 Emission('+unitValkg2+')'];
@@ -2071,6 +2108,9 @@ setVehicleGroupAndVehiclePreSelection() {
 
   //var doc = new jsPDF('p', 'mm', 'a4');
   //let pdfColumns = [this.displayedColumns];
+  let ccdOne = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance3050metric || '30-50') : (this.translationData.lblCruiseControlDistance1530imperial || '15-30');
+  let ccdTwo = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance5075metric || '50-75') : (this.translationData.lblCruiseControlDistance3045imperial || '30-45');
+  let ccdThree = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance75metric || '>75') : (this.translationData.lblCruiseControlDistance45imperial || '>45');
   let distance = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm ||'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile || 'mile');
   let speed =(this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh ||'km/h') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmileh || 'mph') : (this.translationData.lblmileh || 'mph');
   let ton= (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton || 't') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lbltons || 'Ton') : (this.translationData.lbltons || 'Ton');
@@ -2155,15 +2195,15 @@ setVehicleGroupAndVehiclePreSelection() {
         break;
       }
       case 'cruiseControlDistance3050' :{
-        pdfColumnHeads.push('Cruise Control Distance 30-50('+speed+')(%)');
+        pdfColumnHeads.push('Cruise Control Distance '+ccdOne+'('+speed+')(%)');
         break;
       }
       case 'cruiseControlDistance5075' :{
-        pdfColumnHeads.push('Cruise Control Distance 50-75('+speed+')(%)');
+        pdfColumnHeads.push('Cruise Control Distance '+ccdTwo+'('+speed+')(%)');
         break;
       }
       case 'cruiseControlDistance75' :{
-        pdfColumnHeads.push('Cruise Control Distance 75('+speed+')(%)');
+        pdfColumnHeads.push('Cruise Control Distance '+ccdThree+'('+speed+')(%)');
         break;
       }
       case 'averageTrafficClassification' :{

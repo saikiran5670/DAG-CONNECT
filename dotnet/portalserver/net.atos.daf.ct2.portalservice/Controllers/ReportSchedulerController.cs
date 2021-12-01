@@ -357,6 +357,35 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+
+        [HttpGet]
+        [Route("getscheduledreport")]
+        public async Task<IActionResult> GetScheduledReport(int reportSchedulerId)
+        {
+            try
+            {
+                if (reportSchedulerId == 0) return BadRequest(ReportSchedulerConstants.REPORTSCHEDULER_ID_NOT_NULL_MSG);
+
+                ScheduledReportResponse response = await _reportschedulerClient.GetScheduledReportAsync(new ScheduledResponseIdRequest { ReportSchedulerId = reportSchedulerId });
+
+                if (response == null)
+                    return StatusCode(500, ReportSchedulerConstants.REPORTSCHEDULER_INTERNEL_SERVER_ISSUE);
+                if (response.Code == ResponseCode.Success)
+                    return Ok(response);
+                if (response.Code == ResponseCode.InternalServerError)
+                    return StatusCode((int)response.Code, String.Format(ReportSchedulerConstants.REPORTSCHEDULER_DATA_NOT_FOUND_MSG, response.Message));
+                return StatusCode((int)response.Code, response.Message);
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, ReportSchedulerConstants.REPORTSCHEDULER_CONTROLLER_NAME,
+                 ReportSchedulerConstants.REPORTSCHEDULER_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                string.Format(ReportSchedulerConstants.REPORTSCHEDULER_EXCEPTION_LOG_MSG, "GetScheduledReport", ex.Message), 1, 2, Convert.ToString(_userDetails.AccountId),
+                  _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
         #endregion
 
 

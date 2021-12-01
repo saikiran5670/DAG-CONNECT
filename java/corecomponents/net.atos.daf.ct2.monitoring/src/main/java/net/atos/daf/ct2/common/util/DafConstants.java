@@ -13,6 +13,7 @@ public class DafConstants {
 	public static final String CHECKPOINT_DIRECTORY_INDEX = "checkpoint_directory_index";
 	public static final String CHECKPOINT_DIRECTORY_STATUS = "checkpoint_directory_status";
 	public static final String CHECKPOINT_DIRECTORY_MONITORING = "checkpoint_directory_monitor";
+	public static final String CHECKPOINT_DIRECTORY_WARNING_MONITORING = "checkpoint_directory_warning_monitor";
 
 	public static final String RESTART_ATTEMPS = "restart_attempts";
 	public static final String RESTART_INTERVAL = "restart_interval";
@@ -86,6 +87,7 @@ public class DafConstants {
 	public static final String INDEX_JOB = "IndexJob";
 	public static final String MONITOR_JOB = "MonitorJob";
 	public static final String STATUS_JOB = "StatusJob";
+	public static final String WARNING_MONITOR_JOB = "WarningMonitorJob";
 	
 	public static final String Monitor="M";
 	public static final String MONITOR_TOPIC_NAME = "egress.conti.monitordata.object";
@@ -116,6 +118,7 @@ public class DafConstants {
 	public static final String STORE_HISTORICAL_DATA="store.historical.data";
 	public static final String MONITOR_PROCESS="monitor.process";
 	public static final String MONITOR_HBASE_PROCESS="monitor.hbase.process";
+	public static final String MONITOR_WARNING_PROCESS="monitor.warning.process";
 	
 	
 	public static final String LIVEFLEET_WARNING_INSERT = "INSERT INTO livefleet.livefleet_warning_statistics(trip_id , vin   , warning_time_stamp,	warning_class,	warning_number,	latitude,	longitude,	heading,	vehicle_health_status_type,	vehicle_driving_status_type,	driver1_id,	warning_type,	distance_until_next_service,	odometer_val,	lastest_processed_message_time_stamp,	created_at, modified_at,	message_type) VALUES ( ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
@@ -131,6 +134,9 @@ public class DafConstants {
 	///update query
 	public static final String LIVEFLEET_WARNING_DEACTIVATE="UPDATE livefleet.livefleet_warning_statistics set warning_type='D' where vin = ? and warning_class=? and warning_number=? and warning_type='A'";
 	public static final String READ_DTC_WARNING = "select id from master.dtcwarning where class=? and number=?";
+	
+	
+	public static final String WARNING_DATA_PROCESS="warning.data.process";
 	
 		
 		

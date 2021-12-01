@@ -20,6 +20,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
         Task<PDFReportScreenModel> GetPDFBinaryFormatById(ReportPDFByidModel request);
         Task<PDFReportScreenModel> GetPDFBinaryFormatByToken(ReportPDFBytokenModel request);
         Task<string> UpdatePDFBinaryRecordByToken(string token);
+        Task<IEnumerable<ScheduledReport>> GetScheduledReport(int reportschedulerId);
         #endregion
 
         #region Report Creation Scheduler

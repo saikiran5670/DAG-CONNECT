@@ -540,9 +540,12 @@ removeDuplicates(originalArray, prop) {
     if (this.allSelectedAlertLevel) {
       this.select3.options.forEach((item: MatOption) => item.select());
       this.vehicleListData = this.fleetData;
+      this.noRecordFlag=false;
     } else {
       this.select3.options.forEach((item: MatOption) => item.deselect());
+      this.vehicleListData = [];
     }
+    this.filterVINonMap();
   }
 
   onChangeLevel() {
@@ -622,9 +625,12 @@ removeDuplicates(originalArray, prop) {
     if(this.allSelectedAlertCategory) {
       this.select1.options.forEach((item: MatOption) => item.select());
       this.vehicleListData = this.fleetData;
+      this.noRecordFlag=false;
     } else {
       this.select1.options.forEach((item: MatOption) => item.deselect());
+      this.vehicleListData = [];
     }
+    this.filterVINonMap();
   }
   onChangeCategory(){
     let newStatus = true;

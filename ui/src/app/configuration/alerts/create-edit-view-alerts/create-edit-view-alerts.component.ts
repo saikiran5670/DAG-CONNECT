@@ -867,6 +867,8 @@ proceedStep(prefData: any, preference: any){
       //   element["subcriptionStatus"] = true;
       //   this.vehicleListForTable.push(element);
       // });
+      
+      this.vehicleListForTable = this.vehicleByVehGroupList;
 
       //Commented because only vehicles from that group should be displayed.
       //non-subscribed vehicles

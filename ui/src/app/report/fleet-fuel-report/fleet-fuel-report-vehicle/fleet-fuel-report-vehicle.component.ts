@@ -62,6 +62,8 @@ export class FleetFuelReportVehicleComponent implements OnInit {
 
   vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   initData: any = [];
+  finalPrefData: any = [];
+  validTableEntry: any = [];
   FuelData: any;
   graphData: any;
   selectedTrip = new SelectionModel(true, []);
@@ -605,9 +607,10 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   private dataInterchangeService: DataInterchangeService) {
     this.dataInterchangeService.prefSource$.subscribe((prefResp: any) => {
       if(prefResp && (prefResp.type == 'fuel report') && (prefResp.tab == 'Vehicle') && prefResp.prefdata){
-        // this.resetPref();
-        // this.reportPrefData = prefResp.prefdata;
-        // this.onSearch();
+        this.resetPref();
+        this.reportPrefData = prefResp.prefdata;
+        this.preparePrefData(this.reportPrefData);
+        this.onSearch();
       }
     });
   }
@@ -709,8 +712,8 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   }
 
   checkForPreference(fieldKey) {
-    if (this.reportPrefData.length != 0) {
-      let filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_'+fieldKey));
+    if (this.finalPrefData.length != 0) {
+      let filterData = this.finalPrefData.filter(item => item.key.includes('rp_ff_report_vehicle_'+fieldKey)); 
       if (filterData.length > 0) {
         if (filterData[0].state == 'A') {
           return true;
@@ -742,17 +745,46 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   }
 
   getFleetPreferences(){
-    this.reportService.getUserPreferenceReport(this.fleetFuelReportId, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
-      this.reportPrefData = data["userPreferences"];
+    //this.reportService.getUserPreferenceReport(this.fleetFuelReportId, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
+    this.reportService.getReportUserPreference(this.fleetFuelReportId).subscribe((data: any) => {  
+    this.reportPrefData = data["userPreferences"];
       this.resetPref();
-      // this.preparePrefData(this.reportPrefData);
+      this.preparePrefData(this.reportPrefData);
       this.loadWholeTripData();
     }, (error) => {
       this.reportPrefData = [];
       this.resetPref();
-      // this.preparePrefData(this.reportPrefData);
+      //this.preparePrefData(this.reportPrefData);
       this.loadWholeTripData();
     });
+  }
+
+  preparePrefData(reportPref: any){
+    if(reportPref && reportPref.subReportUserPreferences && reportPref.subReportUserPreferences.length > 0){
+      let vehPrf: any = reportPref.subReportUserPreferences.filter(i => i.key == 'rp_ff_report_vehicle');
+      if(vehPrf.length > 0){ // vehicle pref present
+        if(vehPrf[0].subReportUserPreferences && vehPrf[0].subReportUserPreferences.length > 0){
+          vehPrf[0].subReportUserPreferences.forEach(element => {
+            if(element.subReportUserPreferences && element.subReportUserPreferences.length > 0){
+              element.subReportUserPreferences.forEach(elem => {
+                this.finalPrefData.push(elem);
+              });
+            }
+          });
+        }
+      }
+    }
+    this.calcTableEntry(this.finalPrefData);
+  }
+
+  calcTableEntry(entries: any){
+    let _list = entries.filter(i => i.key.includes('rp_ff_report_vehicle_vehicledetails_'));
+    if(_list && _list.length > 0){
+      let _l = _list.filter(j => j.state == 'A');
+      if(_l && _l.length > 0){
+        this.validTableEntry = _l.slice();
+      }
+    }
   }
 
   loadWholeTripData(){
@@ -776,7 +808,8 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   }
 
   resetPref(){
-
+    this.finalPrefData = [];
+    this.validTableEntry = [];
   }
 
   resetCharts(){
@@ -792,18 +825,18 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   onSearch(){
     this.resetCharts();
     this.isChartsOpen = true;
-    if (this.reportPrefData.length != 0) {
-      let filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_chart_fuelconsumed'));
+    if (this.finalPrefData.length != 0) {
+      let filterData = this.finalPrefData.filter(item => item.key.includes('vehicle_chart_fuelconsumed'));
       this.ConsumedChartType = filterData[0].chartType == 'L' ? 'Line' : 'Bar';
-      filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_chart_numberoftrips'));
+      filterData = this.finalPrefData.filter(item => item.key.includes('vehicle_chart_numberoftrips'));
       this.TripsChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
-      filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_chart_co2emission'));
+      filterData = this.finalPrefData.filter(item => item.key.includes('vehicle_chart_co2emission'));
       this.Co2ChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
-      filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_chart_distance'));
+      filterData = this.finalPrefData.filter(item => item.key.includes('vehicle_chart_distance'));
       this.DistanceChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
-      filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_chart_fuelconsumption'));
+      filterData = this.finalPrefData.filter(item => item.key.includes('vehicle_chart_fuelconsumption'));
       this.ConsumptionChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
-      filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_chart_idledurationtotaltime'));
+      filterData = this.finalPrefData.filter(item => item.key.includes('vehicle_chart_idledurationtotaltime'));
       this.DurationChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
     } else {
       this.ConsumedChartType = 'Line';
@@ -1960,6 +1993,9 @@ setVehicleGroupAndVehiclePreSelection() {
     const ranking = 'Ranking Section'
     const summary = 'Summary Section';
     const detail = 'Detail Section';
+    let ccdOne = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance3050metric || '30-50') : (this.translationData.lblCruiseControlDistance1530imperial || '15-30');
+    let ccdTwo = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance5075metric || '50-75') : (this.translationData.lblCruiseControlDistance3045imperial || '30-45');
+    let ccdThree = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance75metric || '>75') : (this.translationData.lblCruiseControlDistance45imperial || '>45');
     let unitVal100km = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || 'Ltrs/100km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmilepergallon || 'mpg') : (this.translationData.lblmilepergallon || 'mpg');
     let unitValuekm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblLtr || 'l') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblgallonmile || 'gal') : (this.translationData.lblgallonmile || 'gal');
     let unitValkg = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 'kg') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblton || 't') : (this.translationData.lblton|| 't');
@@ -1971,8 +2007,8 @@ setVehicleGroupAndVehiclePreSelection() {
     const rankingHeader = ['Ranking','VehicleName','Vin','VehicleRegistrationNo','Consumption('+unitVal100km+')']
     const header =  ['Vehicle Name', 'VIN', 'Vehicle Registration No', 'Distance('+unitValkm+')', 'Average Distance Per Day('+unitValkm+')', 'Average Speed('+unitValkmh+')',
     'Max Speed('+unitValkmh+')', 'Number Of Trips', 'Average Gross Weight Comb('+unitValkg1+')','fuelConsumed('+unitValuekm+')', 'fuelConsumption('+unitVal100km+')',
-    'CO2 Emission('+ unitValkg1+')','Idle Duration(%)','PTO Duration(%)','HarshBrakeDuration(%)','Heavy Throttle Duration(%)','Cruise Control Distance 30-50(km/h)%',
-    'Cruise Control Distance 50-75(km/h)%','Cruise Control Distance>75(km/h)%', 'Average Traffic Classification',
+    'CO2 Emission('+ unitValkg1+')','Idle Duration(%)','PTO Duration(%)','HarshBrakeDuration(%)','Heavy Throttle Duration(%)','Cruise Control Distance '+ccdOne+'('+unitValkmh+')%',
+    'Cruise Control Distance '+ccdTwo+'('+unitValkmh+')%','Cruise Control Distance'+ccdThree+'('+unitValkmh+')%', 'Average Traffic Classification',
     'CC Fuel Consumption('+unitVal100km+')','Fuel Consumption CC Non Active('+unitVal100km+')','Idling Consumption','Dpa Score','DPA Anticipation Score%','DPA Breaking Score%',
     'Idling PTO Score (hh:mm:ss)','Idling with PTO%','Idling Without PTO (hh:mm:ss)','Idling Without PTO%','Foot Brake',
     'CO2 Emmision(gr/km)','Idling Consumption With PTO('+unitVal100km+')'];
@@ -2070,6 +2106,9 @@ setVehicleGroupAndVehiclePreSelection() {
 
     var doc = new jsPDF('p', 'mm', 'a4');
    //let rankingPdfColumns = [this.rankingColumns];
+   let ccdOne = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance3050metric || '30-50') : (this.translationData.lblCruiseControlDistance1530imperial || '15-30');
+   let ccdTwo = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance5075metric || '50-75') : (this.translationData.lblCruiseControlDistance3045imperial || '30-45');
+   let ccdThree = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance75metric || '>75') : (this.translationData.lblCruiseControlDistance45imperial || '>45');
    let distance = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm ||'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile || 'mile');
    let speed =(this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh ||'km/h') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmileh || 'mph') : (this.translationData.lblmileh || 'mph');
    let ton= (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton || 't') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lbltons || 'Ton') : (this.translationData.lbltons || 'Ton');
@@ -2217,15 +2256,15 @@ setVehicleGroupAndVehiclePreSelection() {
         break;
       }
       case 'cruiseControlDistance3050' :{
-        pdfColumnHeads.push('Cruise Control Distance 30-50('+speed+')(%)');
+        pdfColumnHeads.push('Cruise Control Distance '+ccdOne+'('+speed+')(%)');
         break;
       }
       case 'cruiseControlDistance5075' :{
-        pdfColumnHeads.push('Cruise Control Distance 50-75('+speed+')(%)');
+        pdfColumnHeads.push('Cruise Control Distance '+ccdTwo+'('+speed+')(%)');
         break;
       }
       case 'cruiseControlDistance75' :{
-        pdfColumnHeads.push('Cruise Control Distance 75('+speed+')(%)');
+        pdfColumnHeads.push('Cruise Control Distance '+ccdThree+'('+speed+')(%)');
         break;
       }
       case 'averageTrafficClassification' :{

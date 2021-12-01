@@ -564,7 +564,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
             {
                 var parameter = new DynamicParameters();
 
-                string queryAlert = @"SELECT repsch.id as repsch_id, 
+                string query = @"SELECT repsch.id as repsch_id, 
                                             repsch.organization_id as repsch_organization_id, 
                                             repsch.report_id as repsch_report_id,
 											rep.name as rep_reportname,
@@ -640,13 +640,40 @@ namespace net.atos.daf.ct2.reportscheduler.repository
 										INNER JOIN master.report rep
 										on rep.id=repsch.report_id";
                 long currentdate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
-                queryAlert = queryAlert + " where repsch.organization_id = @organization_id and repsch.status<>'D'";
+                query = query + " where repsch.organization_id = @organization_id and repsch.status<>'D'";
                 parameter.Add("@organization_id", organizationid);
                 parameter.Add("@currentDate", currentdate);
                 parameter.Add("@vehicleIds", vehicleIds);
                 parameter.Add("@groupIds", groupIds);
-                IEnumerable<ReportSchedulerResult> reportSchedulerResult = await _dataAccess.QueryAsync<ReportSchedulerResult>(queryAlert, parameter);
+                IEnumerable<ReportSchedulerResult> reportSchedulerResult = await _dataAccess.QueryAsync<ReportSchedulerResult>(query, parameter);
                 return await repositoryMapper.GetReportSchedulerList(reportSchedulerResult);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<ScheduledReport>> GetScheduledReport(int reportschedulerId)
+        {
+            MapperRepo repositoryMapper = new MapperRepo();
+            try
+            {
+                var parameter = new DynamicParameters();
+
+                string query = @"SELECT schrep.id as Id, 
+                                            schrep.schedule_report_id as ScheduleReportId,                                            
+                                            schrep.downloaded_at as DownloadedAt, 
+                                            schrep.valid_till as ValidTill, 
+                                            schrep.created_at as CreatedAt, 
+                                            schrep.start_date as StartDate, 
+                                            schrep.end_date as EndDate
+											FROM master.scheduledreport as schrep
+											WHERE schrep.schedule_report_id =@reportschedulerId AND schrep.valid_till > @currentDate";
+                long currentdate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
+                parameter.Add("@reportschedulerId", reportschedulerId);
+                parameter.Add("@currentDate", currentdate);
+                return await _dataAccess.QueryAsync<ScheduledReport>(query, parameter);
             }
             catch (Exception)
             {

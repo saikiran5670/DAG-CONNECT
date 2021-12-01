@@ -17,6 +17,10 @@ export class ViewReportSchedulerComponent implements OnInit {
 
   @Input() translationData: any = {};
   @Input() selectedRowData: any;
+  @Input() prefTimeFormat: any;
+  @Input() prefTimeZone: any;
+  @Input() prefDateFormat: any;
+  @Input() completePrefData: any;
   @Output() backToPage = new EventEmitter<any>();
 
   vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
@@ -29,9 +33,6 @@ export class ViewReportSchedulerComponent implements OnInit {
   language: string= "";
   vehicleGroupName: string= "";
   vehicleName: string= "";
-  prefTimeFormat: any= 24; //-- coming from pref setting
-  prefTimeZone: any; //-- coming from pref setting
-  prefDateFormat: any = 'DD/MM/YYYY'; //-- coming from pref setting
   accountPrefObj: any;
   localStLanguage: any;
   accountOrganizationId: any;
@@ -42,7 +43,7 @@ export class ViewReportSchedulerComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
-  breadcumMsg: string= ""
+  breadcumMsg: string = "";
 
   constructor(private translationService: TranslationService,
               private organizationService: OrganizationService,
@@ -58,59 +59,69 @@ export class ViewReportSchedulerComponent implements OnInit {
     this.months= [{id : 0, value : 'January'},{id : 1, value : 'February'},{id : 2, value : 'March'},{id : 3, value : 'April'},{id : 4, value : 'May'},{id : 5, value : 'June'},
                   {id : 6, value : 'July'},{id : 7, value : 'August'},{id : 8, value : 'September'},{id : 9, value : 'October'},{id : 10, value : 'November'},{id : 11, value : 'December'}]
 
-    this.breadcumMsg= this.getBreadcum();
+    this.breadcumMsg = this.getBreadcum();
 
-    this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
-      if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
-        this.proceedStep(prefData, this.accountPrefObj.accountPreference);
-      }else{ // org pref
-        this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
-          this.proceedStep(prefData, orgPref);
-        }, (error) => { // failed org API
-          let pref: any = {};
-          this.proceedStep(prefData, pref);
-        });
-      }
+    //this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
+      // if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
+      //   this.proceedStep(prefData, this.accountPrefObj.accountPreference);
+      // }else{ // org pref
+      //   this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
+      //     this.proceedStep(prefData, orgPref);
+      //   }, (error) => { // failed org API
+      //     let pref: any = {};
+      //     this.proceedStep(prefData, pref);
+      //   });
+      // }
       
       this.timeRangeSelection(this.selectedRowData[0].frequencyType);
-
       let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
       if(vehicleDisplayId) {
-        let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+        let vehicledisplay = this.completePrefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
         if(vehicledisplay.length != 0) {
           this.vehicleDisplayPreference = vehicledisplay[0].name;
-
           this.vehicleName = this.selectedRowData[0].vehicleGroupAndVehicleList != "" ? this.selectedRowData[0].scheduledReportVehicleRef.length == 0 ? "ALL" : this.vehicleDisplayPreference == 'dvehicledisplay_VehicleName' ? this.selectedRowData[0].scheduledReportVehicleRef[0].vehicleName : this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber' ? this.selectedRowData[0].scheduledReportVehicleRef[0].vin : this.selectedRowData[0].scheduledReportVehicleRef[0].regno : "ALL";
         }
       }  
 
-    }, error => {
-      this.timeRangeSelection(this.selectedRowData[0].frequencyType);
-    });
+    // }, error => {
+    //   this.timeRangeSelection(this.selectedRowData[0].frequencyType);
+    // });
 
-    this.language= this.languageCodeList.filter(item => item.code == (this.selectedRowData[0].code).trim())[0].name;
-    this.vehicleGroupName= this.selectedRowData[0].vehicleGroupAndVehicleList != "" ? this.selectedRowData[0].scheduledReportVehicleRef.length == 0 ? "ALL" : this.selectedRowData[0].scheduledReportVehicleRef[0].vehicleGroupName: "ALL";
+    this.language = this.languageCodeList.filter(item => item.code == (this.selectedRowData[0].code).trim())[0].name;
+    this.vehicleGroupName = this.selectedRowData[0].vehicleGroupAndVehicleList != "" ? this.selectedRowData[0].scheduledReportVehicleRef.length == 0 ? "ALL" : this.selectedRowData[0].scheduledReportVehicleRef[0].vehicleGroupName: "ALL";
 
-   
     // this.vehicleName = this.selectedRowData[0].vehicleGroupAndVehicleList != "" ? this.selectedRowData[0].scheduledReportVehicleRef.length == 0 ? "ALL" : this.vehicleDisplayPreference == 'dvehicledisplay_VehicleName' ? this.selectedRowData[0].scheduledReportVehicleRef[0].vehicleName : this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber' ? this.selectedRowData[0].scheduledReportVehicleRef[0].vin : this.selectedRowData[0].scheduledReportVehicleRef[0].regno : "ALL";
-    
 
-    this.scheduledReportList= this.selectedRowData[0].scheduledReport;
-    this.scheduledReportList.forEach(element => {
-      element.reportName=this.selectedRowData[0].reportName;
-      element.startDate= Util.convertUtcToDateFormat(element.startDate, this.prefDateFormat+"  HH:mm:ss", this.prefTimeZone);
-      element.endDate= Util.convertUtcToDateFormat(element.endDate, this.prefDateFormat+"  HH:mm:ss",  this.prefTimeZone)
-    });
+    this.getScheduledReportList(); // new changes
 
-    this.updateDatasource();
+    // this.scheduledReportList = this.selectedRowData[0].scheduledReport;
+    // this.scheduledReportList.forEach(element => {
+    //   element.reportName = this.selectedRowData[0].reportName;
+    //   element.startDate = Util.convertUtcToDateFormat(element.startDate, this.prefDateFormat+"  HH:mm:ss", this.prefTimeZone);
+    //   element.endDate = Util.convertUtcToDateFormat(element.endDate, this.prefDateFormat+"  HH:mm:ss",  this.prefTimeZone)
+    // });
+    // this.updateDatasource();
 
     //  this.onDownloadReport({reportName : "Trip Report", id : 128, startDate : "07/07/2021 12:0:0"});
-    
+  }
+
+  getScheduledReportList(){
+    this.reportSchedulerService.getScheduledReportList(this.selectedRowData[0].id).subscribe((_list: any) => {
+      if(_list){
+        this.scheduledReportList = _list.scheduledReport;
+        this.scheduledReportList.forEach(element => {
+          element.reportName = this.selectedRowData[0].reportName;
+          element.startDate = Util.convertUtcToDateFormat(element.startDate, this.prefDateFormat+"  HH:mm:ss", this.prefTimeZone);
+          element.endDate = Util.convertUtcToDateFormat(element.endDate, this.prefDateFormat+"  HH:mm:ss",  this.prefTimeZone)
+        });
+        this.updateDatasource();
+      }
+    }, (error) => {
+      console.log(error);
+    });
   }
 
   updateDatasource(){
-    // this.scheduledReportList = data;
-   
     this.dataSource = new MatTableDataSource(this.scheduledReportList);
     // this.dataSource.filterPredicate = function(data: any, filter: string): boolean {
     //   return (
