@@ -7,8 +7,10 @@ namespace net.atos.daf.ct2.schedular.repository
 {
     public interface IDataCleanupRepository
     {
-        Task<int> DataPurging(DataCleanupConfiguration data);
+        int DataPurging(DataCleanupConfiguration data);
         Task<List<DataCleanupConfiguration>> GetDataPurgingConfiguration();
-        void Worker(int workerId, ConcurrentQueue<DataCleanupConfiguration> _dataCleanupConfigurations);
+        void Worker(DataCleanupConfiguration op);
+        Task<int> DeleteDataFromTables(string connectString, DataCleanupConfiguration dataCleanupConfiguration);
+        Task<DataPurgingTableLog> CreateDataPurgingTableLog(DataPurgingTableLog log);
     }
 }

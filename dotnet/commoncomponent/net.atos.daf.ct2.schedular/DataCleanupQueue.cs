@@ -93,7 +93,7 @@ namespace net.atos.daf.ct2.schedular
                             try
                             {
                                 tries++;
-                                var noOfDeletedData = _dataCleanupManager.DataPurging(op).Result;
+                                var noOfDeletedData = _dataCleanupManager.DataPurging(op);
                                 break;
                             }
                             catch (Exception)

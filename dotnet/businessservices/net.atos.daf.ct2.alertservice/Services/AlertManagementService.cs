@@ -63,10 +63,10 @@ namespace net.atos.daf.ct2.alertservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(ActivateAlert)}: With Error:-", ex);
                 return await Task.FromResult(new AlertResponse
                 {
-                    Message = ex.Message,
+                    Message = $"{nameof(ActivateAlert)}: {AlertConstants.INTERNAL_SERVER_MSG}.",
                     Code = ResponseCode.InternalServerError
                 });
             }
@@ -97,10 +97,10 @@ namespace net.atos.daf.ct2.alertservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(SuspendAlert)}: With Error:-", ex);
                 return await Task.FromResult(new AlertResponse
                 {
-                    Message = ex.Message,
+                    Message = $"{nameof(SuspendAlert)}: {AlertConstants.INTERNAL_SERVER_MSG}.",
                     Code = ResponseCode.InternalServerError
                 });
             }
@@ -140,10 +140,10 @@ namespace net.atos.daf.ct2.alertservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(DeleteAlert)}: With Error:-", ex);
                 return await Task.FromResult(new AlertResponse
                 {
-                    Message = String.Format(AlertConstants.DELETE_ALERT_FAILURE_MSG, request.AlertId, ex.Message),
+                    Message = String.Format(AlertConstants.DELETE_ALERT_FAILURE_MSG, request.AlertId, $"{nameof(DeleteAlert)}: {AlertConstants.INTERNAL_SERVER_MSG}."),
                     Code = ResponseCode.Failed
                 });
             }
@@ -171,11 +171,11 @@ namespace net.atos.daf.ct2.alertservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetAlertCategory)}: With Error:-", ex);
                 return await Task.FromResult(new AlertCategoryResponse
                 {
                     Code = ResponseCode.Failed,
-                    Message = "Get alert category fail : " + ex.Message
+                    Message = $"{nameof(GetAlertCategory)}: {AlertConstants.INTERNAL_SERVER_MSG}."
                 });
             }
         }

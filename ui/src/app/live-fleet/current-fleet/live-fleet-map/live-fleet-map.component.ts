@@ -372,7 +372,7 @@ export class LiveFleetMapComponent implements OnInit {
     let _ui = this.fleetMapService.getUI();
     this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons, this.displayGlobalPOIList);
 
-    //this.fleetMapService.showCategoryPOI(this.displayPOIList,_ui);
+    this.fleetMapService.showCategoryPOI(this.displayPOIList,_ui);
   }
 
   openClosedGlobalPOI(index: any) {

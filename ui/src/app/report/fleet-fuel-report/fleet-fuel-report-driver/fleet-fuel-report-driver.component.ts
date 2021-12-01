@@ -29,6 +29,7 @@ import * as fs from 'file-saver';
 import { Workbook } from 'exceljs';
 import { DatePipe } from '@angular/common';
 import { ReplaySubject } from 'rxjs';
+import { DataInterchangeService } from '../../../services/data-interchange.service';
 
 @Component({
   selector: 'app-fleet-fuel-report-driver',
@@ -607,17 +608,21 @@ export class FleetFuelReportDriverComponent implements OnInit {
   idleDurationConverted: any;
 
   constructor(private _formBuilder: FormBuilder,
-              private translationService: TranslationService,
-              private organizationService: OrganizationService,
-              private reportService: ReportService,
-              private router: Router, private datePipe: DatePipe,
-              @Inject(MAT_DATE_FORMATS) private dateFormats,
-              private reportMapService: ReportMapService) { }
-              defaultTranslation(){
-                this.translationData = {
-                  lblSearchReportParameters: 'Search Report Parameters'
-                }
-               }
+    private translationService: TranslationService,
+    private organizationService: OrganizationService,
+    private reportService: ReportService,
+    private router: Router, private datePipe: DatePipe,
+    @Inject(MAT_DATE_FORMATS) private dateFormats,
+    private reportMapService: ReportMapService,
+    private dataInterchangeService: DataInterchangeService) {
+      this.dataInterchangeService.prefSource$.subscribe((prefResp: any) => {
+        if(prefResp && (prefResp.type == 'fuel report') && (prefResp.tab == 'Driver') && prefResp.prefdata){
+          // this.resetPref();
+          // this.reportPrefData = prefResp.prefdata;
+          // this.onSearch();
+        }
+      });
+    }
 
   ngOnInit(): void {
     this.fleetFuelSearchData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
