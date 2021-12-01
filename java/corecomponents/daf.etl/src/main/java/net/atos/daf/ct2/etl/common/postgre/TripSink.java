@@ -3,8 +3,6 @@ package net.atos.daf.ct2.etl.common.postgre;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import org.apache.flink.api.java.utils.ParameterTool;
@@ -29,15 +27,17 @@ public class TripSink extends RichSinkFunction<Trip> implements Serializable {
 
 	private PreparedStatement statement;
 	private Connection connection;
-	private List<Trip> queue;
-	private List<Trip> synchronizedCopy;
 	TripSinkDao tripDao;
+	//private List<Trip> queue;
+	//private List<Trip> synchronizedCopy;
+	
 	//private PreparedStatement tripStatisticQry;
 
 	@Override
 	public void invoke(Trip rec) throws Exception {
 
-		try {
+		tripDao.insert(rec, statement);
+		/*try {
 			queue.add(rec);
 
 			if (queue.size() >= 1) {
@@ -55,7 +55,7 @@ public class TripSink extends RichSinkFunction<Trip> implements Serializable {
 			logger.error("Issue while calling invoke() in TripSink ::{} " ,e);
 			e.printStackTrace();
 			//remove try catch and throw exception
-		}
+		}*/
 
 	}
 
@@ -63,8 +63,8 @@ public class TripSink extends RichSinkFunction<Trip> implements Serializable {
 	public void open(org.apache.flink.configuration.Configuration parameters) throws Exception {
 		ParameterTool envParams = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
 		tripDao = new TripSinkDao();
-		queue = new ArrayList<Trip>();
-		synchronizedCopy = new ArrayList<Trip>();
+		//queue = new ArrayList<Trip>();
+		//synchronizedCopy = new ArrayList<Trip>();
 		
 		try {
 			/*connection = PostgreDataSourceConnection.getInstance().getDataSourceConnection(

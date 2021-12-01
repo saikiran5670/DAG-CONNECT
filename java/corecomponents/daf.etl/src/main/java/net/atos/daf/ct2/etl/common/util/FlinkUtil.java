@@ -9,13 +9,10 @@ import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.runtime.state.StateBackend;
 import org.apache.flink.runtime.state.filesystem.FsStateBackend;
 import org.apache.flink.streaming.api.CheckpointingMode;
-import org.apache.flink.streaming.api.environment.CheckpointConfig.ExternalizedCheckpointCleanup;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.atos.daf.common.ct2.exception.FailureException;
 import net.atos.daf.common.ct2.exception.TechnicalException;
 
 public class FlinkUtil {
@@ -79,8 +76,8 @@ public class FlinkUtil {
 		return env;
 	}
 
-	public static StreamTableEnvironment createStreamTableEnvironment(StreamExecutionEnvironment env)
+	/*public static StreamTableEnvironment createStreamTableEnvironment(StreamExecutionEnvironment env)
 			throws FailureException {
 		return StreamTableEnvironment.create(env);
-	}
+	}*/
 }
