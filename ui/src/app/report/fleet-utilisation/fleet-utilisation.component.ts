@@ -808,10 +808,22 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
           this.distanceChart.state = element.state == "A" ? true : false;
           this.distanceChart.chartType = element.chartType;
           this.distanceChartType = element.chartType == "L" ? true : false;
+          this.barChartOptions.scales.xAxes[0].scaleLabel.labelString = this.translationData.lblDates || 'Dates'
+          this.barChartOptions.scales.yAxes[1].scaleLabel.labelString = this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblkmperday || 'km/day' })` : `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblmilesperday || 'miles/day'})`;
+          this.barChartOptions.scales.yAxes[0].scaleLabel.labelString =  this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm || 'km'})` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles ||'miles'})`;
+          this.distanceLineChartOptions.scales.yAxes[1].scaleLabel.labelString = this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblkmperday || 'km/day' })` : `${this.translationData.lblpervehicle} (${this.translationData.lblmilesperday || 'miles/day'})`;
+          this.distanceLineChartOptions.scales.yAxes[0].scaleLabel.labelString =  this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm || 'km'})` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles ||'miles'})`;
+          this.distanceLineChartOptions.scales.xAxes[0].scaleLabel.labelString = this.translationData.lblDates || 'Dates'
+
         }else if(element.key == "rp_fu_report_chart_activevehiclperday"){
           this.activeVehicleChart.state = element.state == "A" ? true : false;
           this.activeVehicleChart.chartType = element.chartType;
           this.activeVehicleChartType = element.chartType == "L" ? true : false;
+          this.lineChartOptions.scales.yAxes[0].scaleLabel.labelString = `${this.translationData.lblvalue || 'value'}(${this.translationData.lblnumberofvehicles || 'number of vehicles'})`;
+          this.lineChartOptions.scales.xAxes[0].scaleLabel.labelString = this.translationData.lblDates || 'Dates';
+          this.VehicleBarChartOptions.scales.yAxes[0].scaleLabel.labelString = `${this.translationData.lblvalue || 'value'}(${this.translationData.lblnumberofvehicles || 'number of vehicles'})`;
+          this.VehicleBarChartOptions.scales.xAxes[0].scaleLabel.labelString = this.translationData.lblDates || 'Dates';
+
         }else if(element.key == "rp_fu_report_chart_mileagebased"){
           this.mileageBasedChart.state = element.state == "A" ? true : false;
           this.mileageBasedChart.chartType = element.chartType;
