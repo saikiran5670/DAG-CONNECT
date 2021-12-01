@@ -306,31 +306,38 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 if (orgnizationid == 0) return BadRequest(ReportSchedulerConstants.REPORTSCHEDULER_ORG_ID_NOT_NULL_MSG);
-                orgnizationid = GetContextOrgId();
-                ReportSchedulerListResponse response = await _reportschedulerClient.GetReportSchedulerListAsync(new ReportParameterRequest { AccountId = accountId, OrganizationId = orgnizationid });
-                if (response.ReportSchedulerRequest.Any())
-                {
-                    foreach (var item in response.ReportSchedulerRequest)
-                    {
-                        if (item.ScheduledReportVehicleRef.Any())
-                        {
-                            foreach (var vehicle in item.ScheduledReportVehicleRef)
-                            {
-                                if (vehicle.VehicleGroupId > 0 && vehicle.VehicleGroupType != "S")
-                                {
-                                    VehicleCountFilterRequest vehicleRequest = new VehicleCountFilterRequest();
-                                    vehicleRequest.VehicleGroupId = vehicle.VehicleGroupId;
-                                    vehicleRequest.GroupType = vehicle.VehicleGroupType;
-                                    vehicleRequest.FunctionEnum = vehicle.FunctionEnum;
-                                    vehicleRequest.OrgnizationId = orgnizationid;
-                                    VehicleCountFilterResponse vehicleResponse = await _vehicleClient.GetVehicleAssociatedGroupCountAsync(vehicleRequest);
-                                    vehicle.VehicleCount = vehicleResponse.VehicleCount;
-                                }
-                            }
-                        }
 
-                    }
-                }
+                // Fetch Feature Id of the report for visibility
+                var featureId = GetMappedFeatureId(HttpContext.Request.Path.Value.ToLower());
+                int roleid = _userDetails.RoleId;
+                int contextorgid = GetContextOrgId();
+                accountId = _userDetails.AccountId;
+                orgnizationid = GetUserSelectedOrgId();
+                Metadata headers = new Metadata();
+                headers.Add("report_feature_id", Convert.ToString(featureId));
+                ReportSchedulerListResponse response = await _reportschedulerClient.GetReportSchedulerListAsync(new ReportParameterRequest { AccountId = accountId, OrganizationId = orgnizationid, RoleId = roleid, ContextOrgId = contextorgid }, headers);
+                //if (response.ReportSchedulerRequest.Any())
+                //{
+                //    foreach (var item in response.ReportSchedulerRequest)
+                //    {
+                //        if (item.ScheduledReportVehicleRef.Any())
+                //        {
+                //            foreach (var vehicle in item.ScheduledReportVehicleRef)
+                //            {
+                //                if (vehicle.VehicleGroupId > 0 && vehicle.VehicleGroupType != "S")
+                //                {
+                //                    VehicleCountFilterRequest vehicleRequest = new VehicleCountFilterRequest();
+                //                    vehicleRequest.VehicleGroupId = vehicle.VehicleGroupId;
+                //                    vehicleRequest.GroupType = vehicle.VehicleGroupType;
+                //                    vehicleRequest.FunctionEnum = vehicle.FunctionEnum;
+                //                    vehicleRequest.OrgnizationId = orgnizationid;
+                //                    VehicleCountFilterResponse vehicleResponse = await _vehicleClient.GetVehicleAssociatedGroupCountAsync(vehicleRequest);
+                //                    vehicle.VehicleCount = vehicleResponse.VehicleCount;
+                //                }
+                //            }
+                //        }
+                //    }
+                //}
 
                 if (response == null)
                     return StatusCode(500, ReportSchedulerConstants.REPORTSCHEDULER_INTERNEL_SERVER_ISSUE);

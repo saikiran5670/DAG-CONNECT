@@ -49,7 +49,7 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
   scheduledDate: any;
   prefTimeFormat: any = 12; //-- coming from pref setting
   prefDateFormat: any = 'ddateformat_dd/mm/yyyy'; //-- coming from pref setting
-  prefTimeZone: any; //-- coming from pref setting
+  prefTimeZone: any; //-- coming from pref setting  
   schedulerData: any ={
     campaignName: "",
     vehicalName: "",
@@ -61,7 +61,7 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
     scheduledTime:''
 
   }
-  today= new Date();
+   today= new Date();
   @Output() backToPage = new EventEmitter<any>();
   @Input() selectedVehicleUpdateDetailsData: any;
   @Input() selectedVehicleUpdateDetails: any;
@@ -254,6 +254,7 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
   }
 
   loadVehicleDetailsData(selectedVehicleUpdateDetailsData: any) {
+    this.initData=[];
     this.showLoadingIndicator = true;
     if (selectedVehicleUpdateDetailsData) {
       var todaysDate = moment();
@@ -284,7 +285,7 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
       this.updateDataSource(this.initData);
     }
     this.hideloader();
-  }
+  } 
 
   updateDataSource(tableData: any) {
     this.dataSource = new MatTableDataSource(tableData);
@@ -344,11 +345,11 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
     });
   }
 
-  openScheduler(rowData: any) { 
+  openScheduler(rowData: any) {   
   this.schedulerData.campaignName = rowData.campaignSubject;
   this.schedulerData.baseLineId = rowData.baselineAssignmentId;
   this.schedulerData.campaignID = rowData.campaignID;
-  this.schedulerData.vin = this.selectedVin;
+  this.schedulerData.vin = this.selectedVin;  
   }
  
   changeScheduleDateEvent (event: MatDatepickerInputEvent<any>) {
@@ -394,12 +395,12 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
 
   onSubmitScheduler(){
     this.trigger.closePopover();
-    this.showConfirmDailog(this.schedulerData);
-   
+    this.showConfirmDailog(this.schedulerData);  
+    
 }
 
-onCancel(){
-  this.trigger.closePopover();
+onCancel(){ 
+  this.trigger.closePopover(); 
   // this.trigger.destroyPopover();
 }
 showConfirmDailog(schedulerData: any) {
@@ -428,7 +429,7 @@ showConfirmDailog(schedulerData: any) {
           // this.hideloader();
           let successMsg =`${this.schedulerData.campaignID} ${this.formattedDate} ${this.scheduledTime} scheduled successfully.`
           this.successMsgBlink(successMsg);
-          this.otaSoftwareService.getvehicleupdatedetails(this.selectedVehicleUpdateDetails.vin).subscribe((data: any) =>{
+            this.otaSoftwareService.getvehicleupdatedetails(this.selectedVehicleUpdateDetails.vin).subscribe((data: any) =>{
             this.hideloader();
             if (data  && data.vehicleUpdateDetails && data.vehicleUpdateDetails !== null) {
               this.loadVehicleDetailsData(data)

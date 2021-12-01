@@ -25,7 +25,7 @@ import { QueryList } from '@angular/core';
 import { ViewChildren } from '@angular/core';
 import { HereService } from '../../../../services/here.service';
 import { ConfigService } from '@ngx-config/core';
-//import { LandmarkCategoryService } from '../../../../services/landmarkCategory.service'; 
+//import { LandmarkCategoryService } from '../../../../services/landmarkCategory.service';
 import { CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteData } from 'ng2-completer';
 import { MapService } from '../../report-mapservice';
 import * as fs from 'file-saver';
@@ -60,7 +60,7 @@ export class DetailDriverReportComponent implements OnInit {
   idleDuration: any =[];
   fuelConsumptionSummary: any;
   //  displayedColumns = ['All','startDate','endDate','driverName','driverID','vehicleName', 'vin', 'vehicleRegistrationNo', 'distance', 'averageDistancePerDay', 'averageSpeed',
-  //  'maxSpeed', 'numberOfTrips', 'averageGrossWeightComb', 'fuelConsumed', 'fuelConsumption', 'cO2Emission', 
+  //  'maxSpeed', 'numberOfTrips', 'averageGrossWeightComb', 'fuelConsumed', 'fuelConsumption', 'cO2Emission',
   //  'idleDuration','ptoDuration','harshBrakeDuration','heavyThrottleDuration','cruiseControlDistance3050',
   //  'cruiseControlDistance5075','cruiseControlDistance75', 'averageTrafficClassification',
   //  'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore','dpaAnticipationScore',
@@ -271,7 +271,7 @@ tripTraceArray: any = [];
   startTimeDisplay: any = '00:00:00';
   endTimeDisplay: any = '23:59:59';
   selectedStartTime: any = '00:00';
-  selectedEndTime: any = '23:59'; 
+  selectedEndTime: any = '23:59';
   fleetFuelSearchData: any = {};
   localStLanguage: any;
   accountOrganizationId: any;
@@ -333,21 +333,21 @@ tripTraceArray: any = [];
         },
         scaleLabel: {
           display: true,
-          labelString: this.translationData.lblMinutes || 'Minutes'    
+          labelString: this.translationData.lblMinutes || 'Minutes'
         }
       }],
-      xAxes: [{       
+      xAxes: [{
         type:'time',
         time:
         {
           tooltipFormat:  this.chartLabelDateFormat,
           unit: 'day',
           stepSize:1,
-          displayFormats: {      
-            day:  this.chartLabelDateFormat,            
-           },             
-        }   
-    }] 
+          displayFormats: {
+            day:  this.chartLabelDateFormat,
+           },
+        }
+    }]
     }
   };
   lineChartOptions = {
@@ -368,26 +368,26 @@ tripTraceArray: any = [];
         type: 'linear',
         ticks: {
           steps: 10,
-          stepSize: 5,      
+          stepSize: 5,
           beginAtZero:true
         },
         scaleLabel: {
           display: true,
-          labelString: this.translationData.lblNoOfTrips || 'No Of Trips'     
+          labelString: this.translationData.lblNoOfTrips || 'No Of Trips'
         }
       }],
-      xAxes: [{       
+      xAxes: [{
         type:'time',
         time:
         {
           tooltipFormat:  this.chartLabelDateFormat,
           unit: 'day',
           stepSize:1,
-          displayFormats: {      
-            day:  this.chartLabelDateFormat,            
-           },             
-        }    
-    }] 
+          displayFormats: {
+            day:  this.chartLabelDateFormat,
+           },
+        }
+    }]
     }
   };
   lineChartOptions2 = {
@@ -411,21 +411,21 @@ tripTraceArray: any = [];
         },
         scaleLabel: {
           display: true,
-          labelString:  this.prefUnitFormat == 'dunit_Metric' ? (this.translationData.lblkms || 'Kms') : (this.translationData.lblMiles || 'Miles')   
+          labelString:  this.prefUnitFormat == 'dunit_Metric' ? (this.translationData.lblkms || 'Kms') : (this.translationData.lblMiles || 'Miles')
         }
       }],
-      xAxes: [{       
+      xAxes: [{
         type:'time',
         time:
         {
           tooltipFormat:  this.chartLabelDateFormat,
           unit: 'day',
           stepSize:1,
-          displayFormats: {      
-            day:  this.chartLabelDateFormat,            
-           },             
-        }  
-    }]     
+          displayFormats: {
+            day:  this.chartLabelDateFormat,
+           },
+        }
+    }]
     }
   };
   lineChartOptions3 = {
@@ -449,21 +449,21 @@ tripTraceArray: any = [];
         },
         scaleLabel: {
           display: true,
-          labelString: this.prefUnitFormat == 'dunit_Metric' ? (this.translationData.lblLtrs || 'Ltrs') : (this.translationData.lblGallon || 'Gallon')  
+          labelString: this.prefUnitFormat == 'dunit_Metric' ? (this.translationData.lblLtrs || 'Ltrs') : (this.translationData.lblGallon || 'Gallon')
         }
       }],
-      xAxes: [{       
+      xAxes: [{
         type:'time',
         time:
         {
           tooltipFormat:  this.chartLabelDateFormat,
           unit: 'day',
           stepSize:1,
-          displayFormats: {      
-            day:  this.chartLabelDateFormat,            
-           },             
-        }    
-    }] 
+          displayFormats: {
+            day:  this.chartLabelDateFormat,
+           },
+        }
+    }]
     }
   };
   lineChartOptions4 = {
@@ -487,21 +487,21 @@ tripTraceArray: any = [];
         },
         scaleLabel: {
           display: true,
-          labelString: this.translationData.lblton || 'Ton'  
+          labelString: this.translationData.lblton || 'Ton'
         }
       }],
-      xAxes: [{       
+      xAxes: [{
         type:'time',
         time:
         {
           tooltipFormat:  this.chartLabelDateFormat,
           unit: 'day',
           stepSize:1,
-          displayFormats: {      
-            day:  this.chartLabelDateFormat,            
-           },             
-        }     
-    }] 
+          displayFormats: {
+            day:  this.chartLabelDateFormat,
+           },
+        }
+    }]
     }
   };
   lineChartOptions5 = {
@@ -528,18 +528,18 @@ tripTraceArray: any = [];
           labelString: this.prefUnitFormat == 'dunit_Metric' ? (this.translationData.lblltr100km || 'Ltrs /100 km') : (this.translationData.lblMilesPerGallon || 'Miles per gallon')
         }
       }],
-      xAxes: [{       
+      xAxes: [{
         type:'time',
         time:
         {
           tooltipFormat:  this.chartLabelDateFormat,
           unit: 'day',
           stepSize:1,
-          displayFormats: {      
-            day:  this.chartLabelDateFormat,            
-           },             
-        }      
-    }] 
+          displayFormats: {
+            day:  this.chartLabelDateFormat,
+           },
+        }
+    }]
     }
   };
   lineChartColors: Color[] = [
@@ -563,30 +563,30 @@ tripTraceArray: any = [];
         type: 'linear',
         ticks: {
           steps: 10,
-          stepSize: 5,      
+          stepSize: 5,
           beginAtZero:true
         },
         scaleLabel: {
           display: true,
-          labelString: this.translationData.lblNoOfTrips || 'No Of Trips' 
+          labelString: this.translationData.lblNoOfTrips || 'No Of Trips'
         }}
       ],
-      xAxes: [{ 
+      xAxes: [{
         barThickness: 6,
         gridLines: {
           drawOnChartArea: false
-        },      
+        },
         type:'time',
         time:
         {
           tooltipFormat:  this.chartLabelDateFormat,
           unit: 'day',
           stepSize:1,
-          displayFormats: {      
-            day:  this.chartLabelDateFormat,            
-           },             
-        }    
-    }] 
+          displayFormats: {
+            day:  this.chartLabelDateFormat,
+           },
+        }
+    }]
   }
   };
   barChartOptions1= {
@@ -604,25 +604,25 @@ tripTraceArray: any = [];
         },
         scaleLabel: {
           display: true,
-          labelString:  this.translationData.lblMinutes || 'Minutes'      
+          labelString:  this.translationData.lblMinutes || 'Minutes'
         }}
       ],
-      xAxes: [{ 
+      xAxes: [{
         barThickness: 6,
         gridLines: {
           drawOnChartArea: false
-        },      
+        },
         type:'time',
         time:
         {
           tooltipFormat:  this.chartLabelDateFormat,
           unit: 'day',
           stepSize:1,
-          displayFormats: {      
-            day:  this.chartLabelDateFormat,            
-           },             
-        }    
-    }] 
+          displayFormats: {
+            day:  this.chartLabelDateFormat,
+           },
+        }
+    }]
   }
   };
   barChartOptions2= {
@@ -640,25 +640,25 @@ tripTraceArray: any = [];
         },
         scaleLabel: {
           display: true,
-          labelString:  this.prefUnitFormat == 'dunit_Metric' ? (this.translationData.lblkms || 'Kms') : (this.translationData.lblMiles || 'Miles')    
+          labelString:  this.prefUnitFormat == 'dunit_Metric' ? (this.translationData.lblkms || 'Kms') : (this.translationData.lblMiles || 'Miles')
         }}
       ],
-      xAxes: [{ 
+      xAxes: [{
         barThickness: 6,
         gridLines: {
           drawOnChartArea: false
-        },      
+        },
         type:'time',
         time:
         {
           tooltipFormat:  this.chartLabelDateFormat,
           unit: 'day',
           stepSize:1,
-          displayFormats: {      
-            day:  this.chartLabelDateFormat,            
-           },             
-        }    
-    }] 
+          displayFormats: {
+            day:  this.chartLabelDateFormat,
+           },
+        }
+    }]
   }
   };
   barChartOptions3= {
@@ -679,22 +679,22 @@ tripTraceArray: any = [];
           labelString: this.prefUnitFormat == 'dunit_Metric' ? (this.translationData.lblLtrs || 'Ltrs') : (this.translationData.lblGallon || 'Gallon')
         }}
       ],
-      xAxes: [{ 
+      xAxes: [{
         barThickness: 6,
         gridLines: {
           drawOnChartArea: false
-        },      
+        },
         type:'time',
         time:
         {
           tooltipFormat:  this.chartLabelDateFormat,
           unit: 'day',
           stepSize:1,
-          displayFormats: {      
-            day:  this.chartLabelDateFormat,            
-           },             
-        }     
-    }] 
+          displayFormats: {
+            day:  this.chartLabelDateFormat,
+           },
+        }
+    }]
   }
   };
   barChartOptions4= {
@@ -712,25 +712,25 @@ tripTraceArray: any = [];
         },
         scaleLabel: {
           display: true,
-          labelString: this.translationData.lblton || 'Ton'    
+          labelString: this.translationData.lblton || 'Ton'
         }}
       ],
-      xAxes: [{ 
+      xAxes: [{
         barThickness: 6,
         gridLines: {
           drawOnChartArea: false
-        },      
+        },
         type:'time',
         time:
         {
           tooltipFormat:  this.chartLabelDateFormat,
           unit: 'day',
           stepSize:1,
-          displayFormats: {      
-            day:  this.chartLabelDateFormat,            
-           },             
-        }     
-    }] 
+          displayFormats: {
+            day:  this.chartLabelDateFormat,
+           },
+        }
+    }]
   }
   };
   barChartOptions5= {
@@ -751,22 +751,22 @@ tripTraceArray: any = [];
           labelString: this.prefUnitFormat == 'dunit_Metric' ? (this.translationData.lblltr100km || 'Ltrs/100 km') : (this.translationData.lblMilesPerGallon || 'Miles per gallon')
         }}
       ],
-      xAxes: [{ 
+      xAxes: [{
         barThickness: 6,
         gridLines: {
           drawOnChartArea: false
-        },      
+        },
         type:'time',
         time:
         {
           tooltipFormat:  this.chartLabelDateFormat,
           unit: 'day',
           stepSize:1,
-          displayFormats: {      
-            day:  this.chartLabelDateFormat,            
-           },             
-        }   
-    }] 
+          displayFormats: {
+            day:  this.chartLabelDateFormat,
+           },
+        }
+    }]
   }
   };
   barChartData1: ChartDataSets[] = [{ data: [], label: '' },];
@@ -794,8 +794,8 @@ tripTraceArray: any = [];
   _state: any ;
   map_key: any = '';
   platform: any = '';
-  
-  constructor(private _formBuilder: FormBuilder, 
+
+  constructor(private _formBuilder: FormBuilder,
               //private landmarkCategoryService: LandmarkCategoryService,
               private translationService: TranslationService,
               private organizationService: OrganizationService,
@@ -826,11 +826,12 @@ tripTraceArray: any = [];
                }
 
                defaultTranslation(){
-                this.translationData = { }    
+                this.translationData = { }
               }
-               
+
   ngOnInit(): void {
     this.fleetFuelSearchData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
+    console.log("translationData for driver" +this.translationData);
     // console.log("----globalSearchFilterData---",this.fleetUtilizationSearchData)
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
@@ -880,7 +881,7 @@ tripTraceArray: any = [];
     // this.proceedStep(prefData,pref);
 
     //this.getFleetPreferences();
-   
+
     //this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
     //  this.processTranslation(data);
     //  this.mapFilterForm.get('trackType').setValue('snail');
@@ -899,14 +900,14 @@ tripTraceArray: any = [];
  //       }
   //    });
   //  });
- 
+
  this.isChartsOpen = true;
  this.isDetailsOpen = true;
  this.isSummaryOpen = true;
   }
 
 
- 
+
 
 
   resetTripPrefData(){
@@ -928,7 +929,7 @@ tripTraceArray: any = [];
     }
   }
 
-  
+
   detaildriverreport(){
     const navigationExtras: NavigationExtras = {
       state: {
@@ -960,7 +961,7 @@ tripTraceArray: any = [];
      }
    }
 
-  
+
   changeHerePOISelection(event: any, hereData: any){
     this.herePOIArr = [];
     this.selectedHerePOI.selected.forEach(item => {
@@ -971,7 +972,7 @@ tripTraceArray: any = [];
 
  // searchPlaces() {
  //   let _ui = this.reportMapService.getUI();
- //   this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr); 
+ //   this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
  // }
 
   // makeHerePOIList(){
@@ -1003,18 +1004,18 @@ tripTraceArray: any = [];
   selectionPolylineRoute(dataPoints: any, _index: any, checkStatus?: any){
     let lineString: any = new H.geo.LineString();
     dataPoints.map((element) => {
-      lineString.pushPoint({lat: element.gpsLatitude, lng: element.gpsLongitude});  
+      lineString.pushPoint({lat: element.gpsLatitude, lng: element.gpsLongitude});
     });
 
     let _style: any = {
-      lineWidth: 4, 
+      lineWidth: 4,
       strokeColor: checkStatus ? 'blue' : 'grey'
     }
     let polyline = new H.map.Polyline(
       lineString, { style: _style }
     );
     polyline.setData({id: _index});
-    
+
     this.disableGroup.addObject(polyline);
    }
    viewselectedroutes(_selectedRoutes:any,_displayRouteView:any,trackType:any){
@@ -1035,7 +1036,7 @@ tripTraceArray: any = [];
         if(elem.liveFleetPosition.length > 1){
            // required 2 points atleast to draw polyline
           let liveFleetPoints: any = elem.liveFleetPosition;
-          liveFleetPoints.sort((a, b) => parseInt(a.messageTimeStamp) - parseInt(b.messageTimeStamp)); // sorted in Asc order based on Id's 
+          liveFleetPoints.sort((a, b) => parseInt(a.messageTimeStamp) - parseInt(b.messageTimeStamp)); // sorted in Asc order based on Id's
           if(_displayRouteView == 'C' || _displayRouteView == 'F' || _displayRouteView == 'CO'){ // classic route
             let blueColorCode: any = '#436ddc';
             this.showClassicRoute(liveFleetPoints, trackType, blueColorCode);
@@ -1043,10 +1044,10 @@ tripTraceArray: any = [];
             filterDataPoints.forEach((element) => {
               this.drawPolyline(element, trackType);
             });
-          
+
           }
         }
-        
+
       })
     }
   }
@@ -1054,11 +1055,11 @@ tripTraceArray: any = [];
 drawPolyline(finalDatapoints: any, trackType?: any){
   var lineString = new H.geo.LineString();
   finalDatapoints.dataPoints.map((element) => {
-    lineString.pushPoint({lat: element.gpsLatitude, lng: element.gpsLongitude});  
+    lineString.pushPoint({lat: element.gpsLatitude, lng: element.gpsLongitude});
   });
 
   let _style: any = {
-    lineWidth: 4, 
+    lineWidth: 4,
     strokeColor: finalDatapoints.color
   }
   if(trackType == 'dotted'){
@@ -1072,14 +1073,14 @@ drawPolyline(finalDatapoints: any, trackType?: any){
 
 getFilterDataPoints(_dataPoints: any, _displayRouteView: any){
   //-----------------------------------------------------------------//
-  // Fuel Consumption	Green	 	Orange	 	Red	 
+  // Fuel Consumption	Green	 	Orange	 	Red
   // VehicleSerie	Min	Max	Min	Max	Min	Max
   // LF	0	100	100	500	500	infinity
   // CF	0	100	100	500	500	infinity
   // XF	0	100	100	500	500	infinity
   // XG	0	100	100	500	500	infinity
-  
-  // CO2	A	 	B	 	C	 	D	 	E	 	F	 
+
+  // CO2	A	 	B	 	C	 	D	 	E	 	F
   // VehicleSerie	Min	Max	Min	Max	Min	Max	Min	Max	Min	Max	Min	Max
   // LF	0	270	270	540	540	810	810	1080	1080	1350	1350	infinity
   // CF	0	270	270	540	540	810	810	1080	1080	1350	1350	infinity
@@ -1090,31 +1091,31 @@ getFilterDataPoints(_dataPoints: any, _displayRouteView: any){
   let innerArray: any = [];
   let outerArray: any = [];
   let finalDataPoints: any = [];
-  _dataPoints.forEach((element) => { 
+  _dataPoints.forEach((element) => {
     let elemChecker: any = 0;
     if(_displayRouteView == 'F'){ //------ fuel consumption
       elemChecker = element.fuelconsumtion;
       if(elemChecker <= 100){
         element.color = '#57A952'; // green
-      }else if(elemChecker > 100 && elemChecker <= 500){ 
+      }else if(elemChecker > 100 && elemChecker <= 500){
         element.color = '#FFA500'; // orange
-      }else{ 
-        element.color = '#FF010F';  // red 
+      }else{
+        element.color = '#FF010F';  // red
       }
     }else{ //---- co2 emission
       elemChecker = element.co2Emission;
       if(elemChecker <= 270){
         element.color = '#01FE75'; // light green
       }else if(elemChecker > 270 && elemChecker <= 540){ // green
-        element.color = '#57A952'; 
+        element.color = '#57A952';
       }else if(elemChecker > 540 && elemChecker <= 810){ // green-brown
-        element.color = '#867B3F'; 
+        element.color = '#867B3F';
       }else if(elemChecker > 810 && elemChecker <= 1080){ // red-brown
-        element.color = '#9C6236'; 
+        element.color = '#9C6236';
       }else if(elemChecker > 1080 && elemChecker <= 1350){ // brown
-        element.color = '#C13F28'; 
+        element.color = '#C13F28';
       }else{ // red
-        element.color = '#FF010F'; 
+        element.color = '#FF010F';
       }
     }
     finalDataPoints.push(element);
@@ -1130,7 +1131,7 @@ getFilterDataPoints(_dataPoints: any, _displayRouteView: any){
         curColor = element.color;
         innerArray.push(element);
       }else if(index == (finalDataPoints.length - 1)){ // last point
-        outerArray.push({dataPoints: innerArray, color: curColor}); 
+        outerArray.push({dataPoints: innerArray, color: curColor});
       }
     }else{ // 0
       curColor = element.color;
@@ -1142,11 +1143,11 @@ getFilterDataPoints(_dataPoints: any, _displayRouteView: any){
 showClassicRoute(dataPoints: any, _trackType: any, _colorCode: any){
   let lineString: any = new H.geo.LineString();
   dataPoints.map((element) => {
-    lineString.pushPoint({lat: element.gpsLatitude, lng: element.gpsLongitude});  
+    lineString.pushPoint({lat: element.gpsLatitude, lng: element.gpsLongitude});
   });
 
   let _style: any = {
-    lineWidth: 4, 
+    lineWidth: 4,
     strokeColor: _colorCode
   }
   if(_trackType == 'dotted'){
@@ -1155,7 +1156,7 @@ showClassicRoute(dataPoints: any, _trackType: any, _colorCode: any){
   let polyline = new H.map.Polyline(
     lineString, { style: _style }
   );
-  
+
   this.group.addObject(polyline);
  }
 createHomeMarker(){
@@ -1188,13 +1189,13 @@ createEndMarker(){
         if(subCatUniq.length > 0){
           subCatUniq.forEach(elem => {
             let _subData = _data.filter(i => i.subCategoryId == elem && i.subCategoryId != 0);
-            if (_subData.length > 0) { 
-            _subCatArr.push({ 
-              poiList: _subData, 
-              subCategoryName: _subData[0].subCategoryName, 
+            if (_subData.length > 0) {
+            _subCatArr.push({
+              poiList: _subData,
+              subCategoryName: _subData[0].subCategoryName,
               subCategoryId: _subData[0].subCategoryId,
               checked: false
-            }); 
+            });
             }
           });
         }
@@ -1211,13 +1212,13 @@ createEndMarker(){
           open: false,
           parentChecked: false
         });
-      } 
+      }
     });
 
     return categoryArr;
   }
 
- 
+
 
   public ngAfterViewInit() { }
 
@@ -1238,7 +1239,7 @@ createEndMarker(){
     }
     this.reportService.getDriverTripDetails(getFleetFuelObj).subscribe((data:any) => {
     //console.log("---getting data from getFleetFueldriverDetailsAPI---",data)
-    this.displayData = data["fleetFuelDetails"];  
+    this.displayData = data["fleetFuelDetails"];
     this.FuelData = this.reportMapService.getConvertedFleetFuelDataBasedOnPref(this.displayData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
     // this.setTableInfo();
     this.updateDataSource(this.FuelData);
@@ -1254,18 +1255,18 @@ createEndMarker(){
       "endDateTime":this.dateDetails.endTime,
       "viNs": [driverDetails.vin],
       "LanguageCode": "EN-GB"
-    } 
+    }
    this.reportService.getdriverGraphDetails(searchDataParam).subscribe((graphData: any) => {
       this.setChartData(graphData["fleetfuelGraph"]);
       this.graphData = graphData;
       this.showGraph= true;
-    }); 
+    });
   }
 
- 
+
   getFleetPreferences(){
     this.reportService.getUserPreferenceReport(4, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
-      
+
       this.reportPrefData = data["userPreferences"];
       this.resetPref();
       // this.preparePrefData(this.reportPrefData);
@@ -1458,7 +1459,7 @@ createEndMarker(){
       if(element.subCategoryId == subCatPOI.subCategoryId){
         element.checked = event.checked ? true : false;
       }
-      
+
       if(!element.checked){ // unchecked count
         _uncheckedCount += element.poiList.length;
       }
@@ -1483,7 +1484,7 @@ createEndMarker(){
         if(_s.length > 0){ // other element present
           this.selectedPOI.clear(); // clear all
           _s.forEach(element => {
-            this.selectedPOI.select(element);  
+            this.selectedPOI.select(element);
           });
         }
         this.userPOIList[_index].poiList.forEach(_el => {
@@ -1562,9 +1563,9 @@ createEndMarker(){
     // let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
     // let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
     //let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
-    let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
-    let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone); 
-  
+    let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone);
+    let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);
+
     let _vinData: any = [];
     if( parseInt(this.tripForm.controls.vehicle.value ) == 0){
          _vinData = this.vehicleDD.filter(i => i.vehicleId != 0).map(item => item.vin);
@@ -1591,7 +1592,7 @@ createEndMarker(){
       this.isDetailsOpen = true;
       this.tripData.forEach(element => {
 
-      
+
        }, (error)=>{
           //console.log(error);
          this.hideloader();
@@ -1620,7 +1621,7 @@ createEndMarker(){
 
    // }
   }
-  
+
   updateDataSource(tableData: any) {
     this.initData = tableData;
     this.showMap = false;
@@ -1645,8 +1646,8 @@ createEndMarker(){
     });
   }
 
- 
- 
+
+
   setTableInfo(){
     //let vehName: any = '';
     //let vehGrpName: any = '';
@@ -1690,9 +1691,9 @@ createEndMarker(){
        vin : this.driverDetails.vin,
        plateNo :this.driverDetails.vehicleRegistrationNo,
        driverName : this.driverDetails.unknownDriver ? 'Unknown' : this.driverDetails.driverName,
-       driverID : this.driverDetails.unknownDriver ? '*' : this.driverDetails.driverID 
+       driverID : this.driverDetails.unknownDriver ? '*' : this.driverDetails.driverID
 
-     }     
+     }
   }
 
   formStartDate(date: any){
@@ -1700,13 +1701,13 @@ createEndMarker(){
   }
 
 
-  setChartData(graphData: any){   
+  setChartData(graphData: any){
     graphData.forEach(e => {
       var date = new Date(e.date);
      // let resultDate = `${date.getDate()}/${date.getMonth()+1}/ ${date.getFullYear()}`;
-      let resultDate= Util.convertDateToUtc(date); 
-      resultDate =  this.datePipe.transform(resultDate,'MM/dd/yyyy'); 
-     
+      let resultDate= Util.convertDateToUtc(date);
+      resultDate =  this.datePipe.transform(resultDate,'MM/dd/yyyy');
+
      // this.barChartLabels.push(resultDate);
       this.barData.push({ x:resultDate , y:e.numberofTrips});
       // let convertedFuelConsumed = e.fuelConsumed / 1000;
@@ -1717,16 +1718,16 @@ createEndMarker(){
       // let minutes = this.convertTimeToMinutes(e.idleDuration);
       // // this.idleDuration.push(e.idleDuration);
       // this.idleDuration.push(minutes);
-      
+
       let convertedFuelConsumed = this.reportMapService.getFuelConsumptionUnits(e.fuelConsumed, this.prefUnitFormat);
-      this.fuelConsumedChart.push({ x:resultDate , y:convertedFuelConsumed});      
+      this.fuelConsumedChart.push({ x:resultDate , y:convertedFuelConsumed});
       this.co2Chart.push({ x:resultDate , y:e.co2Emission.toFixed(2)});
       let convertedDistance =  this.reportMapService.convertDistanceUnits(e.distance, this.prefUnitFormat);
       this.distanceChart.push({ x:resultDate , y:convertedDistance});
       let convertedFuelConsumption =  this.reportMapService.getFuelConsumedUnits(e.fuelConsumtion, this.prefUnitFormat,true);
-      this.fuelConsumptionChart.push({ x:resultDate , y:convertedFuelConsumption});      
+      this.fuelConsumptionChart.push({ x:resultDate , y:convertedFuelConsumption});
       let minutes = this.reportMapService.convertTimeToMinutes(e.idleDuration);
-      this.idleDuration.push({ x:resultDate , y:minutes});  
+      this.idleDuration.push({ x:resultDate , y:minutes});
     })
 
     this.barChartLegend = true;
@@ -1736,29 +1737,29 @@ createEndMarker(){
     let newDate_end = new Date(this.dateDetails.endTime);
 
     if( this.chartLabelDateFormat=='DD/MM/YYYY'){
-      let startDate = Util.getMillisecondsToUTCDate(newDate_start, this.prefTimeZone); 
-      let endDate = Util.getMillisecondsToUTCDate(newDate_end, this.prefTimeZone); 
+      let startDate = Util.getMillisecondsToUTCDate(newDate_start, this.prefTimeZone);
+      let endDate = Util.getMillisecondsToUTCDate(newDate_end, this.prefTimeZone);
       this.chartsLabelsdefined=[ startDate, endDate ];
     }
     else if( this.chartLabelDateFormat=='DD-MM-YYYY'){
-      let startDate = Util.getMillisecondsToUTCDate(newDate_start, this.prefTimeZone); 
-      let endDate = Util.getMillisecondsToUTCDate(newDate_end, this.prefTimeZone);   
+      let startDate = Util.getMillisecondsToUTCDate(newDate_start, this.prefTimeZone);
+      let endDate = Util.getMillisecondsToUTCDate(newDate_end, this.prefTimeZone);
       this.chartsLabelsdefined=[ startDate, endDate ];
     }
     else if( this.chartLabelDateFormat=='MM-DD-YYYY'){
-      
+
       let startDate = `${newDate_start.getMonth()+1}-${newDate_start.getDate()}-${newDate_start.getFullYear()}`;;
-      let endDate = `${newDate_end.getMonth()+1}-${newDate_end.getDate()}-${newDate_end.getFullYear()}`;;  
+      let endDate = `${newDate_end.getMonth()+1}-${newDate_end.getDate()}-${newDate_end.getFullYear()}`;;
       this.chartsLabelsdefined=[ startDate, endDate ];
     }
     else{
       let startDate = `${newDate_start.getMonth()+1}/${newDate_start.getDate()}/${newDate_start.getFullYear()}`;;
-      let endDate = `${newDate_end.getMonth()+1}/${newDate_end.getDate()}/${newDate_end.getFullYear()}`;;  
+      let endDate = `${newDate_end.getMonth()+1}/${newDate_end.getDate()}/${newDate_end.getFullYear()}`;;
       this.chartsLabelsdefined=[ startDate, endDate ];
     }
-   
+
     this.lineChartLabels = this.chartsLabelsdefined;
-    this.barChartLabels= this.chartsLabelsdefined;   
+    this.barChartLabels= this.chartsLabelsdefined;
     if(this.ConsumedChartType == 'Bar'){
       let data1 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblLtrs || 'Ltrs') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblGallon || 'Gallon') : (this.translationData.lblGallon|| 'Gallon');
       this.barChartOptions3.scales.yAxes= [{
@@ -1770,25 +1771,25 @@ createEndMarker(){
         },
         scaleLabel: {
           display: true,
-          labelString: data1    
+          labelString: data1
         }
-      }];     
-      this.barChartOptions3.scales.xAxes= [{ 
+      }];
+      this.barChartOptions3.scales.xAxes= [{
         barThickness: 6,
         gridLines: {
           drawOnChartArea: false
-        },  
+        },
         type:'time',
          time:
          {
            tooltipFormat:  this.chartLabelDateFormat,
            unit: 'day',
            stepSize:1,
-           displayFormats: {      
-             day:  this.chartLabelDateFormat,            
-            },             
-         }   
-     }];  
+           displayFormats: {
+             day:  this.chartLabelDateFormat,
+            },
+         }
+     }];
     this.barChartData1= [
       { data: this.fuelConsumedChart,
         label: data1,
@@ -1802,30 +1803,30 @@ createEndMarker(){
       type: 'linear',
       ticks: {
         steps: 10,
-        stepSize: 5,      
+        stepSize: 5,
         beginAtZero:true
       },
       scaleLabel: {
         display: true,
-        labelString: this.translationData.lblNoOfTrips || 'Number Of Trips'       
+        labelString: this.translationData.lblNoOfTrips || 'Number Of Trips'
       }
-    }]; 
-    this.barChartOptions.scales.xAxes= [{ 
+    }];
+    this.barChartOptions.scales.xAxes= [{
       barThickness: 6,
       gridLines: {
         drawOnChartArea: false
-      }, 
+      },
       type:'time',
        time:
        {
          tooltipFormat:  this.chartLabelDateFormat,
          unit: 'day',
          stepSize:1,
-         displayFormats: {      
-           day:  this.chartLabelDateFormat,            
-          },             
-       }   
-   }];  
+         displayFormats: {
+           day:  this.chartLabelDateFormat,
+          },
+       }
+   }];
     this.barChartData2= [
       { data: this.barData,
         label: this.translationData.lblNoOfTrips || 'Number Of Trips',
@@ -1843,24 +1844,24 @@ createEndMarker(){
       },
       scaleLabel: {
         display: true,
-        labelString: data2   
+        labelString: data2
       }
     }];
-    this.barChartOptions4.scales.xAxes= [{     
+    this.barChartOptions4.scales.xAxes= [{
         barThickness: 6,
         gridLines: {
           drawOnChartArea: false
-        },      
+        },
         type:'time',
         time:
         {
           tooltipFormat:  this.chartLabelDateFormat,
           unit: 'day',
           stepSize:1,
-          displayFormats: {      
-            day:  this.chartLabelDateFormat,            
-           },             
-        }  
+          displayFormats: {
+            day:  this.chartLabelDateFormat,
+           },
+        }
      }];
     this.barChartData3= [
       { data: this.co2Chart,
@@ -1879,24 +1880,24 @@ createEndMarker(){
       },
       scaleLabel: {
         display: true,
-        labelString: data3   
+        labelString: data3
       }
     }];
-    this.barChartOptions2.scales.xAxes= [{ 
+    this.barChartOptions2.scales.xAxes= [{
       barThickness: 6,
       gridLines: {
         drawOnChartArea: false
-      },    
+      },
       type:'time',
        time:
        {
          tooltipFormat:  this.chartLabelDateFormat,
          unit: 'day',
          stepSize:1,
-         displayFormats: {      
-           day:  this.chartLabelDateFormat,            
-          },             
-       }     
+         displayFormats: {
+           day:  this.chartLabelDateFormat,
+          },
+       }
    }];
      this.barChartData4= [
       { data: this.distanceChart,
@@ -1914,28 +1915,28 @@ createEndMarker(){
       },
       scaleLabel: {
         display: true,
-        labelString: this.translationData.lblMinutes || 'Minutes'      
+        labelString: this.translationData.lblMinutes || 'Minutes'
       }
     }];
-    this.barChartOptions1.scales.xAxes= [{      
+    this.barChartOptions1.scales.xAxes= [{
         barThickness: 6,
         gridLines: {
           drawOnChartArea: false
-        },    
+        },
       type:'time',
       time:
       {
         tooltipFormat:  this.chartLabelDateFormat,
         unit: 'day',
         stepSize:1,
-        displayFormats: {      
-          day:  this.chartLabelDateFormat,            
-         },             
-      }      
-  }]; 
+        displayFormats: {
+          day:  this.chartLabelDateFormat,
+         },
+      }
+  }];
   this.barChartData6= [{ data: this.idleDuration, label: this.translationData.lblMinutes || 'Minutes' , backgroundColor: '#7BC5EC',
   hoverBackgroundColor: '#7BC5EC', }, ];
-    
+
   }
   if(this.ConsumptionChartType == 'Bar'){
     let data4 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblLtrsperkm || 'Ltrs /100 km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblMilesPerGallon || 'Miles per gallon') : (this.translationData.lblMilesPerGallon || 'Miles per gallon');
@@ -1948,35 +1949,35 @@ createEndMarker(){
       },
       scaleLabel: {
         display: true,
-        labelString: data4    
+        labelString: data4
       }
     }];
-    this.barChartOptions5.scales.xAxes= [{      
+    this.barChartOptions5.scales.xAxes= [{
       barThickness: 6,
       gridLines: {
         drawOnChartArea: false
-      },    
+      },
     type:'time',
     time:
     {
       tooltipFormat:  this.chartLabelDateFormat,
       unit: 'day',
       stepSize:1,
-      displayFormats: {      
-        day:  this.chartLabelDateFormat,            
-       },             
-    }      
-}]; 
+      displayFormats: {
+        day:  this.chartLabelDateFormat,
+       },
+    }
+}];
      this.barChartData5= [
       { data: this.fuelConsumptionChart,
         label:data4,
         backgroundColor: '#7BC5EC',
         hoverBackgroundColor: '#7BC5EC', }];
   }
-  
+
   //line chart for fuel consumed
     if(this.ConsumedChartType == 'Line')
-    {      
+    {
       let data1 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblLtrs || 'Ltrs') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblGallon || 'Gallon') : (this.translationData.lblGallon|| 'Gallon');
       this.lineChartOptions3.scales.yAxes= [{
         id: "y-axis-1",
@@ -1987,43 +1988,43 @@ createEndMarker(){
         },
         scaleLabel: {
           display: true,
-          labelString: data1    
+          labelString: data1
         }
-      }];   
-       this.lineChartOptions3.scales.xAxes= [{ 
+      }];
+       this.lineChartOptions3.scales.xAxes= [{
        type:'time',
         time:
         {
           tooltipFormat:  this.chartLabelDateFormat,
           unit: 'day',
           stepSize:1,
-          displayFormats: {      
-            day:  this.chartLabelDateFormat,            
-           },             
-        }   
-    }];  
+          displayFormats: {
+            day:  this.chartLabelDateFormat,
+           },
+        }
+    }];
     this.lineChartData1= [{ data: this.fuelConsumedChart, label: data1 },];
   }
     if(this.TripsChartType == 'Line')
     {
-      this.lineChartOptions.scales.xAxes= [{ 
+      this.lineChartOptions.scales.xAxes= [{
         type:'time',
         time:
         {
           tooltipFormat:  this.chartLabelDateFormat,
           unit: 'day',
           stepSize:1,
-          displayFormats: {      
-            day:  this.chartLabelDateFormat,            
-           },             
-        }      
-    }]; 
+          displayFormats: {
+            day:  this.chartLabelDateFormat,
+           },
+        }
+    }];
     this.lineChartData2= [{ data: this.barData, label: 'No Of Trips' }, ];
   }
     if(this.Co2ChartType == 'Line')
     {
       let data2 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblTon || 'Ton') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblTon || 'Ton') : (this.translationData.lblTon || 'Ton');
-      
+
       this.lineChartOptions4.scales.yAxes= [{
       id: "y-axis-1",
       position: 'left',
@@ -2033,20 +2034,20 @@ createEndMarker(){
       },
       scaleLabel: {
         display: true,
-        labelString: data2    
+        labelString: data2
       }
     }];
-    this.lineChartOptions4.scales.xAxes= [{ 
+    this.lineChartOptions4.scales.xAxes= [{
       type:'time',
       time:
       {
         tooltipFormat:  this.chartLabelDateFormat,
         unit: 'day',
         stepSize:1,
-        displayFormats: {      
-          day:  this.chartLabelDateFormat,            
-         },             
-      }      
+        displayFormats: {
+          day:  this.chartLabelDateFormat,
+         },
+      }
   }];
     this.lineChartData3= [{ data: this.co2Chart, label: data2 },];
   }
@@ -2062,20 +2063,20 @@ createEndMarker(){
         },
         scaleLabel: {
           display: true,
-          labelString: data3    
+          labelString: data3
         }
       }];
-      this.lineChartOptions2.scales.xAxes= [{ 
+      this.lineChartOptions2.scales.xAxes= [{
        type:'time',
         time:
         {
           tooltipFormat:  this.chartLabelDateFormat,
           unit: 'day',
           stepSize:1,
-          displayFormats: {      
-            day:  this.chartLabelDateFormat,            
-           },             
-        }     
+          displayFormats: {
+            day:  this.chartLabelDateFormat,
+           },
+        }
     }];
     this.lineChartData4= [{ data: this.distanceChart, label: data3 }, ];
   }
@@ -2091,37 +2092,37 @@ createEndMarker(){
         },
         scaleLabel: {
           display: true,
-          labelString: data4   
+          labelString: data4
         }
       }];
-      this.lineChartOptions5.scales.xAxes= [{ 
+      this.lineChartOptions5.scales.xAxes= [{
         type:'time',
         time:
         {
           tooltipFormat:  this.chartLabelDateFormat,
           unit: 'day',
           stepSize:1,
-          displayFormats: {      
-            day:  this.chartLabelDateFormat,            
-           },             
-        }      
-    }]; 
+          displayFormats: {
+            day:  this.chartLabelDateFormat,
+           },
+        }
+    }];
     this.lineChartData5= [{ data: this.fuelConsumptionChart, label: data4 }, ];
   }
     if(this.DurationChartType == 'Line')
     {
-      this.lineChartOptions1.scales.xAxes= [{ 
+      this.lineChartOptions1.scales.xAxes= [{
         type:'time',
         time:
         {
           tooltipFormat:  this.chartLabelDateFormat,
           unit: 'day',
           stepSize:1,
-          displayFormats: {      
-            day:  this.chartLabelDateFormat,            
-           },             
-        }     
-    }]; 
+          displayFormats: {
+            day:  this.chartLabelDateFormat,
+           },
+        }
+    }];
     this.lineChartOptions1.scales.yAxes[0].scaleLabel.labelString = this.translationData.lblMinutes || 'Minutes'
     this.lineChartData6= [{ data: this.idleDuration, label: this.translationData.lblMinutes || 'Minutes' }, ];
   }
@@ -2131,12 +2132,12 @@ createEndMarker(){
         backgroundColor: 'rgba(255,255,0,0)',
       },
     ];
-  
+
     this.lineChartPlugins = [];
     this.lineChartType = 'line';
     this.lineChartLabels = this.chartsLabelsdefined;
-    this.barChartLabels= this.chartsLabelsdefined; 
-  
+    this.barChartLabels= this.chartsLabelsdefined;
+
   }
 
   resetChartData(){
@@ -2182,7 +2183,7 @@ createEndMarker(){
           this.prefUnitFormat = prefData.unit[0].name;
         }
       }
-    
+
     this.setDefaultStartEndTime();
     this.setPrefFormatDate();
     this.setDefaultTodayDate();
@@ -2196,17 +2197,17 @@ createEndMarker(){
       this.selectedStartTime = this.fleetFuelSearchData.startTimeStamp;
       this.selectedEndTime = this.fleetFuelSearchData.endTimeStamp;
       this.startTimeDisplay = (this.prefTimeFormat == 24) ? `${this.fleetFuelSearchData.startTimeStamp}:00` : this.fleetFuelSearchData.startTimeStamp;
-      this.endTimeDisplay = (this.prefTimeFormat == 24) ? `${this.fleetFuelSearchData.endTimeStamp}:59` : this.fleetFuelSearchData.endTimeStamp;  
+      this.endTimeDisplay = (this.prefTimeFormat == 24) ? `${this.fleetFuelSearchData.endTimeStamp}:59` : this.fleetFuelSearchData.endTimeStamp;
     }else{ // different format
       if(this.prefTimeFormat == 12){ // 12
         this.selectedStartTime = this._get12Time(this.fleetFuelSearchData.startTimeStamp);
         this.selectedEndTime = this._get12Time(this.fleetFuelSearchData.endTimeStamp);
-        this.startTimeDisplay = this.selectedStartTime; 
+        this.startTimeDisplay = this.selectedStartTime;
         this.endTimeDisplay = this.selectedEndTime;
       }else{ // 24
         this.selectedStartTime = this.get24Time(this.fleetFuelSearchData.startTimeStamp);
         this.selectedEndTime = this.get24Time(this.fleetFuelSearchData.endTimeStamp);
-        this.startTimeDisplay = `${this.selectedStartTime}:00`; 
+        this.startTimeDisplay = `${this.selectedStartTime}:00`;
         this.endTimeDisplay = `${this.selectedEndTime}:59`;
       }
     }
@@ -2356,9 +2357,9 @@ getLast3MonthDate(){
     // this.tableInfoObj = {};
     // this.selectedPOI.clear();
     this.resetTripFormControlValue();
-    this.filterDateData(); 
+    this.filterDateData();
   }
-  
+
   endTimeChanged(selectedTime: any) {
     this.internalSelection = true;
     this.selectedEndTime = selectedTime;
@@ -2391,8 +2392,8 @@ getLast3MonthDate(){
     let finalVINDataList: any = [];
     this.vehicleListData = [];
     this.vehicleGrpDD = [];
-    let currentStartTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
-    let currentEndTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);   
+    let currentStartTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone);
+    let currentEndTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);
 
     // let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
     // let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
@@ -2412,9 +2413,9 @@ getLast3MonthDate(){
 
         if(distinctVIN.length > 0){
           distinctVIN.forEach(element => {
-            let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element && i.groupType != 'S'); 
+            let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element && i.groupType != 'S');
             if(_item.length > 0){
-              this.vehicleListData.push(_item[0]); //-- unique VIN data added 
+              this.vehicleListData.push(_item[0]); //-- unique VIN data added
               _item.forEach(element => {
                 finalVINDataList.push(element);
               });
@@ -2476,7 +2477,7 @@ setVehicleGroupAndVehiclePreSelection() {
 
   onVehicleGroupChange(event: any){
     if(event.value || event.value == 0){
-      this.internalSelection = true; 
+      this.internalSelection = true;
       this.tripForm.get('vehicle').setValue(0); //- reset vehicle dropdown
       if(parseInt(event.value) == 0){ //-- all group
         let vehicleData = this.vehicleListData.slice();
@@ -2486,7 +2487,7 @@ setVehicleGroupAndVehiclePreSelection() {
         if(search.length > 0){
           this.vehicleDD = [];
           search.forEach(element => {
-            this.vehicleDD.push(element);  
+            this.vehicleDD.push(element);
           });
         }
       }
@@ -2497,7 +2498,7 @@ setVehicleGroupAndVehiclePreSelection() {
   }
 
   onVehicleChange(event: any){
-    this.internalSelection = true; 
+    this.internalSelection = true;
   }
 
   changeEndDateEvent(event: MatDatepickerInputEvent<any>){
@@ -2507,7 +2508,7 @@ setVehicleGroupAndVehiclePreSelection() {
     this.resetTripFormControlValue(); // extra addded as per discuss with Atul
     this.filterDateData(); // extra addded as per discuss with Atul
   }
-  
+
   startTimeChanged(selectedTime: any) {
     this.internalSelection = true;
     this.selectedStartTime = selectedTime;
@@ -2601,37 +2602,37 @@ setVehicleGroupAndVehiclePreSelection() {
   }
 
   applyFilter(filterValue: string) {
-    filterValue = filterValue.trim(); 
-    filterValue = filterValue.toLowerCase(); 
+    filterValue = filterValue.trim();
+    filterValue = filterValue.toLowerCase();
     // this.dataSource.filter = filterValue;
     this.dataSource.filter = filterValue;
   }
 
- 
+
   summaryNewObj: any;
 
-  getAllSummaryData(){ 
+  getAllSummaryData(){
           if(this.initData.length > 0){
-            let numberOfTrips = 0 ; let distanceDone = 0; let idleDuration = 0; 
-            let fuelConsumption = 0; let fuelconsumed = 0; let CO2Emission = 0; 
+            let numberOfTrips = 0 ; let distanceDone = 0; let idleDuration = 0;
+            let fuelConsumption = 0; let fuelconsumed = 0; let CO2Emission = 0;
             numberOfTrips= this.sumOfColumns('noOfTrips');
             distanceDone= this.sumOfColumns('distance');
             idleDuration= this.sumOfColumns('idleDuration');
             fuelConsumption= this.sumOfColumns('fuelConsumption');
             fuelconsumed= this.sumOfColumns('fuelconsumed');
             CO2Emission= this.sumOfColumns('co2emission');
-          // numbeOfVehicles = this.initData.length;   
-            
+          // numbeOfVehicles = this.initData.length;
+
           this.summaryNewObj = [
            ['Fleet Fuel Driver Trip Report', this.reportMapService.getStartTime(Date.now(), this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
              this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, this.tableInfoObj.driverName, this.tableInfoObj.driverID, numberOfTrips, distanceDone,
              fuelconsumed, idleDuration, fuelConsumption,CO2Emission
           ]
-          ];        
+          ];
          }
        }
-         
- 
+
+
 
 
        exportAsExcelFile() {
@@ -2652,7 +2653,7 @@ setVehicleGroupAndVehiclePreSelection() {
         const header =  ['Vehicle Name', 'VIN', 'Vehicle Registration No', 'Start Date', 'End Date', 'Average Speed('+unitValkmh+')','Max Speed('+unitValkmh+')', 'Distance('+unitValkm+')','StartPosition', 'EndPosition',
         'FuelConsumed('+unitValuekm+')', 'FuelConsumption('+unitVal100km+')','CO2Emission('+ unitValkg2+')',  'Idle Duration(%)','PTO Duration(%)','Cruise Control Distance 30-50(km/hr)%',
         'Cruise Control Distance 50-75(km/hr)%','Cruise Control Distance>75(km/hr)%','Heavy Throttle Duration(%)','HarshBrakeDuration(%)', 'GrossWeightCombination('+unitValkg2+')', 'AverageTrafficClassification',
-        'CCFuelConsumption('+unitVal100km+')','FuelConsumptionCCnonactive('+unitVal100km+')','IdlingConsumption','DPAScore', 
+        'CCFuelConsumption('+unitVal100km+')','FuelConsumptionCCnonactive('+unitVal100km+')','IdlingConsumption','DPAScore',
         'Idling PTO Score (hh:mm:ss)','Idling with PTO%','Idling Without PTO (hh:mm:ss)','Idling Without PTO%','Foot Brake',
         'CO2 Emmision(gr/km)','Idling Consumption With PTO('+unitVal100km+')'];
         const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name','Driver Name','Driver ID', 'Number Of Trips', 'Distance('+unitValkm+')', 'Fuel Consumed('+unitValuekm+')', 'Idle Duration(hh:mm)','Fuel Consumption('+unitVal100km+')', 'CO2 Emission('+ unitValkg1+')'];
@@ -2664,7 +2665,7 @@ setVehicleGroupAndVehiclePreSelection() {
         let titleRow = worksheet.addRow([title]);
         worksheet.addRow([]);
         titleRow.font = { name: 'sans-serif', family: 4, size: 14, underline: 'double', bold: true }
-  
+
         worksheet.addRow([]);
         let subTitleRow = worksheet.addRow([summary]);
         let summaryRow = worksheet.addRow(summaryHeader);
@@ -2692,16 +2693,17 @@ setVehicleGroupAndVehiclePreSelection() {
             bgColor: { argb: 'FF0000FF' }
           }
           cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
-        })    
+        })
         this.initData.forEach(item => {
+          let idleDurations = Util.getHhMmTime(parseFloat(item.idleDuration));
           worksheet.addRow([ item.vehicleName,item.vin, item.vehicleRegistrationNo,item.convertedStartTime,item.convertedEndTime,item.convertedAverageSpeed,
-            item.convertedMaxSpeed,item.convertedDistance,item.startPosition,item.endPosition,item.convertedFuelConsumed100Km,item.convertedFuelConsumption,item.cO2Emission,item.idleDurationPercentage,
+            item.convertedMaxSpeed,item.convertedDistance,item.startPosition,item.endPosition,item.convertedFuelConsumed100Km,item.convertedFuelConsumption,item.cO2Emission,idleDurations,
             item.ptoDuration.toFixed(2),item.cruiseControlDistance3050,item.cruiseControlDistance5075,item.cruiseControlDistance75,
             item.heavyThrottleDuration,item.harshBrakeDuration,item.convertedAverageGrossWeightComb,item.averageTrafficClassificationValue,
             item.convetedCCFuelConsumption,item.convertedFuelConsumptionCCNonActive,item.idlingConsumptionValue,item.dpaScore, item.convertedIdlingPTOScore, item.idlingPTO,item.convertedIdlingWithoutPTO,item.idlingWithoutPTOpercent,
             item.footBrake, item.cO2Emmision, item.convertedidlingconsumptionwithpto]);
         });
-  
+
     //  exportAsExcelFile(){
     //   this.matTableExporter.exportTable('xlsx', {fileName:'Fleet_Fuel_Driver', sheet: 'sheet_name'});
         worksheet.mergeCells('A1:D2');
@@ -2717,7 +2719,7 @@ setVehicleGroupAndVehiclePreSelection() {
         workbook.xlsx.writeBuffer().then((data) => {
           let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
           fs.saveAs(blob, 'Fleet_Fuel_Driver_Trip.xlsx');
-        })    
+        })
     }
 
    exportAsPDFFile(){
@@ -2729,7 +2731,7 @@ setVehicleGroupAndVehiclePreSelection() {
     let fuel =(this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr || ' l') : (this.prefUnitFormat =='dunit_Imperial') ? (this.translationData.lblgallonmile || 'gal') : (this.translationData.lblgallonmile || ' gal');
     let fuelCons=  (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || ' Ltrs/100km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmilepergal || 'mpg') : (this.translationData.lblmilepergal || ' mpg');
     let idlingPTO= (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 'kg') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblpound || 'pound') : (this.translationData.lblpound ||  'pound');
-    
+
     let pdfColumns = [];
     let pdfColumnHeads=[];
     this.displayedColumns.forEach(element => {
@@ -2888,7 +2890,7 @@ setVehicleGroupAndVehiclePreSelection() {
         }
       }
     })
-    pdfColumns.push(pdfColumnHeads);  
+    pdfColumns.push(pdfColumnHeads);
 
     let prepare = []
       this.displayData.forEach(e=>{
@@ -3049,10 +3051,10 @@ setVehicleGroupAndVehiclePreSelection() {
             }
           }
         })
- 
-        prepare.push(tempObj);    
+
+        prepare.push(tempObj);
       });
-     
+
       let displayHeader = document.getElementById("chartHeader");
       if(this.isChartsOpen){
       displayHeader.style.display ="block";
@@ -3060,40 +3062,40 @@ setVehicleGroupAndVehiclePreSelection() {
       else{
         displayHeader.style.display = "none";
       }
-     
+
       let DATA = document.getElementById('charts');
       html2canvas( DATA)
-      .then(canvas => {  
+      .then(canvas => {
         (doc as any).autoTable({
           styles: {
               cellPadding: 0.5,
               fontSize: 12
-          },       
-          didDrawPage: function(data) {     
+          },
+          didDrawPage: function(data) {
               doc.setFontSize(14);
               var fileTitle = "Fleet Fuel Report by Driver Details";
               var img = "/assets/logo.png";
               doc.addImage(img, 'JPEG',10,10,0,0);
-   
-              var img = "/assets/logo_daf.png"; 
+
+              var img = "/assets/logo_daf.png";
               doc.text(fileTitle, 14, 35);
-              doc.addImage(img, 'JPEG',150, 10, 0, 10);            
+              doc.addImage(img, 'JPEG',150, 10, 0, 10);
           },
           margin: {
-              bottom: 20, 
-              top:30 
-          }  
+              bottom: 20,
+              top:30
+          }
         });
- 
+
           let fileWidth = 170;
           let fileHeight = canvas.height * fileWidth / canvas.width;
-         
+
           const FILEURI = canvas.toDataURL('image/png')
            let PDF = new jsPDF('p', 'mm', 'a4');
           let position = 0;
           doc.addImage(FILEURI, 'PNG', 10, 40, fileWidth, fileHeight) ;
           doc.addPage('a0','p');
- 
+
         (doc as any).autoTable({
         head: pdfColumns,
         body: prepare,
@@ -3102,41 +3104,41 @@ setVehicleGroupAndVehiclePreSelection() {
           console.log(data.column.index)
         }
       })
- 
+
       doc.save('fleetFuelByDriverDetails.pdf');
-        
-      }); 
-     
+
+      });
+
       displayHeader.style.display ="block";
    }
-   
-  
+
+
 
   backToMainPageCall(){
     let emitObj = {
       booleanFlag: false,
       successMsg: ""
-    }  
+    }
     this.backToMainPage.emit(emitObj);
   }
 
   sumOfColumns(columnName : any){
     let sum: any = 0;
     switch(columnName){
-      case 'noOfTrips': { 
+      case 'noOfTrips': {
         let s = this.displayData.forEach(element => {
          sum += parseInt(element.numberOfTrips);
 
         });
         break;
-      }case 'distance': { 
+      }case 'distance': {
         let s = this.displayData.forEach(element => {
         sum += parseFloat(element.convertedDistance);
         });
         sum= sum.toFixed(2)*1;
         break;
       }
-    case 'fuelconsumed': { 
+    case 'fuelconsumed': {
       let s = this.displayData.forEach(element => {
         if(element.convertedFuelConsumed100Km !='Infinity'){
             sum += parseFloat(element.convertedFuelConsumed100Km);
@@ -3145,14 +3147,14 @@ setVehicleGroupAndVehiclePreSelection() {
       sum= sum.toFixed(2)*1;
       break;
     }
-    case 'idleDuration': { 
+    case 'idleDuration': {
       let s = this.displayData.forEach(element => {
       sum += parseFloat(element.idleDuration);
-      });          
+      });
       sum=Util.getHhMmTime(sum);
       break;
     }
-    case 'fuelConsumption': { 
+    case 'fuelConsumption': {
       // let s = this.displayData.forEach(element => {
       // sum += parseFloat(element.convertedFuelConsumption);
       // });
@@ -3163,7 +3165,7 @@ setVehicleGroupAndVehiclePreSelection() {
       sum= convertedConsumption.toFixed(2)*1;
       break;
     }
-    case 'co2emission': { 
+    case 'co2emission': {
       let s = this.displayData.forEach(element => {
         if(element.cO2Emission !='Infinity'){
            sum += parseFloat(element.cO2Emission);
@@ -3173,7 +3175,7 @@ setVehicleGroupAndVehiclePreSelection() {
       break;
     }
     }
-    return sum; 
+    return sum;
   }
 
   checkForPreference(fieldKey) {
@@ -3198,7 +3200,7 @@ setVehicleGroupAndVehiclePreSelection() {
     }
     return 0;
   }
-  
+
     filterVehicleGroups(vehicleSearch){
     console.log("filterVehicleGroups called");
     if(!this.vehicleGrpDD){
@@ -3233,11 +3235,11 @@ setVehicleGroupAndVehiclePreSelection() {
     );
     console.log("filtered vehicles", this.filteredVehicle);
   }
-  
+
   resetVehicleFilter(){
     this.filteredVehicle.next(this.vehicleDD.slice());
   }
-  
+
    resetVehicleGroupFilter(){
     this.filteredVehicleGroups.next(this.vehicleGrpDD.slice());
   }

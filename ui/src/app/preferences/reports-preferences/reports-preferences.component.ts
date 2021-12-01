@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { AccountService } from 'src/app/services/account.service';
 import { ReportService } from 'src/app/services/report.service';
 import { TranslationService } from 'src/app/services/translation.service';
@@ -34,11 +34,17 @@ export class ReportsPreferencesComponent implements OnInit {
   showFleetFuelPerferences: boolean = false;
   editFleetFuelPerferencesFlag: boolean = false;
   generalPreferences: any;
+  requestSent: boolean = false;
+  tabIndex: any = 0;
 
-  constructor(private reportService: ReportService, private translationService: TranslationService, private accountService: AccountService, private router: Router) { }
+  constructor(private reportService: ReportService, private translationService: TranslationService, private accountService: AccountService, private router: Router, private cdr: ChangeDetectorRef) { }
 
   ngOnInit() {
     this.loadReportData();
+  }
+
+  ngAfterViewInit(){
+    this.cdr.detectChanges();
   }
 
   loadReportData(){
@@ -133,7 +139,6 @@ export class ReportsPreferencesComponent implements OnInit {
     this.fleetFuelPerferencesDriver.setColumnCheckbox();
   }
 
-  requestSent:boolean = false;
   onConfirm() {
     if(!this.requestSent) {
       this.requestSent = true;
@@ -143,18 +148,19 @@ export class ReportsPreferencesComponent implements OnInit {
         reportId: this.reportListData.filter(i => i.name == 'Fleet Fuel Report')[0].id,
         attributes: [...vehicleObj, ...driverObj]
       };
-      this.showLoadingIndicator=true;
+      //this.showLoadingIndicator = true;
       this.reportService.updateReportUserPreference(objData).subscribe((res: any) => {
-        this.showLoadingIndicator=false;
+        this.showLoadingIndicator = false;
+        let _reloadFlag: any = false;
+        if ((this.router.url).includes("fleetfuelreport")) {
+          _reloadFlag = true
+          this.fleetFuelPerferencesVehicle.loadFleetFuelPreferences(_reloadFlag);
+          //this.reloadCurrentComponent();
+        }
         this.updateFleetFuelPerferencesFlag({ flag: false, msg: this.getSuccessMsg() });
-        setTimeout(() => {
-          this.requestSent = false;
-          if((this.router.url).includes("fleetfuelreport")){
-          window.location.reload();
-          }
-        }, 1000);
+        this.requestSent = false;
       }, (error) => {
-        this.showLoadingIndicator=false;
+        this.showLoadingIndicator = false;
       });
     }
   }
@@ -230,6 +236,7 @@ export class ReportsPreferencesComponent implements OnInit {
   }
   
   onTabChanged(event) {
+    this.tabIndex = event.index;
     // event.stopPropogation();
     // event.preventDefault();
   }

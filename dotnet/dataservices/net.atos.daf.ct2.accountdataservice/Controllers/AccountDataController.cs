@@ -65,11 +65,13 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
         {
             try
             {
+                _logger.Debug($"AccountData:driver-lookup.started. Request : {JsonConvert.SerializeObject(request)}");
                 await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Account Data Service", nameof(GetDriver), AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.PARTIAL, "Get driver in Account data service", 0, 0, JsonConvert.SerializeObject(request), 0, 0);
 
                 if (!ModelState.IsValid)
                 {
                     var modelState = ModelState.Where(x => x.Value.ValidationState == ModelValidationState.Invalid).First();
+                    _logger.Debug($"AccountData:driver-lookup. Not ModelState.IsValid. errorCode: {modelState.Value.Errors.First().ErrorMessage}, parameter: {modelState.Key}");
                     return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: modelState.Value.Errors.First().ErrorMessage, parameter: modelState.Key);
                 }
 
@@ -79,11 +81,12 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
                 {
                     return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "DRIVER_NOT_FOUND", parameter: nameof(request.DriverId));
                 }
+                _logger.Debug($"AccountData:driver-lookup. response : {JsonConvert.SerializeObject(response)}");
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                _logger.Error("Error occurred while processing Account API - Driver Lookup request.", ex);
+                _logger.Error($"AccountData:driver-lookup. Error occurred while processing Account API - Driver Lookup request. Request : {JsonConvert.SerializeObject(request)}", ex);
                 await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Account Data Service", nameof(GetDriver), AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.FAILED, "Get driver in Account data service", 0, 0, ex.Message, 0, 0);
                 return StatusCode(500, string.Empty);
             }
@@ -99,11 +102,13 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
         {
             try
             {
+                _logger.Debug($"AccountData:register/driver.started. Request : {JsonConvert.SerializeObject(request)}");
                 await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Account Data Service", nameof(RegisterDriver), AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.PARTIAL, "Register driver in Account data service", 0, 0, JsonConvert.SerializeObject(request), 0, 0);
 
                 if (!ModelState.IsValid)
                 {
                     var modelState = ModelState.Where(x => x.Value.ValidationState == ModelValidationState.Invalid).First();
+                    _logger.Debug($"AccountData:register/driver. Not ModelState.IsValid. errorCode: {modelState.Value.Errors.First().ErrorMessage}, parameter: {modelState.Key}");
                     return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: modelState.Value.Errors.First().ErrorMessage, parameter: modelState.Key);
                 }
 
@@ -119,7 +124,7 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
                         OrganisationId = resultObj.OrgId,
                         IsLoginSuccessful = resultObj.IsLoginSuccessful
                     });
-
+                    _logger.Debug($"AccountData:register/driver. response : {JsonConvert.SerializeObject(response)}");
                     if (response.StatusCode == HttpStatusCode.OK)
                         return Ok();
                     else if (response.StatusCode == HttpStatusCode.Conflict)
@@ -128,7 +133,7 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
                         return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: response.Message, parameter: nameof(request.Authorization));
                     else
                     {
-                        _logger.Error($"Account API - Register Driver request was unsuccessful. { response.StatusCode } - { response.Message }");
+                        _logger.Error($"AccountData:register/driver. Account API - Register Driver request was unsuccessful. { response.StatusCode } - { response.Message }");
                         return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "NOT_VALIDATED", parameter: nameof(request.Authorization));
                     }
                 }
@@ -139,7 +144,7 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error("Error occurred while processing Account API - Register Driver request.", ex);
+                _logger.Error($"AccountData:register/driver. Error occurred while processing Account API - Register Driver request. Request : {JsonConvert.SerializeObject(request)}", ex);
                 await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Account Data Service", nameof(RegisterDriver), AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.FAILED, "Register driver in Account data service", 0, 0, ex.Message, 0, 0);
                 return StatusCode(500, string.Empty);
             }
@@ -155,11 +160,13 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
         {
             try
             {
+                _logger.Debug($"AccountData:validate/driver.started. Request : {JsonConvert.SerializeObject(request)}");
                 await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Account Data Service", nameof(ValidateDriver), AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.PARTIAL, "Validate driver in Account data service", 0, 0, JsonConvert.SerializeObject(request), 0, 0);
 
                 if (!ModelState.IsValid)
                 {
                     var modelState = ModelState.Where(x => x.Value.ValidationState == ModelValidationState.Invalid).First();
+                    _logger.Debug($"AccountData:validate/driver. Not ModelState.IsValid. errorCode: {modelState.Value.Errors.First().ErrorMessage}, parameter: {modelState.Key}");
                     return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: modelState.Value.Errors.First().ErrorMessage, parameter: modelState.Key);
                 }
 
@@ -168,7 +175,7 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
                 {
                     var resultObj = (result as ObjectResult).Value as dynamic;
                     var response = await _accountManager.ValidateDriver(resultObj.Email, resultObj.OrgId);
-
+                    _logger.Debug($"AccountData:validate/driver. response : {JsonConvert.SerializeObject(response)}");
                     if (resultObj.OrgId > 0)
                     {
                         return Ok(new
@@ -194,7 +201,7 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error("Error occurred while processing Account API - Validate Driver request.", ex);
+                _logger.Error($"AccountData:validate/driver. Error occurred while processing Account API - Validate Driver request. Request : {JsonConvert.SerializeObject(request)}", ex);
                 await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Account Data Service", nameof(ValidateDriver), AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.FAILED, "Validate driver in Account data service", 0, 0, ex.Message, 0, 0);
                 return StatusCode(500, string.Empty);
             }
@@ -210,11 +217,13 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
         {
             try
             {
+                _logger.Debug($"AccountData:password/change.started. Request : {JsonConvert.SerializeObject(request)}");
                 await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Account Data Service", nameof(ChangePassword), AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.PARTIAL, "Change password in Account data service", 0, 0, JsonConvert.SerializeObject(request), 0, 0);
 
                 if (!ModelState.IsValid)
                 {
                     var modelState = ModelState.Where(x => x.Value.ValidationState == ModelValidationState.Invalid).First();
+                    _logger.Debug($"AccountData:password/change. Not ModelState.IsValid. errorCode: {modelState.Value.Errors.First().ErrorMessage}, parameter: {modelState.Key}");
                     return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: modelState.Value.Errors.First().ErrorMessage, parameter: modelState.Key);
                 }
 
@@ -226,6 +235,7 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
                     account.EmailId = identity.Split(":")[0];
                     account.Password = identity.Split(":")[1];
                     var identityResult = await _accountManager.ChangePassword(account);
+                    _logger.Debug($"AccountData:password/change. EmailId: {account.EmailId}:{account.Password}, request : {JsonConvert.SerializeObject(request)}");
                     if (identityResult.StatusCode == HttpStatusCode.NoContent)
                         return Ok();
                     else if (identityResult.StatusCode == HttpStatusCode.BadRequest || identityResult.StatusCode == HttpStatusCode.Forbidden)
@@ -240,7 +250,7 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error("Error occurred while processing Account API - Change password request.", ex);
+                _logger.Error($"AccountData:password/change. Error occurred while processing Account API - Change password request. request : {JsonConvert.SerializeObject(request)}", ex);
                 await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Account Data Service", nameof(ChangePassword), AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.FAILED, "Change password in Account data service", 0, 0, ex.Message, 0, 0);
                 return StatusCode(500, string.Empty);
             }
@@ -252,26 +262,28 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
         {
             try
             {
+                _logger.Debug($"AccountData:password/reset.started. Request : {JsonConvert.SerializeObject(request)}");
                 await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Account Data Service", nameof(ResetPassword), AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.PARTIAL, "Reset password in Account data service", 0, 0, JsonConvert.SerializeObject(request), 0, 0);
 
                 if (!ModelState.IsValid)
                 {
                     var modelState = ModelState.Where(x => x.Value.ValidationState == ModelValidationState.Invalid).First();
+                    _logger.Debug($"AccountData:password/reset. Not ModelState.IsValid. errorCode: {modelState.Value.Errors.First().ErrorMessage}, parameter: {modelState.Key}");
                     return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: modelState.Value.Errors.First().ErrorMessage, parameter: modelState.Key);
                 }
 
                 var response = await _accountManager.ResetPasswordInitiate(request.AccountId);
-
+                _logger.Debug($"AccountData:password/reset. response : {JsonConvert.SerializeObject(response)}");
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    _logger.Error("Account API - Reset password request was unsuccessful. " + JsonConvert.SerializeObject(response));
+                    _logger.Error("AccountData:password/reset. Account API - Reset password request was unsuccessful. " + JsonConvert.SerializeObject(response));
                 }
 
                 return Ok();
             }
             catch (Exception ex)
             {
-                _logger.Error("Error occurred while processing Account API - Reset password request.", ex);
+                _logger.Error($"AccountData:password/reset. Error occurred while processing Account API - Reset password request.  Request : {JsonConvert.SerializeObject(request)}", ex);
                 await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Account Data Service", nameof(ResetPassword), AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.FAILED, "Reset password in Account data service", 0, 0, ex.Message, 0, 0);
                 return StatusCode(500, string.Empty);
             }
@@ -287,11 +299,13 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
         {
             try
             {
+                _logger.Debug($"AccountData:preferences.started. Request : {JsonConvert.SerializeObject(request)}");
                 await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Account Data Service", nameof(GetPreferences), AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.PARTIAL, "Get preferences in Account data service", 0, 0, JsonConvert.SerializeObject(request), 0, 0);
 
                 if (!ModelState.IsValid)
                 {
                     var modelState = ModelState.Where(x => x.Value.ValidationState == ModelValidationState.Invalid).First();
+                    _logger.Debug($"AccountData:preferences. Not ModelState.IsValid. errorCode: {modelState.Value.Errors.First().ErrorMessage}, parameter: {modelState.Key}");
                     return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: modelState.Value.Errors.First().ErrorMessage, parameter: modelState.Key);
                 }
 
@@ -300,7 +314,7 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
                 {
                     var orgId = (int)(result as ObjectResult).Value;
                     var response = await _accountManager.GetAccountPreferences(request.AccountId, orgId);
-
+                    _logger.Debug($"AccountData:preferences. response : {JsonConvert.SerializeObject(response)}");
                     return Ok(response);
                 }
                 else
@@ -310,7 +324,7 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error("Error occurred while processing Account API - Get preferences request.", ex);
+                _logger.Error($"AccountData:preferences. Error occurred while processing Account API - Get preferences request. Request : {JsonConvert.SerializeObject(request)}", ex);
                 await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Account Data Service", nameof(GetPreferences), AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.FAILED, "Get preferences in Account data service", 0, 0, ex.Message, 0, 0);
                 return StatusCode(500, string.Empty);
             }
@@ -322,11 +336,13 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
         {
             try
             {
+                _logger.Debug($"AccountData:preferences.started. Request : {JsonConvert.SerializeObject(request)}");
                 await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Account Data Service", nameof(UpdatePreferences), AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.PARTIAL, "Update preferences in Account data service", 0, 0, JsonConvert.SerializeObject(request), 0, 0);
 
                 if (!ModelState.IsValid)
                 {
                     var modelState = ModelState.Where(x => x.Value.ValidationState == ModelValidationState.Invalid).First();
+                    _logger.Debug($"AccountData:preferences. Not ModelState.IsValid. errorCode: {modelState.Value.Errors.First().ErrorMessage}, parameter: {modelState.Key}");
                     return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: modelState.Value.Errors.First().ErrorMessage, parameter: modelState.Key);
                 }
 
@@ -334,6 +350,7 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
                 if (result is NoContentResult)
                 {
                     await _accountManager.UpdateAccountPreferences(MapRequest(request));
+                    _logger.Debug($"AccountData:preferences. OK response with Request: {JsonConvert.SerializeObject(request)}");
                     return Ok();
                 }
                 else
@@ -343,7 +360,7 @@ namespace net.atos.daf.ct2.accountdataservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error("Error occurred while processing Account API - Update preferences request.", ex);
+                _logger.Error("AccountData:preferences. Error occurred while processing Account API - Update preferences request.", ex);
                 await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Account Data Service", nameof(UpdatePreferences), AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "Update preferences in Account data service", 0, 0, ex.Message, 0, 0);
                 return StatusCode(500, string.Empty);
             }

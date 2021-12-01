@@ -20,7 +20,7 @@ import { Util } from 'src/app/shared/util';
 })
 
 export class ReportSchedulerComponent implements OnInit {
-  columnCodes = ['reportName','action2','frequencyTypeName','recipientList','driverList','lastScheduleRunDate','nextScheduleRunDate', 'viewstatus', 'action'];
+  columnCodes = ['reportName','vehicleGroupAndVehicleList','frequencyTypeName','recipientList','driverList','lastScheduleRunDate','nextScheduleRunDate', 'viewstatus', 'action'];
   columnLabels = ['ReportType','VehicleGroupVehicle', 'Frequency', 'Recipient', 'Driver', 'LastRun', 'NextRun', 'Status', 'Action'];
   // displayedColumns: string[] = ['reportName','vehicleGroupAndVehicleList','frequencyType','recipientList','driverList','lastScheduleRunDate','nextScheduleRunDate','status','action'];
   grpTitleVisible : boolean = false;
@@ -214,7 +214,12 @@ export class ReportSchedulerComponent implements OnInit {
        this.schedulerData =this.makeLists(data["reportSchedulerRequest"]);
        this.initData = this.schedulerData;
       //  this.updateDatasource(this.schedulerData);
-
+        this.initData.forEach(element => {
+          if(element.reportName == "Fleet Fuel Report" || element.reportName == "Trip Report"||
+             element.reportName == "Fleet Utilisation Report"||element.reportName == "Fuel Deviation Report"){
+               element.driverList = "";
+             }
+        });
        this.hideloader();
     }, (error) => {
        this.hideloader();

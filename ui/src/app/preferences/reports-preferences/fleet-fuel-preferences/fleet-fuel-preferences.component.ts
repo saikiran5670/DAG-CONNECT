@@ -2,6 +2,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ReportService } from 'src/app/services/report.service';
+import { DataInterchangeService } from '../../../services/data-interchange.service';
 
 @Component({
   selector: 'app-fleet-fuel-preferences',
@@ -10,6 +11,7 @@ import { ReportService } from 'src/app/services/report.service';
 })
 export class FleetFuelPreferencesComponent implements OnInit {
   @Input() tabName: string;
+  @Input() tabIndex: any;
   @Input() editFlag: any;
   @Input() reportListData: any;
   @Input() translationData: any = {};
@@ -55,7 +57,7 @@ export class FleetFuelPreferencesComponent implements OnInit {
     "rp_ff_report_driver_chart_co2emission" : "L"
   }
 
-  constructor(private reportService: ReportService) { }
+  constructor(private reportService: ReportService, private dataInterchangeService: DataInterchangeService) { }
 
   ngOnInit(): void {
     let accountPreference = JSON.parse(localStorage.getItem('accountInfo')).accountPreference;
@@ -69,17 +71,25 @@ export class FleetFuelPreferencesComponent implements OnInit {
     }
   }
 
-  loadFleetFuelPreferences() {
-    this.showLoadingIndicator=true;
+  loadFleetFuelPreferences(reloadFlag?: any) {
+    this.showLoadingIndicator = true;
     this.reportService.getReportUserPreference(this.reportId).subscribe((res:any) => {
-      this.showLoadingIndicator=false;
+      this.showLoadingIndicator = false;
       this.reportData = res.userPreferences;
+      if(reloadFlag){ // close pref tab & goto fuel report
+        let _dataObj: any = {
+          prefdata: this.reportData,
+          type: 'fuel report',
+          tab: this.tabIndex == 0 ? 'Vehicle' : 'Driver'
+        }
+        this.dataInterchangeService.getPrefData(_dataObj);
+        this.dataInterchangeService.closedPrefTab(false); // closed pref tab
+      }
       if (this.tabName == 'Vehicle') {
         this.initData = res['userPreferences']['subReportUserPreferences'].filter((item) => item.name.includes('Vehicle'));
       } else {
         this.initData = res['userPreferences']['subReportUserPreferences'].filter((item) => item.name.includes('Driver'));
       }
-      console.log("Fleet Fuel Report ", this.initData)
       this.resetColumnData();
       this.preparePrefData(this.initData[0]);
     }, (error) => {

@@ -557,12 +557,12 @@ namespace net.atos.daf.ct2.reportscheduler.repository
         #endregion
 
         #region Get Report Scheduler
-        public async Task<IEnumerable<ReportSchedulerMap>> GetReportSchedulerList(int organizationid)
+        public async Task<IEnumerable<ReportSchedulerMap>> GetReportSchedulerList(int organizationid, List<int> vehicleIds, List<int> groupIds)
         {
             MapperRepo repositoryMapper = new MapperRepo();
             try
             {
-                var parameterAlert = new DynamicParameters();
+                var parameter = new DynamicParameters();
 
                 string queryAlert = @"SELECT repsch.id as repsch_id, 
                                             repsch.organization_id as repsch_organization_id, 
@@ -628,23 +628,25 @@ namespace net.atos.daf.ct2.reportscheduler.repository
 	                                    LEFT JOIN master.scheduledreport as schrep
 	                                    ON repsch.id=schrep.schedule_report_id AND repsch.status <>'D' AND schrep.valid_till > @currentDate
                                         LEFT JOIN master.group grp 
-					                    on vehref.vehicle_group_id=grp.id
+					                    on vehref.vehicle_group_id=grp.id and grp.id = ANY(@groupIds)
 					                    LEFT JOIN master.groupref vgrpref
 					                    on  grp.id=vgrpref.group_id and grp.object_type='V'	
 					                    LEFT JOIN master.vehicle veh
-					                    on vgrpref.ref_id=veh.id 
+					                    on vgrpref.ref_id=veh.id and veh.id = ANY(@vehicleIds)
                                         LEFT JOIN master.vehicle vehs
-					                    on grp.ref_id=vehs.id and grp.group_type='S'
+					                    on grp.ref_id=vehs.id and grp.group_type='S' and vehs.id = ANY(@vehicleIds)
 										LEFT JOIN master.driver dr
 										on driveref.driver_id = dr.id and dr.state='A'
 										INNER JOIN master.report rep
-										on rep.id=repsch.report_id ";
+										on rep.id=repsch.report_id";
                 long currentdate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
                 queryAlert = queryAlert + " where repsch.organization_id = @organization_id and repsch.status<>'D'";
-                parameterAlert.Add("@organization_id", organizationid);
-                parameterAlert.Add("@currentDate", currentdate);
-                IEnumerable<ReportSchedulerResult> reportSchedulerResult = await _dataAccess.QueryAsync<ReportSchedulerResult>(queryAlert, parameterAlert);
-                return repositoryMapper.GetReportSchedulerList(reportSchedulerResult);
+                parameter.Add("@organization_id", organizationid);
+                parameter.Add("@currentDate", currentdate);
+                parameter.Add("@vehicleIds", vehicleIds);
+                parameter.Add("@groupIds", groupIds);
+                IEnumerable<ReportSchedulerResult> reportSchedulerResult = await _dataAccess.QueryAsync<ReportSchedulerResult>(queryAlert, parameter);
+                return await repositoryMapper.GetReportSchedulerList(reportSchedulerResult);
             }
             catch (Exception)
             {
