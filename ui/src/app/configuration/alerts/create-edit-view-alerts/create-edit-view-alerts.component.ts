@@ -863,28 +863,30 @@ proceedStep(prefData: any, preference: any){
       }
 
       //subscribed vehicles
-      this.vehicleByVehGroupList.forEach(element => {
-        element["subcriptionStatus"] = true;
-        this.vehicleListForTable.push(element);
-      });
+      // this.vehicleByVehGroupList.forEach(element => {
+      //   element["subcriptionStatus"] = true;
+      //   this.vehicleListForTable.push(element);
+      // });
+      
+      this.vehicleListForTable = this.vehicleByVehGroupList;
 
       //Commented because only vehicles from that group should be displayed.
       //non-subscribed vehicles
-      if(featuresData[0].subscriptionType != 'O'){  
-        this.getUnique(this.associatedVehicleData, "vehicleId").forEach(element => {
-          let isDuplicateVehicle= false;
-          for(let i = 0; i< this.vehicleByVehGroupList.length; i++){
-            if(element.vehicleId == this.vehicleByVehGroupList[i].vehicleId){
-                isDuplicateVehicle= true;
-                break;
-            }
-          }
-          if(!isDuplicateVehicle){
-            element["subcriptionStatus"] = false;
-            this.vehicleListForTable.push(element);
-          }
-        });
-      }
+      // if(featuresData[0].subscriptionType != 'O'){  
+      //   this.getUnique(this.associatedVehicleData, "vehicleId").forEach(element => {
+      //     let isDuplicateVehicle= false;
+      //     for(let i = 0; i< this.vehicleByVehGroupList.length; i++){
+      //       if(element.vehicleId == this.vehicleByVehGroupList[i].vehicleId){
+      //           isDuplicateVehicle= true;
+      //           break;
+      //       }
+      //     }
+      //     if(!isDuplicateVehicle){
+      //       element["subcriptionStatus"] = false;
+      //       this.vehicleListForTable.push(element);
+      //     }
+      //   });
+      // }
       this.updateVehiclesDataSource(this.vehicleListForTable);
     }
   }
