@@ -606,10 +606,10 @@
           <ng-container matColumnDef="driverID">
               <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_driverid')">{{ translationData.lblDriverID || 'Driver ID' }}
               </mat-header-cell>
-              <mat-cell *matCellDef="let row">
+              <!-- <mat-cell *matCellDef="let row">
                 <span *ngIf="!row.unknownDriver" class='navigatePoint' (click)='onDriverSelected(row)'>{{row.driverID }}</span>
                 <span *ngIf="row.unknownDriver" class='navigatePoint' (click)='onDriverSelected(row)'>*</span>
-              </mat-cell>
+              </mat-cell> -->
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_driverid')">
                 <!-- <span >{{row.driverID}}</span> -->
                 <span *ngIf="!row.unknownDriver" class='navigatePoint' (click)='onDriverSelected(row)'>{{ row.driverID }}</span>
