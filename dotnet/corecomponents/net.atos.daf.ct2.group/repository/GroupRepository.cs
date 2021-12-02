@@ -249,7 +249,7 @@ namespace net.atos.daf.ct2.group
                             // group ref filter 
                             if (groupFilter.GroupRefCount)
                             {
-                                group.GroupRefCount = GetRefCount(group.Id).Result;
+                                group.GroupRefCount = GetRefCount(group.Id, groupFilter.OrganizationId).Result;
                             }
                         }
                     }
@@ -616,7 +616,7 @@ namespace net.atos.daf.ct2.group
                         // group ref filter 
                         if (filter.GroupRefCount)
                         {
-                            group.GroupRefCount = GetRefCount(group.Id).Result;
+                            group.GroupRefCount = GetRefCount(group.Id, filter.OrganizationId).Result;
                         }
                     }
                     groupList.Add(group);
@@ -644,13 +644,73 @@ namespace net.atos.daf.ct2.group
             }
         }
 
-        private async Task<int> GetRefCount(int groupid)
+        public async Task<List<GroupRef>> GetGroupRef(int groupid, int organizationId)
         {
             try
             {
                 var parameter = new DynamicParameters();
-                var query = @"select  count(distinct ref_id) as refcount from master.groupref where group_id = @group_id";
+                var query = @"select group_id,ref_id  from master.groupref where ref_id in (
+                                        SELECT v.id
+                                        FROM master.vehicle v
+                                        INNER JOIN master.orgrelationshipmapping as om on v.id = om.vehicle_id and v.organization_id=om.owner_org_id and om.owner_org_id=@organizationId
+                                        INNER JOIN master.orgrelationship as ors on om.relationship_id=ors.id and ors.state='A' and lower(ors.code)='owner'
+                                        INNER JOIN master.groupref gref on v.id=gref.ref_id
+                                        WHERE 
+                                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
+                                        else COALESCE(end_date,0) = 0 end
+                                        and gref.group_id=@group_id
+                                        UNION
+                                        -- Visible vehicles of type G
+                                        SELECT  distinct gref.ref_id
+                                        FROM master.vehicle v
+                                        INNER JOIN master.groupref gref ON v.id=gref.ref_id
+                                        INNER JOIN master.group grp ON gref.group_id=grp.id AND grp.object_type='V'
+                                        INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.target_org_id=@organizationId
+                                        INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND lower(ors.code) NOT IN ('owner','oem')
+                                        WHERE 
+                                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
+                                        else COALESCE(end_date,0) = 0 end
+	                                        ) and group_id= @group_id";
                 parameter.Add("@group_id", groupid);
+                parameter.Add("@organizationId", organizationId);
+                var groupref = await _dataAccess.QueryAsync<GroupRef>(query, parameter);
+                return groupref.ToList();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        private async Task<int> GetRefCount(int groupid, int organizationId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                var query = @"select count(distinct ref_id) as refcount  from master.groupref where ref_id in (
+                                            SELECT v.id
+                                            FROM master.vehicle v
+                                            INNER JOIN master.orgrelationshipmapping as om on v.id = om.vehicle_id and v.organization_id=om.owner_org_id and om.owner_org_id=@organizationId
+                                            INNER JOIN master.orgrelationship as ors on om.relationship_id=ors.id and ors.state='A' and lower(ors.code)='owner'
+                                            INNER JOIN master.groupref gref on v.id=gref.ref_id
+                                            WHERE 
+                                            case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
+                                            else COALESCE(end_date,0) = 0 end
+                                            and gref.group_id=@group_id
+                                            UNION
+                                            -- Visible vehicles of type G
+                                            SELECT  distinct gref.ref_id
+                                            FROM master.vehicle v
+                                            INNER JOIN master.groupref gref ON v.id=gref.ref_id
+                                            INNER JOIN master.group grp ON gref.group_id=grp.id AND grp.object_type='V'
+                                            INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.target_org_id=@organizationId
+                                            INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND lower(ors.code) NOT IN ('owner','oem')
+                                            WHERE 
+                                            case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>now()::date
+                                            else COALESCE(end_date,0) = 0 end
+	                                            ) and group_id=@group_id  ";
+                parameter.Add("@group_id", groupid);
+                parameter.Add("@organizationId", organizationId);
                 var count = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 return count;
             }
@@ -774,7 +834,7 @@ namespace net.atos.daf.ct2.group
                             break;
                         case GroupType.Group:
                             //Group
-                            group.GroupRefCount = GetRefCount(group.Id).Result;
+                            group.GroupRefCount = GetRefCount(group.Id, groupFilter.OrganizationId).Result;
                             break;
                         case GroupType.Dynamic:
                             //Dynamic

@@ -17,6 +17,7 @@ namespace net.atos.daf.ct2.group
         Task<bool> RemoveRefByRefId(int refId);
         Task<IEnumerable<Group>> GetVehicleGroupWithVehCount(GroupFilter groupFilter);
         Task<int> GetVehiclesCount(int[] groupIds, int organizationId);
+        Task<List<GroupRef>> GetGroupRef(int groupid, int organizationId);
 
 
     }

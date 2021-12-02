@@ -90,5 +90,9 @@ namespace net.atos.daf.ct2.group
             }
             return vehicleIds.Distinct().Count();
         }
+        public async Task<List<GroupRef>> GetGroupRef(int groupid, int organizationId)
+        {
+            return await _groupRepository.GetGroupRef(groupid, organizationId);
+        }
     }
 }
