@@ -1510,7 +1510,7 @@ export class ReportMapService {
   meterToMile(_data: any){
     let kmData= _data / 1000;
     let data= kmData * 0.62137119223733; 
-    return data;
+    return data.toFixed(2);
   }
 
   mileToMeter(_data: any){
