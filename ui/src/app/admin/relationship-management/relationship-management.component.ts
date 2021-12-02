@@ -157,8 +157,7 @@ export class RelationshipManagementComponent implements OnInit {
       if(a && !(a instanceof Number)) a = a.toString().toUpperCase();
       if(a && !(b instanceof Number)) b = b.toString().toUpperCase();
     // tslint:disable-next-line: align
-    }
-    if(columnName === 'featureIds')
+    }if(columnName === 'featureIds')
     {
         a = a.length;
         b = b.length;

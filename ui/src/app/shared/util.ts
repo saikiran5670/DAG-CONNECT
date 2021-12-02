@@ -177,13 +177,13 @@ export class Util {
 
         let _date= date.split("T")[0];
         let _time= (date.split("T")[1]).slice(0, -6);
-         date=new Date();
+         date = new Date();
          date.setDate(_date.split("-")[2]);
          date.setMonth(_date.split("-")[1]-1);
          date.setYear(_date.split("-")[0]);
-         date.setHours(_time.split(":")[0]);
-         date.setMinutes(_time.split(":")[1]);
-         date.setSeconds(_time.split(":")[2]);
+         date.setHours(_time.split(":")[0] ? _time.split(":")[0] : 0);
+         date.setMinutes(_time.split(":")[1] ? _time.split(":")[1] : 0);
+         date.setSeconds(_time.split(":")[2] ? _time.split(":")[2] : 0);
 
          return date;
     }

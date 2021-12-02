@@ -551,18 +551,20 @@
           <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort
             #exporter="matTableExporter">
             <ng-container matColumnDef="vehicleName">
-              <mat-header-cell *matHeaderCellDef mat-sort-header
-                [hidden]="!checkForPreference('vehicleranking_vehiclename')">{{ translationData.lblVehicleName}}
+              <!-- <mat-header-cell *matHeaderCellDef mat-sort-header
+                [hidden]="!checkForPreference('vehicledetails_vehiclename')">{{ translationData.lblVehicleName}}
+              </mat-header-cell> -->
+              <mat-header-cell [ngClass]="{'text-truncate': validTableEntry.length < 20}" *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleName }}
               </mat-header-cell>
-              <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicleranking_vehiclename')">
+              <mat-cell *matCellDef="let row" [ngClass]="{'text-truncate': validTableEntry.length < 20}">
                 <span class='navigatePoint' (click)='onVehicleSelected(row)'>{{ row.vehicleName != '' ? row.vehicleName
                   : '-'
                   }}</span>
               </mat-cell>
-              <mat-cell *matCellDef="let row" [ngClass]="{'text-truncate': validTableEntry.length < 20}" matTooltip="{{ row.vehicleName }}"
-                [hidden]="!checkForPreference('vehicleranking_vehiclename')">
-                <span>{{row.vehicleName}}</span>
-              </mat-cell>
+              <!-- <mat-cell *matCellDef="let row" [ngClass]="{'text-truncate': validTableEntry.length < 20}" matTooltip="{{ row.vehicleName }}"
+                [hidden]="checkForPreference('vehicledetails_vehiclename')">
+                <span>{{ row.vehicleName != '' ? row.vehicleName : '-' }}</span>
+              </mat-cell> -->
             </ng-container>
 
             <ng-container matColumnDef="vin">
@@ -751,9 +753,8 @@
 
             <ng-container matColumnDef="cruiseControlDistance3050">
               <mat-header-cell *matHeaderCellDef mat-sort-header
-                [hidden]="!checkForPreference('vehicledetails_cruisecontroldistance3050')">{{
-                translationData.lblCruiseControlDistance3050 }}km/h(%)
-                <span style="font-weight: normal;"></span>
+                [hidden]="!checkForPreference('vehicledetails_cruisecontroldistance3050')">{{translationData.lblCruiseControlDistance || 'Cruise Control Distance'}} {{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblCruiseControlDistance3050metric || '30-50') : (translationData.lblCruiseControlDistance1530imperial || '15-30')}}
+                <span style="font-weight: normal;">{{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh) : (translationData.lblmileh)}} (%)</span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row"
                 [hidden]="!checkForPreference('vehicledetails_cruisecontroldistance3050')">
@@ -763,9 +764,8 @@
 
             <ng-container matColumnDef="cruiseControlDistance5075">
               <mat-header-cell *matHeaderCellDef mat-sort-header
-                [hidden]="!checkForPreference('vehicledetails_cruisecontroldistance5075')">{{
-                translationData.lblCruiseControlDistance5075 }}km/h(%)
-                <span style="font-weight: normal;"></span>
+                [hidden]="!checkForPreference('vehicledetails_cruisecontroldistance5075')">{{translationData.lblCruiseControlDistance || 'Cruise Control Distance'}} {{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblCruiseControlDistance5075metric || '50-75') : (translationData.lblCruiseControlDistance3045imperial || '30-45')}}
+                <span style="font-weight: normal;">{{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh) : (translationData.lblmileh)}} (%)</span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row"
                 [hidden]="!checkForPreference('vehicledetails_cruisecontroldistance5075')">
@@ -775,9 +775,8 @@
 
             <ng-container matColumnDef="cruiseControlDistance75">
               <mat-header-cell *matHeaderCellDef mat-sort-header
-                [hidden]="!checkForPreference('vehicledetails_cruisecontroldistance75')">{{
-                translationData.lblCruiseControlDistance75 }}km/h(%)
-                <span style="font-weight: normal;"></span>
+                [hidden]="!checkForPreference('vehicledetails_cruisecontroldistance75')">{{translationData.lblCruiseControlDistance || 'Cruise Control Distance'}} {{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblCruiseControlDistance75metric || '> 75') : (translationData.lblCruiseControlDistance45imperial || '> 45')}}
+                <span style="font-weight: normal;">{{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh) : (translationData.lblmileh)}} (%)</span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_cruisecontroldistance75')">
                 <span>{{row.cruiseControlDistance75}}</span>
@@ -958,7 +957,7 @@
                 <span> {{row.convertedidlingconsumptionwithpto}}</span>
               </mat-cell>
             </ng-container>
-            <mat-header-row *matHeaderRowDef="displayedColumns"  [ngStyle]="{'min-width': validTableEntry.length > 20 ? '5000px' : '0px'}" class="mat-header-data"></mat-header-row>
+            <mat-header-row *matHeaderRowDef="displayedColumns" [ngStyle]="{'min-width': validTableEntry.length > 20 ? '5000px' : '0px'}" class="mat-header-data"></mat-header-row>
             <mat-row *matRowDef="let row; columns: displayedColumns;" [ngStyle]="{'min-width': validTableEntry.length > 20 ? '5000px' : '0px'}" class="mat-row-data">
             </mat-row>
           </mat-table>
@@ -973,6 +972,6 @@
 
 <div *ngIf="vehicleSelected">
   <app-vehicletrip [translationData]='translationData' [vehicleDetails]='vehicleInfo' [dateDetails]='dateInfo'
-    [displayedColumns]='detaildisplayedColumns' [startDateValue]='startDateValue' [endDateValue]='endDateValue'
+    [displayedColumns]='detaildisplayedColumns' [startDateValue]='startDateValue' [endDateValue]='endDateValue' [finalPrefData]='finalPrefData' [prefTimeFormat]='prefTimeFormat' [prefTimeZone]='prefTimeZone' [prefDateFormat]='prefDateFormat' [prefUnitFormat]='prefUnitFormat' [wholeTripData]='wholeTripData'
     (backToMainPage)="backToMainPage()"></app-vehicletrip>
 </div>

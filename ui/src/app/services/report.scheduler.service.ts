@@ -39,6 +39,16 @@ export class ReportSchedulerService {
       .pipe(catchError(this.handleError));
   }
 
+  getScheduledReportList(id: any){
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .get<any[]>(`${this.reportSchedulerServiceURL}/getscheduledreport?reportSchedulerId=${id}`, headers)
+      .pipe(catchError(this.handleError));
+  }
+
   getReportSchedulerParameter(accountId: any, orgId: any){
     let headerObj = this.generateHeader();
     const headers = {

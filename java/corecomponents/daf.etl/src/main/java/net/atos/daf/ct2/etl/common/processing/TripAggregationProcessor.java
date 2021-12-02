@@ -7,10 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.flink.api.java.utils.ParameterTool;
-import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
-import org.apache.flink.table.api.Table;
-import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,9 +15,6 @@ import net.atos.daf.ct2.etl.common.bo.TripAggregatedData;
 import net.atos.daf.ct2.etl.common.hbase.HbaseLookupDataSource;
 import net.atos.daf.ct2.etl.common.postgre.IndexDataSourceLookup;
 import net.atos.daf.ct2.etl.common.util.ETLConstants;
-import net.atos.daf.ct2.etl.common.util.ETLQueries;
-import net.atos.daf.postgre.bo.EcoScore;
-import net.atos.daf.postgre.bo.Trip;
 
 public class TripAggregationProcessor implements Serializable{
 
@@ -28,7 +22,7 @@ public class TripAggregationProcessor implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static Logger logger = LoggerFactory.getLogger(TripAggregationProcessor.class);
+	private static final Logger logger = LoggerFactory.getLogger(TripAggregationProcessor.class);
 
 		
 	private Map<String, List<String>> getTripIndexColumns() {
@@ -72,7 +66,7 @@ public class TripAggregationProcessor implements Serializable{
 				.flatMap(new IndexDataSourceLookup());
 	}
 	
-	public DataStream<Trip> getTripStatisticData(SingleOutputStreamOperator<TripAggregatedData> tripAggrData, StreamTableEnvironment tableEnv)
+	/*public DataStream<Trip> getTripStatisticData(SingleOutputStreamOperator<TripAggregatedData> tripAggrData, StreamTableEnvironment tableEnv)
 	{
 		tableEnv.createTemporaryView("tripAggrData", tripAggrData);
 		Table tripStatisticData =tableEnv.sqlQuery(ETLQueries.TRIP_QRY);
@@ -86,6 +80,6 @@ public class TripAggregationProcessor implements Serializable{
 		Table tripStatisticData =tableEnv.sqlQuery(ETLQueries.ECOSCORE_QRY);
 		
 		return tableEnv.toRetractStream(tripStatisticData, EcoScore.class).map(rec -> rec.f1);
-	}
+	}*/
 	
 }

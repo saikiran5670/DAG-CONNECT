@@ -3606,7 +3606,7 @@ namespace net.atos.daf.ct2.reports.repository
                     -- Average Distance per day
                     AverageDistancePerDay_Total, AverageDistancePerDay_Count,
                     -- Eco Score
-                    EcoScore_Total,
+                    trunc(EcoScore_Total::numeric,1) as EcoScore_Total,
                     -- Fuel Consumption
                     FuelConsumption_Total, FuelConsumption_Count,
                     -- Cruise Control Usage
