@@ -15,7 +15,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
 
                 //Lookups are implemeted to avoid inserting duplicate entry of same id into the list
                 Dictionary<int, ReportSchedulerMap> reportSchedulerLookup = new Dictionary<int, ReportSchedulerMap>();
-                Dictionary<int, ScheduledReport> scheduledReportLookup = new Dictionary<int, ScheduledReport>();
+                //Dictionary<int, ScheduledReport> scheduledReportLookup = new Dictionary<int, ScheduledReport>();
                 Dictionary<int, ScheduledReportRecipient> scheduledReportRecipientLookup = new Dictionary<int, ScheduledReportRecipient>();
                 Dictionary<Tuple<int, int, int>, ScheduledReportVehicleRef> scheduledReportVehicleRefLookup = new Dictionary<Tuple<int, int, int>, ScheduledReportVehicleRef>();
                 Dictionary<Tuple<int, int>, ScheduledReportDriverRef> scheduledReportDriverRefLookup = new Dictionary<Tuple<int, int>, ScheduledReportDriverRef>();
@@ -34,10 +34,10 @@ namespace net.atos.daf.ct2.reportscheduler.entity
                     {
                         reportScheduler.ScheduledReportVehicleRef = new List<ScheduledReportVehicleRef>();
                     }
-                    if (reportScheduler.ScheduledReport == null)
-                    {
-                        reportScheduler.ScheduledReport = new List<ScheduledReport>();
-                    }
+                    //if (reportScheduler.ScheduledReport == null)
+                    //{
+                    //    reportScheduler.ScheduledReport = new List<ScheduledReport>();
+                    //}
                     if (reportScheduler.ScheduledReportDriverRef == null)
                     {
                         reportScheduler.ScheduledReportDriverRef = new List<ScheduledReportDriverRef>();
@@ -69,15 +69,15 @@ namespace net.atos.daf.ct2.reportscheduler.entity
                             reportScheduler.ScheduledReportDriverRef.Add(scheduledReportDriver);
                         }
                     }
-                    if (reportSchedulerItem.Schrep_id > 0 && reportSchedulerItem.Repsch_id == reportSchedulerItem.Schrep_schedule_report_id)
-                    {
-                        if (!scheduledReportLookup.TryGetValue(Convert.ToInt32(reportSchedulerItem.Schrep_id), out _))
-                        {
-                            var scheduledReport = ToScheduledReportModel(reportSchedulerItem);
-                            scheduledReportLookup.Add(Convert.ToInt32(reportSchedulerItem.Schrep_id), scheduledReport);
-                            reportScheduler.ScheduledReport.Add(scheduledReport);
-                        }
-                    }
+                    //if (reportSchedulerItem.Schrep_id > 0 && reportSchedulerItem.Repsch_id == reportSchedulerItem.Schrep_schedule_report_id)
+                    //{
+                    //    if (!scheduledReportLookup.TryGetValue(Convert.ToInt32(reportSchedulerItem.Schrep_id), out _))
+                    //    {
+                    //        var scheduledReport = ToScheduledReportModel(reportSchedulerItem);
+                    //        scheduledReportLookup.Add(Convert.ToInt32(reportSchedulerItem.Schrep_id), scheduledReport);
+                    //        reportScheduler.ScheduledReport.Add(scheduledReport);
+                    //    }
+                    //}
                 }
                 foreach (var keyValuePair in reportSchedulerLookup)
                 {
@@ -115,7 +115,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
             reportScheduler.MailDescription = request.Repsch_mail_description;
             reportScheduler.MailSubject = request.Repsch_mail_subject;
             reportScheduler.ReportDispatchTime = request.Repsch_report_dispatch_time;
-            reportScheduler.ScheduledReport = new List<ScheduledReport>();
+            //reportScheduler.ScheduledReport = new List<ScheduledReport>();
             reportScheduler.ScheduledReportDriverRef = new List<ScheduledReportDriverRef>();
             reportScheduler.ScheduledReportRecipient = new List<ScheduledReportRecipient>();
             reportScheduler.ScheduledReportVehicleRef = new List<ScheduledReportVehicleRef>();

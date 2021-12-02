@@ -124,13 +124,13 @@ namespace net.atos.daf.ct2.reportschedulerservice.Entity
 
                 }
             }
-            if (request.ScheduledReport.Count > 0)
-            {
-                foreach (var item in request.ScheduledReport)
-                {
-                    reportscheduler.ScheduledReport.Add(MapScheduledReportEntity(item));
-                }
-            }
+            //if (request.ScheduledReport.Count > 0)
+            //{
+            //    foreach (var item in request.ScheduledReport)
+            //    {
+            //        reportscheduler.ScheduledReport.Add(MapScheduledReportEntity(item));
+            //    }
+            //}
             return reportscheduler;
         }
         public ScheduledReportRecipient ToScheduledReportRecipientEntity(ScheduledReportRecipientRequest request)

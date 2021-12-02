@@ -610,23 +610,14 @@ namespace net.atos.daf.ct2.reportscheduler.repository
 					                        (CASE WHEN grp.group_type='S' THEN vehs.name END) as vehiclename,
 					                        (CASE WHEN grp.group_type<>'S' THEN grp.name END) as vehiclegroupname,
                                             grp.group_type as vehiclegrouptype,
-                                            grp.function_enum as functionenum,
-                                            schrep.id as schrep_id, 
-                                            schrep.schedule_report_id as schrep_schedule_report_id,                                            
-                                            schrep.downloaded_at as schrep_downloaded_at, 
-                                            schrep.valid_till as schrep_valid_till, 
-                                            schrep.created_at as schrep_created_at, 
-                                            schrep.start_date as schrep_start_date, 
-                                            schrep.end_date as schrep_end_date
+                                            grp.function_enum as functionenum                                           
 	                                    FROM master.reportscheduler as repsch
 	                                    LEFT JOIN master.scheduledreportdriverref as driveref
 	                                    ON repsch.id=driveref.report_schedule_id AND driveref.state='A'
 	                                    LEFT JOIN master.scheduledreportrecipient as receipt
 	                                    ON repsch.id=receipt.schedule_report_id AND repsch.status <>'D' AND receipt.state='A'
 	                                    LEFT JOIN master.scheduledreportvehicleref as vehref
-	                                    ON repsch.id=vehref.report_schedule_id AND repsch.status <>'D' AND vehref.state='A'
-	                                    LEFT JOIN master.scheduledreport as schrep
-	                                    ON repsch.id=schrep.schedule_report_id AND repsch.status <>'D' AND schrep.valid_till > @currentDate
+	                                    ON repsch.id=vehref.report_schedule_id AND repsch.status <>'D' AND vehref.state='A'	                                   
                                         LEFT JOIN master.group grp 
 					                    on vehref.vehicle_group_id=grp.id and grp.id = ANY(@groupIds)
 					                    LEFT JOIN master.groupref vgrpref
