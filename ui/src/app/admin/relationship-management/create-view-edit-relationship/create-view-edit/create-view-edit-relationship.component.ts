@@ -1,5 +1,5 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -8,13 +8,14 @@ import { RoleService } from 'src/app/services/role.service';
 import { CustomValidators } from 'src/app/shared/custom.validators';
 import { OrganizationService } from 'src/app/services/organization.service';
 import { Router, NavigationExtras  } from '@angular/router';
+import { Util } from 'src/app/shared/util';
 
 @Component({
   selector: 'app-create-view-edit-relationship',
   templateUrl: './create-view-edit-relationship.component.html',
   styleUrls: ['./create-view-edit-relationship.component.less']
 })
-export class CreateViewEditRelationshipComponent implements OnInit {
+export class CreateViewEditRelationshipComponent implements OnInit, AfterViewInit {
   breadcumMsg: any = '';
   //loggedInUser : string = 'admin';
   relationshipFormGroup: FormGroup;
@@ -51,9 +52,9 @@ export class CreateViewEditRelationshipComponent implements OnInit {
   createButtonClicked: boolean = false;
   backToOrgRel: boolean = false;
   showLoadingIndicator: boolean = false;
+  filterValue: string;
   constructor(private _formBuilder: FormBuilder, private roleService: RoleService, private organizationService: OrganizationService, private router: Router) { }
 
-  ngAfterViewInit() {}
 
   ngOnInit() {
     if(localStorage.getItem('contextOrgId')){
@@ -62,7 +63,7 @@ export class CreateViewEditRelationshipComponent implements OnInit {
     else{
       this.organizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     }
- 
+
     this.userType = localStorage.getItem("userType");
     this.relationshipFormGroup = this._formBuilder.group({
       relationshipName: ['', [Validators.required, Validators.maxLength(50),CustomValidators.noWhitespaceValidator]],
@@ -101,40 +102,47 @@ export class CreateViewEditRelationshipComponent implements OnInit {
             data = selectedFeatureList;
             this.featureDisplayedColumns = ['name'];
       }
-      setTimeout(()=>{
-        this.dataSource = new MatTableDataSource(data);
-        this.dataSource.filterPredicate = function(data, filter: any){
-          return data.name.toLowerCase().includes(filter);
-        }
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
-        this.dataSource.sortData = (data: String[], sort: MatSort) =>{
-          const isAsc = sort.direction === 'asc';
-          let columnName = this.sort.active;
-          return data.sort((a: any, b: any) => {
-              return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
-          });
-        }
-        if(!this.createStatus){
-        // if(this.editFlag){
-          this.onReset();
-        }
-      });
+
       this.featuresData = data;
       this.showLoadingIndicator=false;
+      this.applyFilterValue(data);
     }, (error) => {
       this.showLoadingIndicator=false;
     });
-    }, (error) => { 
+    }, (error) => {
       this.showLoadingIndicator=false;
      });
 
     this.doneFlag = this.createStatus ? false : true;
     this.breadcumMsg = this.getBreadcum();
   }
+applyFilterValue(data){
+  this.dataSource = new MatTableDataSource(data);
+  setTimeout(()=>{
+    this.dataSource = new MatTableDataSource(data);
 
-  compare(a: Number | String, b:Number | String, isAsc: boolean, columnName){
-    if(columnName == "name"){
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+    this.dataSource.sortData = (data: String[], sort: MatSort) =>{
+      const isAsc = sort.direction === 'asc';
+      let columnName = this.sort.active;
+      return data.sort((a: any, b: any) => {
+          return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
+      });
+    }
+    this.dataSource.filterPredicate = function(data, filter: any){
+      return data.name.toLowerCase().includes(filter);
+    }
+    if(!this.createStatus){
+    // if(this.editFlag){
+      this.onReset();
+    }
+    Util.applySearchFilter(this.dataSource, this.featureDisplayedColumns ,this.filterValue );
+
+  });
+}
+  compare(a: any, b:any, isAsc: boolean, columnName){
+    if(columnName === 'name' ){
       if(!(a instanceof Number)) a = a.toString().toUpperCase();
       if(!(b instanceof Number)) b = b.toString().toUpperCase();
     }
@@ -147,12 +155,12 @@ export class CreateViewEditRelationshipComponent implements OnInit {
     }else{
       let navigationExtras: NavigationExtras = {
         queryParams: {
-          "name": this.relationshipFormGroup.controls.relationshipName.value             
+          "name": this.relationshipFormGroup.controls.relationshipName.value
         }
       };
      this.router.navigate(['/admin/organisationrelationshipmanagement'], navigationExtras);
     }
-       
+
 };
 
   getBreadcum(){
@@ -180,7 +188,7 @@ export class CreateViewEditRelationshipComponent implements OnInit {
     }
     else{
     this.backToPage.emit({ viewFlag: false, editFlag: false, editText: 'cancel' });
-    }  
+    }
   }
 
   editRelationship(row: any){
@@ -190,7 +198,7 @@ export class CreateViewEditRelationshipComponent implements OnInit {
     this.viewFlag = false;
     // this.viewRelationshipFromOrg = false
     this.editFromRelationship = true;
-    this.createStatus = false;    
+    this.createStatus = false;
   }
 
   onReset(){
@@ -201,7 +209,7 @@ export class CreateViewEditRelationshipComponent implements OnInit {
         level: this.gridData[0].level,
         code: this.gridData[0].code
       })
-      
+
       this.dataSource.data.forEach(row => {
         if(this.featuresSelected){
           for(let selectedFeature of this.featuresSelected){
@@ -278,7 +286,7 @@ export class CreateViewEditRelationshipComponent implements OnInit {
         }
         this.organizationService.createRelationship(objData).subscribe((res) => {
           this.backToPage.emit({ editFlag: false, editText: 'create',  name: this.relationshipFormGroup.controls.relationshipName.value });
-        }, (error) => { 
+        }, (error) => {
           if(error.status == 409){
             this.isRelationshipExist = true;
           }
@@ -292,7 +300,7 @@ export class CreateViewEditRelationshipComponent implements OnInit {
     this.relationshipFormGroup.get("code").setValue(this.codeList[0].name);
   }
 
-  updateRelationship(){  
+  updateRelationship(){
     this.isRelationshipExist = false;
     this.doneFlag = true;
     let featureIds = [];
@@ -344,6 +352,9 @@ export class CreateViewEditRelationshipComponent implements OnInit {
     else
       return `${this.selectionForFeatures.isSelected(row) ? 'deselect' : 'select'
         } row`;
+  }
+  ngAfterViewInit() {
+
   }
 
 }
