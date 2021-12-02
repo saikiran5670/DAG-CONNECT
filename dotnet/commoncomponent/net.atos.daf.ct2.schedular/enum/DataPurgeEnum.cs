@@ -10,7 +10,8 @@ namespace net.atos.daf.ct2.schedular.Enum
         Oknoop = 'N',
         Connectionfailed = 'C',
         Sqlerror = 'S',
-        Timeout = 'T'
+        Timeout = 'T',
+        Failed = 'F'
 
     }
 }
