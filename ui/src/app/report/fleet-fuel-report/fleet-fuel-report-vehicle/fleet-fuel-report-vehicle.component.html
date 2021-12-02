@@ -236,7 +236,7 @@
             <div *ngIf="checkForPreference('summary_distance')" class="areaWidth min-width-15-per colData"
               fxLayout="column" fxLayoutAlign="left">
               <span>{{ translationData.lblDistance}}</span>
-              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('distance')}}{{(
+              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ convertZeros(sumOfColumns('distance'))}}{{(
                 prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm ) : (prefUnitFormat ==
                 'dunit_Imperial') ? (translationData.lblmile ) : (translationData.lblmile )
                 }}</span>
@@ -597,7 +597,7 @@
                   (translationData.lblmile ) }})</span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_distance')">
-                <span>{{row.convertedDistance}}</span>
+                <span>{{ convertZeros(row.convertedDistance)}}</span>
               </mat-cell>
               <!-- <mat-cell *matCellDef="let row">{{ row.convertedDistance != '' ? row.convertedDistance : '-' }}</mat-cell> -->
             </ng-container>

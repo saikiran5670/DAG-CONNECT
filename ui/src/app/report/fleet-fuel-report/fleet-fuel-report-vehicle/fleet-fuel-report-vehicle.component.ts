@@ -1972,7 +1972,7 @@ setVehicleGroupAndVehiclePreSelection() {
             let numberOfTrips = 0 ; let distanceDone = 0; let idleDuration = 0;
             let fuelConsumption = 0; let fuelconsumed = 0; let CO2Emission = 0;
             numberOfTrips= this.sumOfColumns('noOfTrips');
-            distanceDone= this.sumOfColumns('distance');
+            distanceDone= this.convertZeros(this.sumOfColumns('distance'));
             idleDuration= this.sumOfColumns('idleDuration');
             fuelConsumption= this.sumOfColumns('fuelConsumption');
             fuelconsumed= this.sumOfColumns('fuelconsumed');
@@ -2073,7 +2073,7 @@ setVehicleGroupAndVehiclePreSelection() {
     })
     this.initData.forEach(item => {
       let idleDurations = Util.getHhMmTime(parseFloat(item.idleDuration));
-      worksheet.addRow([item.vehicleName,item.vin, item.vehicleRegistrationNo, item.convertedDistance,
+      worksheet.addRow([item.vehicleName,item.vin, item.vehicleRegistrationNo, this.convertZeros(item.convertedDistance),
       item.convertedAverageDistance, item.convertedAverageSpeed, item.convertedMaxSpeed, item.numberOfTrips,
       item.convertedAverageGrossWeightComb, item.convertedFuelConsumed100Km, item.convertedFuelConsumption,item.cO2Emission,idleDurations,
        item.ptoDuration.toFixed(2),
@@ -2101,6 +2101,11 @@ setVehicleGroupAndVehiclePreSelection() {
     })
   }
 
+  convertZeros(val){
+    if( !isNaN(val) && (val == 0 || val == 0.0 || val == 0.00))
+      return '*';
+    return val;
+  }
 
   exportAsPDFFile(){
 
@@ -2344,7 +2349,7 @@ setVehicleGroupAndVehiclePreSelection() {
             break;
           }
           case 'distance' :{
-            tempObj.push(e.convertedDistance);
+            tempObj.push(this.convertZeros(e.convertedDistance));
             break;
           }
           case 'averageDistancePerDay' :{
