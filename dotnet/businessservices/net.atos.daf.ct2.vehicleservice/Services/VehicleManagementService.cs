@@ -616,7 +616,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
 
                 if (vehicleGroup?.GroupType == Group.GroupType.Group)
                 {
-                    List<Group.GroupRef> vehicleDetails = _groupManager.GetRef(request.GroupId).Result;
+                    List<Group.GroupRef> vehicleDetails = _groupManager.GetGroupRef(request.GroupId, request.OrganizationId).Result;
                     StringBuilder vehicleIdList = new StringBuilder();
                     foreach (var item in vehicleDetails)
                     {
