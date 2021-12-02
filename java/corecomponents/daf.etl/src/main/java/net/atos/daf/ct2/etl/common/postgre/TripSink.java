@@ -99,12 +99,13 @@ public class TripSink extends RichSinkFunction<Trip> implements Serializable {
 		try {
 			super.close();
 			if (Objects.nonNull(statement)) {
+				logger.info("Releasing prepared statement from Trip Job ::{}",statement);
 				statement.close();
 			}
-			logger.debug("In close() of tripSink :: ");
+			logger.debug("In close method of tripSink :: ");
 
 			if (Objects.nonNull(connection)) {
-				logger.info("Releasing connection from Trip Job");
+				logger.info("Releasing connection from Trip Job ::{}",connection);
 				connection.close();
 			}
 		} catch (Exception e) {
