@@ -8,11 +8,9 @@ import java.util.List;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.java.tuple.Tuple11;
 import org.apache.flink.runtime.testutils.MiniClusterResourceConfiguration;
-import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.sink.SinkFunction;
-import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import org.apache.flink.test.util.MiniClusterWithClientResource;
 import org.apache.flink.util.Collector;
 import org.junit.ClassRule;
@@ -25,7 +23,6 @@ import net.atos.daf.common.ct2.utc.TimeFormatter;
 import net.atos.daf.ct2.etl.common.bo.TripAggregatedData;
 import net.atos.daf.ct2.etl.common.bo.TripStatusData;
 import net.atos.daf.ct2.etl.common.util.ETLConstants;
-import net.atos.daf.ct2.etl.common.util.FlinkUtil;
 
 public class TripStreamingUnitTesting {
 
@@ -45,7 +42,7 @@ public class TripStreamingUnitTesting {
 
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 		env.setParallelism(PARALLELISM);
-		final StreamTableEnvironment tableEnv = FlinkUtil.createStreamTableEnvironment(env);
+		//final StreamTableEnvironment tableEnv = FlinkUtil.createStreamTableEnvironment(env);
 		
 		TripStatusData tripData = new TripStatusData();
 		tripData.setTripId("fa63bf81-dbfb-4acc-a20a-23e2f7e0cdb0");
@@ -108,7 +105,7 @@ public class TripStreamingUnitTesting {
 		
 		
 		//DataStream<Tuple5<String, String, String, Integer, Double>> secondLevelAggrData = TripAggregations.getTripIndexAggregatedData(tripStsData, tableEnv, indxData);
-		TripAggregations tripAggregations = new TripAggregations();
+		/*TripAggregations tripAggregations = new TripAggregations();
 		
 		//DataStream<Trip> finalTripData = tripAggregations.getConsolidatedTripData(tripStsData, indxData, env.fromElements(Tuple3.of(0.00082, 42.7, 74.3)), 5000L, tableEnv );
 		DataStream<TripAggregatedData> finalTripData = tripAggregations.getConsolidatedTripData(tripStsData, indxData, 5000L, tableEnv );
@@ -117,7 +114,7 @@ public class TripStreamingUnitTesting {
 		
 		//finalTripData.map(rec ->{System.out.println("TripCalDist :: "+rec.getTripCalDist()); return rec;});
 		finalTripData.addSink(new CollectSink());
-		
+		*/
 		
 		
 		// execute

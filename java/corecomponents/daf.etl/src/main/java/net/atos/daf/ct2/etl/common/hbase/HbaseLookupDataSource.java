@@ -36,7 +36,7 @@ import net.atos.daf.postgre.bo.IndexTripData;
 
 public class HbaseLookupDataSource extends
 		RichFlatMapFunction<TripAggregatedData, TripAggregatedData> {
-	private static final Logger logger = LoggerFactory.getLogger(TripIndexData.class);
+	private static final Logger logger = LoggerFactory.getLogger(HbaseLookupDataSource.class);
 
 	private static final long serialVersionUID = 1L;
 
