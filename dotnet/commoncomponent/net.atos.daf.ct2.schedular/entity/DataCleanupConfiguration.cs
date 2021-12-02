@@ -11,7 +11,7 @@
         public long CreatedAt { get; set; }
         public long ModifiedAt { get; set; }
     }
-    public class Pugingefiguration
+    public class PurgingConfiguration
     {
         public bool IsWebServiceCall { get; set; }
         public int ThreadSleepTimeInSec { get; set; }
@@ -19,7 +19,7 @@
         public int WebServiceRetryCount { get; set; }
         public int CancellationTokenDuration { get; set; }
 
-
+       
 
     }
 }
