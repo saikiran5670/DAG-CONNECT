@@ -583,7 +583,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     if (response.GroupRefDetails != null && response.GroupRefDetails.Count > 0)
                     {
-                        return Ok(response.GroupRefDetails);
+                        return Ok(response.GroupRefDetails.Distinct());
                     }
                     else
                     {

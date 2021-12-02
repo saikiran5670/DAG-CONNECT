@@ -240,7 +240,8 @@ export class ViewReportSchedulerComponent implements OnInit {
         this.month = this.months.filter(item => item.id == (Util.convertUtcToDateNoFormat(this.selectedRowData[0].startDate, this.prefTimeZone)).getMonth())[0].value;
       }
       case 'Q' : {
-        let currentMonth =(Util.convertUtcToDateNoFormat(this.selectedRowData[0].startDate, this.prefTimeZone)).getMonth();
+        let convertedDate = new Date(this.selectedRowData[0].startDate);
+        let currentMonth = convertedDate.getMonth();
 
         if(currentMonth >=0 && currentMonth<=2){
           this.quarter= "Quarter1 (Jan-Mar)";
