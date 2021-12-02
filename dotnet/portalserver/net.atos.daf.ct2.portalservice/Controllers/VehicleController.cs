@@ -885,6 +885,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                             VehicleBusinessService.VehicleGroupIdRequest vehicleGroupIdRequest = new VehicleBusinessService.VehicleGroupIdRequest();
                             vehicleGroupIdRequest.GroupId = dynamicVehicleGroupRequest.GroupId;
+                            vehicleGroupIdRequest.OrganizationId = dynamicVehicleGroupRequest.OrganizationId;
                             VehicleBusinessService.VehicleGroupRefResponce response = await _vehicleClient.GetVehiclesByVehicleGroupAsync(vehicleGroupIdRequest);
 
                             if (response != null && response.Code == VehicleBusinessService.Responcecode.Success)

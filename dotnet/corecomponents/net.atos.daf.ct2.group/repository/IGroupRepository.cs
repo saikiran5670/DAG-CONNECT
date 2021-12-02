@@ -18,5 +18,6 @@ namespace net.atos.daf.ct2.group
         Task<IEnumerable<Group>> GetVehicleGroupWithVehCount(GroupFilter groupFilter);
         Task<IEnumerable<int>> GetGroupVehicleCount(int groupId, int organizationId);
         Task<IEnumerable<int>> GetDynamicVehicleCount(int organizationId, FunctionEnum functionEnum);
+        Task<List<GroupRef>> GetGroupRef(int groupid, int organizationId);
     }
 }
