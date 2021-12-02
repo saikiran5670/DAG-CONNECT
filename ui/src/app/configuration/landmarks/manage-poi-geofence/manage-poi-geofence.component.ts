@@ -64,6 +64,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
   @Output() tabVisibility: EventEmitter<boolean> = new EventEmitter();
   categoryList: any = [];
   subCategoryList: any = [];
+  initSubCategoryList: any = [];
   // private _snackBar: any;
   initData: any[];
   importPOIClicked: boolean = false;
@@ -578,9 +579,11 @@ export class ManagePoiGeofenceComponent implements OnInit {
           this.subCategoryList.push({
             id: elem.subCategoryId,
             name: elem.subCategoryName,
+            parentCategoryId: elem.parentCategoryId,
             organizationId: elem.organizationId
           });
         });
+        this.initSubCategoryList = JSON.parse(JSON.stringify(this.subCategoryList));
       }
     }
   }
@@ -601,6 +604,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.categorySelectionForGeo = parseInt(_event.value);
     if(this.categorySelectionForGeo == 0 && this.subCategorySelectionForGeo == 0){
       this.updatedGeofenceTableData(this.geoInitData); //-- load all data
+      this.subCategoryList = JSON.parse(JSON.stringify(this.initSubCategoryList));
     }
     else if(this.categorySelectionForGeo == 0 && this.subCategorySelectionForGeo != 0){
       let filterData = this.geoInitData.filter(item => item.subCategoryId == this.subCategorySelectionForGeo);
@@ -615,6 +619,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
       let selectedId = this.categorySelectionForGeo;
       let selectedSubId = this.subCategorySelectionForGeo;
       let categoryData = this.geoInitData.filter(item => item.categoryId === selectedId);
+      this.subCategoryList = this.initSubCategoryList.filter(item => item.parentCategoryId === selectedId);
       if(selectedSubId != 0){
         categoryData = categoryData.filter(item => item.subCategoryId === selectedSubId);
       }
@@ -660,6 +665,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.categorySelectionForPOI = parseInt(_event.value);
     if(this.categorySelectionForPOI == 0 && this.subCategorySelectionForPOI == 0){
       this.updatedPOITableData(this.poiInitData); //-- load all data
+      this.subCategoryList = JSON.parse(JSON.stringify(this.initSubCategoryList));
     }
     else if(this.categorySelectionForPOI == 0 && this.subCategorySelectionForPOI != 0){
       let filterData = this.poiInitData.filter(item => item.subCategoryId == this.subCategorySelectionForPOI);
@@ -674,6 +680,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
       let selectedId = this.categorySelectionForPOI;
       let selectedSubId = this.subCategorySelectionForPOI;
       let categoryData = this.poiInitData.filter(item => item.categoryId === selectedId);
+      this.subCategoryList = this.initSubCategoryList.filter(item => item.parentCategoryId === selectedId);
       if(selectedSubId != 0){
         categoryData = categoryData.filter(item => item.subCategoryId === selectedSubId);
       }
