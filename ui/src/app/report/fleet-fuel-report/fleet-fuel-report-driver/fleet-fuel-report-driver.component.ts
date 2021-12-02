@@ -1631,26 +1631,31 @@ setPrefFormatDate(){
     case 'ddateformat_dd/mm/yyyy': {
       this.dateFormats.display.dateInput = "DD/MM/YYYY";
       this.chartLabelDateFormat='DD/MM/YYYY';
+      this.dateFormats.parse.dateInput = "DD/MM/YYYY";
       break;
     }
     case 'ddateformat_mm/dd/yyyy': {
       this.dateFormats.display.dateInput = "MM/DD/YYYY";
       this.chartLabelDateFormat='MM/DD/YYYY';
+      this.dateFormats.parse.dateInput = "MM/DD/YYYY";
       break;
     }
     case 'ddateformat_dd-mm-yyyy': {
       this.dateFormats.display.dateInput = "DD-MM-YYYY";
       this.chartLabelDateFormat='DD-MM-YYYY';
+      this.dateFormats.parse.dateInput = "DD-MM-YYYY";
       break;
     }
     case 'ddateformat_mm-dd-yyyy': {
       this.dateFormats.display.dateInput = "MM-DD-YYYY";
       this.chartLabelDateFormat='MM-DD-YYYY';
+      this.dateFormats.parse.dateInput = "MM-DD-YYYY";
       break;
     }
     default:{
       this.dateFormats.display.dateInput = "MM/DD/YYYY";
       this.chartLabelDateFormat='MM/DD/YYYY';
+      this.dateFormats.parse.dateInput = "MM/DD/YYYY";
     }
   }
 }
@@ -1667,12 +1672,14 @@ setDefaultTodayDate(){
     let endDateFromSearch = new Date(this.fleetFuelSearchData.endDateStamp);
     this.startDateValue = this.setStartEndDateTime(startDateFromSearch, this.selectedStartTime, 'start');
     this.endDateValue = this.setStartEndDateTime(endDateFromSearch, this.selectedEndTime, 'end');
+    this.last3MonthDate = this.getLast3MonthDate();
+    this.todayDate = this.getTodayDate();
   }else{
-  this.selectionTab = 'today';
-  this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
-  this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
-  this.last3MonthDate = this.getLast3MonthDate();
-  this.todayDate = this.getTodayDate();
+    this.selectionTab = 'today';
+    this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
+    this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
+    this.last3MonthDate = this.getLast3MonthDate();
+    this.todayDate = this.getTodayDate();
   }
 }
 
@@ -1682,21 +1689,19 @@ setDefaultTodayDate(){
 
   getTodayDate(){
     let _todayDate: any = Util.getUTCDate(this.prefTimeZone);
+    _todayDate.setHours(0);
+    _todayDate.setMinutes(0);
+    _todayDate.setSeconds(0);
     return _todayDate;
-    //let todayDate = new Date();
-    // let _date = moment.utc(todayDate.getTime());
-    // let _tz = moment.utc().tz('Europe/London');
-    // let __tz = moment.utc(todayDate.getTime()).tz('Europe/London').isDST();
-    // var timedifference = new Date().getTimezoneOffset(); //-- difference from the clients timezone from UTC time.
-    // let _tzOffset = this.getUtcOffset(todayDate);
-    // let dt = moment(todayDate).toDate();
   }
 
   getLast3MonthDate() {
-    // let date = new Date();
     if (this.prefTimeZone) {
       var date = Util.getUTCDate(this.prefTimeZone);
       date.setMonth(date.getMonth() - 3);
+      date.setHours(0);
+      date.setMinutes(0);
+      date.setSeconds(0);
       return date;
     }
   }
@@ -1882,9 +1887,18 @@ setVehicleGroupAndVehiclePreSelection() {
   }
 
   changeEndDateEvent(event: MatDatepickerInputEvent<any>){
-    //this.endDateValue = event.value._d;
     this.internalSelection = true;
-    this.endDateValue = this.setStartEndDateTime(event.value._d, this.selectedEndTime, 'end');
+    let dateTime: any = '';
+    if(event.value._d.getTime() <= this.todayDate.getTime()){ // EndTime > todayDate
+      if(event.value._d.getTime() >= this.startDateValue.getTime()){ // EndTime < startDateValue
+        dateTime = event.value._d;
+      }else{
+        dateTime = this.startDateValue; 
+      }
+    }else{ 
+      dateTime = this.todayDate;
+    }
+    this.endDateValue = this.setStartEndDateTime(dateTime, this.selectedEndTime, 'end');
     this.resetTripFormControlValue(); // extra addded as per discuss with Atul
     this.filterDateData(); // extra addded as per discuss with Atul
   }
@@ -1905,8 +1919,17 @@ setVehicleGroupAndVehiclePreSelection() {
 
   changeStartDateEvent(event: MatDatepickerInputEvent<any>){
     this.internalSelection = true;
-    //this.startDateValue = event.value._d;
-    this.startDateValue = this.setStartEndDateTime(event.value._d, this.selectedStartTime, 'start');
+    let dateTime: any = '';
+    if(event.value._d.getTime() >= this.last3MonthDate.getTime()){ // CurTime > Last3MonthTime
+      if(event.value._d.getTime() <= this.endDateValue.getTime()){ // CurTime < endDateValue
+        dateTime = event.value._d;
+      }else{
+        dateTime = this.endDateValue; 
+      }
+    }else{ 
+      dateTime = this.last3MonthDate;
+    }
+    this.startDateValue = this.setStartEndDateTime(dateTime, this.selectedStartTime, 'start');
     this.resetTripFormControlValue(); // extra addded as per discuss with Atul
     this.filterDateData(); // extra addded as per discuss with Atul
   }

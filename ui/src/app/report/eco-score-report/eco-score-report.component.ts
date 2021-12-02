@@ -1270,22 +1270,27 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     switch(this.prefDateFormat){
       case 'ddateformat_dd/mm/yyyy': {
         this.dateFormats.display.dateInput = "DD/MM/YYYY";
+        this.dateFormats.parse.dateInput = "DD/MM/YYYY";
         break;
       }
       case 'ddateformat_mm/dd/yyyy': {
         this.dateFormats.display.dateInput = "MM/DD/YYYY";
+        this.dateFormats.parse.dateInput = "MM/DD/YYYY";
         break;
       }
       case 'ddateformat_dd-mm-yyyy': {
         this.dateFormats.display.dateInput = "DD-MM-YYYY";
+        this.dateFormats.parse.dateInput = "DD-MM-YYYY";
         break;
       }
       case 'ddateformat_mm-dd-yyyy': {
         this.dateFormats.display.dateInput = "MM-DD-YYYY";
+        this.dateFormats.parse.dateInput = "MM-DD-YYYY";
         break;
       }
       default:{
         this.dateFormats.display.dateInput = "MM/DD/YYYY";
+        this.dateFormats.parse.dateInput = "MM/DD/YYYY";
       }
     }
   }
@@ -1302,10 +1307,12 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
         this.selectionTab = 'today';
       }
       if(this.searchFilterpersistData.startDateStamp !== '' && this.searchFilterpersistData.endDateStamp !== ''){
-      let startDateFromSearch = new Date(this.searchFilterpersistData.startDateStamp);
-      let endDateFromSearch = new Date(this.searchFilterpersistData.endDateStamp);
-      this.startDateValue = this.setStartEndDateTime(startDateFromSearch, this.selectedStartTime, 'start');
-      this.endDateValue = this.setStartEndDateTime(endDateFromSearch, this.selectedEndTime, 'end');
+        let startDateFromSearch = new Date(this.searchFilterpersistData.startDateStamp);
+        let endDateFromSearch = new Date(this.searchFilterpersistData.endDateStamp);
+        this.startDateValue = this.setStartEndDateTime(startDateFromSearch, this.selectedStartTime, 'start');
+        this.endDateValue = this.setStartEndDateTime(endDateFromSearch, this.selectedEndTime, 'end');
+        this.last3MonthDate = this.getLast3MonthDate();
+        this.todayDate = this.getTodayDate();
       } else {
         this.selectionTab = 'today';
         this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
@@ -1314,11 +1321,11 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
         this.todayDate = this.getTodayDate();
       }
     }else{
-    this.selectionTab = 'today';
-    this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
-    this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
-    this.last3MonthDate = this.getLast3MonthDate();
-    this.todayDate = this.getTodayDate();
+      this.selectionTab = 'today';
+      this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
+      this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
+      this.last3MonthDate = this.getLast3MonthDate();
+      this.todayDate = this.getTodayDate();
     }
   }
 
@@ -1333,6 +1340,9 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
 
   getTodayDate(){
     let _todayDate: any = Util.getUTCDate(this.prefTimeZone);
+    _todayDate.setHours(0);
+    _todayDate.setMinutes(0);
+    _todayDate.setSeconds(0);
     return _todayDate;
   }
 
@@ -1357,6 +1367,9 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   getLast3MonthDate(){
     var date = Util.getUTCDate(this.prefTimeZone);
     date.setMonth(date.getMonth()-3);
+    date.setHours(0);
+    date.setMinutes(0);
+    date.setSeconds(0);
     return date;
   }
 
@@ -1435,15 +1448,35 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
 
   changeStartDateEvent(event: MatDatepickerInputEvent<any>){
     this.internalSelection = true;
-    this.startDateValue = this.setStartEndDateTime(event.value._d, this.selectedStartTime, 'start');
+    let dateTime: any = '';
+    if(event.value._d.getTime() >= this.last3MonthDate.getTime()){ // CurTime > Last3MonthTime
+      if(event.value._d.getTime() <= this.endDateValue.getTime()){ // CurTime < endDateValue
+        dateTime = event.value._d;
+      }else{
+        dateTime = this.endDateValue; 
+      }
+    }else{ 
+      dateTime = this.last3MonthDate;
+    }
+    this.startDateValue = this.setStartEndDateTime(dateTime, this.selectedStartTime, 'start');
     this.resetEcoScoreFormControlValue(); // extra addded as per discuss with Atul
     this.filterDateData(); // extra addded as per discuss with Atul
-    this.startDateValue = this.setStartEndDateTime(event.value._d, this.selectedStartTime, 'start');
+    // this.startDateValue = this.setStartEndDateTime(dateTime, this.selectedStartTime, 'start');
   }
 
   changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     this.internalSelection = true;
-    this.endDateValue = this.setStartEndDateTime(event.value._d, this.selectedEndTime, 'end');
+    let dateTime: any = '';
+    if(event.value._d.getTime() <= this.todayDate.getTime()){ // EndTime > todayDate
+      if(event.value._d.getTime() >= this.startDateValue.getTime()){ // EndTime < startDateValue
+        dateTime = event.value._d;
+      }else{
+        dateTime = this.startDateValue; 
+      }
+    }else{ 
+      dateTime = this.todayDate;
+    }
+    this.endDateValue = this.setStartEndDateTime(dateTime, this.selectedEndTime, 'end');
     this.resetEcoScoreFormControlValue(); // extra addded as per discuss with Atul
     this.filterDateData(); // extra addded as per discuss with Atul
   }
