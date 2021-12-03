@@ -165,6 +165,28 @@
 </form>
 
 <div *ngIf='!vehicleSelected'>
+  <div *ngIf='displayData.length == 0'>
+  <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
+     <mat-expansion-panel [(expanded)]="isNoRecordOpen" class="full-width" fxLayoutGap="10px"
+        (opened)="isNoRecordOpen == true" (closed)="isNoRecordOpen == false">
+        <mat-expansion-panel-header class="full-width">
+          <mat-panel-title>
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllDetails 
+              }}</span>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div>
+       <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;' fxLayout="row"
+      fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound}}</div>
+     <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{
+      translationData.lblSelectionMessage }}</div>
+  </div>
+  <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
+     </mat-expansion-panel>
+  </mat-card>
+ </div>
+  <div *ngIf='displayData.length > 0'>
+    
   <!-- Summary -->
   <div *ngIf='!showDetailedReport'>
     <mat-card *ngIf='displayData.length > 0' class='mat-elevation-z no-padding margin-bottom-xlg' id="summary">
@@ -520,12 +542,12 @@
           </mat-panel-title>
         </mat-expansion-panel-header>
 
-        <div *ngIf='displayData.length == 0'>
+        <!-- <div *ngIf='displayData.length == 0'>
           <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;' fxLayout="row"
             fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound}}</div>
           <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{
             translationData.lblSelectionMessage }}</div>
-        </div>
+        </div> -->
         <div *ngIf='displayData.length > 0' [ngClass]="{'reportTable': validTableEntry.length > 6}">
           <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm' fxLayoutGap="10px">
             <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
@@ -959,10 +981,11 @@
           </mat-table>
           <mat-paginator [pageSizeOptions]="[5, 10, 50, 100, 500]" (page)="pageSizeUpdated($event)"></mat-paginator>
         </div>
-
-        <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
+     
+       
       </mat-expansion-panel>
     </mat-card>
+  </div>
   </div>
 </div>
 
