@@ -739,7 +739,7 @@
                 </ng-container>
                 
                 <ng-container matColumnDef="idlingPTO">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingWithoutPTO || 'Idling with PTO %' }}
+                  <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingwithPTOPercent || 'Idling with PTO %' }}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">
                     <span>{{row.idlingPTO}}</span>
