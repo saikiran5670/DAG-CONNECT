@@ -599,12 +599,12 @@
                           </mat-cell>              
                         </ng-container>              
                         <ng-container matColumnDef="cO2Emission" >
-                          <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_co2emission')">{{ translationData.lblCO2Emission || 'CO2 Emission' }}
+                          <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_co2emission')">{{ translationData.lblCO2Emission || 'CO2 Emission' }}
                             <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblton || 't') :
                                 (prefUnitFormat == 'dunit_Imperial') ? (translationData.lbltons || 'Ton') : (translationData.lbltons ||
                                 'Ton') }})</span>
                           </mat-header-cell>
-                          <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_co2emission')">
+                          <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_co2emission')">
                             <span>{{row.cO2Emission}}</span>
                           </mat-cell>
                           <!-- <mat-cell *matCellDef="let row">{{ row.convertedAverageDistance != '' ? row.convertedAverageDistance : '-' }}</mat-cell> -->
@@ -625,28 +625,28 @@
                         </ng-container>
                         <ng-container matColumnDef="cruiseControlDistance3050">      
                           <mat-header-cell *matHeaderCellDef mat-sort-header 
-                          [hidden]="!checkForPreference('singlevehicledetails_cruisecontroldistance3050')">{{translationData.lblCruiseControlDistance}} {{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblCruiseControlDistance3050metric) : (translationData.lblCruiseControlDistance1530imperial)}}
+                          [hidden]="!checkForPreference(prefUnitFormat == 'dunit_Metric' ? 'singlevehicledetails_cruisecontroldistance3050' : 'singlevehicledetails_cruisecontroldistance1530')">{{translationData.lblCruiseControlDistance}} {{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblCruiseControlDistance3050metric) : (translationData.lblCruiseControlDistance1530imperial)}}
                             <span style="font-weight: normal;">{{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh) : (translationData.lblmileh)}} (%)</span>             
                           </mat-header-cell>             
-                          <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_cruisecontroldistance3050')">              
+                          <mat-cell *matCellDef="let row" [hidden]="!checkForPreference(prefUnitFormat == 'dunit_Metric' ? 'singlevehicledetails_cruisecontroldistance3050' : 'singlevehicledetails_cruisecontroldistance1530')">              
                             <span>{{row.cruiseControlDistance3050}}</span>              
                           </mat-cell>              
                         </ng-container>              
                         <ng-container matColumnDef="cruiseControlDistance5075">              
                           <mat-header-cell *matHeaderCellDef mat-sort-header 
-                          [hidden]="!checkForPreference('singlevehicledetails_cruisecontroldistance5075')">{{translationData.lblCruiseControlDistance}} {{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblCruiseControlDistance5075metric) : (translationData.lblCruiseControlDistance3045imperial)}}
+                          [hidden]="!checkForPreference(prefUnitFormat == 'dunit_Metric' ? 'singlevehicledetails_cruisecontroldistance5075' : 'singlevehicledetails_cruisecontroldistance3045')">{{translationData.lblCruiseControlDistance}} {{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblCruiseControlDistance5075metric) : (translationData.lblCruiseControlDistance3045imperial)}}
                             <span style="font-weight: normal;">{{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh) : (translationData.lblmileh)}} (%)</span>  
                           </mat-header-cell>             
-                          <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_cruisecontroldistance5075')">             
+                          <mat-cell *matCellDef="let row" [hidden]="!checkForPreference(prefUnitFormat == 'dunit_Metric' ? 'singlevehicledetails_cruisecontroldistance5075' : 'singlevehicledetails_cruisecontroldistance3045')">             
                             <span>{{row.cruiseControlDistance5075}}</span>             
                           </mat-cell>             
                         </ng-container>             
                         <ng-container matColumnDef="cruiseControlDistance75">              
                           <mat-header-cell *matHeaderCellDef mat-sort-header 
-                          [hidden]="!checkForPreference('singlevehicledetails_cruisecontroldistance75')">{{translationData.lblCruiseControlDistance}} {{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblCruiseControlDistance75metric) : (translationData.lblCruiseControlDistance45imperial)}}
+                          [hidden]="!checkForPreference(prefUnitFormat == 'dunit_Metric' ? 'singlevehicledetails_cruisecontroldistance75' : 'singlevehicledetails_cruisecontroldistance45')">{{translationData.lblCruiseControlDistance}} {{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblCruiseControlDistance75metric) : (translationData.lblCruiseControlDistance45imperial)}}
                           <span style="font-weight: normal;">{{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh) : (translationData.lblmileh)}} (%)</span>      
                           </mat-header-cell>              
-                          <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_cruisecontroldistance75')">              
+                          <mat-cell *matCellDef="let row" [hidden]="!checkForPreference(prefUnitFormat == 'dunit_Metric' ? 'singlevehicledetails_cruisecontroldistance75' : 'singlevehicledetails_cruisecontroldistance45')">              
                             <span>{{row.cruiseControlDistance75}}</span>              
                           </mat-cell>              
                         </ng-container>
@@ -679,33 +679,33 @@
                   </mat-cell>      
                 </ng-container>
                 <ng-container matColumnDef="ccFuelConsumption">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_ccfuelconsumption')">{{ translationData.lblCCFuelConsumption || 'CC Fuel
+                    <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_ccfuelconsumption')">{{ translationData.lblCCFuelConsumption || 'CC Fuel
                       Consumption' }}
                       <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || ' Ltrs/100km') : (prefUnitFormat ==
                     'dunit_Imperial') ? (translationData.lblmpg || 'mpg') : (translationData.lblmpg
                     || ' mpg') }})</span>
                     </mat-header-cell>
-                    <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_ccfuelconsumption')">
+                    <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_ccfuelconsumption')">
                       <span>{{ row.convetedCCFuelConsumption }}</span>
                     </mat-cell>
                   </ng-container>
       
                   <ng-container matColumnDef="fuelconsumptionCCnonactive">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_fuelconsumptionccnonactive')">{{ translationData.lblFuelconsumptionCCnonactive ||
+                    <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_fuelconsumptionccnonactive')">{{ translationData.lblFuelconsumptionCCnonactive ||
                       'Fuel
                       Consumption CC non active' }}
                       <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || ' Ltrs/100km') : (prefUnitFormat ==
                         'dunit_Imperial') ? (translationData.lblmpg || 'mpg') : (translationData.lblmpg
                         || ' mpg') }})</span>
                     </mat-header-cell>
-                    <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_fuelconsumptionccnonactive')">
+                    <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_fuelconsumptionccnonactive')">
                       <span>{{ row.convertedFuelConsumptionCCNonActive }}</span>
                     </mat-cell>
                   </ng-container>     
                 <ng-container matColumnDef="idlingConsumption">     
-                  <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idlingconsumption')">{{ translationData.lblIdlingConsumption || 'Idling Consumption' }}    
+                  <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_idlingconsumption')">{{ translationData.lblIdlingConsumption || 'Idling Consumption' }}    
                   </mat-header-cell>     
-                  <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingconsumption')">      
+                  <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_idlingconsumption')">      
                     <span>{{row.idlingConsumptionValue}}</span>      
                   </mat-cell>
                 </ng-container>     
@@ -733,60 +733,60 @@
                 <ng-container matColumnDef="idlingPTOScore">
                   <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idlingwithpto')">{{ translationData.lblIdlingwithPTOscore }}
                   </mat-header-cell>
-                  <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingwithpto')">
+                  <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_idlingwithpto')">
                     <span>{{ row.convertedIdlingPTOScore }}</span>
                   </mat-cell>
                 </ng-container>
                 
                 <ng-container matColumnDef="idlingPTO">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingwithPTOPercent }}
+                  <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingwithPTOPercent }}
                   </mat-header-cell>
-                  <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">
+                  <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_idlingwithoutpto')">
                     <span>{{row.idlingPTO}}</span>
                   </mat-cell>
                 </ng-container>
       
                 <ng-container matColumnDef="idlingWithoutPTO">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingwithoutPTO }}
+                  <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingwithoutPTO }}
                   </mat-header-cell>
-                  <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">
+                  <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_idlingwithoutpto')">
                     <span>{{ row.convertedIdlingWithoutPTO }}</span>
                   </mat-cell>
                 </ng-container>
       
                 <ng-container matColumnDef="idlingWithoutPTOpercent">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingWithoutPTOPercent }}
+                  <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingWithoutPTOPercent }}
                   </mat-header-cell>
-                  <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">
+                  <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_idlingwithoutpto')">
                     <span>{{row.idlingWithoutPTOpercent}}</span>
                   </mat-cell>
                 </ng-container>
       
                 <ng-container matColumnDef="footBrake">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_footbrake')">{{ translationData.lblFootBrake }}
+                  <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_footbrake')">{{ translationData.lblFootBrake }}
                   </mat-header-cell>
-                  <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_footbrake')">
+                  <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_footbrake')">
                     <span>{{row.footBrake}}</span>
                   </mat-cell>
                 </ng-container>
       
                 <ng-container matColumnDef="cO2Emmision">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_co2emmision')">{{ translationData.lblCO2emmisiongrkm  }}
+                  <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_co2emmision')">{{ translationData.lblCO2emmisiongrkm  }}
                     <span style="font-weight: normal;"></span> 
                   </mat-header-cell>
       
-                  <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_co2emmision')">
+                  <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_co2emmision')">
                     <span>{{row.cO2Emmision}}</span>
                   </mat-cell>
                 </ng-container>
       
              
                 <ng-container matColumnDef="idlingConsumptionWithPTO">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idlingconsumptionwithpto')">{{ translationData.lblidlingConsumptionValue }}
+                  <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_idlingconsumptionwithpto')">{{ translationData.lblidlingConsumptionValue }}
                     <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblltrper100km ) :
                     (translationData.lblmpg )  }})</span> 
                   </mat-header-cell>
-                  <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingconsumptionwithpto')">
+                  <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_idlingconsumptionwithpto')">
                     <span> {{row.convertedIdlingConsumptionWithPto}}</span>
                   </mat-cell>
                 </ng-container>
