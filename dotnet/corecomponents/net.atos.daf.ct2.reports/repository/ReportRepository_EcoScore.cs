@@ -1005,6 +1005,7 @@ namespace net.atos.daf.ct2.reports.repository
                                     eco.vin,eco.used_fuel,eco.pto_duration,eco.end_time,eco.start_time,eco.gross_weight_combination_total,
                                     eco.heavy_throttle_pedal_duration,eco.idle_duration,eco.harsh_brake_duration,eco.brake_duration,
                                     eco.cruise_control_usage , eco.cruise_control_usage_30_50,eco.cruise_control_usage_50_75,eco.cruise_control_usage_75
+                                    ,eco.tacho_gross_weight_combination,eco.gross_weight_combination_count
                                     FROM tripdetail.ecoscoredata eco
                                     JOIN master.driver dr  ON dr.driver_id = eco.driver1_id
                                     JOIN master.vehicle veh ON eco.vin = veh.vin AND eco.start_time >= veh.reference_date
@@ -1024,7 +1025,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 AverageGrossweight as 
                                 (
-                                    select eco.driver1_id, (CAST(SUM (eco.gross_weight_combination_total)as DOUBLE PRECISION))/COUNT (eco.trip_id)  as AverageGrossweight
+                                    select eco.driver1_id, (CAST(SUM (eco.tacho_gross_weight_combination)/SUM(eco.gross_weight_combination_count) as DOUBLE PRECISION))/COUNT (eco.trip_id)  as AverageGrossweight
                                     FROM ecoscorequery eco
                                     GROUP BY eco.driver1_id
                                 ),
@@ -1333,6 +1334,7 @@ namespace net.atos.daf.ct2.reports.repository
                                     eco.vin,eco.used_fuel,eco.pto_duration,eco.end_time,eco.start_time,eco.gross_weight_combination_total,
                                     eco.heavy_throttle_pedal_duration,eco.idle_duration,eco.harsh_brake_duration,eco.brake_duration,
                                     eco.cruise_control_usage , eco.cruise_control_usage_30_50,eco.cruise_control_usage_50_75,eco.cruise_control_usage_75
+                                    ,eco.tacho_gross_weight_combination,eco.gross_weight_combination_count
                                     FROM tripdetail.ecoscoredata eco
                                     JOIN master.driver dr ON dr.driver_id = eco.driver1_id
                                     JOIN master.vehicle veh ON eco.vin = veh.vin AND eco.start_time >= veh.reference_date
@@ -1352,7 +1354,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 AverageGrossweight as 
                                 (
-                                    select eco.driver1_id, (CAST(SUM (eco.gross_weight_combination_total)as DOUBLE PRECISION))/COUNT (eco.trip_id)  as AverageGrossweight
+                                    select eco.driver1_id, CAST((SUM (eco.tacho_gross_weight_combination)/SUM(eco.gross_weight_combination_count))/COUNT (eco.trip_id) as double precision)  as AverageGrossweight
                                     FROM ecoscorequery eco
                                     GROUP BY eco.driver1_id
                                 ),
@@ -1625,6 +1627,7 @@ namespace net.atos.daf.ct2.reports.repository
                                     eco.vin,eco.used_fuel,eco.pto_duration,eco.end_time,eco.start_time,eco.gross_weight_combination_total,
                                     eco.heavy_throttle_pedal_duration,eco.idle_duration,eco.harsh_brake_duration,eco.brake_duration,
 									eco.cruise_control_usage , eco.cruise_control_usage_30_50,eco.cruise_control_usage_50_75,eco.cruise_control_usage_75
+                                    ,eco.tacho_gross_weight_combination,eco.gross_weight_combination_count
                                     FROM tripdetail.ecoscoredata eco
                                     JOIN master.driver dr ON dr.driver_id = eco.driver1_id
                                     JOIN master.vehicle veh ON eco.vin = veh.vin AND eco.start_time >= veh.reference_date
@@ -1645,7 +1648,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ) ,
 								 AverageGrossweight as 
                                 (
-                                    select eco.organization_id, (CAST(SUM (eco.gross_weight_combination_total)as DOUBLE PRECISION))/COUNT (eco.trip_id)  as AverageGrossweight
+                                    select eco.organization_id, CAST(SUM (eco.tacho_gross_weight_combination)/SUM(eco.gross_weight_combination_count)/COUNT (eco.trip_id) as double precision)   as AverageGrossweight
                                     FROM ecoscorequery eco
                                     GROUP BY eco.organization_id 
                                 ),
@@ -1918,7 +1921,7 @@ namespace net.atos.daf.ct2.reports.repository
                                     eco.vin,eco.used_fuel,eco.pto_duration,eco.end_time,eco.start_time,eco.gross_weight_combination_total,
                                     eco.heavy_throttle_pedal_duration,eco.idle_duration,eco.harsh_brake_duration,eco.brake_duration,
 									eco.cruise_control_usage , eco.cruise_control_usage_30_50,eco.cruise_control_usage_50_75,eco.cruise_control_usage_75
-									,ve.registration_no,ve.name
+									,ve.registration_no,ve.name,eco.tacho_gross_weight_combination,eco.gross_weight_combination_count
                                     FROM tripdetail.ecoscoredata eco
 									JOIN master.vehicle ve ON eco.vin = ve.vin AND eco.start_time >= ve.reference_date
                                     JOIN master.driver dr ON dr.driver_id = eco.driver1_id
@@ -1938,7 +1941,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ), 
 								 AverageGrossweight as 
                                 (
-                                    select eco.vin, CAST(SUM (eco.gross_weight_combination_total)as DOUBLE PRECISION)/COUNT (eco.trip_id)  as AverageGrossweight
+                                    select eco.vin, CAST(SUM (eco.tacho_gross_weight_combination)/SUM(eco.gross_weight_combination_count) as DOUBLE PRECISION)/COUNT (eco.trip_id)  as AverageGrossweight
                                     FROM ecoscorequery eco
                                     GROUP BY eco.vin
                                 ),
@@ -2213,7 +2216,7 @@ namespace net.atos.daf.ct2.reports.repository
                                     eco.vin,eco.used_fuel,eco.pto_duration,eco.end_time,eco.start_time,eco.gross_weight_combination_total,
                                     eco.heavy_throttle_pedal_duration,eco.idle_duration,eco.harsh_brake_duration,eco.brake_duration,
 									eco.cruise_control_usage , eco.cruise_control_usage_30_50,eco.cruise_control_usage_50_75,eco.cruise_control_usage_75
-									,ve.registration_no,ve.name
+									,ve.registration_no,ve.name,eco.tacho_gross_weight_combination,eco.gross_weight_combination_count
                                     FROM tripdetail.ecoscoredata eco
 									JOIN master.vehicle ve ON eco.vin = ve.vin AND eco.start_time >= ve.reference_date
                                     JOIN master.driver dr ON dr.driver_id = eco.driver1_id
@@ -2234,7 +2237,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ) ,
 								 AverageGrossweight as 
                                 (
-                                    select eco.organization_id , eco.vin, (CAST(SUM (eco.gross_weight_combination_total)as DOUBLE PRECISION))/COUNT (eco.trip_id)  as AverageGrossweight
+                                    select eco.organization_id , eco.vin, (CAST(SUM (eco.tacho_gross_weight_combination)/SUM(gross_weight_combination_count) as DOUBLE PRECISION))/COUNT (eco.trip_id)  as AverageGrossweight
                                     FROM ecoscorequery eco
                                     GROUP BY eco.organization_id ,eco.vin
                                 ),
