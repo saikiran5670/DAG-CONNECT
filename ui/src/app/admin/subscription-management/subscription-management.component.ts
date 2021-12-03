@@ -59,7 +59,7 @@ export class SubscriptionManagementComponent implements OnInit {
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   userType: any = localStorage.getItem("userType");
   organizationList: any = [];
-  organisationData : any;
+  organisationData : any = [];
   accountDetails : any =[];
   TypeList: any = [
     {
@@ -75,7 +75,8 @@ export class SubscriptionManagementComponent implements OnInit {
       value: 'V'
     }
   ];
-  StatusList: any = [];
+  StatusList: any;
+
   showLoadingIndicator: any = true;
   filterData: any = [];
   filterValue: string;
@@ -172,7 +173,6 @@ export class SubscriptionManagementComponent implements OnInit {
     this.contextOrgId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
     this.organizationId = this.contextOrgId? this.contextOrgId : this.accountOrganizationId;
     this.organisationData = JSON.parse(localStorage.getItem('allOrgList'));
-
     let translationObj = {
       id: 0,
       code: this.localStLanguage.code,
@@ -187,6 +187,20 @@ export class SubscriptionManagementComponent implements OnInit {
         this.loadSubscriptionData();
     });
 
+  //   this.StatusList= [
+  //     {
+  //       name: this.translationData.lblActive,
+  //       value: '1'
+  //     },
+  //     {
+  //       name: this.translationData.lblInactive,
+  //       value: '2'
+  //     }
+  //   ]
+  }
+
+  loadSubscriptionData(){
+    this.showLoadingIndicator = true;
     this.StatusList= [
       {
         name: this.translationData.lblActive,
@@ -196,11 +210,7 @@ export class SubscriptionManagementComponent implements OnInit {
         name: this.translationData.lblInactive,
         value: '2'
       }
-    ]
-  }
-
-  loadSubscriptionData(){
-    this.showLoadingIndicator = true;
+    ];
     this.subscriptionService.getSubscriptions(this.organizationId).subscribe((data : any) => {
       this.initData = data["subscriptionList"];
       this.filterData = this.initData;
