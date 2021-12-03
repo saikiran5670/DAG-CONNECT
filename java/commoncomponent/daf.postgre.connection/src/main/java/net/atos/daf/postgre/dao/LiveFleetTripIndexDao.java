@@ -24,7 +24,7 @@ public class LiveFleetTripIndexDao implements Serializable {
 
 	private Connection connection;
 
-	public void insert(IndexTripData indexTripData, PreparedStatement tripIndexQry) throws TechnicalException {
+	public void insert(IndexTripData indexTripData, PreparedStatement tripIndexQry) throws TechnicalException, Exception {
 		try {
 			if (Objects.nonNull(indexTripData)) {
 
@@ -36,7 +36,7 @@ public class LiveFleetTripIndexDao implements Serializable {
 			logger.error("Sql Issue while inserting data to indexMessageData table :{} ", e.getMessage());
 			logger.error("Issue while inserting TripIndex record :: {}", tripIndexQry);
 			logger.error("Issue while inserting TripIndex, connection ::{}, indexTripData :{} " , connection, indexTripData);
-			e.printStackTrace();
+			throw e;
 		} catch (Exception e) {
 			logger.error("Issue while inserting data to indexMessageData table :{} ", e.getMessage());
 			logger.error("Issue while inserting TripIndex record :: {}", tripIndexQry);

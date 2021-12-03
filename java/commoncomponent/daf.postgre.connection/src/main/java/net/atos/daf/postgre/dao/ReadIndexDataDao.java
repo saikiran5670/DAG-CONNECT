@@ -31,7 +31,7 @@ public class ReadIndexDataDao implements Serializable {
 		this.connection = connection;
 	}
 	
-	public List<IndexTripData> read(PreparedStatement tripIdxQry, String tripId) {
+	public List<IndexTripData> read(PreparedStatement tripIdxQry, String tripId)throws Exception  {
 		ResultSet rs = null;
 		List<IndexTripData> indexTripList = new ArrayList<IndexTripData>();
 
@@ -46,7 +46,7 @@ public class ReadIndexDataDao implements Serializable {
 		} catch (SQLException e) {
 			logger.error("Issue while reading granular data from TripIndex job :: " + tripIdxQry);
 			logger.error("Issue while reading granular data from TripIndex job :: " + e);
-			// throw e;
+			throw e;
 		} catch (Exception e) {
 			logger.error("Issue while reading granular data from TripIndex job :: " + tripIdxQry);
 			logger.error("Issue while reading granular data from TripIndex job :: " + e);

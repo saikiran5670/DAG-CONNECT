@@ -37,8 +37,6 @@ public class TripSinkDao implements Serializable {
 			logger.error("Sql Issue while inserting data to tripStatistic table ::{} ", e.getMessage());
 			logger.error("Issue while inserting trip record :: {}", tripInsertQry);
 			throw e;
-			//throw an error to abort the Job
-			
 		} catch (Exception e) {
 			logger.error("Issue while inserting data to tripStatistic table ::{} ", e.getMessage());
 			logger.error("Issue while inserting trip record ::{} ", tripInsertQry);
