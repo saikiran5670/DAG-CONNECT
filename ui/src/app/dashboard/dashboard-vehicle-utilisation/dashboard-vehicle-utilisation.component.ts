@@ -456,26 +456,31 @@ getAlert24HoursAPI: any;
       case 'ddateformat_dd/mm/yyyy': {
         this.dateFormats.display.dateInput = "DD/MM/YYYY";      
         this.chartLabelDateFormat='DD/MM/YYYY';
+        this.dateFormats.parse.dateInput = "DD/MM/YYYY";
         break;
       }
       case 'ddateformat_mm/dd/yyyy': {
         this.dateFormats.display.dateInput = "MM/DD/YYYY";
         this.chartLabelDateFormat='MM/DD/YYYY';
+        this.dateFormats.parse.dateInput = "MM/DD/YYYY";
         break;
       }
       case 'ddateformat_dd-mm-yyyy': {
         this.dateFormats.display.dateInput = "DD-MM-YYYY";       
         this.chartLabelDateFormat='DD-MM-YYYY';
+        this.dateFormats.parse.dateInput = "DD-MM-YYYY";
         break;
       }
       case 'ddateformat_mm-dd-yyyy': {
         this.dateFormats.display.dateInput = "MM-DD-YYYY";
         this.chartLabelDateFormat='MM-DD-YYYY';
+        this.dateFormats.parse.dateInput = "MM-DD-YYYY";
         break;
       }
       default:{
         this.dateFormats.display.dateInput = "MM/DD/YYYY";
         this.chartLabelDateFormat='MM/DD/YYYY';
+        this.dateFormats.parse.dateInput = "MM/DD/YYYY";
       }
     }
   }
@@ -502,9 +507,11 @@ getAlert24HoursAPI: any;
   }
 
   getLast3MonthDate(){
-    // let date = new Date();
     var date = Util.getUTCDate(this.prefTimeZone);
     date.setDate(date.getDate()-90);
+    date.setHours(0);
+    date.setMinutes(0);
+    date.setSeconds(0);
     return date;
   }
 

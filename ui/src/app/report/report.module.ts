@@ -46,7 +46,7 @@ FullCalendarModule.registerPlugins([ // register FullCalendar plugins
 
 export const MY_DATE_FORMAT = {
   parse: {
-      dateInput: 'DD MMM YYYY'
+    dateInput: 'DD MMM YYYY'
   },
   display: {
     dateInput: 'DD MMM YYYY',
