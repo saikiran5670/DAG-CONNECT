@@ -164,9 +164,14 @@ applyFilterValue(data){
 
 };
 
-  getBreadcum(){
-    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblRelationshipManagement ? this.translationData.lblRelationshipManagement : "Relationship Management"} / ${(this.viewFlag) ? (this.translationData.lblViewRelationshipDetails ? this.translationData.lblViewRelationshipDetails : 'View Relationship Details') : (this.actionType) ? (this.translationData.lblEditRelationshipDetails ? this.translationData.lblEditRelationshipDetails : 'Edit Relationship Details') : (this.translationData.lblRelationshipDetails ? this.translationData.lblRelationshipDetails : 'Relationship Details')}`;
-  }
+getBreadcum(){
+
+  var address = (this.createStatus) ? (this.translationData.lblCreateNewRelationship ? this.translationData.lblCreateNewRelationship : 'New Relationship Details')
+  : (this.viewFlag) ? (this.translationData.lblViewUserRole ? this.translationData.lblViewUserRole : 'View Relationship Details')
+  : (this.translationData.lblEdit ? this.translationData.lblEdit + ' ' + this.translationData.lblRelationshipDetails : 'Edit Relationship Details');
+
+  return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblRelationshipManagement ? this.translationData.lblRelationshipManagement : "Relationship Management"} / ${address}`;
+}
 
   onCancel() {
     if(this.viewRelationshipFromOrg)

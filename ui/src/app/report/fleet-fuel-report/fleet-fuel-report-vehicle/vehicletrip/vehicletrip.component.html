@@ -506,7 +506,7 @@
                       </ng-container>             
                       <ng-container matColumnDef="cruiseControlDistance75">              
                         <mat-header-cell *matHeaderCellDef mat-sort-header 
-                        [hidden]="!checkForPreference('singlevehicledetails_cruisecontroldistance75')">{{translationData.lblCruiseControlDistance}} {{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblCruiseControlDistance75metric) : (translationData.lblCruiseControlDistance45imperia)}}
+                        [hidden]="!checkForPreference('singlevehicledetails_cruisecontroldistance75')">{{translationData.lblCruiseControlDistance}} {{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblCruiseControlDistance75metric) : (translationData.lblCruiseControlDistance45imperial)}}
                         <span style="font-weight: normal;">{{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh) : (translationData.lblmileh)}} (%)</span>      
                         </mat-header-cell>              
                         <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_cruisecontroldistance75')">              
