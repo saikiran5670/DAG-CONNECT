@@ -48,7 +48,7 @@
                     <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
                       <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
                         <mat-form-field appearance="outline">
-                          <input matInput [(ngModel)]="startDateValue" (dateChange)="changeStartDateEvent($event)" [min]='last3MonthDate' [max]='endDateValue' [matDatepicker]="startPicker" formControlName="startDate">
+                          <input matInput [(ngModel)]="startDateValue" (dateChange)="changeStartDateEvent($event)" [min]='lastMonthDate' [max]='endDateValue' [matDatepicker]="startPicker" formControlName="startDate">
                           <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
                           <mat-datepicker #startPicker></mat-datepicker>
                         </mat-form-field>
