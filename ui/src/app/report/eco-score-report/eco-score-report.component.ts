@@ -63,6 +63,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   startDateValue: any;
   endDateValue: any;
   last3MonthDate: any;
+  lastYearDate: any;
   allDriversSelected = true;
   todayDate: any;
   onLoadData: any = [];
@@ -1312,6 +1313,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
         this.startDateValue = this.setStartEndDateTime(startDateFromSearch, this.selectedStartTime, 'start');
         this.endDateValue = this.setStartEndDateTime(endDateFromSearch, this.selectedEndTime, 'end');
         this.last3MonthDate = this.getLast3MonthDate();
+        this.lastYearDate = this.getLastYear();
         this.todayDate = this.getTodayDate();
       } else {
         this.selectionTab = 'today';
@@ -1319,6 +1321,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
         this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
         this.last3MonthDate = this.getLast3MonthDate();
         this.todayDate = this.getTodayDate();
+        this.lastYearDate = this.getLastYear();
       }
     }else{
       this.selectionTab = 'today';
@@ -1326,6 +1329,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
       this.last3MonthDate = this.getLast3MonthDate();
       this.todayDate = this.getTodayDate();
+      this.lastYearDate = this.getLastYear();
     }
   }
 
@@ -1382,6 +1386,9 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   getLastYear(){
     var date = Util.getUTCDate(this.prefTimeZone);
     date.setMonth(date.getMonth()-12);
+    date.setHours(0);
+    date.setMinutes(0);
+    date.setSeconds(0);
     return date;
   }
 
@@ -1449,14 +1456,14 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   changeStartDateEvent(event: MatDatepickerInputEvent<any>){
     this.internalSelection = true;
     let dateTime: any = '';
-    if(event.value._d.getTime() >= this.last3MonthDate.getTime()){ // CurTime > Last3MonthTime
+    if(event.value._d.getTime() >= this.lastYearDate.getTime()){ // CurTime > lastYearDate
       if(event.value._d.getTime() <= this.endDateValue.getTime()){ // CurTime < endDateValue
         dateTime = event.value._d;
       }else{
         dateTime = this.endDateValue; 
       }
     }else{ 
-      dateTime = this.last3MonthDate;
+      dateTime = this.lastYearDate;
     }
     this.startDateValue = this.setStartEndDateTime(dateTime, this.selectedStartTime, 'start');
     this.resetEcoScoreFormControlValue(); // extra addded as per discuss with Atul
