@@ -30,6 +30,7 @@ export class CreateViewEditRelationshipComponent implements OnInit, AfterViewIni
   @Input() relationshipData:any;
   @Input() viewRelationshipFromOrg:any;
   @Input() selectedRowFromRelationship:any;
+  @Input() actionType: any;
   dataSource: any;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -164,7 +165,7 @@ applyFilterValue(data){
 };
 
   getBreadcum(){
-    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblRelationshipManagement ? this.translationData.lblRelationshipManagement : "Relationship Management"} / ${this.translationData.lblRelationshipDetails ? this.translationData.lblRelationshipDetails : 'Relationship Details'}`;
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblRelationshipManagement ? this.translationData.lblRelationshipManagement : "Relationship Management"} / ${(this.viewFlag) ? (this.translationData.lblViewRelationshipDetails ? this.translationData.lblViewRelationshipDetails : 'View Relationship Details') : (this.actionType) ? (this.translationData.lblEditRelationshipDetails ? this.translationData.lblEditRelationshipDetails : 'Edit Relationship Details') : (this.translationData.lblRelationshipDetails ? this.translationData.lblRelationshipDetails : 'Relationship Details')}`;
   }
 
   onCancel() {
