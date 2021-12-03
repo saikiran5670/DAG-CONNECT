@@ -753,7 +753,7 @@
 
             <ng-container matColumnDef="cruiseControlDistance3050">
               <mat-header-cell *matHeaderCellDef mat-sort-header
-                [hidden]="!checkForPreference('vehicledetails_cruisecontroldistance3050')">{{translationData.lblCruiseControlDistance || 'Cruise Control Distance'}} {{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblCruiseControlDistance3050metric || '30-50') : (translationData.lblCruiseControlDistance1530imperial || '15-30')}}
+                [hidden]="!checkForPreference('vehicledetails_cruisecontroldistance3050')">{{translationData.lblCruiseControlDistance}} {{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblCruiseControlDistance3050metric) : (translationData.lblCruiseControlDistance1530imperial)}}
                 <span style="font-weight: normal;">{{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh) : (translationData.lblmileh)}} (%)</span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row"
@@ -764,7 +764,7 @@
 
             <ng-container matColumnDef="cruiseControlDistance5075">
               <mat-header-cell *matHeaderCellDef mat-sort-header
-                [hidden]="!checkForPreference('vehicledetails_cruisecontroldistance5075')">{{translationData.lblCruiseControlDistance || 'Cruise Control Distance'}} {{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblCruiseControlDistance5075metric || '50-75') : (translationData.lblCruiseControlDistance3045imperial || '30-45')}}
+                [hidden]="!checkForPreference('vehicledetails_cruisecontroldistance5075')">{{translationData.lblCruiseControlDistance}} {{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblCruiseControlDistance5075metric) : (translationData.lblCruiseControlDistance3045imperial)}}
                 <span style="font-weight: normal;">{{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh) : (translationData.lblmileh)}} (%)</span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row"
@@ -775,7 +775,7 @@
 
             <ng-container matColumnDef="cruiseControlDistance75">
               <mat-header-cell *matHeaderCellDef mat-sort-header
-                [hidden]="!checkForPreference('vehicledetails_cruisecontroldistance75')">{{translationData.lblCruiseControlDistance || 'Cruise Control Distance'}} {{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblCruiseControlDistance75metric || '> 75') : (translationData.lblCruiseControlDistance45imperial || '> 45')}}
+                [hidden]="!checkForPreference('vehicledetails_cruisecontroldistance75')">{{translationData.lblCruiseControlDistance}} {{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblCruiseControlDistance75metric) : (translationData.lblCruiseControlDistance45imperial)}}
                 <span style="font-weight: normal;">{{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh) : (translationData.lblmileh)}} (%)</span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_cruisecontroldistance75')">
@@ -874,8 +874,7 @@
 
             <ng-container matColumnDef="idlingPTOScore">
               <mat-header-cell *matHeaderCellDef mat-sort-header
-                [hidden]="!checkForPreference('vehicledetails_idlingwithpto')">{{ translationData.lblIdlingwithPTOscore || 'Idling with PTO score (hh:mm:ss)'
-                }}
+                [hidden]="!checkForPreference('vehicledetails_idlingwithpto')">{{ translationData.lblIdlingwithPTOscore }}
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingwithpto')">
                 <span>{{ row.convertedIdlingPTOScore }}</span>
@@ -884,8 +883,7 @@
 
             <ng-container matColumnDef="idlingPTO">
               <mat-header-cell *matHeaderCellDef mat-sort-header
-                [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingwithPTOPercent || 'Idling with PTO %'
-                }}
+                [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingwithPTOPercent }}
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">
                 <span>{{row.idlingPTO}}</span>
@@ -894,8 +892,7 @@
 
             <ng-container matColumnDef="idlingWithoutPTO">
               <mat-header-cell *matHeaderCellDef mat-sort-header
-                [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingwithoutPTO || 'Idling without PTO (hh:mm:ss)'
-                }}
+                [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingwithoutPTO }}
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">
                 <span>{{ row.convertedIdlingWithoutPTO }}</span>
@@ -904,8 +901,7 @@
 
             <ng-container matColumnDef="idlingWithoutPTOpercent">
               <mat-header-cell *matHeaderCellDef mat-sort-header
-                [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingWithoutPTOPercent || 'Idling without  PTO %'
-                }}
+                [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingWithoutPTOPercent }}
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">
                 <span>{{row.idlingWithoutPTOpercent}}</span>
