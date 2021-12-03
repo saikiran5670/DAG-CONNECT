@@ -45,6 +45,9 @@ FullCalendarModule.registerPlugins([ // register FullCalendar plugins
 ]);
 
 export const MY_DATE_FORMAT = {
+  parse: {
+      dateInput: 'DD MMM YYYY'
+  },
   display: {
     dateInput: 'DD MMM YYYY',
     monthYearLabel: 'MMM YYYY',
