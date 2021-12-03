@@ -21,12 +21,15 @@ import { Ng2CompleterModule } from 'ng2-completer';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 
 export const MY_DATE_FORMAT = {
+  parse: {
+    dateInput: 'DD MMM YYYY'
+  },
   display: {
     dateInput: 'DD MMM YYYY',
     monthYearLabel: 'MMM YYYY',
     dateA11yLabel: 'LL',
     monthYearA11yLabel: 'MMMM YYYY',
-  },
+  }
 }
 
 @NgModule({
