@@ -109,6 +109,17 @@
         </mat-card>
     </div>
     <div *ngIf='editFlag'>
-        <app-create-view-edit-relationship [selectedRowFromRelationship]='selectedRowFromRelationship' [translationData]='translationData' [viewFlag]='viewFlag' [viewRelationshipFromOrg]='viewRelationshipFromOrg' [createStatus]='createStatus' [title]='titleText' [relationshipData]='initData' [gridData]='rowsData' (backToPage)='editData($event)'></app-create-view-edit-relationship>
+        <app-create-view-edit-relationship 
+        [selectedRowFromRelationship]='selectedRowFromRelationship' 
+        [translationData]='translationData' 
+        [viewFlag]='viewFlag' 
+        [viewRelationshipFromOrg]='viewRelationshipFromOrg' 
+        [createStatus]='createStatus' 
+        [title]='titleText' 
+        [relationshipData]='initData' 
+        [gridData]='rowsData' 
+        [actionType] ='actionType'
+        (backToPage)='editData($event)'>
+    </app-create-view-edit-relationship>
     </div>
 </div>

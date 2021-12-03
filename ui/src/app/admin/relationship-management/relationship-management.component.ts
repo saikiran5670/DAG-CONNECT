@@ -35,6 +35,7 @@ export class RelationshipManagementComponent implements OnInit {
   organizationId: number;
   localStLanguage: any;
   actionBtn:any;
+  actionType : any;
   showLoadingIndicator: any;
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   userType: any = localStorage.getItem("userType");
@@ -239,6 +240,7 @@ export class RelationshipManagementComponent implements OnInit {
     this.rowsData.push(row);
     this.editFlag = true;
     this.createStatus = false;
+    this.actionType = 'edit';
   }
 
   deleteRelationship(row: any){
