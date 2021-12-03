@@ -54,7 +54,7 @@ public class VehicleFuelTypeLookup extends RichFlatMapFunction<TripStatusData, T
 			// TODO: handle exception both logger and throw is not required
 			logger.error("Issue while establishing Postgre connection in Trip streaming Job ::{} ", e);
 			logger.error("serverNm ::{}, port ::{} ",envParams.get(ETLConstants.MASTER_POSTGRE_SERVER_NAME), Integer.parseInt(envParams.get(ETLConstants.MASTER_POSTGRE_PORT)));
-			logger.error("databaseNm ::{}, user ::{}, pwd ::{} "+envParams.get(ETLConstants.MASTER_POSTGRE_DATABASE_NAME), envParams.get(ETLConstants.MASTER_POSTGRE_USER), envParams.get(ETLConstants.MASTER_POSTGRE_PASSWORD));
+			logger.error("databaseNm ::{}, user ::{}, pwd ::{} ",envParams.get(ETLConstants.MASTER_POSTGRE_DATABASE_NAME), envParams.get(ETLConstants.MASTER_POSTGRE_USER), envParams.get(ETLConstants.MASTER_POSTGRE_PASSWORD));
 			logger.error("masterConnection ::{} ", masterConnection);
 			throw e;
 		}
@@ -63,16 +63,19 @@ public class VehicleFuelTypeLookup extends RichFlatMapFunction<TripStatusData, T
 
 	@Override
 	public void flatMap(TripStatusData stsData,
-			Collector<TripStatusData> out){
+			Collector<TripStatusData> out)throws Exception{
 
 		try {
 			String fuelType = cmDao.readFuelType(fuelTypeStmt, stsData.getVin());
 			stsData.setFuelType(fuelType);
 			logger.info("Lookup value for vin : {}  fuelType: {}",stsData.getVin(), fuelType);
 			out.collect(stsData);
-		} catch (Exception e) {
+		}  catch (SQLException e) {
+			logger.error("Sql Issue in VehicleFuelTypeLookup while reading fuelType value exception :: {}", e);
+			throw e;
+		}catch (Exception e) {
 			// TODO error suppressed , cross verify scenarios
-			logger.error("Issue while processing fuelType trip statisctics job :: " + e);
+			logger.error("Issue while processing fuelType trip statisctics job ::{} ", e);
 		}
 	}
 
@@ -80,7 +83,7 @@ public class VehicleFuelTypeLookup extends RichFlatMapFunction<TripStatusData, T
 	public void close() throws Exception{
 		try {
 			super.close();
-			
+			logger.info("Releasing connection in VehicleFuelTypeLookup ::{}, statement :{}", masterConnection, fuelTypeStmt);
 			if(Objects.nonNull(fuelTypeStmt))
 				fuelTypeStmt.close();
 			
