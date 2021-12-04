@@ -645,7 +645,7 @@ export class NewUserStepComponent implements OnInit {
     let _txt: any = '';
     if(createStatus){
       if(this.linkAccountId == parseInt(localStorage.getItem('accountId'))){ // some same account changes
-        _txt = `${this.translationData.lblLogoutAccountMsgToCheckOrgChange }`;
+        _txt = `${this.translationData.lblLogoutAccountMsgToCheckOrgChange || 'You need to logout to see the link organisation.'}`;
       }
       if(this.translationData.lblNewUserAccountCreatedSuccessfully)
         return `${this.translationData.lblNewUserAccountCreatedSuccessfully.replace('$', this.userName)}. ${_txt}`;
@@ -653,7 +653,7 @@ export class NewUserStepComponent implements OnInit {
         return `${("New Account '$' Created Successfully").replace('$', this.userName)}. ${_txt}`;
     }else{
       if(this.linkAccountId == parseInt(localStorage.getItem('accountId'))){
-        _txt = `${this.translationData.lblLogoutAccountMsgToCheckOrgChange }`;
+        _txt = `${this.translationData.lblLogoutAccountMsgToCheckOrgChange || 'You need to logout to see the link organisation.'}`;
       }
       if(this.translationData.lblUserAccountUpdatedSuccessfully)
         return `${this.translationData.lblUserAccountUpdatedSuccessfully.replace('$', this.userName)}. ${_txt}`;

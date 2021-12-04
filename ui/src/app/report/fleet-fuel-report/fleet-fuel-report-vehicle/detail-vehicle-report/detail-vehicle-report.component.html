@@ -85,7 +85,7 @@
                   </div>
                   <div class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
                     <span>{{ translationData.lblDistance || 'Distance' }}</span>
-                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('distance')}}{{(
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{(sumOfColumns('distance') == 0 || sumOfColumns('distance') == 0.0) ? '*' : sumOfColumns('distance')}}{{(
                       prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || ' km') : (prefUnitFormat ==
                       'dunit_Imperial') ? (translationData.lblmile || ' mile') : (translationData.lblmile || ' mile')
                       }}</span>

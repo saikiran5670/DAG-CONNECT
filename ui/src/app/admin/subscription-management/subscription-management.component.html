@@ -21,8 +21,8 @@
         <div class="areaWidth min-width-10-per" fxLayoutAlign="right">
           <mat-form-field appearance="outline" class="full-width">
             <!-- <mat-select [(value)]="accountOrganizationId" (selectionChange)="applyFilterOnOrganization($event.value)" [disabled] = "organisationData.length == 1" > -->
-            <mat-select [disabled]="contextOrgId !== 0" [(value)]="organizationId" (selectionChange)="applyFilterOnOrganization($event.value)">
-              <mat-option value="0">--All--</mat-option>
+            <mat-select placeholder="{{ translationData.lblOrganisation || 'Organisation' }}" [disabled]="contextOrgId == 0" (selectionChange)="applyFilterOnOrganization($event.value)">
+              <mat-option value="0">{{translationData.lblAll || 'All'}}</mat-option>
               <mat-option *ngFor="let options of organisationData" [value]="options.id" >
                 {{options.name}}
               </mat-option>

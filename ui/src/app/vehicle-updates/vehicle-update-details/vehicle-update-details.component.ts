@@ -173,6 +173,9 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
 
   getTodayDate() {
     let todayDate = new Date(); //-- UTC
+    todayDate.setHours(0);
+    todayDate.setMinutes(0);
+    todayDate.setSeconds(0);
     return todayDate;
   }
   
@@ -180,22 +183,27 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
     switch (this.prefDateFormat) {
       case 'dd/mm/yyyy': {
         this.dateFormats.display.dateInput = "DD/MM/YYYY";
+        this.dateFormats.parse.dateInput = "DD/MM/YYYY";
         break;
       }
       case 'mm/dd/yyyy': {
         this.dateFormats.display.dateInput = "MM/DD/YYYY";
+        this.dateFormats.parse.dateInput = "MM/DD/YYYY";
         break;
       }
       case 'dd-mm-yyyy': {
         this.dateFormats.display.dateInput = "DD-MM-YYYY";
+        this.dateFormats.parse.dateInput = "DD-MM-YYYY";
         break;
       }
       case 'mm-dd-yyyy': {
         this.dateFormats.display.dateInput = "MM-DD-YYYY";
+        this.dateFormats.parse.dateInput = "MM-DD-YYYY";
         break;
       }
       default: {
         this.dateFormats.display.dateInput = "MM/DD/YYYY";
+        this.dateFormats.parse.dateInput = "MM/DD/YYYY";
       }
     }
   }

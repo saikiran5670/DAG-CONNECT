@@ -229,7 +229,7 @@
           [datasource]="dataService" [minSearchLength]="0" (focus)="onStartFocus()"  [(ngModel)] = "searchStr" [ngModelOptions]="{standalone: true}"
           (selected)="onSelected($event)" [selectOnClick]="true"></ng2-completer> -->
               <mat-form-field style="background-color: lightgray;" appearance="outline" class='full-width'>
-                <input matTooltip="{{setStartAddress}}" maxlength="50" style='cursor: copy;'
+                <input matTooltip="{{setStartAddress}}" maxlength="500" style='cursor: copy;'
                   placeholder="{{ translationData.lblStartAddress}}" matInput
                   formControlName="startaddress" readonly required>
               </mat-form-field>
@@ -254,7 +254,7 @@
           [minSearchLength]="0" (selected)="onEndSelected($event)" [selectOnClick]="true"></ng2-completer> -->
 
               <mat-form-field style="background-color: lightgray;" appearance="outline" class='full-width'>
-                <input matTooltip="{{setEndAddress}}" style='cursor: copy;' maxlength="50"
+                <input matTooltip="{{setEndAddress}}" style='cursor: copy;' maxlength="500"
                   placeholder="{{ translationData.lblEnterAddress }}" matInput
                   formControlName="endaddress" readonly required>
               </mat-form-field>

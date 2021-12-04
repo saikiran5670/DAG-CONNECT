@@ -30,6 +30,7 @@ export class CreateViewEditRelationshipComponent implements OnInit, AfterViewIni
   @Input() relationshipData:any;
   @Input() viewRelationshipFromOrg:any;
   @Input() selectedRowFromRelationship:any;
+  @Input() actionType: any;
   dataSource: any;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -163,9 +164,14 @@ applyFilterValue(data){
 
 };
 
-  getBreadcum(){
-    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblRelationshipManagement ? this.translationData.lblRelationshipManagement : "Relationship Management"} / ${this.translationData.lblRelationshipDetails ? this.translationData.lblRelationshipDetails : 'Relationship Details'}`;
-  }
+getBreadcum(){
+
+  var address = (this.createStatus) ? (this.translationData.lblCreateNewRelationship ? this.translationData.lblCreateNewRelationship : 'New Relationship Details')
+  : (this.viewFlag) ? (this.translationData.lblViewUserRole ? this.translationData.lblViewUserRole : 'View Relationship Details')
+  : (this.translationData.lblEdit ? this.translationData.lblEdit + ' ' + this.translationData.lblRelationshipDetails : 'Edit Relationship Details');
+
+  return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblRelationshipManagement ? this.translationData.lblRelationshipManagement : "Relationship Management"} / ${address}`;
+}
 
   onCancel() {
     if(this.viewRelationshipFromOrg)

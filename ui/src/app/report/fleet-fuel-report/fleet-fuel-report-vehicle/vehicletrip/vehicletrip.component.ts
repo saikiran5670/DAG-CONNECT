@@ -2523,7 +2523,7 @@ setVehicleGroupAndVehiclePreSelection() {
         let numberOfTrips = 0 ; let distanceDone = 0; let idleDuration = 0; 
         let fuelConsumption = 0; let fuelconsumed = 0; let CO2Emission = 0; 
         numberOfTrips= this.sumOfColumns('noOfTrips');
-        distanceDone= this.sumOfColumns('distance');
+        distanceDone= this.convertZeros(this.sumOfColumns('distance'));
         idleDuration= this.sumOfColumns('idleDuration');
         fuelConsumption= this.sumOfColumns('fuelConsumption');
         fuelconsumed= this.sumOfColumns('fuelconsumed');
@@ -2544,9 +2544,9 @@ setVehicleGroupAndVehiclePreSelection() {
     const title = 'Fleet Fuel Vehicle Trip Report';
     const summary = 'Summary Section';
     const detail = 'Detail Section';
-    let ccdOne = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance3050metric || '30-50') : (this.translationData.lblCruiseControlDistance1530imperial || '15-30');
-    let ccdTwo = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance5075metric || '50-75') : (this.translationData.lblCruiseControlDistance3045imperial || '30-45');
-    let ccdThree = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance75metric || '>75') : (this.translationData.lblCruiseControlDistance45imperial || '>45');
+    let ccdOne = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance3050metric) : (this.translationData.lblCruiseControlDistance1530imperial);
+    let ccdTwo = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance5075metric) : (this.translationData.lblCruiseControlDistance3045imperial);
+    let ccdThree = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance75metric) : (this.translationData.lblCruiseControlDistance45imperial);
     let unitVal100km = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || 'Ltrs/100km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmilepergal || 'mpg') : (this.translationData.lblmilepergal || 'mpg');
     let unitValuekm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr || 'l') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblgallon || 'gal') : (this.translationData.lblgallon || 'gal');
     let unitValkg = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 'kg') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblton || 't') : (this.translationData.lblton|| 't');
@@ -2599,7 +2599,7 @@ setVehicleGroupAndVehiclePreSelection() {
     })    
     this.initData.forEach(item => {
       worksheet.addRow([ item.vehicleName,item.vin, item.vehicleRegistrationNo,item.convertedStartTime,item.convertedEndTime,item.convertedAverageSpeed,
-        item.convertedMaxSpeed,item.convertedDistance,item.startPosition,item.endPosition,item.convertedFuelConsumed100Km,item.convertedTripFuelConsumption,item.cO2Emission,item.idleDurationPercentage,
+        item.convertedMaxSpeed, this.convertZeros(item.convertedDistance),item.startPosition,item.endPosition,item.convertedFuelConsumed100Km,item.convertedTripFuelConsumption,item.cO2Emission,item.idleDurationPercentage,
         item.ptoDuration.toFixed(2),item.cruiseControlDistance3050,item.cruiseControlDistance5075,item.cruiseControlDistance75,
         item.heavyThrottleDuration,item.harshBrakeDuration,item.convertedAverageGrossWeightComb,item.averageTrafficClassificationValue,
         item.ccFuelConsumption,item.convertedFuelConsumptionCCNonActive,item.idlingConsumptionValue,item.dpaScore,item.convertedIdlingPTOScore,
@@ -2627,9 +2627,9 @@ setVehicleGroupAndVehiclePreSelection() {
   exportAsPDFFile(){   
   var doc = new jsPDF('p', 'mm', 'a4');
   // let pdfColumns = [this.displayedColumns];
-  let ccdOne = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance3050metric || '30-50') : (this.translationData.lblCruiseControlDistance1530imperial || '15-30');
-  let ccdTwo = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance5075metric || '50-75') : (this.translationData.lblCruiseControlDistance3045imperial || '30-45');
-  let ccdThree = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance75metric || '>75') : (this.translationData.lblCruiseControlDistance45imperial || '>45');
+  let ccdOne = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance3050metric) : (this.translationData.lblCruiseControlDistance1530imperial);
+  let ccdTwo = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance5075metric) : (this.translationData.lblCruiseControlDistance3045imperial);
+  let ccdThree = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance75metric) : (this.translationData.lblCruiseControlDistance45imperial);
   let distance = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm ||'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile || 'mile');
   let speed =(this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh ||'km/h') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmileh || 'mph') : (this.translationData.lblmileh || 'mph');
   let ton= (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton || 't') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lbltons || 'Ton') : (this.translationData.lbltons || 'Ton');
@@ -2830,7 +2830,7 @@ setVehicleGroupAndVehiclePreSelection() {
               break;
             }
             case 'distance' :{
-              tempObj.push(e.convertedDistance);
+              tempObj.push(this.convertZeros(e.convertedDistance));
               break;
             }
             case 'averageDistancePerDay' :{
@@ -3017,7 +3017,11 @@ setVehicleGroupAndVehiclePreSelection() {
       displayHeader.style.display ="block";
     }
 
- 
+    convertZeros(val){
+      if( !isNaN(val) && (val == 0 || val == 0.0 || val == 0.00))
+        return '*';
+      return val;
+    }
 
   sumOfColumns(columnName : any){
     let sum: any = 0;

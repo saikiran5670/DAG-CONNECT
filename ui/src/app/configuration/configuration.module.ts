@@ -49,6 +49,9 @@ import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/materia
 import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter } from '@angular/material-moment-adapter';
 
 export const MY_DATE_FORMAT = {
+  parse: {
+    dateInput: 'DD MMM YYYY'
+  },
   display: {
     dateInput: 'DD MMM YYYY',
     monthYearLabel: 'MMM YYYY',

@@ -219,22 +219,27 @@ export class CreateEditReportSchedulerComponent implements OnInit {
     switch(this.prefDateFormat){
       case 'ddateformat_dd/mm/yyyy': {
         this.dateFormats.display.dateInput = "DD/MM/YYYY";
+        this.dateFormats.parse.dateInput = "DD/MM/YYYY";
         break;
       }
       case 'ddateformat_mm/dd/yyyy': {
         this.dateFormats.display.dateInput = "MM/DD/YYYY";
+        this.dateFormats.parse.dateInput = "MM/DD/YYYY";
         break;
       }
       case 'ddateformat_dd-mm-yyyy': {
         this.dateFormats.display.dateInput = "DD-MM-YYYY";
+        this.dateFormats.parse.dateInput = "DD-MM-YYYY";
         break;
       }
       case 'ddateformat_mm-dd-yyyy': {
         this.dateFormats.display.dateInput = "MM-DD-YYYY";
+        this.dateFormats.parse.dateInput = "MM-DD-YYYY";
         break;
       }
       default:{
         this.dateFormats.display.dateInput = "MM/DD/YYYY";
+        this.dateFormats.parse.dateInput = "MM/DD/YYYY";
       }
     }
   }
@@ -244,7 +249,6 @@ export class CreateEditReportSchedulerComponent implements OnInit {
     this.selectionTab= this.selectedRowData[0].frequencyType;
     this.selectionTimeRange(this.selectionTab);
     this.reportSchedulerForm.get('reportDispatchTime').setValue(this.selectedRowData[0].reportDispatchTime)
-
     this.reportSchedulerForm.get('reportType').setValue(this.selectedRowData[0].reportId);
     //this.onChangeReportType(this.selectedRowData[0].reportId);
     this.showDriverList= this.selectedRowData[0].isDriver;
@@ -405,6 +409,9 @@ export class CreateEditReportSchedulerComponent implements OnInit {
 
   getTodayDate(){
     let _todayDate: any = Util.getUTCDate(this.prefTimeZone);
+    _todayDate.setHours(0);
+    _todayDate.setMinutes(0);
+    _todayDate.setSeconds(0);
     return _todayDate;
   }
 

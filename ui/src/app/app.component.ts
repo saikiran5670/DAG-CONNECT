@@ -1342,26 +1342,31 @@ export class AppComponent {
       case 'ddateformat_dd/mm/yyyy': {
         this.dateFormats.display.dateInput = "DD/MM/YYYY";      
         this.alertDateFormat='DD/MM/YYYY';
+        this.dateFormats.parse.dateInput = "DD/MM/YYYY";
         break;
       }
       case 'ddateformat_mm/dd/yyyy': {
         this.dateFormats.display.dateInput = "MM/DD/YYYY";
         this.alertDateFormat='MM/DD/YYYY';
+        this.dateFormats.parse.dateInput = "MM/DD/YYYY";
         break;
       }
       case 'ddateformat_dd-mm-yyyy': {
         this.dateFormats.display.dateInput = "DD-MM-YYYY";       
         this.alertDateFormat='DD-MM-YYYY';
+        this.dateFormats.parse.dateInput = "DD-MM-YYYY";
         break;
       }
       case 'ddateformat_mm-dd-yyyy': {
         this.dateFormats.display.dateInput = "MM-DD-YYYY";
         this.alertDateFormat='MM-DD-YYYY';
+        this.dateFormats.parse.dateInput = "MM-DD-YYYY";
         break;
       }
       default:{
         this.dateFormats.display.dateInput = "MM/DD/YYYY";
         this.alertDateFormat='MM/DD/YYYY';
+        this.dateFormats.parse.dateInput = "MM/DD/YYYY";
       }
     }
   }

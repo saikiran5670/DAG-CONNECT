@@ -42,7 +42,7 @@ namespace net.atos.daf.ct2.schedular.repository
         public async Task<int> DeleteDataFromTables(string connectString, DataCleanupConfiguration dataCleanupConfiguration)
         {
             var rowCount = 0;
-           
+
             try
             {
 
@@ -95,7 +95,7 @@ namespace net.atos.daf.ct2.schedular.repository
 
                     var id = await conn.ExecuteScalarAsync<int>(query, parameter);
                     log.Id = id;
-                    Console.WriteLine(@"log :    tble name {0} , thread = {1}", Thread.CurrentThread.ManagedThreadId, log.TableName);
+                    Console.WriteLine(@"log :    tble name {1} , thread = {0}", Thread.CurrentThread.ManagedThreadId, log.TableName);
 
                 }
             }

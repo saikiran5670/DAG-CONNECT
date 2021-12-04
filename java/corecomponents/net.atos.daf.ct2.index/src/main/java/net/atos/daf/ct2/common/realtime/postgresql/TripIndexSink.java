@@ -7,8 +7,6 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
@@ -29,15 +27,16 @@ public class TripIndexSink extends RichSinkFunction<IndexTripData> implements Se
 
 	private PreparedStatement statement;
 	private Connection connection;
-	private List<IndexTripData> queue;
-	private List<IndexTripData> synchronizedCopy;
 	LiveFleetTripIndexDao tripIndexDao;
 	private PreparedStatement tripIndexQry;
 
+	//private List<IndexTripData> queue;
+	//private List<IndexTripData> synchronizedCopy;
+
 	@Override
 	public void invoke(IndexTripData rec) throws Exception {
-
-		try {
+		tripIndexDao.insert(rec, tripIndexQry);
+		/*try {
 			queue.add(rec);
 
 			if (queue.size() >= 1) {
@@ -52,7 +51,7 @@ public class TripIndexSink extends RichSinkFunction<IndexTripData> implements Se
 		} catch (Exception e) {
 			logger.error("Issue while calling invoke() in TripIndexSink :: " + e);
 			e.printStackTrace();
-		}
+		}*/
 
 	}
 
@@ -60,8 +59,8 @@ public class TripIndexSink extends RichSinkFunction<IndexTripData> implements Se
 	public void open(org.apache.flink.configuration.Configuration parameters) throws Exception {
 		ParameterTool envParams = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
 		tripIndexDao = new LiveFleetTripIndexDao();
-		queue = new ArrayList<IndexTripData>();
-		synchronizedCopy = new ArrayList<IndexTripData>();
+		//queue = new ArrayList<IndexTripData>();
+		//synchronizedCopy = new ArrayList<IndexTripData>();
 		
 		try {
 			/*connection = PostgreDataSourceConnection.getInstance().getDataSourceConnection(

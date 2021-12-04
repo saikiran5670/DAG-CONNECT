@@ -163,22 +163,27 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
     switch (this.prefDateFormat) {
       case 'ddateformat_dd/mm/yyyy': {
         this.dateFormats.display.dateInput = "DD/MM/YYYY";
+        this.dateFormats.parse.dateInput = "DD/MM/YYYY";
         break;
       }
       case 'ddateformat_mm/dd/yyyy': {
         this.dateFormats.display.dateInput = "MM/DD/YYYY";
+        this.dateFormats.parse.dateInput = "MM/DD/YYYY";
         break;
       }
       case 'ddateformat_dd-mm-yyyy': {
         this.dateFormats.display.dateInput = "DD-MM-YYYY";
+        this.dateFormats.parse.dateInput = "DD-MM-YYYY";
         break;
       }
       case 'ddateformat_mm-dd-yyyy': {
         this.dateFormats.display.dateInput = "MM-DD-YYYY";
+        this.dateFormats.parse.dateInput = "MM-DD-YYYY";
         break;
       }
       default: {
         this.dateFormats.display.dateInput = "MM/DD/YYYY";
+        this.dateFormats.parse.dateInput = "MM/DD/YYYY";
       }
     }
   }
@@ -186,6 +191,9 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   getTodayDate() {
     if(this.prefTimeZone) {
       let _todayDate: any = Util.getUTCDate(this.prefTimeZone);
+      _todayDate.setHours(0);
+      _todayDate.setMinutes(0);
+      _todayDate.setSeconds(0);
       return _todayDate;
     }
     return null;
@@ -222,6 +230,9 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
     if(this.prefTimeZone) {
       var date = Util.getUTCDate(this.prefTimeZone);
       date.setMonth(date.getMonth() - 3);
+      date.setHours(0);
+      date.setMinutes(0);
+      date.setSeconds(0);
       return date;
     }
     return null;
@@ -384,6 +395,8 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
       let endDateFromSearch = new Date(this.globalSearchFilterData.endDateStamp);
       this.searchForm.get('startDate').setValue(this.setStartEndDateTime(startDateFromSearch, this.searchForm.get('startTime').value, 'start'));
       this.searchForm.get("endDate").setValue(this.setStartEndDateTime(endDateFromSearch, this.searchForm.get('endTime').value, 'end'));
+      this.last3MonthDate = this.getLast3MonthDate();
+      this.todayDate = this.getTodayDate();
     } else {
       this.selectionTab = 'today';
       this.searchForm.get('startDate').setValue(this.setStartEndDateTime(this.getTodayDate(), this.searchForm.get('startTime').value, 'start'));
@@ -449,14 +462,34 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
 
   changeStartDateEvent(event: MatDatepickerInputEvent<any>) {
     this.internalSelection = true;
-    this.searchForm.get('startDate').setValue(this.setStartEndDateTime(event.value._d, this.searchForm.get('startTime').value, 'start'));
+    let dateTime: any = '';
+    if(event.value._d.getTime() >= this.last3MonthDate.getTime()){ // CurTime > Last3MonthTime
+      if(event.value._d.getTime() <= this.searchForm.get("endDate").value.getTime()){ // CurTime < endDateValue
+        dateTime = event.value._d;
+      }else{
+        dateTime = this.searchForm.get("endDate").value; 
+      }
+    }else{ 
+      dateTime = this.last3MonthDate;
+    }
+    this.searchForm.get('startDate').setValue(this.setStartEndDateTime(dateTime, this.searchForm.get('startTime').value, 'start'));
     this.resetDropdownValues(); // extra addded as per discuss with Atul
     this.filterDateData(); // extra addded as per discuss with Atul
   }
 
   changeEndDateEvent(event: MatDatepickerInputEvent<any>) {
     this.internalSelection = true;
-    this.searchForm.get("endDate").setValue(this.setStartEndDateTime(event.value._d, this.searchForm.get('endTime').value, 'end'));
+    let dateTime: any = '';
+    if(event.value._d.getTime() <= this.todayDate.getTime()){ // EndTime > todayDate
+      if(event.value._d.getTime() >= this.searchForm.get("startDate").value.getTime()){ // EndTime < startDateValue
+        dateTime = event.value._d;
+      }else{
+        dateTime = this.searchForm.get("startDate").value; 
+      }
+    }else{ 
+      dateTime = this.todayDate;
+    }
+    this.searchForm.get("endDate").setValue(this.setStartEndDateTime(dateTime, this.searchForm.get('endTime').value, 'end'));
     this.resetDropdownValues(); // extra addded as per discuss with Atul
     this.filterDateData(); // extra addded as per discuss with Atul
   }

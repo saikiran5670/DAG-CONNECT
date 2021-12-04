@@ -59,7 +59,7 @@ public class TripAggregationProcessor implements Serializable{
 		return indxData;
 	}
 	
-	public SingleOutputStreamOperator<TripAggregatedData> getTripGranularData(SingleOutputStreamOperator<TripAggregatedData> tripStatusData)
+	public SingleOutputStreamOperator<TripAggregatedData> getTripGranularData(SingleOutputStreamOperator<TripAggregatedData> tripStatusData)throws Exception
 	{
 		return tripStatusData
 				//.keyBy(value -> value.getTripId())

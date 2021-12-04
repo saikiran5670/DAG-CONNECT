@@ -57,12 +57,12 @@ public class Co2MasterDao implements Serializable {
 			}
 
 		} catch (SQLException e) {
-			logger.error("Issue while reading Co2CoEfficient value for trip Tracing Position job :: " + e.getMessage());
-			logger.error("Issue while reading Co2CoEfficient value for trip Tracing Position job :: ",stmt_read_co2_coefficient);
+			logger.error("Issue while reading Co2CoEfficient value for trip Tracing Position job ::{} ", e.getMessage());
+			logger.error("Issue while reading Co2CoEfficient value for trip Tracing Position job :: {}", stmt_read_co2_coefficient);
 			e.printStackTrace();
 		}  catch (Exception e) {
-			logger.error("Issue while reading Co2CoEfficient value for trip Tracing Position job :: " + e.getMessage());
-			logger.error("Issue while reading Co2CoEfficient value for trip Tracing Position job:: ",stmt_read_co2_coefficient);
+			logger.error("Issue while reading Co2CoEfficient value for trip Tracing Position job ::{} ", e.getMessage());
+			logger.error("Issue while reading Co2CoEfficient value for trip Tracing Position job::{} ", stmt_read_co2_coefficient);
 			// throw e;
 		}finally {
 
@@ -72,7 +72,7 @@ public class Co2MasterDao implements Serializable {
 					rs_position.close();
 				} catch (Exception e) {
 					
-					logger.error("Issue while closing Co2CoEfficient trip Tracing Position :: " + e.getMessage());
+					logger.error("Issue while closing Co2CoEfficient trip Tracing Position :: {}", e.getMessage());
 				}
 			}
 		}
@@ -81,7 +81,7 @@ public class Co2MasterDao implements Serializable {
 
 	}
 
-	public double read(PreparedStatement co2CoEfficientQry, String vin) {
+	public double read(PreparedStatement co2CoEfficientQry, String vin)throws Exception {
 		ResultSet rs = null;
 		double co2CoEfficient = 0;
 		try {
@@ -92,17 +92,17 @@ public class Co2MasterDao implements Serializable {
 			}
 
 		} catch (SQLException e) {
-			logger.error("Issue while reading Co2CoEfficient value for trip statistics job :: " + e);
-			// throw e;
+			logger.error("Issue while reading Co2CoEfficient value for trip statistics job ::{} ", e);
+			throw e;
 		} catch (Exception e) {
-			logger.error("Issue while reading Co2CoEfficient value for trip statistics job :: " + e);
+			logger.error("Issue while reading Co2CoEfficient value for trip statistics job ::{} ", e);
 			// throw e;
 		} finally {
 			if (null != rs) {
 				try {
 					rs.close();
 				} catch (Exception e) {
-					logger.error("Issue while closing Co2CoEfficient resultset :: " + e);
+					logger.error("Issue while closing Co2CoEfficient resultset ::{} ", e);
 					// throw e;
 				}
 			}
@@ -110,7 +110,7 @@ public class Co2MasterDao implements Serializable {
 		return co2CoEfficient;
 	}
 	
-	public String readFuelType(PreparedStatement fuelTypeQry, String vin) {
+	public String readFuelType(PreparedStatement fuelTypeQry, String vin)throws Exception {
 		ResultSet rs = null;
 		String fuelType = "";
 		try {
@@ -121,19 +121,19 @@ public class Co2MasterDao implements Serializable {
 			}
 
 		} catch (SQLException e) {
-			logger.error("Issue while reading fuelType value exception :: " + e);
-			logger.error("Issue while reading fuelType value for trip statistics job :: ",fuelTypeQry);
-			// throw e;
+			logger.error("Sql Issue while reading fuelType value exception :: {}", e);
+			logger.error("Issue while reading fuelType value for trip statistics job ::{} ",fuelTypeQry);
+			throw e;
 		} catch (Exception e) {
-			logger.error("Issue while reading fuelType exception :: " + e);
-			logger.error("Issue while reading fuelType value for trip statistics job :: ",fuelTypeQry);
+			logger.error("Issue while reading fuelType exception ::{} ", e);
+			logger.error("Issue while reading fuelType value for trip statistics job ::{} ",fuelTypeQry);
 			// throw e;
 		} finally {
 			if (null != rs) {
 				try {
 					rs.close();
 				} catch (Exception e) {
-					logger.error("Issue while closing fuelType resultset :: " + e);
+					logger.error("Issue while closing fuelType resultset ::{} ", e);
 					// throw e;
 				}
 			}

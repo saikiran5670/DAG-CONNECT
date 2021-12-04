@@ -150,7 +150,18 @@ export class FleetFuelPreferencesComponent implements OnInit {
   }
 
   preparePrefData(prefData: any) {
+    let unitObj = this.generalPreferences.unit.filter(item => item.id == this.unitId);
     prefData.subReportUserPreferences.forEach(section => {
+      if(unitObj[0].value == 'Imperial') {
+        section.subReportUserPreferences = section.subReportUserPreferences.filter(x => (x.key != 'rp_ff_report_vehicle_vehicledetails_cruisecontroldistance3050' && x.key != 'rp_ff_report_vehicle_vehicledetails_cruisecontroldistance5075' && x.key != 'rp_ff_report_vehicle_vehicledetails_cruisecontroldistance75' && x.key != 'rp_ff_report_vehicle_singlevehicledetails_cruisecontroldistance3050' && x.key != 'rp_ff_report_vehicle_singlevehicledetails_cruisecontroldistance5075' && x.key != 'rp_ff_report_vehicle_singlevehicledetails_cruisecontroldistance75' && x.key != 'rp_ff_report_driver_vehicledetails_cruisecontroldistance3050' && x.key != 'rp_ff_report_driver_vehicledetails_cruisecontroldistance5075' && x.key != 'rp_ff_report_driver_vehicledetails_cruisecontroldistance75' && x.key != 'rp_ff_report_driver_singlevehicledetails_cruisecontroldistance3050' && x.key != 'rp_ff_report_driver_singlevehicledetails_cruisecontroldistance5075' && x.key != 'rp_ff_report_driver_singlevehicledetails_cruisecontroldistance75'));
+      } else {
+        section.subReportUserPreferences = section.subReportUserPreferences.filter(x => (x.key != 'rp_ff_report_vehicle_vehicledetails_cruisecontroldistance1530' && x.key != 'rp_ff_report_vehicle_vehicledetails_cruisecontroldistance3045' && x.key != 'rp_ff_report_vehicle_vehicledetails_cruisecontroldistance45' && x.key != 'rp_ff_report_vehicle_singlevehicledetails_cruisecontroldistance1530' && x.key != 'rp_ff_report_vehicle_singlevehicledetails_cruisecontroldistance3045' && x.key != 'rp_ff_report_vehicle_singlevehicledetails_cruisecontroldistance45' && x.key != 'rp_ff_report_driver_vehicledetails_cruisecontroldistance1530' && x.key != 'rp_ff_report_driver_vehicledetails_cruisecontroldistance3045' && x.key != 'rp_ff_report_driver_vehicledetails_cruisecontroldistance45' && x.key != 'rp_ff_report_driver_singlevehicledetails_cruisecontroldistance1530' && x.key != 'rp_ff_report_driver_singlevehicledetails_cruisecontroldistance3045' && x.key != 'rp_ff_report_driver_singlevehicledetails_cruisecontroldistance45'));
+      }
+      section.subReportUserPreferences.sort(function(a, b) {
+        var textA = a.key.toUpperCase();
+        var textB = b.key.toUpperCase();
+        return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+      });
       section.subReportUserPreferences.forEach(element => {
         let _data: any;
         if (element.name.includes('Driver.Summary') || element.name.includes('Vehicle.Summary')) {
@@ -319,113 +330,30 @@ export class FleetFuelPreferencesComponent implements OnInit {
   let unitObj = this.generalPreferences.unit.filter(item => item.id == this.unitId);
   if(key === "rp_ff_report_vehicle_vehicleranking_consumption" 
     || key === "rp_ff_report_vehicle_vehicledetails_idlingconsumptionwithpto" 
-    || key === "rp_ff_report_driver_vehicledetails_idlingconsumptionwithpto"){
+    || key === "rp_ff_report_vehicle_singlevehicledetails_idlingconsumptionwithpto"
+    || key === "rp_ff_report_driver_vehicledetails_idlingconsumptionwithpto"
+    || key === "rp_ff_report_driver_singlevehicledetails_idlingconsumptionwithpto"){
     if(unitObj[0].value == 'Imperial') {
       return '(mpg)';
     } else {
       return '(lts/100km)';
     }
   }
-  if(key === "rp_ff_report_vehicle_vehicledetails_cruisecontroldistance3050"){
-    if(unitObj[0].value == 'Imperial'){
-      return '(mph)';
-    } else {
-      return 'km/h (%)';
-    }
-  }
-
-  if(key === "rp_ff_report_vehicle_vehicledetails_cruisecontroldistance5075"){
-    if(unitObj[0].value == 'Imperial'){
-      return '(mph)(%)';
-    } else {
-      return 'km/h (%)';
-    }
-  }
-
-  if(key === "rp_ff_report_vehicle_vehicledetails_cruisecontroldistance75"){
-    if(unitObj[0].value == 'Imperial'){
-      return '(mph)(%)';
-    } else {
-      return 'km/h (%)';
-    }
-  }
-  
-  if(key === "rp_ff_report_vehicle_singlevehicledetails_cruisecontroldistance5075"){
-    if(unitObj[0].value == 'Imperial'){
-      return '(mph)(%)';
-    } else {
-      return 'km/h (%)';
-    }
-  }
-
-
-  if(key === "rp_ff_report_vehicle_singlevehicledetails_cruisecontroldistance3050"){
+  if(key === "rp_ff_report_vehicle_vehicledetails_cruisecontroldistance3050" || key === "rp_ff_report_vehicle_vehicledetails_cruisecontroldistance5075" || key === "rp_ff_report_vehicle_vehicledetails_cruisecontroldistance75" || key === "rp_ff_report_vehicle_singlevehicledetails_cruisecontroldistance3050" || key === "rp_ff_report_vehicle_singlevehicledetails_cruisecontroldistance5075" || key === "rp_ff_report_vehicle_singlevehicledetails_cruisecontroldistance75" || key === "rp_ff_report_driver_vehicledetails_cruisecontroldistance3050" ||  key === "rp_ff_report_driver_vehicledetails_cruisecontroldistance5075" ||  key === "rp_ff_report_driver_vehicledetails_cruisecontroldistance75" || key === "rp_ff_report_driver_singlevehicledetails_cruisecontroldistance3050" || key === "rp_ff_report_driver_singlevehicledetails_cruisecontroldistance5075" || key === "rp_ff_report_driver_singlevehicledetails_cruisecontroldistance75" || key === "rp_ff_report_vehicle_vehicledetails_cruisecontroldistance1530" || key === "rp_ff_report_vehicle_vehicledetails_cruisecontroldistance3045" || key === "rp_ff_report_vehicle_vehicledetails_cruisecontroldistance45" || key === "rp_ff_report_vehicle_singlevehicledetails_cruisecontroldistance1530" || key === "rp_ff_report_vehicle_singlevehicledetails_cruisecontroldistance3045" || key === "rp_ff_report_vehicle_singlevehicledetails_cruisecontroldistance45" || key === "rp_ff_report_driver_vehicledetails_cruisecontroldistance1530" ||  key === "rp_ff_report_driver_vehicledetails_cruisecontroldistance3045" ||  key === "rp_ff_report_driver_vehicledetails_cruisecontroldistance45" || key === "rp_ff_report_driver_singlevehicledetails_cruisecontroldistance1530" || key === "rp_ff_report_driver_singlevehicledetails_cruisecontroldistance3045" || key === "rp_ff_report_driver_singlevehicledetails_cruisecontroldistance45"){
     if(unitObj[0].value == 'Imperial'){
       return '(mph)(%)';
     } else {
       return 'km/h(%)';
     }
   }
-
-  if(key === "rp_ff_report_vehicle_singlevehicledetails_cruisecontroldistance75"){
+  if(key === "rp_ff_report_driver_vehicledetails_co2emmision" 
+    || key === "rp_ff_report_vehicle_vehicledetails_co2emmision"
+    || key === "rp_ff_report_vehicle_singlevehicledetails_co2emmision"
+    || key === "rp_ff_report_driver_singlevehicledetails_co2emmision"){
     if(unitObj[0].value == 'Imperial'){
-      return '(mph)(%)';
+      return '(gr/km)';
     } else {
-      return 'km/h(%)';
-    }
-  }
-
-  if(key === "rp_ff_report_driver_vehicledetails_cruisecontroldistance3050"){
-    if(unitObj[0].value == 'Imperial'){
-      return '(mph)(%)';
-    } else {
-      return 'km/h(%)';
-    }
-  }
-
-  if(key === "rp_ff_report_driver_vehicledetails_cruisecontroldistance75"){
-    if(unitObj[0].value == 'Imperial'){
-      return '(mph)(%)';
-    } else {
-      return 'km/h(%)';
-    }
-  }
-
-  if(key === "rp_ff_report_driver_vehicledetails_cruisecontroldistance5075"){
-    if(unitObj[0].value == 'Imperial'){
-      return '(mph)(%)';
-    } else {
-      return 'km/h(%)';
-    }
-  }
-
-  if(key === "rp_ff_report_driver_singlevehicledetails_cruisecontroldistance3050"){
-    if(unitObj[0].value == 'Imperial'){
-      return '(mph)(%)';
-    } else {
-      return 'km/h(%)';
-    }
-  }
-
-  if(key === "rp_ff_report_driver_singlevehicledetails_cruisecontroldistance5075"){
-    if(unitObj[0].value == 'Imperial'){
-      return '(mph)(%)';
-    } else {
-      return 'km/h(%)';
-    }
-  }
-  if(key === "rp_ff_report_driver_singlevehicledetails_cruisecontroldistance75"){
-    if(unitObj[0].value == 'Imperial'){
-      return '(mph)(%)';
-    } else {
-      return 'km/h(%)';
-    }
-  }
-  if(key === "rp_ff_report_driver_vehicledetails_co2emmision" || key === "rp_ff_report_vehicle_vehicledetails_co2emission"){
-    if(unitObj[0].value == 'Imperial'){
-      return 'gr/km';
-    } else {
-      return 'gr/km';
+      return '(gr/km)';
     }
   }
   }
