@@ -74,6 +74,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
   summaryColumnData: any = [];
   isChartsOpen: boolean = false;
   isDetailsOpen: boolean = false;
+  isNoRecordsOpen: boolean = true;
   startTimeDisplay: any = '00:00:00';
   endTimeDisplay: any = '23:59:59';
   selectedStartTime: any = '00:00';
