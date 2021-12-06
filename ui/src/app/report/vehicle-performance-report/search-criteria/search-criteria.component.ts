@@ -462,14 +462,34 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
 
   changeStartDateEvent(event: MatDatepickerInputEvent<any>) {
     this.internalSelection = true;
-    this.searchForm.get('startDate').setValue(this.setStartEndDateTime(event.value._d, this.searchForm.get('startTime').value, 'start'));
+    let dateTime: any = '';
+    if(event.value._d.getTime() >= this.last3MonthDate.getTime()){ // CurTime > Last3MonthTime
+      if(event.value._d.getTime() <= this.searchForm.get("endDate").value.getTime()){ // CurTime < endDateValue
+        dateTime = event.value._d;
+      }else{
+        dateTime = this.searchForm.get("endDate").value; 
+      }
+    }else{ 
+      dateTime = this.last3MonthDate;
+    }
+    this.searchForm.get('startDate').setValue(this.setStartEndDateTime(dateTime, this.searchForm.get('startTime').value, 'start'));
     this.resetDropdownValues(); // extra addded as per discuss with Atul
     this.filterDateData(); // extra addded as per discuss with Atul
   }
 
   changeEndDateEvent(event: MatDatepickerInputEvent<any>) {
     this.internalSelection = true;
-    this.searchForm.get("endDate").setValue(this.setStartEndDateTime(event.value._d, this.searchForm.get('endTime').value, 'end'));
+    let dateTime: any = '';
+    if(event.value._d.getTime() <= this.todayDate.getTime()){ // EndTime > todayDate
+      if(event.value._d.getTime() >= this.searchForm.get("startDate").value.getTime()){ // EndTime < startDateValue
+        dateTime = event.value._d;
+      }else{
+        dateTime = this.searchForm.get("startDate").value; 
+      }
+    }else{ 
+      dateTime = this.todayDate;
+    }
+    this.searchForm.get("endDate").setValue(this.setStartEndDateTime(dateTime, this.searchForm.get('endTime').value, 'end'));
     this.resetDropdownValues(); // extra addded as per discuss with Atul
     this.filterDateData(); // extra addded as per discuss with Atul
   }

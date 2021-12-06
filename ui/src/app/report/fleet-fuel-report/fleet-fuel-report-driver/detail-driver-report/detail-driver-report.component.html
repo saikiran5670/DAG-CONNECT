@@ -719,14 +719,14 @@
                 <ng-container matColumnDef="dpaAnticipationScore">     
                   <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_dpaAnticipationScore')">{{ translationData.lbldpaAnticipationScore || 'DPA Anticipation Score%' }}     
                   </mat-header-cell>      
-                  <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_dpaAnticipationScore')">      
+                  <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_dpaanticipationscore')">      
                     <span>{{row.dpaAnticipationScore}}</span>     
                   </mat-cell>      
                 </ng-container>
-                <ng-container matColumnDef="dpaBrakingScore">     
+                <ng-container matColumnDef="dpaBrakingScore">     singlevehicledetails_dpabrakingscore
                   <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_dpaBrakingScore')">{{ translationData.lbldpaBrakingScore || 'DPA Braking Score%' }}     
                   </mat-header-cell>      
-                  <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_dpaBrakingScore')">      
+                  <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_dpabrakingscore')">      
                     <span>{{row.dpaBrakingScore}}</span>     
                   </mat-cell>      
                 </ng-container>

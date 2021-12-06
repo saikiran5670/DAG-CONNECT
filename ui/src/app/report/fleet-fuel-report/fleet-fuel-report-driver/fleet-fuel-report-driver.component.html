@@ -188,7 +188,39 @@
   <!-- Summary Section -->
   <div *ngIf= '!driverSelected'>
   <div *ngIf='!showDetailedReport'>
-  <div id="charts">
+    <div *ngIf='displayData.length == 0'>
+    <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
+
+      <mat-expansion-panel [(expanded)]="isNoRecordsOpen" class="full-width" fxLayoutGap="10px"
+      (opened)="isNoRecordsOpen == true"(closed)="isNoRecordsOpen == false">
+
+        <mat-expansion-panel-header class="full-width">
+
+          <mat-panel-title>
+
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllDetails || 'All Details' }}</span>
+
+          </mat-panel-title>
+
+        </mat-expansion-panel-header>
+
+        <div *ngIf='displayData.length == 0'>
+
+          <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;' fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound || '' }}
+
+          </div>
+
+          <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblSelectionMessage || 'Please select and search required fields from top to view the details'
+            }}</div>
+
+        </div>
+        <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
+
+      </mat-expansion-panel>
+      </mat-card>
+      </div>
+      <div *ngIf='displayData.length > 0'>
+   <div id="charts">
     <div *ngIf='!showDetailedReport'>
     <mat-card *ngIf='displayData.length > 0' class='mat-elevation-z no-padding margin-bottom-xlg' id="summary">
 
@@ -546,7 +578,7 @@
           </mat-panel-title>
 
         </mat-expansion-panel-header>
-
+<!-- 
         <div *ngIf='displayData.length == 0'>
 
           <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;' fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound || '' }}
@@ -556,7 +588,7 @@
           <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblSelectionMessage || 'Please select and search required fields from top to view the details'
             }}</div>
 
-        </div>
+        </div> -->
 
         <div *ngIf='displayData.length > 0' [ngClass]="{'reportTable': validTableEntry.length > 4}">
 
@@ -1000,17 +1032,17 @@
 
 
             <ng-container matColumnDef="dpaAnticipationScore">
-              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_dpaAnticipationScore')">{{ translationData.lbldpaAnticipationScore || 'DPA Anticipation Score%' }}
+              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_dpaanticipationscore')">{{ translationData.lbldpaAnticipationScore || 'DPA Anticipation Score%' }}
               </mat-header-cell>
-              <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_dpaAnticipationScore')">
+              <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_dpaanticipationscore')">
                 <span>{{row.dpaAnticipationScore}}</span>
               </mat-cell>
             </ng-container>
 
             <ng-container matColumnDef="dpaBrakingScore">
-              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_dpaBrakingScore')">{{ translationData.lbldpaBrakingScore || 'DPA Braking Score%' }}
+              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_dpabrakingscore')">{{ translationData.lbldpaBrakingScore || 'DPA Braking Score%' }}
               </mat-header-cell>
-              <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_dpaBrakingScore')">
+              <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_dpabrakingscore')">
                 <span>{{row.dpaBrakingScore}}</span>
               </mat-cell>
             </ng-container>
@@ -1105,13 +1137,12 @@
           <mat-paginator [pageSizeOptions]="[5, 10, 25, 100, 500]" (page)="pageSizeUpdated($event)"></mat-paginator>
 
         </div>
-
-        <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
-
+     
       </mat-expansion-panel>
 
     </mat-card>
     </div>
+  </div>
     </div>
     <div *ngIf="driverSelected">
       <app-detail-driver-report
