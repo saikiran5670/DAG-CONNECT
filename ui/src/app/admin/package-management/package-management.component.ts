@@ -279,6 +279,7 @@ export class PackageManagementComponent implements OnInit {
 
   processTranslationForImport(){
     if(this.translationData){
+      this.importTranslationData.lblBack = this.translationData.lblBack;
       this.importTranslationData.importTitle = this.translationData.lblImportNewPackage;
       this.importTranslationData.downloadTemplate = this.translationData.lbldownloadTemplate;
       this.importTranslationData.downloadTemplateInstruction = this.translationData.lbldownloadTemplateInstruction;
