@@ -277,8 +277,8 @@ export class ManagePoiGeofenceComponent implements OnInit {
       let latitude=0;
       let longitude=0;
       this.geoMarkerArray.push(row);
-
-      this.addMarkersAndSetViewBoundsGeofence(this.map, row);
+      if(row.type != 'C')
+        this.addMarkersAndSetViewBoundsGeofence(this.map, row);
     }else{
       let arr = this.geoMarkerArray.filter(item => item.id != row.id);
       this.geoMarkerArray = arr;
