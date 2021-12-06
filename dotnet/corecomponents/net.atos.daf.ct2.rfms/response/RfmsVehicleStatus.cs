@@ -224,11 +224,11 @@ namespace net.atos.daf.ct2.rfms.response
         public TriggerType TriggerType { get; set; }
         public string CreatedDateTime { get; set; }
         public string ReceivedDateTime { get; set; }
-        public int? HrTotalVehicleDistance { get; set; }
+        public long? HrTotalVehicleDistance { get; set; }
         public double TotalEngineHours { get; set; }
         public Driver1Id Driver1Id { get; set; }
         public int? GrossCombinationVehicleWeight { get; set; }
-        public int? EngineTotalFuelUsed { get; set; }
+        public long? EngineTotalFuelUsed { get; set; }
         public int? TotalFuelUsedGaseous { get; set; } //optional
         // public string Status2OfDoors { get; set; }
         public AccumulatedData AccumulatedData { get; set; }
