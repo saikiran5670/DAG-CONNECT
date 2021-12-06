@@ -76,7 +76,12 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   }
 
   getBreadcum(type: any){
-    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblFeatureManagement ? this.translationData.lblFeatureManagement : "Feature Management"} / ${(type == 'view') ? (this.translationData.lblViewFeatureRelationship ? this.translationData.lblViewFeatureRelationship : 'View Feature Relationship') : (this.translationData.lblFeatureRelationshipDetails ? this.translationData.lblFeatureRelationshipDetails : 'Feature Relationship Details')}`;
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } /
+    ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} /
+    ${this.translationData.lblFeatureManagement ? this.translationData.lblFeatureManagement : "Feature Management"} /
+    ${(type == 'view') ? (this.translationData.lblViewFeatureRelationship ? this.translationData.lblViewFeatureRelationship : 'View Feature Relationship') :
+    (type == 'edit') ? (this.translationData.lblEditFeatureRelationship ? this.translationData.lblEditFeatureRelationship : 'Edit Feature Relationship') :
+    (this.translationData.lblNewFeatureRelationship ? this.translationData.lblNewFeatureRelationship : 'New Feature Relationship')}`;
   }
 
   loadGridData(tableData: any){
