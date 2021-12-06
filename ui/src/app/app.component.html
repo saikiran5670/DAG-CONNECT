@@ -11,13 +11,15 @@
                 <form [formGroup]="appForm" class='toolbarRightContainer full-width'>
                     <div fxLayoutAlign="start center" class='half-width titleText'>{{ currentTitle }}
                     </div>
-                    <div fxLayoutAlign="end" class='full-width'>
-                        <span *ngIf="showTimer"><button class="btn btn-primary" type="button" disabled>
-                            <div class="lds-roller-sm" style="height: 19px; width: 54px;">
-                                <div></div><div></div><div></div><div></div><div></div><div></div>
-                              </div>
-                           {{ subscribeTimer }}
-                        </button></span>
+                    <div fxLayoutAlign="end center" class='full-width'>
+                        <span *ngIf="showTimer" style='background: #007bff; border-radius: 5px; padding: 3px 10px;'>
+                            <button class="btn btn-primary" type="button" disabled style='padding: 0;'>
+                                <div class="lds-roller-sm" style="height: 19px; width: 54px; top: -7px;">
+                                    <div></div><div></div><div></div><div></div><div></div><div></div>
+                                </div>
+                            </button>
+                            <span style="font-size: 15px; color: #fff;">{{ subscribeTimer }}</span>
+                        </span>
                         <!-- <span *ngIf="showTimer"><button class="btn btn-primary" type="button" disabled>
                             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                             {{ subscribeTimer }}
