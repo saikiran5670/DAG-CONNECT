@@ -47,6 +47,8 @@ import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { TimeRangeSliderComponent } from './eco-score-profile-management/time-range-slider/time-range-slider.component';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter } from '@angular/material-moment-adapter';
+// import { TableVirtualScrollModule } from 'ng-table-virtual-scroll';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 
 export const MY_DATE_FORMAT = {
   parse: {
@@ -106,7 +108,9 @@ export const MY_DATE_FORMAT = {
     NgxSliderModule,
     BsDropdownModule.forRoot(),
     NgxIntlTelInputModule,
-    NgxMatSelectSearchModule
+    NgxMatSelectSearchModule,
+    // TableVirtualScrollModule,
+    ScrollingModule
     ],
     schemas: [
       CUSTOM_ELEMENTS_SCHEMA
