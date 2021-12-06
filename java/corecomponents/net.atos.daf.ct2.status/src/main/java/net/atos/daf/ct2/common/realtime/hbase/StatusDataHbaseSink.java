@@ -57,7 +57,7 @@ public class StatusDataHbaseSink extends RichSinkFunction<KafkaRecord<Status>> {
 			TableName tabName = TableName.valueOf(tableName);
 			table = conn.getConnection().getTable(tabName);
 
-			log.info("table_name -- " + tableName);
+			log.debug("table_name -- {}" , tableName);
 
 		} catch (IOException e) {
 			log.error("create connection failed from the configuration" + e.getMessage());
@@ -68,7 +68,7 @@ public class StatusDataHbaseSink extends RichSinkFunction<KafkaRecord<Status>> {
 			throw e;
 		}
 
-		log.info("Status table name - " + tableName);
+		log.debug("Status table name - {}" , tableName);
 	}
 
 	public void invoke(KafkaRecord<Status> value, Context context) throws Exception {
@@ -212,7 +212,7 @@ public class StatusDataHbaseSink extends RichSinkFunction<KafkaRecord<Status>> {
 					Bytes.toBytes(String.valueOf(value.getValue().getDocument().getVEvtCause())));
 
 			// VCruiseControlDistanceDistr
-			System.out.println("VCruiseControlDistanceDistr Data Fields in Status Data");
+			log.debug("VCruiseControlDistanceDistr Data Fields in Status Data");
 
 			if (value.getValue().getDocument().getVCruiseControlDistanceDistr() != null) {
 
@@ -226,7 +226,7 @@ public class StatusDataHbaseSink extends RichSinkFunction<KafkaRecord<Status>> {
 						.toString(value.getValue().getDocument().getVCruiseControlDistanceDistr().getDistrArrayInt())));
 			}
 			// VRpmTorque
-			System.out.println("getStatusVRpmTorque Data Fields in Status Data");
+			log.debug("getStatusVRpmTorque Data Fields in Status Data");
 
 			if (value.getValue().getDocument().getVRpmTorque() != null) {
 
@@ -244,7 +244,7 @@ public class StatusDataHbaseSink extends RichSinkFunction<KafkaRecord<Status>> {
 			}
 			// VSpeedRpm
 
-			System.out.println("StatusVSpeedRpm Data Fields in Status Data");
+			log.debug("StatusVSpeedRpm Data Fields in Status Data");
 
 			if (value.getValue().getDocument().getVSpeedRpm() != null) {
 				put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("Vspeed_abs"),
@@ -260,11 +260,10 @@ public class StatusDataHbaseSink extends RichSinkFunction<KafkaRecord<Status>> {
 						Bytes.toBytes(Arrays.toString(value.getValue().getDocument().getVSpeedRpm().getJa())));
 			}
 
-			// VAccelerationSpeed
-
-			System.out.println("VAccelerationSpeed Data Fields in Status Data");
 
 			if (value.getValue().getDocument().getVAccelerationSpeed() != null) {
+				// VAccelerationSpeed
+				log.info("VAccelerationSpeed Data Fields in Status Data");
 
 				put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VAcceleration_abs"),
 						Bytes.toBytes(String.valueOf(value.getValue().getDocument().getVAccelerationSpeed().getAbs())));
@@ -284,10 +283,10 @@ public class StatusDataHbaseSink extends RichSinkFunction<KafkaRecord<Status>> {
 			// put.addColumn(Bytes.toBytes("t"), Bytes.toBytes ("M2M_out") ,
 			// Bytes.toBytes(String.valueOf(value.getValue().getTimestamps().getM2M_out())));
 
-			// VIdleDurationDistr
-			System.out.println("VIdleDurationDistr Data Fields in Status Data");
-			if (value.getValue().getVIdleDurationDistr() != null) {
 
+			if (value.getValue().getVIdleDurationDistr() != null) {
+               // VIdleDurationDistr
+				log.info("VIdleDurationDistr Data Fields in Status Data");
 				put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VIdleDistrStep"),
 						Bytes.toBytes(String.valueOf(value.getValue().getVIdleDurationDistr().getDistrStep())));
 				put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VIdleDistrMaxRangeInt"),
@@ -297,9 +296,9 @@ public class StatusDataHbaseSink extends RichSinkFunction<KafkaRecord<Status>> {
 				put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VIdleDistrArrayInt"),
 						Bytes.toBytes(Arrays.toString(value.getValue().getVIdleDurationDistr().getDistrArrayInt())));
 			}
-			// VAccelerationPedalDistr
-			System.out.println("VAccelerationPedalDistr Data Fields in Status Data");
 			if (value.getValue().getDocument().getVAccelerationPedalDistr() != null) {
+				// VAccelerationPedalDistr
+				log.info("VAccelerationPedalDistr Data Fields in Status Data");
 				put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("DistrMinRangeInt"), Bytes.toBytes(
 						String.valueOf(value.getValue().getDocument().getVAccelerationPedalDistr().getDistrMinRangeInt())));
 				put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("DistrMaxRangeInt"), Bytes.toBytes(
@@ -309,10 +308,10 @@ public class StatusDataHbaseSink extends RichSinkFunction<KafkaRecord<Status>> {
 				put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("DistrArrayTime"), Bytes.toBytes(
 						Arrays.toString(value.getValue().getDocument().getVAccelerationPedalDistr().getDistrArrayInt())));
 			}
-			// VEngineLoadAtEngineSpeedDistr
-			System.out.println("VEngineLoadAtEngineSpeedDistr Data Fields in Status Data");
 
 			if (value.getValue().getDocument().getVEngineLoadAtEngineSpeedDistr() != null) {
+				// VEngineLoadAtEngineSpeedDistr
+				log.info("VEngineLoadAtEngineSpeedDistr Data Fields in Status Data");
 
 				put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("DistrMinRangeInt"), Bytes.toBytes(String
 						.valueOf(value.getValue().getDocument().getVEngineLoadAtEngineSpeedDistr().getDistrMinRangeInt())));
@@ -323,10 +322,10 @@ public class StatusDataHbaseSink extends RichSinkFunction<KafkaRecord<Status>> {
 				put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("DistrArrayInt"), Bytes.toBytes(Arrays
 						.toString(value.getValue().getDocument().getVEngineLoadAtEngineSpeedDistr().getDistrArrayInt())));
 			}
-			// VRetarderTorqueActualDistr
-			System.out.println("VRetarderTorqueActualDistr Data Fields in Status Data");
 
 			if (value.getValue().getDocument().getVRetarderTorqueActualDistr() != null) {
+				// VRetarderTorqueActualDistr
+				log.info("VRetarderTorqueActualDistr Data Fields in Status Data");
 				put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("DistrMinRangeInt"), Bytes.toBytes(String
 						.valueOf(value.getValue().getDocument().getVRetarderTorqueActualDistr().getDistrMinRangeInt())));
 				put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("DistrMaxRangeInt"), Bytes.toBytes(String
@@ -337,14 +336,13 @@ public class StatusDataHbaseSink extends RichSinkFunction<KafkaRecord<Status>> {
 						.toString(value.getValue().getDocument().getVRetarderTorqueActualDistr().getDistrArrayInt())));
 			}
 			table.put(put);
+			log.info("Status data set in table {}",value);
 		} catch (ParseException e) {
-			System.out.println("status input message--" +value);
-			e.printStackTrace();
+			log.error("status input message-- {} error {}" ,value,e.getMessage());
 		} catch (IOException e) {
-			System.out.println("status input message--" +value);
-			e.printStackTrace();
+			log.error("status input message-- {} error {}" ,value,e.getMessage());
 		} catch (Exception e) {
-			System.out.println("status input message--" +value);
+			log.error("status input message-- {} error {}" ,value,e.getMessage());
 		}
 
 	}

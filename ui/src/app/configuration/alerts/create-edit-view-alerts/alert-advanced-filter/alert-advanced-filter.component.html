@@ -1,17 +1,19 @@
-<form [formGroup]="alertAdvancedFilterForm">
-
+<form [formGroup]="alertAdvancedFilterForm"> 
    <!-- Select Period -->
    <mat-card *ngIf="((alert_category_selected === 'L') && (alert_type_selected === 'N' ||  alert_type_selected == 'X'))
    || ((alert_category_selected === 'F') && (alert_type_selected === 'I' || alert_type_selected === 'A')) && actionType != 'view'"
   class='mat-elevation-z'>
-    <mat-expansion-panel class="full-width" fxLayoutGap="10px">
+    <!-- <mat-expansion-panel class="full-width" fxLayoutGap="10px">
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title>
           <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
             translationData.lblPeriod }}<span class='mandatoryColor'>*</span></span>
         </mat-panel-title>
-      </mat-expansion-panel-header>
-      <div fxLayout="row" class="full-width filter-direction">
+      </mat-expansion-panel-header> -->
+    
+    
+    
+      <!-- <div fxLayout="row" class="full-width filter-direction">
         <mat-radio-group formControlName="fullorCustom" (change)='onApplyOnChange($event)'>
           <mat-radio-button style='margin-right: 20px;' value="A">
             {{ translationData.lblFullDay }}
@@ -60,14 +62,23 @@
             </div>
           </div>
         </div>
-      </div>
-      <div *ngIf="selectedApplyOn =='C'" > 
+      </div> -->
+
+
+
+      <!-- <div *ngIf="selectedApplyOn =='C'" > 
+      <app-period-selection-filter  #periodComponent
+      [translationData] = 'translationData'
+      [selectedRowData] = 'selectedRowData'
+      [actionType]='actionType'></app-period-selection-filter>
+    </div> -->
+    <!-- </mat-expansion-panel> -->
+    <div *ngIf="selectedApplyOn =='C'" > 
       <app-period-selection-filter  #periodComponent
       [translationData] = 'translationData'
       [selectedRowData] = 'selectedRowData'
       [actionType]='actionType'></app-period-selection-filter>
     </div>
-    </mat-expansion-panel>
   </mat-card>
   
   <!-- distance option -->
@@ -440,7 +451,7 @@
         translationData.lblAdvanceFilterDetails || 'Advance Filter Details' }}</span> -->
     <!-- </mat-panel-title>
   </mat-expansion-panel-header> -->
-  <div fxLayout="row" fxLayoutAlign="space-between"
+  <!-- <div fxLayout="row" fxLayoutAlign="space-between"
   class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
   <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
     Validity Type : <span style='font-weight: 500!important;'>{{ this.selectedRowData.alertUrgencyLevelRefs[0].periodType == 'A' ? (translationData.lblAlways) :  (translationData.lblCustom) }}</span>
@@ -453,8 +464,8 @@
     <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
       To : <span style='font-weight: 500!important;'>{{ to[0]}} {{ to[1] }}</span>
       </div>
-  </div>
-  <div fxLayout="row" *ngIf="this.selectedRowData.alertUrgencyLevelRefs[0].periodType == 'C'" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+  </div> -->
+  <div fxLayout="row" *ngIf="this.selectedRowData.alertUrgencyLevelRefs[0].periodType == 'C' && this.selectedRowData.alertUrgencyLevelRefs[0].alertTimingDetail.length > 0" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
     <div class="areaWidth full-width" fxLayout="column" fxLayoutAlign="left">
         <app-period-selection-filter  #periodComponent
         [translationData] = 'translationData'

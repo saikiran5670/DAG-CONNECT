@@ -143,7 +143,9 @@ export class ReportsPreferencesComponent implements OnInit {
         reportId: this.reportListData.filter(i => i.name == 'Fleet Fuel Report')[0].id,
         attributes: [...vehicleObj, ...driverObj]
       };
+      this.showLoadingIndicator=true;
       this.reportService.updateReportUserPreference(objData).subscribe((res: any) => {
+        this.showLoadingIndicator=false;
         this.updateFleetFuelPerferencesFlag({ flag: false, msg: this.getSuccessMsg() });
         setTimeout(() => {
           this.requestSent = false;
@@ -151,6 +153,8 @@ export class ReportsPreferencesComponent implements OnInit {
           window.location.reload();
           }
         }, 1000);
+      }, (error) => {
+        this.showLoadingIndicator=false;
       });
     }
   }

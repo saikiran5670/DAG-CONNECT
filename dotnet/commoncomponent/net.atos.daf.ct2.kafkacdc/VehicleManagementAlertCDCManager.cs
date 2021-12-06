@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using net.atos.daf.ct2.kafkacdc.entity;
 using net.atos.daf.ct2.kafkacdc.repository;
+using net.atos.daf.ct2.visibility;
 
 namespace net.atos.daf.ct2.kafkacdc
 {
@@ -19,22 +20,66 @@ namespace net.atos.daf.ct2.kafkacdc
         private readonly IVehicleManagementAlertCDCRepository _vehicleManagementAlertCDCRepository;
         private readonly IAlertMgmAlertCdcRepository _vehicleAlertRepository;
         private readonly KafkaCdcHelper _kafkaCdcHelper;
+        private readonly IVisibilityManager _visibilityManager;
 
         public VehicleManagementAlertCDCManager(IAlertMgmAlertCdcRepository vehicleAlertRepository
                                                 , IVehicleManagementAlertCDCRepository vehicleManagementAlertCDCRepository
-                                                , IConfiguration configuration)
+                                                , IConfiguration configuration
+                                                , IVisibilityManager visibilityManager)
         {
             this._configuration = configuration;
             _kafkaConfig = new entity.KafkaConfiguration();
             configuration.GetSection("KafkaConfigurationAlertCDC").Bind(_kafkaConfig);
             _vehicleManagementAlertCDCRepository = vehicleManagementAlertCDCRepository;
             _vehicleAlertRepository = vehicleAlertRepository;
+            _visibilityManager = visibilityManager;
             _kafkaCdcHelper = new KafkaCdcHelper();
         }
 
-        public Task<bool> GetVehicleAlertRefFromVehicleId(IEnumerable<int> vehicleIds, string operation, int organizationId) => ExtractAndSyncVehicleAlertRefFromVehicleId(vehicleIds, operation, organizationId);
+        public async Task<bool> GetVehicleAlertRefFromVehicleId(IEnumerable<int> vehicleIds, string operation, int contextOrgId, int userOrgId, int accountId, IEnumerable<int> featureIds)
+        {
+            try
+            {
+                var vehicleAccountVisibiltyList = new List<visibility.entity.VehicleDetailsAccountVisibilityForAlert>();
+                vehicleAccountVisibiltyList = (await _visibilityManager.GetVehicleByAccountVisibilityForAlert(accountId, userOrgId, contextOrgId, featureIds.ToArray())).ToList();
+                if (vehicleAccountVisibiltyList.Count() == 0) return false;
+                var filteredVisibility = vehicleAccountVisibiltyList.Where(w => vehicleIds.Contains(w.VehicleId));
+                if (filteredVisibility.Count() == 0) return false;
+                var filteredVisiblityVehicleGroups = new List<int>();
+                foreach (var items in filteredVisibility.ToList().Select(w => w.VehicleGroupIds))
+                {
+                    foreach (var subItem in items)
+                    {
+                        if (!filteredVisiblityVehicleGroups.Any(a => a == subItem))
+                            filteredVisiblityVehicleGroups.Add(subItem);
+                    }
+                }
+                if (filteredVisiblityVehicleGroups.Count() == 0) return false;
+                var alertByVehicleGroupFeature = await _vehicleManagementAlertCDCRepository.GetAlertByVehicleAndFeatures(filteredVisiblityVehicleGroups, featureIds.ToList());
 
-        internal async Task<bool> ExtractAndSyncVehicleAlertRefFromVehicleId(IEnumerable<int> vehicleIds, string operation, int organizationId)
+                var vehicleAlerts = new List<VehicleAlertRef>();
+
+                foreach (var item in alertByVehicleGroupFeature)
+                {
+                    foreach (var vehicle in filteredVisibility.Where(w => w.VehicleGroupIds.ToList().Contains(item.VehicleGroupId)))
+                    {
+                        vehicleAlerts.Add(new VehicleAlertRef { AlertId = item.AlertId, VIN = vehicle.Vin, Op = operation });
+                    }
+                }
+                if (vehicleAlerts.Count() == 0) return false;
+                return await ExtractAndSyncVehicleAlertRefFromVehicleId(vehicleIds, operation, vehicleAlerts);
+
+            }
+            catch (Exception ex)
+            {
+                var vehicleString = vehicleIds.Count() > 10 ? string.Join(",", vehicleIds.Take(10)) : string.Join(", ", vehicleIds);
+                _log.Info($"Alert CDC has failed for Vehicle Id :{vehicleString} and operation " + operation);
+                _log.Error(ex.ToString());
+                return false;
+            }
+        }
+
+        internal async Task<bool> ExtractAndSyncVehicleAlertRefFromVehicleId(IEnumerable<int> vehicleIds, string operation, List<VehicleAlertRef> vehicleAlerts)
         {
             bool result = false;
             List<VehicleAlertRef> unmodifiedMapping = new List<VehicleAlertRef>();
@@ -45,9 +90,9 @@ namespace net.atos.daf.ct2.kafkacdc
             try
             {
                 // get all the vehicles & alert mapping under the vehicle group for given alert id
-                List<VehicleAlertRef> masterDBVehicleAlerts = await _vehicleManagementAlertCDCRepository.GetVehicleAlertByvehicleId(vehicleIds, organizationId);//Context Org ID
+                List<VehicleAlertRef> masterDBVehicleAlerts = vehicleAlerts.Distinct().ToList();// await _vehicleManagementAlertCDCRepository.GetVehicleAlertByvehicleId(vehicleIds, organizationId);//Context Org ID
                 alertIds = masterDBVehicleAlerts.Select(x => x.AlertId).Distinct().ToList();
-                List<VehicleAlertRef> datamartVehicleAlerts = await _vehicleManagementAlertCDCRepository.GetVehicleAlertRefFromvehicleId(alertIds);
+                List<VehicleAlertRef> datamartVehicleAlerts = await _vehicleManagementAlertCDCRepository.GetVehicleAlertRefFromvehicleId(alertIds, vehicleIds);
 
                 // Preparing data for sending to kafka topic
                 if (masterDBVehicleAlerts.Count > 0)
@@ -86,7 +131,7 @@ namespace net.atos.daf.ct2.kafkacdc
                 //set alert operation for state column into datamart                
                 masterDBVehicleAlerts.ForEach(s => s.Op = operation);
                 //Update datamart table vehiclealertref based on latest modification.
-                await _vehicleAlertRepository.DeleteAndInsertVehicleAlertRef(alertIds, masterDBVehicleAlerts);
+                await _vehicleManagementAlertCDCRepository.DeleteAndInsertVehicleAlertRef(alertIds, vehicleIds, masterDBVehicleAlerts);
                 //sent message to Kafka topic 
                 //Union mapping for sending to kafka topic
                 finalmapping = insertionMapping.Union(deletionMapping).ToList();

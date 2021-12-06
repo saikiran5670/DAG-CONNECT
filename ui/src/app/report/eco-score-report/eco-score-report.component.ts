@@ -550,11 +550,11 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     if(parseInt(event.value) == 0){ //-- all group
       this.ecoScoreForm.get('vehicle').setValue(0);
       this.ecoScoreForm.get('driver').setValue(0);
-      let vehicleData = this.vehicleListData.slice();
+      let vehicleData = this.vehicleGroupListData.slice();
       this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
       console.log("vehicleDD 1", this.vehicleDD);
     }else{
-      let search = this.vehicleListData.filter(i => i.vehicleGroupId == parseInt(event.value));
+      let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
       if(search.length > 0){
         this.vehicleDD = [];
         search.forEach(element => {
@@ -656,6 +656,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       if(this.allDriversSelected){
       this.showLoadingIndicator = true;
         this.reportService.getEcoScoreProfiles(true).subscribe((profiles: any) => {
+          if(profiles){
           this.profileList = profiles.profiles;
           let obj = this.profileList.find(o => o.isDeleteAllowed === false);
           if(obj) this.targetProfileId = obj.profileId;
@@ -680,6 +681,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
           this.hideloader();
           this.tableInfoObj = {};
         });
+      }
         }, (error)=>{
           this.isSearched=true;
           this.hideloader();
@@ -845,7 +847,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
         }
       }
 
-
+   
       this.driverListData = filteredDriverList;
       this.vehicleListData = filteredVehicleList;
       this.vehicleGroupListData = finalVehicleList;
@@ -954,7 +956,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     this.selectedDriverId = this.driverListData.filter(item => (item.driverID).toString() == (this.ecoScoreForm.controls.driver.value))[0]["driverID"];
     let driverFirstName = this.driverListData.filter(item => (item.driverID).toString() == (this.ecoScoreForm.controls.driver.value))[0]["firstName"];
     let driverLastName = this.driverListData.filter(item => (item.driverID).toString() == (this.ecoScoreForm.controls.driver.value))[0]["lastName"];
-    this.selectedDriverName = driverFirstName +" "+ driverLastName;
+    this.selectedDriverName = (driverFirstName !== undefined) ? driverFirstName : '' +" "+ (driverLastName !== undefined) ? driverLastName : '';
     this.selectedDriverOption='';
     this.selectedDriverOption += (this.ecoScoreForm.controls.minTripCheck.value === true) ? (this.translationData.lblInclude ) : (this.translationData.lblExclude );
     this.selectedDriverOption += ' ' + (this.translationData.lblShortTrips ) + ' ';
@@ -1155,6 +1157,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   }
 
   loadSingleDriverDetails(){
+    this.showLoadingIndicator=true;
     this.selectedDriverData = {
       startDate: this.fromDisplayDate,
       endDate: this.toDisplayDate,
@@ -1606,7 +1609,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
 
   checkForConversion(val){
     if(this.prefUnitFormat === 'dunit_Imperial')
-      return (val * 0.621371).toFixed(2);
+      return (val * 0.6213711899416732).toFixed(2);
     return val;
   }
 

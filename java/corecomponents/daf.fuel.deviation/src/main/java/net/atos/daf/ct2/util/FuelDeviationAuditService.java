@@ -42,11 +42,11 @@ public class FuelDeviationAuditService implements Serializable {
 	      auditMap.put(FuelDeviationConstants.AUDIT_TARGET_OBJECT_ID, FuelDeviationConstants.DEFAULT_OBJECT_ID);
 
 	      auditETLJobClient.auditTrialGrpcCall(auditMap);
-	      log.info("Audit Trial Started for job :: "+jobName);
+	      log.debug("Audit Trial Started for job ::{} ",jobName);
 	          
 	    } catch (Exception e) {
-	    	log.info("Issue ::"+e.getMessage());
-	    	throw new FuelDeviationAuditServiceException(" Issue while calling audit service ", e);
+	    	log.error("Issue in FuelDeviationAuditService ::{}",e.getMessage());
+	    	throw new FuelDeviationAuditServiceException(" Issue while calling Fuel audit service ", e);
 	    }finally{
 	    	if(auditETLJobClient != null)
 		      auditETLJobClient.closeChannel();

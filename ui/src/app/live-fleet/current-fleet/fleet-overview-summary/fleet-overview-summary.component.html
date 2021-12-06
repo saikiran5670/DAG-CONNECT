@@ -1,4 +1,4 @@
-<mat-card class='mat-elevation-z no-padding' style='margin: 10px; background: transparent;'>
+<mat-card class='mat-elevation-z no-padding' style='margin: 10px; background: transparent !important;'>
   <mat-expansion-panel style="width:100%;" class="full-width"> 
     <mat-expansion-panel-header class="full-width">
       <mat-panel-title>
@@ -61,3 +61,4 @@
   </div>
   </mat-expansion-panel>
 </mat-card>
+<app-spinner *ngIf="showLoadingIndicator" ></app-spinner>

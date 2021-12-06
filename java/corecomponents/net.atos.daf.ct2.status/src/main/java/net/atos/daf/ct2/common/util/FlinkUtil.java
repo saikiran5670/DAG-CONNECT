@@ -44,7 +44,7 @@ public class FlinkUtil {
 		 * restart attempts 20000 //time in milliseconds between restarts ));
 		 */
 
-		logger.info("envParams:: " + envParams);
+		logger.debug("envParams:: " + envParams);
 		env.setParallelism(Integer.parseInt(envParams.get(DafConstants.PARALLELISM)));
 
 		/*
@@ -111,9 +111,9 @@ public class FlinkUtil {
 					RestartStrategies.fixedDelayRestart(Integer.parseInt(envParams.get(DafConstants.RESTART_ATTEMPS)), //no of restart attempts
 							Long.parseLong(envParams.get(DafConstants.RESTART_INTERVAL))) //time in milliseconds between restarts
 						);			
-		}else{
+		}/*else{
 			env.setRestartStrategy(RestartStrategies.noRestart());
-		}
+		}*/
 		return env;
 	}
 

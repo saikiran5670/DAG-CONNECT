@@ -14,9 +14,9 @@ namespace net.atos.daf.ct2.packageservice.Common
         {
             _packageMgmAlertCdcManager = packageMgmAlertCdcManager;
         }
-        public async Task TriggerPackageCdc(int packageid, string packageState)
+        public async Task TriggerPackageCdc(int packageid, string operation, int orgContextId, int accountId, int loggedInOrgId, int[] featureIds)
         {
-            _ = await Task.Run(() => _packageMgmAlertCdcManager.GetVehiclesAndAlertFromPackageConfiguration(packageid, packageState));
+            _ = await Task.Run(() => _packageMgmAlertCdcManager.GetVehiclesAndAlertFromPackageConfiguration(packageid, operation, accountId, loggedInOrgId, orgContextId, featureIds.ToArray()));
         }
     }
 }

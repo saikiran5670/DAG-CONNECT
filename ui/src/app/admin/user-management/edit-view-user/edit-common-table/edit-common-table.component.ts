@@ -5,6 +5,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { AccountService } from 'src/app/services/account.service';
+import { Util } from 'src/app/shared/util';
 
 @Component({
   selector: 'app-edit-common-table',
@@ -18,6 +19,8 @@ export class EditCommonTableComponent implements OnInit {
   dataSource: any;
   selectionData = new SelectionModel(true, []);
   servicesIcon: any = ['service-icon-daf-connect', 'service-icon-eco-score', 'service-icon-open-platform', 'service-icon-open-platform-inactive', 'service-icon-daf-connect-inactive', 'service-icon-eco-score-inactive', 'service-icon-open-platform-1', 'service-icon-open-platform-inactive-1'];
+  filterValue: string;
+  columns: any;
 
   constructor(
     @Inject(MAT_DIALOG_DATA)
@@ -40,9 +43,25 @@ export class EditCommonTableComponent implements OnInit {
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
-    });
+      this.dataSource.sortData = (data: String[], sort: MatSort) => {
+        const isAsc = sort.direction === 'asc';
+        return data.sort((a: any, b: any) => {
+            let columnName = sort.active;
+          return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
+        });
+
+    }
+    Util.applySearchFilter(this.dataSource, this.columns ,this.filterValue );
+
     this.selectTableRows();
-  }
+  });
+}
+compare(a: any, b: any, isAsc: boolean, columnName:any) {
+  if(!(a instanceof Number)) a = a.toString().toUpperCase();
+  if(!(b instanceof Number)) b = b.toString().toUpperCase();
+  return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+}
+
 
   selectTableRows() {
     this.dataSource.data.forEach(row => {

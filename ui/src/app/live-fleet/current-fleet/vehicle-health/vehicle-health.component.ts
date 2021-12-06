@@ -677,10 +677,12 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
   }
   
   getWarningData() {
+    this.showLoadingIndicator=true;
     this.reportService.getvehiclehealthstatus(this.healthData.vin, this.localStLanguage.code).subscribe((res) => {
       this.currentHealthData = this.processDataForActivatedAndDeactivatedTime(res);
       this.historyHealthData = res;
       this.onSearch();
+      this.showLoadingIndicator=false;
     });
   }
 

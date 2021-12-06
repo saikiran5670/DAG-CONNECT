@@ -212,3 +212,4 @@
     <button [disabled]='(selectionForAllDriver.selected.length == 0 && allDriverTableData.length > 0) || (selectionForChart.selected.length == 0 && chartData.length > 0) || (selectionForDriver.selected.length == 0 && specificDriverData.length > 0)' class='no-margin' mat-raised-button
         color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm) }}</button>
 </div>
+<app-spinner *ngIf="showLoadingIndicator"></app-spinner>	

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Dapper;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.kafkacdc.entity;
+using net.atos.daf.ct2.utilities;
 
 namespace net.atos.daf.ct2.kafkacdc.repository
 {
@@ -19,14 +20,15 @@ namespace net.atos.daf.ct2.kafkacdc.repository
             _dataAccess = dataAccess;
             _dataMartdataAccess = dataMartdataAccess;
         }
-        public async Task<List<VehicleAlertRef>> GetVehicleAlertRefFromvehicleId(IEnumerable<int> alertIds)
+        public async Task<List<VehicleAlertRef>> GetVehicleAlertRefFromvehicleId(IEnumerable<int> alertIds, IEnumerable<int> vehicleIds)
         {
             try
             {
-                //parameter.Add("@vin", await GetVINsByIds(vehicleIds));
                 var parameter = new DynamicParameters();
                 parameter.Add("@alertids", alertIds.ToArray());
-                string queryAlertLevelPull = @"select vin,alert_id as AlertId, state  from tripdetail.vehiclealertref where alert_id = ANY(@alertIds);";
+                var vins = await GetVINsByIds(vehicleIds);
+                parameter.Add("@vins", vins.ToArray());
+                string queryAlertLevelPull = @"select vin,alert_id as AlertId, state  from tripdetail.vehiclealertref where alert_id = ANY(@alertIds) AND vin = ANY(@vins);";
 
                 IEnumerable<VehicleAlertRef> vehicleGroupAlertRefs = await _dataMartdataAccess.QueryAsync<VehicleAlertRef>(queryAlertLevelPull, parameter);
                 return vehicleGroupAlertRefs.AsList();
@@ -404,6 +406,103 @@ select distinct alertid as AlertId,vin as VIN from subscription_complete;";
             string queryAlertLevelPull = @"select vin  from master.vehicle where id = Any(@vehicleid) and vin is not null;";
 
             return _dataAccess.QueryAsync<string>(queryAlertLevelPull, parameter);
+        }
+
+        public async Task<List<VehicleGroupAlertRef>> GetAlertByVehicleAndFeatures(List<int> vehicleGroupIds, List<int> featureIds)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@vehicleGroupIds", vehicleGroupIds.ToArray());
+                parameter.Add("@featureIds", featureIds.ToArray());
+                var queryStatementFeature = @"select enum from translation.enumtranslation where feature_id = ANY(@featureIds)";
+                List<string> resultFeaturEnum = (List<string>)await _dataAccess.QueryAsync<string>(queryStatementFeature, parameter);
+                parameter.Add("@featureEnums", resultFeaturEnum.ToArray());
+                string queryAlert = @"select id as AlertId, vehicle_group_id as VehicleGroupId, 'N' as Op 
+                                        from master.alert 
+                                        where state in ('A','I') and vehicle_group_id = ANY(@vehicleGroupIds) and type = ANY(@featureEnums)  ";
+                var result = await _dataAccess.QueryAsync<VehicleGroupAlertRef>(queryAlert, parameter);
+                return result.AsList<VehicleGroupAlertRef>();
+            }
+            catch (System.Exception)
+            {
+
+                throw;
+            }
+
+        }
+
+        public async Task<bool> DeleteAndInsertVehicleAlertRef(List<int> alertIds, IEnumerable<int> vehicleIds, List<VehicleAlertRef> vehicleAlertRefs)
+        {
+            //datamart transaction
+            _dataMartdataAccess.Connection.Open();
+            var transactionScope = _dataMartdataAccess.Connection.BeginTransaction();
+            bool isSucceed = false;
+            try
+            {
+                isSucceed = await DeleteVehicleAlertRef(alertIds, vehicleIds);
+                isSucceed = await InsertVehicleAlertRef(vehicleAlertRefs);
+                transactionScope.Commit();
+            }
+            catch (Exception ex)
+            {
+                transactionScope.Rollback();
+                throw ex;
+            }
+            finally
+            {
+                _dataAccess.Connection.Close();
+            }
+            return isSucceed;
+        }
+
+        private async Task<bool> DeleteVehicleAlertRef(List<int> alertIds, IEnumerable<int> vehicleIds)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                var vins = await GetVINsByIds(vehicleIds);
+                parameter.Add("@vins", vins.ToArray());
+                parameter.Add("@alertids", alertIds.ToArray());
+                string queryAlertLevelPull = @"DELETE FROM tripdetail.vehiclealertref
+                                               WHERE alert_id=any(@alertids) AND vin = ANY(@vins)";
+                int result = await _dataMartdataAccess.ExecuteAsync(queryAlertLevelPull, parameter);
+                return result > 0;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private async Task<bool> InsertVehicleAlertRef(List<VehicleAlertRef> vehicleAlertRefs)
+        {
+            bool isSucceed = false;
+            try
+            {
+                foreach (VehicleAlertRef item in vehicleAlertRefs)
+                {
+                    var parameter = new DynamicParameters();
+                    parameter.Add("@vin", item.VIN);
+                    parameter.Add("@alertid", item.AlertId);
+                    parameter.Add("@state", item.Op);
+                    parameter.Add("@createdat", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                    string query = @"INSERT INTO tripdetail.vehiclealertref(vin, alert_id, state, created_at)
+                                                    VALUES (@vin, @alertid, @state, @createdat) RETURNING id;";
+                    int result = await _dataMartdataAccess.ExecuteAsync(query, parameter);
+                    if (result <= 0)
+                    {
+                        isSucceed = false;
+                        break;
+                    }
+                    isSucceed = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return isSucceed;
         }
     }
 }

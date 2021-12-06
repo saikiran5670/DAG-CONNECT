@@ -44,6 +44,8 @@ namespace net.atos.daf.ct2.alert.entity
     {
         public int AccountId { get; set; }
         public int OrganizationId { get; set; }
+        public List<string> Vins { get; set; }
+        public List<int> FeatureIds { get; set; }
     }
 
     public class AlertVehicleGroup

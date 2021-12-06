@@ -30,7 +30,7 @@ namespace net.atos.daf.ct2.vehicle.entity
         public string Tcu_Brand { get; set; }
         public string Tcu_Version { get; set; }
         public bool Is_Tcu_Register { get; set; }
-        public DateTime? Reference_Date { get; set; }
+        public DateTime Reference_Date { get; set; }
         public int? VehiclePropertiesId { get; set; }
         public long? CreatedAt { get; set; }
         public int Oem_id { get; set; }

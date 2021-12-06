@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using net.atos.daf.ct2.kafkacdc.entity;
 using net.atos.daf.ct2.kafkacdc.repository;
+using net.atos.daf.ct2.visibility;
+using net.atos.daf.ct2.visibility.entity;
 
 namespace net.atos.daf.ct2.kafkacdc
 {
@@ -18,21 +20,22 @@ namespace net.atos.daf.ct2.kafkacdc
         private readonly IConfiguration _configuration;
         private readonly entity.KafkaConfiguration _kafkaConfig;
         private readonly IAlertMgmAlertCdcRepository _vehicleAlertRepository;
+        private readonly IVisibilityManager _visibilityManager;
 
-        public CustomerDataCdcManager(ICustomerDataCdcRepository vehicleAlertCustomerDataRepository, IConfiguration configuration, IAlertMgmAlertCdcRepository vehicleAlertRepository)
+        public CustomerDataCdcManager(ICustomerDataCdcRepository vehicleAlertCustomerDataRepository, IConfiguration configuration, IAlertMgmAlertCdcRepository vehicleAlertRepository, IVisibilityManager visibilityManager)
         {
 
             this._configuration = configuration;
             _kafkaConfig = new entity.KafkaConfiguration();
             configuration.GetSection("KafkaConfiguration").Bind(_kafkaConfig);
-
+            _visibilityManager = visibilityManager;
             _vehicleAlertCustomerDataRepository = vehicleAlertCustomerDataRepository;
             _vehicleAlertRepository = vehicleAlertRepository;
             _kafkaCdcHelper = new KafkaCdcHelper();
         }
 
-        public Task<bool> GetVehiclesAndAlertFromCustomerDataConfiguration(int subscriptionId, string operation) => ExtractAndSyncVehicleAlertRefBySubscriptionId(subscriptionId, operation);
-        internal async Task<bool> ExtractAndSyncVehicleAlertRefBySubscriptionId(int subscriptionId, string operation)
+        public Task<bool> GetVehiclesAndAlertFromCustomerDataConfiguration(int orgId, string operation, string vin) => ExtractAndSyncVehicleAlertRefBySubscriptionId(orgId, operation, vin);
+        internal async Task<bool> ExtractAndSyncVehicleAlertRefBySubscriptionId(int orgId, string operation, string vin)
         {
             bool result = false;
             List<int> alertIds = new List<int>();
@@ -44,7 +47,8 @@ namespace net.atos.daf.ct2.kafkacdc
             try
             {
                 // get all the vehicles & alert mapping under the vehicle group for given alert id
-                List<VehicleAlertRef> masterDBPackageVehicleAlerts = await _vehicleAlertCustomerDataRepository.GetVehiclesAndAlertFromCustomerDataConfiguration(subscriptionId);
+                List<VehicleAlertRef> masterDBPackageVehicleAlerts = await GetVisibilityVehicleAlertRefByAlertIds(orgId, vin);
+                //await _vehicleAlertCustomerDataRepository.GetVehiclesAndAlertFromCustomerDataConfiguration(subscriptionId);
                 alertIds = masterDBPackageVehicleAlerts.Select(x => x.AlertId).Distinct().ToList();
                 List<VehicleAlertRef> datamartVehicleAlerts = await _vehicleAlertCustomerDataRepository.GetVehicleAlertRefByAlertIds(alertIds);
                 // Preparing data for sending to kafka topic
@@ -98,11 +102,75 @@ namespace net.atos.daf.ct2.kafkacdc
             }
             catch (Exception ex)
             {
-                _log.Info("Subscription CDC has failed for Subscription Id :" + subscriptionId.ToString() + " and operation " + operation);
+                _log.Info("KeyHandover CDC has failed for vin Id :" + vin + " and operation " + operation);
                 _log.Error(ex.ToString());
                 result = false;
             }
             return result;
+        }
+
+        internal async Task<List<VehicleAlertRef>> GetVisibilityVehicleAlertRefByAlertIds(int org_Id, string vin)
+        {
+            try
+            {
+
+                IEnumerable<int> featureIds = await _vehicleAlertCustomerDataRepository.GetAlertFeatureIds(org_Id);
+
+                IEnumerable<VehicleDetailsAccountVisibilityForAlert> visibilityVehicle = null;
+                if (featureIds.Count() > 0)
+                {
+                    visibilityVehicle = await _visibilityManager.GetVehicleByAccountVisibilityForAlert(0, 0, org_Id, featureIds.ToArray());
+                }
+                List<VehicleAlertRef> vehicleRefList = new List<VehicleAlertRef>();
+
+                if (visibilityVehicle != null)
+                {
+                    int vehicleId = 0;
+                    if (!string.IsNullOrEmpty(vin))
+                    {
+                        vehicleId = visibilityVehicle.Where(x => x.Vin == vin).Select(x => x.VehicleId).FirstOrDefault();
+                    }
+                    else
+                    {
+                        vehicleId = visibilityVehicle.Select(x => x.VehicleId).FirstOrDefault();
+                    }
+                    var vehgroupIds = visibilityVehicle.Where(x => x.VehicleId == vehicleId).Select(x => x.VehicleGroupIds).ToArray();
+
+                    List<int> groupIds = new List<int>();
+                    foreach (var item in vehgroupIds)
+                    {
+                        for (int i = 0; i < item.Length; i++)
+                        {
+                            var grpId = item[i];
+                            groupIds.Add(grpId);
+                        }
+                    }
+
+                    List<AlertGroupId> alertVehicleGroup = await _vehicleAlertCustomerDataRepository.GetAlertIdsandVGIds(groupIds, featureIds.ToList());
+
+                    foreach (var item in alertVehicleGroup)
+                    {
+                        var vinDetails = visibilityVehicle.Where(x => x.VehicleGroupIds.Contains(item.GroupId) && x.VehicleId == vehicleId).Select(x => x.Vin).ToList();
+                        if (vinDetails.Any())
+                        {
+                            foreach (var itemvin in vinDetails)
+                            {
+                                VehicleAlertRef vehicleRef = new VehicleAlertRef();
+                                vehicleRef.AlertId = item.Alertid;
+                                vehicleRef.VIN = itemvin;
+                                vehicleRefList.Add(vehicleRef);
+                            }
+
+                        }
+                    }
+                }
+
+                return vehicleRefList;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
     }

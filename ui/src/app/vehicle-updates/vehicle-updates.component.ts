@@ -106,8 +106,10 @@ export class VehicleUpdatesComponent implements OnInit {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
   }
   getVehicleSoftStatus() {
+    this.showLoadingIndicator=true;
     this.vehicleSoftwareStatus = [];
     this.otaSoftwareUpdateService.getVehicleSoftwareStatus().subscribe((data) => {
+      this.showLoadingIndicator=false;
       let vehicleSoftStatusArr = data['vehicleSoftwareStatus'];
       if (this.translationData != undefined) {
         vehicleSoftStatusArr.forEach(element => {
@@ -121,6 +123,7 @@ export class VehicleUpdatesComponent implements OnInit {
         });
       }     
     }, (error) => {
+      this.showLoadingIndicator=false;
     })   
   }
 

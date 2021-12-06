@@ -685,10 +685,13 @@ tripTraceArray: any = [];
     }];
   }
   loadUserPOI(){
+    this.showLoadingIndicator=true;
     this.landmarkCategoryService.getCategoryWisePOI(this.accountOrganizationId).subscribe((poiData: any) => {
       this.userPOIList = this.makeUserCategoryPOIList(poiData);
+      this.hideloader();
     }, (error) => {
       this.userPOIList = [];
+      this.hideloader();
     });
   }
 viewselectedroutes(_selectedRoutes:any,_displayRouteView:any,trackType:any){
@@ -906,14 +909,18 @@ createEndMarker(){
       "viNs": _vinData,
       "LanguageCode": "EN-GB"
     }
+    this.showLoadingIndicator=true;
     this.reportService.getVehicleTripDetails(getFleetFuelObj).subscribe((data:any) => {
-    console.log("---getting data from getFleetFueldriverDetailsAPI---",data)
+    // console.log("---getting data from getFleetFueldriverDetailsAPI---",data)
     this.displayData = data["fleetFuelDetails"];
     this.FuelData = this.reportMapService.getConvertedFleetFuelDataBasedOnPref(this.displayData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
     // this.setTableInfo();
     this.updateDataSource(this.FuelData);
     this.setTableInfo();
-    })
+    this.hideloader();
+    }, (complete)=>{
+      this.hideloader();
+    });
   }
 
  
@@ -935,10 +942,11 @@ createEndMarker(){
   loadWholeTripData(){
     this.showLoadingIndicator = true;
     this.reportService.getVINFromTripFleetfuel(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
-      this.hideloader();
+      // this.hideloader();
       this.wholeTripData = tripData;
       this.filterDateData();
       this.loadUserPOI();
+      this.hideloader();
     }, (error)=>{
       this.hideloader();
       this.wholeTripData.vinTripList = [];
@@ -1260,8 +1268,12 @@ createEndMarker(){
       "viNs": _vinData,
       "LanguageCode": "EN-GB"
     }
+    this.showLoadingIndicator=true;
     this.reportService.getdriverGraphDetails(searchDataParam).subscribe((graphData: any) => {
       this.setChartData(graphData["fleetfuelGraph"]);
+      this.hideloader();
+    }, (error)=>{
+      this.hideloader();
     });
     //if(_vinData.length === 1){
     //  this.showDetailedReport = true;

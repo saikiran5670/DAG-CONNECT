@@ -278,6 +278,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
       "state": this.selectedStatus === "Inactive" ? "I" : "A" //TODO: For delete, add option "D"
     }
     if(this.actionType == 'create'){
+      this.showLoadingIndicator=true;
       this.packageService.createPackage(createPackageParams).subscribe((res) => {
         this.packageService.getPackages().subscribe((getData) => {
         this.updatedData = getData["pacakageList"];
@@ -286,10 +287,14 @@ export class CreateEditPackageDetailsComponent implements OnInit {
           stepFlag: false,
           successMsg: this.userCreatedMsg,
           tableData: this.updatedData,
-        }
+        };
+        this.showLoadingIndicator=false;
         this.createViewEditPackageEmit.emit(emitObj);
+    }, (error) => {
+      this.showLoadingIndicator=false;
     });
   },(err) => {
+    this.showLoadingIndicator=false;
     if (err.status == 409) {
       this.duplicateMsg = true;
     }
@@ -306,6 +311,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
       "description": this.packageFormGroup.controls.description.value,
       "state": this.selectedStatus === "Inactive" ? "I" : "A"
     }
+    this.showLoadingIndicator=true;
     this.packageService.updatePackage(updatePackageParams).subscribe((data) => {
       this.packageService.getPackages().subscribe((getData) => {
       this.updatedData = getData["pacakageList"];
@@ -315,10 +321,13 @@ export class CreateEditPackageDetailsComponent implements OnInit {
         successMsg: this.userCreatedMsg,
         tableData: this.updatedData,
       }
+      this.showLoadingIndicator=false;
       this.createViewEditPackageEmit.emit(emitObj);
+      }, (error) => {
+        this.showLoadingIndicator=false;
       });
     },(err) => {
-
+      this.showLoadingIndicator=false;
       if (err.status == 409) {
         this.duplicateMsg = true;
       }

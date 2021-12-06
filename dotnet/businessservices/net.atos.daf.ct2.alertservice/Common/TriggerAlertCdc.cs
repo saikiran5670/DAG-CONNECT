@@ -19,5 +19,9 @@ namespace net.atos.daf.ct2.alertservice.common
         {
             _ = await Task.Run(() => _alertMgmAlertCdcManager.GetVehicleAlertRefFromAlertConfiguration(alertid, alertState));
         }
+        public async Task TriggerAlertCdc(int alertid, string alertState, int accountId, int organisationId, int contextOrgId, IEnumerable<int> featureIds)
+        {
+            _ = await Task.Run(() => _alertMgmAlertCdcManager.GetVehicleAlertRefFromAlertConfiguration(alertid, alertState, accountId, organisationId, contextOrgId, featureIds));
+        }
     }
 }

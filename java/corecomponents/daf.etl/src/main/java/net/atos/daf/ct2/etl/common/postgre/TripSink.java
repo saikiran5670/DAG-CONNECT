@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
@@ -45,16 +46,15 @@ public class TripSink extends RichSinkFunction<Trip> implements Serializable {
 					synchronizedCopy = new ArrayList<Trip>(queue);
 					queue.clear();
 					for (Trip tripData : synchronizedCopy) {
-						logger.info(
-								"tripId :: " + tripData.getTripId() + " co2Emi ::" + tripData.getTripCalC02Emission());
 						tripDao.insert(tripData, statement);
-						logger.info("Trip records inserted to trip table :: "+tripData.getTripId());
+						logger.info("Trip records inserted to trip table :: {}",tripData.getTripId());
 					}
 				}
 			}
 		} catch (Exception e) {
-			logger.error("Issue while calling invoke() in TripSink :: " + e);
+			logger.error("Issue while calling invoke() in TripSink ::{} " ,e);
 			e.printStackTrace();
+			//remove try catch and throw exception
 		}
 
 	}
@@ -96,15 +96,20 @@ public class TripSink extends RichSinkFunction<Trip> implements Serializable {
 	// @SuppressWarnings("unchecked")
 	@Override
 	public void close() throws Exception {
-		super.close();
-		if (statement != null) {
-			statement.close();
-		}
-		logger.info("In close() of tripSink :: ");
+		try {
+			super.close();
+			if (Objects.nonNull(statement)) {
+				statement.close();
+			}
+			logger.debug("In close() of tripSink :: ");
 
-		if (connection != null) {
-			logger.info("Releasing connection from Trip Job");
-			connection.close();
+			if (Objects.nonNull(connection)) {
+				logger.info("Releasing connection from Trip Job");
+				connection.close();
+			}
+		} catch (Exception e) {
+			logger.error("Issue while Trip connection close ::{}",e.getMessage());
+			throw e;
 		}
 	}
 	

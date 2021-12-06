@@ -24,7 +24,7 @@ namespace net.atos.daf.ct2.vehicleservice.Entity
             vehicle.Tcu_Brand = null;
             vehicle.Tcu_Version = null;
             vehicle.Is_Tcu_Register = false;
-            vehicle.Reference_Date = null;
+            vehicle.Reference_Date = DateTime.Now;
             vehicle.Organization_Id = request.OrganizationId;
             // vehicle.VehiclePropertiesId = null;
             return vehicle;
@@ -44,7 +44,7 @@ namespace net.atos.daf.ct2.vehicleservice.Entity
             vehicle.Tcu_Brand = null;
             vehicle.Tcu_Version = null;
             vehicle.Is_Tcu_Register = false;
-            vehicle.Reference_Date = null;
+            vehicle.Reference_Date = DateTime.Now;
             vehicle.Organization_Id = request.OrganizationId;
             return vehicle;
         }

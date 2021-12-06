@@ -37,7 +37,7 @@ export class VehicleDetailsComponent implements OnInit {
   titleVisible: boolean = false;
   showLoadingIndicator: any = false;
   // localStLanguage: any;
-  actionBtn:any; 
+  actionBtn:any;
   updateViewStatus: boolean = false;
   adminAccessType: any = {};
   userType: any = localStorage.getItem("userType");
@@ -51,7 +51,7 @@ export class VehicleDetailsComponent implements OnInit {
       lblAllVehicleDetails: "All Vehicle Details",
       lblNoRecordFound: "No Record Found",
       lblVehicle: "Vehicle",
-      lblVIN: "VIN"      
+      lblVIN: "VIN"
     };
     this.translationData = Object.assign( {}, this.translationData, defaultValues );
   }
@@ -59,7 +59,7 @@ export class VehicleDetailsComponent implements OnInit {
   onClose() {
     this.titleVisible = false;
   }
-  
+
   ngOnInit() {
     this.adminAccessType = JSON.parse(localStorage.getItem("accessType"));
     // this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
@@ -78,9 +78,9 @@ export class VehicleDetailsComponent implements OnInit {
     //   // this.loadVehicleData();
     // });
     this.initData = this.updateStatusName(this.relationshipVehiclesData);
-    // this.updateDataSource(this.relationshipVehiclesData)
+    this.updateDataSource(this.relationshipVehiclesData)
   }
-  
+
   // processTranslation(transData: any) {
   //   this.translationData = transData.reduce((acc: any, cur: any) => ({ ...acc, [cur.name]: cur.value }),{});
   // }
@@ -101,27 +101,27 @@ export class VehicleDetailsComponent implements OnInit {
         item.viewstatus = 'Opt-In'
       }  else if(item.status == 'O'){
         item.viewstatus = 'Opt-Out'
-      }  
-    }); 
+      }
+    });
     return relationshipVehiclesData;
   }
 
-  // updateDataSource(tableData: any) {
-  //   this.initData = tableData;
-  //   setTimeout(() => {
-  //     this.dataSource = new MatTableDataSource(this.initData);
-  //     this.dataSource.paginator = this.paginator;
-  //     this.dataSource.sort = this.sort;
-  //     this.dataSource.sortData = (data: String[], sort: MatSort) =>{
-  //       const isAsc = sort.direction === 'asc';
-  //       let columnName = this.sort.active;
-  //       return data.sort((a: any, b: any) => {
-  //         return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
-  //       });
-  //     }
+  updateDataSource(tableData: any) {
+    this.initData = tableData;
+    setTimeout(() => {
+      this.dataSource = new MatTableDataSource(this.initData);
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+      this.dataSource.sortData = (data: String[], sort: MatSort) =>{
+        const isAsc = sort.direction === 'asc';
+        let columnName = this.sort.active;
+        return data.sort((a: any, b: any) => {
+          return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
+        });
+      }
 
-  //   });
-  // }
+    });
+  }
 
   compare(a: Number  | String, b: Number  | String, isAsc: boolean, columnName: any){
     if(columnName == "name"  || columnName == "vin"){
@@ -136,7 +136,7 @@ export class VehicleDetailsComponent implements OnInit {
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
     this.dataSource.filter = filterValue;
   }
-  
+
   hideloader() {
     // Setting display of spinner
     this.showLoadingIndicator = false;
@@ -168,7 +168,7 @@ export class VehicleDetailsComponent implements OnInit {
       this.showSuccessMessage(item.successMsg);
     }
     if(item.tableData){
-      this.initData = item.tableData;  
+      this.initData = item.tableData;
     }
     // this.updateDataSource(this.initData);
   }
@@ -184,14 +184,14 @@ export class VehicleDetailsComponent implements OnInit {
 //   exportAsCSV(){
 //     console.log("Yes, It is working Properly");
 //     this.matTableExporter.exportTable('csv', {fileName:'VehicleMgmt_Data', sheet: 'sheet_name'});
-       
+
 // }
 
-exportAsCSV(){  
+exportAsCSV(){
   const title = 'Vehicle Details';
-  
+
   const header = ['Vehicle','VIN', 'Registration Number', 'Model', 'Relationship','Status'];
-  
+
   //Create workbook and worksheet
   let workbook = new Workbook();
   let worksheet = workbook.addWorksheet('Vehicle Management');
@@ -199,8 +199,8 @@ exportAsCSV(){
   let titleRow = worksheet.addRow([title]);
   worksheet.addRow([]);
   titleRow.font = { name: 'sans-serif', family: 4, size: 14, underline: 'double', bold: true }
- 
-  worksheet.addRow([]);  
+
+  worksheet.addRow([]);
   let headerRow = worksheet.addRow(header);
   headerRow.eachCell((cell, number) => {
     cell.fill = {
@@ -223,42 +223,42 @@ exportAsCSV(){
       status1 = 'Opt-In'
     }  else if(item.status == 'O'){
       status1 = 'Opt-Out'
-    }  
-    worksheet.addRow([item.name,item.vin, item.licensePlateNumber, item.modelId, item.relationShip, status1]);   
-  }); 
-  worksheet.mergeCells('A1:D2'); 
-  for (var i = 0; i < header.length; i++) {    
-    worksheet.columns[i].width = 20;      
+    }
+    worksheet.addRow([item.name,item.vin, item.licensePlateNumber, item.modelId, item.relationShip, status1]);
+  });
+  worksheet.mergeCells('A1:D2');
+  for (var i = 0; i < header.length; i++) {
+    worksheet.columns[i].width = 20;
   }
-  worksheet.addRow([]); 
+  worksheet.addRow([]);
   workbook.xlsx.writeBuffer().then((data) => {
     let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     fs.saveAs(blob, 'VehicleMgmt_Data.xlsx');
- }) 
+ })
 }
 
 
 exportAsPdf() {
   let DATA = document.getElementById('vehicleMgmtData');
-    
+
   html2canvas( DATA , { onclone: (document) => {
     this.actionBtn = document.getElementsByClassName('action');
     for (let obj of this.actionBtn) {
-      obj.style.visibility = 'hidden';  }       
+      obj.style.visibility = 'hidden';  }
   }})
-  .then(canvas => {  
-      
+  .then(canvas => {
+
       let fileWidth = 208;
       let fileHeight = canvas.height * fileWidth / canvas.width;
-      
+
       const FILEURI = canvas.toDataURL('image/png')
       let PDF = new jsPDF('p', 'mm', 'a4');
       let position = 0;
       PDF.addImage(FILEURI, 'PNG', 0, position, fileWidth, fileHeight)
-      
+
       PDF.save('VehicleMgmt_Data.pdf');
       PDF.output('dataurlnewwindow');
-  });     
+  });
 }
 
 }

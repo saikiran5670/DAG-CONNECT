@@ -12,12 +12,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Objects;
@@ -97,11 +92,11 @@ public class Utils implements Serializable {
 
     public static long convertDateToMillis(String dateTime) {
         LocalDateTime localTime = LocalDateTime.parse(dateTime, formatter);
-        return localTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+        return localTime.atZone(ZoneOffset.UTC).toInstant().toEpochMilli();
     }
 
     public static String convertMillisecondToDateTime(Long timeInMillis) {
-        LocalDateTime ldt = LocalDateTime.ofInstant(Instant.ofEpochMilli(timeInMillis), ZoneId.systemDefault());
+        LocalDateTime ldt = LocalDateTime.ofInstant(Instant.ofEpochMilli(timeInMillis), ZoneOffset.UTC);
         return ldt.format(formatter);
     }
 

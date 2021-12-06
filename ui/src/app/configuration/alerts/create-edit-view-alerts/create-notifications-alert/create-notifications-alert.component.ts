@@ -20,6 +20,7 @@ export class CreateNotificationsAlertComponent implements OnInit, OnChanges {
   @Input() translationData: any = {};
   @Input() selectedRowData: any;
   @Input()  formGroup: FormGroup;
+  @Input() panelOpenState: any;
   notificationForm: FormGroup;
   FormArrayItems: FormArray;
   FormEmailArray: FormArray;
@@ -43,6 +44,7 @@ export class CreateNotificationsAlertComponent implements OnInit, OnChanges {
   @Input() criticalLevel: any;
   @Input() warningLevel: any;
   @Input() advisoryLevel: any;
+  @Output() closePanel = new EventEmitter<any>();
   criticalFlag: boolean = false;
   warningFlag: boolean = false;
   advisoryFlag: boolean = false;
@@ -641,6 +643,9 @@ getLevelValues(){
     console.log("deleted");
     this.wsIndex = this.wsIndex - 1;
     this.wsCount = this.wsCount - 1;
+    if(this.actionType == "edit"){
+      this.deleteSingleNotifcation(index);
+    }
   }
 
   deleteEmailNotificationRow(index: number) {
@@ -648,6 +653,9 @@ getLevelValues(){
     console.log("deleted");
     this.emailIndex = this.emailIndex - 1;
     this.emailCount = this.emailCount - 1;
+    if(this.actionType == "edit"){
+      this.deleteSingleNotifcation(index);
+    }
   }
 
   deleteSMSNotificationRow(index: number) {
@@ -655,6 +663,20 @@ getLevelValues(){
     console.log("deleted");
     this.smsIndex = this.smsIndex - 1;
     this.smsCount = this.smsCount - 1;
+    if(this.actionType == "edit"){
+      this.deleteSingleNotifcation(index);
+    }
+  }
+  
+  deleteSingleNotifcation(index1){
+
+    if((this.FormWebArray == undefined || this.FormWebArray.controls.length ==0 )&& 
+      (this.FormEmailArray == undefined || this.FormEmailArray.controls.length ==0) &&
+       (this.FormSMSArray == undefined || this.FormSMSArray.controls.length ==0)){
+      this.panelOpenState = false;
+      this.selectedRowData.notifications = [];
+      this.closePanel.emit(this.panelOpenState);
+    }
   }
 
   setDefaultValueForws() {
@@ -1181,7 +1203,7 @@ getLevelValues(){
     }
     else if (this.actionType == 'edit') {
       this.notifications = [];
-      if(!this.criticalFlag && !this.warningFlag && !this.advisoryFlag){
+      if(!this.criticalFlag && !this.warningFlag && !this.advisoryFlag && this.notificationReceipients.length >0){
       this.notifications = [
         {
           "alertUrgencyLevelType": "C",
@@ -1198,7 +1220,7 @@ getLevelValues(){
       ]
     }
 
-    if(this.criticalFlag){
+    if(this.criticalFlag  && this.notificationReceipients.length >0){
       let objData = 
         {
           "alertUrgencyLevelType": "C",
@@ -1214,7 +1236,7 @@ getLevelValues(){
         }
         this.notifications.push(objData);
     }
-    if(this.warningFlag){
+    if(this.warningFlag  && this.notificationReceipients.length >0){
       let objData = 
         {
           "alertUrgencyLevelType": "W",
@@ -1230,7 +1252,7 @@ getLevelValues(){
         }
         this.notifications.push(objData);
     }
-    if(this.advisoryFlag){
+    if(this.advisoryFlag  && this.notificationReceipients.length >0){
       let objData = 
         {
           "alertUrgencyLevelType": "A",

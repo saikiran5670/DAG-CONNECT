@@ -777,7 +777,7 @@ namespace net.atos.daf.ct2.alert.repository
                     aleurg.id as aleurg_id,
                     aleurg.alert_id as aleurg_alert_id,
                     aleurg.urgency_level_type as aleurg_urgency_level_type,
-                    aleurg.threshold_value as aleurg_threshold_value,
+                    aleurg.threshold_value::text as aleurg_threshold_value,
                     aleurg.unit_type as aleurg_unit_type,
                     aleurg.day_type as aleurg_day_type,
                     aleurg.period_type as aleurg_period_type,
@@ -800,7 +800,7 @@ namespace net.atos.daf.ct2.alert.repository
                     alefil.alert_id as alefil_alert_id,
                     alefil.alert_urgency_level_id as alefil_alert_urgency_level_id,
                     alefil.filter_type as alefil_filter_type,
-                    alefil.threshold_value as alefil_threshold_value,
+                    alefil.threshold_value::text as alefil_threshold_value,
                     alefil.unit_type as alefil_unit_type,
                     alefil.landmark_type as alefil_landmark_type,
                     alefil.ref_id as alefil_ref_id,
@@ -935,7 +935,7 @@ namespace net.atos.daf.ct2.alert.repository
                 return repositoryMapper.GetAlertList(alertResult);
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -1535,9 +1535,15 @@ namespace net.atos.daf.ct2.alert.repository
                                             ale.id as AlertId
                                             from master.alert ale
                                             inner join master.group grp
-                                            on ale.vehicle_group_id = grp.id where state=@state  and created_by = @created_by ");
+                                            on ale.vehicle_group_id = grp.id where state=@state  and created_by = @created_by
+                                            and ale.type = ANY(@featureEnums)");
                 parameterAlert.Add("@state", Convert.ToChar(AlertState.Active));
                 parameterAlert.Add("@created_by", offlinePushNotificationFilter.AccountId);
+                parameterAlert.Add("@featureIds", offlinePushNotificationFilter.FeatureIds);
+                var queryStatementFeature = @"select enum from translation.enumtranslation where feature_id = ANY(@featureIds)";
+                List<string> resultFeaturEnum = (List<string>)await _dataAccess.QueryAsync<string>(queryStatementFeature, parameterAlert);
+                parameterAlert.Add("@featureEnums", resultFeaturEnum);
+                parameterAlert.Add("@vins", offlinePushNotificationFilter.Vins);
 
                 if (offlinePushNotificationFilter.OrganizationId > 0)
                 {
@@ -1570,7 +1576,9 @@ namespace net.atos.daf.ct2.alert.repository
                                     inner join master.vehicle veh
                                     on triale.vin = veh.vin 
                                     where  triale.alert_generated_time > @alterGeneratedTime
-                                    and triale.alert_id = ANY(@alertIDs)");
+                                    and triale.alert_id = ANY(@alertIDs)
+                                    and triale.type = ANY(@featureEnums)
+                                    and triale.vin =ANY(@vins)");
                 List<NotificationDisplayProp> notificationDisplayProps = (List<NotificationDisplayProp>)await _dataMartdataAccess.QueryAsync<NotificationDisplayProp>(queryStringNoti.ToString(), parameterAlert);
                 List<NotificationDisplayProp> latestTop5Notification = notificationDisplayProps.OrderByDescending(x => x.AlertGeneratedTime).Take(5).ToList();
                 foreach (var item in latestTop5Notification)

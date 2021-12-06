@@ -50,12 +50,19 @@ export class CreateViewEditRelationshipComponent implements OnInit {
   userType: any;
   createButtonClicked: boolean = false;
   backToOrgRel: boolean = false;
+  showLoadingIndicator: boolean = false;
   constructor(private _formBuilder: FormBuilder, private roleService: RoleService, private organizationService: OrganizationService, private router: Router) { }
 
   ngAfterViewInit() {}
 
   ngOnInit() {
-    this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
+    if(localStorage.getItem('contextOrgId')){
+      this.organizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
+    }
+    else{
+      this.organizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    }
+ 
     this.userType = localStorage.getItem("userType");
     this.relationshipFormGroup = this._formBuilder.group({
       relationshipName: ['', [Validators.required, Validators.maxLength(50),CustomValidators.noWhitespaceValidator]],
@@ -72,7 +79,7 @@ export class CreateViewEditRelationshipComponent implements OnInit {
     let objData = {
       organization_Id: this.organizationId
     }
-
+    this.showLoadingIndicator=true;
     this.organizationService.getLevelcode().subscribe((obj: any)=>{
     this.roleService.getFeatures(objData).subscribe((data) => {
       this.levelList = obj["levels"];
@@ -114,8 +121,13 @@ export class CreateViewEditRelationshipComponent implements OnInit {
         }
       });
       this.featuresData = data;
+      this.showLoadingIndicator=false;
+    }, (error) => {
+      this.showLoadingIndicator=false;
     });
-    }, (error) => { });
+    }, (error) => { 
+      this.showLoadingIndicator=false;
+     });
 
     this.doneFlag = this.createStatus ? false : true;
     this.breadcumMsg = this.getBreadcum();

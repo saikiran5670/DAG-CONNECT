@@ -10,6 +10,7 @@ namespace net.atos.daf.ct2.kafkacdc.repository
     {
         Task<List<VehicleAlertRef>> GetVehicleGroupAlertRefByAlertIds(List<int> alertId);
         Task<List<VehicleAlertRef>> GetVehiclesGroupFromAlertConfiguration(int vehicleGroupId, int organizationId);
+        Task<List<AlertGroupId>> GetAlertIdsandVGIds(int groupIds, List<int> featureIds);
 
     }
 }

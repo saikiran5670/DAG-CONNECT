@@ -9,5 +9,6 @@ namespace net.atos.daf.ct2.reports.entity
         public string VIN { get; set; }
         public List<int> FeatureIds { get; set; }
         public string AlertVIN { get; set; }
+        public int OrganizationId { get; set; }
     }
 }

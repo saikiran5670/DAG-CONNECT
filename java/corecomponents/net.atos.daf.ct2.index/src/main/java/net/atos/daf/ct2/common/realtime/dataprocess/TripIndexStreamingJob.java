@@ -27,14 +27,16 @@ public class TripIndexStreamingJob {
 		ParameterTool envParams = null;
 
 		try {
-			logger.info(" In TripIndexDataJob :: ");
+			logger.debug(" In TripIndexDataJob :: ");
 			
 			ParameterTool params = ParameterTool.fromArgs(args);
 			if (params.get("input") != null)
 				envParams = ParameterTool.fromPropertiesFile(params.get("input"));
 
-			final StreamExecutionEnvironment env = FlinkUtil.createStreamExecutionEnvironment(envParams,
-					envParams.get(DafConstants.INDEX_TRIPJOB));
+			final StreamExecutionEnvironment env = envParams.get("flink.streaming.evn").equalsIgnoreCase("default") ?
+					StreamExecutionEnvironment.getExecutionEnvironment() :
+					FlinkUtil.createStreamExecutionEnvironment(envParams,envParams.get(DafConstants.INDEX_TRIPJOB));
+
 			env.getConfig().setGlobalJobParameters(envParams);
 
 			// Call Audit Trail
@@ -45,7 +47,7 @@ public class TripIndexStreamingJob {
 
 			SingleOutputStreamOperator<IndexTripData> indexTripData = flinkKafkaConsumer
 					.connectToKafkaTopic(envParams, env)
-					.rebalance()
+					.keyBy(rec ->rec.getValue().getVin()!=null ? rec.getValue().getVin() : rec.getValue().getVid())
 					.map(new MapFunction<KafkaRecord<Index>, IndexTripData>() {
 						/**
 						 * 

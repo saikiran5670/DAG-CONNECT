@@ -74,7 +74,7 @@
               </div>
             </div>
             </div>
-            <div fxLayout="row" id="charts-overallPerformancePanel" fxLayoutAlign="space-between" fxLayoutGap="10px">
+            <div fxLayout="row" id="charts-overallPerformancePanel" fxLayoutAlign="space-between" fxLayoutGap="0px">
               <div style="display: block">
                 <div class="text-center"><span><b>{{ translationData.lblEcoScore  }}</b></span></div>
                 <canvas #chart1 baseChart
@@ -83,7 +83,7 @@
                   [chartType]="doughnutChartType"
                   [options]="doughnutChartOptions"
                   [plugins]="pluginsCommon"
-                  [colors]="doughnutColors">
+                  [colors]="doughnutColors" height="125" width="250">
                 </canvas>
               </div>
               <div style="display: block" class="relative">
@@ -94,7 +94,7 @@
                   [chartType]="doughnutChartType"
                   [options]="doughnutChartOptions"
                   [plugins]="pluginsCommon"
-                  [colors]="doughnutColors">
+                  [colors]="doughnutColors" height="125" width="250">
                 </canvas>
               </div>
               <div style="display: block" class="relative">
@@ -105,7 +105,7 @@
                   [chartType]="doughnutChartType"
                   [options]="doughnutChartOptionsA"
                   [plugins]="pluginsCommon"
-                  [colors]="doughnutColorsAnticipationScore">
+                  [colors]="doughnutColorsAnticipationScore" height="125" width="250">
                 </canvas>
               </div>
                <div style="display: block" class="relative">
@@ -116,7 +116,7 @@
                   [chartType]="doughnutChartType"
                   [options]="doughnutChartOptions"
                   [plugins]="pluginsCommon"
-                  [colors]="doughnutColors">
+                  [colors]="doughnutColors" height="125" width="250">
                 </canvas>
               </div>
             </div>

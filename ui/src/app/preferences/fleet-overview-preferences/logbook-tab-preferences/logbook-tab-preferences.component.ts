@@ -20,6 +20,7 @@ export class LogbookTabPreferencesComponent implements OnInit {
   selectionForLoogbookColumns = new SelectionModel(true, []);
   reqField: boolean = false;
   requestSent:boolean = false;
+  showLoadingIndicator: boolean = false;
 
   constructor(private reportService: ReportService, private router: Router) { }
 
@@ -60,12 +61,15 @@ export class LogbookTabPreferencesComponent implements OnInit {
   }
 
   loadLogbookPreferences(){
+    this.showLoadingIndicator=true;
     this.reportService.getReportUserPreference(this.reportId).subscribe((prefData : any) => {
+      this.showLoadingIndicator=false;
       this.initData = prefData['userPreferences'];
       this.resetColumnData();
       this.getTranslatedColumnName(this.initData);
       this.validateRequiredField();
     }, (error)=>{
+      this.showLoadingIndicator=false;
       this.initData = [];
       this.resetColumnData();
     });
@@ -184,8 +188,9 @@ export class LogbookTabPreferencesComponent implements OnInit {
         reportId: this.reportId,
         attributes: _dataArr
       }
-
+      this.showLoadingIndicator=true;
       this.reportService.updateReportUserPreference(objData).subscribe((_tripPrefData: any) => {
+        this.showLoadingIndicator=false;
         this.loadLogbookPreferences();
         this.setLogbookFlag.emit({ flag: false, msg: this.getSuccessMsg() });
         if ((this.router.url).includes("fleetoverview/logbook")) {
@@ -193,6 +198,7 @@ export class LogbookTabPreferencesComponent implements OnInit {
         }
         this.requestSent = false;
       }, (error) => {
+        this.showLoadingIndicator=false;
         console.log(error);
       });
     }

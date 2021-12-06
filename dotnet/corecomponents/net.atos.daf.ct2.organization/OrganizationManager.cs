@@ -53,6 +53,10 @@ namespace net.atos.daf.ct2.organization
             return await _organizationRepository.KeyHandOverEvent(keyHandOver);
         }
 
+        public async Task<int> GetOrgId(string vin)
+        {
+            return await _organizationRepository.GetOrgId(vin);
+        }
         // public async Task<int> CreateVehicleParty(List<Customer> customers)
         // {
         //     return await organizationRepository.CreateVehicleParty(customers);

@@ -39,6 +39,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
   prefUnitFormat: any = 'dunit_Metric';
   unitValkm: string = '';
   filterInvoked: boolean = false;
+  showLoadingIndicator: any = false;
 
   constructor(private messageService: MessageService, private reportService: ReportService, private fleetMapService: FleetMapService) {
     this.loadData();
@@ -67,6 +68,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
   showCharts:boolean = false;
   loadData(){
     let localStLanguage = JSON.parse(localStorage.getItem("language"));
+    this.showLoadingIndicator = true;
     let objData = {
       "groupId": ['all'],
       "alertLevel": ['all'],
@@ -88,7 +90,14 @@ export class FleetOverviewSummaryComponent implements OnInit {
       this.showCharts = true;
     }, (error) => {
       this.resetSummary();
+      this.hideloader();
     });
+  }
+
+
+  hideloader() {
+    // Setting display of spinner
+    this.showLoadingIndicator = false;
   }
 
   barChartOptions: ChartOptions = {

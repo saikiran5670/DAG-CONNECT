@@ -198,5 +198,10 @@ namespace net.atos.daf.ct2.notificationengine
         {
             return await _notificationIdentifierRepository.GetEligibleAccountForAlert(alertMessageEntity);
         }
+
+        public async Task<List<string>> GetFeatureEnumForAlert(List<int> featureIds)
+        {
+            return await _notificationIdentifierRepository.GetFeatureEnumForAlert(featureIds);
+        }
     }
 }

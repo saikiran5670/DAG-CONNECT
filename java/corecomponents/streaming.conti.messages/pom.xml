@@ -32,6 +32,11 @@
     </properties>
 
     <dependencies>
+    <dependency>
+	<groupId>net.atos</groupId>
+	<artifactId>daf.postgre.connection</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	</dependency>
     
     <!-- <dependency>
             <groupId>net.atos.daf.ct2</groupId>

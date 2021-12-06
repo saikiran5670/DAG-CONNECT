@@ -7,6 +7,8 @@ using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using net.atos.daf.ct2.confluentkafka;
+using net.atos.daf.ct2.visibility;
+using net.atos.daf.ct2.vehicle;
 
 namespace net.atos.daf.ct2.kafkacdc.test
 {
@@ -22,6 +24,8 @@ namespace net.atos.daf.ct2.kafkacdc.test
         private readonly IConfiguration _configuration;
         private readonly KafkaConfiguration _kafkaConfig;
         private readonly VehicleCdcManager _vehicleCdcManager;
+        private readonly IVisibilityManager _visibilityManager;
+        private readonly IVehicleManager _vehicleManager;
         private readonly IVehicleManagementAlertCDCManager _vehicleMgmAlertCdcManager;
 
         public AlertCDCTest()
@@ -31,14 +35,15 @@ namespace net.atos.daf.ct2.kafkacdc.test
             string connectionString = _configuration.GetConnectionString("DevAzure");
             string datamartconnectionString = _configuration.GetConnectionString("DevAzureDatamart");
             _dataAccess = new PgSQLDataAccess(connectionString);
+            //_visibilityManager = new VisibilityManager(visibilityManager, vehicleManager);
             _datamartDataacess = new PgSQLDataMartDataAccess(datamartconnectionString);
             _vehicleAlertRepository = new AlertMgmAlertCdcRepository(_dataAccess, _datamartDataacess);
             _configuration.GetSection("KafkaConfiguration").Bind(_kafkaConfig);
-            _vehicleAlertRefManager = new AlertMgmAlertCdcManager(_vehicleAlertRepository, _configuration);
+            _vehicleAlertRefManager = new AlertMgmAlertCdcManager(_vehicleAlertRepository, _configuration, _visibilityManager);
             var vehicleCdcrepository = new VehicleCdcRepository(_dataAccess, _datamartDataacess);
             _vehicleCdcManager = new VehicleCdcManager(vehicleCdcrepository);
             var vehicleManagementAlertCDCRepository = new VehicleManagementAlertCDCRepository(_dataAccess, _datamartDataacess);
-            _vehicleMgmAlertCdcManager = new VehicleManagementAlertCDCManager(_vehicleAlertRepository, vehicleManagementAlertCDCRepository, _configuration);
+            //_vehicleMgmAlertCdcManager = new VehicleManagementAlertCDCManager(_vehicleAlertRepository, vehicleManagementAlertCDCRepository, _configuration);
             _landmarkrefrepo = new LandmarkAlertCdcRepository(_dataAccess, _datamartDataacess);
             _landmarkrefmanager = new LandmarkAlertCdcManager(_landmarkrefrepo, _vehicleAlertRepository, _configuration);
         }
@@ -69,12 +74,12 @@ namespace net.atos.daf.ct2.kafkacdc.test
             Assert.IsTrue(result);
         }
 
-        [TestMethod]
-        public void UpdateVehcle()
-        {
-            var result = _vehicleMgmAlertCdcManager.GetVehicleAlertRefFromVehicleId(new List<int> { 27 }, "N", 36).Result;
-            Assert.IsTrue(result);
-        }
+        //[TestMethod]
+        //public void UpdateVehcle()
+        //{
+        //    var result = _vehicleMgmAlertCdcManager.GetVehicleAlertRefFromVehicleId(new List<int> { 27 }, "N", 36, 36, 120, new List<int> { 0 }).Result;
+        //    Assert.IsTrue(result);
+        //}
         [TestMethod]
         public async Task VehicleCdcProducer()
         {

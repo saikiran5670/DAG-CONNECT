@@ -31,7 +31,6 @@ public class FlinkUtil {
 		StreamExecutionEnvironment env;
 
 		env = StreamExecutionEnvironment.getExecutionEnvironment();
-		// env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime);
 		env.setParallelism(Integer.parseInt(envParams.get(ETLConstants.PARALLELISM)));
 		
 		// start a checkpoint every 1000 ms and mode set to EXACTLY_ONCE
@@ -74,9 +73,9 @@ public class FlinkUtil {
 						  Time.of(Long.parseLong(envParams.get(ETLConstants.RESTART_FAILURE_DELAY)), TimeUnit.MILLISECONDS) // delay
 						));
 			}
-		}else{
+		}/*else{
 			env.setRestartStrategy(RestartStrategies.noRestart());
-		}
+		}*/
 		return env;
 	}
 

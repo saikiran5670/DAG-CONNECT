@@ -351,9 +351,13 @@ export class UserGroupManagementComponent implements OnInit {
       roleId: 0,
       name: ""
     }
+    this.showLoadingIndicator=true;
     this.accountService.getAccountDetails(obj).subscribe((data) => {
       data = this.makeRoleAccountGrpList(data);
       this.callToCommonTable(data, colsList, colsName, tableTitle);
+      this.showLoadingIndicator=false;
+    }, (error) => {
+      this.showLoadingIndicator=false;
     });
   }
 

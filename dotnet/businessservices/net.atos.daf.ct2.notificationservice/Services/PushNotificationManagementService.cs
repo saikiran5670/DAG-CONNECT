@@ -138,6 +138,17 @@ namespace net.atos.daf.ct2.notificationservice.services
                     vehicleDetailsAccountVisibilty = vehicleDetailsAccountVisibilty.GroupBy(c => c.Vin, (key, c) => c.FirstOrDefault()).ToList();
                     //}
                 }
+
+                List<string> featureEnum = await _notificationIdentifierManager.GetFeatureEnumForAlert(request.FeatureIds.ToList());
+
+                if (featureEnum.Any())
+                {
+                    var res = JsonConvert.SerializeObject(featureEnum);
+                    response.FeatureEnum.AddRange(
+                        JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<FeatureEnum>>(res)
+                        );
+                }
+
                 if (vehicleDetailsAccountVisibilty.Any())
                 {
                     var res = JsonConvert.SerializeObject(vehicleDetailsAccountVisibilty);

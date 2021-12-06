@@ -3,6 +3,8 @@ package net.atos.daf.ct2.postgre;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Objects;
 
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
@@ -25,7 +27,7 @@ public class FuelDeviationSink extends RichSinkFunction<FuelDeviation> implement
 	private Connection connection;
 
 	String query = "INSERT INTO livefleet.livefleet_trip_fuel_deviation(trip_id, vin, fuel_event_type, vehicle_activity_type, event_time, fuel_difference "
-			+ ", odometer_val, latitude, longitude, heading, created_at)" + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			+ ", odometer_val, latitude, longitude, heading, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 	@Override
 	public void invoke(FuelDeviation rec) throws Exception {
@@ -43,12 +45,16 @@ public class FuelDeviationSink extends RichSinkFunction<FuelDeviation> implement
 			statement.setDouble(10, rec.getGpsHeading());
 			statement.setDouble(11, TimeFormatter.getInstance().getCurrentUTCTime());
 
-			logger.info("FuelDeviation data for veh: " + rec);
+			logger.info("FuelDeviation data for veh::{} ", rec);
 			statement.execute();
-		} catch (Exception e) {
-			logger.error("Issue while inserting data to fuelDeviation table :{} ", e.getMessage());
+		}  catch (SQLException e) {
+			logger.error("Sql Issue while inserting data to fuelDeviation table ::{} ", e.getMessage());
+			logger.error("Sql Issue while inserting fuelDeviation record :: {}", statement);
+			throw e;
+		}catch (Exception e) {
+			logger.error("Issue while inserting data to fuelDeviation table ::{} ", e.getMessage());
 			logger.error("Issue while inserting to fuelDeviation record :: {}", statement);
-			logger.error("Issue while inserting to fuelDeviation, connection ::{}, FuelDeviation rec :{} " , connection, rec);
+			logger.error("Issue while inserting to fuelDeviation, connection ::{}, FuelDeviation rec ::{} " , connection, rec);
 			e.printStackTrace();
 		}
 	}
@@ -69,16 +75,16 @@ public class FuelDeviationSink extends RichSinkFunction<FuelDeviation> implement
 					envParams.get(FuelDeviationConstants.DATAMART_POSTGRE_DATABASE_NAME),
 					envParams.get(FuelDeviationConstants.DATAMART_POSTGRE_USER),
 					envParams.get(FuelDeviationConstants.DATAMART_POSTGRE_PASSWORD),envParams.get(FuelDeviationConstants.POSTGRE_SQL_DRIVER));
-			logger.info("In FuelDeviation sink connection done : " + connection);
+			logger.info("In FuelDeviation sink connection done ::{} ", connection);
 			statement = connection.prepareStatement(query);
 		} catch (Exception e) {
-			logger.error("Issue while establishing Postgre connection in FuelDeviation streaming Job :: " + e);
-			logger.error("serverNm :: " + envParams.get(FuelDeviationConstants.DATAMART_POSTGRE_SERVER_NAME)
-					+ " port :: " + Integer.parseInt(envParams.get(FuelDeviationConstants.DATAMART_POSTGRE_PORT)));
-			logger.error("databaseNm :: " + envParams.get(FuelDeviationConstants.DATAMART_POSTGRE_DATABASE_NAME)
-					+ " user :: " + envParams.get(FuelDeviationConstants.DATAMART_POSTGRE_USER) + " pwd :: "
-					+ envParams.get(FuelDeviationConstants.DATAMART_POSTGRE_PASSWORD));
-			logger.error("connection :: " + connection);
+			logger.error("Issue while establishing Postgre connection in FuelDeviation streaming Job ::{} ", e);
+			logger.error("serverNm :: {}, port :: {} ", envParams.get(FuelDeviationConstants.DATAMART_POSTGRE_SERVER_NAME)
+					, Integer.parseInt(envParams.get(FuelDeviationConstants.DATAMART_POSTGRE_PORT)));
+			logger.error("databaseNm ::{}, user ::{}, pwd :: {} ", envParams.get(FuelDeviationConstants.DATAMART_POSTGRE_DATABASE_NAME)
+					, envParams.get(FuelDeviationConstants.DATAMART_POSTGRE_USER)
+					, envParams.get(FuelDeviationConstants.DATAMART_POSTGRE_PASSWORD));
+			logger.error("connection ::{} ", connection);
 			throw e;
 		}
 
@@ -86,15 +92,20 @@ public class FuelDeviationSink extends RichSinkFunction<FuelDeviation> implement
 
 	@Override
 	public void close() throws Exception {
-		super.close();
-		if (statement != null) {
-			statement.close();
-		}
-		logger.info("In close() of FuelDeviationSink :: ");
+		try {
+			super.close();
+			if(Objects.nonNull(statement)) {
+				statement.close();
+			}
+			logger.debug("In close() of FuelDeviationSink :: ");
 
-		if (connection != null) {
-			logger.info("Releasing connection from FuelDeviation Job");
-			connection.close();
+			if (Objects.nonNull(connection)) {
+				logger.info("Releasing connection from FuelDeviation Job");
+				connection.close();
+			}
+		} catch (Exception e) {
+			logger.error("Issue while calling close in FuelDeviation streaming Job ::{} ", e);
+			throw e;
 		}
 
 	}

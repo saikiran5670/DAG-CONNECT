@@ -265,16 +265,16 @@ export class FleetMapService {
           bubble = new H.ui.InfoBubble(evt.target.getGeometry(), {
             content: `<table style='width: 350px;'>
             <tr>
-              <td style='width: 100px;'>POI Name:</td> <td><b>${element.poiName}</b></td>
+              <td style='width: 100px;'>POI Name:</td> <td><b>${element.name !== undefined && element.name != ''  ? element.name : '-'}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>Category:</td> <td><b>${element.categoryName}</b></td>
+              <td style='width: 100px;'>Category:</td> <td><b>${ element.categoryName !== undefined && element.categoryName != '' ? element.categoryName : '-' }</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>Sub-Category:</td> <td><b>${element.subCategoryName != '' ? element.subCategoryName : '-'}</b></td>
+              <td style='width: 100px;'>Sub-Category:</td> <td><b>${element.subCategoryName !== undefined && element.subCategoryName != '' ? element.subCategoryName : '-'}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>Address:</td> <td><b>${element.poiAddress != '' ? element.poiAddress : '-'}</b></td>
+              <td style='width: 100px;'>Address:</td> <td><b>${element.address !== undefined && element.address != '' ? element.address : '-'}</b></td>
             </tr>
           </table>`
           });

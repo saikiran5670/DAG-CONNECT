@@ -47,6 +47,7 @@ export class FuelDeviationPreferencesComponent implements OnInit {
   accountPreference: any;
   prefUnitFormat: any = 'dunit_Metric';
   requestSent:boolean = false;
+  showLoadingIndicator: boolean = false;
 
   constructor(private reportService: ReportService, private router: Router, private _formBuilder: FormBuilder) { }
 
@@ -110,11 +111,14 @@ export class FuelDeviationPreferencesComponent implements OnInit {
   }
 
   loadFuelDeviationReportPreferences(){
+    this.showLoadingIndicator=true;
     this.reportService.getReportUserPreference(this.reportId).subscribe((prefData : any) => {
+      this.showLoadingIndicator=false;
       this.initData = prefData['userPreferences'];
       this.resetColumnData();
       this.preparePrefData(this.initData);
     }, (error)=>{
+      this.showLoadingIndicator=false;
       this.resetColumnData();
       this.initData = [];
     });
@@ -318,13 +322,17 @@ export class FuelDeviationPreferencesComponent implements OnInit {
         reportId: this.reportId,
         attributes: [..._summaryArr, ..._chartArr, ..._detailArr, ...parentDataAttr] //-- merge data
       }
+      this.showLoadingIndicator=true;
       this.reportService.updateReportUserPreference(objData).subscribe((prefData: any) => {
+        this.showLoadingIndicator=false;
         this.loadFuelDeviationReportPreferences();
         this.requestSent = false;
         this.setFuelDeviationReportFlag.emit({ flag: false, msg: this.getSuccessMsg() });
         if ((this.router.url).includes("fueldeviationreport")) {
           this.reloadCurrentComponent();
         }
+      }, (error) => {
+        this.showLoadingIndicator=false;
       });
     }
   }

@@ -202,16 +202,16 @@ export class ExistingTripsComponent implements OnInit {
     });
     if(this.vehicleGroupIdsSet.length > 0){
       this.vehicleGroupIdsSet.unshift(this.translationData.lblAll || 'All' );
-    };    
-    this.vinList = [];    
-    this.vehicleGroupList.forEach(item => {      
-        this.vinList.push(item.vin)      
-    });    
+    };
+    this.vinList = [];
+    this.vehicleGroupList.forEach(item => {
+        this.vinList.push(item.vin)
+    });
     // if(this.vinList.length > 0){
-    //   this.vinList.unshift(this.translationData.lblAll || 'All' );     
+    //   this.vinList.unshift(this.translationData.lblAll || 'All' );
     // };
     this.filteredVehicleList.next(this.vinList);
-    
+
     this.showLoadingIndicator = true;
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
@@ -251,7 +251,7 @@ export class ExistingTripsComponent implements OnInit {
       // this.processTranslation(data);
       this.setDefaultStartEndTime();
       this.setPrefFormatDate();
-      this.setDefaultTodayDate();    
+      this.setDefaultTodayDate();
     });
     // this.loadExistingTripData();
     this.setDefaultTodayDate();
@@ -294,7 +294,7 @@ export class ExistingTripsComponent implements OnInit {
       this.startTimeDisplay = '12:00:00 AM';
       this.endTimeDisplay = '11:59:59 PM';
       this.selectedStartTime = "12:00 AM";
-      this.selectedEndTime = "11:59 PM";   
+      this.selectedEndTime = "11:59 PM";
     }
   }
 
@@ -432,14 +432,14 @@ export class ExistingTripsComponent implements OnInit {
           date.setHours(_x);
         }
       }
-      else if(_y.split(' ')[1] == 'PM'){               
+      else if(_y.split(' ')[1] == 'PM'){
          if(_x != 12){
            date.setHours(parseInt(_x) + 12);
          }
          else{
           date.setHours(_x);
          }
-      }     
+      }
       date.setMinutes(_y.split(' ')[0]);
     } else {
       date.setHours(_x);
@@ -663,17 +663,17 @@ export class ExistingTripsComponent implements OnInit {
   vehicleGroupSelection(vehicleGroupValue: any) {
     this.vinList = [];
     // console.log("----vehicleGroupList---",this.vehicleGroupList)
-    if(vehicleGroupValue.value == "All"){   
-      this.vehicleGroupList.forEach(item => {      
-          this.vinList.push(item.vin)      
-      });        
+    if(vehicleGroupValue.value == "All"){
+      this.vehicleGroupList.forEach(item => {
+          this.vinList.push(item.vin)
+      });
     }
     this.vehicleGroupList.forEach(item => {
       // this.vehicleGroupIdsSet.push(item.vehicleGroupId)
       if (item.vehicleGroupId == vehicleGroupValue.value) {
         this.vinList.push(item.vin)
       }
-    });      
+    });
   }
 
   // ------------- Map Functions ------------------------//
@@ -1153,8 +1153,22 @@ export class ExistingTripsComponent implements OnInit {
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+      this.dataSource.sortData = (data: String[], sort: MatSort) => {
+        const isAsc = sort.direction === 'asc';
+        return data.sort((a: any, b: any) => {
+            let columnName = sort.active;
+            return this.compare(a[sort.active], b[sort.active], isAsc , columnName);
+        });
+      }
     });
   }
+  compare(a: Number | String, b: Number | String, isAsc: boolean, columnName: any) {
+
+    if(!(a instanceof Number)) a = a.toString().toUpperCase();
+    if(!(b instanceof Number)) b = b.toString().toUpperCase();
+
+  return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+}
 
   setAllAddressValues(markerArray: any) {
     if (this.markerArray.length > 0) {

@@ -116,6 +116,21 @@ public class DafConstants {
 	public static final String STORE_HISTORICAL_DATA="store.historical.data";
 	public static final String MONITOR_PROCESS="monitor.process";
 	public static final String MONITOR_HBASE_PROCESS="monitor.hbase.process";
+	
+	
+	public static final String LIVEFLEET_WARNING_INSERT = "INSERT INTO livefleet.livefleet_warning_statistics(trip_id , vin   , warning_time_stamp,	warning_class,	warning_number,	latitude,	longitude,	heading,	vehicle_health_status_type,	vehicle_driving_status_type,	driver1_id,	warning_type,	distance_until_next_service,	odometer_val,	lastest_processed_message_time_stamp,	created_at, modified_at,	message_type) VALUES ( ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+	public static final String LIVEFLEET_CURRENT_TRIP_STATISTICS_UPDATE_TEN = "UPDATE livefleet.livefleet_current_trip_statistics  SET latest_received_position_lattitude = ? , latest_received_position_longitude = ? , latest_received_position_heading = ? , latest_processed_message_time_stamp = ? , vehicle_health_status_type = ? , latest_warning_class = ? ,latest_warning_number = ? , latest_warning_type = ? , latest_warning_timestamp = ? , latest_warning_position_latitude = ? , latest_warning_position_longitude = ? WHERE trip_id = ( SELECT trip_id FROM livefleet.livefleet_current_trip_statistics WHERE vin = ? ORDER BY id DESC LIMIT 1 )";
+
+	public static final String REPAITM_MAINTENANCE_WARNING_READ = "select warning_type from livefleet.livefleet_warning_statistics where message_type=? and vin = ? and warning_class = ? and warning_number= ? AND vin IS NOT NULL order by warning_time_stamp DESC limit 1";
+
+	//public static final String LIVEFLEET_WARNING_READLIST = "select id, warning_class,	warning_number, vin from livefleet.livefleet_warning_statistics where vin = ? AND  message_type=10 and warning_type='A'  order by id DESC";
+	public static final String LIVEFLEET_WARNING_READLIST = "select id, warning_class, warning_number, vin from livefleet.livefleet_warning_statistics ws1 where vin = ? AND message_type=10 and warning_type='A' and not exists (select 1 from livefleet.livefleet_warning_statistics ws2 where ws2.vin=ws1.vin and ws2.message_type=ws1.message_type and ws2.warning_type='D' and ws2.warning_class=ws1.warning_class and ws2.warning_number=ws1.warning_number and ws2.warning_time_stamp>=ws1.warning_time_stamp) order by id DESC";
+	public static final String LIVEFLEET_WARNING_UPDATELIST = "UPDATE livefleet.livefleet_warning_statistics set warning_type='D' where id = ANY (?)";
+	public static final String LIVEFLEET_DRIVER_INSERT = "INSERT INTO livefleet.livefleet_trip_driver_activity  (trip_id    , trip_start_time_stamp , trip_end_time_stamp   , activity_date,  vin   , driver_id     , code  , start_time    , end_time      , duration      , created_at_m2m        , created_at_kafka      , created_at_dm , modified_at   , last_processed_message_time_stamp ,is_driver1, logical_code    ) VALUES ( ?, ?, ?, ?   , ?,?, ?, ?, ?, ?       , ?     , ?     , ?     , ? ,?    ,?, ?)";
+	
+	///update query
+	public static final String LIVEFLEET_WARNING_DEACTIVATE="UPDATE livefleet.livefleet_warning_statistics set warning_type='D' where vin = ? and warning_class=? and warning_number=? and warning_type='A'";
+	
 		
 		
 	

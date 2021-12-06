@@ -347,5 +347,29 @@ namespace net.atos.daf.ct2.kafkacdc.repository
             }
         }
 
+        public async Task<List<AlertGroupId>> GetAlertIdsandVGIds(int groupIds, List<int> featureIds)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@featureIds", featureIds);
+                var queryStatementFeature = @"select enum from translation.enumtranslation where feature_id = ANY(@featureIds)";
+                List<string> resultFeaturEnum = (List<string>)await _dataAccess.QueryAsync<string>(queryStatementFeature, parameter);
+                parameter.Add("@featureEnums", resultFeaturEnum);
+                parameter.Add("@groupIds", groupIds);
+                string query = @"SELECT ale.id as Alertid,ale.vehicle_group_id as GroupId
+								FROM master.alert ale
+								WHERE ale.vehicle_group_id= @groupIds AND ale.type = ANY(@featureEnums) AND ale.state<>'D';";
+
+                IEnumerable<AlertGroupId> vehicleAlertRefs = await _dataAccess.QueryAsync<AlertGroupId>(query, parameter);
+
+                return vehicleAlertRefs.AsList();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
     }
 }

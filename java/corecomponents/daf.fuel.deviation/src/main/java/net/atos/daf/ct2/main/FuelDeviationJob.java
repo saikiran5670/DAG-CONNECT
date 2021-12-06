@@ -27,20 +27,22 @@ import net.atos.daf.ct2.util.FuelDeviationAuditService;
 import net.atos.daf.ct2.util.FuelDeviationConstants;
 
 public class FuelDeviationJob {
-	private static Logger logger = LoggerFactory.getLogger(FuelDeviationJob.class);
+	private static final Logger logger = LoggerFactory.getLogger(FuelDeviationJob.class);
 
 	public static void main(String[] args) throws Exception {
 
 		ParameterTool envParams = null;
 		FuelDeviationJob fuelDeviationJob = null;
 		try {
-			logger.info(" In FuelDeviationJob :: ");
+			logger.debug(" In FuelDeviationJob :: ");
 			fuelDeviationJob = new FuelDeviationJob();
 			ParameterTool params = ParameterTool.fromArgs(args);
 			if (params.get("input") != null)
 				envParams = ParameterTool.fromPropertiesFile(params.get("input"));
 
-			final StreamExecutionEnvironment env = FlinkUtil.createStreamExecutionEnvironment(envParams);
+			final StreamExecutionEnvironment env = envParams.get("flink.streaming.evn").equalsIgnoreCase("default") ?
+					StreamExecutionEnvironment.getExecutionEnvironment() : FlinkUtil.createStreamExecutionEnvironment(envParams);
+
 			env.getConfig().setGlobalJobParameters(envParams);
 
 			fuelDeviationJob.auditFuelDevialJobDetails(envParams, "Fuel Deviation job started");
@@ -68,6 +70,7 @@ public class FuelDeviationJob {
 									return eventTm;
 								}
 							}))
+					.keyBy(rec ->rec.getValue().getVin()!=null ? rec.getValue().getVin() : rec.getValue().getVid())
 					.map(new MapFunction<KafkaRecord<Index>, FuelDeviationData>() {
 						/**
 						 * 
@@ -105,7 +108,7 @@ public class FuelDeviationJob {
 		} catch (Exception e) {
 			fuelDeviationJob.auditFuelDevialJobDetails(envParams,
 					"FuelDeviation streaming job failed ::" + e.getMessage());
-			logger.error("Issue FuelDeviationJob failed, reason :: " + e);
+			logger.error("Issue FuelDeviationJob failed, reason ::{} ", e);
 			e.printStackTrace();
 		}
 
@@ -172,7 +175,7 @@ public class FuelDeviationJob {
 			else
 				fuelStopObj.setGpsHeading(FuelDeviationConstants.ZERO_DOUBLE_VAL);
 
-			logger.info("fuelStopObj object :: {}" , fuelStopObj);
+			logger.info("fuelStopObj object :: {}", fuelStopObj);
 		} catch (Exception e) {
 			logger.error("Issue while mapping deserialized Index object to fuelDeviationDuringStop object ::{} ", e.getMessage());
 			logger.error("Issue while processing fuelDeviationDuringStop record :: {}", idxMsg);
@@ -182,13 +185,13 @@ public class FuelDeviationJob {
 	}
 
 	public void auditFuelDevialJobDetails(ParameterTool properties, String message) {
-		logger.info("Calling audit service for FuelDeviation Job :: ");
+		logger.debug("Calling audit service for FuelDeviation Job :: ");
 		try {
 			new FuelDeviationAuditService().auditTrail(properties.get(FuelDeviationConstants.GRPC_SERVER),
 					properties.get(FuelDeviationConstants.GRPC_PORT), FuelDeviationConstants.FUEL_DEVIATION_JOB_NAME,
 					message);
 		} catch (FuelDeviationAuditServiceException e) {
-			logger.info("FuelDeviation Streaming Job :: ", e.getMessage());
+			logger.error("FuelDeviation Streaming Job :: ", e.getMessage());
 		}
 
 	}

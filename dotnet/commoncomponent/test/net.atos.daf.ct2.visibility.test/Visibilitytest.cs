@@ -23,7 +23,7 @@ namespace net.atos.daf.ct2.Audittrail.test
 
             _dataAccess = new PgSQLDataAccess(connectionString);
             _visibilityRepository = new VisibilityRepository(_dataAccess);
-            _visibilityManager = new VisibilityManager(_visibilityRepository, null, null);
+            _visibilityManager = new VisibilityManager(_visibilityRepository, null, null, null);
         }
 
         [TestCategory("Unit-Test-Case")]

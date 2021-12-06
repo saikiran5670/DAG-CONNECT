@@ -75,26 +75,31 @@ namespace net.atos.daf.ct2.subscription.repository
         }
 
         //To check if Organization is already inserted
-        async Task<SubscriptionIdStatus> SubscriptionExits(int orgId, int packageId)
+        async Task<SubscriptionIdStatus> SubscriptionExits(int orgId, int packageId, string packageType)
         {
             var parameterToGetSubscribeId = new DynamicParameters();
             parameterToGetSubscribeId.Add("@organization_Id", orgId);
             parameterToGetSubscribeId.Add("@package_id", packageId);
+            parameterToGetSubscribeId.Add("@package_type", packageType);
             var data = await _dataAccess.QueryFirstOrDefaultAsync<SubscriptionIdStatus>
-                             (@"select subscription_id, state from master.subscription where organization_Id =@organization_Id and package_id=@package_id",
+                             (@"select subscription_id, state from master.subscription 
+                where organization_Id=@organization_Id and package_id=@package_id and type=@package_type",
                             parameterToGetSubscribeId);
             return data;
         }
 
         //To check if Subscription exits with orgid, packid and vinid is already inserted
-        async Task<SubscriptionIdStatus> SubscriptionExits(int orgId, int packageId, int vinId)
+        async Task<SubscriptionIdStatus> SubscriptionExits(int orgId, int packageId, int vinId, string packageType)
         {
             var parameterToGetSubscribeId = new DynamicParameters();
             parameterToGetSubscribeId.Add("@organization_Id", orgId);
             parameterToGetSubscribeId.Add("@package_id", packageId);
             parameterToGetSubscribeId.Add("@vehicle_id", vinId);
+            parameterToGetSubscribeId.Add("@package_type", packageType);
             var data = await _dataAccess.QueryFirstOrDefaultAsync<SubscriptionIdStatus>
-                             (@"select subscription_id, state from master.subscription where organization_Id =@organization_Id and package_id=@package_id and vehicle_id=@vehicle_id",
+                             (@"select subscription_id, state 
+                    from master.subscription where organization_Id =@organization_Id and package_id=@package_id and 
+                         vehicle_id=@vehicle_id and type=@package_type",
                             parameterToGetSubscribeId);
             return data;
         }
@@ -132,7 +137,7 @@ namespace net.atos.daf.ct2.subscription.repository
 
                     long subscriptionId;
                     //return subscriptionid and state from subscription table
-                    var response = await SubscriptionExits(orgid, packageDetails.Id);
+                    var response = await SubscriptionExits(orgid, packageDetails.Id, packageDetails.Type);
                     if (response != null && response.Subscription_Id != 0 && response.State.ToUpper() == "A")
                     {// Subscription exists and Active
                         return new Tuple<HttpStatusCode, SubscriptionResponse>(HttpStatusCode.BadRequest, new SubscriptionResponse("INVALID_REQUEST", objSubscription.PackageId));
@@ -223,7 +228,7 @@ namespace net.atos.daf.ct2.subscription.repository
                     foreach (var vin in objSubscription.VINs.Concat(visibleVINs))
                     {
                         int vinActivated = 0;
-                        var response = await SubscriptionExits(orgid, packageDetails.Id, vehicleIds[vin]);
+                        var response = await SubscriptionExits(orgid, packageDetails.Id, vehicleIds[vin], packageDetails.Type);
                         if (response != null && response.Subscription_Id != 0 && response.State.ToUpper() == "A")
                         {
                             return new Tuple<HttpStatusCode, SubscriptionResponse>(HttpStatusCode.BadRequest, new SubscriptionResponse("INVALID_REQUEST", objSubscription.PackageId));
@@ -402,8 +407,9 @@ namespace net.atos.daf.ct2.subscription.repository
             try
             {
                 SubscriptionResponse objSubscriptionResponse = new SubscriptionResponse();
+                var package = await GetPackageTypeById(packageId);
                 //To check if subscription_id exists and to get status
-                var response = await SubscriptionExits(orgId, packageId);
+                var response = await SubscriptionExits(orgId, packageId, package.Type);
                 if (response != null && response.Subscription_Id != 0 && response.State.ToUpper() == "A")
                 {
                     objSubscriptionResponse.Response.OrderId = response.Subscription_Id.ToString();

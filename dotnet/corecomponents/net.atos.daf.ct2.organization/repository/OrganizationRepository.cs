@@ -762,6 +762,8 @@ namespace net.atos.daf.ct2.organization.repository
                 objVehicle.Tcu_Serial_Number = null;
                 objVehicle.Tcu_Version = null;
                 objVehicle.Organization_Id = organizationId;
+                objVehicle.Name = keyHandOver.VIN.Substring(keyHandOver.VIN.Length - 8);
+                objVehicle.License_Plate_Number = string.Empty;
                 await _vehicelManager.UpdateOrgVehicleDetails(objVehicle);
             }
             catch (Exception ex)
@@ -889,6 +891,21 @@ namespace net.atos.daf.ct2.organization.repository
                 throw;
             }
             return keyHandOver;
+        }
+
+        public async Task<int> GetOrgId(string vin)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@vin", vin);
+                string query = @"SELECT organization_id FROM master.vehicle WHERE vin = @vin;";
+                return await _dataAccess.QueryFirstOrDefaultAsync<int>(query, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         // public async Task<int> CreateVehicleParty(List<Customer> customers)

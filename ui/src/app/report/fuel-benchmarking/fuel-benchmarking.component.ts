@@ -845,8 +845,9 @@ export class FuelBenchmarkingComponent implements OnInit {
           "vehicleGroupId": selectedVehicleGroup,
         }
       }
+      this.showLoadingIndicator=true;
       this.reportService.getBenchmarkDataByTimePeriod(requestObj).subscribe((data: any) => {
-        this.showLoadingIndicator = true;
+        // this.showLoadingIndicator = true;
         let withConvertedDataObj;
         withConvertedDataObj = this.reportMapService.getConvertedFuelBenchmarkingData(data, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat, this.prefTimeZone);
         //console.log("---api hit and get data for time period range---", data)
@@ -861,6 +862,9 @@ export class FuelBenchmarkingComponent implements OnInit {
             this.makeAddDisable=true;
           }
         }
+        this.hideloader();
+      }, (complete) => {
+        this.hideloader();
       });
 
     } else if (this.selectedBenchmarking == "vehicleGroup") {
@@ -884,7 +888,7 @@ export class FuelBenchmarkingComponent implements OnInit {
         "vehicleGroupId": selectedVehicleGroup,
       }
       //console.log("---VG fuel benchmarking---reuest obj-", requestObj)
-
+      this.showLoadingIndicator=true;
       this.reportService.getBenchmarkDataByVehicleGroup(requestObj).subscribe((data: any) => {
         this.showLoadingIndicator = true;
         let withConvertedDataObj;
@@ -901,6 +905,9 @@ export class FuelBenchmarkingComponent implements OnInit {
             this.makeAddDisable=true;
           }
         }
+        this.hideloader();
+      }, (complete) => {
+        this.hideloader();
       });
 
     }

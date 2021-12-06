@@ -1,4 +1,6 @@
-﻿namespace net.atos.daf.ct2.vehicle.entity
+﻿using System;
+
+namespace net.atos.daf.ct2.vehicle.entity
 {
     public class VehicleDataMart
     {
@@ -12,6 +14,7 @@
         public string Engine_Type { get; set; }
         public string Model_Type { get; set; }
         public bool IsIPPS { get; set; } = false;
-
+        public DateTime ReferenceDate { get; set; }
+        public bool IsKeyhandover { get; set; }
     }
 }

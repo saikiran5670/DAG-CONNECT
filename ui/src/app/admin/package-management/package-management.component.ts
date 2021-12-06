@@ -7,6 +7,8 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { PackageService } from 'src/app/services/package.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { MatTableDataSource } from '@angular/material/table';
+import { Util } from 'src/app/shared/util';
 
 @Component({
   selector: 'app-package-management',
@@ -43,6 +45,9 @@ export class PackageManagementComponent implements OnInit {
   tableColumnList = ['packageCode','packageName','packageDescription','packageType','packageStatus','packageFeature','returnMessage'];
   tableColumnName = ['Package Code','Package Name','Package Description','Package Type','Package Status','Package Feature','Fail Reason'];
   tableTitle = 'Rejected Driver Details';
+  dataSource: any;
+  tableData: unknown[];
+  filterValue: string;
 
   constructor(
       private translationService: TranslationService,
@@ -103,7 +108,11 @@ export class PackageManagementComponent implements OnInit {
     this.showLoadingIndicator = true;
     this.packageService.getPackages().subscribe((data : any) => {
       this.initData = data["pacakageList"];
-      this.hideloader();
+    this.dataSource = new MatTableDataSource(this.tableData);
+    Util.applySearchFilter(this.dataSource, this.tableColumnList , this.filterValue );
+
+    this.hideloader();
+
       // this.updatedTableData(this.initData);
     }, (error) => {
       this.initData = [];

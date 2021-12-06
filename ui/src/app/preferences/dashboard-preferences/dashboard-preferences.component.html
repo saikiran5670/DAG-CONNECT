@@ -71,14 +71,14 @@
                                         placeholder="{{ 'Set Target' }}">
                                     <span *ngIf="field.key =='rp_db_dashboard_fleetkpi_co2emission'" matSuffix>{{translationData.lblTon || 'Ton'}}</span>
                                     <span *ngIf="field.key =='rp_db_dashboard_fleetkpi_fuelconsumption'" matSuffix>
-                                        {{prefUnit == 'Metric' ? (translationData.lblltr100km ) :
-                                        (translationData.lblmpg)}}
+                                        {{prefUnit == 'Metric' ? (translationData.lblltr100km || 'ltr/100km' ) :
+                                        (translationData.lblmpg || 'mpg')}}
                                     </span>
                                     <span *ngIf="field.key =='rp_db_dashboard_fleetkpi_totaldistance'" matSuffix>
                                         {{prefUnit == 'Metric' ? (translationData.lblkms ) : (translationData.lblmile)}} </span>
                                     <span *ngIf="field.key =='rp_db_dashboard_fleetkpi_fuelusedidling' || 
                         field.key =='rp_db_dashboard_fleetkpi_fuelconsumed'" matSuffix>
-                                        {{prefUnit == 'Metric' ? (translationData.lbl ) : (translationData.lbl)}}
+                                        {{prefUnit == 'Metric' ? (translationData.lblltr || 'ltr' ) : (translationData.lblgal || 'gal')}}
                                     </span>
                                     <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValue').hasError('min')">
                                         {{translationData.lblNoNegativeValuesAllowed || 'No negative values allowed'}}
@@ -209,7 +209,7 @@
                                     <input [readonly]='!editDashboardFlag' matInput type="number" [formControlName]="field.key+'thresholdValue'"
                                         placeholder="{{ 'Set Target' }}">
                                     <span *ngIf="field.key == 'rp_db_dashboard_todaylivevehicle_distancebasedutilizationrate'" matSuffix>
-                                        {{prefUnit == 'Metric' ? (translationData.lblkms) : (translationData.lblmile)}}
+                                        {{prefUnit == 'Metric' ? (translationData.lblkms || 'km') : (translationData.lblmile || 'mile')}}
                                     </span>
                                     <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValue').hasError('min')">
                                         No negative values allowed
@@ -312,7 +312,7 @@
                                 class="areaWidth min-width-25-per targetSpanIcon" fxLayoutGap="0px" fxLayoutAlign="left">
                                 <mat-form-field appearance="outline" style='width: 80%'>
                                     <input [readonly]='!editDashboardFlag' matInput type="number" [formControlName]="field.key+'thresholdValue'" placeholder="{{ 'Set Target' }}">
-                                      <span matSuffix> {{prefUnit == 'Metric' ? (translationData.lblkms) : (translationData.lblmile)}}
+                                      <span matSuffix> {{prefUnit == 'Metric' ? (translationData.lblkms || 'km') : (translationData.lblmile || 'mile')}}
                                     </span>
                                     <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValue').hasError('min')">
                                        {{translationData.lblNoNegativeValuesAllowed || 'No negative values allowed' }}

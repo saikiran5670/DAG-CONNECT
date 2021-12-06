@@ -22,6 +22,6 @@ namespace net.atos.daf.ct2.vehicle.entity
         public string VIN { get; set; }
         public decimal TachoMileage { get; set; }
         public decimal RealMileage { get; set; }
-        public string RealMileageAlgorithmVersion { get; set; }
+        public string RealMileageAlgorithmVersion { get; } = "1.2";
     }
 }

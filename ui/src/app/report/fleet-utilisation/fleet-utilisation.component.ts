@@ -1625,7 +1625,17 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     return date;
   }
 
-getAllSummaryData(){ 
+  summaryHeader: any=[];
+  exportDetailTableData: any=[];
+  exportDetailTableHeader: any=[];
+getAllSummaryData(unitValkm, unitKmperday){ 
+   this.summaryHeader = [`${this.translationData.lblReportName}`, `${this.translationData.lblReportCreated}`, 
+  `${this.translationData.lblReportStartTime}`, `${this.translationData.lblReportEndTime}`, 
+  `${this.translationData.lblVehicleGroup}`, `${this.translationData.lblVehicleName}` 
+  // `${this.translationData.lblNumberOfVehicles}`, `${this.translationData.lblTotalDistance} (${unitValkm})`, 
+  // `${this.translationData.lblNumberOfTrips}`, `${this.translationData.lblAverageDistanceperDay} (${unitKmperday})`, 
+  // `${this.translationData.lblIdleDuration} (${this.translationData.lblhhmm })`
+];
     if(this.initData.length > 0){
       let numberOfTrips = 0 ; let distanceDone = 0; let idleDuration = 0; 
       let averageDistPerDay = 0; let numbeOfVehicles = 0;
@@ -1648,10 +1658,30 @@ getAllSummaryData(){
       numbeOfVehicles = this.initData.length;      
       this.summaryObj = [
         [this.translationData.lblFleetUtilizationReport || 'Fleet Utilization Report', this.reportMapService.getStartTime(Date.now(), this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
-          this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, numbeOfVehicles, distanceDone.toFixed(2),
-          numberOfTrips, averageDistPerDay.toFixed(2), idleDuration 
+          this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName //numbeOfVehicles, distanceDone.toFixed(2),
+          //numberOfTrips, averageDistPerDay.toFixed(2), idleDuration 
         ]
       ];
+      if(this.noOfVehStatus) {
+        this.summaryHeader.push(`${this.translationData.lblNumberOfVehicles}`);
+        this.summaryObj[0].push(numbeOfVehicles);
+      }
+      if(this.totalDistanceStatus){
+        this.summaryHeader.push(`${this.translationData.lblTotalDistance} (${unitValkm})`);
+        this.summaryObj[0].push(distanceDone.toFixed(2));
+      }
+      if(this.noOfTripsStatus){
+        this.summaryHeader.push(`${this.translationData.lblNumberOfTrips}`);
+        this.summaryObj[0].push(numberOfTrips);
+      }
+      if(this.avgDistanceStatus){
+        this.summaryHeader.push(`${this.translationData.lblAverageDistanceperDay} (${unitKmperday})`);
+        this.summaryObj[0].push(averageDistPerDay.toFixed(2));
+      }
+      if(this.idleDurationStatus){
+        this.summaryHeader.push(`${this.translationData.lblIdleDuration} (${this.translationData.lblhhmm })`);
+        this.summaryObj[0].push(idleDuration);
+      }
     }
   }
 
@@ -1662,89 +1692,78 @@ getAllSummaryData(){
     let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmph || 'mph') : (this.translationData.lblmph || 'mph');
     let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmi || 'mi') : (this.translationData.lblmi || 'mi');
 
-    col = [`${this.translationData.lblVehicleName || 'Vehicle Name'}`, `${this.translationData.lblVIN || 'VIN'}`, `${this.translationData.lblRegistrationNumber || 'Registration Number'}`, `${this.translationData.lblDistance || 'Distance'} (${unitValkm})`, `${this.translationData.lblNumberOfTrips || 'Number Of Trips'}`, `${this.translationData.lblTripTime || 'Trip Time'} (${this.translationData.lblhhmm || 'hh:mm'})`, `${this.translationData.lblDrivingTime || 'Driving Time'} (${this.translationData.lblhhmm || 'hh:mm'})`, `${this.translationData.lblIdleDuration || 'Idle Duration'} (${this.translationData.lblhhmm || 'hh:mm'})`, `${this.translationData.lblStopTime || 'Stop Time'} (${this.translationData.lblhhmm || 'hh:mm'})`, `${this.translationData.lblAverageDistanceperDay || 'Average Distance per Day'} (${unitKmperday})`, `${this.translationData.lblAverageSpeed || 'Average Speed'} (${unitValkmh})`, `${this.translationData.lblAverageWeightperTrip || 'Average Weight per Trip'} (${unitValTon})`, `${this.translationData.lblOdometer || 'Odometer'} (${unitValkm})`];
-    return col;
-  }
+    // col = [`${this.translationData.lblVehicleName || 'Vehicle Name'}`, `${this.translationData.lblVIN || 'VIN'}`, 
+    // `${this.translationData.lblRegistrationNumber || 'Registration Number'}`, `${this.translationData.lblDistance || 'Distance'} (${unitValkm})`,
+    //  `${this.translationData.lblNumberOfTrips || 'Number Of Trips'}`, `${this.translationData.lblTripTime || 'Trip Time'} (${this.translationData.lblhhmm || 'hh:mm'})`, 
+    //  `${this.translationData.lblDrivingTime || 'Driving Time'} (${this.translationData.lblhhmm || 'hh:mm'})`, 
+    //  `${this.translationData.lblIdleDuration || 'Idle Duration'} (${this.translationData.lblhhmm || 'hh:mm'})`, 
+    //  `${this.translationData.lblStopTime || 'Stop Time'} (${this.translationData.lblhhmm || 'hh:mm'})`, 
+    //  `${this.translationData.lblAverageDistanceperDay || 'Average Distance per Day'} (${unitKmperday})`, 
+    //  `${this.translationData.lblAverageSpeed || 'Average Speed'} (${unitValkmh})`, 
+    //  `${this.translationData.lblAverageWeightperTrip || 'Average Weight per Trip'} (${unitValTon})`, 
+    //  `${this.translationData.lblOdometer || 'Odometer'} (${unitValkm})`];
+    // return col;
+    this.exportDetailTableData = [];
+    this.exportDetailTableHeader = [];
+    this.displayedColumns.forEach(element => {
+      switch(element){
+        case 'vehiclename' :{
+          this.exportDetailTableHeader.push(this.translationData.lblVehicleName);
+          break;
+        }
+        case 'vin' :{
+          this.exportDetailTableHeader.push(this.translationData.lblVIN);
+          break;
+        }
+        case 'registrationnumber' :{
+          this.exportDetailTableHeader.push(this.translationData.lblRegistrationNumber);
+          break;
+        }
+        case 'distance' :{
+          this.exportDetailTableHeader.push(`${this.translationData.lblDistance} (${unitValkm})`);
+          break;
+        }
+        case 'numberOfTrips' :{
+          this.exportDetailTableHeader.push(this.translationData.lblNumberOfTrips);
+          break;
+        }
+        case 'tripTime' :{
+          this.exportDetailTableHeader.push(this.translationData.lblTripTime);
+          break;
+        }
+        case 'drivingTime' :{
+          this.exportDetailTableHeader.push(`${this.translationData.lblDrivingTime} (${this.translationData.lblhhmm})`);
+          break;
+        }
+        case 'idleDuration' :{
+          this.exportDetailTableHeader.push(`${this.translationData.lblIdleDuration} (${this.translationData.lblhhmm})`);
+          break;
+        }
+        case 'stopTime' :{
+          this.exportDetailTableHeader.push(`${this.translationData.lblStopTime} (${this.translationData.lblhhmm})`);
+          break;
+        }
+        case 'averageDistancePerDay' :{
+          this.exportDetailTableHeader.push(`${this.translationData.lblAverageDistanceperDay} (${unitKmperday})`);
+          break;
+        }
+        case 'averageSpeed' :{
+          this.exportDetailTableHeader.push(`${this.translationData.lblAverageSpeed} (${unitValkmh})`);
+          break;
+        }
+        case 'averageWeight' :{
+          this.exportDetailTableHeader.push(`${this.translationData.lblAverageWeightperTrip} (${unitValTon})`);
+          break;
+        }
+        case 'odometer' :{
+          this.exportDetailTableHeader.push(`${this.translationData.lblOdometer} (${unitValkm})`);
+          break;
+        }
+      }
+    });
 
-  exportAsExcelFile(){    
-  this.getAllSummaryData();
-  const title = this.translationData.lblTripFleetUtilisationReport || 'Trip Fleet Utilisation Report';
-  const summary = this.translationData.lblSummarySection || 'Summary Section';
-  const detail = this.translationData.lblDetailSection || 'Detail Section';
-  let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmi || 'mi') : (this.translationData.lblmi || 'mi');
-  let unitKmperday = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmperday || 'km/day') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmilesperday || 'miles/day') : (this.translationData.lblmilesperday || 'miles/day');
-  
-  const header = this.getPDFExcelHeader();
-  const summaryHeader = [`${this.translationData.lblReportName || 'Report Name'}`, `${this.translationData.lblReportCreated || 'Report Created'}`, `${this.translationData.lblReportStartTime|| 'Report Start Time'}`, `${this.translationData.lblReportEndTime|| 'Report End Time'}`, `${this.translationData.lblVehicleGroup || 'Vehicle Group'}`, `${this.translationData.lblVehicleName || 'Vehicle Name'}`, `${this.translationData.lblNumberOfVehicles || 'Number Of Vehicles'}`, `${this.translationData.lblTotalDistance || 'Total Distance'} (${unitValkm})`, `${this.translationData.lblNumberOfTrips || 'Number Of Trips'}`, `${this.translationData.lblAverageDistanceperDay || 'Average Distance per Day'} (${unitKmperday})`, `${this.translationData.lblIdleDuration || 'Idle Duration'} (${this.translationData.lblhhmm || 'hh:mm'})`];
-  const summaryData = this.summaryObj;
-  
-  //Create workbook and worksheet
-  let workbook = new Workbook();
-  let worksheet = workbook.addWorksheet('Trip Fleet Report');
-  //Add Row and formatting
-  let titleRow = worksheet.addRow([title]);
-  worksheet.addRow([]);
-  titleRow.font = { name: 'sans-serif', family: 4, size: 14, underline: 'double', bold: true }
- 
-  worksheet.addRow([]);  
-  let subTitleRow = worksheet.addRow([summary]);
-  let summaryRow = worksheet.addRow(summaryHeader);  
-  summaryData.forEach(element => {  
-    worksheet.addRow(element);   
-  });      
-  worksheet.addRow([]);
-  summaryRow.eachCell((cell, number) => {
-    cell.fill = {
-      type: 'pattern',
-      pattern: 'solid',
-      fgColor: { argb: 'FFFFFF00' },
-      bgColor: { argb: 'FF0000FF' }      
-    }
-    cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
-  })  
-  worksheet.addRow([]);   
-  let subTitleDetailRow = worksheet.addRow([detail]);
-  let headerRow = worksheet.addRow(header);
-  headerRow.eachCell((cell, number) => {
-    cell.fill = {
-      type: 'pattern',
-      pattern: 'solid',
-      fgColor: { argb: 'FFFFFF00' },
-      bgColor: { argb: 'FF0000FF' }
-    }
-    cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
-  })
-
- this.initData.forEach(item => {     
-   console.log("initData", this.initData);
-    worksheet.addRow([item.vehicleName,item.vin, item.registrationNumber,item.convertedDistance,
-      item.numberOfTrips,item.convertedTripTime, item.convertedDrivingTime, item.convertedIdleDuration,
-      item.convertedStopTime, item.convertedAverageDistance, item.convertedAverageSpeed, item.convertedAverageWeight, 
-      item.convertedOdometer]);   
-  }); 
-  worksheet.mergeCells('A1:D2'); 
-  subTitleRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
-  subTitleDetailRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
-  for (var i = 0; i < header.length; i++) {    
-    worksheet.columns[i].width = 20;      
-  }
-  for (var j = 0; j < summaryHeader.length; j++) {  
-    worksheet.columns[j].width = 20; 
-  }
-  worksheet.addRow([]); 
-  workbook.xlsx.writeBuffer().then((data) => {
-    let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    fs.saveAs(blob, 'Trip_Fleet_Utilisation.xlsx');
- })
-    // this.matTableExporter.exportTable('xlsx', {fileName:'Trip_Fleet_Utilisation', sheet: 'sheet_name'});
-}
-
-  exportAsPDFFile(){
-  var doc = new jsPDF('p', 'mm', 'a4');  
-  let pdfColumns = this.getPDFExcelHeader();
-  let prepare = []
     this.initData.forEach(e => {
-      var tempObj = [];
+      let tempObj: any=[];
       this.displayedColumns.forEach(element => {
         switch(element){
           case 'vehiclename' :{
@@ -1800,10 +1819,152 @@ getAllSummaryData(){
             break;
           }
         }
-      })
-
-      prepare.push(tempObj);    
+      });
+      this.exportDetailTableData.push(tempObj);
+      console.log(this.exportDetailTableData);
     });
+  }
+
+  exportAsExcelFile(){    
+  const title = this.translationData.lblTripFleetUtilisationReport || 'Trip Fleet Utilisation Report';
+  const summary = this.translationData.lblSummarySection || 'Summary Section';
+  const detail = this.translationData.lblDetailSection || 'Detail Section';
+  let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmi || 'mi') : (this.translationData.lblmi || 'mi');
+  let unitKmperday = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmperday || 'km/day') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmilesperday || 'miles/day') : (this.translationData.lblmilesperday || 'miles/day');
+  this.getAllSummaryData(unitValkm, unitKmperday);
+  this.getPDFExcelHeader();
+  // const header = this.getPDFExcelHeader();
+  //const summaryHeader = [`${this.translationData.lblReportName || 'Report Name'}`, `${this.translationData.lblReportCreated || 'Report Created'}`, `${this.translationData.lblReportStartTime|| 'Report Start Time'}`, `${this.translationData.lblReportEndTime|| 'Report End Time'}`, `${this.translationData.lblVehicleGroup || 'Vehicle Group'}`, `${this.translationData.lblVehicleName || 'Vehicle Name'}`, `${this.translationData.lblNumberOfVehicles || 'Number Of Vehicles'}`, `${this.translationData.lblTotalDistance || 'Total Distance'} (${unitValkm})`, `${this.translationData.lblNumberOfTrips || 'Number Of Trips'}`, `${this.translationData.lblAverageDistanceperDay || 'Average Distance per Day'} (${unitKmperday})`, `${this.translationData.lblIdleDuration || 'Idle Duration'} (${this.translationData.lblhhmm || 'hh:mm'})`];
+  //const summaryData = this.summaryObj;
+  
+  //Create workbook and worksheet
+  let workbook = new Workbook();
+  let worksheet = workbook.addWorksheet('Trip Fleet Report');
+  //Add Row and formatting
+  let titleRow = worksheet.addRow([title]);
+  worksheet.addRow([]);
+  titleRow.font = { name: 'sans-serif', family: 4, size: 14, underline: 'double', bold: true }
+ 
+  worksheet.addRow([]);  
+  let subTitleRow = worksheet.addRow([summary]);
+  let summaryRow = worksheet.addRow(this.summaryHeader);  
+  this.summaryObj.forEach(element => {  
+    worksheet.addRow(element);   
+  });      
+  worksheet.addRow([]);
+  summaryRow.eachCell((cell, number) => {
+    cell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FFFFFF00' },
+      bgColor: { argb: 'FF0000FF' }      
+    }
+    cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+  })  
+  worksheet.addRow([]);   
+  let subTitleDetailRow = worksheet.addRow([detail]);
+  let headerRow = worksheet.addRow(this.exportDetailTableHeader);
+  headerRow.eachCell((cell, number) => {
+    cell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FFFFFF00' },
+      bgColor: { argb: 'FF0000FF' }
+    }
+    cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+  })
+// worksheet.addRow(this.exportDetailTableData);
+ this.exportDetailTableData.forEach(item => {     
+  //  console.log("initData", this.initData);
+    // worksheet.addRow([item.vehicleName,item.vin, item.registrationNumber,item.convertedDistance,
+    //   item.numberOfTrips,item.convertedTripTime, item.convertedDrivingTime, item.convertedIdleDuration,
+    //   item.convertedStopTime, item.convertedAverageDistance, item.convertedAverageSpeed, item.convertedAverageWeight, 
+    //   item.convertedOdometer]);   
+    worksheet.addRow(item);
+  }); 
+  worksheet.mergeCells('A1:D2'); 
+  subTitleRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
+  subTitleDetailRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
+  for (var i = 0; i < this.exportDetailTableHeader.length; i++) {    
+    worksheet.columns[i].width = 20;      
+  }
+  for (var j = 0; j < this.summaryHeader.length; j++) {  
+    worksheet.columns[j].width = 20; 
+  }
+  worksheet.addRow([]); 
+  workbook.xlsx.writeBuffer().then((data) => {
+    let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    fs.saveAs(blob, 'Trip_Fleet_Utilisation.xlsx');
+ })
+    // this.matTableExporter.exportTable('xlsx', {fileName:'Trip_Fleet_Utilisation', sheet: 'sheet_name'});
+}
+
+  exportAsPDFFile(){
+  var doc = new jsPDF('p', 'mm', 'a4');  
+  this.getPDFExcelHeader();
+  // let pdfColumns = this.getPDFExcelHeader();
+  // let prepare = [];
+    // this.initData.forEach(e => {
+    //   var tempObj = [];
+    //   this.displayedColumns.forEach(element => {
+    //     switch(element){
+    //       case 'vehiclename' :{
+    //         tempObj.push(e.vehicleName);
+    //         break;
+    //       }
+    //       case 'vin' :{
+    //         tempObj.push(e.vin);
+    //         break;
+    //       }
+    //       case 'registrationnumber' :{
+    //         tempObj.push(e.registrationNumber);
+    //         break;
+    //       }
+    //       case 'distance' :{
+    //         tempObj.push(e.convertedDistance);
+    //         break;
+    //       }
+    //       case 'numberOfTrips' :{
+    //         tempObj.push(e.numberOfTrips);
+    //         break;
+    //       }
+    //       case 'tripTime' :{
+    //         tempObj.push(e.convertedTripTime);
+    //         break;
+    //       }
+    //       case 'drivingTime' :{
+    //         tempObj.push(e.convertedDrivingTime);
+    //         break;
+    //       }
+    //       case 'idleDuration' :{
+    //         tempObj.push(e.convertedIdleDuration);
+    //         break;
+    //       }
+    //       case 'stopTime' :{
+    //         tempObj.push(e.convertedStopTime);
+    //         break;
+    //       }
+    //       case 'averageDistancePerDay' :{
+    //         tempObj.push(e.convertedAverageDistance);
+    //         break;
+    //       }
+    //       case 'averageSpeed' :{
+    //         tempObj.push(e.convertedAverageSpeed);
+    //         break;
+    //       }
+    //       case 'averageWeight' :{
+    //         tempObj.push(e.convertedAverageWeight);
+    //         break;
+    //       }
+    //       case 'odometer' :{
+    //         tempObj.push(e.convertedOdometer);
+    //         break;
+    //       }
+    //     }
+    //   })
+
+    //   prepare.push(tempObj);    
+    // });
     
     
     let DATA = document.getElementById('charts');
@@ -1840,8 +2001,8 @@ getAllSummaryData(){
         doc.addPage('a2','p');
 
       (doc as any).autoTable({
-      head: [pdfColumns],
-      body: prepare,
+      head: [this.exportDetailTableHeader],
+      body: this.exportDetailTableData,
       theme: 'striped',
       didDrawCell: data => {
         //console.log(data.column.index)

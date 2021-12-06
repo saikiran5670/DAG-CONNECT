@@ -12,6 +12,8 @@ using net.atos.daf.ct2.packageservice;
 using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.portalservice.Entity.Package;
 using Newtonsoft.Json;
+using Grpc.Core;
+using System.Collections.Generic;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -129,6 +131,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
             try
             {
+                // Fetch Feature Ids of the alert for visibility
+                //var featureIds = GetMappedFeatureIdByStartWithName(PackageConstant.PACKAGE_FEATURE_STARTWITH);
+                Metadata headers = new Metadata();
+                //headers.Add("report_feature_ids", JsonConvert.SerializeObject(featureIds));
+                headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+                headers.Add("logged_in_accId", Convert.ToString(_userDetails.AccountId));
+                headers.Add("loggedd_in_orgContxtID", Convert.ToString(GetContextOrgId()));
+
                 _logger.Info("Update method in package API called.");
 
                 // Validation 
@@ -155,7 +165,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     }
                     var createPackageRequest = _packageMapper.ToCreatePackage(request);
                     var packageResponse = new PackageResponse();
-                    packageResponse = await _packageClient.UpdateAsync(createPackageRequest);
+                    packageResponse = await _packageClient.UpdateAsync(createPackageRequest, headers);
 
                     if (packageResponse.PackageId == -1 && packageResponse.Code == Responsecode.Conflict)
                     {
@@ -283,6 +293,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             var packageRequest = new PackageDeleteRequest();
             try
             {
+                // Fetch Feature Ids of the alert for visibility
+                var featureIds = GetMappedFeatureIdByStartWithName(PackageConstant.PACKAGE_FEATURE_STARTWITH);
+                Metadata headers = new Metadata();
+                headers.Add("report_feature_ids", JsonConvert.SerializeObject(featureIds));
+                headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+                headers.Add("logged_in_accId", Convert.ToString(_userDetails.AccountId));
+                headers.Add("loggedd_in_orgContxtID", Convert.ToString(GetContextOrgId()));
+
                 // Validation                 
                 if (packageId <= 0)
                 {
@@ -290,7 +308,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 packageRequest = new PackageDeleteRequest();
                 packageRequest.Id = packageId;
-                var response = await _packageClient.DeleteAsync(packageRequest);
+                var response = await _packageClient.DeleteAsync(packageRequest, headers);
                 response.PackageDeleteRequest = packageRequest;
                 if (response != null && response.Code == Responsecode.Success)
                 {
@@ -390,6 +408,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                var featureIds = GetMappedFeatureIdByStartWithName(PackageConstant.PACKAGE_FEATURE_STARTWITH);
+                Metadata headers = new Metadata();
+                headers.Add("report_feature_ids", JsonConvert.SerializeObject(featureIds));
+                headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
+                headers.Add("logged_in_accId", Convert.ToString(_userDetails.AccountId));
+                headers.Add("loggedd_in_orgContxtID", Convert.ToString(GetContextOrgId()));
+
                 _logger.Info("Update package status method in package API called.");
 
                 // Validation 
@@ -404,7 +429,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
 
 
-                var packageResponse = await _packageClient.UpdatePackageStateAsync(request);
+                var packageResponse = await _packageClient.UpdatePackageStateAsync(request, headers);
 
 
                 if (packageResponse != null && packageResponse.Code == Responsecode.Failed

@@ -69,7 +69,8 @@ namespace net.atos.daf.ct2.reports.test
         {
             var logbookTripAlertDetails = new LogbookTripAlertDetails();
             List<string> objvin = new List<string> { "XLR0998HGFFT76657", "XLR0998HGFFT80000", "PLOI098OO1", "XLR0998HGFFT74611", "XLR0998HGFFT74600", "XLR0998HGFFT76657", "BLRAE75PC0E272200" };
-            var result = await _reportManager.GetLogbookSearchParameter(objvin);
+            List<int> featureId = new List<int> { 401, 402, 403 };
+            var result = await _reportManager.GetLogbookSearchParameter(objvin, featureId);
             Assert.IsNotNull(result);
         }
     }

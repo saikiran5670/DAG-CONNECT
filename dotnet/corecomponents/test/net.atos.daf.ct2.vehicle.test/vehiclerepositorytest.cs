@@ -31,7 +31,7 @@ namespace net.atos.daf.ct2.vehicle.test
             _datamartDataacess = new PgSQLDataMartDataAccess(datamartconnectionString);
             _vehicleRepository = new VehicleRepository(_dataAccess, _datamartDataacess);
             _groupRepository = new GroupRepository(_dataAccess);
-            _vehiclemanager = new VehicleManager(_vehicleRepository, null);
+            _vehiclemanager = new VehicleManager(_vehicleRepository, null, null);
 
         }
         //[TestCategory("Unit-Test-Case")]
@@ -229,17 +229,7 @@ namespace net.atos.daf.ct2.vehicle.test
             bool isnumeric = true;
             string contenttype = "text/csv";
             var results = await _vehiclemanager.GetVehicleMileage(since, isnumeric, contenttype, 1, 1);
-            if (contenttype == "text/csv")
-            {
-                Assert.IsNotNull(results.VehiclesCSV);
-                Assert.IsTrue(results.VehiclesCSV != null);
-            }
-            else
-            {
-                Assert.IsNotNull(results.Vehicles);
-                Assert.IsTrue(results.Vehicles != null);
-            }
-
+            Assert.IsTrue(results != null);
         }
         #endregion
 

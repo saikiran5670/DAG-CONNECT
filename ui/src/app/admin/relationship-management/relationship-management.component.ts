@@ -9,6 +9,7 @@ import { ThrowStmt } from '@angular/compiler';
 import { MatTableExporterDirective } from 'mat-table-exporter';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { Util } from 'src/app/shared/util';
 
 @Component({
   selector: 'app-relationship-management',
@@ -33,13 +34,14 @@ export class RelationshipManagementComponent implements OnInit {
   displayMessage: any;
   organizationId: number;
   localStLanguage: any;
-  actionBtn:any; 
+  actionBtn:any;
   showLoadingIndicator: any;
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   userType: any = localStorage.getItem("userType");
   viewRelationshipFromOrg: boolean;
   selectedRowFromRelationship: any = {};
-  
+  filterValue: string;
+
   constructor(private translationService: TranslationService, private dialogService: ConfirmDialogService, private organizationService: OrganizationService) {
     this.defaultTranslation();
    }
@@ -60,9 +62,14 @@ export class RelationshipManagementComponent implements OnInit {
           this.viewRelationship(newData[0]);
         }});
     }
-   
+
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
-    this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
+    if(localStorage.getItem('contextOrgId')){
+      this.organizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
+    }
+    else{
+      this.organizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    }
     // if(this.organizationId == 1 || this.organizationId == 2)
     if(this.userType == 'Admin#Platform' || this.userType == 'Admin#Global')
     {
@@ -88,17 +95,17 @@ export class RelationshipManagementComponent implements OnInit {
     this.translationData = {};
   }
 
-  processTranslation(transData: any){   
+  processTranslation(transData: any){
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
     //console.log("process translationData:: ", this.translationData)
   }
 
   loadInitData() {
     this.showLoadingIndicator = true;
-     let objData = { 
-        Organizationid : this.organizationId,
+     let objData = {
+      Organizationid : this.organizationId
      };
-     
+
     //  this.mockData(); //temporary
     this.organizationService.getRelationship(objData).subscribe((data: any) => {
       this.hideloader();
@@ -107,7 +114,7 @@ export class RelationshipManagementComponent implements OnInit {
         // this.initData = this.getNewTagData(this.initData)
        this.updateDataSource(this.initData);
       }
-    }, 
+    },
     (error) => {
       this.hideloader();
       this.initData = [];
@@ -120,17 +127,19 @@ export class RelationshipManagementComponent implements OnInit {
     this.initData.map(obj =>{   //temporary
       obj.levelVal = obj.level === 10? 'PlatformAdmin': obj.level=== 20 ? 'GlobalAdmin': obj.level=== 30 ? 'OrgAdmin' :obj.level=== 40? 'Account' : '';
     })
-    this.dataSource = new MatTableDataSource(this.initData);
-    this.dataSource.filterPredicate = function(data, filter: any){
-      return data.name.toLowerCase().includes(filter) ||
-             (data.featureIds.length).toString().includes(filter) ||
-             data.levelVal.toLowerCase().includes(filter) ||
-             data.code.toLowerCase().includes(filter) ||
-             data.description.toLowerCase().includes(filter)
-    }
+
     setTimeout(()=>{
+      this.dataSource = new MatTableDataSource(this.initData);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+
+      this.dataSource.filterPredicate = function(data, filter: any){
+        return data.name.toLowerCase().includes(filter) ||
+               (data.featureIds.length).toString().includes(filter) ||
+               data.levelVal.toLowerCase().includes(filter) ||
+               data.code.toLowerCase().includes(filter) ||
+               data.description.toLowerCase().includes(filter)
+      };
       this.dataSource.sortData = (data : String[], sort: MatSort) => {
         const isAsc = sort.direction === 'asc';
         let columnName = this.sort.active;
@@ -139,6 +148,7 @@ export class RelationshipManagementComponent implements OnInit {
         });
       }
     });
+
   }
 
   compare(a: Number | String, b: Number | String, isAsc: boolean, columnName: any) {
@@ -146,13 +156,13 @@ export class RelationshipManagementComponent implements OnInit {
       if(!(a instanceof Number)) a = a.toString().toUpperCase();
       if(!(b instanceof Number)) b = b.toString().toUpperCase();
     }
-    return (a < b ? -1 : 1) * (isAsc ? 1 : -1); 
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
   getNewTagData(data: any){
     let currentDate = new Date().getTime();
     if(data.length > 0){
       data.forEach(row => {
-        let createdDate = parseInt(row.createdAt); 
+        let createdDate = parseInt(row.createdAt);
         let nextDate = createdDate + 86400000;
         if(currentDate > createdDate && currentDate < nextDate){
           row.newTag = true;
@@ -164,7 +174,7 @@ export class RelationshipManagementComponent implements OnInit {
       let newTrueData = data.filter(item => item.newTag == true);
       newTrueData.sort((userobj1, userobj2) => parseInt(userobj2.createdAt) - parseInt(userobj1.createdAt));
       let newFalseData = data.filter(item => item.newTag == false);
-      Array.prototype.push.apply(newTrueData, newFalseData); 
+      Array.prototype.push.apply(newTrueData, newFalseData);
       return newTrueData;
     }
     else{
@@ -178,31 +188,31 @@ export class RelationshipManagementComponent implements OnInit {
 
   exportAsPdf() {
     let DATA = document.getElementById('relationshipData');
-      
+
     html2canvas( DATA , { onclone: (document) => {
       this.actionBtn = document.getElementsByClassName('action');
       for (let obj of this.actionBtn) {
-        obj.style.visibility = 'hidden';  }       
+        obj.style.visibility = 'hidden';  }
     }})
-    .then(canvas => { 
-        
+    .then(canvas => {
+
         let fileWidth = 208;
         let fileHeight = canvas.height * fileWidth / canvas.width;
-        
+
         const FILEURI = canvas.toDataURL('image/png')
         let PDF = new jsPDF('p', 'mm', 'a4');
         let position = 0;
         PDF.addImage(FILEURI, 'PNG', 0, position, fileWidth, fileHeight)
-        
+
         PDF.save('Relationship_Data.pdf');
         PDF.output('dataurlnewwindow');
-    });     
+    });
   }
 
   newRelationship(){
     this.titleText = this.translationData.lblAddNewRelationship ;
     this.rowsData = [];
-    this.rowsData = this.initData; 
+    this.rowsData = this.initData;
     this.editFlag = true;
     this.createStatus = true;
   }
@@ -221,7 +231,7 @@ export class RelationshipManagementComponent implements OnInit {
     this.rowsData = [];
     this.rowsData.push(row);
     this.editFlag = true;
-    this.createStatus = false;    
+    this.createStatus = false;
   }
 
   deleteRelationship(row: any){
@@ -229,7 +239,7 @@ export class RelationshipManagementComponent implements OnInit {
       title: this.translationData.lblDelete ,
       message: this.translationData.lblAreyousureyouwanttodeleterelationship ,
       cancelText: this.translationData.lblCancel ,
-      confirmText: this.translationData.lblDelete 
+      confirmText: this.translationData.lblDelete
     };
     let name = row.name;
     this.dialogService.DeleteModelOpen(options, name);
@@ -261,13 +271,13 @@ export class RelationshipManagementComponent implements OnInit {
       else
         return ("Relationship '$' cannot be deleted as it is mapped with organisation").replace('$', relationshipName);
     }
-    
+
   }
 
   successMsgBlink(msg: any){
     this.grpTitleVisible = true;
     this.displayMessage = msg;
-    setTimeout(() => {  
+    setTimeout(() => {
       this.grpTitleVisible = false;
     }, 5000);
   }
@@ -275,7 +285,7 @@ export class RelationshipManagementComponent implements OnInit {
   errorMsgBlink(errorMsg: any){
     this.errorMsgVisible = true;
     this.displayMessage = errorMsg;
-    setTimeout(() => {  
+    setTimeout(() => {
       this.errorMsgVisible = false;
     }, 5000);
   }

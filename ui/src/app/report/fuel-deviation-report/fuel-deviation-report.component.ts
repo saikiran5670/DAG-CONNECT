@@ -1265,6 +1265,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
          },             
       }    
     }];   
+    this.fuelDecLineChartOptions.scales.yAxes[0].scaleLabel.labelString = this.translationData.lblValuesFuelDecreaseEvents || 'Values(Fuel Decrease Events)';
     this.fuelDecLineChartData = [
       { data: this._yDecLine, label: this.translationData.lblFuelDecreaseEvents },
     ];
@@ -1282,6 +1283,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
          },             
       }    
     }];   
+    this.fuelIncBarChartOptions.scales.yAxes[0].scaleLabel.labelString = this.translationData.lblValuesFuelIncreaseEvents || 'Values(Fuel Increase Events)';
     this.fuelIncBarChartData = [
       {
         label: this.translationData.lblFuelIncreaseEvents ,
@@ -1305,7 +1307,8 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
           day:  this.chartLabelDateFormat,            
          },             
       }    
-    }];   
+    }]; 
+    this.fuelDecBarChartOptions.scales.yAxes[0].scaleLabel.labelString = this.translationData.lblValuesFuelDecreaseEvents || 'Values(Fuel Decrease Events)';  
     this.fuelDecBarChartData = [
       {
         label: this.translationData.lblFuelDecreaseEvents ,
@@ -1467,7 +1470,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     const summary = this.translationData.lblSummarySection;
     const detail = this.translationData.lblDetailSection;
     const header = this.getPDFExcelHeader();
-    const summaryHeader = [`${this.translationData.lblReportName}`, `${this.translationData.lblReportCreated }`, `${this.translationData.lblReportStartTime}`, `${this.translationData.lblReportEndTime}`, `${this.translationData.lblVehicleGroup }`, (this.vehVinRegChecker.length > 0 && this.vehVinRegChecker[0].attr == 'vin') ? (this.translationData.lblVIN ) : (this.vehVinRegChecker[0].attr == 'registrationNo') ? (this.translationData.lblRegPlateNumber ) : (this.translationData.lblVehicle) , `${this.translationData.lblFuelIncreaseEvents }`, `${this.translationData.lblFuelDecreaseEvents }`, `${this.translationData.lblVehiclesWithFuelEvents }`];
+    const summaryHeader = [`${this.translationData.lblReportName || 'Report Name'}`, `${this.translationData.lblReportCreated || 'Report Created' }`, `${this.translationData.lblReportStartTime || 'Report Start Time' }`, `${this.translationData.lblReportEndTime || 'Report End Time'}`, `${this.translationData.lblVehicleGroup }`, (this.vehVinRegChecker.length > 0 && this.vehVinRegChecker[0].attr == 'vin') ? (this.translationData.lblVIN ) : (this.vehVinRegChecker[0].attr == 'registrationNo') ? (this.translationData.lblRegPlateNumber ) : (this.translationData.lblVehicle) , `${this.translationData.lblFuelIncreaseEvents }`, `${this.translationData.lblFuelDecreaseEvents }`, `${this.translationData.lblVehiclesWithFuelEvents }`];
     const summaryData = this.excelSummaryData;
     
     //Create workbook and worksheet

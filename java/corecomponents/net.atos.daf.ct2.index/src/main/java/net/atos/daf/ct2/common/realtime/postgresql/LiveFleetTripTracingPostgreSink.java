@@ -3,18 +3,17 @@ package net.atos.daf.ct2.common.realtime.postgresql;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
+
 
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
+
 import net.atos.daf.common.ct2.utc.TimeFormatter;
-import net.atos.daf.ct2.common.realtime.dataprocess.IndexDataProcess;
 import net.atos.daf.ct2.common.util.DafConstants;
-import net.atos.daf.ct2.pojo.KafkaRecord;
 import net.atos.daf.ct2.pojo.standard.Index;
 import net.atos.daf.postgre.bo.Co2Master;
 import net.atos.daf.postgre.bo.LiveFleetPojo;
@@ -23,7 +22,7 @@ import net.atos.daf.postgre.dao.Co2MasterDao;
 import net.atos.daf.postgre.dao.LiveFleetPosition;
 import net.atos.daf.postgre.dao.LivefleetCurrentTripStatisticsDao;
 
-public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecord<Index>> implements Serializable {
+public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<Index> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	Logger logger = LoggerFactory.getLogger(LiveFleetTripTracingPostgreSink.class);
@@ -36,80 +35,22 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 	LivefleetCurrentTripStatisticsDao currentTripDAO;
 	Co2MasterDao cmDAO;
 	Co2Master cmData;
-	private List<Index> queue;
-	private List<Index> synchronizedCopy;
+	//private List<Index> queue;
+	//private List<Index> synchronizedCopy;
 
 	Long Fuel_consumption = 0L;
-
-	public void invoke(KafkaRecord<Index> index) throws Exception {
-
-		queue = new ArrayList<Index>();
-		synchronizedCopy = new ArrayList<Index>();
-
-		Index row = index.getValue();
-
+	
+	public void invoke(Index index) throws Exception {
+		logger.debug("inside invoke of LiveFleetPosition Management ");
 		try {
+		LiveFleetPojo currentPosition = tripCalculation(index);
 
-			queue.add(row);
-
-			cmData = cmDAO.read(row.getVid()); // CO2 coefficient data read from
-												// master table
-
-			if (queue.size() >= 1) {
-
-				synchronized (synchronizedCopy) {
-					synchronizedCopy = new ArrayList<Index>(queue);
-					queue.clear();
-					for (Index indexData : synchronizedCopy) {
-						
-						logger.info("inside LiveFleet Sink class :{}");
-						String tripID = "NOT AVAILABLE";
-
-						if (indexData.getDocument().getTripID() != null) {
-							tripID = indexData.getDocument().getTripID();
-						}
-
-						Double drivingTime = 0.0;
-						String vin;
-						if (indexData.getVin() != null)
-							vin = indexData.getVin();
-						else
-							vin = indexData.getVid();
-						
-						if (indexData.getVEvtID() != 4) {
-							
-							LiveFleetPojo previousRecordInfo = positionDAO.read(vin, tripID);
-							//logger.info("inside LiveFleet Sink class after read :{}");
-							if (previousRecordInfo != null) {
-								logger.info("inside LiveFleet previousRecordInfo is not null :{}");
-								Double previousMessageTimeStamp = previousRecordInfo.getMessageTimestamp();
-								Double currentMessageTimeStamp = (double) TimeFormatter.getInstance()
-										.convertUTCToEpochMilli(indexData.getEvtDateTime().toString(),
-												DafConstants.DTM_TS_FORMAT);
-								Long idleDuration=0L;
-								if(indexData.getVIdleDuration()!=null) {
-									idleDuration=(indexData.getVIdleDuration() * 1000); //later need to keep in constant
-								}
-								drivingTime = ((currentMessageTimeStamp - previousMessageTimeStamp)
-										+ previousRecordInfo.getDrivingTime() - idleDuration);
-							}
-							//System.out.println("drivingTime-->" + drivingTime);
-							logger.info("inside LiveFleet drivingTime-->:{}"+ drivingTime);
-						}
-
-						LiveFleetPojo currentPosition = tripCalculation(row, drivingTime);
-
-						positionDAO.insert(currentPosition);
-						logger.info("Data inserted in Live fleet position :: "+currentPosition.getTripId());
-
-					}
-				}
-			}
-		} catch (Exception e) {
-			logger.error("Error in Live fleet position invoke method" + e.getMessage());
-			e.printStackTrace();
+		positionDAO.insert(currentPosition);
+		logger.info("Data inserted in Live fleet position :: "+currentPosition.getTripId());
+		} catch(Exception e) {
+			logger.error("error in invoke of LiveFleetCurrentTripPostgreSink" + e.getMessage());
 		}
-
+		
 	}
 
 	@Override
@@ -143,21 +84,21 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 			cmDAO.setConnection(masterConnection);
 
 		} catch (Exception e) {
-
 			logger.error("Error in Live fleet position" + e.getMessage());
-
 		}
 
 	}
 
-	public LiveFleetPojo tripCalculation(Index row, Double drivingTime) {
+	public LiveFleetPojo tripCalculation(Index row) {
 		LiveFleetPojo currentPosition = new LiveFleetPojo();
-		System.out.println("Inside Trip Calculation");
-		int varVEvtid = 0;
-		if (row.getVEvtID() != null) {
-			varVEvtid = row.getVEvtID();
-		}
-
+		logger.debug("Inside Trip Calculation");
+		/*
+		 * int varVEvtid = 0; if (row.getVEvtID() != null) { varVEvtid =
+		 * row.getVEvtID(); }
+		 */
+		
+		try {
+			cmData = cmDAO.read(row.getVid());
 		double varGPSLongi = 0;
 		if (row.getGpsLongitude() != null) {
 			varGPSLongi = row.getGpsLongitude();
@@ -170,11 +111,10 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 			currentPosition.setMessageTimestamp((double) TimeFormatter.getInstance()
 					.convertUTCToEpochMilli(row.getEvtDateTime().toString(), DafConstants.DTM_TS_FORMAT));
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("ParseException {} {}",e.getMessage(),e);
 		}
 		currentPosition.setCreated_at_m2m(row.getReceivedTimestamp());
-		currentPosition.setCreated_at_kafka(Long.parseLong(row.getKafkaProcessingTS()));
+		//currentPosition.setCreated_at_kafka(Long.parseLong(row.getKafkaProcessingTS()));
 		currentPosition.setCreated_at_dm(TimeFormatter.getInstance().getCurrentUTCTimeInSec());
 
 		if (varGPSLongi == 255.0) {
@@ -207,9 +147,7 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 		Long Fuel_consumption = row.getVUsedFuel();
 
 		if (Fuel_consumption != null) {
-
 			double co2emission = (Fuel_consumption * cmData.getCoefficient()) / 1000;
-			//System.out.println("co2emission-->" + co2emission);
 			currentPosition.setCo2Emission(co2emission); // co2emission
 			currentPosition.setFuelConsumption(Fuel_consumption.doubleValue());// fuel_consumption
 		} else {
@@ -222,44 +160,6 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 		else
 			currentPosition.setLastOdometerValue(0);
 
-		/*
-		 * Long[] tachomileageArray = row.getDocument().getTotalTachoMileage(); int
-		 * tachomileagelength = 0; if (tachomileageArray != null) tachomileagelength =
-		 * tachomileageArray.length; // long[] longtachoMlArray =
-		 * Arrays.stream(tachomileageArray).mapToLong(i -> // i).toArray(); try { if
-		 * (tachomileagelength > 0) {
-		 * 
-		 * if (tachomileageArray[tachomileagelength - 1] != null &&
-		 * !"null".equals(tachomileageArray[tachomileagelength - 1])) {
-		 * 
-		 * System.out.println("odometer value--" + tachomileageArray[tachomileagelength
-		 * - 1]);
-		 * currentPosition.setLastOdometerValue(tachomileageArray[tachomileagelength -
-		 * 1].intValue()); } else { System.out.println("odometer value inside else--" +
-		 * tachomileageArray); currentPosition.setLastOdometerValue(0); } } else {
-		 * 
-		 * System.out.println("odometer value when odometer less then 0--" +
-		 * tachomileageArray); currentPosition.setLastOdometerValue(0); } } catch
-		 * (Exception e) {
-		 * 
-		 * currentPosition.setLastOdometerValue(0); System.out.println(); }
-		 */
-
-		/*
-		 * if (varVEvtid == 26 || varVEvtid == 28 || varVEvtid == 29 || varVEvtid == 32
-		 * || varVEvtid == 42 || varVEvtid == 43 || varVEvtid == 44 || varVEvtid == 45
-		 * || varVEvtid == 46) {
-		 * currentPosition.setLastOdometerValue(row.getDocument().getVTachographSpeed())
-		 * ;// TotalTachoMileage } else { currentPosition.setLastOdometerValue(0); }
-		 */
-
-		/*
-		 * if (varVEvtid == 42 || varVEvtid == 43) {
-		 * currentPosition.setDistUntilNextService(row.getDocument().
-		 * getVDistanceUntilService());// distance_until_next_service } else {
-		 * currentPosition.setDistUntilNextService(0); }
-		 */
-
 		currentPosition.setDistUntilNextService(0);
 
 		currentPosition.setVehMessageType(DafConstants.Index);
@@ -267,11 +167,12 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 		currentPosition.setVehicleMsgTriggerTypeId(row.getVEvtID());
 
 		try {
+			//TODO---log start time
 			currentPosition.setCreatedDatetime(TimeFormatter.getInstance()
 					.convertUTCToEpochMilli(row.getEvtDateTime().toString(), DafConstants.DTM_TS_FORMAT));
+			//TODO---log end time
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("ParseException {} {}",e.getMessage(),e);
 		}
 
 		currentPosition.setReceivedDatetime(row.getReceivedTimestamp());
@@ -284,8 +185,7 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 				currentPosition.setGpsDatetime(TimeFormatter.getInstance()
 						.convertUTCToEpochMilli(row.getGpsDateTime().toString(), DafConstants.DTM_TS_FORMAT));
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error("ParseException {} {}",e.getMessage(),e);
 			}
 		}
 
@@ -298,7 +198,16 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 			currentPosition.setDriver1Id("Unknown");
 		}
 		//currentPosition.setDriver1Id(row.getDriverID());
-		currentPosition.setDrivingTime(drivingTime.intValue());
+		
+		//Driving Calculation for memory load
+		//currentPosition.setDrivingTime(drivingTime.intValue());
+		if(row.getNumSeq()!=null) {
+		currentPosition.setDrivingTime(row.getNumSeq().intValue());
+		} else {
+			currentPosition.setDrivingTime(0);
+		}
+		
+		
 	//vehicle status API fields
 		currentPosition.setTotal_vehicle_distance(row.getVDist());
 		currentPosition.setTotal_engine_hours(row.getDocument().getVEngineTotalHours());
@@ -307,7 +216,7 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 		currentPosition.setEngine_speed(row.getDocument().getVEngineSpeed());
 		currentPosition.setFuel_level1(row.getDocument().getVFuelLevel1());
 		currentPosition.setCatalyst_fuel_level(row.getDocument().getVDEFTankLevel());
-		if(row.getDocument().getDriver2ID()!= null || ! row.getDocument().getDriver2ID().isEmpty()) {
+		if(row.getDocument().getDriver2ID()!= null && ! row.getDocument().getDriver2ID().isEmpty()) {
 					currentPosition.setDriver2_id(row.getDocument().getDriver2ID());
 				} else {
 					currentPosition.setDriver2_id("Unknown");
@@ -320,20 +229,19 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 		//currentPosition.setService_brake_air_pressure_circuit2(row.getDocument().getVServiceBrakeAirPressure2());)
 		currentPosition.setService_brake_air_pressure_circuit2(row.getDocument().getVServiceBrakeAirPressure2());
 
-		//System.out.println("Inside Trip Calculation in end");
-		logger.info("inside Inside Trip Calculation in end :{}");
-
+		logger.debug("inside Inside Trip Calculation in end :{}");
+		} catch(Exception e) {
+			logger.error("error in trip calculation {} {}" , e.getMessage(),e);
+		}
 		return currentPosition;
 
 	}
 
 	@Override
 	public void close() throws Exception {
-
 		connection.close();
 		masterConnection.close();
-
-		logger.info("In Close");
+		logger.debug("In Close");
 
 	}
 

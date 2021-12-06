@@ -8,6 +8,7 @@ import { FileValidator } from 'ngx-material-file-input';
 import { TranslationService } from 'src/app/services/translation.service';
 import * as FileSaver from 'file-saver';
 import { base64ToFile } from 'ngx-image-cropper';
+import { Util } from 'src/app/shared/util';
 
 @Component({
   selector: 'app-terms-conditions-management',
@@ -41,14 +42,15 @@ export class TermsConditionsManagementComponent implements OnInit {
   uploadFileErrorCode: number;
   downloadPDFErrorCode: number;
   greaterVersionPresentMsg: string;
-  
-  constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private translationService: TranslationService) { 
+  filterValue: any;
+
+  constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private translationService: TranslationService) {
       this.defaultTranslation();
   }
 
   defaultTranslation(){
     this.translationData = {
-      
+
     }
   }
 
@@ -70,7 +72,7 @@ export class TermsConditionsManagementComponent implements OnInit {
       name: "",
       value: "",
       filter: "",
-      menuId: 41 
+      menuId: 41
     }
 
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
@@ -83,7 +85,7 @@ export class TermsConditionsManagementComponent implements OnInit {
     let objData= {
       OrganizationId : this.accountOrganizationId
     }
-    
+
     this.showLoadingIndicator = true;
     this.translationService.getUserAcceptedTC(objData).subscribe((data: any) => {
       this.hideloader();
@@ -103,20 +105,21 @@ export class TermsConditionsManagementComponent implements OnInit {
   }
 
   updateGridData(tableData: any){
-    this.initData = tableData; 
+    this.initData = tableData;
     this.dataSource = new MatTableDataSource(this.initData);
     setTimeout(()=>{
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
     });
+    Util.applySearchFilter(this.dataSource, this.displayedColumns , this.filterValue );
   }
 
-  uploadTermsAndConditions(){ 
+  uploadTermsAndConditions(){
     let languageData = [];
-    
-   
+
+
     let tncObj= {
-      
+
       "created_by": parseInt(localStorage.getItem("accountId")),
       "data": this.filelist
     }
@@ -137,8 +140,8 @@ export class TermsConditionsManagementComponent implements OnInit {
     }, (error) => {
       this.uploadFileErrorCode = error.status;
       this.filelist= [];
-    });   
-    
+    });
+
   }
 
   applyFilter(filterValue: string) {
@@ -150,13 +153,13 @@ export class TermsConditionsManagementComponent implements OnInit {
   successMsgBlink(msg: any){
     this.grpTitleVisible = true;
     this.fileUploadedMsg = msg;
-    setTimeout(() => {  
+    setTimeout(() => {
       this.grpTitleVisible = false;
     }, 5000);
   }
 
-  addfile(event)     
-  {    
+  addfile(event)
+  {
     this.greaterVersionPresentMsg= "";
     this.uploadFileErrorCode = 0;
     for(let i= 0; i < event.target.files.length; i++){
@@ -169,14 +172,14 @@ export class TermsConditionsManagementComponent implements OnInit {
         {
           this.pdfEmptyMsg = false;
           this.filelist.push({"fileName": (this.uploadTermsConditionsFormGroup.controls.uploadFile.value._fileNames).replace(".pdf", ""), "description": fileSelected.split(",")[1]})
-        } 
+        }
         else{
           this.pdfEmptyMsg = true;
-        } 
-      };  
+        }
+      };
     }
-           
-  }   
+
+  }
 
   onClose(){
     this.isTranslationDataUploaded = false;
@@ -203,7 +206,7 @@ export class TermsConditionsManagementComponent implements OnInit {
     }, (error) => {
       this.downloadPDFErrorCode= error.status;
     });
-    
+
   }
 
   onCloseMsg(){

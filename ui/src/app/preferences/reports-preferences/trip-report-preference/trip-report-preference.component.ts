@@ -26,6 +26,7 @@ export class TripReportPreferenceComponent implements OnInit {
   accountPreference: any;
   prefUnitFormat: any = 'dunit_Metric';
   requestSent:boolean = false;
+  showLoadingIndicator: boolean = false;
 
   constructor(private reportService: ReportService, private router: Router) { }
 
@@ -76,12 +77,15 @@ export class TripReportPreferenceComponent implements OnInit {
   }
 
   loadTripReportPreferences(){
+    this.showLoadingIndicator=true;
     this.reportService.getReportUserPreference(this.reportId).subscribe((prefData : any) => {
+      this.showLoadingIndicator=false;
       this.initData = prefData['userPreferences'];
       this.resetColumnData();
       this.getTranslatedColumnName(this.initData);
       this.validateRequiredField();
     }, (error)=>{
+      this.showLoadingIndicator=false;
       this.initData = [];
       this.tripPrefData = [];
     });
@@ -228,8 +232,9 @@ export class TripReportPreferenceComponent implements OnInit {
         reportId: this.reportId,
         attributes: _dataArr
       }
-
+      this.showLoadingIndicator=true;
       this.reportService.updateReportUserPreference(objData).subscribe((_tripPrefData: any) => {
+        this.showLoadingIndicator=false;
         this.loadTripReportPreferences();
         this.setTripReportFlag.emit({ flag: false, msg: this.getSuccessMsg() });
         if ((this.router.url).includes("tripreport")) {
@@ -237,6 +242,7 @@ export class TripReportPreferenceComponent implements OnInit {
         }
         this.requestSent = false;
       }, (error) => {
+        this.showLoadingIndicator=false;
         console.log(error);
       });
     }

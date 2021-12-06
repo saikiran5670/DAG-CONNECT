@@ -29,5 +29,10 @@
     <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.kafkacdc\net.atos.daf.ct2.kafkacdc.csproj" />
     <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.poigeofence\net.atos.daf.ct2.poigeofence.csproj" />
   </ItemGroup>
-
+	<ItemGroup>
+		<None Update="cacert.pem">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+	
 </Project>

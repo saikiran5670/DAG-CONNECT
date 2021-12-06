@@ -19,10 +19,12 @@ namespace net.atos.daf.ct2.reports.repository
                 parameter.Add("@fromdate", UTCHandling.GetUTCFromDateTime(DateTime.Now.AddDays(-90)));
                 parameter.Add("@todate", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 parameter.Add("@vins", vinList.ToArray());
-                var query = @"SELECT DISTINCT vin,
-                                     array_agg(distinct end_time_stamp) AS EndTimeStamp FROM tripdetail.trip_statistics 
-                              WHERE end_time_stamp >= @fromdate AND end_time_stamp <= @todate AND 
-                                     vin = Any(@vins) group by vin";
+                var query = @"SELECT DISTINCT v.vin,
+                              array_agg(distinct end_time_stamp) AS EndTimeStamp 
+                              FROM tripdetail.trip_statistics ts
+                              Join Master.vehicle V on ts.vin = v.vin
+                              WHERE  ts.end_time_stamp >= v.reference_date and end_time_stamp >= @fromdate AND end_time_stamp <= @todate AND 
+                                     ts.vin = Any(@vins) group by v.vin";
                 return _dataMartdataAccess.QueryAsync<VehicleFromTripDetails>(query, parameter);
             }
             catch (Exception)
@@ -77,7 +79,7 @@ namespace net.atos.daf.ct2.reports.repository
                          left JOIN master.geolocationaddress as endgeoaddr
                             on TRUNC(CAST(endgeoaddr.latitude as numeric),4)= TRUNC(CAST(TS.end_position_lattitude as numeric),4) 
                                and TRUNC(CAST(endgeoaddr.longitude as numeric),4) = TRUNC(CAST(TS.end_position_longitude as numeric),4)
-                        where  TS.vin = @vin
+                        where  TS.vin = @vin and ts.end_time_stamp >= vh.reference_date
 	                        AND (
 		                        end_time_stamp >= @StartDateTime
 		                        AND end_time_stamp <= @EndDateTime
@@ -126,7 +128,7 @@ namespace net.atos.daf.ct2.reports.repository
                 {
                     List<string> vins = new List<string>();
                     vins.Add(tripFilters.AlertVIN);
-                    List<TripAlert> lstTripAlert = await GetTripAlertDetails(tripFilters.StartDateTime, tripFilters.EndDateTime, vins, tripFilters.FeatureIds);
+                    List<TripAlert> lstTripAlert = await GetTripAlertDetails(tripFilters.StartDateTime, tripFilters.EndDateTime, vins, tripFilters.FeatureIds, tripFilters.OrganizationId);
                     if (lstTripAlert.Count() > 0)
                     {
                         foreach (TripDetails trip in data)
@@ -298,10 +300,15 @@ namespace net.atos.daf.ct2.reports.repository
 
         }
 
-        private async Task<List<TripAlert>> GetTripAlertDetails(double startDate, double endDate, List<string> vin, List<int> featureIds)
+        private async Task<List<TripAlert>> GetTripAlertDetails(double startDate, double endDate, List<string> vin, List<int> featureIds, int organizationId)
         {
             try
             {
+                var parameterOrg = new DynamicParameters();
+                parameterOrg.Add("@Org_Id", organizationId);
+                string queryAlertIds = @"select id from master.alert where organization_id = @Org_Id and state in ('I','A') ";
+                var alertids = await _dataAccess.QueryAsync<int>(queryAlertIds, parameterOrg);
+
                 var parameterAlert = new DynamicParameters();
                 parameterAlert.Add("@featureIds", featureIds);
                 var queryStatementFeature = @"select enum from translation.enumtranslation where feature_id = ANY(@featureIds)";
@@ -311,17 +318,17 @@ namespace net.atos.daf.ct2.reports.repository
                                                 TA.trip_id TripId, 
                                                 TA.vin as VIN, 
                                                 category_type as CategoryType, 
-                                                type AlertType,
-                                                name as AlertName,                                                
+                                                ta.type AlertType,
+                                                ta.name as AlertName,                                                
                                                 latitude as AlertLatitude, 
                                                 longitude as AlertLongitude,
                                                 alert_generated_time as AlertTime,   
                                                 processed_message_time_stamp ProcessedMessageTimeStamp, 
                                                 urgency_level_type as UrgencyLevelType
 	                                FROM tripdetail.tripalert TA
-	                                     join tripdetail.trip_statistics TS on TA.VIN=TS.VIN
-                                           and TA.trip_id = TS.trip_id
-	                                 where  TS.vin =ANY (@vin)
+	                                     join tripdetail.trip_statistics TS on TA.VIN=TS.VIN and TA.trip_id = TS.trip_id
+                                         join master.vehicle v on  v.vin=ta.vin                                           
+	                                 where TA.alert_generated_time >= v.reference_date and  TS.vin =ANY (@vin)
 	                                 AND (
 		                                    TS.end_time_stamp >= @StartDateTime and
 		                                    TS.end_time_stamp <= @EndDateTime
@@ -329,6 +336,7 @@ namespace net.atos.daf.ct2.reports.repository
                                         AND TA.type = ANY (@resultFeaturEnum)
                                         and TA.category_type <> 'O'
                 				        and TA.type <> 'W'
+                                        and TA.alert_id = Any(@alert_ids)
                                          order by TS.end_time_stamp desc";
 
                 var parameter = new DynamicParameters();
@@ -336,6 +344,7 @@ namespace net.atos.daf.ct2.reports.repository
                 parameter.Add("@EndDateTime", endDate);
                 parameter.Add("@vin", vin);
                 parameter.Add("@resultFeaturEnum", resultFeaturEnum);
+                parameter.Add("@alert_ids", alertids.ToArray());
                 List<TripAlert> lstTripAlert = (List<TripAlert>)await _dataMartdataAccess.QueryAsync<TripAlert>(queryAlert, parameter);
 
                 if (lstTripAlert.Count() > 0)

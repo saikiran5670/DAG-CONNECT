@@ -136,13 +136,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "Organization_Id Required .");
                 }
-                if (request.ViaAddressDetails.Count > 5)
-                {
-                    return StatusCode(400, "You cannot enter more than 5 via Routes.");
-                }
+                //As more Via routes will be included
+                //if (request.ViaAddressDetails.Count > 5)
+                //{
+                //    return StatusCode(400, "You cannot enter more than 5 via Routes.");
+                //}
                 request.OrganizationId = GetContextOrgId();
-                var MapRequest = _corridorMapper.MapCorridor(request);
-                var data = await _corridorServiceClient.AddRouteCorridorAsync(MapRequest);
+                var mapRequest = _corridorMapper.MapCorridor(request);
+                var data = await _corridorServiceClient.AddRouteCorridorAsync(mapRequest);
                 if (data != null && data.Code == Responsecode.Success)
                 {
                     await _auditHelper.AddLogs(DateTime.Now, "Landmark Corridor Component",
@@ -341,11 +342,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "Organization Id is required.");
                 }
-
-                if (request.ViaAddressDetails.Count > 5)
-                {
-                    return StatusCode(400, "You cannot enter more than 5 via Routes.");
-                }
+                //As more Via routes will be included
+                //if (request.ViaAddressDetails.Count > 5)
+                //{
+                //    return StatusCode(400, "You cannot enter more than 5 via Routes.");
+                //}
                 request.OrganizationId = GetContextOrgId();
                 UpdateRouteCorridorRequest objUpdateRouteCorridorRequest = new UpdateRouteCorridorRequest();
                 objUpdateRouteCorridorRequest.Request = _corridorMapper.MapCorridor(request);

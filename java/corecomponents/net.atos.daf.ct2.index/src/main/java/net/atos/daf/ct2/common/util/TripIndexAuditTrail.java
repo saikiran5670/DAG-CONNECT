@@ -23,7 +23,7 @@ public class TripIndexAuditTrail implements Serializable {
 			String evtType) {
 		try {
 			Map<String, String> auditMap = createAuditMap(jobStatus, jobName, message, evtType);
-			logger.info("Inside auditTrail meesage = "+ message);
+			logger.debug("Inside auditTrail meesage = "+ message);
 
 			AuditETLJobClient auditing = new AuditETLJobClient(envParams.get(DafConstants.GRPC_SERVER),
 					Integer.valueOf(envParams.get(DafConstants.GRPC_PORT)));
@@ -37,7 +37,7 @@ public class TripIndexAuditTrail implements Serializable {
 	private static Map<String, String> createAuditMap(String jobStatus, String jobName, String message,
 			String evtType) {
 		Map<String, String> auditMap = new HashMap<>();
-		logger.info("Inside auditMap message :: " + message);
+		logger.debug("Inside auditMap message :: " + message);
 		
 		auditMap.put(DafConstants.JOB_EXEC_TIME, String.valueOf(TimeFormatter.getInstance().getCurrentUTCTimeInSec()));
 		auditMap.put(DafConstants.AUDIT_PERFORMED_BY, jobName);

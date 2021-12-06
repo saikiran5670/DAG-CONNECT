@@ -49,11 +49,12 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
 
     public class ViaStopDetails
     {
-        [Required]
         [StringLength(100)]
         public string ViaRoutName { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
+        public string Type { get; set; }
+        public int SeqNo { get; set; }
     }
 
     public class VehicleSize

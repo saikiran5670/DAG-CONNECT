@@ -348,6 +348,8 @@ chartLabelDateFormat :any;
 alert24: any;
 displayPiechart: boolean = true;
 subscriberOn : boolean = false;
+getVehicleUtilisationDataAPI: any;
+getAlert24HoursAPI: any;
   constructor(private router: Router,
               private elRef: ElementRef,
               private dashboardService : DashboardService,
@@ -409,18 +411,21 @@ subscriberOn : boolean = false;
         this.selectionTab = 'lastweek';
         this.startDateValue = this.setStartEndDateTime(this.getLastWeekDate(), this.selectedStartTime, 'start');
         this.endDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
+        this.getVehicleUtilisationDataAPI = undefined;
         break;
       } 
       case 'lastmonth': {
         this.selectionTab = 'lastmonth';
         this.startDateValue = this.setStartEndDateTime(this.getLastMonthDate(), this.selectedStartTime, 'start');
         this.endDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
+        this.getVehicleUtilisationDataAPI = undefined;
         break;
       }
       case 'last3month': {
         this.selectionTab = 'last3month';
         this.startDateValue = this.setStartEndDateTime(this.getLast3MonthDate(), this.selectedStartTime, 'start');
         this.endDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
+        this.getVehicleUtilisationDataAPI = undefined;
         break;
       }
     }
@@ -532,31 +537,35 @@ subscriberOn : boolean = false;
       "endDateTime": endDate,
       "viNs": this.finalVinList
     }
-  this.dashboardService.getVehicleUtilisationData(_vehiclePayload).subscribe((vehicleData)=>{
-    if(vehicleData["fleetutilizationcharts"].length > 0){
-       this.vehicleUtilisationData = vehicleData["fleetutilizationcharts"];
-       this.vehicleUtilisationLength = vehicleData["fleetutilizationcharts"].length;
-       this.setChartData();
+    if(!this.getVehicleUtilisationDataAPI){
+      this.getVehicleUtilisationDataAPI = this.dashboardService.getVehicleUtilisationData(_vehiclePayload).subscribe((vehicleData)=>{
+        if(vehicleData["fleetutilizationcharts"].length > 0){
+           this.vehicleUtilisationData = vehicleData["fleetutilizationcharts"];
+           this.vehicleUtilisationLength = vehicleData["fleetutilizationcharts"].length;
+           this.setChartData();
+        }
+        else{
+          this.vehicleUtilisationLength = 0;
+        }
+     });
     }
-    else{
-      this.vehicleUtilisationLength = 0;
-    }
- });
 
  let alertPayload ={
   "viNs": this.finalVinList
  }
- this.dashboardService.getAlert24Hours(alertPayload).subscribe((alertData)=>{
-  if(alertData["alert24Hours"].length > 0){
-    this.alert24 = alertData["alert24Hours"];
-     this.alertsData = alertData["alert24Hours"][0];
-     this.logisticCount = this.alertsData.logistic;
-     this.fuelAndDriverCount = this.alertsData.fuelAndDriver;
-     this.repairAndMaintenanceCount = this.alertsData.repairAndMaintenance;
-     this.toatlSum = this.alertsData.critical + this.alertsData.warning +this.alertsData.advisory;
-     this.setAlertChartData();
-  }
-});
+ if(!this.getAlert24HoursAPI){
+  this.getAlert24HoursAPI = this.dashboardService.getAlert24Hours(alertPayload).subscribe((alertData)=>{
+    if(alertData["alert24Hours"].length > 0){
+      this.alert24 = alertData["alert24Hours"];
+       this.alertsData = alertData["alert24Hours"][0];
+       this.logisticCount = this.alertsData.logistic;
+       this.fuelAndDriverCount = this.alertsData.fuelAndDriver;
+       this.repairAndMaintenanceCount = this.alertsData.repairAndMaintenance;
+       this.toatlSum = this.alertsData.critical + this.alertsData.warning +this.alertsData.advisory;
+       this.setAlertChartData();
+    }
+  });
+ }
 
 }
 
@@ -616,7 +625,7 @@ checkForPreference(fieldKey) {
 
 checkForVehiclePreference(fieldKey) {
   if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences.length > 2 && this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.length != 0) {
-    let filterData = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_'+fieldKey));
+    let filterData = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes(`rp_db_dashboard_vehicleutilization_${fieldKey}`));
     if (filterData.length > 0) {
       if (filterData[0].state == 'A') {
         return true;
@@ -792,7 +801,7 @@ if(this.prefTimeFormat == 12){
                   },
                   scaleLabel: {
                    display: true,
-                   labelString: "Date",
+                   labelString: this.translationData.lblDate || "Date",
                   },
                  },
               ] 
@@ -841,7 +850,7 @@ if(this.prefTimeFormat == 12){
             },
             scaleLabel: {
              display: true,
-             labelString: "Date",
+             labelString:  this.translationData.lblDate || "Date",
             },
           },
         ]
@@ -883,7 +892,7 @@ if(this.prefTimeFormat == 12){
           },
           scaleLabel: {
             display: true,
-            labelString: 'Vehicles'    
+            labelString: this.translationData.lblVehicles ||'Vehicles'    
           }
         }],
         xAxes: [{
@@ -901,13 +910,13 @@ if(this.prefTimeFormat == 12){
           },
           scaleLabel: {
            display: true,
-           labelString: "Date",
+           labelString:  this.translationData.lblDate || "Date",
           },     
       }]      
   }
   this.lineChartLabels2= this.calenderDate;
     this.lineChartData2= [
-      { data: this.vehiclecount, label: 'Vehicles',
+      { data: this.vehiclecount, label: this.translationData.lblVehicles ||'Vehicles',
         lineTension: 0, 
         pointBorderColor: "orange", 
       pointBackgroundColor: "white", 
@@ -940,7 +949,7 @@ if(this.prefTimeFormat == 12){
         },
         scaleLabel: {
           display: true,
-          labelString: 'Vehicles'    
+          labelString: this.translationData.lblVehicles ||'Vehicles'   
         }
         }
       ],
@@ -962,13 +971,13 @@ if(this.prefTimeFormat == 12){
         },
         scaleLabel: {
          display: true,
-         labelString: "Date",
+         labelString: this.translationData.lblDate || "Date",
         },            
     }]
    }
     this.barChartLabels2= this.calenderDate;
     this.barChartData2= [
-      { data: this.vehiclecount, label: 'Vehicles' , backgroundColor: '#7BC5EC',
+      { data: this.vehiclecount, label: this.translationData.lblVehicles ||'Vehicles'  , backgroundColor: '#7BC5EC',
       hoverBackgroundColor: '#7BC5EC',}
     ];
   }

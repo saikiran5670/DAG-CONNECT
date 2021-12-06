@@ -78,7 +78,7 @@ export class OtaSoftwareUpdateService {
       headers: new HttpHeaders({ headerObj }),
     };
     let scheduleData={
-      campaignId: data.campaignId,
+      campaignId: data.campaignID,
       vin: data.vin,
       baseLineId: data.baseLineId,
       scheduleDateTime: data.scheduleDateTime

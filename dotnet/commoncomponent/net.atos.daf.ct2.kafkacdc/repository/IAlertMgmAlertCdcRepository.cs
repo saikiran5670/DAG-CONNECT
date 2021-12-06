@@ -14,5 +14,7 @@ namespace net.atos.daf.ct2.kafkacdc.repository
         Task<bool> UpdateVehicleAlertRef(List<VehicleAlertRef> vehicleAlertRefs);
         Task<bool> DeleteVehicleAlertRef(List<int> alertIds);
         Task<bool> DeleteAndInsertVehicleAlertRef(List<int> alertIds, List<VehicleAlertRef> vehicleAlertRefs);
+        Task<List<AlertGroupId>> GetAlertIdsandVGIds(IEnumerable<int> groupIds, List<int> featureIds);
+        Task<int> GetAlertVehicleGroupId(int alertIds);
     }
 }

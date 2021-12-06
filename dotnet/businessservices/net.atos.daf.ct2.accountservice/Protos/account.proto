@@ -142,6 +142,7 @@ message AccountRequest {
     int64 CreatedAt=11;
     int64 StartDate=12;
     int64 EndDate=13;    
+    string OwnerEmail=14;
   }
 
 message ChangePasswordRequest {

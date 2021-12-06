@@ -47,7 +47,7 @@ public class EgressCorruptMessages implements Serializable {
 
 			@Override
 			public KafkaRecord<String> map(Tuple2<Integer, KafkaRecord<String>> arg0) throws Exception {
-				//System.out.println("Received corrupt message from source system :: " + arg0.f1.getValue());
+				logger.info("Received corrupt message from source system ::{} " , arg0.f1.getValue());
 				return arg0.f1;
 			}
 		}).addSink(new FlinkKafkaProducer<KafkaRecord<String>>(sinkTopicName,

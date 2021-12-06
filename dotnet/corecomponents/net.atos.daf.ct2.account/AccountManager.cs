@@ -675,7 +675,7 @@ namespace net.atos.daf.ct2.account
             };
             messageRequest.ToAddressList = new Dictionary<string, string>()
             {
-                { account.EmailId, null }
+                { account.AccountType == AccountType.SystemAccount ? account.OwnerEmail : account.EmailId, null }
             };
             messageRequest.Configuration = _emailConfiguration;
             messageRequest.TokenSecret = tokenSecret;

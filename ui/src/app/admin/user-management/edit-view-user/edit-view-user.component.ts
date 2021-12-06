@@ -11,6 +11,7 @@ import { AccountService } from '../../../services/account.service';
 import { UserDetailTableComponent } from '.././new-user-step/user-detail-table/user-detail-table.component';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router, NavigationExtras  } from '@angular/router';
+import { Util } from 'src/app/shared/util';
 
 @Component({
   selector: 'app-edit-view-user',
@@ -73,6 +74,7 @@ export class EditViewUserComponent implements OnInit {
   userCreatedMsg : any;
   grpTitleVisible: boolean = false;
   adminAccessType: any = {};
+  filterValue: string;
 
   constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private accountService: AccountService, private domSanitizer: DomSanitizer, private router: Router) { }
 
@@ -106,7 +108,7 @@ export class EditViewUserComponent implements OnInit {
       validator: [
         CustomValidators.specialCharValidationForName('firstName'),
         CustomValidators.numberValidationForName('firstName'),
-        CustomValidators.specialCharValidationForName('lastName'), 
+        CustomValidators.specialCharValidationForName('lastName'),
         CustomValidators.numberValidationForName('lastName')
       ]
     });
@@ -115,7 +117,7 @@ export class EditViewUserComponent implements OnInit {
     this.accountInfoData.organization = this.contextOrgName;
     if(localStorage.getItem('contextOrgId'))
       this.accountOrganizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
-    else 
+    else
       this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
 
     //this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
@@ -145,11 +147,11 @@ export class EditViewUserComponent implements OnInit {
     this.breadcumMsg = this.getBreadcum(this.fromEdit);
     if( this.breadcumMsg!=''){
       let navigationExtras: NavigationExtras = {
-        queryParams:  {         
-         "UserDetails": this.fromEdit   
+        queryParams:  {
+         "UserDetails": this.fromEdit
         }
-      };    
-      this.router.navigate([], navigationExtras);     
+      };
+      this.router.navigate([], navigationExtras);
     }
     this.solutationList = [
       {
@@ -189,9 +191,9 @@ export class EditViewUserComponent implements OnInit {
   }
 
   getBreadcum(val: any){
-    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / 
-    ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / 
-    ${this.translationData.lblAccountManagement ? this.translationData.lblAccountManagement : "Account Management"} / 
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } /
+    ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} /
+    ${this.translationData.lblAccountManagement ? this.translationData.lblAccountManagement : "Account Management"} /
     ${(this.fromEdit == 'edit') ? (this.translationData.lblAccountDetails ? 'Edit '+this.translationData.lblAccountDetails : 'Edit Account Details') : (this.fromEdit == 'view') ? (this.translationData.lblAccountDetails ? 'View '+this.translationData.lblAccountDetails : 'View Account Details') : ''}`;
     // ${this.translationData.lblAccountDetails ? this.translationData.lblAccountDetails : 'Account Details'}`;
   }
@@ -209,12 +211,13 @@ export class EditViewUserComponent implements OnInit {
           return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
         });
        }
+       Util.applySearchFilter(this.selectedRoleDataSource, this.displayedColumnsRoleConfirm ,this.filterValue );
     });
   }
 
   compare(a: any, b: any, isAsc: boolean, columnName:any) {
     if(!(a instanceof Number)) a = a.toString().toUpperCase();
-    if(!(b instanceof Number)) b = b.toString().toUpperCase(); 
+    if(!(b instanceof Number)) b = b.toString().toUpperCase();
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 
@@ -278,7 +281,7 @@ export class EditViewUserComponent implements OnInit {
         this.generalSettingForm.get('vehDisplay').setValue(this.vehicleDisplayData.length > 0 ? this.vehicleDisplayData[0].id : this.defaultSetting.vehicleDisplayDropdownData[0].id);
         this.generalSettingForm.get('landingPage').setValue(this.landingPageDisplayData.length > 0 ? this.landingPageDisplayData[0].id : this.defaultSetting.landingPageDisplayDropdownData[0].id);
         this.generalSettingForm.get('pageRefreshTime').setValue(this.pageRefreshTime ? this.pageRefreshTime : 1);
-        
+
       });
       if(this.accountInfoData.preferenceId > 0){
         this.setDefaultOrgVal(false); //-- normal color
@@ -302,7 +305,7 @@ export class EditViewUserComponent implements OnInit {
   }
 
   toBack(){
-    if(this.fromEdit == 'edit'){ //--- back from edit 
+    if(this.fromEdit == 'edit'){ //--- back from edit
       let obj: any = {
         accountId: 0,
         organizationId: this.accountOrganizationId,
@@ -318,7 +321,7 @@ export class EditViewUserComponent implements OnInit {
           tableData: data
         }
         this.userCreate.emit(emitObj);
-      });  
+      });
     }
     else{ //-- back from view
       let emitObj = {
@@ -339,7 +342,7 @@ export class EditViewUserComponent implements OnInit {
     this.editGeneralSettingsFlag = false;
   }
 
-  onGeneralSettingsUpdate(){ 
+  onGeneralSettingsUpdate(){
     let objData: any = {
       id: this.accountInfoData.preferenceId > 0 ? this.accountInfoData.preferenceId : 0,
       refId: this.accountInfoData.id,
@@ -360,7 +363,7 @@ export class EditViewUserComponent implements OnInit {
         this.goForword();
         this.successMsgBlink(this.getSuccessMsg('accountSetting'));
       });
-    } 
+    }
     else{ //-- create pref
       for (const [key, value] of Object.entries(this.orgDefaultFlag)) {
         if(!value){
@@ -412,7 +415,7 @@ export class EditViewUserComponent implements OnInit {
     this.setDefaultGeneralSetting(this.selectedPreference);
   }
 
-  onAccountInfoUpdate(){ 
+  onAccountInfoUpdate(){
     let objData: any = {
         id: this.accountInfoData.id,
         emailId: this.accountInfoForm.controls.loginEmail.value,
@@ -573,7 +576,7 @@ export class EditViewUserComponent implements OnInit {
 
     this.accountService.saveAccountPicture(objData).subscribe(data => {
       if(data){
-        
+
       }
     }, (error) => {
       this.imageError= "Something went wrong. Please try again!";
@@ -585,7 +588,7 @@ export class EditViewUserComponent implements OnInit {
     let objData = {
       accountId: 0,
       organizationId: rowData.organizationId, //32
-      accountGroupId: rowData.groupId, 
+      accountGroupId: rowData.groupId,
       vehicleGroupId: 0,
       roleId: 0,
       name: ""
@@ -593,7 +596,7 @@ export class EditViewUserComponent implements OnInit {
 
     this.accountService.getAccountDetails(objData).subscribe((data)=>{
       let repsData = this.makeRoleAccountGrpList(data);
-      this.callToUserDetailTable(repsData, rowData);  
+      this.callToUserDetailTable(repsData, rowData);
     });
   }
 
@@ -615,10 +618,10 @@ export class EditViewUserComponent implements OnInit {
         accGrpTxt = accGrpTxt.slice(0, -2);
       }
 
-      initdata[index].roleList = roleTxt; 
+      initdata[index].roleList = roleTxt;
       initdata[index].accountGroupList = accGrpTxt;
     });
-    
+
     return initdata;
   }
 
@@ -669,7 +672,7 @@ export class EditViewUserComponent implements OnInit {
         this.orgDefaultFlag.landingPage = false;
         break;
       }
-    } 
+    }
   }
 
   onClose(){
@@ -679,7 +682,7 @@ export class EditViewUserComponent implements OnInit {
   successMsgBlink(msg: any){
     this.grpTitleVisible = true;
     this.userCreatedMsg = msg;
-    setTimeout(() => {  
+    setTimeout(() => {
       this.grpTitleVisible = false;
     }, 5000);
   }

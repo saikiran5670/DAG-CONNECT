@@ -7,6 +7,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { Workbook } from 'exceljs';
 import * as fs from 'file-saver';
+import { Util } from '../util';
 
 @Component({
   selector: 'app-data-table',
@@ -33,6 +34,7 @@ export class DataTableComponent implements OnInit {
 
   dataSource;
   actionBtn: any;
+  filterValue: string;
 
   constructor() { }
 
@@ -44,6 +46,7 @@ export class DataTableComponent implements OnInit {
     filterValue = filterValue.trim(); // Remove whitespace
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
     this.dataSource.filter = filterValue;
+    // this.updatedTableData(this.tableData);
   }
 
   // exportAsCSV() {
@@ -54,7 +57,7 @@ export class DataTableComponent implements OnInit {
   //   this.matTableExporter.exportTable('csv', { fileName: fileName, sheet: fileName });
   // }
 
-  exportAsCSV(){  
+  exportAsCSV(){
     let fileName = this.exportFileName || 'Data Export';
     let workbook = new Workbook();
     let worksheet = workbook.addWorksheet(fileName);
@@ -83,15 +86,15 @@ export class DataTableComponent implements OnInit {
       }
       worksheet.addRow(excelRow);
     });
-    // worksheet.mergeCells('A1:D2'); 
-    // for (var i = 0; i < header.length; i++) {    
-    //   worksheet.columns[i].width = 20;      
+    // worksheet.mergeCells('A1:D2');
+    // for (var i = 0; i < header.length; i++) {
+    //   worksheet.columns[i].width = 20;
     // }
-    // worksheet.addRow([]); 
+    // worksheet.addRow([]);
     workbook.csv.writeBuffer().then((data) => {
       let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
       fs.saveAs(blob, fileName+'.csv');
-   }) 
+   })
   }
 
   exportAsPdf() {
@@ -135,7 +138,8 @@ export class DataTableComponent implements OnInit {
         });
       }
     });
-    this.defaultSearchfilter();
+    Util.applySearchFilter(this.dataSource, this.columnCodes , this.filterValue );
+
   }
 
   // defaultSearchfilter() {
@@ -152,10 +156,10 @@ export class DataTableComponent implements OnInit {
         if(data[col]) {
           if(data[col] instanceof Number && data[col].toLowerCase().includes(filter.toLowerCase())) {
            return data;
-          } 
+          }
 
           if(!(data[col] instanceof Number) && data[col].toString().toLowerCase().includes(filter)) {
-            return data;  
+            return data;
           }
         }
 

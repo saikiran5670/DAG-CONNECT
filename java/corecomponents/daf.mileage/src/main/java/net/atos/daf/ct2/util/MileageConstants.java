@@ -73,5 +73,6 @@ public class MileageConstants {
 	public static final Integer ZERO = 0;
 	public static final Long ZERO_VAL = 0L;
 	public static final String MILEAGE_STREAMING_JOB_NAME = "mileage.streaming.job.name";
+	public static final String RETAIN_ON_CANCELLATION = "retain.on.cancellation";
 		
 }

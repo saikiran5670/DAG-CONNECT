@@ -14,9 +14,9 @@ namespace net.atos.daf.ct2.customerdataservice.Common
         {
             _customerDataCdcManager = customerDataCdcManager;
         }
-        public async Task TriggerSubscriptionCdc(int subscriptionid, string subscriptionState)
+        public async Task TriggerKeyHandOverCdc(int orgId, string keyhandOverState, string vin)
         {
-            _ = await Task.Run(() => _customerDataCdcManager.GetVehiclesAndAlertFromCustomerDataConfiguration(subscriptionid, subscriptionState));
+            _ = await Task.Run(() => _customerDataCdcManager.GetVehiclesAndAlertFromCustomerDataConfiguration(orgId, keyhandOverState, vin));
         }
     }
 }

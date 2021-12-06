@@ -44,8 +44,8 @@
         </canvas>
       </div>
     </div>
-    <div [hidden]="!checkForVehiclePreference('timebasedutilizationrate')" class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="end">
-      <div fxLayout="column">
+    <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
+      <div [hidden]="!checkForVehiclePreference('timebasedutilizationrate')" fxLayout="column">
         <span style='font: 500 14px/30px Roboto, "Helvetica Neue", sans-serif;padding-left: 10px;'>{{
           translationData.lblTimeBasedUtilisationRate }}</span>
         <div *ngIf="timeDChartType =='doughnut' && !(timebasedThreshold==0)" class="chart-wrapper">

@@ -13,6 +13,10 @@ using net.atos.daf.ct2.kafkacdc;
 using net.atos.daf.ct2.kafkacdc.repository;
 using net.atos.daf.ct2.package;
 using net.atos.daf.ct2.package.repository;
+using net.atos.daf.ct2.vehicle;
+using net.atos.daf.ct2.vehicle.repository;
+using net.atos.daf.ct2.visibility;
+using net.atos.daf.ct2.visibility.repository;
 
 namespace net.atos.daf.ct2.packageservice
 {
@@ -60,6 +64,10 @@ namespace net.atos.daf.ct2.packageservice
             services.AddTransient<IPackageAlertCdcRepository, PackageAlertCdcRepository>();
             services.AddTransient<IAlertMgmAlertCdcManager, AlertMgmAlertCdcManager>();
             services.AddTransient<IAlertMgmAlertCdcRepository, AlertMgmAlertCdcRepository>();
+            services.AddTransient<IVisibilityManager, VisibilityManager>();
+            services.AddTransient<IVisibilityRepository, VisibilityRepository>();
+            services.AddTransient<IVehicleManager, VehicleManager>();
+            services.AddTransient<IVehicleRepository, VehicleRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

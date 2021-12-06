@@ -21,11 +21,10 @@ namespace net.atos.daf.ct2.reports.repository
                                  trips.vin,
                                  veh.name as VehicleName,
                                  Round((SUM(trips.etl_gps_fuel_consumed)/SUM(trips.etl_gps_distance)),4) as FuelConsumption
-                                From
-                                tripdetail.trip_statistics as trips
-                                Left JOIN master.vehicle as veh
-                                ON trips.vin = veh.vin
+                                From tripdetail.trip_statistics as trips
+                                left JOIN master.vehicle as veh ON trips.vin = veh.vin
                                 WHERE (end_time_stamp >= @fromDate AND end_time_stamp<= @endDate) 
+                                    and (trips.end_time_stamp >= veh.reference_date)
                                 AND trips.VIN=ANY(@vin)
                                 GROUP BY
                                 trips.vin,veh.name";
@@ -51,13 +50,15 @@ namespace net.atos.daf.ct2.reports.repository
                 //Query change for bug no.16325
                 string query = @"Select
                                 @totalActiveVehicle as numbersofactivevehicle                                                  		 
-                                , SUM(etl_gps_distance) as totalmileage
-                                , Round(SUM(etl_gps_fuel_consumed),2) as totalfuelconsumed
-                                , Round((SUM(etl_gps_fuel_consumed)/SUM(etl_gps_distance)),4) as averagefuelconsumption
+                                , SUM(ts.etl_gps_distance) as totalmileage
+                                , Round(SUM(ts.etl_gps_fuel_consumed),2) as totalfuelconsumed
+                                , Round((SUM(ts.etl_gps_fuel_consumed)/SUM(ts.etl_gps_distance)),4) as averagefuelconsumption
                                 From
-                                tripdetail.trip_statistics 
-                                WHERE (end_time_stamp >= @fromDate AND end_time_stamp<= @endDate) 
-                                AND VIN=ANY(@vin)";
+                                tripdetail.trip_statistics ts
+								join master.vehicle VH on TS.vin=VH.vin
+                                WHERE (ts.end_time_stamp >= @fromDate AND ts.end_time_stamp<= @endDate) 
+                                and ts.end_time_stamp >= vh.reference_date
+                                AND ts.VIN=ANY(@vin)";
                 param.Add("@vin", fuelBenchmarkFilter.VINs);
                 param.Add("@fromDate", fuelBenchmarkFilter.StartDateTime);
                 param.Add("@endDate", fuelBenchmarkFilter.EndDateTime);

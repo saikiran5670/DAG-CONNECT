@@ -385,5 +385,21 @@ namespace net.atos.daf.ct2.notificationengine.repository
                 throw;
             }
         }
+
+        public async Task<List<string>> GetFeatureEnumForAlert(List<int> featureIds)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@featureIds", featureIds);
+                var queryStatementFeature = @"select enum from translation.enumtranslation where feature_id = ANY(@featureIds)";
+                List<string> resultFeaturEnum = (List<string>)await _dataAccess.QueryAsync<string>(queryStatementFeature, parameter);
+                return resultFeaturEnum;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }

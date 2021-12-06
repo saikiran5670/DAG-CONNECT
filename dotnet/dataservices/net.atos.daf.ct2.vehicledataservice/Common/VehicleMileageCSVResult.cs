@@ -3,21 +3,18 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using net.atos.daf.ct2.vehicle.entity;
-//using net.atos.daf.ct2.vehicledataservice.Entity;
 namespace net.atos.daf.ct2.vehicledataservice.Common
 {
-    public class VehicleMileageCSVResult : ContentResult //FileResult
+    public class VehicleMileageCSVResult : ContentResult
     {
-        private readonly IEnumerable<VehiclesCSV> _mileageData;
-        public VehicleMileageCSVResult(IEnumerable<VehiclesCSV> mileageData) //: base("text/csv") //, string fileDownloadName
+        private readonly IEnumerable<DtoVehicleMileage> _mileageData;
+        public VehicleMileageCSVResult(IEnumerable<DtoVehicleMileage> mileageData)
         {
             _mileageData = mileageData;
-            //FileDownloadName = fileDownloadName;
         }
         public async override Task ExecuteResultAsync(ActionContext context)
         {
             var response = context.HttpContext.Response;
-            //context.HttpContext.Response.Headers.Add("Content-Disposition", new[] { "attachment; filename=" + FileDownloadName });
             using (var streamWriter = new StreamWriter(response.Body))
             {
                 await streamWriter.WriteLineAsync(
@@ -26,7 +23,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Common
                 foreach (var m in _mileageData)
                 {
                     await streamWriter.WriteLineAsync(
-                      $"{m.EvtDateTime};{m.VIN};{m.TachoMileage};{m.RealMileage};{m.RealMileageAlgorithmVersion}"
+                      $"{m.EvtDateTime};{m.VIN};{m.TachoMileage};{m.GPSMileage};{m.RealMileageAlgorithmVersion}"
                     );
                     await streamWriter.FlushAsync();
                 }

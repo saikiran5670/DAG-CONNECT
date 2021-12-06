@@ -24,6 +24,7 @@ export class FleetOverviewTabPreferencesComponent implements OnInit {
   selectionForVehInfoColumns = new SelectionModel(true, []);
   fleetOverviewForm: FormGroup;
   requestSent:boolean = false;
+  showLoadingIndicator: boolean = false;
 
   constructor(private messageService: MessageService, private reportService: ReportService, private router: Router, private _formBuilder: FormBuilder) { }
 
@@ -63,11 +64,14 @@ export class FleetOverviewTabPreferencesComponent implements OnInit {
    }
 
    loadFleetOverviewPreferences(){
+     this.showLoadingIndicator=true;
     this.reportService.getReportUserPreference(this.reportId).subscribe((prefData : any) => {
+      this.showLoadingIndicator=false;
       this.initData = prefData['userPreferences'];
       this.resetColumnData();
       this.getTranslatedColumnName(this.initData);
     }, (error)=>{
+      this.showLoadingIndicator=false;
       this.initData = [];
       this.resetColumnData();
     });
@@ -197,7 +201,9 @@ export class FleetOverviewTabPreferencesComponent implements OnInit {
         reportId: this.reportId,
         attributes: [..._timerArr, ..._vehInfoArr, ...parentDataAttr] //-- merge data
       }
+      this.showLoadingIndicator=true;
       this.reportService.updateReportUserPreference(objData).subscribe((prefData: any) => {
+        this.showLoadingIndicator=false;
         this.setTimerValueInLocalStorage(parseInt(this.fleetOverviewForm.controls.refreshTime.value));
         this.loadFleetOverviewPreferences();
         this.setFleetOverviewFlag.emit({ flag: false, msg: this.getSuccessMsg() });
@@ -205,6 +211,8 @@ export class FleetOverviewTabPreferencesComponent implements OnInit {
           this.reloadCurrentComponent();
         }
         this.requestSent = false;
+      }, (error) => {
+        this.showLoadingIndicator=false;
       });
     }
   }

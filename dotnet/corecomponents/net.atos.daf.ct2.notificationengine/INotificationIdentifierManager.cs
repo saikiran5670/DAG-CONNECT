@@ -13,5 +13,6 @@ namespace net.atos.daf.ct2.notificationengine
         Task<string> GetTranslateValue(string languageCode, string key);
         Task<string> GetLanguageCodePreference(string emailId);
         Task<AlertVehicleEntity> GetEligibleAccountForAlert(AlertMessageEntity alertMessageEntity);
+        Task<List<string>> GetFeatureEnumForAlert(List<int> featureIds);
     }
 }

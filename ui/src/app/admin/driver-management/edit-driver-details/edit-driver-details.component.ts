@@ -23,6 +23,7 @@ export class EditDriverDetailsComponent implements OnInit {
   duplicateEmailMsg: boolean = false;
   accountOrganizationId: any = 0;
   accountId: any = 0;
+  showLoadingIndicator: boolean = false;
   
   constructor(private _formBuilder: FormBuilder,private dialog: MatDialog, private driverService: DriverService) { }
 
@@ -111,6 +112,7 @@ export class EditDriverDetailsComponent implements OnInit {
       optIn: this.selectedConsentType,
       modifiedBy: this.accountId
     }
+    this.showLoadingIndicator=true;
     this.driverService.updateDriver(objData).subscribe((drv: any) => {
       let drvId: any = 0;
       // this.driverService.getDrivers(this.accountOrganizationId, drvId).subscribe((drvList: any) => {
@@ -121,6 +123,9 @@ export class EditDriverDetailsComponent implements OnInit {
         }; 
         this.backToPage.emit(returnObj);
       // });
+      this.showLoadingIndicator=false;
+    }, (error) => {
+      this.showLoadingIndicator=false;
     });
   }
 

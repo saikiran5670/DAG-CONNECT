@@ -16,6 +16,7 @@
     <ProjectReference Include="..\net.atos.daf.ct2.confluentkafka\net.atos.daf.ct2.confluentkafka.csproj" />
     <ProjectReference Include="..\net.atos.daf.ct2.data\net.atos.daf.ct2.data.csproj" />
     <ProjectReference Include="..\net.atos.daf.ct2.utilities\net.atos.daf.ct2.utilities.csproj" />
+    <ProjectReference Include="..\net.atos.daf.ct2.visibility\net.atos.daf.ct2.visibility.csproj" />
   </ItemGroup>
 
 </Project>

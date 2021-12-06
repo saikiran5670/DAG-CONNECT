@@ -6,6 +6,9 @@ using Microsoft.Extensions.Configuration;
 using net.atos.daf.ct2.kafkacdc.entity;
 using net.atos.daf.ct2.kafkacdc.repository;
 using System.Linq;
+using net.atos.daf.ct2.visibility;
+using net.atos.daf.ct2.visibility.entity;
+
 namespace net.atos.daf.ct2.kafkacdc
 {
     public class PackageAlertCdcManager : IPackageAlertCdcManager
@@ -17,20 +20,21 @@ namespace net.atos.daf.ct2.kafkacdc
         private readonly IConfiguration _configuration;
         private readonly entity.KafkaConfiguration _kafkaConfig;
         private readonly IAlertMgmAlertCdcRepository _vehicleAlertRepository;
+        private readonly IVisibilityManager _visibilityManager;
 
-        public PackageAlertCdcManager(IPackageAlertCdcRepository vehicleAlertPackageRepository, IConfiguration configuration, IAlertMgmAlertCdcRepository vehicleAlertRepository)
+        public PackageAlertCdcManager(IPackageAlertCdcRepository vehicleAlertPackageRepository, IConfiguration configuration, IAlertMgmAlertCdcRepository vehicleAlertRepository, IVisibilityManager visibilityManager)
         {
 
             this._configuration = configuration;
             _kafkaConfig = new entity.KafkaConfiguration();
             configuration.GetSection("KafkaConfiguration").Bind(_kafkaConfig);
-
+            _visibilityManager = visibilityManager;
             _vehicleAlertPackageRepository = vehicleAlertPackageRepository;
             _vehicleAlertRepository = vehicleAlertRepository;
             _kafkaCdcHelper = new KafkaCdcHelper();
         }
-        public Task<bool> GetVehiclesAndAlertFromPackageConfiguration(int packageId, string operation) => ExtractAndSyncVehicleAlertRefByPackageIds(packageId, operation);
-        internal async Task<bool> ExtractAndSyncVehicleAlertRefByPackageIds(int packageId, string operation)
+        public Task<bool> GetVehiclesAndAlertFromPackageConfiguration(int packageId, string operation, int orgContextId, int accountId, int loggedInOrgId, int[] featureIds) => ExtractAndSyncVehicleAlertRefByPackageIds(packageId, operation, accountId, loggedInOrgId, orgContextId, featureIds.ToArray());
+        internal async Task<bool> ExtractAndSyncVehicleAlertRefByPackageIds(int packageId, string operation, int orgContextId, int accountId, int loggedInOrgId, int[] featureIds)
         {
             bool result = false;
             List<int> alertIds = new List<int>();
@@ -42,7 +46,8 @@ namespace net.atos.daf.ct2.kafkacdc
             try
             {
                 // get all the vehicles & alert mapping under the vehicle group for given alert id
-                List<VehicleAlertRef> masterDBPackageVehicleAlerts = await _vehicleAlertPackageRepository.GetVehiclesAndAlertFromPackageConfiguration(packageId);
+                //List<VehicleAlertRef> masterDBPackageVehicleAlerts = await _vehicleAlertPackageRepository.GetVehiclesAndAlertFromPackageConfiguration(packageId);
+                List<VehicleAlertRef> masterDBPackageVehicleAlerts = await GetVehiclesAndAlertFromPackage(packageId, orgContextId, accountId, loggedInOrgId, featureIds);
                 alertIds = masterDBPackageVehicleAlerts.Select(x => x.AlertId).Distinct().ToList();
                 List<VehicleAlertRef> datamartVehicleAlerts = await _vehicleAlertPackageRepository.GetVehicleAlertRefByAlertIds(alertIds);
                 // Preparing data for sending to kafka topic
@@ -101,6 +106,60 @@ namespace net.atos.daf.ct2.kafkacdc
                 result = false;
             }
             return result;
+        }
+
+        internal async Task<List<VehicleAlertRef>> GetVehiclesAndAlertFromPackage(int packageId, int orgContextId, int accountId, int loggedInOrgId, int[] featureIds)
+        {
+            try
+            {
+
+                IEnumerable<int> featureIdss = await _vehicleAlertPackageRepository.GetAlertPackageIds(orgContextId, packageId, featureIds.ToList());
+                IEnumerable<VehicleDetailsAccountVisibilityForAlert> visibilityVehicle = null;
+                if (featureIdss.Count() > 0)
+                {
+                    visibilityVehicle = await _visibilityManager.GetVehicleByAccountVisibilityForAlert(accountId, loggedInOrgId, orgContextId, featureIdss.ToArray());
+                }
+
+                List<VehicleAlertRef> vehicleRefList = new List<VehicleAlertRef>();
+                List<int> vehicleIds = null;
+                if (visibilityVehicle != null)
+                {
+                    vehicleIds = visibilityVehicle.Select(x => x.VehicleId).ToList();
+                    var vehgroupIds = visibilityVehicle.Where(x => vehicleIds.Contains(x.VehicleId)).Select(x => x.VehicleGroupIds).ToArray();
+                    List<int> groupIds = new List<int>();
+                    foreach (var item in vehgroupIds)
+                    {
+                        for (int i = 0; i < item.Length; i++)
+                        {
+                            var grpId = item[i];
+                            groupIds.Add(grpId);
+                        }
+                    }
+
+                    List<AlertGroupId> alertVehicleGroup = await _vehicleAlertPackageRepository.GetAlertIdsandVGIds(groupIds, featureIdss.ToList());
+
+                    foreach (var item in alertVehicleGroup)
+                    {
+                        var vinDetails = visibilityVehicle.Where(x => x.VehicleGroupIds.Contains(item.GroupId) && vehicleIds.Contains(x.VehicleId)).Select(x => x.Vin).ToList();
+                        if (vinDetails.Any())
+                        {
+                            foreach (var vin in vinDetails)
+                            {
+                                VehicleAlertRef vehicleRef = new VehicleAlertRef();
+                                vehicleRef.AlertId = item.Alertid;
+                                vehicleRef.VIN = vin;
+                                vehicleRefList.Add(vehicleRef);
+                            }
+
+                        }
+                    }
+                }
+                return vehicleRefList;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 
