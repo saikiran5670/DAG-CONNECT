@@ -1329,7 +1329,7 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
   }
 
 exportAsPDFFile(){
-  var doc = new jsPDF();
+  var doc = new jsPDF('p', 'mm', 'a2');
   (doc as any).autoTable({
     styles: {
         cellPadding: 0.5,
