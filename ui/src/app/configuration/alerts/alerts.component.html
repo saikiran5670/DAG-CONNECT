@@ -21,7 +21,7 @@
       <mat-card class='mat-elevation-z'>
         <div *ngIf='alertCategoryList.length > 0 && initData.length > 0'>
           <app-alerts-filter (filterValues)="getFilteredValues($event)" [initData]='initData' [translationData]='translationData'  [alertStatusList]='alertStatusList' [vehicleGroupList]='vehicleGroupList'
-            [alertCategoryList]='alertCategoryList' [alertTypeList]='alertTypeList' [alertCriticalityList]='alertCriticalityList' [vehicleList]='vehicleList'>
+            [associatedVehicleData] = "associatedVehicleData" [vehicleByVehGroupList] ="vehicleByVehGroupList" [filteredVehicles] = "filteredVehicles" [alertCategoryList]='alertCategoryList' [alertTypeList]='alertTypeList' [alertCriticalityList]='alertCriticalityList' [vehicleList]='vehicleList'>
           </app-alerts-filter>        
         </div>  
         <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>

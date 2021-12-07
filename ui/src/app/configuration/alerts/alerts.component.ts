@@ -13,6 +13,7 @@ import { AlertService } from 'src/app/services/alert.service';
 import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dialog.service';
 import { ReportMapService } from '../../report/report-map.service';
 import { Util } from 'src/app/shared/util';
+import { ReplaySubject } from 'rxjs';
 
 @Component({
   selector: 'app-alerts',
@@ -32,8 +33,10 @@ export class AlertsComponent implements OnInit {
   actionType: any = '';
   UnitTypeVal: any;
   selectedRowData: any= [];
+  singleVehicle: any =[];
   titleText: string;
   translationData: any= {};
+  vehicleByVehGroupList: any= [];
   localStLanguage: any;
   dataSource: any;
   initData: any = [];
@@ -76,6 +79,8 @@ export class AlertsComponent implements OnInit {
   prefData: any;
   vehicleDisplayPreference: any= 'dvehicledisplay_VehicleIdentificationNumber';
 
+  public filteredVehicles: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+
   constructor(
     private translationService: TranslationService,
     private accountService: AccountService,
@@ -112,7 +117,8 @@ export class AlertsComponent implements OnInit {
       }
       this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
         this.processTranslation(data);
-        this.loadFiltersData();
+        // this.loadFiltersData();
+        this.loadDataBasedOnPrivileges();
       });
       this.translationService.getPreferences(this.localStLanguage).subscribe((res) => { 
         this.generalPreferences = res; this.getUnits();
@@ -170,6 +176,7 @@ export class AlertsComponent implements OnInit {
   }
 
   loadDataBasedOnPrivileges(){
+    this.showLoadingIndicator = true;
     this.alertService.getAlertFilterDataBasedOnPrivileges(this.accountId, this.accountRoleId).subscribe((data) => {
       this.alertCategoryTypeMasterData = data["enumTranslation"];
       this.alertCategoryTypeFilterData = data["alertCategoryFilterRequest"];
@@ -178,6 +185,11 @@ export class AlertsComponent implements OnInit {
       let alertTypeMap = new Map();
       this.alertCategoryTypeFilterData.forEach(element => {
         alertTypeMap.set(element.featureKey, element.featureKey);
+      });
+
+      this.alertCriticalityList= this.alertCategoryTypeMasterData.filter(item => item.type == 'U');
+      this.alertCriticalityList.forEach(element => {
+        element["value"]= this.translationData[element["key"]];
       });
 
       if(alertTypeMap != undefined){
@@ -189,30 +201,85 @@ export class AlertsComponent implements OnInit {
         });
       }
 
+      this.alertTypeList = this.alertTypeListBasedOnPrivilege;
+     
+      if(this.alertTypeList.length != 0){
+        this.alertCategoryTypeMasterData.forEach(element => {
+          this.alertTypeList.forEach(item => {
+            if(item.parentEnum == element.enum && element.parentEnum == ""){
+              element["value"]= this.translationData[element["key"]];
+              this.alertCategoryList.push(element);
+            }
+          });
+        });
+        this.alertCategoryList = this.getUnique(this.alertCategoryList, "enum")
+      }
+
       this.associatedVehicleData.forEach(element => {
         if(element.vehicleGroupDetails != ""){
           let vehicleGroupDetails= element.vehicleGroupDetails.split(",");
           vehicleGroupDetails.forEach(item => {
             let itemSplit = item.split("~");
-            // if(itemSplit[2] != 'S') {
+            if(itemSplit[2] != 'S') {
             let vehicleGroupObj= {
               "vehicleGroupId" : itemSplit[0],
-              "vehicleGroupName" : itemSplit[1]
+              "vehicleGroupName" : itemSplit[1],
+              "vehicleId" : parseInt(element.vehicleId)
             }
             this.vehicleGroupListBasedOnPrivilege.push(vehicleGroupObj);
-          //  }
+            this.vehicleList.push(vehicleGroupObj);
+           }
+           else{
+            this.singleVehicle.push(element);
+           }
           });
         }
 
-        this.vehicleListBasedOnPrivilege.push({"vehicleId" : element.vehicleId});
+        // this.vehicleListBasedOnPrivilege.push({"vehicleId" : element.vehicleId});
       });
 
       this.vehicleGroupListBasedOnPrivilege = this.removeDuplicates(this.vehicleGroupListBasedOnPrivilege, "vehicleGroupId");
+      // this.vehicleList = this.vehicleGroupListBasedOnPrivilege;
+
+      this.vehicleByVehGroupList = this.getUniqueVINs([...this.associatedVehicleData, ...this.singleVehicle]);
+      // this.resetVehiclesFilter();
+      this.alertStatusList = [{
+        id: 1,
+        value: "A",
+        key: 'Active'
+      }, {
+        id: 2,
+        value: "I",
+        key: 'Suspended'
+      }
+      ]
 
       this.loadAlertsData();
     })
   }
 
+  getUniqueVINs(vinList: any){
+    let uniqueVINList = [];
+    for(let vin of vinList){
+      let vinPresent = uniqueVINList.map(element => element.vin).indexOf(vin.vin);
+      if(vinPresent == -1) {
+        uniqueVINList.push(vin);
+      }
+    }
+    return uniqueVINList;
+  }
+
+  getUnique(arr, comp) {
+
+    // store the comparison  values in array
+    const unique =  arr.map(e => e[comp])
+      // store the indexes of the unique objects
+      .map((e, i, final) => final.indexOf(e) === i && i)
+      // eliminate the false indexes & return unique objects
+    .filter((e) => arr[e]).map(e => arr[e]);
+
+    return unique;
+  }
 
   removeDuplicates(originalArray, prop) {
     var newArray = [];
