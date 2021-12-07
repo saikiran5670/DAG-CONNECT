@@ -99,7 +99,8 @@ namespace net.atos.daf.ct2.reports.repository
 
                     // new way To pull respective trip fleet position (One DB call for batch of 1000 trips)
                     string[] tripIds = data.Select(item => item.TripId).ToArray();
-                    List<LiveFleetPosition> lstLiveFleetPosition = await GetLiveFleetPosition(tripIds);
+                    string[] vinArr = new string[] { tripFilters.VIN };
+                    List<LiveFleetPosition> lstLiveFleetPosition = await GetLiveFleetPosition(tripIds, vinArr);
                     if (lstLiveFleetPosition.Count > 0)
                         foreach (TripDetails trip in data)
                         {
@@ -188,7 +189,7 @@ namespace net.atos.daf.ct2.reports.repository
             return lstLiveFleetPosition;
         }
 
-        private async Task<List<LiveFleetPosition>> GetLiveFleetPosition(String[] TripIds)
+        private async Task<List<LiveFleetPosition>> GetLiveFleetPosition(String[] TripIds, String[] vins)
         {
             try
             {
@@ -201,7 +202,7 @@ namespace net.atos.daf.ct2.reports.repository
                     foreach (var item in combineTrips)
                     {
                         // Collecting all batch to add under respective trip
-                        lstLiveFleetPosition.AddRange(await GetFleetOfTripWithINClause(item.ToArray()));
+                        lstLiveFleetPosition.AddRange(await GetFleetOfTripWithINClause(item.ToArray(), vins));
                     }
                 }
                 return lstLiveFleetPosition;
@@ -217,12 +218,13 @@ namespace net.atos.daf.ct2.reports.repository
         /// </summary>
         /// <param name="CommaSparatedTripIDs"> Comma Sparated Trip IDs (max 1000 ids)</param>
         /// <returns>List of LiveFleetPosition Object</returns>
-        private async Task<List<LiveFleetPosition>> GetFleetOfTripWithINClause(string[] CommaSparatedTripIDs)
+        private async Task<List<LiveFleetPosition>> GetFleetOfTripWithINClause(string[] CommaSparatedTripIDs, string[] vins)
         {
             try
             {
                 var parameterPosition = new DynamicParameters();
                 parameterPosition.Add("@trip_id", CommaSparatedTripIDs);
+                parameterPosition.Add("@vin", vins);
                 string queryPosition = @"select id, 
                                          vin,
                                     	 trip_id as Tripid,
@@ -234,7 +236,7 @@ namespace net.atos.daf.ct2.reports.repository
                                          co2_emission as Co2emission,
                                          message_time_stamp as MessageTimeStamp     
                                     from livefleet.livefleet_position_statistics
-                                    where trip_id = ANY (@trip_id) order by id desc";
+                                    where vin = ANY (@vin) and trip_id = ANY (@trip_id) order by id desc";
                 List<LiveFleetPosition> lstLiveFleetPosition = (List<LiveFleetPosition>)await _dataMartdataAccess.QueryAsync<LiveFleetPosition>(queryPosition, parameterPosition);
 
                 if (lstLiveFleetPosition.Count() > 0)
