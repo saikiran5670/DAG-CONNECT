@@ -277,8 +277,8 @@ export class ManagePoiGeofenceComponent implements OnInit {
       let latitude=0;
       let longitude=0;
       this.geoMarkerArray.push(row);
-      if(row.type != 'C')
-        this.addMarkersAndSetViewBoundsGeofence(this.map, row);
+      // if(row.type != 'C')
+        this.addMarkersAndSetViewBoundsGeofence(this.map, this.geoMarkerArray);
     }else{
       let arr = this.geoMarkerArray.filter(item => item.id != row.id);
       this.geoMarkerArray = arr;
@@ -441,13 +441,21 @@ export class ManagePoiGeofenceComponent implements OnInit {
     map.setZoom(16);
   }
 
-  addMarkersAndSetViewBoundsGeofence(map, row) {
+  addMarkersAndSetViewBoundsGeofence(map, geoMarkerArray) {
     let group = new H.map.Group();
     let locationObjArray= [];
-    row.nodes.forEach(element => {
-      locationObjArray.push(new H.map.Marker({lat:element.latitude, lng:element.longitude}));
-    });
+    geoMarkerArray.forEach(row => {
+    
+    if(row.type == 'C'){
+      locationObjArray.push(new H.map.Marker({lat:row.latitude, lng:row.longitude}));
+    } else {
+      row.nodes.forEach(element => {
+        locationObjArray.push(new H.map.Marker({lat:element.latitude, lng:element.longitude}));
+      });
+    }
+  });
 
+    group.removeAll();
     // add markers to the group
     group.addObjects(locationObjArray);
     map.addObject(group);

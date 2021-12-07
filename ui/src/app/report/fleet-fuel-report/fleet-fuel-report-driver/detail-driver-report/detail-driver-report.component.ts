@@ -2667,7 +2667,7 @@ setVehicleGroupAndVehiclePreSelection() {
         'FuelConsumed('+unitValuekm+')', 'FuelConsumption('+unitVal100km+')','CO2Emission('+ unitValkg2+')',  'Idle Duration(%)','PTO Duration(%)','Cruise Control Distance '+ccdOne+'('+unitValkmh+')%',
         'Cruise Control Distance '+ccdTwo+'('+unitValkmh+')%','Cruise Control Distance'+ccdThree+'('+unitValkmh+')%','Heavy Throttle Duration(%)','HarshBrakeDuration(%)', 'GrossWeightCombination('+unitValkg2+')', 'AverageTrafficClassification',
         'CCFuelConsumption('+unitVal100km+')','FuelConsumptionCCnonactive('+unitVal100km+')','IdlingConsumption','DPAScore','DPA Anticipation Score%','DPA Breaking Score%',
-        'Idling PTO Score (hh:mm:ss)','Idling with PTO%','Idling Without PTO (hh:mm:ss)','Idling Without PTO%','Foot Brake',
+        'Idling with PTO Score (hh:mm:ss)','Idling with PTO%','Idling Without PTO (hh:mm:ss)','Idling Without PTO%','Foot Brake',
         'CO2 Emmision(gr/km)','Idling Consumption With PTO('+unitVal100km+')'];
         const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name','Driver Name','Driver ID', 'Number Of Trips', 'Distance('+unitValkm+')', 'Fuel Consumed('+unitValuekm+')', 'Idle Duration(hh:mm)','Fuel Consumption('+unitVal100km+')', 'CO2 Emission('+ unitValkg1+')'];
         const summaryData= this.summaryNewObj;

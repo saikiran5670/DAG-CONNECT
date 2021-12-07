@@ -1,21 +1,21 @@
 <div class="full-width">
-       <div *ngIf='titleVisible' fxLayout="row" fxLayoutAlign="center center"
-      style='padding:10px; color:#fff; background: #5dc24e;' class='margin-bottom-sm'>
-      <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center" style='width:95%;'>
-        {{ vehicleUpdatedMsg }}
-      </div>
-      <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
-        <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
-      </div>
+  <div *ngIf='titleVisible' fxLayout="row" fxLayoutAlign="center center"
+    style='padding:10px; color:#fff; background: #5dc24e;' class='margin-bottom-sm'>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center" style='width:95%;'>
+      {{ vehicleUpdatedMsg }}
     </div>
-    <mat-card *ngIf='!updateViewStatus' class='mat-elevation-z'>
-      <!-- <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
+      <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
+    </div>
+  </div>
+  <mat-card *ngIf='!updateViewStatus' class='mat-elevation-z'>
+    <!-- <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
               <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
                 translationData.lblAllVehicleDetails || 'Vehicle Details' }}</span>
             </div>
           </div> -->
-      <!-- <div fxLayout="row" fxLayoutGap="50px" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+    <div fxLayout="row" fxLayoutGap="50px" fxLayoutAlign="space-between" class='margin-bottom-sm'>
             <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
               <mat-form-field appearance="outline">
                 <input matInput (keyup)="applyFilter($event.target.value)"
@@ -34,6 +34,7 @@
               </div>
           </div>
           <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
+          <cdk-virtual-scroll-viewport [itemSize]="10" style="height: 400px;"  (scrolledIndexChange)="onScroll($event)">
           <div *ngIf='initData.length > 0' id="vehicleMgmtData">
             <mat-table matTableExporter [dataSource]="dataSource" matSort #exporter="matTableExporter" [hiddenColumns]="[6]">
               <ng-container matColumnDef="name">
@@ -87,14 +88,20 @@
                   </button>
                 </mat-cell>
               </ng-container>
-              <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+              <mat-header-row *matHeaderRowDef="displayedColumns;sticky: true" ></mat-header-row>
               <mat-row *matRowDef="let row; columns: displayedColumns;">
               </mat-row>
           </mat-table>
-          <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
-          </div> -->
+         
+          <!-- <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator> -->
+          </div>
+          
+        </cdk-virtual-scroll-viewport>
+        <!-- <span style="margin-top:5px;">Total Count {{initData.length}} </span><br/>
+        <span style="margin-top:5px;">First Row Index{{index}} </span> -->
+
     
-      <app-data-table *ngIf="!showLoadingIndicator" [tableData]="initData" [translationData]="translationData"
+    <!-- <app-data-table *ngIf="!showLoadingIndicator" [tableData]="initData" [translationData]="translationData"
         [columnCodes]="columnCodes" [columnLabels]="columnLabels" [actionColumnElements]="actionColumnElements"
         [viewStatusColumnElements]="viewStatusColumnElements" showExport="true" exportFileName="Vehicle Details">
     
@@ -130,15 +137,16 @@
           </button>
         </ng-template>
     
-      </app-data-table>
-
+      </app-data-table> -->
+    
     </mat-card>
 
-    
 
-    <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
-    <app-edit-view-vehicle *ngIf='updateViewStatus' [actionType]='actionType' [translationData]="translationData"
-    [selectedRowData]="selectedRowData" (backToPage)='onVehicleUpdateView($event)' (updateRelationshipVehiclesData)="getRelationshipVehiclesData()"></app-edit-view-vehicle>
-    
-  
-  </div> 
+
+  <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
+  <app-edit-view-vehicle *ngIf='updateViewStatus' [actionType]='actionType' [translationData]="translationData"
+    [selectedRowData]="selectedRowData" (backToPage)='onVehicleUpdateView($event)'
+    (updateRelationshipVehiclesData)="getRelationshipVehiclesData()"></app-edit-view-vehicle>
+
+
+</div>
