@@ -211,7 +211,7 @@ namespace net.atos.daf.ct2.reports.repository
 
                     // new way To pull respective trip fleet position (One DB call for batch of 1000 trips)
                     string[] tripIds = lstFleetDetails.Select(item => item.Tripid).ToArray();
-                    List<LiveFleetPosition> lstLiveFleetPosition = await GetLiveFleetPosition(tripIds);
+                    List<LiveFleetPosition> lstLiveFleetPosition = await GetLiveFleetPosition(tripIds, fleetFuelFilters.VINs.ToArray());
                     if (lstLiveFleetPosition.Count > 0)
                         foreach (FleetFuelDetails trip in lstFleetDetails)
                         {
@@ -670,7 +670,7 @@ namespace net.atos.daf.ct2.reports.repository
 
                     // new way To pull respective trip fleet position (One DB call for batch of 1000 trips)
                     string[] tripIds = lstFleetDetails.Select(item => item.Tripid).ToArray();
-                    List<LiveFleetPosition> lstLiveFleetPosition = await GetLiveFleetPosition(tripIds);
+                    List<LiveFleetPosition> lstLiveFleetPosition = await GetLiveFleetPosition(tripIds, fleetFuelFilters.VINs.ToArray());
                     if (lstLiveFleetPosition.Count > 0)
                         foreach (FleetFuelDetails trip in lstFleetDetails)
                         {
@@ -846,7 +846,8 @@ namespace net.atos.daf.ct2.reports.repository
 
                     // new way To pull respective trip fleet position (One DB call for batch of 1000 trips)
                     string[] tripIds = lstFleetDetails.Select(item => item.Tripid).ToArray();
-                    List<LiveFleetPosition> lstLiveFleetPosition = await GetLiveFleetPosition(tripIds);
+                    string[] vinArr = new string[] { fleetFuelFiltersDriver.VIN };
+                    List<LiveFleetPosition> lstLiveFleetPosition = await GetLiveFleetPosition(tripIds, vinArr);
                     if (lstLiveFleetPosition.Count > 0)
                         foreach (FleetFuelDetails trip in lstFleetDetails)
                         {
