@@ -34,8 +34,8 @@ export class VehicleDetailsComponent implements OnInit {
   vehicleUpdatedMsg: any = '';
   @Output() updateRelationshipVehiclesData = new EventEmitter();
   // @ViewChild(MatPaginator) paginator: MatPaginator;
-  // @ViewChild(MatSort) sort: MatSort;
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
+  @ViewChild(MatSort) sort: MatSort;
+  // @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective
   initData: any = [];
