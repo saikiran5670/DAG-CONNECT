@@ -10,7 +10,7 @@ namespace net.atos.daf.ct2.rfms
         public List<AccelerationPedalPositionClass> AccumulateAccelerationPedalPositionClass(dynamic record)
         {
             var accClass = new List<AccelerationPedalPositionClass>();
-            if (record.accelerationpedalposclassmaxrange != null && record.accelerationpedalposclassminrange != null && record.accelerationpedalposclassdistrstep != null && record.accelerationpedalposclassdistr != null)
+            if (record.accelerationpedalposclassdistrarraytime != null && record.accelerationpedalposclassmaxrange != null && record.accelerationpedalposclassminrange != null && record.accelerationpedalposclassdistrstep != null && record.accelerationpedalposclassdistr != null)
 
             {
                 var accumulatedClassRequest = new AccumulatedClassRequest();
@@ -25,7 +25,7 @@ namespace net.atos.daf.ct2.rfms
 
                 //var accClass = new List<AccelerationPedalPositionClass>();
                 var intervals = GetPedalInterval(accumulatedClassRequest.MaxRange, accumulatedClassRequest.MinRange, accumulatedClassRequest.NoOfStep);
-                foreach (var item in intervals.Select((value, i) => new { i, value }))
+                foreach (var item in intervals?.Select((value, i) => new { i, value }))
                 {
                     accClass.Add(new AccelerationPedalPositionClass()
                     {
@@ -43,7 +43,7 @@ namespace net.atos.daf.ct2.rfms
         public List<RetarderTorqueClass> AccumulateRetarderTorqueClass(dynamic record)
         {
             var accClass = new List<RetarderTorqueClass>();
-            if (record.retardertorqueclassmaxrange != null && record.retardertorqueclassminrange != null && record.retardertorqueclassdistrstep != null && record.retardertorqueclassdistr != null)
+            if (record.retardertorqueclassdistrarray_time != null && record.retardertorqueclassmaxrange != null && record.retardertorqueclassminrange != null && record.retardertorqueclassdistrstep != null && record.retardertorqueclassdistr != null)
 
             {
                 var accumulatedClassRequest = new AccumulatedClassRequest();
@@ -74,7 +74,7 @@ namespace net.atos.daf.ct2.rfms
         public List<EngineTorqueAtCurrentSpeedClass> AccumulateEngineTorqueAtCurrentSpeedClass(dynamic record)
         {
             var accClass = new List<EngineTorqueAtCurrentSpeedClass>();
-            if (record.enginetorqueengineloadclassmaxrange != null && record.enginetorqueengineloadclassminrange != null && record.enginetorqueengineloadclassdistrstep != null && record.enginetorqueengineloadclassdistr != null)
+            if (record.enginetorqueengineloadclassdistrarraytime != null && record.enginetorqueengineloadclassmaxrange != null && record.enginetorqueengineloadclassminrange != null && record.enginetorqueengineloadclassdistrstep != null && record.enginetorqueengineloadclassdistr != null)
             {
                 var accumulatedClassRequest = new AccumulatedClassRequest();
 
