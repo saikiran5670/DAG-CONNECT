@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.atos.daf.common.ct2.utc.TimeFormatter;
+import net.atos.daf.ct2.common.realtime.postgresql.TripIndexJdbcSink;
 import net.atos.daf.ct2.common.realtime.postgresql.TripIndexSink;
 import net.atos.daf.ct2.common.util.DafConstants;
 import net.atos.daf.ct2.common.util.FlinkKafkaIndexDataConsumer;
@@ -60,7 +61,13 @@ public class TripIndexStreamingJob {
 						}
 					});
 
-			indexTripData.addSink(new TripIndexSink());
+			
+			TripIndexJdbcSink tripSink = new TripIndexJdbcSink();
+			
+			if("true".equals(envParams.get(DafConstants.JDBC_SINK_ENABLED)))
+				tripSink.saveTripIndexData(indexTripData, envParams);
+			else
+				indexTripData.addSink(new TripIndexSink());
 			
 			env.execute(envParams.get(DafConstants.INDEX_TRIP_STREAMING_JOB_NAME));
 
@@ -133,6 +140,7 @@ public class TripIndexStreamingJob {
 			else
 				indexTripData.setVEvtId(0);
 			
+			logger.debug("Trip index record ::{}",indexTripData);
 		} catch (Exception e) {
 			logger.error("Issue while mapping deserialized Index object to indexTripData object :: " + e);
 			logger.error("Issue while processing Index record :: " + idxMsg);
