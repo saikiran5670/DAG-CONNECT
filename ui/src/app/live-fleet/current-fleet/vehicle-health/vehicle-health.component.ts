@@ -1,5 +1,5 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { Component, ElementRef, Inject, Input, OnInit, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, ElementRef, Inject, Input, OnInit, OnDestroy, ViewChild, ChangeDetectorRef, EventEmitter, Output } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -107,6 +107,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
   obs: Observable<any>;
   healthDdataSource: MatTableDataSource<any>;
   map_key: any = '';
+  @Output() backToPage = new EventEmitter<object>();
 
 
   constructor(private _configService: ConfigService, private dataInterchangeService: DataInterchangeService,@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder,private organizationService: OrganizationService, private reportService: ReportService, private changeDetectorRef: ChangeDetectorRef) { 
@@ -1087,5 +1088,9 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
       }
     }
     return _date;
+  }
+
+  toBack(){
+    this.backToPage.emit();
   }
 }
