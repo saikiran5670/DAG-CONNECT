@@ -2,7 +2,7 @@ import { Inject } from '@angular/core';
 import { Input } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
 import { Color, Label } from 'ng2-charts';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -38,7 +38,7 @@ import { DataInterchangeService } from '../../../services/data-interchange.servi
   providers: [DatePipe]
 })
 
-export class FleetFuelReportDriverComponent implements OnInit {
+export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
   @Input() translationData: any = {};
   displayedColumns = ['driverName','driverID','vehicleName', 'vin', 'vehicleRegistrationNo', 'distance', 'averageDistancePerDay', 'averageSpeed',
   'maxSpeed', 'numberOfTrips', 'averageGrossWeightComb', 'fuelConsumed', 'fuelConsumption', 'cO2Emission',
@@ -79,7 +79,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
   endTimeDisplay: any = '23:59:59';
   selectedStartTime: any = '00:00';
   selectedEndTime: any = '23:59';
-  fleetFuelSearchData: any = {};
+  fleetFuelSearchData: any = JSON.parse(localStorage.getItem("globalSearchFilterData")) || {};
   localStLanguage: any;
   accountOrganizationId: any;
   wholeTripData: any = [];
@@ -676,9 +676,36 @@ export class FleetFuelReportDriverComponent implements OnInit {
         }
       });
     });
-
-
   }
+
+  ngOnDestroy() {
+    this.setFilterValues();
+  }
+  setFilterValues(){
+    this.fleetFuelSearchData["vehicleGroupDropDownValue"] = this.tripForm.controls.vehicleGroup.value;
+    this.fleetFuelSearchData["vehicleDropDownValue"] = this.tripForm.controls.vehicle.value;
+    this.fleetFuelSearchData["timeRangeSelection"] = this.selectionTab;
+    this.fleetFuelSearchData["startDateStamp"] = this.startDateValue;
+    this.fleetFuelSearchData["endDateStamp"] = this.endDateValue;
+    this.fleetFuelSearchData.testDate = this.startDateValue;
+    this.fleetFuelSearchData.filterPrefTimeFormat = this.prefTimeFormat;
+    if (this.prefTimeFormat == 24) {
+      let _splitStartTime = this.startTimeDisplay.split(':');
+      let _splitEndTime = this.endTimeDisplay.split(':');
+      this.fleetFuelSearchData["startTimeStamp"] = `${_splitStartTime[0]}:${_splitStartTime[1]}`;
+      this.fleetFuelSearchData["endTimeStamp"] = `${_splitEndTime[0]}:${_splitEndTime[1]}`;
+    } else {
+      this.fleetFuelSearchData["startTimeStamp"] = this.startTimeDisplay;
+      this.fleetFuelSearchData["endTimeStamp"] = this.endTimeDisplay;
+    }
+    this.setGlobalSearchData(this.fleetFuelSearchData);
+  }
+
+  setGlobalSearchData(globalSearchFilterData:any) {
+    this.fleetFuelSearchData["modifiedFrom"] = "fleetFuelDriver";
+    localStorage.setItem("globalSearchFilterData", JSON.stringify(globalSearchFilterData));
+  }
+
   loadfleetFuelDetails(_vinData: any){
     this.showLoadingIndicator=true;
     let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone);
@@ -1564,7 +1591,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
 
   setDefaultStartEndTime()
   {
-  if(!this.internalSelection && this.fleetFuelSearchData.modifiedFrom !== "" &&  ((this.fleetFuelSearchData.startTimeStamp || this.fleetFuelSearchData.endTimeStamp) !== "") ) {
+  if(!this.internalSelection &&  this.fleetFuelSearchData && this.fleetFuelSearchData?.modifiedFrom !== "" && ((this.fleetFuelSearchData?.startTimeStamp || this.fleetFuelSearchData?.endTimeStamp) !== "") ) {
     if(this.prefTimeFormat == this.fleetFuelSearchData.filterPrefTimeFormat){ // same format
       this.selectedStartTime = this.fleetFuelSearchData.startTimeStamp;
       this.selectedEndTime = this.fleetFuelSearchData.endTimeStamp;
@@ -1662,7 +1689,7 @@ setPrefFormatDate(){
 }
 
 setDefaultTodayDate(){
-  if(!this.internalSelection && this.fleetFuelSearchData.modifiedFrom !== "") {
+  if(!this.internalSelection && this.fleetFuelSearchData && this.fleetFuelSearchData.modifiedFrom !== "") {
     //console.log("---if fleetUtilizationSearchData startDateStamp exist")
     if(this.fleetFuelSearchData.timeRangeSelection !== ""){
       this.selectionTab = this.fleetFuelSearchData.timeRangeSelection;
