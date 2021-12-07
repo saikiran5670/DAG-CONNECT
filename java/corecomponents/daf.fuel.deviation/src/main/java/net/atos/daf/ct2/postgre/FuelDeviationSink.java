@@ -50,6 +50,7 @@ public class FuelDeviationSink extends RichSinkFunction<FuelDeviation> implement
 		}  catch (SQLException e) {
 			logger.error("Sql Issue while inserting data to fuelDeviation table ::{} ", e.getMessage());
 			logger.error("Sql Issue while inserting fuelDeviation record :: {}", statement);
+			e.printStackTrace();
 			throw e;
 		}catch (Exception e) {
 			logger.error("Issue while inserting data to fuelDeviation table ::{} ", e.getMessage());
@@ -94,13 +95,14 @@ public class FuelDeviationSink extends RichSinkFunction<FuelDeviation> implement
 	public void close() throws Exception {
 		try {
 			super.close();
+			logger.info("Releasing connection in FuelDeviationSink ::{}, statement::{} ", connection, statement);
+			
 			if(Objects.nonNull(statement)) {
 				statement.close();
 			}
-			logger.debug("In close() of FuelDeviationSink :: ");
-
+			
 			if (Objects.nonNull(connection)) {
-				logger.info("Releasing connection from FuelDeviation Job");
+				logger.debug("Releasing connection from FuelDeviation Job");
 				connection.close();
 			}
 		} catch (Exception e) {
