@@ -61,7 +61,8 @@ export class EditDriverDetailsComponent implements OnInit {
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / 
     ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} / 
     ${this.translationData.lblDriverManagement ? this.translationData.lblDriverManagement : "Driver Management"} / 
-    ${(this.actionType == 'edit') ? (this.translationData.lblEditDriverDetails ? this.translationData.lblEditDriverDetails : 'Edit Driver Details') : (this.translationData.lblViewDriverDetails ? this.translationData.lblViewDriverDetails : 'View Driver Details')}`;
+    ${(this.actionType == 'edit') ? (this.translationData.lblEditDriverDetails ? this.translationData.lblEditDriverDetails : 'Edit Driver Details') : 
+    (this.translationData.lblViewDriverDetails ? this.translationData.lblViewDriverDetails : 'View Driver Details')}`;
   }
 
   myFilter = (d: Date | null): boolean => {

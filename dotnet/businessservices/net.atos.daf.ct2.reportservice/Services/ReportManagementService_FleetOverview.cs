@@ -257,9 +257,17 @@ namespace net.atos.daf.ct2.reportservice.Services
                     }
                     //foreach (var element in result.ToList())
                     //{
-                    //    if ((element?.FleetOverviewAlert?.Count == 0) || (element?.FleetOverviewAlert?.Count > 0 && !element.FleetOverviewAlert.Any(y => resultEnum.Contains(y.AlertType))))
+                    //    if ((element?.FleetOverviewAlert?.Count == 0) || (element?.FleetOverviewAlert?.Count > 0))
                     //    {
-                    //        result.Remove(element);
+                    //        foreach (var alertItem in element.FleetOverviewAlert.ToList())
+                    //        {
+                    //            if (!resultEnum.Contains(alertItem.AlertType))
+                    //            {
+                    //                element.FleetOverviewAlert.Remove(alertItem);
+                    //            }
+
+                    //        }
+
                     //    }
                     //}
                     //fleetOverviewFilter.AlertLevel
@@ -392,9 +400,17 @@ namespace net.atos.daf.ct2.reportservice.Services
                         }
                         //foreach (var element in result.ToList())
                         //{
-                        //    if ((element?.FleetOverviewAlert?.Count == 0) || (element?.FleetOverviewAlert?.Count > 0 && !element.FleetOverviewAlert.Any(y => resultEnum.Contains(y.AlertType))))
+                        //    if ((element?.FleetOverviewAlert?.Count == 0) || (element?.FleetOverviewAlert?.Count > 0))
                         //    {
-                        //        result.Remove(element);
+                        //        foreach (var alertItem in element.FleetOverviewAlert.ToList())
+                        //        {
+                        //            if (!resultEnum.Contains(alertItem.AlertType))
+                        //            {
+                        //                element.FleetOverviewAlert.Remove(alertItem);
+                        //            }
+
+                        //        }
+
                         //    }
                         //}
                         //fleetOverviewFilter.AlertLevel

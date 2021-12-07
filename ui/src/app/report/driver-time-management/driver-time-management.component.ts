@@ -59,6 +59,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   startDateValue: any;
   endDateValue: any;
   last3MonthDate: any;
+  lastMonthDate: any;
   todayDate: any;
   onLoadData: any = [];
   tableInfoObj: any = {};
@@ -1349,6 +1350,7 @@ getExcelSummaryHeader(){
     this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
     this.last3MonthDate = this.getLast3MonthDate();
     this.todayDate = this.getTodayDate();
+    this.lastMonthDate = this.getLastMonthDate();
     // }
   }
 
@@ -1386,9 +1388,11 @@ getExcelSummaryHeader(){
   }
 
   getLastMonthDate(){
-    // let date = new Date();
     var date = Util.getUTCDate(this.prefTimeZone);
     date.setMonth(date.getMonth()-1);
+    date.setHours(0);
+    date.setMinutes(0);
+    date.setSeconds(0);
     return date;
   }
 
@@ -1452,14 +1456,14 @@ getExcelSummaryHeader(){
   changeStartDateEvent(event: MatDatepickerInputEvent<any>){
     this.internalSelection = true;
     let dateTime: any = '';
-    if(event.value._d.getTime() >= this.last3MonthDate.getTime()){ // CurTime > Last3MonthTime
+    if(event.value._d.getTime() >= this.lastMonthDate.getTime()){ // CurTime > lastMonthDate
       if(event.value._d.getTime() <= this.endDateValue.getTime()){ // CurTime < endDateValue
         dateTime = event.value._d;
       }else{
         dateTime = this.endDateValue; 
       }
     }else{ 
-      dateTime = this.last3MonthDate;
+      dateTime = this.lastMonthDate;
     }
     this.startDateValue = this.setStartEndDateTime(dateTime, this.selectedStartTime, 'start');
     this.resetdriverTimeFormControlValue(); // extra addded as per discuss with Atul

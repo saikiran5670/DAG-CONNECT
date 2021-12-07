@@ -77,7 +77,8 @@ export class EditViewVehicleComponent implements OnInit {
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / 
     ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} / 
     ${this.translationData.lblVehicleManagement ? this.translationData.lblVehicleManagement : "Vehicle Management"} / 
-    ${(this.actionType == 'edit') ? (this.translationData.lblEditVehicleDetails ? this.translationData.lblEditVehicleDetails : 'Edit Vehicle Details') : (this.translationData.lblViewVehicleDetails ? this.translationData.lblViewVehicleDetails : 'View Vehicle Details') }`;
+    ${(this.actionType == 'edit') ? (this.translationData.lblEditVehicleDetails ? this.translationData.lblEditVehicleDetails : 'Edit Vehicle Details') :
+    (this.translationData.lblViewVehicleDetails ? this.translationData.lblViewVehicleDetails : 'View Vehicle Details') }`;
   }
 
   onCancel(){

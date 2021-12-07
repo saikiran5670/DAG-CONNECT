@@ -173,18 +173,18 @@ namespace net.atos.daf.ct2.rfms.response
             }
 
 
-            if (record.HrTotalVehicleDistance != null)
+            if (record.totalvehicledistance != null)
             {
-                vehicleStatus.HrTotalVehicleDistance = Convert.ToString(record.HrTotalVehicleDistance);
+                vehicleStatus.HrTotalVehicleDistance = record.totalvehicledistance;
             }
 
-            if (record.totalEngineHours != null)
+            if (record.totalenginehours != null)
             {
-                vehicleStatus.TotalEngineHours = Convert.ToString(record.totalEngineHours);
+                vehicleStatus.TotalEngineHours = record.totalenginehours;
             }
-            if (record.totalFuelUsedGaseous != null)
+            if (record.enginetotalfuelused != null)
             {
-                vehicleStatus.TotalFuelUsedGaseous = Convert.ToString(record.totalFuelUsedGaseous);
+                vehicleStatus.EngineTotalFuelUsed = record.enginetotalfuelused;
             }
             if (record.grossCombinationVehicleWeight != null)
             {
