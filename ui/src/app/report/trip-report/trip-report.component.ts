@@ -1306,9 +1306,9 @@ export class TripReportComponent implements OnInit, OnDestroy {
     // }
     this.resetTripFormControlValue();
     this.setVehicleGroupAndVehiclePreSelection();
-    // if (this.showBack) {
-    //   this.onSearch();
-    // }
+    if (this.showBack) {
+      this.onSearch();
+    }
   }
   compare(a, b) {
     if (a.vehicleGroupName< b.vehicleGroupName) {
