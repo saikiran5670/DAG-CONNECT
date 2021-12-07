@@ -35,6 +35,12 @@ export class EditViewVehicleComponent implements OnInit {
       vehicleModel: new FormControl({value: null, disabled: true}),
       associatedGroups: new FormControl({value: null, disabled: true}),
       relationship: new FormControl({value: null, disabled: true}),
+    },
+    {
+      validator: [
+        CustomValidators.specialCharValidationForName('vehicleName') // specialCharValidationForNameWithoutRequired
+       
+      ]
     });
     if(this.actionType == 'edit' || this.actionType == 'view'){
       this.setDefaultValue();
