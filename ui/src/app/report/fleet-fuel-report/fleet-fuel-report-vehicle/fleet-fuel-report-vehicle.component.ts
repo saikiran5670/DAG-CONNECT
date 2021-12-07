@@ -1645,7 +1645,7 @@ setDefaultTodayDate(){
     this.FuelData =[];
     this.tableInfoObj = [];
     // this.rankingData =[];
-    // this.dataSource2 =[];
+     this.dataSource2 =[];
     // this.rankingColumns=[];
     this.displayData =[];
     this.vehicleSelected = false;

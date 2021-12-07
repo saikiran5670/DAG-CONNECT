@@ -183,7 +183,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                 var result = await _reportManager.GetFleetOverviewDetails(fleetOverviewFilter);
 
                 //Get the enum list for the feature                
-                //var resultEnum = await _reportManager.GetEnumList(alertFeatureIds);
+                var resultEnum = await _reportManager.GetEnumList(alertFeatureIds);
 
                 //remove the alerts dont have visibility for user
                 foreach (var element in result)
@@ -255,21 +255,20 @@ namespace net.atos.daf.ct2.reportservice.Services
                             }
                         }
                     }
-                    //foreach (var element in result.ToList())
-                    //{
-                    //    if ((element?.FleetOverviewAlert?.Count == 0) || (element?.FleetOverviewAlert?.Count > 0))
-                    //    {
-                    //        foreach (var alertItem in element.FleetOverviewAlert.ToList())
-                    //        {
-                    //            if (!resultEnum.Contains(alertItem.AlertType))
-                    //            {
-                    //                element.FleetOverviewAlert.Remove(alertItem);
-                    //            }
-
-                    //        }
-
-                    //    }
-                    //}
+                    //Fleet overview details for alert access 
+                    foreach (var element in result.ToList())
+                    {
+                        if ((element?.FleetOverviewAlert?.Count == 0) || (element?.FleetOverviewAlert?.Count > 0))
+                        {
+                            foreach (var alertItem in element.FleetOverviewAlert.ToList())
+                            {
+                                if (!resultEnum.Contains(alertItem.AlertType))
+                                {
+                                    element.FleetOverviewAlert.Remove(alertItem);
+                                }
+                            }
+                        }
+                    }
                     //fleetOverviewFilter.AlertLevel
                     if (fleetOverviewFilter.AlertLevel?.Count > 0)
                     {
@@ -398,21 +397,20 @@ namespace net.atos.daf.ct2.reportservice.Services
                                 }
                             }
                         }
-                        //foreach (var element in result.ToList())
-                        //{
-                        //    if ((element?.FleetOverviewAlert?.Count == 0) || (element?.FleetOverviewAlert?.Count > 0))
-                        //    {
-                        //        foreach (var alertItem in element.FleetOverviewAlert.ToList())
-                        //        {
-                        //            if (!resultEnum.Contains(alertItem.AlertType))
-                        //            {
-                        //                element.FleetOverviewAlert.Remove(alertItem);
-                        //            }
-
-                        //        }
-
-                        //    }
-                        //}
+                        //Fleet overview details for alert access
+                        foreach (var element in result.ToList())
+                        {
+                            if ((element?.FleetOverviewAlert?.Count == 0) || (element?.FleetOverviewAlert?.Count > 0))
+                            {
+                                foreach (var alertItem in element.FleetOverviewAlert.ToList())
+                                {
+                                    if (!resultEnum.Contains(alertItem.AlertType))
+                                    {
+                                        element.FleetOverviewAlert.Remove(alertItem);
+                                    }
+                                }
+                            }
+                        }
                         //fleetOverviewFilter.AlertLevel
                         if (fleetOverviewFilter.AlertLevel?.Count > 0)
                         {

@@ -29,13 +29,14 @@ public class LiveFleetTripIndexDao implements Serializable {
 			if (Objects.nonNull(indexTripData)) {
 
 				tripIndexQry = fillStatement(tripIndexQry, indexTripData);
-				//logger.info("LiveFleetTripIndexDao indexTripData:: "+indexTripData);
+				//logger.info("LiveFleetTripIndexDao indexTripData:: {}",indexTripData);
 				tripIndexQry.execute();
 			} 
 		} catch (SQLException e) {
 			logger.error("Sql Issue while inserting data to indexMessageData table :{} ", e.getMessage());
 			logger.error("Issue while inserting TripIndex record :: {}", tripIndexQry);
 			logger.error("Issue while inserting TripIndex, connection ::{}, indexTripData :{} " , connection, indexTripData);
+			e.printStackTrace();
 			throw e;
 		} catch (Exception e) {
 			logger.error("Issue while inserting data to indexMessageData table :{} ", e.getMessage());
@@ -50,7 +51,7 @@ public class LiveFleetTripIndexDao implements Serializable {
 
 		statement.setString(1, rec.getTripId());
 
-		//logger.info("TripIndex Sink TripId : " + rec.getTripId() + " Increment : " + rec.getIncrement());
+		//logger.info("TripIndex Sink TripId ::{},  Increment ::{} " , rec.getTripId() ,rec.getIncrement());
 		
 		if (rec.getVin() != null) {
 			statement.setString(2, rec.getVin());
