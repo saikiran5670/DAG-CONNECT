@@ -57,7 +57,7 @@
             <mat-form-field appearance="outline" class="full-width">
               <!-- <input maxlength="50" placeholder="{{ translationData.lblEnterRegistrationNumber || 'Enter Registration Number' }}" matInput
                 formControlName="registrationNumber"> -->
-                <input maxlength="60" placeholder="{{ translationData.lblEnterRegistrationNumber }}" matInput
+                <input maxlength="50" placeholder="{{ translationData.lblEnterRegistrationNumber }}" matInput
                 formControlName="registrationNumber" required>
             </mat-form-field>
             <mat-error *ngIf="vehicleForm.get('registrationNumber').hasError('required')">
