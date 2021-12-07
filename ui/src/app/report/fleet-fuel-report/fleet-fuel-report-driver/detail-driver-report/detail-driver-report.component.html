@@ -610,7 +610,7 @@
                           <!-- <mat-cell *matCellDef="let row">{{ row.convertedAverageDistance != '' ? row.convertedAverageDistance : '-' }}</mat-cell> -->
                         </ng-container>           
                         <ng-container matColumnDef="idleDuration">             
-                          <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_idleduration')">{{ translationData.lblIdleDuration || 'Idle Duration%' }}              
+                          <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_idleduration')">{{ translationData.lblIdleDuration || 'Idle Duration%' }} (%)             
                           </mat-header-cell>          
                           <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_idleduration')">             
                            <span>{{row.idleDurationPercentage}}</span>              

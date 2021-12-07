@@ -162,8 +162,8 @@ namespace net.atos.daf.ct2.reports.repository
                                                          		  , round(fd.idle_duration,2)                            					as IdleDuration
                                                                   , round(fd.idle_duration_percentage,2)                 					as IdleDurationPercentage
                                                          		  , round(fd.pto_duration,2)                             					as PTODuration
-                                                         		  ,case when numoftripswithharshbreak>0 then round (fd.harsh_brake_duration/numberoftrips, 2) 
-													  			      else round (fd.harsh_brake_duration/numberoftrips,2) end  						    as HarshBrakeDuration
+                                                         		  ,case when numoftripswithharshbreak>0 then round (fd.harsh_brake_duration/numoftripswithharshbreak, 5) 
+													  			      else round (fd.harsh_brake_duration/numoftripswithharshbreak,5) end  						    as HarshBrakeDuration
                                                          		  , round(fd.heavy_throttle_duration/numberoftrips,2)                  					as HeavyThrottleDuration
                                                          		  , round(fd.cruise_control_distance_30_50,2)            					as CruiseControlDistance3050
                                                          		  , round(fd.cruise_control_distance_50_75,2)            					as CruiseControlDistance5075
@@ -211,7 +211,7 @@ namespace net.atos.daf.ct2.reports.repository
 
                     // new way To pull respective trip fleet position (One DB call for batch of 1000 trips)
                     string[] tripIds = lstFleetDetails.Select(item => item.Tripid).ToArray();
-                    List<LiveFleetPosition> lstLiveFleetPosition = await GetLiveFleetPosition(tripIds);
+                    List<LiveFleetPosition> lstLiveFleetPosition = await GetLiveFleetPosition(tripIds, fleetFuelFilters.VINs.ToArray());
                     if (lstLiveFleetPosition.Count > 0)
                         foreach (FleetFuelDetails trip in lstFleetDetails)
                         {
@@ -335,8 +335,8 @@ namespace net.atos.daf.ct2.reports.repository
                                                   		  , round(fd.idle_duration_percentage,2)                   					as IdleDurationPercentage
                                                          , round(fd.idle_duration,2)                               					as IdleDuration
                                                   		  , round(fd.pto_duration,2)                               					as PTODuration
-                                                  		  ,case when numoftripswithharshbreak>0 then round (fd.harsh_brake_duration/numberoftrips, 2) 
-													  			      else round (fd.harsh_brake_duration/numberoftrips,2) end  				    as HarshBrakeDuration
+                                                  		  ,case when numoftripswithharshbreak>0 then round (fd.harsh_brake_duration/numoftripswithharshbreak, 5) 
+													  			      else round (fd.harsh_brake_duration/numoftripswithharshbreak,5) end  				    as HarshBrakeDuration
                                                   		  , round(fd.heavy_throttle_duration/numberoftrips,2)                    					as HeavyThrottleDuration
                                                   		  , round(fd.cruise_control_distance_30_50,2)              					as CruiseControlDistance3050
                                                   		  , round(fd.cruise_control_distance_50_75,2)              					as CruiseControlDistance5075
@@ -670,7 +670,7 @@ namespace net.atos.daf.ct2.reports.repository
 
                     // new way To pull respective trip fleet position (One DB call for batch of 1000 trips)
                     string[] tripIds = lstFleetDetails.Select(item => item.Tripid).ToArray();
-                    List<LiveFleetPosition> lstLiveFleetPosition = await GetLiveFleetPosition(tripIds);
+                    List<LiveFleetPosition> lstLiveFleetPosition = await GetLiveFleetPosition(tripIds, fleetFuelFilters.VINs.ToArray());
                     if (lstLiveFleetPosition.Count > 0)
                         foreach (FleetFuelDetails trip in lstFleetDetails)
                         {
@@ -846,7 +846,8 @@ namespace net.atos.daf.ct2.reports.repository
 
                     // new way To pull respective trip fleet position (One DB call for batch of 1000 trips)
                     string[] tripIds = lstFleetDetails.Select(item => item.Tripid).ToArray();
-                    List<LiveFleetPosition> lstLiveFleetPosition = await GetLiveFleetPosition(tripIds);
+                    string[] vinArr = new string[] { fleetFuelFiltersDriver.VIN };
+                    List<LiveFleetPosition> lstLiveFleetPosition = await GetLiveFleetPosition(tripIds, vinArr);
                     if (lstLiveFleetPosition.Count > 0)
                         foreach (FleetFuelDetails trip in lstFleetDetails)
                         {
