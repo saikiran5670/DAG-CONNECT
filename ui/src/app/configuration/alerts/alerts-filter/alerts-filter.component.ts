@@ -21,7 +21,11 @@ export class AlertsFilterComponent implements OnInit {
   @Input() vehicleGroupList: any= [];
   @Input() alertStatusList: any= [];
   @Input() initData : any;
-
+  @Input() filteredVehicles: any;
+  @Input() vehicleByVehGroupList: any;
+  @Input() associatedVehicleData :any;
+  singleVehicle = [];
+  vehicle_group_selected:any;
   isDisabledAlerts = true; 
   localData : any; 
   tempData: any; 
@@ -86,9 +90,14 @@ export class AlertsFilterComponent implements OnInit {
         }
       }  
     });
+    this.resetVehiclesFilter();
     });
    
   } 
+
+  resetVehiclesFilter(){
+    this.filteredVehicles.next(this.vehicleByVehGroupList.slice());
+  }
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
@@ -141,13 +150,16 @@ export class AlertsFilterComponent implements OnInit {
           event_val = event.value.enum; 
         }
         }else if(filter == "vehicleGroupName"){
-          if(event.value == ''){
+          if(event.value == ''){ //for all option
             this.alertVehicleGroup='';
             event_val = event.value.trim();  
           }
           else{
-            if(event.value.vehicleName != undefined){
-              event_val = event.value.vehicleName.trim();
+            if(event.value!= undefined){
+              this.vehicle_group_selected= event.value.value;
+              this.vehicleByVehGroupList= this.associatedVehicleData.filter(item => item.vehicleGroupDetails.includes(this.vehicle_group_selected+"~"));
+              this.resetVehiclesFilter();
+            event_val = event.value.vehicleName.trim();
             }
             else{
               event_val = event.value.value.trim();  
@@ -165,6 +177,17 @@ export class AlertsFilterComponent implements OnInit {
    this.filterListValues[filter] =event_val;
    this.dataSource.filter = JSON.stringify(this.filterListValues);
    this.filterValues.emit(this.dataSource);    
+  }
+  
+  getUniqueVINs(vinList: any){
+    let uniqueVINList = [];
+    for(let vin of vinList){
+      let vinPresent = uniqueVINList.map(element => element.vin).indexOf(vin.vin);
+      if(vinPresent == -1) {
+        uniqueVINList.push(vin);
+      }
+    }
+    return uniqueVINList;
   }
   
   createFilter() {

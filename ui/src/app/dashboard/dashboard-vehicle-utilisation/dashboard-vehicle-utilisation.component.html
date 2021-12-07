@@ -119,15 +119,15 @@
       <div fxLayout="row" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
         <div class="areaWidth min-width-33-per block1" matTooltip="{{translationData.lblClicktoviewmoredetails || 'Click to view more details'}}"
         [hidden]="!checkForPreference('alertlast24hours_logisticalert')"  (click)="gotoLogBookFromLogistic()" >
-          <div style='font: 500 15px/30px Roboto, "Helvetica Neue", sans-serif;;' class="full width">{{ translationData.lblLogistics }}<span>{{logisticCount}}</span></div>
+          <div style='font: 500 15px/30px Roboto, "Helvetica Neue", sans-serif;;' class="full width">{{ translationData.lblLogistics }}&nbsp;<span>{{logisticCount}}</span></div>
          </div>
         <div class="areaWidth min-width-33-per block2" matTooltip="{{translationData.lblClicktoviewmoredetails || 'Click to view more details'}}"
         [hidden]="!checkForPreference('alertlast24hours_fueldriveralerts')"  (click)="gotoLogBookFromFuel()" >
-          <div style='font: 500 15px/30px Roboto, "Helvetica Neue", sans-serif;' class="full width">{{ translationData.lblFuelAndDriver }}<span>{{fuelAndDriverCount}}</span></div>
+          <div style='font: 500 15px/30px Roboto, "Helvetica Neue", sans-serif;' class="full width">{{ translationData.lblFuelAndDriver }}&nbsp;<span>{{fuelAndDriverCount}}</span></div>
          </div>
         <div  class="areaWidth min-width-33-per block3" matTooltip="{{translationData.lblClicktoviewmoredetails || 'Click to view more details'}}"
         [hidden]="!checkForPreference('alertlast24hours_repairmaintenancealerts')" (click)="gotoLogBookFromRepair()" >
-          <div style='font: 500 15px/30px Roboto, "Helvetica Neue", sans-serif;' class="full width">{{ translationData.lblRepairAndMaintenance }}<span>{{repairAndMaintenanceCount}}</span></div>
+          <div style='font: 500 15px/30px Roboto, "Helvetica Neue", sans-serif;' class="full width">{{ translationData.lblRepairAndMaintenance }}&nbsp;<span>{{repairAndMaintenanceCount}}</span></div>
         </div>
       </div>
     </div>
