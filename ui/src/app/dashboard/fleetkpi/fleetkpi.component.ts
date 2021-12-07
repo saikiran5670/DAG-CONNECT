@@ -1988,7 +1988,7 @@ export class FleetkpiComponent implements OnInit {
     this.fuelConsumptionThreshold = _thresholdValue;
     let calculationValue = this.dashboardService.calculateKPIPercentage(this.currentFuelConsumption,this.activeVehicles,convertedThreshold,this.totalDays);
     let targetValue = calculationValue['cuttOff'] //this.reportMapService.getFuelConsumedUnits(calculationValue['cuttOff'],this.prefUnitFormat,true); // calculationValue['cuttOff'] //
-    this.cutOffFuelConsumption = calculationValue['cuttOff'] //this.reportMapService.getFuelConsumedUnits(calculationValue['cuttOff'],this.prefUnitFormat,true); //calculationValue['cuttOff'] //
+    this.cutOffFuelConsumption = calculationValue['cuttOff'].toFixed(2); //this.reportMapService.getFuelConsumedUnits(calculationValue['cuttOff'],this.prefUnitFormat,true); //calculationValue['cuttOff'] //
     let currentPercent = (this.currentFuelConsumption / this.cutOffFuelConsumption ) * 100;//calculationValue['kpiPercent'];
     
      
