@@ -712,7 +712,7 @@
 
             <ng-container matColumnDef="idleDuration">
               <mat-header-cell *matHeaderCellDef mat-sort-header
-                [hidden]="!checkForPreference('vehicledetails_idleduration')">{{ translationData.lblIdleDuration }}
+                [hidden]="!checkForPreference('vehicledetails_idleduration')">{{ translationData.lblIdleDuration }} (%)
                 <span style="font-weight: normal;"></span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idleduration')">
