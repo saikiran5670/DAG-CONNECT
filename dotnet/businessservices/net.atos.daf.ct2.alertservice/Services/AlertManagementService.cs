@@ -486,7 +486,7 @@ namespace net.atos.daf.ct2.alertservice.Services
             {
                 var response = new AlertCategoryFilterResponse();
                 var enumTranslationList = await _alertManager.GetAlertCategory();
-                var notificationTemplate = await GetNotificationTemplate(new AccountIdRequest { AccountId = request.AccountId }, context);
+                //var notificationTemplate = await GetNotificationTemplate(new AccountIdRequest { AccountId = request.AccountId }, context);
                 foreach (var item in enumTranslationList)
                 {
                     response.EnumTranslation.Add(_mapper.MapEnumTranslation(item));
@@ -526,13 +526,13 @@ namespace net.atos.daf.ct2.alertservice.Services
                         );
 
                 }
-                if (notificationTemplate.NotificationTemplatelist != null)
-                {
-                    foreach (var item in notificationTemplate.NotificationTemplatelist)
-                    {
-                        response.NotificationTemplate.Add(_mapper.MapNotificationTemplate(item));
-                    }
-                }
+                //if (notificationTemplate.NotificationTemplatelist != null)
+                //{
+                //    foreach (var item in notificationTemplate.NotificationTemplatelist)
+                //    {
+                //        response.NotificationTemplate.Add(_mapper.MapNotificationTemplate(item));
+                //    }
+                //}
                 response.Message = AlertConstants.ALERT_FILTER_SUCCESS_MSG;
                 response.Code = ResponseCode.Success;
                 //_logger.Info("Get method in alert service called.");
