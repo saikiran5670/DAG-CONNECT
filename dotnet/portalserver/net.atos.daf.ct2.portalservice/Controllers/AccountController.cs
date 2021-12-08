@@ -346,7 +346,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 AccountBusinessService.AccountFilter accountFilter = new AccountBusinessService.AccountFilter();
                 accountFilter = _mapper.ToAccountFilter(request);
-                accountFilter.OrganizationId = GetContextOrgId();
+                accountFilter.OrganizationId = _userDetails.OrgId;// GetContextOrgId(); // bug 20705
                 AccountBusinessService.AccountDataList accountResponse = await _accountClient.GetAsync(accountFilter);
                 List<AccountResponse> response = new List<AccountResponse>();
                 response = _mapper.ToAccounts(accountResponse);
@@ -1903,7 +1903,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 int sRoleId = _userDetails.RoleId;
                 int sOrgId = _userDetails.OrgId;
 
-                await _auditHelper.AddLogs(DateTime.Now, "Account Component",
+               await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                               "Account controller", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                               "SwitchOrgContext method in Account controller", _userDetails.AccountId, _userDetails.AccountId,
                               _userDetails.ToString(), _userDetails);
