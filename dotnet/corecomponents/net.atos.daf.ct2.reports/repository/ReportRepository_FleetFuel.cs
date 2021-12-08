@@ -157,13 +157,13 @@ namespace net.atos.daf.ct2.reports.repository
 													                 else round (fd.average_gross_weight_comb,3) end  as AverageGrossWeightComb
                                                          		  , round(fd.fuel_consumed,2)                            					as FuelConsumed
                                                          		  , round(fd.fuel_consumption,5)                         					as FuelConsumption
-                                                         		  , round(fd.co2_emission,2)                             					as CO2Emission
+                                                         		  , round(fd.co2_emission,4)                             					as CO2Emission
                                                                   , round(((fd.etl_gps_distance * 2640)/100)/1000,4) as CO2Emmision
                                                          		  , round(fd.idle_duration,2)                            					as IdleDuration
                                                                   , round(fd.idle_duration_percentage,2)                 					as IdleDurationPercentage
                                                          		  , round(fd.pto_duration,2)                             					as PTODuration
-                                                         		  ,case when numoftripswithharshbreak>0 then round (fd.harsh_brake_duration/numberoftrips, 2) 
-													  			      else round (fd.harsh_brake_duration/numberoftrips,2) end  						    as HarshBrakeDuration
+                                                         		  ,case when numoftripswithharshbreak>0 then round (fd.harsh_brake_duration/numoftripswithharshbreak, 5) 
+													  			      else round (fd.harsh_brake_duration/numoftripswithharshbreak,5) end  						    as HarshBrakeDuration
                                                          		  , round(fd.heavy_throttle_duration/numberoftrips,2)                  					as HeavyThrottleDuration
                                                          		  , round(fd.cruise_control_distance_30_50,2)            					as CruiseControlDistance3050
                                                          		  , round(fd.cruise_control_distance_50_75,2)            					as CruiseControlDistance5075
@@ -211,7 +211,7 @@ namespace net.atos.daf.ct2.reports.repository
 
                     // new way To pull respective trip fleet position (One DB call for batch of 1000 trips)
                     string[] tripIds = lstFleetDetails.Select(item => item.Tripid).ToArray();
-                    List<LiveFleetPosition> lstLiveFleetPosition = await GetLiveFleetPosition(tripIds);
+                    List<LiveFleetPosition> lstLiveFleetPosition = await GetLiveFleetPosition(tripIds, fleetFuelFilters.VINs.ToArray());
                     if (lstLiveFleetPosition.Count > 0)
                         foreach (FleetFuelDetails trip in lstFleetDetails)
                         {
@@ -330,13 +330,13 @@ namespace net.atos.daf.ct2.reports.repository
 													                 else round (fd.average_gross_weight_comb,3) end  as AverageGrossWeightComb
                                                           , round(fd.fuel_consumed,2)                              					as FuelConsumed
                                                   		  , round((fd.fuel_consumed/case when fd.etl_gps_distance > 0 then fd.etl_gps_distance else 1 end),5)                         as FuelConsumption
-                                                  		  , round(fd.co2_emission,2)                               					as CO2Emission
+                                                  		  , round(fd.co2_emission,4)                               					as CO2Emission
                                                           , round(((fd.etl_gps_distance * 2640)/100)/1000,4) as CO2Emmision
                                                   		  , round(fd.idle_duration_percentage,2)                   					as IdleDurationPercentage
                                                          , round(fd.idle_duration,2)                               					as IdleDuration
                                                   		  , round(fd.pto_duration,2)                               					as PTODuration
-                                                  		  ,case when numoftripswithharshbreak>0 then round (fd.harsh_brake_duration/numberoftrips, 2) 
-													  			      else round (fd.harsh_brake_duration/numberoftrips,2) end  				    as HarshBrakeDuration
+                                                  		  ,case when numoftripswithharshbreak>0 then round (fd.harsh_brake_duration/numoftripswithharshbreak, 5) 
+													  			      else round (fd.harsh_brake_duration/numoftripswithharshbreak,5) end  				    as HarshBrakeDuration
                                                   		  , round(fd.heavy_throttle_duration/numberoftrips,2)                    					as HeavyThrottleDuration
                                                   		  , round(fd.cruise_control_distance_30_50,2)              					as CruiseControlDistance3050
                                                   		  , round(fd.cruise_control_distance_50_75,2)              					as CruiseControlDistance5075
@@ -614,7 +614,7 @@ namespace net.atos.daf.ct2.reports.repository
 				  , round(fd.average_gross_weight_comb, 2) as AverageGrossWeightComb
 				  , round((fd.fuel_consumed), 2)              As FuelConsumed
                    , round((fd.fuel_consumption), 2)           As FuelConsumption
-                    , round((fd.co2_emission), 2)           As CO2Emission
+                    , round((fd.co2_emission), 4)           As CO2Emission
                      , round(fd.idle_duration, 2)                                      as IdleDuration
                     , round(fd.idle_duration_percentage, 2)                                      as IdleDurationPercentage
 				  , round(fd.pto_duration, 2) as PTODuration
@@ -670,7 +670,7 @@ namespace net.atos.daf.ct2.reports.repository
 
                     // new way To pull respective trip fleet position (One DB call for batch of 1000 trips)
                     string[] tripIds = lstFleetDetails.Select(item => item.Tripid).ToArray();
-                    List<LiveFleetPosition> lstLiveFleetPosition = await GetLiveFleetPosition(tripIds);
+                    List<LiveFleetPosition> lstLiveFleetPosition = await GetLiveFleetPosition(tripIds, fleetFuelFilters.VINs.ToArray());
                     if (lstLiveFleetPosition.Count > 0)
                         foreach (FleetFuelDetails trip in lstFleetDetails)
                         {
@@ -783,7 +783,7 @@ namespace net.atos.daf.ct2.reports.repository
 				  , round (fd.average_gross_weight_comb,2)               as AverageGrossWeightComb
 				  , round((fd.fuel_consumed),2)         As FuelConsumed
 				  , round((fd.fuel_consumption),4)         As FuelConsumption
-				  , round((fd.co2_emission),2)         As CO2Emission
+				  , round((fd.co2_emission),4)         As CO2Emission
 				  , round(fd.idle_duration,2)                            as IdleDuration
                   , round(fd.idle_duration_percentage,2)                            as IdleDurationPercentage
 				  , round(fd.pto_duration,2)                             as PTODuration
@@ -846,7 +846,8 @@ namespace net.atos.daf.ct2.reports.repository
 
                     // new way To pull respective trip fleet position (One DB call for batch of 1000 trips)
                     string[] tripIds = lstFleetDetails.Select(item => item.Tripid).ToArray();
-                    List<LiveFleetPosition> lstLiveFleetPosition = await GetLiveFleetPosition(tripIds);
+                    string[] vinArr = new string[] { fleetFuelFiltersDriver.VIN };
+                    List<LiveFleetPosition> lstLiveFleetPosition = await GetLiveFleetPosition(tripIds, vinArr);
                     if (lstLiveFleetPosition.Count > 0)
                         foreach (FleetFuelDetails trip in lstFleetDetails)
                         {

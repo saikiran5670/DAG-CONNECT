@@ -352,8 +352,8 @@ export class CurrentFleetComponent implements OnInit {
   
   refreshData(){}
 
-  toBack(){
-    this.obj ={
+  toBack(item?: any){
+    this.obj = {
       fromVehicleHealth : true,
       isOpen: this.isOpen,
       selectedElementData: (this._state && this._state.data) ? this._state.data : this.healthData
