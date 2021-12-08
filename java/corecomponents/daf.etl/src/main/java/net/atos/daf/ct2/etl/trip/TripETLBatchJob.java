@@ -32,7 +32,7 @@ public class TripETLBatchJob {
 			 
 	        /*final StreamExecutionEnvironment env = envParams.get("flink.streaming.evn").equalsIgnoreCase("default") ?
 					StreamExecutionEnvironment.getExecutionEnvironment() : FlinkUtil.createStreamExecutionEnvironment(envParams);
-*/
+	         */
 			env.getConfig().setGlobalJobParameters(envParams);
 		    	
 	        Long startDt = 0L;
