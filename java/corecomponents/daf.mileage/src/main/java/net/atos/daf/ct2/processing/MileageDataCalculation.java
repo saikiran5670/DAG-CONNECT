@@ -128,9 +128,6 @@ public class MileageDataCalculation extends ProcessWindowFunction<VehicleMileage
 			}
 			modelState.put(key, vMileageMap);
 			
-			logger.info(
-					"Mileage data calculated for veh :{}",tripMileage);
-
 			out.collect(tripMileage);
 		} catch (Exception e) {
 			logger.error("Issue while processing Mileage Data for key :{}, Error:{}, tripMileage:{} " , key , e.getMessage(), tripMileage);

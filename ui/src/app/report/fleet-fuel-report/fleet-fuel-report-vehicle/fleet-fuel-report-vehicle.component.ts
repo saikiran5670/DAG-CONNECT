@@ -23,7 +23,7 @@ import { ViewChild } from '@angular/core';
 import { SelectionModel } from '@angular/cdk/collections';
 import { Router, NavigationExtras } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
-import { QueryList } from '@angular/core';
+import { QueryList, OnDestroy } from '@angular/core';
 import { ViewChildren } from '@angular/core';
 import {VehicletripComponent} from 'src/app/report/fleet-fuel-report/fleet-fuel-report-vehicle/vehicletrip/vehicletrip.component'
 import * as fs from 'file-saver';
@@ -38,7 +38,7 @@ import { DataInterchangeService } from '../../../services/data-interchange.servi
   styleUrls: ['./fleet-fuel-report-vehicle.component.less'],
   providers: [DatePipe]
 })
-export class FleetFuelReportVehicleComponent implements OnInit {
+export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
   @Input() translationData: any = {};
   displayedColumns = ['vehicleName', 'vin', 'vehicleRegistrationNo', 'distance', 'averageDistancePerDay', 'averageSpeed',
   'maxSpeed', 'numberOfTrips', 'averageGrossWeightComb', 'fuelConsumed', 'fuelConsumption', 'cO2Emission',
@@ -85,7 +85,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   endTimeDisplay: any = '23:59:59';
   selectedStartTime: any = '00:00';
   selectedEndTime: any = '23:59';
-  fleetFuelSearchData: any = {};
+  fleetFuelSearchData: any = JSON.parse(localStorage.getItem("globalSearchFilterData")) || {};
   localStLanguage: any;
   accountOrganizationId: any;
   fleetFuelReportId: number;
@@ -662,6 +662,29 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         }
       });
     });
+  }
+
+  ngOnDestroy() {
+    this.setFilterValues();
+  }
+  setFilterValues(){
+    this.fleetFuelSearchData["vehicleGroupDropDownValue"] = this.tripForm.controls.vehicleGroup.value;
+    this.fleetFuelSearchData["vehicleDropDownValue"] = this.tripForm.controls.vehicle.value;
+    this.fleetFuelSearchData["timeRangeSelection"] = this.selectionTab;
+    this.fleetFuelSearchData["startDateStamp"] = this.startDateValue;
+    this.fleetFuelSearchData["endDateStamp"] = this.endDateValue;
+    this.fleetFuelSearchData.testDate = this.startDateValue;
+    this.fleetFuelSearchData.filterPrefTimeFormat = this.prefTimeFormat;
+    if (this.prefTimeFormat == 24) {
+      let _splitStartTime = this.startTimeDisplay.split(':');
+      let _splitEndTime = this.endTimeDisplay.split(':');
+      this.fleetFuelSearchData["startTimeStamp"] = `${_splitStartTime[0]}:${_splitStartTime[1]}`;
+      this.fleetFuelSearchData["endTimeStamp"] = `${_splitEndTime[0]}:${_splitEndTime[1]}`;
+    } else {
+      this.fleetFuelSearchData["startTimeStamp"] = this.startTimeDisplay;
+      this.fleetFuelSearchData["endTimeStamp"] = this.endTimeDisplay;
+    }
+    this.setGlobalSearchData(this.fleetFuelSearchData);
   }
 
   setGlobalSearchData(globalSearchFilterData:any) {
