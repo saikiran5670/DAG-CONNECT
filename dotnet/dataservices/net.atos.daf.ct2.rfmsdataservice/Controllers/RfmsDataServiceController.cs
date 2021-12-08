@@ -21,6 +21,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Http;
 using net.atos.daf.ct2.rfms.entity;
 using Newtonsoft.Json;
+using net.atos.daf.ct2.vehicle.entity;
+using System.Diagnostics.CodeAnalysis;
 
 namespace net.atos.daf.ct2.rfmsdataservice.Controllers
 {
@@ -139,7 +141,8 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
             try
             {
                 await GetUserDetails();
-                var visibleVehicles = await _vehicleManager.GetVisibilityVehicles(AccountId, OrgId);
+                var visibleVehiclesResult = await _vehicleManager.GetVisibilityVehicles(AccountId, OrgId);
+                var visibleVehicles = visibleVehiclesResult.Values.SelectMany(x => x).Distinct(new ObjectComparer()).ToList();
                 if (visibleVehicles.Count() == 0)
                 {
 
@@ -206,13 +209,14 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
             {
 
                 await GetUserDetails();
-                var visibleVehicles = await _vehicleManager.GetVisibilityVehicles(AccountId, OrgId);
+                var visibleVehiclesResult = await _vehicleManager.GetVisibilityVehicles(AccountId, OrgId);
+                var visibleVehicles = visibleVehiclesResult.Values.SelectMany(x => x).Distinct(new ObjectComparer()).ToList();
                 if (visibleVehicles.Count() == 0)
                 {
                     var response = new RfmsVehicleStatus();
                     var message = string.Format(RFMSResponseTypeConstants.GET_VIN_VISIBILITY_FAILURE_MSG, AccountId, OrgId);
                     _logger.LogError(message);
-                    return Ok(response);
+                    return Ok(message);
 
                 }
 
@@ -312,6 +316,33 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
             var orgs = await _accountManager.GetAccountOrg(account.Id);
             OrgId = orgs.First().Id;
             AccountId = account.Id;
+        }
+
+        internal class ObjectComparer : IEqualityComparer<VisibilityVehicle>
+        {
+            public bool Equals(VisibilityVehicle x, VisibilityVehicle y)
+            {
+                if (object.ReferenceEquals(x, y))
+                {
+                    return true;
+                }
+                if (x is null || y is null)
+                {
+                    return false;
+                }
+                return x.Id == y.Id && x.VIN == y.VIN;
+            }
+
+            public int GetHashCode([DisallowNull] VisibilityVehicle obj)
+            {
+                if (obj == null)
+                {
+                    return 0;
+                }
+                int idHashCode = obj.Id.GetHashCode();
+                int vinHashCode = obj.VIN == null ? 0 : obj.VIN.GetHashCode();
+                return idHashCode ^ vinHashCode;
+            }
         }
     }
 }

@@ -29,7 +29,7 @@ namespace net.atos.daf.ct2.rfms.response
 
             DriverId driverId = new DriverId();
 
-            TachoDriverIdentification tachoDriverIdentification = GetDriverCardDetails(record.tachodriveridentification, record.driverauthenticationequipment);           
+            TachoDriverIdentification tachoDriverIdentification = GetDriverCardDetails(record.tachodriveridentification, record.driverauthenticationequipment);
 
             OemDriverIdentification oemDriverIdentification = new OemDriverIdentification();
             oemDriverIdentification.DriverIdentification = record.oemdriveridentification;
