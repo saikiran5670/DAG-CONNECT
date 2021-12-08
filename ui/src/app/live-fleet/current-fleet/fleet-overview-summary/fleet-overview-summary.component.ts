@@ -65,7 +65,6 @@ export class FleetOverviewSummaryComponent implements OnInit {
     
   }
 
-  showCharts:boolean = false;
   loadData(){
     let localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.showLoadingIndicator = true;
@@ -87,7 +86,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
       this.barChartLabels = [this.translationData.lblMovedVehicle, this.translationData.lblTotalVehicle];
       this.doughnutChartLabelsMileage = [(this.translationData.lblFleetMileageRate ), ''];
       this.doughnutChartLabelsUtil = [(this.translationData.lblFleetUtilizationRate), '', ''];
-      this.showCharts = true;
+      this.hideloader();
     }, (error) => {
       this.resetSummary();
       this.hideloader();
