@@ -193,4 +193,17 @@ public class ETLQueries {
 	
 	public static final String TRIP_INDEX_READ_STATEMENT = "select trip_id, vin, tachograph_speed, gross_weight_combination"
 				+ ", driver2_id, driver1_id, jobname, increment, distance, event_datetime, event_id from livefleet.index_message_data where trip_id = ? ";
+	
+	public static final String TRIP_AVG_GROSS_WEIGHT_QRY = " select trip_id "
+			+ " , max(tachograph_speed) as max_speed, sum(grossWt * (distance - prvDist )) as gross_weight_sum, sum(distance - prvDist ) as gross_weight_dist "
+			+ " from ( "
+			+ " select trip_id, vin, tachograph_speed, grossWt, distance, LAG(distance) OVER(partition by trip_id ORDER BY event_datetime)  as prvDist from( "
+			+ " select distinct trip_id, vin, tachograph_speed, case when gross_weight_combination>50000 then 0 else gross_weight_combination end as grossWt, increment , distance, event_datetime, jobname, driver1_id, driver2_id from livefleet.index_message_data where trip_id in( "
+			+ " select trip_id from tripdetail.trip_statistics "
+			+ " where end_time_stamp > ? and end_time_stamp < ? "
+			+ "  ))a)b group by trip_id ";
+	
+	public static final String TRIP_AVG_GROSS_WEIGHT_UPDATE_QRY = "update tripdetail.trip_statistics set max_speed =?, average_gross_weight_comb =? where trip_id = ?";
+	public static final String ECOSCORE_AVG_GROSS_WEIGHT_UPDATE_QRY = "update tripdetail.ecoscoredata set gross_weight_combination_total =?, tacho_gross_weight_combination =?, gross_weight_combination_count =? where trip_id = ?";
+
 }
