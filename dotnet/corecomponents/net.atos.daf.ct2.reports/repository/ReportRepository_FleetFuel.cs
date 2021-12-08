@@ -157,7 +157,7 @@ namespace net.atos.daf.ct2.reports.repository
 													                 else round (fd.average_gross_weight_comb,3) end  as AverageGrossWeightComb
                                                          		  , round(fd.fuel_consumed,2)                            					as FuelConsumed
                                                          		  , round(fd.fuel_consumption,5)                         					as FuelConsumption
-                                                         		  , round(fd.co2_emission,2)                             					as CO2Emission
+                                                         		  , round(fd.co2_emission,4)                             					as CO2Emission
                                                                   , round(((fd.etl_gps_distance * 2640)/100)/1000,4) as CO2Emmision
                                                          		  , round(fd.idle_duration,2)                            					as IdleDuration
                                                                   , round(fd.idle_duration_percentage,2)                 					as IdleDurationPercentage
@@ -330,7 +330,7 @@ namespace net.atos.daf.ct2.reports.repository
 													                 else round (fd.average_gross_weight_comb,3) end  as AverageGrossWeightComb
                                                           , round(fd.fuel_consumed,2)                              					as FuelConsumed
                                                   		  , round((fd.fuel_consumed/case when fd.etl_gps_distance > 0 then fd.etl_gps_distance else 1 end),5)                         as FuelConsumption
-                                                  		  , round(fd.co2_emission,2)                               					as CO2Emission
+                                                  		  , round(fd.co2_emission,4)                               					as CO2Emission
                                                           , round(((fd.etl_gps_distance * 2640)/100)/1000,4) as CO2Emmision
                                                   		  , round(fd.idle_duration_percentage,2)                   					as IdleDurationPercentage
                                                          , round(fd.idle_duration,2)                               					as IdleDuration
@@ -614,7 +614,7 @@ namespace net.atos.daf.ct2.reports.repository
 				  , round(fd.average_gross_weight_comb, 2) as AverageGrossWeightComb
 				  , round((fd.fuel_consumed), 2)              As FuelConsumed
                    , round((fd.fuel_consumption), 2)           As FuelConsumption
-                    , round((fd.co2_emission), 2)           As CO2Emission
+                    , round((fd.co2_emission), 4)           As CO2Emission
                      , round(fd.idle_duration, 2)                                      as IdleDuration
                     , round(fd.idle_duration_percentage, 2)                                      as IdleDurationPercentage
 				  , round(fd.pto_duration, 2) as PTODuration
@@ -783,7 +783,7 @@ namespace net.atos.daf.ct2.reports.repository
 				  , round (fd.average_gross_weight_comb,2)               as AverageGrossWeightComb
 				  , round((fd.fuel_consumed),2)         As FuelConsumed
 				  , round((fd.fuel_consumption),4)         As FuelConsumption
-				  , round((fd.co2_emission),2)         As CO2Emission
+				  , round((fd.co2_emission),4)         As CO2Emission
 				  , round(fd.idle_duration,2)                            as IdleDuration
                   , round(fd.idle_duration_percentage,2)                            as IdleDurationPercentage
 				  , round(fd.pto_duration,2)                             as PTODuration
