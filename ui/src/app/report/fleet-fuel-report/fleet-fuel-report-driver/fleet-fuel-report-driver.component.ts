@@ -1085,7 +1085,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
 
       let convertedFuelConsumed = this.reportMapService.getFuelConsumptionUnits(e.fuelConsumed, this.prefUnitFormat);
       this.fuelConsumedChart.push({ x:resultDate , y:convertedFuelConsumed});
-      this.co2Chart.push({ x:resultDate , y:e.co2Emission.toFixed(2)});
+      this.co2Chart.push({ x:resultDate , y:e.co2Emission.toFixed(4)});
       let convertedDistance =  this.reportMapService.convertDistanceUnits(e.distance, this.prefUnitFormat);
       this.distanceChart.push({ x:resultDate , y:convertedDistance });
       let convertedFuelConsumption =  this.reportMapService.getFuelConsumedUnits(e.fuelConsumtion, this.prefUnitFormat,true);
@@ -2600,7 +2600,7 @@ setVehicleGroupAndVehiclePreSelection() {
            sum += parseFloat(element.cO2Emission);
         }
       });
-      sum= sum.toFixed(2)*1;
+      sum= sum.toFixed(4)*1;
       break;
     }
     }
