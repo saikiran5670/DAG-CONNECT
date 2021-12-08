@@ -24,6 +24,7 @@ public class MileageConstants {
 	public static final String DATAMART_POSTGRE_DATABASE_NAME ="datamart.postgres.database.name";
 	public static final String DATAMART_POSTGRE_PASSWORD = "datamart.postgres.password";
 	public static final String POSTGRE_SQL_DRIVER = "postgresql.driver";
+	public static final String POSTGRE_SQL_SSL_MODE = "&sslmode=require";
 
 	//Date Format
 	public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
@@ -74,5 +75,10 @@ public class MileageConstants {
 	public static final Long ZERO_VAL = 0L;
 	public static final String MILEAGE_STREAMING_JOB_NAME = "mileage.streaming.job.name";
 	public static final String RETAIN_ON_CANCELLATION = "retain.on.cancellation";
+	
+	public static final String MILEAGE_QRY = "INSERT INTO mileage.vehiclemileage( vin, evt_timestamp, odo_mileage, odo_distance, real_distance, gps_distance, modified_at) VALUES (?, ?, ?, ?, ?, ?, ?)"
+			+ "  ON CONFLICT (vin) "
+			+ "  DO UPDATE SET evt_timestamp = ?, odo_mileage = ?, odo_distance = ?, real_distance = ?, gps_distance = ?, modified_at = ?" ;
+			
 		
 }

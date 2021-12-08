@@ -25,4 +25,6 @@ public class DafConstants {
 		public static final String JDBC_EXEC_OPTION_BATCH_SIZE = "jdbc.execution.options.batch.size";
 		public static final String JDBC_EXEC_OPTION_BATCH_INTERVAL_MILLISEC ="jdbc.execution.options.batch.interval.millisec";
 		public static final String JDBC_EXEC_OPTION_BATCH_MAX_RETRIES = "jdbc.execution.options.batch.max.retries";
+		public static final String CONNECTION_RETRY_TIME_MILLI = "connection.retry.time.milli";
+		public static final String JDBC_SINK_ENABLED = "jdbc.sink.enabled";
 }
