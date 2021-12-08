@@ -192,7 +192,7 @@ export class ManageCorridorComponent implements OnInit {
     let corridorId = rowData.id;
     const options = {
       title: this.translationData.lblDelete || "Delete",
-      message: this.translationData.lblAreyousureyouwanttodelete + " '$'?",
+      message: this.translationData.lblAreyousureyouwanttodeleteCorridor + " '$'?",
       cancelText: this.translationData.lblCancel || "Cancel",
       confirmText: this.translationData.lblDelete || "Delete"
     };
