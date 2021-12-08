@@ -176,7 +176,17 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
         {
             try
             {
-                IEnumerable<ReportSchedulerMap> reportSchedulerList = await _reportSchedulerManager.GetReportSchedulerList(request.OrganizationId);
+                var featureId = Convert.ToInt32(context.RequestHeaders.Get("report_feature_id").Value);
+
+                var vehicleDetailsAccountVisibilty
+                                              = await _visibilityManager
+                                                 .GetVehicleByAccountVisibility(request.AccountId, request.OrganizationId, request.ContextOrgId, featureId);
+
+                IEnumerable<int> vehicleIds = vehicleDetailsAccountVisibilty.Select(x => x.VehicleId).ToList().Distinct();
+
+                var vehgroupIds = vehicleDetailsAccountVisibilty.Select(x => x.VehicleGroupId).ToList().Distinct();
+
+                IEnumerable<ReportSchedulerMap> reportSchedulerList = await _reportSchedulerManager.GetReportSchedulerList(request.OrganizationId, vehicleIds.ToList(), vehgroupIds.ToList());
                 ReportSchedulerListResponse response = new ReportSchedulerListResponse();
                 if (reportSchedulerList.Any())
                 {
@@ -194,6 +204,33 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
             {
                 _logger.Error(null, ex);
                 return await Task.FromResult(new ReportSchedulerListResponse
+                {
+                    Code = ResponseCode.Failed,
+                    Message = ReportSchedulerConstant.REPORT_SCHEDULER_GET_FAIL_MSG + ex.Message
+                });
+            }
+        }
+        public override async Task<ScheduledReportResponse> GetScheduledReport(ScheduledResponseIdRequest request, ServerCallContext context)
+        {
+            try
+            {
+                ScheduledReportResponse response = new ScheduledReportResponse();
+
+                var scheduledReportList = await _reportSchedulerManager.GetScheduledReport(request.ReportSchedulerId);
+
+                var res = JsonConvert.SerializeObject(scheduledReportList);
+                response.ScheduledReport.AddRange(
+                    JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<ScheduledReportRequest>>(res)
+                    );
+                response.Message = ReportSchedulerConstant.SHEDULED_REPORT_GET_SUCCESS_MSG;
+                response.Code = ResponseCode.Success;
+                _logger.Info(ReportSchedulerConstant.REPORT_SCHEDULER_GET_CALLED_MSG);
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new ScheduledReportResponse
                 {
                     Code = ResponseCode.Failed,
                     Message = ReportSchedulerConstant.REPORT_SCHEDULER_GET_FAIL_MSG + ex.Message

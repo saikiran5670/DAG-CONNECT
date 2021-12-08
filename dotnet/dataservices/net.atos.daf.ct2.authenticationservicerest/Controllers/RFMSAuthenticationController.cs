@@ -6,6 +6,8 @@ using net.atos.daf.ct2.authenticationservicerest.Entity;
 using AccountComponent = net.atos.daf.ct2.account;
 using IdentityEntity = net.atos.daf.ct2.identity.entity;
 using net.atos.daf.ct2.authenticationservicerest.CustomAttributes;
+using log4net;
+using System.Reflection;
 
 namespace net.atos.daf.ct2.authenticationservicerest.Controllers
 {
@@ -13,15 +15,15 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
     [Route("rfms3")]
     public class RFMSAuthenticationController : ControllerBase
     {
-        private readonly ILogger _logger;
+        private readonly ILog _logger;
         private readonly AccountComponent.IAccountIdentityManager _accountIdentityManager;
         private readonly AccountComponent.IAccountManager _accountManager;
 
-        public RFMSAuthenticationController(AccountComponent.IAccountIdentityManager accountIdentityManager, AccountComponent.IAccountManager accountManager, ILogger<AuthenticationController> logger)
+        public RFMSAuthenticationController(AccountComponent.IAccountIdentityManager accountIdentityManager, AccountComponent.IAccountManager accountManager)
         {
             this._accountIdentityManager = accountIdentityManager;
             this._accountManager = accountManager;
-            this._logger = logger;
+            this._logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         }
 
         [HttpPost]
@@ -29,9 +31,10 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
         //In case, to generate only account token 
         public async Task<IActionResult> GenerateToken()
         {
-            string identity;
+            string identity = string.Empty;
             try
             {
+                _logger.Debug($"RFMSAuthentication:token.started");
                 if (!string.IsNullOrEmpty(Request.Headers["Authorization"]))
                 {
                     var authHeader = Request.Headers["Authorization"].ToString().Replace("Basic ", "");
@@ -44,6 +47,7 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
                         return StatusCode(400, string.Empty);
                     }
                     var arrUsernamePassword = identity.Split(':');
+                    _logger.Debug($"RFMSAuthentication:token.name:-{arrUsernamePassword[0]}");
                     if (string.IsNullOrEmpty(arrUsernamePassword[0].Trim()))
                     {
                         return StatusCode(401, string.Empty);
@@ -70,6 +74,7 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
                             authToken.Access_token = response.AccessToken;
                             authToken.Expires_in = response.ExpiresIn;
                             authToken.Token_type = response.TokenType;
+                            _logger.Debug($"FMSAuthentication:token.name:-{arrUsernamePassword[0]} , Access_token:-{authToken.Access_token}");
                             return Ok(authToken);
                         }
                         else
@@ -85,7 +90,7 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message + " " + ex.StackTrace);
+                _logger.Error($"FMSAuthentication:token. with Identity : {identity}.", ex);
                 return StatusCode(500, string.Empty);
             }
         }

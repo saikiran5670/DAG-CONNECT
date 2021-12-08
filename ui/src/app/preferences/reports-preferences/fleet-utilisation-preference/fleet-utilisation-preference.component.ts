@@ -6,6 +6,7 @@ import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms'
 import { Router } from '@angular/router';
 import { ReportMapService } from '../../../report/report-map.service';
 import { CustomValidators } from '../../../shared/custom.validators';
+import { DataInterchangeService } from '../../../services/data-interchange.service';
 
 @Component({
   selector: 'app-fleet-utilisation-preference',
@@ -72,7 +73,7 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
   prefUnitFormat: any = 'dunit_Metric';
   requestSent:boolean = false;
   
-  constructor(private reportService: ReportService, private _formBuilder: FormBuilder, private router: Router, private reportMapService: ReportMapService) { }
+  constructor(private reportService: ReportService, private _formBuilder: FormBuilder, private router: Router, private reportMapService: ReportMapService, private dataInterchangeService: DataInterchangeService) { }
 
   ngOnInit() { 
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -155,11 +156,19 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
     }
   }
 
-  loadFleetUtilisationPreferences(){
-    this.showLoadingIndicator=true;
+  loadFleetUtilisationPreferences(reloadFlag?: any){
+    this.showLoadingIndicator = true;
     this.reportService.getReportUserPreference(this.reportId).subscribe((prefData: any) => {
-      this.showLoadingIndicator=false;
+      this.showLoadingIndicator = false;
       this.initData = prefData['userPreferences'];
+      if(reloadFlag){ // refresh pref setting & goto trip report
+        let _dataObj: any = {
+          prefdata: this.initData,
+          type: 'fleet utilisation report' 
+        }
+        this.dataInterchangeService.getPrefData(_dataObj);
+        this.dataInterchangeService.closedPrefTab(false); // closed pref tab
+      }
       this.resetColumnData();
       this.preparePrefData(this.initData);
     }, (error)=>{
@@ -473,15 +482,17 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
       }
       this.showLoadingIndicator=true;
       this.reportService.updateReportUserPreference(objData).subscribe((prefData: any) => {
-        this.showLoadingIndicator=false;
-        this.loadFleetUtilisationPreferences();
-        this.setFleetUtilFlag.emit({ flag: false, msg: this.getSuccessMsg() });
+        this.showLoadingIndicator = false;
+        let _reloadFlag = false;
         if ((this.router.url).includes("fleetutilisation")) {
-          this.reloadCurrentComponent();
+          _reloadFlag = true
+          //this.reloadCurrentComponent();
         }
+        this.loadFleetUtilisationPreferences(_reloadFlag);
+        this.setFleetUtilFlag.emit({ flag: false, msg: this.getSuccessMsg() });
         this.requestSent = false;
       }, (error) => {
-        this.showLoadingIndicator=false;
+        this.showLoadingIndicator = false;
       });
     }
   }

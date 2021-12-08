@@ -48,7 +48,7 @@ public class IndexDataHbaseProcess {
 
 			final StreamExecutionEnvironment env = envParams.get("flink.streaming.evn").equalsIgnoreCase("default") ?
 					StreamExecutionEnvironment.getExecutionEnvironment() :
-					FlinkUtil.createStreamExecutionEnvironment(envParams,envParams.get(DafConstants.INDEX_TRIPJOB));
+					FlinkUtil.createStreamExecutionEnvironment(envParams,envParams.get(DafConstants.INDEX_JOB));
 
 			log.debug("env :: " + env);
 

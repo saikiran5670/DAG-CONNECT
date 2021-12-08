@@ -75,7 +75,7 @@ public class IndexDataSourceLookup extends RichFlatMapFunction<TripAggregatedDat
 
 	@Override
 	public void flatMap(TripAggregatedData stsData,
-			Collector<TripAggregatedData> out){
+			Collector<TripAggregatedData> out)throws SQLException{
 
 		try {
 			List<IndexTripData> tripIdxLst = tripIdxDao.read(tripIndexStmt, stsData.getTripId());
@@ -189,10 +189,13 @@ public class IndexDataSourceLookup extends RichFlatMapFunction<TripAggregatedDat
 		
 		logger.info("Final trip statistics {} ",stsData);
 		out.collect(stsData);
-} catch (Exception e) {
+	} catch (SQLException e) {
+		logger.error("Sql Issue while processing IndexDataSourceLookup job :: {}" , stsData);
+		throw e;
+	}  catch (Exception e) {
 			// TODO error suppressed , cross verify scenarios
-			logger.error("Issue while processing TripGranularData job :: " + stsData);
-			logger.error("Issue while processing TripGranularData job :: " + e.getMessage());
+			logger.error("Issue while processing IndexDataSourceLookup job :: {}" , stsData);
+			logger.error("Issue while processing IndexDataSourceLookup job :: {}" , e.getMessage());
 		}
 	}
 
@@ -202,6 +205,7 @@ public class IndexDataSourceLookup extends RichFlatMapFunction<TripAggregatedDat
 			
 			super.close();
 			
+			logger.info("In IndexDataSourceLookup closing connection ::{}, preparedStmt::{}",connection, tripIndexStmt);
 			if(Objects.nonNull(tripIndexStmt))
 				tripIndexStmt.close();
 			
@@ -210,7 +214,7 @@ public class IndexDataSourceLookup extends RichFlatMapFunction<TripAggregatedDat
 			}
 		} catch (SQLException e) {
 			// TODO Need to check if logging and throw is required
-			logger.error("Issue while Closing Postgre table connection :: ", e);
+			logger.error("Issue in IndexDataSourceLookup while Closing Postgre table connection :: ", e);
 			throw e;
 		}
 	}

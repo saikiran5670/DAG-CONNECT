@@ -11,13 +11,15 @@
                 <form [formGroup]="appForm" class='toolbarRightContainer full-width'>
                     <div fxLayoutAlign="start center" class='half-width titleText'>{{ currentTitle }}
                     </div>
-                    <div fxLayoutAlign="end" class='full-width'>
-                        <span *ngIf="showTimer"><button class="btn btn-primary" type="button" disabled>
-                            <div class="lds-roller-sm" style="height: 19px; width: 54px;">
-                                <div></div><div></div><div></div><div></div><div></div><div></div>
-                              </div>
-                           {{ subscribeTimer }}
-                        </button></span>
+                    <div fxLayoutAlign="end center" class='full-width'>
+                        <span *ngIf="showTimer" style='background: #007bff; border-radius: 5px; padding: 3px 10px;'>
+                            <button class="btn btn-primary" type="button" disabled style='padding: 0;'>
+                                <div class="lds-roller-sm" style="height: 19px; width: 54px; top: -7px;">
+                                    <div></div><div></div><div></div><div></div><div></div><div></div>
+                                </div>
+                            </button>
+                            <span style="font-size: 15px; color: #fff;">{{ subscribeTimer }}</span>
+                        </span>
                         <!-- <span *ngIf="showTimer"><button class="btn btn-primary" type="button" disabled>
                             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                             {{ subscribeTimer }}
@@ -163,13 +165,13 @@
                 [ngClass]="{'active': pageName === menu.url}" [attr.menuName]="menu.url">
                 <span *ngIf="menu.subMenus.length == 0; else elseBlock">
                     <a class='selectedManu' *ngIf="!menu.externalLink" [routerLink]="[ '/'+ menu.url]"
-                        (click)='navigateToPage(menu.url)'>
+                        (click)='navigateToPage(menu)'>
                         <mat-icon matTooltip="{{ menuCollapsed ? (translationData[menu.key] || menu.name | titlecase) : '' }}" class="box-svg-css ">{{menu.icon}}</mat-icon>
                         <span class="menuLabel" *ngIf ="!menuCollapsed">
                             {{ translationData[menu.key] || menu.name | titlecase }}</span>
                     </a>
-                    <a target="_blank" href="{{menu.link}}" class='selectedManu' *ngIf="menu.externalLink"
-                        (click)='navigateToPage(menu.url)'>
+                    <a class='selectedManu' *ngIf="menu.externalLink"
+                        (click)='navigateToPage(menu)'>
                         <mat-icon matTooltip="{{ menuCollapsed ? (translationData[menu.key] || menu.name | titlecase) : '' }}" class="box-svg-css ">{{menu.icon}}</mat-icon>
                         <span class="menuLabel" *ngIf ="!menuCollapsed" >
                             {{ translationData[menu.key] || menu.name | titlecase }}</span>
@@ -204,7 +206,7 @@
     <div class="user-preferences">
         <div *ngIf="isLogedIn" class="preferences-sidenav-content"
             [ngClass]="userPreferencesFlag ? 'pref-expand' : 'pref-collapse' " (click)='userPreferencesSetting($event)'>
-            <mat-icon matTooltip="{{ translationData.lblClicktoviewuserpreferences || 'Click to view user preferences' }} " style="margin-top:5px; color:white;">{{!userPreferencesFlag ?
+            <mat-icon matTooltip="{{ translationData.lblClicktoviewuserpreferences || 'Click to view user preferences' }} " [ngStyle]="{'margin-left': userPreferencesFlag ? '5px' : '0px' }" style="margin-top:5px; color:white;">{{!userPreferencesFlag ?
                 'keyboard_arrow_leftperson_search' : 'person_searchkeyboard_arrow_right'}}</mat-icon>
         </div>
         <app-preferences *ngIf="isLogedIn && userPreferencesFlag" [userPreferencesFlag]="userPreferencesFlag">

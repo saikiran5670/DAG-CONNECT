@@ -356,7 +356,9 @@ proceedStep(prefData: any, preference: any){
   }
 
   loadFilterDataBasedOnPrivileges(){
+    
     this.alertService.getAlertFilterDataBasedOnPrivileges(this.accountId, this.accountRoleId).subscribe((data) => {
+     
       this.alertCategoryTypeMasterData = data["enumTranslation"];
       this.alertCategoryTypeFilterData = data["alertCategoryFilterRequest"];
       this.associatedVehicleData = data["associatedVehicleRequest"];
@@ -854,19 +856,27 @@ proceedStep(prefData: any, preference: any){
         this.vehicleByVehGroupList= this.associatedVehicleData.filter(item => item.vehicleGroupDetails.includes(this.vehicle_group_selected+"~"));
       }
       else{ //if subscriptionType == 'v'
-        featuresData.forEach(element => {
-          let vehicle= this.associatedVehicleData.filter(item => item.vehicleId == element.vehicleId && item.vehicleGroupDetails.includes(this.vehicle_group_selected+"~"));
+        // featuresData.forEach(element => {
+        //   let vehicle= this.associatedVehicleData.filter(item => item.vehicleId == element.vehicleId && item.vehicleGroupDetails.includes(this.vehicle_group_selected+"~"));
+        //   if(vehicle.length > 0){
+        //     this.vehicleByVehGroupList.push(vehicle[0]);
+        //   }
+        //});
+        if(featuresData.length > 0){
+          let vehicle= this.associatedVehicleData.filter(item =>  item.vehicleGroupDetails.includes(this.vehicle_group_selected+"~"));
           if(vehicle.length > 0){
-            this.vehicleByVehGroupList.push(vehicle[0]);
+             this.vehicleByVehGroupList = vehicle.slice();
           }
-        });
+        }
       }
 
       //subscribed vehicles
-      this.vehicleByVehGroupList.forEach(element => {
-        element["subcriptionStatus"] = true;
-        this.vehicleListForTable.push(element);
-      });
+      // this.vehicleByVehGroupList.forEach(element => {
+      //   element["subcriptionStatus"] = true;
+      //   this.vehicleListForTable.push(element);
+      // });
+      
+      this.vehicleListForTable = this.vehicleByVehGroupList;
 
       //Commented because only vehicles from that group should be displayed.
       //non-subscribed vehicles

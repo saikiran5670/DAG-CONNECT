@@ -150,20 +150,20 @@ namespace net.atos.daf.ct2.reports.repository
                                                          		  , vh.registration_no                                   					as VehicleRegistrationNo
                                                          		  , round ( fd.etl_gps_distance,2)                       					as Distance
                                                          		  , case when totalworkingdays>0 then round ((fd.veh_message_distance/totalworkingdays),2) else 0 end as AverageDistancePerDay
-                                                         		  , round (fd.average_speed,7)                           					as AverageSpeed
+                                                         		  , round (fd.average_speed,9)                           					as AverageSpeed
                                                          		  , max_speed                                            					as MaxSpeed
                                                          		  , numberoftrips                                        					as NumberOfTrips
                                                          		  ,case when numoftripswithavgweight>0 then round (fd.average_gross_weight_comb/numoftripswithavgweight, 3) 
 													                 else round (fd.average_gross_weight_comb,3) end  as AverageGrossWeightComb
                                                          		  , round(fd.fuel_consumed,2)                            					as FuelConsumed
                                                          		  , round(fd.fuel_consumption,5)                         					as FuelConsumption
-                                                         		  , round(fd.co2_emission,2)                             					as CO2Emission
+                                                         		  , round(fd.co2_emission,4)                             					as CO2Emission
                                                                   , round(((fd.etl_gps_distance * 2640)/100)/1000,4) as CO2Emmision
                                                          		  , round(fd.idle_duration,2)                            					as IdleDuration
                                                                   , round(fd.idle_duration_percentage,2)                 					as IdleDurationPercentage
                                                          		  , round(fd.pto_duration,2)                             					as PTODuration
-                                                         		  ,case when numoftripswithharshbreak>0 then round (fd.harsh_brake_duration/numberoftrips, 2) 
-													  			      else round (fd.harsh_brake_duration/numberoftrips,2) end  						    as HarshBrakeDuration
+                                                         		  ,case when numoftripswithharshbreak>0 then round (fd.harsh_brake_duration/numoftripswithharshbreak, 5) 
+													  			      else round (fd.harsh_brake_duration/numoftripswithharshbreak,5) end  						    as HarshBrakeDuration
                                                          		  , round(fd.heavy_throttle_duration/numberoftrips,2)                  					as HeavyThrottleDuration
                                                          		  , round(fd.cruise_control_distance_30_50,2)            					as CruiseControlDistance3050
                                                          		  , round(fd.cruise_control_distance_50_75,2)            					as CruiseControlDistance5075
@@ -323,20 +323,20 @@ namespace net.atos.daf.ct2.reports.repository
                                                   		  , fd.tripDriverId				    
                                                   		  , round ( fd.etl_gps_distance,2)                         				    as Distance
                                                   		  , case when totalworkingdays>0 then round((fd.veh_message_distance/totalworkingdays),2) else 0 end  as AverageDistancePerDay
-                                                  		  , round (fd.average_speed,7)                             					as AverageSpeed
+                                                  		  , round (fd.average_speed,9)                             					as AverageSpeed
                                                   		  , max_speed                                              					as MaxSpeed
                                                   		  , numberoftrips                                          					as NumberOfTrips
                                                   		 ,case when numoftripswithavgweight>0 then round (fd.average_gross_weight_comb/numoftripswithavgweight, 3) 
 													                 else round (fd.average_gross_weight_comb,3) end  as AverageGrossWeightComb
                                                           , round(fd.fuel_consumed,2)                              					as FuelConsumed
                                                   		  , round((fd.fuel_consumed/case when fd.etl_gps_distance > 0 then fd.etl_gps_distance else 1 end),5)                         as FuelConsumption
-                                                  		  , round(fd.co2_emission,2)                               					as CO2Emission
+                                                  		  , round(fd.co2_emission,4)                               					as CO2Emission
                                                           , round(((fd.etl_gps_distance * 2640)/100)/1000,4) as CO2Emmision
                                                   		  , round(fd.idle_duration_percentage,2)                   					as IdleDurationPercentage
                                                          , round(fd.idle_duration,2)                               					as IdleDuration
                                                   		  , round(fd.pto_duration,2)                               					as PTODuration
-                                                  		  ,case when numoftripswithharshbreak>0 then round (fd.harsh_brake_duration/numberoftrips, 2) 
-													  			      else round (fd.harsh_brake_duration/numberoftrips,2) end  				    as HarshBrakeDuration
+                                                  		  ,case when numoftripswithharshbreak>0 then round (fd.harsh_brake_duration/numoftripswithharshbreak, 5) 
+													  			      else round (fd.harsh_brake_duration/numoftripswithharshbreak,5) end  				    as HarshBrakeDuration
                                                   		  , round(fd.heavy_throttle_duration/numberoftrips,2)                    					as HeavyThrottleDuration
                                                   		  , round(fd.cruise_control_distance_30_50,2)              					as CruiseControlDistance3050
                                                   		  , round(fd.cruise_control_distance_50_75,2)              					as CruiseControlDistance5075
@@ -387,15 +387,16 @@ namespace net.atos.daf.ct2.reports.repository
                 List<string> lstDriverIds = lstFleetDetails.Select(a => a.DriverID).ToList();
                 //checking driverId of tripdetail.trip_statistics are opt-out or not in master.driver table
                 //Mostly tripdetail.trip_statistics driverid are not availeble in master,driver table
-                List<string> lstOfOptOutDriver = await GetOptOutDriver(lstDriverIds);
-                for (int i = 0; i < lstOfOptOutDriver.Count; i++)
-                {
-                    var data = lstFleetDetails.SingleOrDefault(a => a.DriverID == lstOfOptOutDriver[0]);//"PH B313715714715196");
-                    if (data != null)
-                    {
-                        lstFleetDetails.Remove(data);
-                    }
-                }
+                //write driver table will be in sync - so below code is not required
+                //List<string> lstOfOptOutDriver = await GetOptOutDriver(lstDriverIds);
+                //for (int i = 0; i < lstOfOptOutDriver.Count; i++)
+                //{
+                //    var data = lstFleetDetails.SingleOrDefault(a => a.DriverID == lstOfOptOutDriver[0]);//"PH B313715714715196");
+                //    if (data != null)
+                //    {
+                //        lstFleetDetails.Remove(data);
+                //    }
+                //}
                 if (lstTripAlert.Count() > 0)
                 {
                     foreach (FleetFuelDetailsByDriver trip in lstFleetDetails)
@@ -498,7 +499,7 @@ namespace net.atos.daf.ct2.reports.repository
 						Count(distinct trip_id)                                 as tripcount,
                         sum(etl_gps_distance)                                   as totaldistance,
                         sum(idle_duration)                                      as totalidleduration,
-						(SUM(etl_gps_fuel_consumed)/SUM(etl_gps_distance))     as fuelconsumption,
+						(SUM(etl_gps_fuel_consumed)/case when SUM(etl_gps_distance) >0 then SUM(etl_gps_distance) else 1 end) as fuelconsumption,
                         sum(etl_gps_fuel_consumed)                              as fuelconsumed,
 						sum(co2_emission)                                       as co2emission	
                         FROM tripdetail.trip_statistics CT
@@ -608,13 +609,13 @@ namespace net.atos.daf.ct2.reports.repository
 				  , vh.registration_no as VehicleRegistrationNo
 				  , round(fd.etl_gps_distance, 2) as Distance
 				  , round((fd.veh_message_distance), 2) as AverageDistancePerDay
-				  , round(fd.average_speed, 7) as AverageSpeed
+				  , round(fd.average_speed, 9) as AverageSpeed
 				  , max_speed as MaxSpeed
 				  , numberoftrips as NumberOfTrips
 				  , round(fd.average_gross_weight_comb, 2) as AverageGrossWeightComb
 				  , round((fd.fuel_consumed), 2)              As FuelConsumed
                    , round((fd.fuel_consumption), 2)           As FuelConsumption
-                    , round((fd.co2_emission), 2)           As CO2Emission
+                    , round((fd.co2_emission), 4)           As CO2Emission
                      , round(fd.idle_duration, 2)                                      as IdleDuration
                     , round(fd.idle_duration_percentage, 2)                                      as IdleDurationPercentage
 				  , round(fd.pto_duration, 2) as PTODuration
@@ -777,13 +778,13 @@ namespace net.atos.daf.ct2.reports.repository
 				  , fd.tripDriverId
 				  , round ( fd.etl_gps_distance,2)                       as Distance
 				  , round ((fd.veh_message_distance),2) as AverageDistancePerDay
-				  , round (fd.average_speed,7)                           as AverageSpeed
+				  , round (fd.average_speed,9)                           as AverageSpeed
 				  , max_speed                                            as MaxSpeed
 				  , numberoftrips                                        as NumberOfTrips
 				  , round (fd.average_gross_weight_comb,2)               as AverageGrossWeightComb
 				  , round((fd.fuel_consumed),2)         As FuelConsumed
 				  , round((fd.fuel_consumption),4)         As FuelConsumption
-				  , round((fd.co2_emission),2)         As CO2Emission
+				  , round((fd.co2_emission),4)         As CO2Emission
 				  , round(fd.idle_duration,2)                            as IdleDuration
                   , round(fd.idle_duration_percentage,2)                            as IdleDurationPercentage
 				  , round(fd.pto_duration,2)                             as PTODuration

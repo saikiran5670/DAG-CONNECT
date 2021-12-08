@@ -164,7 +164,7 @@ style='padding:10px; color:#fff; background: #5dc24e;'>
         <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageSizeUpdated($event)"></mat-paginator>
       </div>
     </mat-card-content>
-    <mde-popover #schedulerPopover="mdePopover" mdePopoverOffsetX="-300" [mdePopoverCloseOnClick]="false">
+    <mde-popover #schedulerPopover="mdePopover" mdePopoverOffsetX="-300" [mdePopoverCloseOnClick]="true">
       <div class="openSchedulerContainer">
         <form [formGroup]="schedulerForm" style="border: 1px solid deepskyblue;">
           <mat-card class='mat-elevation-z no-padding'>

@@ -83,7 +83,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
     }
     public class ReportSchedulerMap : ReportScheduler
     {
-        public List<ScheduledReport> ScheduledReport { get; set; } = new List<ScheduledReport>();
+        //public List<ScheduledReport> ScheduledReport { get; set; } = new List<ScheduledReport>();
         public List<ScheduledReportRecipient> ScheduledReportRecipient { get; set; } = new List<ScheduledReportRecipient>();
         public List<ScheduledReportVehicleRef> ScheduledReportVehicleRef { get; set; } = new List<ScheduledReportVehicleRef>();
         public List<ScheduledReportDriverRef> ScheduledReportDriverRef { get; set; } = new List<ScheduledReportDriverRef>();

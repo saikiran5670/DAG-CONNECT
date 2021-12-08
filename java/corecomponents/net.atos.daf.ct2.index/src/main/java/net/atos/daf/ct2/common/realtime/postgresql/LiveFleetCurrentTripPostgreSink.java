@@ -81,7 +81,7 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<Index> imp
 
 	public void invoke(Index index) {
 		try {
-			
+			log.info("meesage received Current Trip Statistics--" + index.toString());
 			if(index.getVEvtID()!=4) {
 				TripStatisticsPojo Trip=tripCalculationUpdate(index);
 				currentTripDAO.update(Trip);

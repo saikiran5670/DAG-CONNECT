@@ -26,6 +26,7 @@ import net.atos.daf.common.ct2.utc.TimeFormatter;
 import net.atos.daf.ct2.common.processing.DriverProcessing;
 import net.atos.daf.ct2.common.realtime.hbase.MonitorDataHbaseSink;
 import net.atos.daf.ct2.common.realtime.postgresql.DriverTimeManagementSink;
+//import net.atos.daf.ct2.common.realtime.postgresql.LiveFleetPositionPostgreSink;
 import net.atos.daf.ct2.common.realtime.postgresql.WarningStatisticsSink;
 import net.atos.daf.ct2.common.util.DafConstants;
 import net.atos.daf.ct2.common.util.FlinkKafkaMonitorDataConsumer;
@@ -76,8 +77,9 @@ public class MonitorDataProcess {
 				envParams = ParameterTool.fromPropertiesFile(params.get("input"));
 
 			final StreamExecutionEnvironment env = envParams.get("flink.streaming.evn").equalsIgnoreCase("default") ?
-					StreamExecutionEnvironment.getExecutionEnvironment() : FlinkUtil.createStreamExecutionEnvironment(envParams,envParams.get(DafConstants.MONITOR_JOB));
-
+					StreamExecutionEnvironment.getExecutionEnvironment() : FlinkUtil.createStreamExecutionEnvironment(envParams,envParams.get(DafConstants.MONITOR_JOB)); 
+			
+			
 			log.debug("env :: " + env);
 			FlinkKafkaMonitorDataConsumer flinkKafkaConsumer = new FlinkKafkaMonitorDataConsumer();
 			env.getConfig().setGlobalJobParameters(envParams);
@@ -89,9 +91,8 @@ public class MonitorDataProcess {
 			}
 			KeyedStream<KafkaRecord<Monitor>, String> consumerKeyedStream = consumerStream.keyBy(kafkaRecord -> kafkaRecord.getValue().getVin()!=null ? kafkaRecord.getValue().getVin() : kafkaRecord.getValue().getVid());
 			
+			
 			DriverProcessing driverProcess= new DriverProcessing();
-			
-			
 			SingleOutputStreamOperator<Monitor> monitorStream=consumerKeyedStream.map(record -> record.getValue()).returns(Monitor.class)
 					.filter(monitor -> monitor.getMessageType().equals(valueSeven) && monitor.getDocument().getDriverID()!=null).returns(Monitor.class);
 			
@@ -101,9 +102,11 @@ public class MonitorDataProcess {
                 log.info("monitor message received after driver calculation processing :: {}  {}", monitor, String.format(INCOMING_MESSAGE_UUID, monitor.getJobName()));
                 return monitor;
             });
-			driverManagementProcessing.addSink(new DriverTimeManagementSink());  // Drive Time Management
-			
-			consumerKeyedStream.addSink(new WarningStatisticsSink()); 
+			driverManagementProcessing.addSink(new DriverTimeManagementSink());   // Drive Time Management
+			//consumerKeyedStream.addSink(new LiveFleetPositionPostgreSink());
+			if("true".equals(envParams.get(DafConstants.WARNING_DATA_PROCESS))) {
+				consumerKeyedStream.addSink(new WarningStatisticsSink()); 
+			}
 			
 
 			log.debug("after addsink");
@@ -141,7 +144,7 @@ public class MonitorDataProcess {
 				  
 				  auditing = new AuditETLJobClient(envParams.get(DafConstants.GRPC_SERVER),
 				  Integer.valueOf(envParams.get(DafConstants.GRPC_PORT)));
-				  auditing.auditTrialGrpcCall(auditMap); auditing.closeChannel();
+				  auditing.auditTrialGrpcCall(auditMap); auditing.closeChannel(); 
 				 
 				 
 			} catch (Exception ex) {

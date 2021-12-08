@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, AfterViewInit } from '@angular/core';
+import { Component, OnInit, Input, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslationService } from '../services/translation.service';
 import { DataInterchangeService } from '.././services/data-interchange.service';
@@ -16,7 +16,7 @@ export class PreferencesComponent implements OnInit, AfterViewInit {
   localStLanguage: any;
   accountInfo: any;
 
-  constructor(private translationService: TranslationService, private route: Router, private dataInterchangeService: DataInterchangeService) {
+  constructor(private translationService: TranslationService, private route: Router, private dataInterchangeService: DataInterchangeService, private cdr: ChangeDetectorRef) {
     this.dataInterchangeService.settingInterface$.subscribe(data => {
       this.userPreferencesFlag = data;
     }); 
@@ -52,6 +52,7 @@ export class PreferencesComponent implements OnInit, AfterViewInit {
       else if (currentComponentUrl.substr(0, 15) == "/fleetoverview/") { this.selectedIndex = 3; }
       else { this.selectedIndex = 0; }
     }
+    this.cdr.detectChanges();
   }
 
   processTranslation(transData: any){

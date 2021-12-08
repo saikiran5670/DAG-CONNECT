@@ -48,8 +48,9 @@
             <mat-label>{{ translationData.lblVehicle }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
                 <mat-select placeholder="{{translationData.lblSelectVehicle }}" (selectionChange)="filterChange('vehicleGroupName',$event)"  [(ngModel)]="alertVehicle">
-                    <mat-option value=''>{{ translationData.lblAll || 'All'}}</mat-option>
-                    <mat-option *ngFor="let vehList of filteredVehicles | async"  [value]="vehList.vehicleId">
+
+                <mat-option value=''>{{ translationData.lblAll || 'All'}}</mat-option>
+                <mat-option *ngFor="let vehList of filteredVehicles | async"  [value]="vehList.vehicleId">
                     <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleName'"> {{vehList.vehicleName}} </span>
                     <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber'"> {{vehList.vin}} </span>
                     <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber'"> {{vehList.registrationNo ? vehList.registrationNo : vehList.vehicleName}} </span>

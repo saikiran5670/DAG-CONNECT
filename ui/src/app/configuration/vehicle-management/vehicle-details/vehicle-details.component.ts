@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -10,6 +10,11 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { Workbook } from 'exceljs';
 import * as fs from 'file-saver';
+import { CdkVirtualScrollViewport, ScrollDispatcher } from '@angular/cdk/scrolling';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+// import { TableVirtualScrollDataSource } from 'ng-table-virtual-scroll';
+import { HttpClient } from "@angular/common/http";
 
 
 @Component({
@@ -23,12 +28,15 @@ export class VehicleDetailsComponent implements OnInit {
   columnLabels = ['Vehicle','VIN', 'RegistrationNumber', 'Model', 'Relationship', 'Status', 'Action'];
   actionType: any = '';
   selectedRowData: any = [];
-  // displayedColumns: string[] = ['name', 'vin', 'licensePlateNumber', 'modelId', 'relationShip', 'status', 'action'];
+  displayedColumns: string[] = ['name', 'vin', 'licensePlateNumber', 'modelId', 'relationShip', 'status', 'action'];
   dataSource: any = new MatTableDataSource([]);
+  // dataSource1: any = new MatTableDataSource([]);
   vehicleUpdatedMsg: any = '';
   @Output() updateRelationshipVehiclesData = new EventEmitter();
-  @ViewChild(MatPaginator) paginator: MatPaginator;
+  // @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+  // @ViewChild(MatSort, { static: true }) sort: MatSort;
+  @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective
   initData: any = [];
   @Input() translationData;
@@ -41,8 +49,15 @@ export class VehicleDetailsComponent implements OnInit {
   updateViewStatus: boolean = false;
   adminAccessType: any = {};
   userType: any = localStorage.getItem("userType");
-
-  constructor(private vehicleService: VehicleService, private dialogService: ConfirmDialogService, private translationService: TranslationService, ) {
+  // relationshipVehiclesData : [];
+  // getVehiclesDataAPICall: any;
+  @ViewChild(CdkVirtualScrollViewport) viewport: CdkVirtualScrollViewport;
+  index: number;
+  // itemSize = 8;
+  
+ 
+  constructor(private cd: ChangeDetectorRef, private scrollDispatcher: ScrollDispatcher,private httpClient: HttpClient, private vehicleService: VehicleService, private dialogService: ConfirmDialogService, private translationService: TranslationService, ) {
+    // this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.defaultTranslation();
   }
 
@@ -79,7 +94,7 @@ export class VehicleDetailsComponent implements OnInit {
     // });
     this.initData = this.updateStatusName(this.relationshipVehiclesData);
     this.updateDataSource(this.relationshipVehiclesData)
-  }
+    }
 
   // processTranslation(transData: any) {
   //   this.translationData = transData.reduce((acc: any, cur: any) => ({ ...acc, [cur.name]: cur.value }),{});
@@ -87,29 +102,47 @@ export class VehicleDetailsComponent implements OnInit {
 
   getRelationshipVehiclesData() {
     this.updateRelationshipVehiclesData.emit()
-  }
+  } 
+
+  onScroll(event) {
+    this.index = event;
+    // const buffer = Math.floor(this.viewport.getViewportSize() / this.itemSize);
+    // console.log(buffer, 'event');
+    // console.log((this.viewport.getRenderedRange()), "range start");
+}
 
   updateStatusName(relationshipVehiclesData) {
-    relationshipVehiclesData.forEach(item => {
-      if(item.status == 'T'){
-        item.viewstatus = 'Terminate'
-      } else if(item.status == 'N'){
-        item.viewstatus = 'Opt-In + OTA'
-      } else if(item.status == 'A'){
-        item.viewstatus = 'OTA'
-      } else if(item.status == 'C'){
-        item.viewstatus = 'Opt-In'
-      }  else if(item.status == 'O'){
-        item.viewstatus = 'Opt-Out'
-      }
-    });
+    if(relationshipVehiclesData && relationshipVehiclesData.length>0){
+      for(let item of relationshipVehiclesData){
+        // relationshipVehiclesData.forEach(item => {
+          if(item.status == 'T'){
+            item.viewstatus = 'Terminate';
+            break;
+          } else if(item.status == 'N'){
+            item.viewstatus = 'Opt-In + OTA';
+            break;
+          } else if(item.status == 'A'){
+            item.viewstatus = 'OTA';
+            break;
+          } else if(item.status == 'C'){
+            item.viewstatus = 'Opt-In';
+            break;
+          }  else if(item.status == 'O'){
+            item.viewstatus = 'Opt-Out';
+            break;
+          }
+    }
     return relationshipVehiclesData;
+    // });
+  }
+   return [];
   }
 
   updateDataSource(tableData: any) {
     this.initData = tableData;
     setTimeout(() => {
       this.dataSource = new MatTableDataSource(this.initData);
+      // this.dataSource1 = new MatTableDataSource(this.initData);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
       this.dataSource.sortData = (data: String[], sort: MatSort) =>{
@@ -135,6 +168,7 @@ export class VehicleDetailsComponent implements OnInit {
     filterValue = filterValue.trim(); // Remove whitespace
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
     this.dataSource.filter = filterValue;
+    // this.dataSource1.filter = filterValue;
   }
 
   hideloader() {

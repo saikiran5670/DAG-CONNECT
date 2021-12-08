@@ -41,7 +41,7 @@
               <mat-label>{{ translationData.lblVehicleGroup  }} <span class='mandatoryColor'>*</span>
               </mat-label>
               <mat-form-field appearance="outline">
-                <mat-select [disabled]="vehicleGrpDD.length == 0" (selectionChange)="onVehicleGroupChange($event)"
+                <mat-select [disabled]="vehicleGrpDD.length == 0" (selectionChange)="onVehicleGroupChange($event, true)"
                   placeholder="{{ translationData.lblSelectVehicleGroup }}"
                   formControlName="vehicleGroup">
                   <mat-option>

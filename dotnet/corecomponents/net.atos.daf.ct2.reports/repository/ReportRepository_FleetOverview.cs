@@ -357,6 +357,22 @@ namespace net.atos.daf.ct2.reports.repository
                 throw;
             }
         }
+        public async Task<IEnumerable<string>> GetEnumList(IEnumerable<int> alertFeatureIds)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@alertFeatureIds", alertFeatureIds);
+                var queryStatementFeature = @"select enum from translation.enumtranslation where feature_id = ANY(@alertFeatureIds)";
+                IEnumerable<string> resultFeaturEnum = await _dataAccess.QueryAsync<string>(queryStatementFeature, parameter);
+                return resultFeaturEnum;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public async Task<List<FleetOverviewDetails>> GetFleetOverviewDetails_NeverMoved(FleetOverviewFilter fleetOverviewFilter)
         {
             List<FleetOverviewDetails> fleetOverviewDetails = new List<FleetOverviewDetails>();

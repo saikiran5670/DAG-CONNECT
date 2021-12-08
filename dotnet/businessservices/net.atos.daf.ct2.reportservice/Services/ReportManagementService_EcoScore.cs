@@ -149,11 +149,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetEcoScoreProfiles)}: With Error:-", ex);
                 return await Task.FromResult(new GetEcoScoreProfileResponse
                 {
                     Code = Responsecode.InternalServerError,
-                    Message = $"{nameof(GetEcoScoreProfiles)} failed due to - " + ex.Message
+                    Message = $"{nameof(GetEcoScoreProfiles)}: {ReportConstants.INTERNAL_SERVER_MSG}."
                 });
             }
         }

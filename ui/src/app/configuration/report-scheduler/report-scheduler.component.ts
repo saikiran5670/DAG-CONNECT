@@ -20,7 +20,7 @@ import { Util } from 'src/app/shared/util';
 })
 
 export class ReportSchedulerComponent implements OnInit {
-  columnCodes = ['reportName','action2','frequencyTypeName','recipientList','driverList','lastScheduleRunDate','nextScheduleRunDate', 'viewstatus', 'action'];
+  columnCodes = ['reportName','vehicleGroupAndVehicleList','frequencyTypeName','recipientList','driverList','lastScheduleRunDate','nextScheduleRunDate', 'viewstatus', 'action'];
   columnLabels = ['ReportType','VehicleGroupVehicle', 'Frequency', 'Recipient', 'Driver', 'LastRun', 'NextRun', 'Status', 'Action'];
   // displayedColumns: string[] = ['reportName','vehicleGroupAndVehicleList','frequencyType','recipientList','driverList','lastScheduleRunDate','nextScheduleRunDate','status','action'];
   grpTitleVisible : boolean = false;
@@ -40,6 +40,7 @@ export class ReportSchedulerComponent implements OnInit {
   originalAlertData: any= [];
   rowsData: any;
   accountOrganizationId: any;
+  completePrefData: any;
   accountId: any;
   titleVisible : boolean = false;
   dialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
@@ -86,6 +87,7 @@ export class ReportSchedulerComponent implements OnInit {
       this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
         this.processTranslation(data);
         this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
+          this.completePrefData = prefData;
           if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
             this.proceedStep(prefData, this.accountPrefObj.accountPreference);
           }else{ // org pref
@@ -214,7 +216,12 @@ export class ReportSchedulerComponent implements OnInit {
        this.schedulerData =this.makeLists(data["reportSchedulerRequest"]);
        this.initData = this.schedulerData;
       //  this.updateDatasource(this.schedulerData);
-
+        this.initData.forEach(element => {
+          if(element.reportName == "Fleet Fuel Report" || element.reportName == "Trip Report"||
+             element.reportName == "Fleet Utilisation Report"||element.reportName == "Fuel Deviation Report"){
+               element.driverList = "";
+             }
+        });
        this.hideloader();
     }, (error) => {
        this.hideloader();

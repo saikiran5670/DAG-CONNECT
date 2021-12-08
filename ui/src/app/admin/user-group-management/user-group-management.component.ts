@@ -399,6 +399,7 @@ export class UserGroupManagementComponent implements OnInit {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
+    dialogConfig.minWidth = 800;
     dialogConfig.data = {
       tableData: tableData,
       colsList: colsList,

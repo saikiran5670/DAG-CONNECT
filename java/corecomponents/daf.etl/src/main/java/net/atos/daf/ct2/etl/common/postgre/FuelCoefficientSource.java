@@ -46,7 +46,7 @@ public class FuelCoefficientSource extends RichSourceFunction<FuelCoEfficient> i
 				}
 			}
 		} catch (Exception e) {
-			logger.error("Issue while calling run() in FuelCoefficientSource :: " + e);
+			logger.error("Issue in FuelCoefficientSource while calling run() ::{} ", e);
 			e.printStackTrace();
 		}
 	}

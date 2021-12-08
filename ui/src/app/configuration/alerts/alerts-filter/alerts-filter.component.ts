@@ -25,7 +25,7 @@ export class AlertsFilterComponent implements OnInit {
   @Input() vehicleByVehGroupList: any;
   @Input() associatedVehicleData :any;
   singleVehicle = [];
-  vehicle_group_selected:any;
+
   isDisabledAlerts = true; 
   localData : any; 
   tempData: any; 
@@ -51,9 +51,10 @@ export class AlertsFilterComponent implements OnInit {
     Organizationid : this.OrgId,
     IsGlobal: this.isGlobal
  };
-
+ vehicle_group_selected:any;
  filterListValues = {};
  dataSource = new MatTableDataSource();
+
  constructor(private translationService: TranslationService, private reportMapService : ReportMapService) { }
    
   ngOnInit(): void {
@@ -92,12 +93,12 @@ export class AlertsFilterComponent implements OnInit {
     });
     this.resetVehiclesFilter();
     });
-   
   } 
 
   resetVehiclesFilter(){
     this.filteredVehicles.next(this.vehicleByVehGroupList.slice());
   }
+
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
@@ -138,7 +139,6 @@ export class AlertsFilterComponent implements OnInit {
         this.dataSource.sort = this.sort;
       });
     }
-   
   // Called on Filter change
   filterChange(filter, event) {     
     let event_val;      
@@ -150,6 +150,7 @@ export class AlertsFilterComponent implements OnInit {
           event_val = event.value.enum; 
         }
         }else if(filter == "vehicleGroupName"){
+
           if(event.value == ''){ //for all option
             this.alertVehicleGroup='';
             event_val = event.value.trim();  
@@ -159,7 +160,7 @@ export class AlertsFilterComponent implements OnInit {
               this.vehicle_group_selected= event.value.value;
               this.vehicleByVehGroupList= this.associatedVehicleData.filter(item => item.vehicleGroupDetails.includes(this.vehicle_group_selected+"~"));
               this.resetVehiclesFilter();
-            event_val = event.value.vehicleName.trim();
+              event_val = event.value.vehicleName.trim();
             }
             else{
               event_val = event.value.value.trim();  
@@ -179,6 +180,7 @@ export class AlertsFilterComponent implements OnInit {
    this.filterValues.emit(this.dataSource);    
   }
   
+
   getUniqueVINs(vinList: any){
     let uniqueVINList = [];
     for(let vin of vinList){
@@ -189,7 +191,7 @@ export class AlertsFilterComponent implements OnInit {
     }
     return uniqueVINList;
   }
-  
+
   createFilter() {
     return (data: any, filter: string): boolean => {
       let searchTerms = JSON.parse(filter);

@@ -583,7 +583,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     if (response.GroupRefDetails != null && response.GroupRefDetails.Count > 0)
                     {
-                        return Ok(response.GroupRefDetails);
+                        return Ok(response.GroupRefDetails.Distinct());
                     }
                     else
                     {
@@ -885,6 +885,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                             VehicleBusinessService.VehicleGroupIdRequest vehicleGroupIdRequest = new VehicleBusinessService.VehicleGroupIdRequest();
                             vehicleGroupIdRequest.GroupId = dynamicVehicleGroupRequest.GroupId;
+                            vehicleGroupIdRequest.OrganizationId = dynamicVehicleGroupRequest.OrganizationId;
                             VehicleBusinessService.VehicleGroupRefResponce response = await _vehicleClient.GetVehiclesByVehicleGroupAsync(vehicleGroupIdRequest);
 
                             if (response != null && response.Code == VehicleBusinessService.Responcecode.Success)
@@ -1033,8 +1034,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetRelationshipVehicles)}: With Error:-", ex);
+                return StatusCode(500, VehcileConstants.INTERNAL_SERVER_MSG);
             }
         }
 

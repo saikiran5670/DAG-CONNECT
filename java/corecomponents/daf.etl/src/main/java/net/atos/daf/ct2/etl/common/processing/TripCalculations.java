@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import net.atos.daf.ct2.etl.common.bo.FuelCoEfficient;
 import net.atos.daf.ct2.etl.common.bo.TripAggregatedData;
 import net.atos.daf.ct2.etl.common.bo.TripStatusData;
+import net.atos.daf.ct2.etl.common.util.ETLConstants;
 
 
 public class TripCalculations implements Serializable{
@@ -56,7 +57,7 @@ public class TripCalculations implements Serializable{
 									logger.info("Inside FuelCoefficientCalculation fueltpe:{},  coff is: {} ",value.getFuelType(), mapBrodcast.get(value.getFuelType()));
 									tripStsAggr.setTripCalC02Emission((mapBrodcast.get(value.getFuelType()) * (value.getVStopFuel() - value.getVStartFuel())) / 1000000);
 								}else{
-									tripStsAggr.setTripCalC02Emission(Double.valueOf(0));
+									tripStsAggr.setTripCalC02Emission(ETLConstants.DOUBLE_ZERO_VAL);
 								}
 						
 								
@@ -76,8 +77,9 @@ public class TripCalculations implements Serializable{
 									tripStsAggr.setTripCalAvgSpeed(Double.valueOf(value.getTripCalGpsVehDistDiff()) / value.getTripCalGpsVehTimeDiff() );
 									tripStsAggr.setTripCalPtoDuration((Double.valueOf(value.getVPTODuration()) / (value.getTripCalGpsVehTimeDiff() * 0.001)) * 100 );
 								}else{
-									tripStsAggr.setTripCalAvgSpeed(Double.valueOf(0));
-									tripStsAggr.setTripCalPtoDuration(Double.valueOf(value.getVPTODuration()));
+									tripStsAggr.setTripCalAvgSpeed(ETLConstants.DOUBLE_ZERO_VAL);
+									//tripStsAggr.setTripCalPtoDuration(Double.valueOf(value.getVPTODuration()));
+									tripStsAggr.setTripCalPtoDuration(ETLConstants.DOUBLE_ZERO_VAL);
 								}
 														
 								tripStsAggr.setGpsStartVehDist(value.getGpsStartVehDist());
@@ -96,19 +98,23 @@ public class TripCalculations implements Serializable{
 									tripStsAggr.setTripCalFuelConsumption((Double.valueOf(value.getVUsedFuel()) / value.getTripCalGpsVehDistDiff() ) * 100);
 									tripStsAggr.setTripCalAvgTrafficClsfn(Double.valueOf(value.getVTripDPABrakingCount() +value.getVTripDPAAnticipationCount())/value.getTripCalGpsVehDistDiff());
 								}else{
-									tripStsAggr.setTripCalFuelConsumption(Double.valueOf(value.getVUsedFuel()));
-									tripStsAggr.setTripCalAvgTrafficClsfn(Double.valueOf(value.getVTripDPABrakingCount() +value.getVTripDPAAnticipationCount()));
+									tripStsAggr.setTripCalFuelConsumption(ETLConstants.DOUBLE_ZERO_VAL);
+									tripStsAggr.setTripCalAvgTrafficClsfn(ETLConstants.DOUBLE_ZERO_VAL);
 								}
 									
 								if(0 != value.getVBrakeDuration()){
 									tripStsAggr.setTripCalHarshBrakeDuration((Double.valueOf(value.getVHarshBrakeDuration()) / value.getVBrakeDuration() ) * 100);
-								}else
-									tripStsAggr.setTripCalHarshBrakeDuration(Double.valueOf(value.getVHarshBrakeDuration()));
+								}else{
+									//tripStsAggr.setTripCalHarshBrakeDuration(Double.valueOf(value.getVHarshBrakeDuration()));
+									tripStsAggr.setTripCalHarshBrakeDuration(ETLConstants.DOUBLE_ZERO_VAL);
+								}
 								
 								if(0 != value.getVTripAccelerationTime()){
 									tripStsAggr.setTripCalHeavyThrottleDuration((Double.valueOf(value.getVMaxThrottlePaddleDuration()) / value.getVTripAccelerationTime() ) * 100);
-								}else
-									tripStsAggr.setTripCalHeavyThrottleDuration(Double.valueOf(value.getVMaxThrottlePaddleDuration()));
+								}else{
+									//tripStsAggr.setTripCalHeavyThrottleDuration(Double.valueOf(value.getVMaxThrottlePaddleDuration()));
+									tripStsAggr.setTripCalHeavyThrottleDuration(ETLConstants.DOUBLE_ZERO_VAL);
+								}
 															
 								tripStsAggr.setTripCalCrsCntrlDist25To50(value.getTripCalCrsCntrlDist25To50());
 								tripStsAggr.setTripCalCrsCntrlDist50To75(value.getTripCalCrsCntrlDist50To75());
@@ -116,8 +122,10 @@ public class TripCalculations implements Serializable{
 								
 								if(0 != value.getVCruiseControlDist()){
 									tripStsAggr.setTripCalCCFuelConsumption((Double.valueOf(value.getVCruiseControlFuelConsumed()) / value.getVCruiseControlDist() ) * 100);
-								}else
-									tripStsAggr.setTripCalCCFuelConsumption(Double.valueOf(value.getVCruiseControlFuelConsumed()));
+								}else{
+									//tripStsAggr.setTripCalCCFuelConsumption(Double.valueOf(value.getVCruiseControlFuelConsumed()));
+									tripStsAggr.setTripCalCCFuelConsumption(ETLConstants.DOUBLE_ZERO_VAL);
+								}
 
 								tripStsAggr.setVCruiseControlFuelConsumed(value.getVCruiseControlFuelConsumed());
 								tripStsAggr.setVCruiseControlDist(value.getVCruiseControlDist());
@@ -128,12 +136,13 @@ public class TripCalculations implements Serializable{
 									double ccFuelConsumption = 0;
 									if(0 != value.getVCruiseControlDist())
 										ccFuelConsumption = Double.valueOf(value.getVCruiseControlFuelConsumed())/value.getVCruiseControlDist();
-									else
-										ccFuelConsumption = value.getVCruiseControlDist();
+									/*else
+										ccFuelConsumption = value.getVCruiseControlDist();*/
 									
 									tripStsAggr.setTripCalfuelNonActiveCnsmpt(((value.getVUsedFuel() - ccFuelConsumption) / (value.getTripCalGpsVehDistDiff() - value.getVCruiseControlDist())) * 100 );
-								}else
-									tripStsAggr.setTripCalfuelNonActiveCnsmpt(Double.valueOf(0));
+								}else{
+									tripStsAggr.setTripCalfuelNonActiveCnsmpt(ETLConstants.DOUBLE_ZERO_VAL);
+								}
 								
 								tripStsAggr.setDriverId(value.getDriverId());
 								tripStsAggr.setTripCalGpsVehTime(value.getTripCalGpsVehTimeDiff());
@@ -185,15 +194,20 @@ public class TripCalculations implements Serializable{
 									anticipationScore = Double.valueOf(value.getVSumTripDPAAnticipationScore()) / value.getVTripDPAAnticipationCount();
 								}
 							
-								tripStsAggr.setTripCalDpaScore((brakingScore + anticipationScore)/2);
+								if(0 != brakingScore && 0 != anticipationScore)
+									tripStsAggr.setTripCalDpaScore((brakingScore + anticipationScore)/2);
+								else
+									tripStsAggr.setTripCalDpaScore(ETLConstants.DOUBLE_ZERO_VAL);
 								
 								tripStsAggr.setVTripIdlePTOFuelConsumed(value.getVTripIdlePTOFuelConsumed());
 								tripStsAggr.setVPtoDist(value.getVPtoDist());
 								
 								if(0 != value.getVPtoDist())
 									tripStsAggr.setIdlingConsumptionWithPTO((Double.valueOf(value.getVTripIdlePTOFuelConsumed())/value.getVPtoDist()) *100);
-								else
-									tripStsAggr.setIdlingConsumptionWithPTO(Double.valueOf(value.getVTripIdlePTOFuelConsumed()));
+								else{
+									//tripStsAggr.setIdlingConsumptionWithPTO(Double.valueOf(value.getVTripIdlePTOFuelConsumed()));
+									tripStsAggr.setIdlingConsumptionWithPTO(ETLConstants.DOUBLE_ZERO_VAL);
+								}
 									
 								tripStsAggr.setVTripCruiseControlDuration(value.getVTripCruiseControlDuration());
 								tripStsAggr.setVTripIdleWithoutPTOFuelConsumed(value.getVTripIdleWithoutPTOFuelConsumed());

@@ -30,6 +30,7 @@ export class ManageCategoryComponent implements OnInit , AfterViewInit{
   @ViewChild(MatSort) sort: MatSort;
   categoryList: any = [];
   subCategoryList: any = [];
+  initSubCategoryList: any = [];
   categoryTitleVisible: boolean = false;
   displayMessage: any = '';
   actionType: any;
@@ -122,9 +123,11 @@ export class ManageCategoryComponent implements OnInit , AfterViewInit{
           this.subCategoryList.push({
             id: elem.subCategoryId,
             name: elem.subCategoryName,
+            parentCategoryId: elem.parentCategoryId,
             organizationId: elem.organizationId
           });
         });
+        this.initSubCategoryList = JSON.parse(JSON.stringify(this.subCategoryList));
       }
     }
   }
@@ -394,6 +397,7 @@ export class ManageCategoryComponent implements OnInit , AfterViewInit{
     this.categorySelection = parseInt(_event.value);
     if(this.categorySelection == 0 && this.subCategorySelection == 0){
       this.onUpdateDataSource(this.allCategoryData); //-- load all data
+      this.subCategoryList = JSON.parse(JSON.stringify(this.initSubCategoryList));
     }
     else if(this.categorySelection == 0 && this.subCategorySelection != 0){
       let filterData = this.allCategoryData.filter(item => item.subCategoryId == this.subCategorySelection);
@@ -408,6 +412,7 @@ export class ManageCategoryComponent implements OnInit , AfterViewInit{
       let selectedId = this.categorySelection;
       let selectedSubId = this.subCategorySelection;
       let categoryData = this.allCategoryData.filter(item => item.parentCategoryId === selectedId);
+      this.subCategoryList = this.initSubCategoryList.filter(item => item.parentCategoryId === selectedId);
       if(selectedSubId != 0){
         categoryData = categoryData.filter(item => item.subCategoryId === selectedSubId);
       }

@@ -133,9 +133,11 @@ export class NewUserStepComponent implements OnInit {
   }
 
   compare(a: any, b: any, isAsc: boolean, columnName:any) {
+    if(columnName === 'roleName'){
     if(!(a instanceof Number)) a = a.toString().toUpperCase();
     if(!(b instanceof Number)) b = b.toString().toUpperCase();
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+    }
   }
   resetLanguageFilter(){
     this.filteredLanguges.next(this.defaultSetting.languageDropdownData.slice());
@@ -643,7 +645,7 @@ export class NewUserStepComponent implements OnInit {
     let _txt: any = '';
     if(createStatus){
       if(this.linkAccountId == parseInt(localStorage.getItem('accountId'))){ // some same account changes
-        _txt = `${this.translationData.lblLogoutAccountMsgToCheckOrgChange }`;
+        _txt = `${this.translationData.lblLogoutAccountMsgToCheckOrgChange || 'You need to logout to see the link organisation.'}`;
       }
       if(this.translationData.lblNewUserAccountCreatedSuccessfully)
         return `${this.translationData.lblNewUserAccountCreatedSuccessfully.replace('$', this.userName)}. ${_txt}`;
@@ -651,7 +653,7 @@ export class NewUserStepComponent implements OnInit {
         return `${("New Account '$' Created Successfully").replace('$', this.userName)}. ${_txt}`;
     }else{
       if(this.linkAccountId == parseInt(localStorage.getItem('accountId'))){
-        _txt = `${this.translationData.lblLogoutAccountMsgToCheckOrgChange }`;
+        _txt = `${this.translationData.lblLogoutAccountMsgToCheckOrgChange || 'You need to logout to see the link organisation.'}`;
       }
       if(this.translationData.lblUserAccountUpdatedSuccessfully)
         return `${this.translationData.lblUserAccountUpdatedSuccessfully.replace('$', this.userName)}. ${_txt}`;

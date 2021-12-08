@@ -93,7 +93,7 @@ public class IndexDataHbaseSink extends RichSinkFunction<KafkaRecord<Index>> {
 			    		  value.getValue().getDocument().getTripID() + "_" + value.getValue().getVid()
 			    		  + "_" + currentTimeStamp));
 			
-			log.debug("Index Data Row_Key :: {}"
+			log.info("Index Data Row_Key :: {}"
 					, (value.getValue().getTransID() + "_" + value.getValue().getDocument().getTripID() + "_"
 							+ value.getValue().getVid() + "_" + currentTimeStamp));
 

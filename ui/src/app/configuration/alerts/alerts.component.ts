@@ -33,8 +33,10 @@ export class AlertsComponent implements OnInit {
   actionType: any = '';
   UnitTypeVal: any;
   selectedRowData: any= [];
+  singleVehicle: any =[];
   titleText: string;
   translationData: any= {};
+  vehicleByVehGroupList: any= [];
   localStLanguage: any;
   dataSource: any;
   initData: any = [];
@@ -73,8 +75,9 @@ export class AlertsComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   filterValue: any;
-  singleVehicle: any =[];
-  vehicleByVehGroupList: any= [];
+  accountPrefObj: any;
+  prefData: any;
+  vehicleDisplayPreference: any= 'dvehicledisplay_VehicleIdentificationNumber';
 
   public filteredVehicles: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
@@ -86,7 +89,9 @@ export class AlertsComponent implements OnInit {
     private vehicleService: VehicleService,
     private alertService: AlertService,
     private dialogService: ConfirmDialogService,
-    private reportMapService: ReportMapService ) { }
+    private reportMapService: ReportMapService ) {
+      this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
+     }
 
     ngOnInit() {
       this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -115,7 +120,10 @@ export class AlertsComponent implements OnInit {
         // this.loadFiltersData();
         this.loadDataBasedOnPrivileges();
       });
-      this.translationService.getPreferences(this.localStLanguage).subscribe((res) => { this.generalPreferences = res; this.getUnits() });
+      this.translationService.getPreferences(this.localStLanguage).subscribe((res) => { 
+        this.generalPreferences = res; this.getUnits();
+        this.prefData = res;
+      });
     }
 
     getUnits() {
@@ -192,6 +200,7 @@ export class AlertsComponent implements OnInit {
           }
         });
       }
+
       this.alertTypeList = this.alertTypeListBasedOnPrivilege;
      
       if(this.alertTypeList.length != 0){
@@ -212,25 +221,28 @@ export class AlertsComponent implements OnInit {
           vehicleGroupDetails.forEach(item => {
             let itemSplit = item.split("~");
             if(itemSplit[2] != 'S') {
-              let vehicleGroupObj= {
-                "vehicleGroupId" : itemSplit[0],
-                "vehicleGroupName" : itemSplit[1],
-                "vehicleId" : parseInt(element.vehicleId)
-              }
-              this.vehicleGroupListBasedOnPrivilege.push(vehicleGroupObj);
-              this.vehicleList.push(vehicleGroupObj);
-             }
-             else{
-              this.singleVehicle.push(element);
-             }
-            });
-          }
+            let vehicleGroupObj= {
+              "vehicleGroupId" : itemSplit[0],
+              "vehicleGroupName" : itemSplit[1],
+              "vehicleId" : parseInt(element.vehicleId)
+            }
+            this.vehicleGroupListBasedOnPrivilege.push(vehicleGroupObj);
+            this.vehicleList.push(vehicleGroupObj);
+           }
+           else{
+            this.singleVehicle.push(element);
+           }
+          });
+        }
 
-        //this.vehicleListBasedOnPrivilege.push({"vehicleId" : element.vehicleId});
+        // this.vehicleListBasedOnPrivilege.push({"vehicleId" : element.vehicleId});
       });
 
       this.vehicleGroupListBasedOnPrivilege = this.removeDuplicates(this.vehicleGroupListBasedOnPrivilege, "vehicleGroupId");
+      // this.vehicleList = this.vehicleGroupListBasedOnPrivilege;
+
       this.vehicleByVehGroupList = this.getUniqueVINs([...this.associatedVehicleData, ...this.singleVehicle]);
+      // this.resetVehiclesFilter();
       this.alertStatusList = [{
         id: 1,
         value: "A",
@@ -241,6 +253,7 @@ export class AlertsComponent implements OnInit {
         key: 'Suspended'
       }
       ]
+
       this.loadAlertsData();
     })
   }
@@ -267,7 +280,7 @@ export class AlertsComponent implements OnInit {
 
     return unique;
   }
-  
+
   removeDuplicates(originalArray, prop) {
     var newArray = [];
     var lookupObject  = {};
@@ -503,8 +516,25 @@ export class AlertsComponent implements OnInit {
           findTest.value === test.value
           )
        );
-      } else {
-        item.vehicleGroupName = item.vehicleName;
+      } else {//according to pref
+        let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
+        if(vehicleDisplayId) {
+          let vehicledisplay = this.prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+          if(vehicledisplay.length != 0) {
+            this.vehicleDisplayPreference = vehicledisplay[0].name;
+          }
+        }  
+        if(this.vehicleDisplayPreference == 'dvehicledisplay_VehicleName'){
+          item.vehicleGroupName = item.vehicleName;
+        }
+        else if(this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber'){
+          item.vehicleGroupName = item.vin;
+        }
+        else{
+          item.vehicleGroupName = item.regNo;
+        }
+        // item.vehicleGroupName = item.vehicleName;
+        
       }
      });
       this.updateDatasource(this.initData);

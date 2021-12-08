@@ -22,6 +22,7 @@ export class CreateEditReportSchedulerComponent implements OnInit {
   @Input() reportSchedulerParameterData: any;
   @Output() backToPage = new EventEmitter<any>();
   
+  vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   breadcumMsg: any = '';
   reportSchedulerForm: FormGroup;
   accountOrganizationId: any;
@@ -151,6 +152,14 @@ export class CreateEditReportSchedulerComponent implements OnInit {
       if(this.actionType == 'edit'){
         this.setDefaultValues();
       }
+
+      let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
+        if(vehicleDisplayId) {
+          let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+          if(vehicledisplay.length != 0) {
+            this.vehicleDisplayPreference = vehicledisplay[0].name;
+          }
+        }  
     });
   }
 
@@ -210,22 +219,27 @@ export class CreateEditReportSchedulerComponent implements OnInit {
     switch(this.prefDateFormat){
       case 'ddateformat_dd/mm/yyyy': {
         this.dateFormats.display.dateInput = "DD/MM/YYYY";
+        this.dateFormats.parse.dateInput = "DD/MM/YYYY";
         break;
       }
       case 'ddateformat_mm/dd/yyyy': {
         this.dateFormats.display.dateInput = "MM/DD/YYYY";
+        this.dateFormats.parse.dateInput = "MM/DD/YYYY";
         break;
       }
       case 'ddateformat_dd-mm-yyyy': {
         this.dateFormats.display.dateInput = "DD-MM-YYYY";
+        this.dateFormats.parse.dateInput = "DD-MM-YYYY";
         break;
       }
       case 'ddateformat_mm-dd-yyyy': {
         this.dateFormats.display.dateInput = "MM-DD-YYYY";
+        this.dateFormats.parse.dateInput = "MM-DD-YYYY";
         break;
       }
       default:{
         this.dateFormats.display.dateInput = "MM/DD/YYYY";
+        this.dateFormats.parse.dateInput = "MM/DD/YYYY";
       }
     }
   }
@@ -235,7 +249,6 @@ export class CreateEditReportSchedulerComponent implements OnInit {
     this.selectionTab= this.selectedRowData[0].frequencyType;
     this.selectionTimeRange(this.selectionTab);
     this.reportSchedulerForm.get('reportDispatchTime').setValue(this.selectedRowData[0].reportDispatchTime)
-
     this.reportSchedulerForm.get('reportType').setValue(this.selectedRowData[0].reportId);
     //this.onChangeReportType(this.selectedRowData[0].reportId);
     this.showDriverList= this.selectedRowData[0].isDriver;
@@ -303,8 +316,8 @@ export class CreateEditReportSchedulerComponent implements OnInit {
       endDate=  this.getTodayDate();
     }
     else{
-      startDate= Util.convertUtcToDateNoFormat(this.selectedRowData[0].startDate, this.prefTimeZone);
-      endDate= Util.convertUtcToDateNoFormat(this.selectedRowData[0].endDate, this.prefTimeZone);
+      startDate= new Date(this.selectedRowData[0].startDate);
+      endDate= new Date(this.selectedRowData[0].endDate);
     }
     this.selectionTab = timeRange;
     switch(timeRange){
@@ -396,6 +409,9 @@ export class CreateEditReportSchedulerComponent implements OnInit {
 
   getTodayDate(){
     let _todayDate: any = Util.getUTCDate(this.prefTimeZone);
+    _todayDate.setHours(0);
+    _todayDate.setMinutes(0);
+    _todayDate.setSeconds(0);
     return _todayDate;
   }
 

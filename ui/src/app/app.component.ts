@@ -428,6 +428,11 @@ export class AppComponent {
         }
       }
     });
+
+    this.dataInterchangeService.prefClosedSource$.subscribe((flag: any) => {
+      this.userPreferencesFlag = flag;
+    });
+
   }
 
   @HostListener('window:beforeunload', ['$event'])
@@ -1065,8 +1070,17 @@ export class AppComponent {
     }
   }
 
-  navigateToPage(pageName) {
+  navigateToPage(menu) {
     //this.currentTitle = this.pageTitles[pageName];
+    if(menu.externalLink) {
+      if(menu.url == "information") {
+        let selectedLanguage = JSON.parse(localStorage.getItem("language"));
+        if(selectedLanguage.code == "nl-NL") {
+          menu.link = menu.link.replace('/en/','/de-de/');
+        }
+      }
+      window.open(menu.link, '_blank');
+    }
     if (this.menuCollapsed) {
       this.hideAllOpenMenus();
     }
@@ -1328,26 +1342,31 @@ export class AppComponent {
       case 'ddateformat_dd/mm/yyyy': {
         this.dateFormats.display.dateInput = "DD/MM/YYYY";      
         this.alertDateFormat='DD/MM/YYYY';
+        this.dateFormats.parse.dateInput = "DD/MM/YYYY";
         break;
       }
       case 'ddateformat_mm/dd/yyyy': {
         this.dateFormats.display.dateInput = "MM/DD/YYYY";
         this.alertDateFormat='MM/DD/YYYY';
+        this.dateFormats.parse.dateInput = "MM/DD/YYYY";
         break;
       }
       case 'ddateformat_dd-mm-yyyy': {
         this.dateFormats.display.dateInput = "DD-MM-YYYY";       
         this.alertDateFormat='DD-MM-YYYY';
+        this.dateFormats.parse.dateInput = "DD-MM-YYYY";
         break;
       }
       case 'ddateformat_mm-dd-yyyy': {
         this.dateFormats.display.dateInput = "MM-DD-YYYY";
         this.alertDateFormat='MM-DD-YYYY';
+        this.dateFormats.parse.dateInput = "MM-DD-YYYY";
         break;
       }
       default:{
         this.dateFormats.display.dateInput = "MM/DD/YYYY";
         this.alertDateFormat='MM/DD/YYYY';
+        this.dateFormats.parse.dateInput = "MM/DD/YYYY";
       }
     }
   }

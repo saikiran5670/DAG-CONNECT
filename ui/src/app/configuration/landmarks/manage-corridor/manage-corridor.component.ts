@@ -192,7 +192,7 @@ export class ManageCorridorComponent implements OnInit {
     let corridorId = rowData.id;
     const options = {
       title: this.translationData.lblDelete || "Delete",
-      message: this.translationData.lblAreyousureyouwanttodelete || "Are you sure you want to delete '$' ?",
+      message: this.translationData.lblAreyousureyouwanttodeleteCorridor + " '$'?",
       cancelText: this.translationData.lblCancel || "Cancel",
       confirmText: this.translationData.lblDelete || "Delete"
     };
@@ -316,7 +316,8 @@ export class ManageCorridorComponent implements OnInit {
       let arr = this.markerArray.filter(item => item.id != row.id);
       this.markerArray = arr;
       }
-    this.mapFunctions.viewSelectedRoutes(this.markerArray,this.accountOrganizationId);
+      this.mapFunctions.viewSelectedRoutesCorridor(this.markerArray,this.accountOrganizationId);
+    // this.mapFunctions.viewSelectedRoutes(this.markerArray,this.accountOrganizationId);
 
      // this.addPolylineToMap();
   }
@@ -369,7 +370,7 @@ export class ManageCorridorComponent implements OnInit {
 
     this.tabVisibility.emit(true);
     if(_eventObj.successMsg=="create"){
-      var _msg =  "Corridor "+_eventObj.CreateCorridorName+" created successfully!"
+      var _msg =  "Corridor '"+_eventObj.CreateCorridorName+"' created successfully!"
       this.successMsgBlink(_msg);
     }
     else if(_eventObj.successMsg=="update"){

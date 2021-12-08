@@ -68,6 +68,10 @@
                             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFeatures }}</mat-header-cell>
                             <mat-cell *matCellDef="let row">{{row.featureIds.length}} </mat-cell>
                         </ng-container>
+                        <ng-container matColumnDef="featureIds">
+                          <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFeatures }}</mat-header-cell>
+                          <mat-cell *matCellDef="let row">{{row.featureIds.length}} </mat-cell>
+                      </ng-container>
                         <ng-container matColumnDef="level">
                             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblLevel }}</mat-header-cell>
                             <mat-cell *matCellDef="let row">{{row.levelVal}} </mat-cell>
@@ -105,6 +109,17 @@
         </mat-card>
     </div>
     <div *ngIf='editFlag'>
-        <app-create-view-edit-relationship [selectedRowFromRelationship]='selectedRowFromRelationship' [translationData]='translationData' [viewFlag]='viewFlag' [viewRelationshipFromOrg]='viewRelationshipFromOrg' [createStatus]='createStatus' [title]='titleText' [relationshipData]='initData' [gridData]='rowsData' (backToPage)='editData($event)'></app-create-view-edit-relationship>
+        <app-create-view-edit-relationship 
+        [selectedRowFromRelationship]='selectedRowFromRelationship' 
+        [translationData]='translationData' 
+        [viewFlag]='viewFlag' 
+        [viewRelationshipFromOrg]='viewRelationshipFromOrg' 
+        [createStatus]='createStatus' 
+        [title]='titleText' 
+        [relationshipData]='initData' 
+        [gridData]='rowsData' 
+        [actionType] ='actionType'
+        (backToPage)='editData($event)'>
+    </app-create-view-edit-relationship>
     </div>
 </div>

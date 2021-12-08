@@ -2,6 +2,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ReportService } from '../../../services/report.service';
 import { Router } from '@angular/router';
+import { DataInterchangeService } from '../../../services/data-interchange.service';
 
 @Component({
   selector: 'app-eco-score-report-preferences',
@@ -33,7 +34,7 @@ export class EcoScoreReportPreferencesComponent implements OnInit {
   requestSent:boolean = false;
   showLoadingIndicator: boolean = false;
 
-  constructor(private reportService: ReportService, private router: Router) { }
+  constructor(private reportService: ReportService, private router: Router, private dataInterchangeService: DataInterchangeService) { }
 
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -86,15 +87,23 @@ export class EcoScoreReportPreferencesComponent implements OnInit {
     }
   }
 
-  loadEcoScoreReportPreferences(){
-    this.showLoadingIndicator=true;
+  loadEcoScoreReportPreferences(reloadFlag?: any){
+    this.showLoadingIndicator = true;
     this.reportService.getReportUserPreference(this.reportId).subscribe((prefData : any) => {
       this.showLoadingIndicator=false;
       this.initData = prefData['userPreferences'];
+      if(reloadFlag){
+        let _dataObj: any = {
+          prefdata: this.initData,
+          type: 'eco score report' 
+        }
+        this.dataInterchangeService.getPrefData(_dataObj);
+        this.dataInterchangeService.closedPrefTab(false); // closed pref tab
+      }
       this.resetColumnData();
       this.preparePrefData(this.initData);
     }, (error)=>{
-      this.showLoadingIndicator=false;
+      this.showLoadingIndicator = false;
       this.initData = [];
       this.resetColumnData();
     });
@@ -506,12 +515,14 @@ export class EcoScoreReportPreferencesComponent implements OnInit {
       }
       this.showLoadingIndicator=true;
       this.reportService.updateReportUserPreference(objData).subscribe((_prefData: any) => {
-        this.showLoadingIndicator=false;
-        this.loadEcoScoreReportPreferences();
-        this.setEcoScoreFlag.emit({ flag: false, msg: this.getSuccessMsg() });
+        this.showLoadingIndicator = false;
+        let _reloadFlag = false;
         if ((this.router.url).includes("ecoscorereport")) {
-          this.reloadCurrentComponent();
+          _reloadFlag = true
+          //this.reloadCurrentComponent();
         }
+        this.loadEcoScoreReportPreferences(_reloadFlag);
+        this.setEcoScoreFlag.emit({ flag: false, msg: this.getSuccessMsg() });
         this.requestSent = false;
       }, (error) => {
         this.showLoadingIndicator=false;

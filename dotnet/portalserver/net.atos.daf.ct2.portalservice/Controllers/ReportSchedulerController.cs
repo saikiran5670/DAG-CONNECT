@@ -50,6 +50,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 int contextorgid = GetContextOrgId();
                 int roleid = _userDetails.RoleId;
                 accountId = _userDetails.AccountId;
+                orgnizationid = GetUserSelectedOrgId();
                 await _auditHelper.AddLogs(DateTime.Now, ReportSchedulerConstants.REPORTSCHEDULER_CONTROLLER_NAME,
                  ReportSchedulerConstants.REPORTSCHEDULER_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                 "GetReportSchedulerParameter", 1, 2, Convert.ToString(accountId),
@@ -58,7 +59,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 Metadata headers = new Metadata();
                 headers.Add("report_feature_id", Convert.ToString(featureId));
 
-                ReportParameterResponse response = await _reportschedulerClient.GetReportParameterAsync(new ReportParameterRequest { AccountId = accountId, OrganizationId = GetUserSelectedOrgId(), RoleId = roleid, ContextOrgId = contextorgid }, headers);
+                ReportParameterResponse response = await _reportschedulerClient.GetReportParameterAsync(new ReportParameterRequest { AccountId = accountId, OrganizationId = orgnizationid, RoleId = roleid, ContextOrgId = contextorgid }, headers);
 
                 if (response == null)
                     return StatusCode(500, ReportSchedulerConstants.REPORTSCHEDULER_INTERNEL_SERVER_ISSUE);
@@ -306,31 +307,38 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 if (orgnizationid == 0) return BadRequest(ReportSchedulerConstants.REPORTSCHEDULER_ORG_ID_NOT_NULL_MSG);
-                orgnizationid = GetContextOrgId();
-                ReportSchedulerListResponse response = await _reportschedulerClient.GetReportSchedulerListAsync(new ReportParameterRequest { AccountId = accountId, OrganizationId = orgnizationid });
-                if (response.ReportSchedulerRequest.Any())
-                {
-                    foreach (var item in response.ReportSchedulerRequest)
-                    {
-                        if (item.ScheduledReportVehicleRef.Any())
-                        {
-                            foreach (var vehicle in item.ScheduledReportVehicleRef)
-                            {
-                                if (vehicle.VehicleGroupId > 0 && vehicle.VehicleGroupType != "S")
-                                {
-                                    VehicleCountFilterRequest vehicleRequest = new VehicleCountFilterRequest();
-                                    vehicleRequest.VehicleGroupId = vehicle.VehicleGroupId;
-                                    vehicleRequest.GroupType = vehicle.VehicleGroupType;
-                                    vehicleRequest.FunctionEnum = vehicle.FunctionEnum;
-                                    vehicleRequest.OrgnizationId = orgnizationid;
-                                    VehicleCountFilterResponse vehicleResponse = await _vehicleClient.GetVehicleAssociatedGroupCountAsync(vehicleRequest);
-                                    vehicle.VehicleCount = vehicleResponse.VehicleCount;
-                                }
-                            }
-                        }
 
-                    }
-                }
+                // Fetch Feature Id of the report for visibility
+                var featureId = GetMappedFeatureId(HttpContext.Request.Path.Value.ToLower());
+                int roleid = _userDetails.RoleId;
+                int contextorgid = GetContextOrgId();
+                accountId = _userDetails.AccountId;
+                orgnizationid = GetUserSelectedOrgId();
+                Metadata headers = new Metadata();
+                headers.Add("report_feature_id", Convert.ToString(featureId));
+                ReportSchedulerListResponse response = await _reportschedulerClient.GetReportSchedulerListAsync(new ReportParameterRequest { AccountId = accountId, OrganizationId = orgnizationid, RoleId = roleid, ContextOrgId = contextorgid }, headers);
+                //if (response.ReportSchedulerRequest.Any())
+                //{
+                //    foreach (var item in response.ReportSchedulerRequest)
+                //    {
+                //        if (item.ScheduledReportVehicleRef.Any())
+                //        {
+                //            foreach (var vehicle in item.ScheduledReportVehicleRef)
+                //            {
+                //                if (vehicle.VehicleGroupId > 0 && vehicle.VehicleGroupType != "S")
+                //                {
+                //                    VehicleCountFilterRequest vehicleRequest = new VehicleCountFilterRequest();
+                //                    vehicleRequest.VehicleGroupId = vehicle.VehicleGroupId;
+                //                    vehicleRequest.GroupType = vehicle.VehicleGroupType;
+                //                    vehicleRequest.FunctionEnum = vehicle.FunctionEnum;
+                //                    vehicleRequest.OrgnizationId = orgnizationid;
+                //                    VehicleCountFilterResponse vehicleResponse = await _vehicleClient.GetVehicleAssociatedGroupCountAsync(vehicleRequest);
+                //                    vehicle.VehicleCount = vehicleResponse.VehicleCount;
+                //                }
+                //            }
+                //        }
+                //    }
+                //}
 
                 if (response == null)
                     return StatusCode(500, ReportSchedulerConstants.REPORTSCHEDULER_INTERNEL_SERVER_ISSUE);
@@ -345,6 +353,35 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, ReportSchedulerConstants.REPORTSCHEDULER_CONTROLLER_NAME,
                  ReportSchedulerConstants.REPORTSCHEDULER_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                 string.Format(ReportSchedulerConstants.REPORTSCHEDULER_EXCEPTION_LOG_MSG, "GetReportScheduler", ex.Message), 1, 2, Convert.ToString(accountId),
+                  _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        [HttpGet]
+        [Route("getscheduledreport")]
+        public async Task<IActionResult> GetScheduledReport(int reportSchedulerId)
+        {
+            try
+            {
+                if (reportSchedulerId == 0) return BadRequest(ReportSchedulerConstants.REPORTSCHEDULER_ID_NOT_NULL_MSG);
+
+                ScheduledReportResponse response = await _reportschedulerClient.GetScheduledReportAsync(new ScheduledResponseIdRequest { ReportSchedulerId = reportSchedulerId });
+
+                if (response == null)
+                    return StatusCode(500, ReportSchedulerConstants.REPORTSCHEDULER_INTERNEL_SERVER_ISSUE);
+                if (response.Code == ResponseCode.Success)
+                    return Ok(response);
+                if (response.Code == ResponseCode.InternalServerError)
+                    return StatusCode((int)response.Code, String.Format(ReportSchedulerConstants.REPORTSCHEDULER_DATA_NOT_FOUND_MSG, response.Message));
+                return StatusCode((int)response.Code, response.Message);
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, ReportSchedulerConstants.REPORTSCHEDULER_CONTROLLER_NAME,
+                 ReportSchedulerConstants.REPORTSCHEDULER_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                string.Format(ReportSchedulerConstants.REPORTSCHEDULER_EXCEPTION_LOG_MSG, "GetScheduledReport", ex.Message), 1, 2, Convert.ToString(_userDetails.AccountId),
                   _userDetails);
                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);

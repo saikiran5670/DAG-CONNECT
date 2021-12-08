@@ -332,6 +332,7 @@ export class LoginComponent implements OnInit {
   }
 
   public onResetPassword(values: object): void {
+    values['emailId'] = values['emailId'].toLowerCase(); 
     console.log("values:: ", values)
     if (this.forgotPasswordForm.valid) {
       this.accountService.resetPasswordInitiate(values).subscribe(data => {

@@ -66,6 +66,7 @@ import java.util.stream.StreamSupport;
 
 import static net.atos.daf.ct2.process.functions.IndexBasedAlertFunctions.*;
 import static net.atos.daf.ct2.props.AlertConfigProp.*;
+import static net.atos.daf.ct2.util.FlinkUtil.getFlinkUtil;
 import static net.atos.daf.ct2.util.Utils.*;
 @Deprecated
 public class TripBasedTest implements Serializable {
@@ -78,17 +79,19 @@ public class TripBasedTest implements Serializable {
      */
     private static final Map<Object, Object> geofenceFunConfigMap = new HashMap() {{
         put("functions", Arrays.asList(
-                exitCorridorFun
+                enteringZoneFun
         ));
     }};
 
 
     public static void main(String[] args) throws Exception {
-        final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+
         ParameterTool parameterTool = ParameterTool.fromArgs(args);
         logger.info("TripBasedTest started with properties :: {}", parameterTool.getProperties());
         ParameterTool propertiesParamTool = ParameterTool.fromPropertiesFile(parameterTool.get("prop"));
         logger.info("PropertiesParamTool :: {}", propertiesParamTool.getProperties());
+
+        final StreamExecutionEnvironment env = getFlinkUtil(propertiesParamTool).createStreamExecutionEnvironment();
         env.getConfig().setGlobalJobParameters(propertiesParamTool);
 
 
@@ -110,7 +113,14 @@ public class TripBasedTest implements Serializable {
         SingleOutputStreamOperator<Index> indexStringStream = KafkaConnectionService.connectIndexObjectTopic(
                         propertiesParamTool.get(KAFKA_EGRESS_INDEX_MSG_TOPIC),
                         propertiesParamTool, env)
-                .map(indexKafkaRecord -> indexKafkaRecord.getValue())
+                .map(indexKafkaRecord -> {
+                    try{
+                        return indexKafkaRecord.getValue();
+                    }catch (Exception e){
+                        logger.error("Error {}",e);
+                    }
+                    return new Index();
+                })
                 .returns(Index.class)
                 .filter(index -> index.getVid() != null)
                 .returns(Index.class)

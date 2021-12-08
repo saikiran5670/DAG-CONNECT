@@ -362,10 +362,16 @@
                   <mat-label>{{ translationData.lblVehicle || 'Vehicle' }}<span class='mandatoryColor'>*</span></mat-label>
                   <mat-form-field appearance="outline">
                     <mat-select placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" formControlName="vehicle">
-                        <mat-option [value]="0">All</mat-option>
-                        <mat-option *ngFor="let rer of VehicleList" [value]="rer.vehicleId">
-                            {{rer.vin}}
-                        </mat-option>
+                      <mat-option [value]="0">All</mat-option>
+                      <mat-option *ngFor="let rer of VehicleList" [value]="rer.vehicleId">
+                        <!-- {{rer.vin}} -->
+                        <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleName' && rer.vehicleId !==0"> {{rer.vehicleName}}
+                        </span>
+                        <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber' && rer.vehicleId !==0">
+                          {{rer.vin}} </span>
+                        <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber' && rer.vehicleId !==0">
+                          {{rer.registrationNo ? rer.registrationNo : rer.vehicleName}} </span>
+                      </mat-option>
                     </mat-select>
                   </mat-form-field>
                 </div>

@@ -437,6 +437,11 @@ namespace net.atos.daf.ct2.reports
             List<FleetOverviewDetails> fleetOverviewDetails = await _reportRepository.GetFleetOverviewDetails(fleetOverviewFilter);
             return fleetOverviewDetails;
         }
+        public async Task<IEnumerable<string>> GetEnumList(IEnumerable<int> alertFeatureIds)
+        {
+            IEnumerable<string> enumList = await _reportRepository.GetEnumList(alertFeatureIds);
+            return enumList;
+        }
         public async Task<List<DriverFilter>> GetDriverList(List<string> vins, int organizationId)
         {
             List<DriverFilter> lstDriver = await _reportRepository.GetDriverList(vins, organizationId);
@@ -618,7 +623,7 @@ namespace net.atos.daf.ct2.reports
                     kpiInfoResponse.AnticipationScore = new KPI(kpiInfo.anticipationscore_total, kpiInfo.anticipationscore_count);
                     kpiInfoResponse.BrakingScore = new KPI(kpiInfo.brakingscore_total, kpiInfo.brakingscore_count);
                     kpiInfoResponse.FuelConsumption = new KPI(kpiInfo.fuelconsumption_total, kpiInfo.fuelconsumption_count);
-                    kpiInfoResponse.Ecoscore = kpiInfo.ecoscore_total;
+                    kpiInfoResponse.Ecoscore = Convert.ToDouble(kpiInfo.ecoscore_total);
                     kpiInfoResponse.NumberOfTrips = kpiInfo.numberoftrips;
                     kpiInfoResponse.NumberOfVehicles = kpiInfo.numberofvehicles;
                     kpiInfoResponse.AverageGrossWeight = new KPI(kpiInfo.averagegrossweight_total, kpiInfo.averagegrossweight_count);

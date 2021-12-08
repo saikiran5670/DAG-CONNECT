@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ReportService } from '../../../services/report.service';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { DataInterchangeService } from '../../../services/data-interchange.service';
 
 @Component({
   selector: 'app-fuel-benchmark-preferences',
@@ -37,7 +38,7 @@ export class FuelBenchmarkPreferencesComponent implements OnInit {
   requestSent:boolean = false;
   showLoadingIndicator: boolean = false;
 
-  constructor(private reportService: ReportService, private _formBuilder: FormBuilder, private router: Router) { }
+  constructor(private reportService: ReportService, private _formBuilder: FormBuilder, private router: Router, private dataInterchangeService: DataInterchangeService) { }
 
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -71,16 +72,24 @@ export class FuelBenchmarkPreferencesComponent implements OnInit {
     }
   }
 
-  loadFuelBenchmarkReportPreferences() {
-    this.showLoadingIndicator=true;
+  loadFuelBenchmarkReportPreferences(reloadFlag?: any) {
+    this.showLoadingIndicator = true;
     this.reportService.getReportUserPreference(this.reportId).subscribe((prefData: any) => {
-      this.showLoadingIndicator=false;
+      this.showLoadingIndicator = false;
       this.initData = prefData['userPreferences'];
+      if(reloadFlag){ // refresh pref setting & goto trip report
+        let _dataObj: any = {
+          prefdata: this.initData,
+          type: 'fuel benchmarking report' 
+        }
+        this.dataInterchangeService.getPrefData(_dataObj);
+        this.dataInterchangeService.closedPrefTab(false); // closed pref tab
+      }
       this.getReportPreferenceResponse = this.initData;    
       this.resetColumnData();
       this.getTranslatedColumnName(this.initData);
     }, (error) => {
-      this.showLoadingIndicator=false;
+      this.showLoadingIndicator = false;
       this.initData = [];
       this.resetColumnData();
     });
@@ -211,17 +220,17 @@ export class FuelBenchmarkPreferencesComponent implements OnInit {
       }
       this.showLoadingIndicator=true;
       this.reportService.updateReportUserPreference(benchmarkObject).subscribe((data: any) => {
-        this.showLoadingIndicator=false;
+        this.showLoadingIndicator = false;
         this.setFuelBenchmarkReportFlag.emit({ flag: false, msg: this.getSuccessMsg() });
+        let _reloadFlag = false;
         if ((this.router.url).includes("fuelbenchmarking")) {
-          this.reloadCurrentComponent();
+          _reloadFlag = true
+          //this.reloadCurrentComponent();
         }
+        this.loadFuelBenchmarkReportPreferences(_reloadFlag);
         this.requestSent = false;
-        // setTimeout(() => {
-        //   window.location.reload();
-        // }, 1000);
       }, (error) => {
-        this.showLoadingIndicator=false;
+        this.showLoadingIndicator = false;
       });
     }
   }

@@ -3,7 +3,7 @@
     public static class ReportConstants
     {
         public const string USER_PREFERENCE_FAILURE_MSG = "Error: {0}";
-
+        public const string INTERNAL_SERVER_MSG = "Error occured, Please check with DAF IT team for more info.";
         public const string GET_VIN_SUCCESS_MSG = "VIN fetched successfully for given date range";
         public const string GET_VIN_FAILURE_MSG = "VIN fetched failed for given date range";
 

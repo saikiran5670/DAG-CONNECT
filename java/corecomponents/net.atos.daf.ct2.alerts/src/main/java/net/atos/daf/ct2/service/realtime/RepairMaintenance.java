@@ -202,7 +202,7 @@ public class RepairMaintenance extends ProcessFunction<Monitor, Monitor> impleme
 
 		// Warning Type
 		if (row.getVEvtID() != null) {
-			if (row.getVEvtID() == 44 || row.getVEvtID() == 46) {
+			if (row.getVEvtID() == 44 || row.getVEvtID() == 46 || row.getVEvtID() == 63) {
 				warningDetail.setWarningType("A");
 			} else if (row.getVEvtID() == 45) {
 				warningDetail.setWarningType("D");

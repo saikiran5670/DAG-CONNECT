@@ -224,7 +224,7 @@
         (backToPage)='onBackToPage($event)'></app-create-edit-report-scheduler>
   </div>
   <div *ngIf='viewStatus'>
-    <app-view-report-scheduler [translationData]='translationData' [selectedRowData]="rowsData"
+    <app-view-report-scheduler [translationData]='translationData' [selectedRowData]="rowsData" [completePrefData]='completePrefData' [prefTimeFormat]='prefTimeFormat' [prefTimeZone]='prefTimeZone' [prefDateFormat]='prefDateFormat'
       (backToPage)='onBackToPage($event)'></app-view-report-scheduler>
 </div>
 </div>

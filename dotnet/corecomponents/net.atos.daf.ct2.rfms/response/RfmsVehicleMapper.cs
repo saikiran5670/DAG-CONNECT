@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using net.atos.daf.ct2.rfms.entity;
 using net.atos.daf.ct2.utilities;
 
 namespace net.atos.daf.ct2.rfms.response
@@ -32,12 +30,6 @@ namespace net.atos.daf.ct2.rfms.response
             DriverId driverId = new DriverId();
 
             TachoDriverIdentification tachoDriverIdentification = GetDriverCardDetails(record.tachodriveridentification, record.driverauthenticationequipment);
-            //new TachoDriverIdentification();
-            //tachoDriverIdentification.DriverIdentification = record.tachodriveridentification;
-            //tachoDriverIdentification.DriverAuthenticationEquipment = Convert.ToString(record.driverauthenticationequipment);
-            //tachoDriverIdentification.CardReplacementIndex = record.cardreplacementindex;
-            //tachoDriverIdentification.CardRenewalIndex = record.cardrenewalindex;
-            //tachoDriverIdentification.CardIssuingMemberState = record.cardissuingmemberstate;
 
             OemDriverIdentification oemDriverIdentification = new OemDriverIdentification();
             oemDriverIdentification.DriverIdentification = record.oemdriveridentification;
@@ -135,13 +127,6 @@ namespace net.atos.daf.ct2.rfms.response
             DriverId driverId = new DriverId();
 
             TachoDriverIdentification tachoDriverIdentification = GetDriverCardDetails(record.tachodriveridentification, record.driverauthenticationequipment);
-            // new TachoDriverIdentification();
-            //tachoDriverIdentification.DriverIdentification = record.tachodriveridentification;
-            //tachoDriverIdentification.DriverAuthenticationEquipment = Convert.ToString(record.driverauthenticationequipment);
-            //tachoDriverIdentification.CardReplacementIndex = record.cardreplacementindex;
-            //tachoDriverIdentification.CardRenewalIndex = record.cardrenewalindex;
-            //tachoDriverIdentification.CardIssuingMemberState = record.cardissuingmemberstate;
-
             OemDriverIdentification oemDriverIdentification = new OemDriverIdentification();
             oemDriverIdentification.DriverIdentification = record.oemdriveridentification;
             oemDriverIdentification.IdType = record.oemidtype;
@@ -173,18 +158,18 @@ namespace net.atos.daf.ct2.rfms.response
             }
 
 
-            if (record.HrTotalVehicleDistance != null)
+            if (record.totalvehicledistance != null)
             {
-                vehicleStatus.HrTotalVehicleDistance = Convert.ToString(record.HrTotalVehicleDistance);
+                vehicleStatus.HrTotalVehicleDistance = record.totalvehicledistance;
             }
 
-            if (record.totalEngineHours != null)
+            if (record.totalenginehours != null)
             {
-                vehicleStatus.TotalEngineHours = Convert.ToString(record.totalEngineHours);
+                vehicleStatus.TotalEngineHours = record.totalenginehours;
             }
-            if (record.totalFuelUsedGaseous != null)
+            if (record.enginetotalfuelused != null)
             {
-                vehicleStatus.TotalFuelUsedGaseous = Convert.ToString(record.totalFuelUsedGaseous);
+                vehicleStatus.EngineTotalFuelUsed = record.enginetotalfuelused;
             }
             if (record.grossCombinationVehicleWeight != null)
             {
@@ -235,9 +220,6 @@ namespace net.atos.daf.ct2.rfms.response
 
             if (!string.IsNullOrEmpty(Convert.ToString(record.totalfueltankvolume)))
                 vehicle.TotalFuelTankVolume = Convert.ToInt32(record.totalfueltankvolume);
-            // else
-            //  vehicle.TotalFuelTankVolume = 0;
-
             vehicle.GearboxType = record.gearboxtype;
             return vehicle;
         }
@@ -257,116 +239,22 @@ namespace net.atos.daf.ct2.rfms.response
                 FuelWheelbaseSpeedOverZero = record.fuelwheelbasespeedoverzero
             };
 
-            //PtoActiveClass = new List<PtoActiveClass>
-            //{ new PtoActiveClass()
-            //{
-            //Label= MasterMemoryObjectCacheConstants.WHEELBASED_SPEED_OVER_ZERO,
-            //Seconds= 12345,
-            //Meters= 2345,
-            //MilliLitres= 3456
-            //}
-            //},
-
             if (record.accelerationpedalposclassmaxrange != null && record.accelerationpedalposclassminrange != null && record.accelerationpedalposclassdistrstep != null)
             {
                 accumulatedData.AccelerationPedalPositionClass = _rfmsVehicleStatusAccumulator.AccumulateAccelerationPedalPositionClass(record);
             }
-            //new List<AccelerationPedalPositionClass>() { new AccelerationPedalPositionClass() {  From = 0,
-            //    To = 20,
-            //    Seconds = 23456,
-            //    Meters = 345678,
-            //    MilliLitres = 678345} },
-            //       BrakePedalPositionClass = new List<BrakePedalPositionClass>() { new BrakePedalPositionClass() {  From = 0,
-            //           To = 20,
-            //           Seconds = 2456,
-            //           Meters = 34578,
-            //           MilliLitres = 67345 } },
-            //       AccelerationClass = new List<AccelerationClass>{ new AccelerationClass() { From = -1.1,
-            //           To = -0.9,
-            //           Seconds = 23456,
-            //           Meters = 345678,
-            //           MilliLitres = 678345
-            //       } },
 
-            //       HighAccelerationClass = new List<HighAccelerationClass>(){new HighAccelerationClass()
-            //   {
-            //           From = -3,
-            //           To = -2.5,
-            //           Seconds = 23456,
-            //           Meters = 345678,
-            //           MilliLitres = 678345
-            //       }
-            //       },
             if (record.retardertorqueclassmaxrange != null && record.retardertorqueclassminrange != null && record.retardertorqueclassdistrstep != null)
             {
                 accumulatedData.RetarderTorqueClass = _rfmsVehicleStatusAccumulator.AccumulateRetarderTorqueClass(record);
             }
 
-            //       DrivingWithoutTorqueClass = new List<DrivingWithoutTorqueClass>(){new DrivingWithoutTorqueClass()
-            //   {
-            //           Label =MasterMemoryObjectCacheConstants.DRIVING_WITHOUT_TORQUE,
-            //           Seconds = 12345,
-            //           Meters = 2345,
-            //           MilliLitres = 3456
-            //       }
-            //       },
-            //       EngineTorqueClass = new List<EngineTorqueClass>() {new EngineTorqueClass()            {
-            //           From = 0,
-            //           To = 10,
-            //           Seconds = 23456,
-            //           Meters = 345678,
-            //           MilliLitres = 678345
-            //       }
-            //},
+
             if (record.enginetorqueengineloadclassmaxrange != null && record.enginetorqueengineloadclassminrange != null && record.enginetorqueengineloadclassdistrstep != null)
             {
                 accumulatedData.EngineTorqueAtCurrentSpeedClass = _rfmsVehicleStatusAccumulator.AccumulateEngineTorqueAtCurrentSpeedClass(record);
             }
-            //       VehicleSpeedClass = new List<VehicleSpeedClass>(){new VehicleSpeedClass()
-            //   {
-            //           From = 0,
-            //           To = 4,
-            //           Seconds = 23456,
-            //           Meters = 345678,
-            //           MilliLitres = 678345
-            //       }
-            //},
-            //       EngineSpeedClass = new List<EngineSpeedClass>() {new EngineSpeedClass()
-            //   {
-            //           From = 0,
-            //           To = 400,
-            //           Seconds = 23456,
-            //           Meters = 345678,
-            //           MilliLitres = 678345
-            //       }
-            //},
-            //       AccelerationDuringBrakeClass = new List<AccelerationDuringBrakeClass>() { new  AccelerationDuringBrakeClass()
-            //   {
-            //           From = -1.1,
-            //           To = -0.9,
-            //           Seconds = 23456,
-            //           Meters = 345678,
-            //           MilliLitres = 678345
-            //       }
-            //},
-            //       SelectedGearClass = new List<SelectedGearClass>() {new SelectedGearClass()
-            //   {
-            //           Label = "0",
-            //           Seconds = 12345,
-            //           Meters = 2345,
-            //           MilliLitres = 3456
-            //       }
-            //},
-            //       CurrentGearClass = new List<CurrentGearClass>() { new CurrentGearClass()
-            //   {
-            //           Label = "0",
-            //           Seconds = 12345,
-            //           Meters = 2345,
-            //           MilliLitres = 3456
-            //       }
-            //       },
 
-            // };
 
             return accumulatedData;
         }
@@ -459,16 +347,11 @@ namespace net.atos.daf.ct2.rfms.response
                 EngineCoolantTemperature = record.enginecoolanttemperature,
                 ServiceBrakeAirPressureCircuit1 = record.servicebrakeairpressurecircuit1,
                 ServiceBrakeAirPressureCircuit2 = record.servicebrakeairpressurecircuit2,
-                // DurationAtLeastOneDoorOpen = 0,
                 AlternatorInfo = new AlternatorInfo()
                 {
-                    //AlternatorStatus = MasterMemoryObjectCacheConstants.CHARGING,
                     AlternatorNumber = 1
                 },
-                //BellowPressureFrontAxleLeft = 234000,
-                //BellowPressureFrontAxleRight = 234000,
-                //BellowPressureRearAxleLeft = 234000,
-                //BellowPressureRearAxleRight = 234000
+
             };
             return uptimeData;
 
@@ -478,9 +361,6 @@ namespace net.atos.daf.ct2.rfms.response
 
         public TachoDriverIdentification GetDriverCardDetails(string driverIdentification, int? authenticationEquipment)
         {
-            //TachoDriverIdentification tacho = new TachoDriverIdentification();
-            // record.tachodriver2identification;
-            //string driverid = record.tachodriveridentification;
             if (driverIdentification != null && (driverIdentification.Length == 19 || driverIdentification == "*"))
             {
                 return new TachoDriverIdentification()

@@ -22,6 +22,7 @@ using net.atos.daf.ct2.translation;
 using net.atos.daf.ct2.translation.repository;
 using net.atos.daf.ct2.vehicle;
 using net.atos.daf.ct2.vehicle.repository;
+using System.IO.Compression;
 
 namespace net.atos.daf.ct2.reportschedulerservice
 {
@@ -38,7 +39,13 @@ namespace net.atos.daf.ct2.reportschedulerservice
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddGrpc();
+            services.AddGrpc(options =>
+            {
+                options.MaxReceiveMessageSize = null;
+                options.MaxSendMessageSize = null;
+                options.ResponseCompressionLevel = CompressionLevel.Optimal;
+                options.ResponseCompressionAlgorithm = "gzip";
+            });
             services.AddCors(o => o.AddPolicy("AllowAll", builder =>
             {
                 builder.AllowAnyOrigin()

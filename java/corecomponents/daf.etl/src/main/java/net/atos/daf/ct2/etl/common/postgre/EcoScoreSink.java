@@ -3,8 +3,6 @@ package net.atos.daf.ct2.etl.common.postgre;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
@@ -26,17 +24,16 @@ public class EcoScoreSink extends RichSinkFunction<EcoScore> implements Serializ
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = LoggerFactory.getLogger(EcoScoreSink.class);
 
-	//private PreparedStatement statement;
 	private Connection connection;
-	private List<EcoScore> queue;
-	private List<EcoScore> synchronizedCopy;
 	EcoScoreDao ecoScoreDao;
 	private PreparedStatement ecoScoreQryStmt;
+	//private List<EcoScore> queue;
+	//private List<EcoScore> synchronizedCopy;
 
 	@Override
 	public void invoke(EcoScore rec) throws Exception {
-
-		try {
+		ecoScoreDao.insert(rec, ecoScoreQryStmt);
+		/*try {
 			queue.add(rec);
 
 			if (queue.size() >= 1) {
@@ -54,15 +51,15 @@ public class EcoScoreSink extends RichSinkFunction<EcoScore> implements Serializ
 			logger.error("Issue while calling invoke() in EcoScoreSink :: {}", e.getMessage());
 			e.printStackTrace();
 		}
-
+*/
 	}
 
 	@Override
 	public void open(org.apache.flink.configuration.Configuration parameters) throws Exception {
 		ParameterTool envParams = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
 		ecoScoreDao = new EcoScoreDao();
-		queue = new ArrayList<EcoScore>();
-		synchronizedCopy = new ArrayList<EcoScore>();
+		//queue = new ArrayList<EcoScore>();
+		//synchronizedCopy = new ArrayList<EcoScore>();
 		
 		try {
 			/*connection = PostgreDataSourceConnection.getInstance().getDataSourceConnection(

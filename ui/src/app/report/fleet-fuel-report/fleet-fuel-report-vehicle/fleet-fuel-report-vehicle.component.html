@@ -165,7 +165,119 @@
 </form>
 
 <div *ngIf='!vehicleSelected'>
+  <div *ngIf='displayData.length == 0'>
+  <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
+     <mat-expansion-panel [(expanded)]="isNoRecordOpen" class="full-width" fxLayoutGap="10px"
+        (opened)="isNoRecordOpen == true" (closed)="isNoRecordOpen == false">
+        <mat-expansion-panel-header class="full-width">
+          <mat-panel-title>
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllDetails 
+              }}</span>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div>
+       <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;' fxLayout="row"
+      fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound}}</div>
+     <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{
+      translationData.lblSelectionMessage }}</div>
+  </div>
+  <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
+     </mat-expansion-panel>
+  </mat-card>
+ </div>
+  <div *ngIf='displayData.length > 0'>
+  
+  <!-- Ranking section -->
+  <div *ngIf='!showRanking'>
+    <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
+      <mat-expansion-panel [(expanded)]="isRankingOpen" class="full-width" fxLayoutGap="10px"
+        (opened)="isRankingOpen == true" (closed)="isRankingOpen == false">
+        <mat-expansion-panel-header class="full-width">
+          <mat-panel-title>
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblRanking
+              }}</span>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <!-- <div *ngIf='rankingData.length > 0' [ngClass]="{'reportTable': rankingColumns.length > 7}"> -->
+        <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm' fxLayoutGap="10px">
+          <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+            <mat-form-field appearance="outline">
+              <input matInput (keyup)="applyFilterRanking($event.target.value)"
+                placeholder="{{ translationData.lblSearch  }}">
+              <span matPrefix>
+                <mat-icon>search</mat-icon>
+              </span>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <mat-table matTableExporter [dataSource]="dataSource2" matSort #exporter="matTableExporter">
+          <ng-container matColumnDef="ranking">
+            <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicleranking_ranking')">
+              {{ translationData.lblRanking }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicleranking_ranking')">
+              <span>{{row.ranking}}</span>
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="vehicleName">
+            <mat-header-cell class="text-truncate" *matHeaderCellDef mat-sort-header
+              [hidden]="!checkForPreference('vehicleranking_vehiclename')">{{ translationData.lblVehicleName }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{ row.vehicleName }}"
+              [hidden]="!checkForPreference('vehicleranking_vehiclename')">
+              <span>{{row.vehicleName}}</span>
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="vin">
+            <mat-header-cell class="text-truncate" *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicleranking_vin')">{{
+              translationData.lblVIN }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{ row.vin }}"
+              [hidden]="!checkForPreference('vehicleranking_vin')">
+              <span>{{row.vin}}</span>
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="vehicleRegistrationNo">
+            <mat-header-cell [hidden]="!checkForPreference('vehicleranking_registrationno')" *matHeaderCellDef
+              mat-sort-header>{{ translationData.lblPlateNo }}
+            </mat-header-cell>
+            <mat-cell matTooltip="{{ row.vehicleRegistrationNo }}"
+              [hidden]="!checkForPreference('vehicleranking_registrationno')" *matCellDef="let row">
+              <span>{{row.vehicleRegistrationNo}}</span>
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="fuelConsumption">
+            <mat-header-cell [hidden]="!checkForPreference('vehicleranking_consumption')" *matHeaderCellDef
+              mat-sort-header>{{ translationData.lblConsumption }}
+              &nbsp; <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>({{(prefUnitFormat ==
+                'dunit_Metric') ? (translationData.lblltr100km) : (prefUnitFormat ==
+                'dunit_Imperial') ? (translationData.lblmpg) : (translationData.lblmpg
+                ) }})</span>
+            </mat-header-cell>
+            <mat-cell [hidden]="!checkForPreference('vehicleranking_consumption')" *matCellDef="let row">
+              <mat-progress-bar class="example-margin" [color]="color" [mode]="mode"
+                [bufferValue]="100 - row.convertedFuelConsumption" value={{row.convertedFuelConsumption}}>
+              </mat-progress-bar>
+              <div style="position: absolute; padding: 10px; color: white;"> {{row.convertedFuelConsumption | number :
+                '.2-2'}} </div>
+            </mat-cell>
+          </ng-container>
+          <mat-header-row *matHeaderRowDef="rankingColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: rankingColumns;">
+          </mat-row>
+        </mat-table>
+        <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageSizeUpdated($event)"></mat-paginator>
+        <!-- </div> -->
+      </mat-expansion-panel>
+    </mat-card>
+  </div>
   <!-- Summary -->
+<div id="charts">
   <div *ngIf='!showDetailedReport'>
     <mat-card *ngIf='displayData.length > 0' class='mat-elevation-z no-padding margin-bottom-xlg' id="summary">
       <mat-expansion-panel [(expanded)]="isSummaryOpen" class="full-width" fxLayoutGap="10px"
@@ -236,7 +348,7 @@
             <div *ngIf="checkForPreference('summary_distance')" class="areaWidth min-width-15-per colData"
               fxLayout="column" fxLayoutAlign="left">
               <span>{{ translationData.lblDistance}}</span>
-              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('distance')}}{{(
+              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ convertZeros(sumOfColumns('distance'))}}{{(
                 prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm ) : (prefUnitFormat ==
                 'dunit_Imperial') ? (translationData.lblmile ) : (translationData.lblmile )
                 }}</span>
@@ -279,99 +391,9 @@
     </mat-card>
   </div>
 
-  <!-- Ranking section -->
-  <div *ngIf='!showRanking'>
-    <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
-      <mat-expansion-panel [(expanded)]="isRankingOpen" class="full-width" fxLayoutGap="10px"
-        (opened)="isRankingOpen == true" (closed)="isRankingOpen == false">
-        <mat-expansion-panel-header class="full-width">
-          <mat-panel-title>
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblRanking
-              }}</span>
-          </mat-panel-title>
-        </mat-expansion-panel-header>
-        <!-- <div *ngIf='rankingData.length > 0' [ngClass]="{'reportTable': rankingColumns.length > 7}"> -->
-        <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm' fxLayoutGap="10px">
-          <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-            <mat-form-field appearance="outline">
-              <input matInput (keyup)="applyFilterRanking($event.target.value)"
-                placeholder="{{ translationData.lblSearch  }}">
-              <span matPrefix>
-                <mat-icon>search</mat-icon>
-              </span>
-            </mat-form-field>
-          </div>
-        </div>
-
-        <mat-table matTableExporter [dataSource]="dataSource2" matSort #exporter="matTableExporter">
-          <ng-container matColumnDef="ranking">
-            <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicleranking_ranking')">
-              {{ translationData.lblRanking }}
-            </mat-header-cell>
-            <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicleranking_ranking')">
-              <span>{{row.ranking}}</span>
-            </mat-cell>
-          </ng-container>
-
-          <ng-container matColumnDef="vehicleName">
-            <mat-header-cell *matHeaderCellDef mat-sort-header
-              [hidden]="!checkForPreference('vehicleranking_vehiclename')">{{ translationData.lblVehicleName }}
-            </mat-header-cell>
-            <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{ row.vehicleName }}"
-              [hidden]="!checkForPreference('vehicleranking_vehiclename')">
-              <span>{{row.vehicleName}}</span>
-            </mat-cell>
-          </ng-container>
-
-          <ng-container matColumnDef="vin">
-            <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicleranking_vin')">{{
-              translationData.lblVIN }}
-
-            </mat-header-cell>
-            <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{ row.vin }}"
-              [hidden]="!checkForPreference('vehicleranking_vin')">
-              <span>{{row.vin}}</span>
-            </mat-cell>
-          </ng-container>
-
-          <ng-container matColumnDef="vehicleRegistrationNo">
-            <mat-header-cell [hidden]="!checkForPreference('vehicleranking_registrationno')" *matHeaderCellDef
-              mat-sort-header>{{ translationData.lblPlateNo }}
-            </mat-header-cell>
-            <mat-cell class="text-truncate" matTooltip="{{ row.vehicleRegistrationNo }}"
-              [hidden]="!checkForPreference('vehicleranking_registrationno')" *matCellDef="let row">
-              <span>{{row.vehicleRegistrationNo}}</span>
-            </mat-cell>
-          </ng-container>
-
-          <ng-container matColumnDef="fuelConsumption">
-            <mat-header-cell [hidden]="!checkForPreference('vehicleranking_consumption')" *matHeaderCellDef
-              mat-sort-header>{{ translationData.lblConsumption }}
-              &nbsp; <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>({{(prefUnitFormat ==
-                'dunit_Metric') ? (translationData.lblltr100km) : (prefUnitFormat ==
-                'dunit_Imperial') ? (translationData.lblmpg) : (translationData.lblmpg
-                ) }})</span>
-            </mat-header-cell>
-            <mat-cell [hidden]="!checkForPreference('vehicleranking_consumption')" *matCellDef="let row">
-              <mat-progress-bar class="example-margin" [color]="color" [mode]="mode"
-                [bufferValue]="100 - row.convertedFuelConsumption" value={{row.convertedFuelConsumption}}>
-              </mat-progress-bar>
-              <div style="position: absolute; padding: 10px; color: white;"> {{row.convertedFuelConsumption | number :
-                '.2-2'}} </div>
-            </mat-cell>
-          </ng-container>
-          <mat-header-row *matHeaderRowDef="rankingColumns"></mat-header-row>
-          <mat-row *matRowDef="let row; columns: rankingColumns;">
-          </mat-row>
-        </mat-table>
-        <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageSizeUpdated($event)"></mat-paginator>
-        <!-- </div> -->
-      </mat-expansion-panel>
-    </mat-card>
-  </div>
 
   <!-- Charts view -->
-  <div id="charts" *ngIf='!showDetailedReport'>
+  <div  *ngIf='!showDetailedReport'>
       <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
         <mat-expansion-panel [(expanded)]="isChartsOpen" class="full-width" fxLayoutGap="10px" (opened)="isChartsOpen"
           (closed)="!isChartsOpen">
@@ -419,9 +441,9 @@
               </div>
             </div>
             <!-- </div>
-  
-  
-  
+
+
+
           <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px"> -->
             <div *ngIf="checkForPreference('chart_co2emission')" class="areaWidth half-width" fxLayout="column"
               fxLayoutAlign="right" fxFlex="0 1 calc(50% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32px)"
@@ -461,9 +483,9 @@
               </div>
             </div>
             <!-- </div>
-  
-  
-  
+
+
+
           <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px"> -->
             <div *ngIf="checkForPreference('chart_fuelconsumption')" class="areaWidth half-width" fxLayout="column"
               fxLayoutAlign="right" fxFlex="0 1 calc(50% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32px)"
@@ -508,7 +530,7 @@
         </mat-expansion-panel>
       </mat-card>
   </div>
-
+</div>
   <!-- Fleet Table -->
   <div>
     <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
@@ -521,13 +543,13 @@
           </mat-panel-title>
         </mat-expansion-panel-header>
 
-        <div *ngIf='displayData.length == 0'>
+        <!-- <div *ngIf='displayData.length == 0'>
           <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;' fxLayout="row"
             fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound}}</div>
           <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{
             translationData.lblSelectionMessage }}</div>
-        </div>
-        <div *ngIf='displayData.length > 0' [ngClass]="{'reportTable': displayedColumns.length > 7}">
+        </div> -->
+        <div *ngIf='displayData.length > 0' [ngClass]="{'reportTable': validTableEntry.length > 6}">
           <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm' fxLayoutGap="10px">
             <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
               <mat-form-field appearance="outline">
@@ -552,26 +574,28 @@
           <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort
             #exporter="matTableExporter">
             <ng-container matColumnDef="vehicleName">
-              <mat-header-cell *matHeaderCellDef mat-sort-header
-                [hidden]="!checkForPreference('vehicleranking_vehiclename')">{{ translationData.lblVehicleName}}
+              <!-- <mat-header-cell *matHeaderCellDef mat-sort-header
+                [hidden]="!checkForPreference('vehicledetails_vehiclename')">{{ translationData.lblVehicleName}}
+              </mat-header-cell> -->
+              <mat-header-cell [ngClass]="{'text-truncate': validTableEntry.length < 20}" *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleName }}
               </mat-header-cell>
-              <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicleranking_vehiclename')">
+              <mat-cell *matCellDef="let row" [ngClass]="{'text-truncate': validTableEntry.length < 20}">
                 <span class='navigatePoint' (click)='onVehicleSelected(row)'>{{ row.vehicleName != '' ? row.vehicleName
                   : '-'
                   }}</span>
               </mat-cell>
-              <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{ row.vehicleName }}"
-                [hidden]="!checkForPreference('vehicleranking_vehiclename')">
-                <span>{{row.vehicleName}}</span>
-              </mat-cell>
+              <!-- <mat-cell *matCellDef="let row" [ngClass]="{'text-truncate': validTableEntry.length < 20}" matTooltip="{{ row.vehicleName }}"
+                [hidden]="checkForPreference('vehicledetails_vehiclename')">
+                <span>{{ row.vehicleName != '' ? row.vehicleName : '-' }}</span>
+              </mat-cell> -->
             </ng-container>
 
             <ng-container matColumnDef="vin">
-              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_vin')">{{
+              <mat-header-cell [ngClass]="{'text-truncate': validTableEntry.length < 20}" *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_vin')">{{
                 translationData.lblVIN }}
               </mat-header-cell>
-              <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{row.vin}}"
-                [hidden]="!checkForPreference('vehicledetails_vin')" style="max-width: 145px;">
+              <mat-cell *matCellDef="let row" [ngClass]="{'text-truncate': validTableEntry.length < 20}" matTooltip="{{row.vin}}"
+                [hidden]="!checkForPreference('vehicledetails_vin')">
                 <span>{{row.vin}}</span>
               </mat-cell>
               <!-- <mat-cell *matCellDef="let row">{{ row.vin != '' ? row.vin : '-' }}</mat-cell> -->
@@ -581,7 +605,7 @@
               <mat-header-cell *matHeaderCellDef mat-sort-header
                 [hidden]="!checkForPreference('vehicledetails_vehicleregistrationno')">{{ translationData.lblPlateNo }}
               </mat-header-cell>
-              <mat-cell *matCellDef="let row" class="text-truncate"
+              <mat-cell *matCellDef="let row" [ngClass]="{'text-truncate': validTableEntry.length < 20}" 
                 [hidden]="!checkForPreference('vehicledetails_vehicleregistrationno')">
                 <span>{{row.vehicleRegistrationNo}}</span>
               </mat-cell>
@@ -596,7 +620,7 @@
                   (translationData.lblmile ) }})</span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_distance')">
-                <span>{{row.convertedDistance}}</span>
+                <span>{{ convertZeros(row.convertedDistance)}}</span>
               </mat-cell>
               <!-- <mat-cell *matCellDef="let row">{{ row.convertedDistance != '' ? row.convertedDistance : '-' }}</mat-cell> -->
             </ng-container>
@@ -711,7 +735,7 @@
 
             <ng-container matColumnDef="idleDuration">
               <mat-header-cell *matHeaderCellDef mat-sort-header
-                [hidden]="!checkForPreference('vehicledetails_idleduration')">{{ translationData.lblIdleDuration }}
+                [hidden]="!checkForPreference('vehicledetails_idleduration')">{{ translationData.lblIdleDuration }} (%)
                 <span style="font-weight: normal;"></span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idleduration')">
@@ -752,33 +776,30 @@
 
             <ng-container matColumnDef="cruiseControlDistance3050">
               <mat-header-cell *matHeaderCellDef mat-sort-header
-                [hidden]="!checkForPreference('vehicledetails_cruisecontroldistance3050')">{{
-                translationData.lblCruiseControlDistance3050 }}km/h(%)
-                <span style="font-weight: normal;"></span>
+                [hidden]="!checkForPreference(prefUnitFormat == 'dunit_Metric' ? 'vehicledetails_cruisecontroldistance3050' : 'vehicledetails_cruisecontroldistance1530')">{{translationData.lblCruiseControlDistance}} {{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblCruiseControlDistance3050metric) : (translationData.lblCruiseControlDistance1530imperial)}}
+                <span style="font-weight: normal;">{{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh) : (translationData.lblmileh)}} (%)</span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row"
-                [hidden]="!checkForPreference('vehicledetails_cruisecontroldistance3050')">
+              [hidden]="!checkForPreference(prefUnitFormat == 'dunit_Metric' ? 'vehicledetails_cruisecontroldistance3050' : 'vehicledetails_cruisecontroldistance1530')">
                 <span>{{row.cruiseControlDistance3050}}</span>
               </mat-cell>
             </ng-container>
 
             <ng-container matColumnDef="cruiseControlDistance5075">
               <mat-header-cell *matHeaderCellDef mat-sort-header
-                [hidden]="!checkForPreference('vehicledetails_cruisecontroldistance5075')">{{
-                translationData.lblCruiseControlDistance5075 }}km/h(%)
-                <span style="font-weight: normal;"></span>
+                [hidden]="!checkForPreference(prefUnitFormat == 'dunit_Metric' ? 'vehicledetails_cruisecontroldistance5075' : 'vehicledetails_cruisecontroldistance3045')">{{translationData.lblCruiseControlDistance}} {{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblCruiseControlDistance5075metric) : (translationData.lblCruiseControlDistance3045imperial)}}
+                <span style="font-weight: normal;">{{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh) : (translationData.lblmileh)}} (%)</span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row"
-                [hidden]="!checkForPreference('vehicledetails_cruisecontroldistance5075')">
+                [hidden]="!checkForPreference(prefUnitFormat == 'dunit_Metric' ? 'vehicledetails_cruisecontroldistance5075' : 'vehicledetails_cruisecontroldistance3045')">
                 <span>{{row.cruiseControlDistance5075}}</span>
               </mat-cell>
             </ng-container>
 
             <ng-container matColumnDef="cruiseControlDistance75">
               <mat-header-cell *matHeaderCellDef mat-sort-header
-                [hidden]="!checkForPreference('vehicledetails_cruisecontroldistance75')">{{
-                translationData.lblCruiseControlDistance75 }}km/h(%)
-                <span style="font-weight: normal;"></span>
+                [hidden]="!checkForPreference(prefUnitFormat == 'dunit_Metric' ? 'vehicledetails_cruisecontroldistance75' : 'vehicledetails_cruisecontroldistance45')">{{translationData.lblCruiseControlDistance}} {{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblCruiseControlDistance75metric) : (translationData.lblCruiseControlDistance45imperial)}}
+                <span style="font-weight: normal;">{{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh) : (translationData.lblmileh)}} (%)</span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_cruisecontroldistance75')">
                 <span>{{row.cruiseControlDistance75}}</span>
@@ -855,20 +876,20 @@
 
             <ng-container matColumnDef="dpaAnticipationScore">
               <mat-header-cell *matHeaderCellDef mat-sort-header
-                [hidden]="!checkForPreference('vehicledetails_dpaAnticipationScore')">{{
+                [hidden]="!checkForPreference('vehicledetails_dpaanticipationscore')">{{
                 translationData.lbldpaAnticipationScore }}
               </mat-header-cell>
-              <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_dpaAnticipationScore')">
+              <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_dpaanticipationscore')">
                 <span>{{row.dpaAnticipationScore}}</span>
               </mat-cell>
             </ng-container>
 
             <ng-container matColumnDef="dpaBrakingScore">
               <mat-header-cell *matHeaderCellDef mat-sort-header
-                [hidden]="!checkForPreference('vehicledetails_dpaBrakingScore')">{{ translationData.lbldpaBrakingScore
+                [hidden]="!checkForPreference('vehicledetails_dpabrakingscore')">{{ translationData.lbldpaBrakingScore
                 }}
               </mat-header-cell>
-              <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_dpaBrakingScore')">
+              <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_dpabrakingscore')">
                 <span>{{row.dpaBrakingScore}}</span>
               </mat-cell>
             </ng-container>
@@ -876,8 +897,7 @@
 
             <ng-container matColumnDef="idlingPTOScore">
               <mat-header-cell *matHeaderCellDef mat-sort-header
-                [hidden]="!checkForPreference('vehicledetails_idlingwithpto')">{{ translationData.lblIdlingwithPTOscore || 'Idling with PTO score (hh:mm:ss)'
-                }}
+                [hidden]="!checkForPreference('vehicledetails_idlingwithpto')">{{ translationData.lblIdlingwithPTOscore }}
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingwithpto')">
                 <span>{{ row.convertedIdlingPTOScore }}</span>
@@ -886,8 +906,7 @@
 
             <ng-container matColumnDef="idlingPTO">
               <mat-header-cell *matHeaderCellDef mat-sort-header
-                [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingWithoutPTO || 'Idling with PTO %'
-                }}
+                [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingwithPTOPercent }}
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">
                 <span>{{row.idlingPTO}}</span>
@@ -896,8 +915,7 @@
 
             <ng-container matColumnDef="idlingWithoutPTO">
               <mat-header-cell *matHeaderCellDef mat-sort-header
-                [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingwithoutPTO || 'Idling without PTO (hh:mm:ss)'
-                }}
+                [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingwithoutPTO }}
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">
                 <span>{{ row.convertedIdlingWithoutPTO }}</span>
@@ -906,8 +924,7 @@
 
             <ng-container matColumnDef="idlingWithoutPTOpercent">
               <mat-header-cell *matHeaderCellDef mat-sort-header
-                [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingWithoutPTOPercent || 'Idling without  PTO %'
-                }}
+                [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingWithoutPTOPercent }}
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">
                 <span>{{row.idlingWithoutPTOpercent}}</span>
@@ -939,7 +956,7 @@
               || 'average TrafficClassification Value' }}
               <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkg || 'kg') :
         (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblpound || 'pound') : (translationData.lblpound ||
-        'pound') }})</span> 
+        'pound') }})</span>
             </mat-header-cell>
 
             <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('averageTrafficClassificationValue')">
@@ -959,21 +976,22 @@
                 <span> {{row.convertedidlingconsumptionwithpto}}</span>
               </mat-cell>
             </ng-container>
-            <mat-header-row *matHeaderRowDef="displayedColumns" class="mat-header-data"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: displayedColumns;" class="mat-row-data">
+            <mat-header-row *matHeaderRowDef="displayedColumns" [ngStyle]="{'min-width': validTableEntry.length > 20 ? '5000px' : '0px'}" class="mat-header-data"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;" [ngStyle]="{'min-width': validTableEntry.length > 20 ? '5000px' : '0px'}" class="mat-row-data">
             </mat-row>
           </mat-table>
           <mat-paginator [pageSizeOptions]="[5, 10, 50, 100, 500]" (page)="pageSizeUpdated($event)"></mat-paginator>
         </div>
-
-        <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
+     
+       
       </mat-expansion-panel>
     </mat-card>
+  </div>
   </div>
 </div>
 
 <div *ngIf="vehicleSelected">
   <app-vehicletrip [translationData]='translationData' [vehicleDetails]='vehicleInfo' [dateDetails]='dateInfo'
-    [displayedColumns]='detaildisplayedColumns' [startDateValue]='startDateValue' [endDateValue]='endDateValue'
+    [displayedColumns]='detaildisplayedColumns' [startDateValue]='startDateValue' [endDateValue]='endDateValue' [finalPrefData]='finalPrefData' [prefTimeFormat]='prefTimeFormat' [prefTimeZone]='prefTimeZone' [prefDateFormat]='prefDateFormat' [prefUnitFormat]='prefUnitFormat' [wholeTripData]='wholeTripData'
     (backToMainPage)="backToMainPage()"></app-vehicletrip>
 </div>

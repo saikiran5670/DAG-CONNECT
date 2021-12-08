@@ -80,7 +80,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, String.Format(AlertConstants.INTERNAL_SERVER_ERROR_MSG, 2));
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(ActivateAlert)}: With Error:-", ex);
+                return StatusCode(500, AlertConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -122,7 +123,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, string.Format(AlertConstants.ACTIVATED_ALERT_SUCCESS_MSG, 2));
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(SuspendAlert)}: With Error:-", ex);
+                return StatusCode(500, AlertConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -166,7 +168,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, string.Format(AlertConstants.INTERNAL_SERVER_ERROR_MSG, 2));
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(DeleteAlert)}: With Error:-", ex);
+                return StatusCode(500, AlertConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -219,8 +222,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  AlertConstants.ALERT_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  string.Format(AlertConstants.ALERT_EXCEPTION_LOG_MSG, "GetAlertCategory", ex.Message), 1, 2, Convert.ToString(accountId),
                   _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetAlertCategory)}: With Error:-", ex);
+                return StatusCode(500, AlertConstants.INTERNAL_SERVER_MSG);
             }
         }
         #endregion

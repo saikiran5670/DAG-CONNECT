@@ -44,7 +44,7 @@ public class LiveFleetPojo implements Serializable{
 	private Double gpsSpeed;
 	private Long gpsDatetime; 
 	private Double wheelbasedSpeed; 
-	private Double tachgraphSpeed ;
+	private Integer tachgraphSpeed ;
 	private String driver1Id;
 	private String vehicleMsgTriggerAdditionalInfo; 
 	private Integer driverAuthEquipmentTypeId;

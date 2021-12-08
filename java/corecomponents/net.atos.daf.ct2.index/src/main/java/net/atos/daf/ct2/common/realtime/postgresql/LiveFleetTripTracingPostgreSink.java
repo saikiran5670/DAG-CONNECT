@@ -41,7 +41,8 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<Index> imp
 	Long Fuel_consumption = 0L;
 	
 	public void invoke(Index index) throws Exception {
-		logger.debug("inside invoke of LiveFleetPosition Management ");
+		//logger.debug("inside invoke of LiveFleetPosition Management ");
+		logger.info("meesage received Livefleet Position --" + index.toString());
 		try {
 		LiveFleetPojo currentPosition = tripCalculation(index);
 
@@ -228,6 +229,8 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<Index> imp
 		currentPosition.setService_brake_air_pressure_circuit1(row.getDocument().getVServiceBrakeAirPressure1());
 		//currentPosition.setService_brake_air_pressure_circuit2(row.getDocument().getVServiceBrakeAirPressure2());)
 		currentPosition.setService_brake_air_pressure_circuit2(row.getDocument().getVServiceBrakeAirPressure2());
+		currentPosition.setTachgraphSpeed(row.getDocument().getVTachographSpeed());
+		
 
 		logger.debug("inside Inside Trip Calculation in end :{}");
 		} catch(Exception e) {

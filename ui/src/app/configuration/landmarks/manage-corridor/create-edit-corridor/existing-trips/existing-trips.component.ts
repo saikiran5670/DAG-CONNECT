@@ -302,22 +302,27 @@ export class ExistingTripsComponent implements OnInit {
     switch (this.prefDateFormat) {
       case 'dd/mm/yyyy': {
         this.dateFormats.display.dateInput = "DD/MM/YYYY";
+        this.dateFormats.parse.dateInput = "DD/MM/YYYY";
         break;
       }
       case 'mm/dd/yyyy': {
         this.dateFormats.display.dateInput = "MM/DD/YYYY";
+        this.dateFormats.parse.dateInput = "MM/DD/YYYY";
         break;
       }
       case 'dd-mm-yyyy': {
         this.dateFormats.display.dateInput = "DD-MM-YYYY";
+        this.dateFormats.parse.dateInput = "DD-MM-YYYY";
         break;
       }
       case 'mm-dd-yyyy': {
         this.dateFormats.display.dateInput = "MM-DD-YYYY";
+        this.dateFormats.parse.dateInput = "MM-DD-YYYY";
         break;
       }
       default: {
         this.dateFormats.display.dateInput = "MM/DD/YYYY";
+        this.dateFormats.parse.dateInput = "MM/DD/YYYY";
       }
     }
   }
@@ -346,6 +351,9 @@ export class ExistingTripsComponent implements OnInit {
 
   getTodayDate() {
     let todayDate = new Date(); //-- UTC
+    todayDate.setHours(0);
+    todayDate.setMinutes(0);
+    todayDate.setSeconds(0);
     return todayDate;
   }
 
@@ -370,6 +378,9 @@ export class ExistingTripsComponent implements OnInit {
   getLast3MonthDate() {
     let date = new Date();
     date.setMonth(date.getMonth() - 3);
+    date.setHours(0);
+    date.setMinutes(0);
+    date.setSeconds(0);
     return date;
   }
 
@@ -414,11 +425,31 @@ export class ExistingTripsComponent implements OnInit {
   }
 
   changeStartDateEvent(event: MatDatepickerInputEvent<any>) {
-    this.startDateValue = this.setStartEndDateTime(event.value._d, this.selectedStartTime, 'start');
+    let dateTime: any = '';
+    if(event.value._d.getTime() >= this.last3MonthDate.getTime()){ // CurTime > Last3MonthTime
+      if(event.value._d.getTime() <= this.endDateValue.getTime()){ // CurTime < endDateValue
+        dateTime = event.value._d;
+      }else{
+        dateTime = this.endDateValue; 
+      }
+    }else{ 
+      dateTime = this.last3MonthDate;
+    }
+    this.startDateValue = this.setStartEndDateTime(dateTime, this.selectedStartTime, 'start');
   }
 
   changeEndDateEvent(event: MatDatepickerInputEvent<any>) {
-    this.endDateValue = this.setStartEndDateTime(event.value._d, this.selectedEndTime, 'end');
+    let dateTime: any = '';
+    if(event.value._d.getTime() <= this.todayDate.getTime()){ // EndTime > todayDate
+      if(event.value._d.getTime() >= this.startDateValue.getTime()){ // EndTime < startDateValue
+        dateTime = event.value._d;
+      }else{
+        dateTime = this.startDateValue; 
+      }
+    }else{
+      dateTime = this.todayDate;
+    }
+    this.endDateValue = this.setStartEndDateTime(dateTime, this.selectedEndTime, 'end');
   }
 
   setStartEndDateTime(date: any, timeObj: any, type: any) {
