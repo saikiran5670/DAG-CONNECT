@@ -32,7 +32,7 @@ public class TripIndexJdbcSink implements Serializable{
                 .append("&password=" + PostgreConnection.getInstance().encodeValue(envParams.get(DafConstants.DATAMART_POSTGRE_PASSWORD)))
                 .append(DafConstants.POSTGRE_SQL_SSL_MODE)
                 .toString();
-		logger.info("jdbcUrl ::{}",jdbcUrl);
+		logger.debug("TripIndexJdbcSink jdbcUrl ::{}",jdbcUrl);
 		
 		indexTripData.addSink(JdbcSink.sink(
 				DafConstants.TRIP_INDEX_INSERT_STATEMENT,
@@ -61,27 +61,6 @@ public class TripIndexJdbcSink implements Serializable{
                         .withDriverName(envParams.get(DafConstants.POSTGRE_SQL_DRIVER))
                         .build()));
 		
-		/*JdbcSink.sink(
-                "insert into books (id, title, authors, year) values (?, ?, ?, ?)",
-                (statement, book) -> {
-                    statement.setLong(1, book.id);
-                    statement.setString(2, book.title);
-                    statement.setString(3, book.authors);
-                    statement.setInt(4, book.year);
-                },
-                JdbcExecutionOptions.builder()
-                        .withBatchSize(1000)
-                        .withBatchIntervalMs(200)
-                        .withMaxRetries(5)
-                        .build(),
-                new JdbcConnectionOptions.JdbcConnectionOptionsBuilder()
-                        .withUrl("jdbc:postgresql://dbhost:5432/postgresdb")
-                        .withDriverName("org.postgresql.Driver")
-                        .withUsername("someUser")
-                        .withPassword("somePassword")
-                        .build()
-        ));*/
-	
 	}
 
 }
