@@ -1619,7 +1619,7 @@ createEndMarker(){
 
       let convertedFuelConsumed = this.reportMapService.getFuelConsumptionUnits(e.fuelConsumed, this.prefUnitFormat);
       this.fuelConsumedChart.push({ x:resultDate , y:convertedFuelConsumed });      
-      this.co2Chart.push({ x:resultDate , y:e.co2Emission.toFixed(2) });
+      this.co2Chart.push({ x:resultDate , y:e.co2Emission.toFixed(4) });
       let convertedDistance =  this.reportMapService.convertDistanceUnits(e.distance, this.prefUnitFormat);
       this.distanceChart.push({ x:resultDate , y:convertedDistance});
       let convertedFuelConsumption =  this.reportMapService.getFuelConsumedUnits(e.fuelConsumtion, this.prefUnitFormat,true);
@@ -2599,7 +2599,7 @@ setVehicleGroupAndVehiclePreSelection() {
     })    
     this.initData.forEach(item => {
       worksheet.addRow([ item.vehicleName,item.vin, item.vehicleRegistrationNo,item.convertedStartTime,item.convertedEndTime,item.convertedAverageSpeed,
-        item.convertedMaxSpeed, this.convertZeros(item.convertedDistance),item.startPosition,item.endPosition,item.convertedFuelConsumed100Km,item.convertedTripFuelConsumption,item.cO2Emission,item.idleDurationPercentage,
+        item.convertedMaxSpeed, this.convertZeros(item.convertedDistance),item.startPosition,item.endPosition,item.convertedFuelConsumed100Km,item.convertedFuelConsumption,item.cO2Emission,item.idleDurationPercentage,
         item.ptoDuration.toFixed(2),item.cruiseControlDistance3050,item.cruiseControlDistance5075,item.cruiseControlDistance75,
         item.heavyThrottleDuration,item.harshBrakeDuration,item.convertedAverageGrossWeightComb,item.averageTrafficClassificationValue,
         item.ccFuelConsumption,item.convertedFuelConsumptionCCNonActive,item.idlingConsumptionValue,item.dpaScore,item.convertedIdlingPTOScore,
@@ -2862,7 +2862,7 @@ setVehicleGroupAndVehiclePreSelection() {
               break;
             }
             case 'fuelConsumption' :{
-              tempObj.push(e.convertedTripFuelConsumption);
+              tempObj.push(e.convertedFuelConsumption);
               break;
             }
             case 'cO2Emission' :{
@@ -3081,7 +3081,7 @@ setVehicleGroupAndVehiclePreSelection() {
            sum += parseFloat(element.cO2Emission);
         }
       });
-      sum= sum.toFixed(2)*1;
+      sum= sum.toFixed(4)*1;
       break;
     }
     }
