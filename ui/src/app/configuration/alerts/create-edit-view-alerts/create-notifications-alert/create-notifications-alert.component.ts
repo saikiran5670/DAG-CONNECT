@@ -1282,6 +1282,14 @@ getLevelValues(){
       } 
       this.isNotifyEmailValid.emit(emitEmailObj);
     }
+    
+    let notificationData = [...this.notifications];
+    notificationData.forEach((element,index) => {
+      if(element.notificationRecipients.length ==0){
+        this.notifications.splice(element);
+      }
+    });
+
     return this.notifications;
   }
 
