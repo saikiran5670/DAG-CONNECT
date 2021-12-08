@@ -22,7 +22,7 @@
   <div fxLayout="row" fxLayoutAlign="space-between" fxLayoutGap="10px">
     <div>{{ translationData.lblVehicleIn }} {{ vehicleGroup }}</div>
   </div>
-  <div fxLayout="row" fxLayoutAlign="space-between" fxLayoutGap="10px" *ngIf="showCharts">
+  <div fxLayout="row" fxLayoutAlign="space-between" fxLayoutGap="10px">
     <div style="display: block">
       <canvas baseChart
         [datasets]="barChartData"
