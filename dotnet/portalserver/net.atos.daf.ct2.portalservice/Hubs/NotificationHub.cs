@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -18,9 +19,11 @@ using net.atos.daf.ct2.confluentkafka;
 using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.portalservice.Entity.Alert;
 using net.atos.daf.ct2.portalservice.Entity.Hub;
+using net.atos.daf.ct2.portalservice.Hubs;
 using net.atos.daf.ct2.pushnotificationservice;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+
 
 namespace net.atos.daf.ct2.portalservice.hubs
 {
@@ -85,6 +88,7 @@ namespace net.atos.daf.ct2.portalservice.hubs
                     {
                         //Get Feature ids for alert feature
                         var featureIds = GetMappedFeatureIdByStartWithName(NotificationHubConstant.ALERT_FEATURE_STARTWITH);
+                        var otaFeatureId = GetSessionFeatureIdByStartWithName(NotificationHubConstant.OTA_FEATURE_STARTWITH);
                         //_logger.Info("featureIds:" + JsonConvert.SerializeObject(featureIds));
                         //_logger.Info("_userDetails.UserFeatures:" + JsonConvert.SerializeObject(_userDetails));
                         AccountSignalRClientMapper accountSignalRClientMapper = new AccountSignalRClientMapper()
@@ -93,6 +97,7 @@ namespace net.atos.daf.ct2.portalservice.hubs
                             OrganizationId = GetUserSelectedOrgId(),
                             HubClientId = Context.ConnectionId,
                             FeatureIds = featureIds,
+                            OTAFeatureId = otaFeatureId,
                             ContextOrgId = GetContextOrgId()
                         };
                         _accountSignalRClientsMappingList._accountClientMapperList.Add(accountSignalRClientMapper);
@@ -190,6 +195,7 @@ namespace net.atos.daf.ct2.portalservice.hubs
         //        await Clients.Client(this.Context.ConnectionId).SendAsync("TestErrorResponse", ex.Message);
         //    }
         //}
+
         public async Task PushNotificationForAlert()
         {
             try
@@ -226,6 +232,7 @@ namespace net.atos.daf.ct2.portalservice.hubs
                         {
                             //Console.WriteLine(response.Message.Value);
                             tripAlert = JsonConvert.DeserializeObject<TripAlert>(response.Message.Value);
+
                             if (tripAlert != null && (tripAlert.Alertid > 0 || (tripAlert.Alertid == 0 && tripAlert.CategoryType == "O")))
                             {
                                 alertId = tripAlert.Alertid;
@@ -259,7 +266,38 @@ namespace net.atos.daf.ct2.portalservice.hubs
                                 };
                                 if (tripAlert.Alertid == 0 && tripAlert.CategoryType == "O")
                                 {
-                                    connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => objAlertVehicleDetails.OTAAccountIds.Contains(pre.AccountId)).Select(clients => clients.HubClientId).ToList();
+                                    //connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => objAlertVehicleDetails.OTAAccountIds.Contains(pre.AccountId)).Select(clients => clients.HubClientId).ToList();
+                                    var visibleAccountByVin = _accountSignalRClientsMappingList._accountClientMapperList
+                                                                .Where(pre => objAlertVehicleDetails.OTAAccountIds.Contains(pre.AccountId) && pre.OTAFeatureId > 0)
+                                                                .Select(s => new AccountSignalRClientList { ContextOrgId = s.ContextOrgId, OrganizationId = s.OrganizationId, OTAFeatureId = s.OTAFeatureId })
+                                                                .Distinct(new ObjectComparer())
+                                                                .ToList();
+                                    connectionIds = new List<string>();
+                                    if (visibleAccountByVin != null && visibleAccountByVin.Count() > 0)
+                                    {
+                                        var accountSignalRClientMapperReq = new AccountSignalRClientMapperReq();
+                                        accountSignalRClientMapperReq.Vin = tripAlert.Vin;
+                                        accountSignalRClientMapperReq.AccountSignalRClientMapper.AddRange(visibleAccountByVin);
+                                        var visiblityResponse = await _pushNotofocationServiceClient.GetVehicleAccountVisibilityByVINAsync(accountSignalRClientMapperReq);
+                                        if (visiblityResponse.Code == ResponseCode.Success)
+                                        {
+                                            var visiblityList = visiblityResponse.AccountSignalRClientMapper.ToList();
+                                            var connectionIdList = new List<string>();
+                                            connectionIds = new List<string>();
+                                            if (visiblityList != null && visiblityList.Count() > 0)
+                                            {
+                                                foreach (var item in _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => objAlertVehicleDetails.OTAAccountIds.Contains(pre.AccountId) && pre.OTAFeatureId > 0).ToList())
+                                                {
+                                                    if (!connectionIds.Any(s => s == item.HubClientId) && visiblityList.Any(s => s.OrganizationId == item.OrganizationId && s.ContextOrgId == item.ContextOrgId))
+                                                    {
+                                                        connectionIdList.Add(item.HubClientId);
+                                                    }
+                                                }
+                                                connectionIds = connectionIdList;
+                                            }
+                                        }
+                                    }
+
                                 }
                                 else
                                 {
@@ -280,31 +318,34 @@ namespace net.atos.daf.ct2.portalservice.hubs
                                         connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => pre.AccountId == notificationAlertMessages.CreatedBy).Select(clients => clients.HubClientId).ToList();
                                     }
                                 }
-                                _logger.Info($"\n\rReadKafka2019 - {_kafkaConfiguration.CONSUMER_GROUP} - {this.Context.ConnectionId} : {string.Join(",", connectionIds)} : {Dns.GetHostName()} : {JsonConvert.SerializeObject(notificationAlertMessages, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() })}");
-                                await Clients.Clients(connectionIds).SendAsync("PushNotificationForAlertResponse", JsonConvert.SerializeObject(notificationAlertMessages, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() }));
+                                _logger.Info($"PushNotificationForAlert - {_kafkaConfiguration.CONSUMER_GROUP} - {this.Context.ConnectionId} : {string.Join(",", connectionIds)} : {Dns.GetHostName()} : {JsonConvert.SerializeObject(notificationAlertMessages, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() })}");
+                                if (connectionIds.Count() > 0)
+                                    await Clients.Clients(connectionIds).SendAsync("PushNotificationForAlertResponse", JsonConvert.SerializeObject(notificationAlertMessages, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() }));
+                                else
+                                    _logger.Info($"PushNotificationForAlert: No Connection ids found for the account visibility.");
                             }
                         }
                     }
                     catch (RpcException ex)
                     {
-                        _logger.Error($"RpcException Error in ReadKafkaMessages - AlertID: {alertId}, Host: : {Dns.GetHostName()}, KafkaConfig: {JsonConvert.SerializeObject(kafkaEntity)}", ex);
+                        _logger.Error($"RpcException Error in PushNotificationForAlert - AlertID: {alertId}, Host: : {Dns.GetHostName()}, KafkaConfig: {JsonConvert.SerializeObject(kafkaEntity)}", ex);
                         await Clients.Clients(connectionIds).SendAsync("PushNotificationForAlertError", ex.Message);
                     }
                     catch (Exception ex)
                     {
-                        _logger.Error($"Error in ReadKafkaMessages  - AlertID: {alertId}, Host: : {Dns.GetHostName()}, KafkaConfig: {JsonConvert.SerializeObject(kafkaEntity)}", ex);
+                        _logger.Error($"Error in PushNotificationForAlert  - AlertID: {alertId}, Host: : {Dns.GetHostName()}, KafkaConfig: {JsonConvert.SerializeObject(kafkaEntity)}", ex);
                         await Clients.Clients(connectionIds).SendAsync("PushNotificationForAlertError", ex.Message);
                     }
                 }
             }
             catch (RpcException ex)
             {
-                _logger.Error("RpcException in ReadKafkaMessages method", ex);
+                _logger.Error("RpcException in PushNotificationForAlert method", ex);
                 await Clients.Client(this.Context.ConnectionId).SendAsync("PushNotificationForAlertError", ex.Message);
             }
             catch (Exception ex)
             {
-                _logger.Error("Error in ReadKafkaMessages method", ex);
+                _logger.Error("Error in PushNotificationForAlert method", ex);
                 await Clients.Client(this.Context.ConnectionId).SendAsync("PushNotificationForAlertError", ex.Message);
             }
         }
@@ -328,6 +369,12 @@ namespace net.atos.daf.ct2.portalservice.hubs
         protected int GetContextOrgId()
         {
             return _userDetails.ContextOrgId;
+        }
+
+        protected int GetSessionFeatureIdByStartWithName(string featureName)
+        {
+            return GetUserSubscribeFeatures()?.Where(x => x.Name.ToLower().Equals(featureName.ToLower()))
+                                            ?.Select(x => x.FeatureId)?.FirstOrDefault() ?? default;
         }
         #endregion
     }

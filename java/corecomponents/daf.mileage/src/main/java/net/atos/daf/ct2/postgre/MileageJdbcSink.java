@@ -32,7 +32,7 @@ public class MileageJdbcSink  implements Serializable{
                 .append("&password=" + PostgreConnection.getInstance().encodeValue(envParams.get(MileageConstants.DATAMART_POSTGRE_PASSWORD)))
                 .append(MileageConstants.POSTGRE_SQL_SSL_MODE)
                 .toString();
-		logger.info("Mileage jdbcUrl ::{}",jdbcUrl);
+		logger.debug("Mileage jdbcUrl ::{}",jdbcUrl);
 		
 		mileageData.addSink(JdbcSink.sink(
 				MileageConstants.MILEAGE_QRY,
