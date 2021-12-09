@@ -140,6 +140,26 @@ export class CustomValidators {
     };
   }
 
+  static specialCharAllowedValidationForName(name, formArrayName?) {
+    
+    return (formGroup: FormGroup) => {
+      let NAME;
+      if(formArrayName){
+        NAME = formGroup.controls[formArrayName]['controls'][0]['controls'][name];
+      }else{
+        NAME = formGroup.controls[name];
+      }
+      var regex = /^[ A-Za-zàèìòùÀÈÌÒÙ0-9@#&!$*%._-\s]*$/;
+
+      if (!NAME.value) {
+        NAME.setErrors({ required: true });
+      } else if ((!regex.test(NAME.value))) {
+        NAME.setErrors({ specialCharsNotAllowed: true });
+      }
+    };
+  }
+
+
   static specialCharValidationForNameWithoutRequired(name: any) {
     return (formGroup: FormGroup) => {
       const NAME = formGroup.controls[name];
