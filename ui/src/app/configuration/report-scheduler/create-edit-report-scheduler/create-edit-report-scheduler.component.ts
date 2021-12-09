@@ -291,10 +291,13 @@ export class CreateEditReportSchedulerComponent implements OnInit {
       else
         return ("New Report Schedule for '$' Created Successfully").replace('$', reportName);
     }else if(this.actionType == 'edit') {
-      if (this.translationData.lblScheduleUpdatedSuccessfully)
-        return this.translationData.lblScheduleUpdatedSuccessfully.replace('$', reportName);
+      if (this.translationData.lblUpdatedSuccessfully)
+        { 
+          this.translationData.lblUpdatedSuccessfully = "'$' Updated Successfully";
+        return ("'$' Updated Successfully").replace('$', reportName);
+        }
       else
-        return ("Report Schedule for '$' Updated Successfully").replace('$', reportName);
+       return ("'$' Updated Successfully").replace('$', reportName);
     }
     else{
       return '';
