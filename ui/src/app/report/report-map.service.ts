@@ -1395,7 +1395,8 @@ export class ReportMapService {
     if(_data == 0){
       return (_data);
     }
-    let data: any = 282.481/(_data*100);
+    let data: any = _data*2.8248093627967;  //UK Imperial
+    // let data: any = _data*2.35214583;  //US Imperial
     return (data).toFixed(2); // as inverted division results in very low value upto 6 places shown // 16044
   }
 
