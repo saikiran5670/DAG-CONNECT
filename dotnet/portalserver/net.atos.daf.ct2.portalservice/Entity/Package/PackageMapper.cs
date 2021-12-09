@@ -89,11 +89,23 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
                         FeatureSetID = featureSetID,
                         Description = x.Description,
                         Name = x.Name,
-                        //  Status = x.Status,
                         Type = x.Type,
                         State = x.State
                     };
                     packageRequest.Packages.Add(pkgRequest);
+                }
+                else
+                {
+                    var rejectedPkg = new PackageCreateRequest()
+                    {
+                        Code = x.Code ?? string.Empty,
+                        FeatureSetID = featureSetID,
+                        Description = x.Description ?? string.Empty,
+                        Name = x.Name ?? string.Empty,
+                        Type = x.Type ?? string.Empty,
+                        State = x.State ?? string.Empty
+                    };
+                    packageRequest.RejectedPackages.Add(rejectedPkg);
                 }
             }
             return packageRequest;

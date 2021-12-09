@@ -373,7 +373,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     else
                     {
                         if (packageResponse.PackageList.Count == 0)
-                            return StatusCode(409, "package code already exists");
+                        {
+                            packageResponse.Responsecode = Responsecode.Conflict;
+                            packageResponse.Message = "package code already exists or some packages got rejected as feature name was not correct";
+                            return Ok(packageResponse);
+                        }
                         else
                         {
                             return StatusCode(500, "Package response is null");
