@@ -17,7 +17,7 @@ namespace net.atos.daf.ct2.reportservice.Services
         {
             try
             {
-                var contextOrgId = Convert.ToInt32(context.RequestHeaders.Get("context_orgId")?.Value);
+                var contextOrgId = Convert.ToInt32(context.RequestHeaders.Get("context_orgid")?.Value);
 
                 var result = await _reportManager
                                             .GetFilteredFuelDeviation(
