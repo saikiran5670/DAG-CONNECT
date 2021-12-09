@@ -708,6 +708,8 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
       this.historyHealthData = res;
       this.onSearch();
       this.showLoadingIndicator=false;
+    }, (error) => {
+      this.showLoadingIndicator=false;
     });
   }
 

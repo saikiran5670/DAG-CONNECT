@@ -207,7 +207,7 @@
                       <span>{{ translationData.lblIdleDuration || 'Idle duration' }} </span>
                   </div>
                   <div>
-                      <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('idleDuration')}} hh:mm</span>
+                      <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{idleDurationSumConverted}} hh:mm</span>
                   </div>
               </div>
             </div>
@@ -451,7 +451,7 @@
                           <span>{{ translationData.lblIdleDuration || 'Idle duration' }} </span>
                       </div>
                       <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="right">
-                          <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('idleDuration')}} hh:mm</span>
+                          <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ idleDurationSumConverted}} hh:mm</span>
                       </div>
                   </div>
               </div>
