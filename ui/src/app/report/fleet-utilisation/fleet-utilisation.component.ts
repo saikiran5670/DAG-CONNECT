@@ -466,7 +466,7 @@ calendarOptions: CalendarOptions = {
 
 public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
-  idleDurationConverted: any;
+  idleDurationSumConverted: any;
   filterValue: string;
 
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private router: Router, private organizationService: OrganizationService, private datePipe: DatePipe, private dataInterchangeService: DataInterchangeService) {
@@ -1087,7 +1087,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       let percentage2 = (this.greaterTimeCount/this.tripData.length)* 100;
       this.doughnutChartDataForTime = [percentage2, 100- percentage2];
       this.timePieChartData = [percentage2, 100- percentage2];
-
+      this.idleDurationCount();
       }, (error)=>{
          //console.log(error);
         this.hideloader();
@@ -1100,7 +1100,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
         //this.calendarSelectedValues(calendarData["calenderDetails"]);
       })
     }
-    this.idleDurationCount()
+    // this.idleDurationCount()
     this.calendarOptions.initialDate = this.startDateValue;
     this.calendarOptions.validRange = { start: `${new Date(this.startDateValue).getFullYear()}-${(new Date(this.startDateValue).getMonth() + 1).toString().padStart(2, '0')}-${new Date(this.startDateValue).getDate().toString().padStart(2, '0')}`, end :  `${new Date(this.endDateValue).getFullYear()}-${(new Date(this.endDateValue).getMonth() + 1).toString().padStart(2, '0')}-${new Date(this.endDateValue).getDate().toString().padStart(2, '0')}`};
   }
@@ -1390,10 +1390,12 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       return ( a < b ? -1 : 1) * (isAsc ? 1: -1);
     }
   idleDurationCount(){
+    let idleDuration=0;
     this.initData.forEach(item => {
-    this.idleDurationConverted = Util.getHhMmTime(parseFloat(item.idleDuration));
-  })
-}
+      idleDuration += parseFloat(item.idleDuration);
+    });
+    this.idleDurationSumConverted = Util.getHhMmTime(idleDuration);
+  }
 
   setVehicleGroupAndVehiclePreSelection() {
     if(!this.internalSelection && this.fleetUtilizationSearchData.modifiedFrom !== "") {
@@ -1760,21 +1762,21 @@ getAllSummaryData(){
        // idleDuration += parseFloat(item.idleDuration);
         averageDistPerDay += parseFloat(item.convertedAverageDistance);
 
-        let time: any = 0;
-        time += (item.idleDuration);
-        let data: any = "00:00";
-        let hours = Math.floor(time / 3600);
-        time %= 3600;
-        let minutes = Math.floor(time / 60);
-        let seconds = time % 60;
-        data = `${(hours >= 10) ? hours : ('0'+hours)}:${(minutes >= 10) ? minutes : ('0'+minutes)}`;
-        idleDuration = data;
+        // let time: any = 0;
+        // time += (item.idleDuration);
+        // let data: any = "00:00";
+        // let hours = Math.floor(time / 3600);
+        // time %= 3600;
+        // let minutes = Math.floor(time / 60);
+        // let seconds = time % 60;
+        // data = `${(hours >= 10) ? hours : ('0'+hours)}:${(minutes >= 10) ? minutes : ('0'+minutes)}`;
+        // idleDuration = data;
       });
       numbeOfVehicles = this.initData.length;
       this.summaryObj = [
         [this.translationData.lblFleetUtilizationReport || 'Fleet Utilization Report', this.reportMapService.getStartTime(Date.now(), this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
           this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, numbeOfVehicles, distanceDone.toFixed(2),
-          numberOfTrips, averageDistPerDay.toFixed(2), idleDuration
+          numberOfTrips, averageDistPerDay.toFixed(2), this.idleDurationSumConverted
         ]
       ];
     }

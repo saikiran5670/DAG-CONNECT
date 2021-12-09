@@ -39,7 +39,7 @@
         <ng-container [matColumnDef]="column" *ngFor="let column of columnCodes; let i=index;">
 
             <ng-container
-                *ngIf="column != 'viewstatus' && column != 'action2' && column != 'action' && column != 'select' && column != 'isExclusive'">
+                *ngIf="column != 'viewstatus' && column != 'action2' && column != 'action' && column != 'nextScheduleRunDate' && column != 'select' && column != 'isExclusive'">
                 <mat-header-cell *matHeaderCellDef mat-sort-header style="word-break: break-all;">{{ translationData['lbl'+columnLabels[i]]  }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                     <span *ngIf="row.newTag && i == 0" class='newTagIcon marginLeft-24'></span>
@@ -55,7 +55,7 @@
                     <ng-container *ngTemplateOutlet='viewStatusColumnElements; context: {rowData: row}'></ng-container>
                 </mat-cell>
             </ng-container>
-
+          
             <ng-container *ngIf="column == 'action'">
                 <mat-header-cell *matHeaderCellDef style="word-break: break-all;">{{ translationData['lbl'+columnLabels[i]] }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">
@@ -71,12 +71,18 @@
                     <ng-container *ngTemplateOutlet='action2ColumnElements; context: {rowData: row}'></ng-container>
                 </mat-cell>
             </ng-container>
-
+                      
+            <ng-container *ngIf="column == 'nextScheduleRunDate'">
+                <mat-header-cell *matHeaderCellDef mat-sort-header style="word-break: break-all;">{{ translationData['lbl'+columnLabels[i]] }}</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                    <ng-container *ngTemplateOutlet='nextScheduleRunDateColumnElements; context: {rowData: row}'></ng-container>
+                </mat-cell>
+           </ng-container>
             <ng-container *ngIf="column == 'isExclusive'">
                 <mat-header-cell *matHeaderCellDef style="word-break: break-all;">{{ translationData['lbl'+columnLabels[i]]  }}
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row">{{ row.isExclusive ? translationData.lblExclusive : translationData.lblInclusive }}</mat-cell>
-            </ng-container>
+           </ng-container>
 
             <ng-container *ngIf="column == 'select'">
                 <mat-header-cell *matHeaderCellDef style="word-break: break-all;">
