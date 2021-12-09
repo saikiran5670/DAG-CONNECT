@@ -231,7 +231,7 @@ namespace net.atos.daf.ct2.portalservice.hubs
                         if (response != null)
                         {
                             //Console.WriteLine(response.Message.Value);
-                            tripAlert = JsonConvert.DeserializeObject<TripAlert>(response.Message.Value);
+                            tripAlert = JsonConvert.DeserializeObject<TripAlert>(response.Message.Value);                            
 
                             if (tripAlert != null && (tripAlert.Alertid > 0 || (tripAlert.Alertid == 0 && tripAlert.CategoryType == "O")))
                             {
@@ -296,6 +296,14 @@ namespace net.atos.daf.ct2.portalservice.hubs
                                                 connectionIds = connectionIdList;
                                             }
                                         }
+                                        else
+                                        {
+                                            _logger.Debug($"PushNotificationForAlert: Valdation Failed - package by VIN vissibity. {_accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => objAlertVehicleDetails.OTAAccountIds.Contains(pre.AccountId) && pre.OTAFeatureId > 0).ToList()}");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        _logger.Debug($"PushNotificationForAlert: accountClientMapper_List: {JsonConvert.SerializeObject(_accountSignalRClientsMappingList._accountClientMapperList.Distinct().ToList())}");
                                     }
 
                                 }
@@ -318,11 +326,11 @@ namespace net.atos.daf.ct2.portalservice.hubs
                                         connectionIds = _accountSignalRClientsMappingList._accountClientMapperList.Distinct().Where(pre => pre.AccountId == notificationAlertMessages.CreatedBy).Select(clients => clients.HubClientId).ToList();
                                     }
                                 }
-                                _logger.Info($"PushNotificationForAlert - {_kafkaConfiguration.CONSUMER_GROUP} - {this.Context.ConnectionId} : {string.Join(",", connectionIds)} : {Dns.GetHostName()} : {JsonConvert.SerializeObject(notificationAlertMessages, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() })}");
+                                _logger.Debug($"PushNotificationForAlert - {_kafkaConfiguration.CONSUMER_GROUP} - {this.Context.ConnectionId} : {string.Join(",", connectionIds)} : {Dns.GetHostName()} : {JsonConvert.SerializeObject(notificationAlertMessages, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() })}");
                                 if (connectionIds.Count() > 0)
                                     await Clients.Clients(connectionIds).SendAsync("PushNotificationForAlertResponse", JsonConvert.SerializeObject(notificationAlertMessages, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() }));
                                 else
-                                    _logger.Info($"PushNotificationForAlert: No Connection ids found for the account visibility.");
+                                    _logger.Debug($"PushNotificationForAlert: No Connection ids found for the account visibility.");
                             }
                         }
                     }
