@@ -56,10 +56,11 @@ export class ReportSchedulerComponent implements OnInit {
   prefTimeFormat: any= 24; //-- coming from pref setting
   prefTimeZone: any; //-- coming from pref setting
   prefDateFormat: any = 'DD/MM/YYYY'; //-- coming from pref setting
+  nextScheduleDateFormat:any ='dd/MM/yyyy';
   accountPrefObj: any;
   @ViewChild('gridComp') gridComp: DataTableComponent
   filterValue: string;
-
+  
   constructor(
     private translationService: TranslationService,
     private dialog: MatDialog,
@@ -103,7 +104,7 @@ export class ReportSchedulerComponent implements OnInit {
           this.loadScheduledReports();
         });
       });
-
+     
       this.reportSchedulerService.getReportSchedulerParameter(this.accountId, this.accountOrganizationId).subscribe(parameterData => {
         this.reportSchedulerParameterData = parameterData;
         this.ReportTypeList = this.reportSchedulerParameterData["reportType"];
@@ -111,8 +112,8 @@ export class ReportSchedulerComponent implements OnInit {
       })
 
     }
-
-
+     
+    
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
     //console.log("process translationData:: ", this.translationData)
@@ -141,22 +142,27 @@ export class ReportSchedulerComponent implements OnInit {
     switch(this.prefDateFormat){
       case 'ddateformat_dd/mm/yyyy': {
         this.prefDateFormat = "DD/MM/YYYY";
+        this.nextScheduleDateFormat = "dd/MM/yyyy";
         break;
       }
       case 'ddateformat_mm/dd/yyyy': {
         this.prefDateFormat = "MM/DD/YYYY";
+        this.nextScheduleDateFormat = "MM/dd/yyyy";
         break;
       }
       case 'ddateformat_dd-mm-yyyy': {
         this.prefDateFormat = "DD-MM-YYYY";
+        this.nextScheduleDateFormat = "dd-MM-yyyy";
         break;
       }
       case 'ddateformat_mm-dd-yyyy': {
         this.prefDateFormat = "MM-DD-YYYY";
+        this.nextScheduleDateFormat = "MM-dd-yyyy";
         break;
       }
       default:{
         this.prefDateFormat = "MM/DD/YYYY";
+        this.nextScheduleDateFormat = "MM/dd/yyyy";
       }
     }
   }
@@ -269,7 +275,7 @@ export class ReportSchedulerComponent implements OnInit {
     initdata[index].driverList = driverTxt.slice(0, -2);
     initdata[index].vehicleGroupAndVehicleList = vehicleGroupTxt == "" ? vehicleGroupTxt : vehicleGroupTxt.slice(0, -2);
     initdata[index].lastScheduleRunDate= element.lastScheduleRunDate == 0 ? '-' : Util.convertUtcToDateFormat(element.lastScheduleRunDate, this.prefDateFormat, this.prefTimeZone);
-    initdata[index].nextScheduleRunDate= element.nextScheduleRunDate == 0 ? '-' : Util.convertUtcToDateFormat(element.nextScheduleRunDate, this.prefDateFormat, this.prefTimeZone);
+   // initdata[index].nextScheduleRunDate= element.nextScheduleRunDate == 0 ? '-' : Util.convertUtcToDateFormat(element.nextScheduleRunDate, this.prefDateFormat, this.prefTimeZone);
     initdata[index].isDriver = this.ReportTypeList.filter(item => item.id == initdata[index].reportId)[0].isDriver == 'Y' ? true : false;
   });
 
@@ -325,7 +331,7 @@ getUnique(arr, comp) {
 
       return data[sortHeaderId];
     };
-
+  
     setTimeout(()=>{
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;

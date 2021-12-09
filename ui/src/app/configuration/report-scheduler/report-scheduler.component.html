@@ -143,7 +143,7 @@
         
         <app-data-table *ngIf="!showLoadingIndicator" [tableData]="initData" [translationData]="translationData"
         [columnCodes]="columnCodes" [columnLabels]="columnLabels" [actionColumnElements]="actionColumnElements" [action2ColumnElements]="action2ColumnElements" [topRightElements]="topRightElements" [topLeftElements]="topLeftElements"
-        [viewStatusColumnElements]="viewStatusColumnElements" [showExport]="false" #gridComp>
+        [viewStatusColumnElements]="viewStatusColumnElements" [nextScheduleRunDateColumnElements]="nextScheduleRunDateColumnElements" [showExport]="false" #gridComp>
 
         <ng-template #topLeftElements let-gridData='rowData'>
           <div class='areaWidth' fxLayoutAlign="center center">
@@ -185,7 +185,7 @@
           <span>{{ gridData.status == "A" ? (translationData.lblActive || 'Active') : translationData.lblSuspended || 'Suspended' }}</span>
           </button>
         </ng-template>
-    
+     
         <ng-template #actionColumnElements let-gridData='rowData'>
           <button class='actionBtn' mat-flat-button (click)="onViewReportScheduler(gridData, 'view')" matTooltip="{{ translationData.lblView || 'view' }}">
             <mat-icon>visibility</mat-icon>
@@ -199,7 +199,7 @@
         </ng-template>
 
         <ng-template #action2ColumnElements let-gridData='rowData'>
-          <span class="text-truncate"
+           <span class="text-truncate"
             *ngIf="gridData.scheduledReportVehicleRef.length ==1 && gridData.scheduledReportVehicleRef[0].vehicleGroupType == 'G'">
             <span [ngClass]="gridData.scheduledReportVehicleRef[0].vehicleGroupName != '' ? 'row-hover' : ''"
               (click)="gridData.scheduledReportVehicleRef[0].vehicleGroupName != '' ? onVehicleGroupClick(gridData) : ''"
@@ -211,8 +211,13 @@
               gridData.vehicleGroupAndVehicleList }}</span>
           <span class="text-truncate" *ngIf="gridData.scheduledReportVehicleRef.length != 1" class="text-truncate">{{
             gridData.scheduledReportVehicleRef.length > 0 ? gridData.vehicleGroupAndVehicleList : '&nbsp; &nbsp; -' }}</span>
+        </ng-template>   
+          <ng-template #nextScheduleRunDateColumnElements let-gridData='rowData'>
+            <span>
+              {{gridData.nextScheduleRunDate | date:nextScheduleDateFormat}}
+            </span>
         </ng-template>
-    
+      
       </app-data-table>
 
       </mat-card>

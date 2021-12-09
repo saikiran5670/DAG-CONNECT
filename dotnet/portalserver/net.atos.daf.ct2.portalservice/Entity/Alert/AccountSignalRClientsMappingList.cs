@@ -15,6 +15,14 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
         public int AccountId { get; set; }
         public string HubClientId { get; set; }
         public IEnumerable<int> FeatureIds { get; set; }
+        public int OTAFeatureId { get; set; }
+        public int ContextOrgId { get; set; }
+    }
+
+    public class AccountSignalRClientMapperRequest
+    {
+        public int OrganizationId { get; set; }
+        public int OTAFeatureId { get; set; }
         public int ContextOrgId { get; set; }
     }
 }

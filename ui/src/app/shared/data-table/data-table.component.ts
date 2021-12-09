@@ -28,10 +28,11 @@ export class DataTableComponent implements OnInit {
   @Input() selectColumnHeaderElements;
   @Input() showExport;
   @Input() exportFileName;
+  @Input() nextScheduleRunDateColumnElements;
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
-
+ 
   dataSource;
   actionBtn: any;
   filterValue: string;
@@ -129,19 +130,19 @@ export class DataTableComponent implements OnInit {
   updatedTableData(tableData: any) {
     this.tableData = this.getNewTagData(tableData);
     this.dataSource = new MatTableDataSource(this.tableData);
-    setTimeout(() => {
+      setTimeout(() => {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
       this.dataSource.sortData = (data: String[], sort: MatSort) => {
-        const isAsc = sort.direction === 'asc';
-        let columnName = this.sort.active;
-        return data.sort((a: any, b: any) => {
+        const isAsc = sort.direction === 'asc';        
+        let columnName = this.sort.active;  
+          return data.sort((a: any, b: any) => { 
           return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
-        });
-      }
+        });        
+      }     
     });
     Util.applySearchFilter(this.dataSource, this.columnCodes , this.filterValue );
-
+    
   }
 
   // defaultSearchfilter() {

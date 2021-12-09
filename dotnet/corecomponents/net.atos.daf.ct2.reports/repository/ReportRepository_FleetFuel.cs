@@ -387,15 +387,16 @@ namespace net.atos.daf.ct2.reports.repository
                 List<string> lstDriverIds = lstFleetDetails.Select(a => a.DriverID).ToList();
                 //checking driverId of tripdetail.trip_statistics are opt-out or not in master.driver table
                 //Mostly tripdetail.trip_statistics driverid are not availeble in master,driver table
-                List<string> lstOfOptOutDriver = await GetOptOutDriver(lstDriverIds);
-                for (int i = 0; i < lstOfOptOutDriver.Count; i++)
-                {
-                    var data = lstFleetDetails.SingleOrDefault(a => a.DriverID == lstOfOptOutDriver[0]);//"PH B313715714715196");
-                    if (data != null)
-                    {
-                        lstFleetDetails.Remove(data);
-                    }
-                }
+                //write driver table will be in sync - so below code is not required
+                //List<string> lstOfOptOutDriver = await GetOptOutDriver(lstDriverIds);
+                //for (int i = 0; i < lstOfOptOutDriver.Count; i++)
+                //{
+                //    var data = lstFleetDetails.SingleOrDefault(a => a.DriverID == lstOfOptOutDriver[0]);//"PH B313715714715196");
+                //    if (data != null)
+                //    {
+                //        lstFleetDetails.Remove(data);
+                //    }
+                //}
                 if (lstTripAlert.Count() > 0)
                 {
                     foreach (FleetFuelDetailsByDriver trip in lstFleetDetails)

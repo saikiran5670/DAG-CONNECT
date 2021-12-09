@@ -168,5 +168,44 @@ namespace net.atos.daf.ct2.notificationservice.services
                 });
             }
         }
+
+        public override async Task<AccountSignalRClientMapperResponse> GetVehicleAccountVisibilityByVIN(AccountSignalRClientMapperReq request, ServerCallContext context)
+        {
+            try
+            {
+                var response = new AccountSignalRClientMapperResponse { Code = ResponseCode.Success };
+                foreach (var item in request.AccountSignalRClientMapper)
+                {
+                    try
+                    {
+                        if (await _visibilityManager.IsVehicleSubcribedForFeature(request.Vin, item.OrganizationId, item.ContextOrgId, item.OTAFeatureId))
+                        {
+                            response.AccountSignalRClientMapper.Add(new AccountSignalRClientList
+                            {
+                                OrganizationId = item.OrganizationId,
+                                ContextOrgId = item.ContextOrgId,
+                                OTAFeatureId = item.OTAFeatureId
+                            });
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Error("IsVehicleVisible", ex);
+                    }
+                }
+
+                return await Task.FromResult(response);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new AccountSignalRClientMapperResponse
+                {
+                    Code = ResponseCode.Failed
+                });
+            }
+
+        }
     }
 }

@@ -666,5 +666,39 @@ namespace net.atos.daf.ct2.visibility
         {
             return await _visibilityRepository.GetAccountsForOTA(vin);
         }
+
+        public async Task<bool> IsVehicleSubcribedForFeature(string vin, int orgId, int contextOrgId, int reportFeatureId)
+        {
+            try
+            {
+                var resultDict = new Dictionary<VehicleGroupDetails, List<VisibilityVehicle>>();
+                var vehicle = await _vehicleManager.GetVehicleByVIN(vin);
+                if (vehicle?.ID == 0) return await Task.FromResult(false);
+                resultDict.Add(new VehicleGroupDetails
+                {
+                    Id = 0,
+                    Name = string.Empty,
+                    GroupType = string.Empty,
+                    AccessRelationType = string.Empty,
+                    GroupMethod = string.Empty,
+                    RefId = 0
+                },
+                    new List<VisibilityVehicle> { new VisibilityVehicle
+                    {
+                        Id = vehicle.ID,
+                        Name = vehicle.Name,
+                        VIN = vehicle.VIN,
+                        RegistrationNo = vehicle.License_Plate_Number,
+                        HasOwned = vehicle.Organization_Id == contextOrgId
+                    } });
+                // vehicle filtering based on features
+                resultDict = await FilterVehiclesByfeatures(resultDict, reportFeatureId, contextOrgId);
+                return await Task.FromResult(resultDict.SelectMany(e => e.Value).ToList().Count() > 0);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }
