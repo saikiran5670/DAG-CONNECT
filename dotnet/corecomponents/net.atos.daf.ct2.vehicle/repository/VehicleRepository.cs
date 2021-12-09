@@ -2916,6 +2916,49 @@ namespace net.atos.daf.ct2.vehicle.repository
                 throw;
             }
         }
+
+        public async Task<Vehicle> GetVehicleByVIN(string vin)
+        {
+            try
+            {
+                var queryStatement = @"select id
+                                   ,organization_id 
+                                   ,name 
+                                   ,vin 
+                                   ,license_plate_number 
+                                   ,status
+                                   ,reference_date 
+                                   ,vehicle_property_id                                   
+                                   ,created_at 
+                                   ,model_id
+                                   ,opt_in
+                                   ,is_ota
+                                   ,oem_id
+                                   ,oem_organisation_id
+                                   from master.vehicle 
+                                   where ";
+                var parameter = new DynamicParameters();
+                int Vehicle_Id = await _dataAccess.QuerySingleAsync<int>("SELECT id FROM master.vehicle where vin=@vin", new { vin = vin });
+
+                // Vehicle Id 
+                if (Vehicle_Id > 0)
+                {
+                    parameter.Add("@id", Vehicle_Id);
+                    queryStatement = queryStatement + " id=@id";
+                }
+                dynamic result = await _dataAccess.QueryAsync<dynamic>(queryStatement, parameter);
+                Vehicle vehicle = new Vehicle();
+                foreach (dynamic record in result)
+                {
+                    vehicle = Map(record);
+                }
+                return vehicle;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }
 
