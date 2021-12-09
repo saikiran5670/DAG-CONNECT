@@ -54,7 +54,7 @@ public class GrossWeightEcoScoreJdbcSink  implements Serializable{
                 new JdbcConnectionOptions.JdbcConnectionOptionsBuilder()
                         .withUrl(jdbcUrl)
                         .withDriverName(envParams.get(ETLConstants.POSTGRE_SQL_DRIVER))
-                        .build()));
+                        .build())).name("Gross weight ecoscore sink");
 	
 	
 	}
