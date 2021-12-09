@@ -11,7 +11,7 @@ namespace net.atos.daf.ct2.package
         Task<Package> Create(Package package);
         Task<Package> Update(Package package);
         Task<IEnumerable<Package>> Get(PackageFilter packageFilter);
-        Task<List<Package>> Import(List<Package> packageList);
+        Task<PackageMaster> Import(List<Package> packageList);
         Task<bool> Delete(int packageId);
 
         Task<Package> UpdatePackageState(Package package);

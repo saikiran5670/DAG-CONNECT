@@ -51,9 +51,9 @@ namespace net.atos.daf.ct2.schedularservice.ServiceSchedular
                 {
 
                     await DeleteDataFromTable();
-                    Console.Write("****************************************Wait for 5 min*******************************************************");
+                    Console.Write("Datapurging paused for 5 min");
                     await Task.Delay(_purgingConfiguration.ThreadSleepTimeInSec); // 5 mins sleep mode
-                    Console.Write("****************************************Wait finish for 5 min*******************************************************");
+
                 }
             });
         }
@@ -66,9 +66,10 @@ namespace net.atos.daf.ct2.schedularservice.ServiceSchedular
         {
             int rowCount = 0;
             var attempts = 0;
+            var workitemCount = 0;
             var tokenSource2 = new CancellationTokenSource();
             var state = string.Empty;
-            var dataCleanupConfigurations = _dataCleanupManager.GetDataPurgingConfiguration().Result;
+            var dataCleanupConfigurations = await _dataCleanupManager.GetDataPurgingConfiguration();
 
             var masterConnectionString = _configuration.GetConnectionString("ConnectionString");
             var datamartConnectionString = _configuration.GetConnectionString("DataMartConnectionString");
@@ -85,28 +86,19 @@ namespace net.atos.daf.ct2.schedularservice.ServiceSchedular
                         try
                         {
                             var connString = node.DatabaseName != "dafconnectmasterdatabase" ? datamartConnectionString : masterConnectionString;
-
                             rowCount = await _dataCleanupManager.DeleteDataFromTables(connString, node);
-
                             state = rowCount == 0 ? "N" : "O";
                             logData = ToTableLog(node, purgeSatrtTime, rowCount, state);
                             await _dataCleanupManager.CreateDataPurgingTableLog(logData, masterConnectionString);
-                            //if (rowCount >= 0)
-                            //{
-                            //     state = "O";
-                            //    _logger.Info("RowCount is null");
-
-
-
-                            //   // await _dataCleanupManager.CreateDataPurgingTableLog(logData, masterConnectionString);
-                            //}
+                            _logger.Info("Data deleted successfully from" + node.DatabaseName + "." + node.TableName + "nuber of records deeted : " + rowCount);
                             break;
                         }
 
                         catch (PostgresException neEx)
                         {
 
-                            state = GetExceptionCode(neEx.Code.ToString());
+                            attempts++;
+                            state = GetExceptionCode(neEx.SqlState.ToString());
                             if (attempts >= _purgingConfiguration.RetryCount)
                             {
                                 logData = ToTableLog(node, purgeSatrtTime, rowCount, state);
@@ -116,6 +108,7 @@ namespace net.atos.daf.ct2.schedularservice.ServiceSchedular
                         }
                         catch (Exception e)
                         {
+
                             state = e.Message.ToString() == "The operation has timed out." ? "T" : "F";
                             _logger.Info("Data purge failed");
                             _logger.Error(null, e);
@@ -123,13 +116,20 @@ namespace net.atos.daf.ct2.schedularservice.ServiceSchedular
                             attempts++;
                             if (attempts >= _purgingConfiguration.RetryCount)
                             {
+                                _logger.Info("Data purge looged to master.datapurgingtablelog table");
                                 logData = ToTableLog(node, purgeSatrtTime, rowCount, state);
                                 await _dataCleanupManager.CreateDataPurgingTableLog(logData, masterConnectionString);
+                                workitemCount++;
                                 break;
                             }
                         }
 
+                        if (workitemCount > _purgingConfiguration.WebServiceRetryCount)
+                        {
+                            _logger.Info("Data purge service stoped after " + _purgingConfiguration.CancellationTokenDuration + " workitem execution");
+                            await StopAsync(new CancellationTokenSource(_purgingConfiguration.CancellationTokenDuration).Token);
 
+                        }
 
                     }
                 }
@@ -152,6 +152,10 @@ namespace net.atos.daf.ct2.schedularservice.ServiceSchedular
             else if (PgSqlErrorCodes.sessionTimeoutCodes.Any(x => x == errorCode))
             {
                 state = "T";
+            }
+            else if (PgSqlErrorCodes.authorizationCodes.Any(x => x == errorCode))
+            {
+                state = "A";
             }
             return state;
         }
