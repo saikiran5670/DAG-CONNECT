@@ -37,7 +37,7 @@ namespace net.atos.daf.ct2.fms.repository
                                         ,gps_datetime as gpstimestamp
                                         ,gps_speed as speed
                                from livefleet.livefleet_position_statistics
-                               WHERE 1=1";
+                               WHERE trip_id<>'' ";
                 var parameter = new DynamicParameters();
                 if (!string.IsNullOrEmpty(vin))
                 {
@@ -87,7 +87,7 @@ namespace net.atos.daf.ct2.fms.repository
                                         ,gps_datetime as gpstimestamp
                                         ,gps_speed as speed
                                from livefleet.livefleet_position_statistics
-                               WHERE 1=1";
+                               WHERE trip_id<>'' ";
                 var parameter = new DynamicParameters();
                 if (vin != null && vin.Count > 0)
                 {
@@ -168,7 +168,7 @@ namespace net.atos.daf.ct2.fms.repository
 										,total_engine_hours as TotalEngineHours
 										,wheelbased_speed as WheelBasedSpeed
                                from livefleet.livefleet_position_statistics
-                               WHERE 1=1";
+                               WHERE trip_id<>'' ";
                 var parameter = new DynamicParameters();
                 if (!string.IsNullOrEmpty(vin))
                 {
@@ -229,7 +229,7 @@ namespace net.atos.daf.ct2.fms.repository
 										,total_engine_hours as TotalEngineHours
 										,wheelbased_speed as WheelBasedSpeed
                                from livefleet.livefleet_position_statistics
-                               WHERE 1=1";
+                               WHERE trip_id<>'' ";
                 var parameter = new DynamicParameters();
                 if (vin != null && vin.Count > 0)
                 {

@@ -498,7 +498,7 @@ export class AlertsComponent implements OnInit {
  }
 
  setUnitOfThreshold(item){
-  let unitTypeEnum,maxVal, data;
+  let unitTypeEnum, unitType;
   switch(item.category +item.type){
     case 'LH': unitTypeEnum= "H";
     item.UnitTypeVal =  this.translationData.lblHours;
@@ -517,12 +517,11 @@ export class AlertsComponent implements OnInit {
 
     case 'LU': unitTypeEnum= "H";
     // item.UnitTypeVal =  this.translationData.lblHours;
-       maxVal =Math.max.apply(Math, item.alertUrgencyLevelRefs.map( a=> a.thresholdValue));
-       data = item.alertUrgencyLevelRefs.find(i=>i.thresholdValue = data);
-    if(data.unitType == 'H'){
+     unitType = item.alertUrgencyLevelRefs? item.alertUrgencyLevelRefs[0].unitType : 'S';
+    if(unitType == 'H'){
       item.UnitTypeVal = this.translationData.lblHours;
     }
-    else if(data.unitType == 'T'){
+    else if(unitType == 'T'){
       item.UnitTypeVal = this.translationData.lblMinutes;
     }
     else{
@@ -554,12 +553,11 @@ export class AlertsComponent implements OnInit {
 
     case 'FI': unitTypeEnum= "S";
     // item.UnitTypeVal = this.translationData.lblSeconds;
-     maxVal =Math.max.apply(Math, item.alertUrgencyLevelRefs.map( a=> a.thresholdValue));
-     data = item.alertUrgencyLevelRefs.find(i=>i.thresholdValue = data);
-    if(data.unitType == 'H'){
+    unitType = item.alertUrgencyLevelRefs? item.alertUrgencyLevelRefs[0].unitType : 'S';
+    if(unitType == 'H'){
       item.UnitTypeVal = this.translationData.lblHours;
     }
-    else if(data.unitType == 'T'){
+    else if(unitType == 'T'){
       item.UnitTypeVal = this.translationData.lblMinutes;
     }
     else{
