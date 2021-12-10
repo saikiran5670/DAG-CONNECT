@@ -797,5 +797,53 @@ namespace net.atos.daf.ct2.reportscheduler.repository
             }
         }
         #endregion
+
+        #region Get Feature id by Account Id and Org ID
+        public async Task<IEnumerable<int>> GetfeaturesByAccountAndOrgId(int accountid, int organizationid, string featureName = "alerts.")
+        {
+            try
+            {
+                var parameterType = new DynamicParameters();
+                var queryStatement =
+                    @"SELECT DISTINCT features.id as Id
+                    FROM 
+                    (
+	                    --Account Route
+	                    SELECT f.id
+	                    FROM master.Account acc
+	                    INNER JOIN master.AccountRole ar ON acc.id = ar.account_id AND acc.id = @account_id AND ar.organization_id = @organization_id AND acc.state = 'A'
+	                    INNER JOIN master.Role r ON ar.role_id = r.id AND r.state = 'A'
+	                    INNER JOIN master.FeatureSet fset ON r.feature_set_id = fset.id AND fset.state = 'A'
+	                    INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
+	                    INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.state = 'A' AND f.type <> 'D' AND lower(f.name) like @feature_name and r.level <= f.level
+	                    INTERSECT 
+	                    (
+		                    SELECT f.id
+		                    FROM
+		                    (
+			                    SELECT pkg.feature_set_id
+			                    FROM master.Package pkg
+			                    INNER JOIN master.Subscription s ON s.package_id = pkg.id AND s.organization_id = @organization_id AND s.state = 'A' AND pkg.state = 'A'
+			                    UNION
+			                    SELECT pkg.feature_set_id FROM master.Package pkg WHERE pkg.type='P' AND pkg.state = 'A'	--Consider platform type packages
+		                    ) subs
+		                    INNER JOIN master.FeatureSet fset ON subs.feature_set_id = fset.id AND fset.state = 'A'
+		                    INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
+		                    INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.state = 'A' AND f.type <> 'D' AND lower(f.name) like @feature_name
+	                    )    
+                    ) features";
+
+                parameterType.Add("@organization_id", organizationid);
+                parameterType.Add("@account_id", accountid);
+                parameterType.Add("@feature_name", $"{featureName}%");
+
+                return await _dataAccess.QueryAsync<int>(queryStatement, parameterType);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        #endregion
     }
 }

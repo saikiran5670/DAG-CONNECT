@@ -99,7 +99,21 @@ namespace net.atos.daf.ct2.account.report
 
         public async Task<string> GenerateTable()
         {
-            var result = await ReportManager.GetFilteredTripDetails(new TripFilterRequest { StartDateTime = FromDate, EndDateTime = ToDate, VIN = VIN }, false);
+            var tripFilter = new TripFilterRequest { StartDateTime = FromDate, EndDateTime = ToDate, VIN = VIN, OrganizationId = ReportSchedulerData.OrganizationId };
+            tripFilter.FeatureIds = (List<int>)await _reportSchedularRepository.GetfeaturesByAccountAndOrgId(ReportSchedulerData.CreatedBy, ReportSchedulerData.OrganizationId);
+
+            List<visibility.entity.VehicleDetailsAccountVisibilityForAlert> vehicleDetailsAccountVisibilty = new List<visibility.entity.VehicleDetailsAccountVisibilityForAlert>();
+
+            IEnumerable<visibility.entity.VehicleDetailsAccountVisibilityForAlert> vehicleAccountVisibiltyList
+               = await _visibilityManager.GetVehicleByAccountVisibilityForAlert(ReportSchedulerData.CreatedBy, ReportSchedulerData.OrganizationId, ReportSchedulerData.OrganizationId, tripFilter.FeatureIds.ToArray());
+            //append visibile vins
+            vehicleDetailsAccountVisibilty.AddRange(vehicleAccountVisibiltyList);
+            //remove duplicate vins by key as vin
+            vehicleDetailsAccountVisibilty = vehicleDetailsAccountVisibilty.GroupBy(c => c.Vin, (key, c) => c.FirstOrDefault()).ToList();
+
+            tripFilter.AlertVIN = vehicleDetailsAccountVisibilty.Where(x => x.Vin == VIN).Select(x => x.Vin).FirstOrDefault();
+
+            var result = await ReportManager.GetFilteredTripDetails(tripFilter, false);
             //string res = JsonConvert.SerializeObject(result);
             //var tripReportDetails = JsonConvert.DeserializeObject<List<TripReportDetails>>(res);
             var tripReportPdfDetails = new List<TripReportPdfDetails>();
