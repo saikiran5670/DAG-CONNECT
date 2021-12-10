@@ -1250,7 +1250,7 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
 
   getPDFExcelHeader(){
     let col: any = [];
-    col = [`${this.translationData.lblAlertLevel || 'Alert Level'}`, `${this.translationData.lblGeneratedDate || 'Generated Date'}`, `${this.translationData.lblRegistrationNumber || 'Registration Number'}`, `${this.translationData.lblAlertType || 'Alert Type' }`, `${this.translationData.lblAlertName || 'Alert Name' }`, `${this.translationData.lblAlertCategory || 'Alert Category' }`, `${this.translationData.lblStartTime || 'Start Time' }`, `${this.translationData.lblEndTime || 'End Time' }`, `${this.translationData.lblVehicle || 'Vehicle' }`, `${this.translationData.lblVIN || 'VIN' }`, `${this.translationData.lblOccurrence || 'Occurrence' }`, `${this.translationData.lblThresholdValue || 'Threshold Value' }`];
+    col = [`${this.translationData.lblAlertLevel || 'Alert Level'}`, `${this.translationData.lblDate || 'Date'}`, `${this.translationData.lblRegistrationNumber || 'Registration Number'}`, `${this.translationData.lblAlertType || 'Alert Type' }`, `${this.translationData.lblAlertName || 'Alert Name' }`, `${this.translationData.lblAlertCategory || 'Alert Category' }`, `${this.translationData.lblTripStart || 'Trip Start' }`, `${this.translationData.lblTripEnd || 'Trip End' }`, `${this.translationData.lblVehicleName || 'Vehicle Name' }`, `${this.translationData.lblVIN || 'VIN' }`, `${this.translationData.lblOccurrence || 'Occurrence' }`, `${this.translationData.lblThresholdValue || 'Threshold Value' }`];
     return col;
   }
 
