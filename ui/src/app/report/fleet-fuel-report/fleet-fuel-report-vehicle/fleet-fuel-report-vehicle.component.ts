@@ -2048,13 +2048,13 @@ setVehicleGroupAndVehiclePreSelection() {
     let unitValkg = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 'kg') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblton || 't') : (this.translationData.lblton|| 't');
     let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmileh || 'mph') : (this.translationData.lblmileh || 'mph');
     let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile || 'mile');
-    let unitValkg1 = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lbltonns || 't') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lbltonn || 'Ton') : (this.translationData.lbltons|| 'Ton');
+    let unitValkg1 = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblTon || 'Ton') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lbltons || 'ton') : (this.translationData.lbltons|| 'ton');
     let unitValhhmm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblhhmm || 'hh:mm') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblhhmm || 'hh:mm') : (this.translationData.lblhhmm || 'hh:mm');
     //let unitValkmhr = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h(%)') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.translationData.lblkmh || 'km/h(%)') : (this.translationData.translationData.lblkmh || 'km/h(%)');
     const rankingHeader = ['Ranking','VehicleName','Vin','VehicleRegistrationNo','Consumption('+unitVal100km+')']
     const header =  ['Vehicle Name', 'VIN', 'Vehicle Registration No', 'Distance('+unitValkm+')', 'Average Distance Per Day('+unitValkm+')', 'Average Speed('+unitValkmh+')',
     'Max Speed('+unitValkmh+')', 'Number Of Trips', 'Average Gross Weight Comb('+unitValkg1+')','fuelConsumed('+unitValuekm+')', 'fuelConsumption('+unitVal100km+')',
-    'CO2 Emission','Idle Duration(%)','PTO Duration(%)','HarshBrakeDuration(%)','Heavy Throttle Duration(%)','Cruise Control Distance '+ccdOne+'('+unitValkmh+')%',
+    'CO2 Emissions('+ unitValkg1+')','Idle Duration(%)','PTO Duration(%)','HarshBrakeDuration(%)','Heavy Throttle Duration(%)','Cruise Control Distance '+ccdOne+'('+unitValkmh+')%',
     'Cruise Control Distance '+ccdTwo+'('+unitValkmh+')%','Cruise Control Distance'+ccdThree+'('+unitValkmh+')%', 'Average Traffic Classification',
     'CC Fuel Consumption('+unitVal100km+')','Fuel Consumption CC Non Active('+unitVal100km+')','Idling Consumption','Dpa Score','DPA Anticipation Score%','DPA Breaking Score%',
     'Idling PTO Score (hh:mm:ss)','Idling with PTO%','Idling Without PTO (hh:mm:ss)','Idling Without PTO%','Foot Brake',

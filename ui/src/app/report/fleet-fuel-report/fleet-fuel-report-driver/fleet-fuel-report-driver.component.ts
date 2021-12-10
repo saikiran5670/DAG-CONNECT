@@ -2079,7 +2079,7 @@ setVehicleGroupAndVehiclePreSelection() {
     let unitValkg2 = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lbltonns || 't') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lbltonn || 'Ton') : (this.translationData.lbltons|| 'Ton');
 
     const header =  ['Driver Name','Driver ID','Vehicle Name', 'VIN', 'Vehicle Registration No', 'Distance('+unitValkm+')', 'Average Distance Per Day('+unitValkm+')', 'Average Speed('+unitValkmh+')',
-    'Max Speed('+unitValkmh+')', 'Number Of Trips', 'Average Gross Weight Comb('+unitValkg2+')','FuelConsumed('+unitValuekm+')', 'FuelConsumption('+unitVal100km+')',  'CO2 Emission',
+    'Max Speed('+unitValkmh+')', 'Number Of Trips', 'Average Gross Weight Comb('+unitValkg2+')','FuelConsumed('+unitValuekm+')', 'FuelConsumption('+unitVal100km+')',  'CO2 Emission('+unitValkg2+')',
     'Idle Duration(%)','PTO Duration(%)','HarshBrakeDuration(%)','Heavy Throttle Duration(%)','Cruise Control Distance '+ccdOne+'('+unitValkmh+')%',
     'Cruise Control Distance '+ccdTwo+'('+unitValkmh+')%','Cruise Control Distance'+ccdThree+'('+unitValkmh+')%', 'Average Traffic Classification',
     'CC Fuel Consumption('+unitVal100km+')','fuel Consumption CC Non Active('+unitVal100km+')','Idling Consumption','Dpa Score','DPA Anticipation Score%','DPA Breaking Score%', 'Idling PTO Score (hh:mm:ss)','Idling With PTO%','Idling Without PTO (hh:mm:ss)','Idling Without PTO%','Foot Brake',
