@@ -34,7 +34,7 @@
               </div>
           </div>
           <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
-          <cdk-virtual-scroll-viewport [itemSize]="10" style="height: 400px;"  (scrolledIndexChange)="onScroll($event)">
+          <cdk-virtual-scroll-viewport [itemSize]="48" style="height: 400px;"  (scrolledIndexChange)="onScroll($event)">
           <div *ngIf='initData.length > 0' id="vehicleMgmtData">
             <mat-table matTableExporter [dataSource]="dataSource" matSort #exporter="matTableExporter" [hiddenColumns]="[6]">
               <ng-container matColumnDef="name">
@@ -92,13 +92,12 @@
               <mat-row *matRowDef="let row; columns: displayedColumns;">
               </mat-row>
           </mat-table>
-         
+          <span style="margin-top:5px;">Total Count - {{initData.length}} </span>
           <!-- <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator> -->
           </div>
           
         </cdk-virtual-scroll-viewport>
-        <span style="margin-top:5px;">Total Count - {{initData.length}} </span><br/>
-        <span style="margin-top:5px;">Index of First Row - {{index}} </span>
+        <!-- <span style="margin-top:5px;">Index of First Row - {{index}} </span> -->
 
     
     <!-- <app-data-table *ngIf="!showLoadingIndicator" [tableData]="initData" [translationData]="translationData"
@@ -138,7 +137,7 @@
         </ng-template>
     
       </app-data-table> -->
-    
+      <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
     </mat-card>
 
 
