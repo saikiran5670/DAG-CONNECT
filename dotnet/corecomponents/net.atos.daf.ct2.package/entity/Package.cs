@@ -16,7 +16,8 @@ namespace net.atos.daf.ct2.package.entity
     }
     public class PackageMaster
     {
-        public List<Package> Packages { get; set; }
+        public List<Package> PackageList { get; set; }
+        public List<Package> DuplicatePackages { get; set; }
     }
 
 }
