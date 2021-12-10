@@ -1096,7 +1096,7 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
     graphData.forEach(e => {
       var date = new Date(e.date);
      // let resultDate = `${date.getDate()}/${date.getMonth()+1}/ ${date.getFullYear()}`;
-      let resultDate= Util.convertDateToUtc(date);
+      let resultDate= Util.getMillisecondsToUTCDate(date, this.prefTimeZone); //Util.convertDateToUtc(date);
       resultDate =  this.datePipe.transform(resultDate,'MM/dd/yyyy');
 
      // this.barChartLabels.push(resultDate);
