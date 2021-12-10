@@ -136,6 +136,7 @@ namespace net.atos.daf.ct2.reports.repository
                         {
                             trip.TripAlert = new List<TripAlert>();
                             trip.TripAlert = lstTripAlert.Where(fleet => fleet.TripId == trip.TripId).ToList();
+                            trip.Alert = lstTripAlert.Where(fleet => fleet.TripId == trip.TripId).ToList()?.Count() ?? 0;
                         }
                     }
                 }
