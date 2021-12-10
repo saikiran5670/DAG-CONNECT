@@ -16,7 +16,7 @@ import { NgxXml2jsonService } from 'ngx-xml2json';
 @Component({
   selector: 'app-common-import',
   templateUrl: './common-import.component.html',
-  styleUrls: ['./common-import.component.css']
+  styleUrls: ['./common-import.component.less']
 })
 export class CommonImportComponent implements OnInit {
   importClicked : boolean = false;
@@ -350,6 +350,7 @@ export class CommonImportComponent implements OnInit {
       validData.push(item);
     }
     else{
+      item.status = (item.status == 'I') ? 'Inactive' : 'Active';
       invalidData.push(item);
     }
     });
@@ -371,12 +372,37 @@ export class CommonImportComponent implements OnInit {
           removableInput.clear();
           if(resultData){
             this.importedCount = resultData.packageList.length;
+            if(resultData.duplicatePackages && resultData.duplicatePackages.length > 0){
+              this.rejectedCount = this.rejectedCount + resultData.duplicatePackages.length;
+              resultData.duplicatePackages.forEach(element => {
+                let _s: any = this.filelist.filter(i => i.PackageCode == element.code);
+                if(_s && _s.length > 0){
+                  element.returnMessage = this.importTranslationData.lblDuplicatePackage;
+                  element.status = _s[0].PackageStatus;
+                  element.features = _s[0].FeatureId;
+                  this.rejectedList.push(element);
+                }
+              });
+            }
+
+            if(resultData.rejectedPackages && resultData.rejectedPackages.length > 0){
+              this.rejectedCount = this.rejectedCount + resultData.rejectedPackages.length;
+              resultData.rejectedPackages.forEach(element => {
+                let _s: any = this.filelist.filter(i => i.PackageCode == element.code);
+                if(_s && _s.length > 0){
+                  element.returnMessage = this.importTranslationData.lblIncorrectFeatureIds;
+                  element.status = (_s[0].state == 'V') ? 'Org+VIN' : (_s[0].state == 'N') ? 'VIN' : 'Organisation';
+                  element.type = (_s[0].state == 'I') ? 'Inactive' : 'Active';
+                  element.features = _s[0].FeatureId;
+                  this.rejectedList.push(element);
+                }
+              });
+            }
           }
         },
         (err)=>{
           removableInput.clear();
           this.showImportStatus = true;
-
           if(err.status === 409){
             this.rejectedList = this.rejectedList + this.importedCount;
             this.importedCount = 0
@@ -882,7 +908,7 @@ export class CommonImportComponent implements OnInit {
       switch (type) {
         case 'type':
            if(value.toLowerCase() != "vin"){
-            if(value.toLowerCase() != "organization" ){
+            if(value.toLowerCase() != "organisation" ){
               if(value.toLowerCase() != "org+vin" ){
               obj.status = false;
               obj.reason = this.importTranslationData.packageTypeReason;
@@ -1098,19 +1124,19 @@ export class CommonImportComponent implements OnInit {
     }
   }
 
-  showRejectedPopup(rejectedList){
-    let populateRejectedList=[];
+  showRejectedPopup(rejectedList: any){
+    let populateRejectedList: any = [];
     if(this.importFileComponent === 'package'){
       for(var i in rejectedList){
         populateRejectedList.push(
           {
-            "packageCode":this.rejectedList[i]["code"],
+            "packageCode": this.rejectedList[i]["code"],
             "packageName": this.rejectedList[i]["name"],
-            "packageDescription" :this.rejectedList[i]["description"],
-            "packageType" : this.rejectedList[i]["type"],
-            "packageStatus" :this.rejectedList[i]["status"],
-            "packageFeature" :this.rejectedList[i]["features"],
-            "returnMessage" :this.rejectedList[i]["returnMessage"]
+            "packageDescription": this.rejectedList[i]["description"],
+            "packageType": this.rejectedList[i]["type"],
+            "packageStatus": this.rejectedList[i]["status"],
+            "packageFeature": this.rejectedList[i]["features"],
+            "returnMessage": this.rejectedList[i]["returnMessage"]
           }
         )
       }

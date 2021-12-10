@@ -28,7 +28,6 @@ namespace net.atos.daf.ct2.schedularservice.ServiceSchedular
         private readonly IConfiguration _configuration;
         private readonly PurgingConfiguration _purgingConfiguration;
         private readonly List<DataCleanupConfiguration> _dataCleanupConfigurations;
-
         public DataCleanupHostedService(IDataCleanupManager dataCleanupManager, Server server, IHostApplicationLifetime appLifetime, IConfiguration configuration)
         {
             _dataCleanupManager = dataCleanupManager;
@@ -59,7 +58,7 @@ namespace net.atos.daf.ct2.schedularservice.ServiceSchedular
         }
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            // httpClient.Dispose();
+            _logger.Info("Timed Hosted Service is stopping.");
             return Task.CompletedTask;
         }
         public async Task DeleteDataFromTable()
@@ -73,7 +72,8 @@ namespace net.atos.daf.ct2.schedularservice.ServiceSchedular
 
             var masterConnectionString = _configuration.GetConnectionString("ConnectionString");
             var datamartConnectionString = _configuration.GetConnectionString("DataMartConnectionString");
-            Parallel.ForEach(dataCleanupConfigurations, new ParallelOptions() { MaxDegreeOfParallelism = datamartConnectionString.Length, CancellationToken = new CancellationToken() }, async node =>
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(3));
+            Parallel.ForEach(dataCleanupConfigurations, new ParallelOptions() { MaxDegreeOfParallelism = datamartConnectionString.Length, CancellationToken = cts.Token }, async node =>
             {
                 using (CancellationTokenSource cancel = new CancellationTokenSource())
                 {
@@ -105,6 +105,12 @@ namespace net.atos.daf.ct2.schedularservice.ServiceSchedular
                                 await _dataCleanupManager.CreateDataPurgingTableLog(logData, masterConnectionString);
                                 break;
                             }
+                        }
+                        catch (OperationCanceledException e)
+                        {
+                            _logger.Info("Data purge entire operation was cancelled");
+                            _logger.Error(null, e);
+
                         }
                         catch (Exception e)
                         {
