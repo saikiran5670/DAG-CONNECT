@@ -730,7 +730,12 @@ export class TripReportComponent implements OnInit, OnDestroy {
       }
       this.tripForm.get('vehicleGroup').setValue(this.globalSearchFilterData.vehicleGroupDropDownValue);
     } else {
+      if(this.vehicleDD.length >0){
+        this.tripForm.get('vehicle').setValue(this.vehicleDD[0].vehicleID);
+      }
+      else{
       this.tripForm.get('vehicle').setValue('');
+      }
       this.tripForm.get('vehicleGroup').setValue(0);
     }
   }
@@ -752,7 +757,12 @@ export class TripReportComponent implements OnInit, OnDestroy {
           });
         }
       }
+      if(this.vehicleDD.length >0){
+        this.tripForm.get('vehicle').setValue(this.vehicleDD[0].vehicleID);
+      }
+      else{
       this.tripForm.get('vehicle').setValue('');
+      }
     }
     else {
       this.tripForm.get('vehicleGroup').setValue(parseInt(this.globalSearchFilterData.vehicleGroupDropDownValue));
