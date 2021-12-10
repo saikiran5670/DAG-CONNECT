@@ -270,7 +270,7 @@ namespace net.atos.daf.ct2.accountpreference
                             LEFT OUTER JOIN master.icon i ON i.id = ac.icon_id
                             LEFT JOIN master.account A on A.preference_id=ac.id
                             WHERE ac.state = 'A'
-                            AND ac.preference_id = @id
+                            AND ac.id = @id
                             ORDER BY 1 DESC
                             LIMIT  1 ";
                 // if (filter != null)
