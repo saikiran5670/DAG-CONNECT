@@ -995,7 +995,7 @@ namespace net.atos.daf.ct2.account
 				                          WHEN (vg.group_type ='D' and vg.function_enum='O') 
 						                  THEN (
                                                 -- Fetch Owned vehicles from vehicle group type 'D'
-                                                SELECT count(veh.id) 
+                                                SELECT count(distinct veh.id) 
 									            FROM master.vehicle veh 
 									            INNER JOIN master.orgrelationshipmapping org on veh.id=org.vehicle_id 
 									            INNER JOIN master.orgrelationship ors on ors.id=org.relationship_id
