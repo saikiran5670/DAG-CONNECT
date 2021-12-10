@@ -2805,7 +2805,7 @@ setVehicleGroupAndVehiclePreSelection() {
           break;
         }
         case 'averageGrossWeightComb' :{
-          pdfColumnHeads.push('Average Gross Weight Comb('+ton+')');
+          pdfColumnHeads.push('Gross Weight Comb('+ton+')');
           break;
         }
         case 'fuelConsumed' :{
