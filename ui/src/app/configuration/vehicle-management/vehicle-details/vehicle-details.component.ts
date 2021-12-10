@@ -76,6 +76,7 @@ export class VehicleDetailsComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.showLoadingIndicator = true;
     this.adminAccessType = JSON.parse(localStorage.getItem("accessType"));
     // this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     // this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -92,19 +93,25 @@ export class VehicleDetailsComponent implements OnInit {
     //   this.processTranslation(data);
     //   // this.loadVehicleData();
     // });
-    this.initData = this.updateStatusName(this.relationshipVehiclesData);
-    this.updateDataSource(this.relationshipVehiclesData)
+    // this.initData = this.updateStatusName(this.relationshipVehiclesData);
+    // this.updateDataSource(this.relationshipVehiclesData);
+    
     }
 
   // processTranslation(transData: any) {
   //   this.translationData = transData.reduce((acc: any, cur: any) => ({ ...acc, [cur.name]: cur.value }),{});
   // }
+  ngAfterViewInit() {
+    this.initData = this.updateStatusName(this.relationshipVehiclesData);
+    this.updateDataSource(this.relationshipVehiclesData);
+  }
 
   getRelationshipVehiclesData() {
     this.updateRelationshipVehiclesData.emit()
   } 
 
   onScroll(event) {
+    this.index = 0;
     this.index = event;
     // const buffer = Math.floor(this.viewport.getViewportSize() / this.itemSize);
     // console.log(buffer, 'event');
@@ -143,8 +150,9 @@ export class VehicleDetailsComponent implements OnInit {
     setTimeout(() => {
       this.dataSource = new MatTableDataSource(this.initData);
       // this.dataSource1 = new MatTableDataSource(this.initData);
-      this.dataSource.paginator = this.paginator;
+      // this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+      this.showLoadingIndicator = false;
       this.dataSource.sortData = (data: String[], sort: MatSort) =>{
         const isAsc = sort.direction === 'asc';
         let columnName = this.sort.active;

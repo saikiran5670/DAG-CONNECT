@@ -111,10 +111,8 @@ message GetPackageResponce {
         VIN = 3;//'W'=2;
     }
     enum Responsecode {
-      NaN = 0;
-      Success = 200;
-      Failed = 400;
+      Success = 0;
+      Failed = 1;
+      NotFound = 3;
       Conflict = 409;
-      NotFound = 404;
-      InternalServerError = 500;
     }
