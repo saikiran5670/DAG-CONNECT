@@ -655,7 +655,7 @@ namespace net.atos.daf.ct2.visibility.repository
                 var queryStatement =
                     @"with cte_org_rels as 
                         (
-	                        select distinct orm.owner_org_id, orm.vehicle_group_id, grp.group_type, array_agg(f.id) as FeatureIds
+	                        select distinct orm.owner_org_id, orm.vehicle_group_id, grp.group_type, array_agg(distinct f.id) as FeatureIds
 	                        from master.orgrelationshipmapping orm
 	                        inner join master.orgrelationship ors on orm.relationship_id = ors.id and orm.target_org_id=@organizationid and lower(ors.code) not in ('owner','oem')
 	                        inner join master.group grp on orm.vehicle_group_id = grp.id and grp.organization_id = orm.owner_org_id
