@@ -43,5 +43,6 @@ namespace net.atos.daf.ct2.reportscheduler.repository
         Task<IEnumerable<ReportEmailFrequency>> GetMissingSchedulerData();
         Task<bool> UnSubscribeById(int recipientId, string emailId);
         Task<bool> UnSubscribeAllByEmailId(string emailId);
+        Task<IEnumerable<int>> GetfeaturesByAccountAndOrgId(int accountid, int organizationid, string featureName = "alerts.");
     }
 }

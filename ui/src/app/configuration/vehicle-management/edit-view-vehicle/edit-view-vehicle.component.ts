@@ -38,7 +38,7 @@ export class EditViewVehicleComponent implements OnInit {
     },
     {
       validator: [
-        CustomValidators.specialCharValidationForName('vehicleName') // specialCharValidationForNameWithoutRequired
+        CustomValidators.specialCharAllowedValidationForName('vehicleName') // specialCharValidationForNameWithoutRequired
        
       ]
     });
