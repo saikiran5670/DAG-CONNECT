@@ -437,17 +437,35 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 headers.Add("logged_in_orgId", Convert.ToString(GetUserSelectedOrgId()));
                 headers.Add("report_feature_id", Convert.ToString(featureId));
 
-                var data = await _reportServiceClient.GetDriverActivityParametersAsync(request, headers);
-
-                if (data.Code.ToString() == "NotFound")
+                if (HttpContext.Request.Path.Value.ToLower() == "/report/ecoscore/getparameters")
                 {
-                    return StatusCode(404, ReportConstants.GET_DRIVER_TIME_FAILURE_MSG);
+                    var data = await _reportServiceClient.GetDriverEcoScoreParametersAsync(request, headers);
+
+                    if (data.Code.ToString() == Responcecode.NotFound.ToString())
+                    {
+                        return StatusCode(404, ReportConstants.GET_DRIVER_TIME_FAILURE_MSG);
+                    }
+                    else
+                    {
+                        data.Message = ReportConstants.GET_DRIVER_TIME_SUCCESS_MSG;
+                        return Ok(data);
+                    }
                 }
                 else
                 {
-                    data.Message = ReportConstants.GET_DRIVER_TIME_SUCCESS_MSG;
-                    return Ok(data);
+                    var data = await _reportServiceClient.GetDriverActivityParametersAsync(request, headers);
+
+                    if (data.Code.ToString() == "NotFound")
+                    {
+                        return StatusCode(404, ReportConstants.GET_DRIVER_TIME_FAILURE_MSG);
+                    }
+                    else
+                    {
+                        data.Message = ReportConstants.GET_DRIVER_TIME_SUCCESS_MSG;
+                        return Ok(data);
+                    }
                 }
+
             }
             catch (Exception ex)
             {

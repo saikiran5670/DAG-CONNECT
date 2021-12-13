@@ -3853,5 +3853,47 @@ namespace net.atos.daf.ct2.reports.repository
         }
 
         #endregion
+
+        #region EcoDropDown
+        public async Task<List<Driver>> GetDriversByVINForEcoScore(long startDateTime, long endDateTime, List<string> vin, int organizationId)
+        {
+            try
+            {
+                var parameterOfReport = new DynamicParameters();
+                parameterOfReport.Add("@FromDate", startDateTime);
+                parameterOfReport.Add("@ToDate", endDateTime);
+                parameterOfReport.Add("@organizationId", organizationId);
+                parameterOfReport.Add("@Vins", vin.ToArray());
+                string queryDriversPull = @"SELECT da.vin VIN,
+                                            da.driver1_id DriverId,
+                                            d.first_name FirstName,
+                                            d.last_name LastName,
+                                            array_agg(distinct da.end_time) ActivityDateTime
+                                            FROM tripdetail.ecoscoredata da
+                                            join master.driver d on d.driver_id=da.driver1_id and d.organization_id = @organizationId
+                                            join master.vehicle v on v.vin=da.vin and da.start_time >= v.reference_date
+                                            where  (da.start_time >= @FromDate AND da.end_time <= @ToDate) and da.vin=ANY(@Vins)
+                                            GROUP BY da.driver1_id, da.vin,d.first_name,d.last_name
+                                            --,da.activity_date
+                                            ORDER BY da.driver1_id DESC ";
+
+                List<Driver> lstDriver = (List<Driver>)await _dataMartdataAccess.QueryAsync<Driver>(queryDriversPull, parameterOfReport);
+                if (lstDriver?.Count() > 0)
+                {
+                    return lstDriver;
+                }
+                else
+                {
+                    return new List<Driver>();
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+        }
+        #endregion
     }
 }
