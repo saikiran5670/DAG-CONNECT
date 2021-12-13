@@ -45,9 +45,12 @@
                                         <mat-error *ngIf="excelEmptyMsg">
                                             {{ translationData.lblEmptyFile  }}
                                         </mat-error>
+                                        <mat-error *ngIf="excelFileLengthFlag">
+                                            {{ translationData.lblFileLegthError || 'File name should be between 1 and 45 characters' }}
+                                        </mat-error>
                                     </div>
                                     <div fxLayout="column" fxLayoutAlign="space-around" class='margin-bottom-sm'>
-                                        <button style='color: #fff;' [disabled]="!uploadTranslationDataFormGroup.valid || excelEmptyMsg" [ngStyle]="{'margin-top': uploadTranslationDataFormGroup.get('uploadFile').hasError('required') ? '9px' : '29px' }" mat-flat-button color="primary"
+                                        <button style='color: #fff;' [disabled]="!uploadTranslationDataFormGroup.valid || excelEmptyMsg || excelFileLengthFlag" [ngStyle]="{'margin-top': uploadTranslationDataFormGroup.get('uploadFile').hasError('required') ? '9px' : '29px' }" mat-flat-button color="primary"
                                             (click)="uploadTranslationData()">
                                             <mat-icon>arrow_circle_up</mat-icon> {{ translationData.lblUploadFile }}
                                         </button>
