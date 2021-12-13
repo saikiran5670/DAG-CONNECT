@@ -120,7 +120,7 @@ namespace net.atos.daf.ct2.rfms.repository
 										from livefleet.livefleet_position_statistics 
 										Group By Vin) T2
 										on T1.created_datetime = T2.lastDate
-										and T1.Vin = T2.Vin";
+										and T1.Vin = T2.Vin and T1.trip_id<>''  and T2.trip_id<>'' ";
                 }
                 else
                 {
@@ -159,9 +159,9 @@ namespace net.atos.daf.ct2.rfms.repository
                     List<string> lstVisibleVins = visibleVins.Split(',').ToList();
                     parameter.Add("@visibleVins", lstVisibleVins);
                     if (rfmsVehiclePositionRequest.RfmsVehiclePositionFilter.LatestOnly)
-                        queryStatement = queryStatement + " WHERE T1.vin = ANY(@visibleVins)";
+                        queryStatement = queryStatement + " WHERE T1.vin = ANY(@visibleVins) and T1.trip_id<>''  and T2.trip_id<>'' ";
                     else
-                        queryStatement = queryStatement + " WHERE vin = ANY(@visibleVins)";
+                        queryStatement = queryStatement + " WHERE vin = ANY(@visibleVins) and trip_id<>''";
                 }
 
                 //If Not Latest Only Check
@@ -216,7 +216,7 @@ namespace net.atos.daf.ct2.rfms.repository
                 {
                     parameter.Add("@lastVinReceivedDateTime", utilities.UTCHandling.GetUTCFromDateTime(rfmsVehiclePositionRequest.RfmsVehiclePositionFilter.StartTime));
                     if (!rfmsVehiclePositionRequest.RfmsVehiclePositionFilter.LatestOnly)
-                        queryStatement = queryStatement + " AND received_datetime > (SELECT distinct received_datetime FROM LIVEFLEET.LIVEFLEET_POSITION_STATISTICS VV WHERE VV.received_datetime = @lastVinReceivedDateTime)";
+                        queryStatement = queryStatement + " AND received_datetime > (SELECT distinct received_datetime FROM LIVEFLEET.LIVEFLEET_POSITION_STATISTICS VV WHERE VV.received_datetime = @lastVinReceivedDateTime) and VV.trip_id<>''";
                     //require to confirm from Anirudha
                 }
                 if (rfmsVehiclePositionRequest.RfmsVehiclePositionFilter.LatestOnly)
@@ -358,11 +358,11 @@ namespace net.atos.daf.ct2.rfms.repository
                                         t1.total_engine_fuel_used as engineTotalFuelUsed ";
                     var selectQuery = @" from livefleet.livefleet_position_statistics T1
                                         left  join tripdetail.trip_statistics t2
-                                        on t1.trip_id = t2.trip_id and t1.vin=t2.vin
+                                        on t1.trip_id<> '' and t1.trip_id = t2.trip_id and t1.vin=t2.vin
                                         INNER JOIN (SELECT MAX(Created_DateTime) as lastDate, vin
 										from livefleet.livefleet_position_statistics Group By Vin) T3
 										on T1.created_datetime = T3.lastDate
-										and T1.Vin = T3.Vin";
+										and T1.Vin = T3.Vin and T3.trip_id<>'' ";
 
                     queryStatement += contentFilterQuery + selectQuery;
 
@@ -399,7 +399,7 @@ namespace net.atos.daf.ct2.rfms.repository
                                         t1.total_engine_fuel_used as engineTotalFuelUsed ";
                     var selectQuery = @"from livefleet.livefleet_position_statistics t1 left
                                         join tripdetail.trip_statistics t2
-                                        on t1.trip_id = t2.trip_id and t1.vin=t2.vin";
+                                        on t1.trip_id=<>'' and t1.trip_id = t2.trip_id and t1.vin=t2.vin";
                     queryStatement += contentFilterQuery + selectQuery;
                 }
 
@@ -412,9 +412,9 @@ namespace net.atos.daf.ct2.rfms.repository
                     List<string> lstVisibleVins = visibleVins.Split(',').ToList();
                     parameter.Add("@visibleVins", lstVisibleVins);
                     if (rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.LatestOnly)
-                        queryStatement = queryStatement + " WHERE t1.vin = ANY(@visibleVins)";
+                        queryStatement = queryStatement + " WHERE t1.vin = ANY(@visibleVins) and t1.trip_id=<>'' and T3.trip_id<>'' ";
                     else
-                        queryStatement = queryStatement + " WHERE t1.vin = ANY(@visibleVins)";
+                        queryStatement = queryStatement + " WHERE t1.vin = ANY(@visibleVins) and t1.trip_id=<>''";
                 }
 
                 //If Not Latest Only Check
@@ -472,7 +472,7 @@ namespace net.atos.daf.ct2.rfms.repository
                 {
                     parameter.Add("@lastVinReceivedDateTime", utilities.UTCHandling.GetUTCFromDateTime(rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.StartTime));
                     if (!rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.LatestOnly)
-                        queryStatement = queryStatement + " AND received_datetime > (SELECT distinct received_datetime FROM LIVEFLEET.LIVEFLEET_POSITION_STATISTICS VV WHERE VV.received_datetime = @lastVinReceivedDateTime)";
+                        queryStatement = queryStatement + " AND received_datetime > (SELECT distinct received_datetime FROM LIVEFLEET.LIVEFLEET_POSITION_STATISTICS VV WHERE VV.received_datetime = @lastVinReceivedDateTime) and VV.trip_id<>''";
                 }
                 if (rfmsVehicleStatusRequest.RfmsVehicleStatusFilter.LatestOnly)
                 {

@@ -12,6 +12,7 @@ import { Workbook } from 'exceljs';
 import * as fs from 'file-saver';
 import * as Highcharts from 'highcharts';
 import ColumnRange from 'highcharts/highcharts-more';
+import { MAT_DATE_FORMATS } from '@angular/material/core';
 ColumnRange(Highcharts);
 
 @Component({
@@ -70,6 +71,7 @@ export class DriverTimeDetailComponent implements OnInit {
     serviceTime: number;
     restTime: number;
   }
+  dateFormats: any;
   dayWiseSummaryList: any =[];
   chartOptions: any;
   chart: Highcharts.Chart;
@@ -90,6 +92,7 @@ export class DriverTimeDetailComponent implements OnInit {
   ngOnInit(): void {
     // this.createChart(this.chartData);
     this.showLoadingIndicator = true;
+    this.setPrefFormatDate();
   }
 
   ngOnChanges(){
@@ -160,7 +163,7 @@ export class DriverTimeDetailComponent implements OnInit {
     // });
     
     let driveData=[], workData=[], restData=[], availableData=[];
-    let startTime='';
+    let startTime: any;
     let currentArray;
     let newObj=[];
     this.dayWiseSummaryList=[];
@@ -168,7 +171,8 @@ export class DriverTimeDetailComponent implements OnInit {
       // let _startTime1 = Util.convertUtcToDateTZ(element.startTime,this.prefTimeZone);
       let _startTime = Util.convertUtcToHour(element.startTime,this.prefTimeZone);
       let _endTime = Util.convertUtcToHour(element.endTime,this.prefTimeZone);
-      let _startTimeDate = Util.convertUtcToDateStart(element.startTime, this.prefTimeZone);
+      // let _startTimeDate = Util.convertUtcToDateStart(element.startTime, this.prefTimeZone);
+      let _startTimeDate = Util.getMillisecondsToUTCDate(new Date(element.startTime), this.prefTimeZone);
       let isValid=true;
       if(_startTime == _endTime || (_startTime) > (_endTime)){
         isValid=false;
@@ -177,7 +181,9 @@ export class DriverTimeDetailComponent implements OnInit {
       if(isValid && element.duration > 0){
         // console.log('start'+element.startTime+' end '+element.endTime+' activity'+element.activityDate+' duration'+element.duration);
         
-        startTime=Util.convertUtcToDateFormat2(_startTimeDate, this.prefTimeZone);
+        // startTime=Util.convertUtcToDateFormat2(_startTimeDate, this.prefTimeZone);------
+        let formatDate = Util.convertUtcToDateAndTimeFormat(_startTimeDate, this.prefTimeZone,this.dateFormats);
+       startTime = formatDate[0];
         // startTime=this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false);
         // console.log('sta'+_startTime+' end'+_endTime+' sa'+Util.convertUtcToDateStart(element.startTime, this.prefTimeZone)+' ac'+Util.convertUtcToDateFormat2(element.activityDate, this.prefTimeZone));
         let restObj={
@@ -371,6 +377,31 @@ export class DriverTimeDetailComponent implements OnInit {
       // this.setGraphData();
       // this.showLoadingIndicator=false;
   }
+
+  setPrefFormatDate(){
+    switch(this.prefDateFormat){
+      case 'ddateformat_dd/mm/yyyy': {
+        this.dateFormats = "DD/MM/YYYY"; 
+        break;
+      }
+      case 'ddateformat_mm/dd/yyyy': {
+        this.dateFormats = "MM/DD/YYYY";
+        break;
+      }
+      case 'ddateformat_dd-mm-yyyy': {
+        this.dateFormats = "DD-MM-YYYY";  
+        break;
+      }
+      case 'ddateformat_mm-dd-yyyy': {
+        this.dateFormats = "MM-DD-YYYY";
+        break;
+      }
+      default: {
+        this.dateFormats = "MM/DD/YYYY";
+      }
+    }
+  }
+
 
   setGraphData(){
     let dateArray = this.detailConvertedData.map(data=>data.startTime);

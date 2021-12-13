@@ -274,17 +274,15 @@ doughnutDistanceColors: Color[] = [
         
       // ]
     }
-    if(!this.todayLiveVehicalAPI){
-      this.todayLiveVehicalAPI =this.dashboardService.getTodayLiveVehicleData(_vehiclePayload).subscribe((vehicleData)=>{
+    if(this.finalVinList && this.finalVinList.length > 0 && !this.todayLiveVehicalAPI){
+      this.todayLiveVehicalAPI = this.dashboardService.getTodayLiveVehicleData(_vehiclePayload).subscribe((vehicleData)=>{
         //console.log(vehicleData);
-     this.dataError = false;
- 
-       if(vehicleData){
-           this.liveVehicleData = vehicleData;
-           this.totalVehicles =  this.finalVinList.length;
-           this.setValues();
-           this.updateCharts();
- 
+        this.dataError = false;
+        if(vehicleData){
+          this.liveVehicleData = vehicleData;
+          this.totalVehicles =  this.finalVinList.length;
+          this.setValues();
+          this.updateCharts();
         }
      },(error)=>{
        if(error.status === 400){

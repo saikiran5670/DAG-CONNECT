@@ -374,72 +374,8 @@ export class AlertsComponent implements OnInit {
 
       this.originalAlertData= JSON.parse(JSON.stringify(data)); //Clone array of objects
       this.initData.forEach(item => {
-
-        let unitTypeEnum;
-        switch(item.category +item.type){
-            case 'LH': unitTypeEnum= "H";
-            item.UnitTypeVal =  this.translationData.lblHours;
-            break;
-
-            case 'LD':
-            if(this.prefUnitFormat == 'dunit_Metric'){
-              unitTypeEnum= "K";
-              item.UnitTypeVal = this.translationData.lblkm;
-             }
-              else{
-              unitTypeEnum= "L";
-              item.UnitTypeVal = this.translationData.lblmile;
-              }
-              break;
-
-            case 'LU': unitTypeEnum= "H";
-            item.UnitTypeVal =  this.translationData.lblHours;
-             break;
-
-            case 'LG':
-            if(this.prefUnitFormat == 'dunit_Metric'){
-              unitTypeEnum= "K";
-              item.UnitTypeVal = this.translationData.lblkm;}
-              else{
-              unitTypeEnum= "L";
-              item.UnitTypeVal = this.translationData.lblmile;
-              }
-             break;
-
-            case 'FP': unitTypeEnum= "P";
-            item.UnitTypeVal =  "%"
-            break;
-
-            case 'FL': unitTypeEnum= "P";
-            item.UnitTypeVal =  "%"
-            break;
-
-            case 'FT': unitTypeEnum= "P";
-            item.UnitTypeVal =  "%"
-            break;
-
-            case 'FI': unitTypeEnum= "S";
-            item.UnitTypeVal = this.translationData.lblSeconds;
-            break;
-
-            case 'FA':
-            if(this.prefUnitFormat == 'dunit_Metric'){
-              unitTypeEnum= "A";
-              item.UnitTypeVal = this.translationData.lblkilometerperhour;
-            }
-              else{
-                unitTypeEnum= "B";
-                item.UnitTypeVal = this.translationData.lblMilesPerHour
-              }
-              break;
-
-            case 'FF': unitTypeEnum= "P";
-            item.UnitTypeVal =  "%"
-            break;
-
-            return item.UnitTypeVal;
-          }
-
+        this.setUnitOfThreshold(item);
+ 
       let catVal = this.alertCategoryList.filter(cat => cat.enum == item.category);
       catVal.forEach(obj => {
         item["category"]=obj.value;
@@ -559,6 +495,93 @@ export class AlertsComponent implements OnInit {
    }
 
    return threshold;
+ }
+
+ setUnitOfThreshold(item){
+  let unitTypeEnum, unitType;
+  switch(item.category +item.type){
+    case 'LH': unitTypeEnum= "H";
+    item.UnitTypeVal =  this.translationData.lblHours;
+    break;
+
+    case 'LD':
+    if(this.prefUnitFormat == 'dunit_Metric'){
+      unitTypeEnum= "K";
+      item.UnitTypeVal = this.translationData.lblkm;
+     }
+      else{
+      unitTypeEnum= "L";
+      item.UnitTypeVal = this.translationData.lblmile;
+      }
+      break;
+
+    case 'LU': unitTypeEnum= "H";
+    // item.UnitTypeVal =  this.translationData.lblHours;
+     unitType = item.alertUrgencyLevelRefs? item.alertUrgencyLevelRefs[0].unitType : 'S';
+    if(unitType == 'H'){
+      item.UnitTypeVal = this.translationData.lblHours;
+    }
+    else if(unitType == 'T'){
+      item.UnitTypeVal = this.translationData.lblMinutes;
+    }
+    else{
+      item.UnitTypeVal = this.translationData.lblSeconds;
+    }
+     break;
+
+    case 'LG':
+    if(this.prefUnitFormat == 'dunit_Metric'){
+      unitTypeEnum= "K";
+      item.UnitTypeVal = this.translationData.lblkm;}
+      else{
+      unitTypeEnum= "L";
+      item.UnitTypeVal = this.translationData.lblmile;
+      }
+     break;
+
+    case 'FP': unitTypeEnum= "P";
+    item.UnitTypeVal =  "%"
+    break;
+
+    case 'FL': unitTypeEnum= "P";
+    item.UnitTypeVal =  "%"
+    break;
+
+    case 'FT': unitTypeEnum= "P";
+    item.UnitTypeVal =  "%"
+    break;
+
+    case 'FI': unitTypeEnum= "S";
+    // item.UnitTypeVal = this.translationData.lblSeconds;
+    unitType = item.alertUrgencyLevelRefs? item.alertUrgencyLevelRefs[0].unitType : 'S';
+    if(unitType == 'H'){
+      item.UnitTypeVal = this.translationData.lblHours;
+    }
+    else if(unitType == 'T'){
+      item.UnitTypeVal = this.translationData.lblMinutes;
+    }
+    else{
+      item.UnitTypeVal = this.translationData.lblSeconds;
+    }
+    break;
+
+    case 'FA':
+    if(this.prefUnitFormat == 'dunit_Metric'){
+      unitTypeEnum= "A";
+      item.UnitTypeVal = this.translationData.lblkilometerperhour;
+    }
+      else{
+        unitTypeEnum= "B";
+        item.UnitTypeVal = this.translationData.lblMilesPerHour
+      }
+      break;
+
+    case 'FF': unitTypeEnum= "P";
+    item.UnitTypeVal =  "%"
+    break;
+
+    return item.UnitTypeVal;
+  }
  }
 
  getFilteredValues(dataSource){

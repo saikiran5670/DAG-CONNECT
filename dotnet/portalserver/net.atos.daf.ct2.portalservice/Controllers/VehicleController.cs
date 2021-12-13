@@ -433,7 +433,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 VehicleBusinessService.VehicleGroupIdRequest vehicleGroupIdRequest = new VehicleBusinessService.VehicleGroupIdRequest();
                 vehicleGroupIdRequest.GroupId = groupId;
-
+                vehicleGroupIdRequest.OrganizationId = GetContextOrgId();
                 VehicleBusinessService.VehicleGroupRefResponce response = await _vehicleClient.GetVehiclesByVehicleGroupAsync(vehicleGroupIdRequest);
 
 
