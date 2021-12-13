@@ -133,7 +133,7 @@ export class NewUserStepComponent implements OnInit {
   }
 
   compare(a: any, b: any, isAsc: boolean, columnName:any) {
-    if(columnName === 'roleName'){
+    if(columnName === 'roleName' || 'accountCount'){
     if(!(a instanceof Number)) a = a.toString().toUpperCase();
     if(!(b instanceof Number)) b = b.toString().toUpperCase();
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);

@@ -32,7 +32,7 @@ export class DataTableComponent implements OnInit {
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
- 
+
   dataSource;
   actionBtn: any;
   filterValue: string;
@@ -134,15 +134,15 @@ export class DataTableComponent implements OnInit {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
       this.dataSource.sortData = (data: String[], sort: MatSort) => {
-        const isAsc = sort.direction === 'asc';        
-        let columnName = this.sort.active;  
-          return data.sort((a: any, b: any) => { 
+        const isAsc = sort.direction === 'asc';
+        let columnName = this.sort.active;
+          return data.sort((a: any, b: any) => {
           return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
-        });        
-      }     
+        });
+      }
     });
     Util.applySearchFilter(this.dataSource, this.columnCodes , this.filterValue );
-    
+
   }
 
   // defaultSearchfilter() {
@@ -192,14 +192,34 @@ export class DataTableComponent implements OnInit {
       return data;
     }
   }
+//   compareSpec(a: Number | String, b: Number | String){
+//     var s1lower = a.toString().toLowerCase().split(/^[^\w\s]/);
+//     var s2lower = b.toString().toLowerCase().split(/^[^\w\s]/);
+//     if (s1lower[0] > s2lower[0]) {
+//       return 1;
+//     }
+//     else if (s1lower[0] < s2lower[0]) {
+//       return -1;
+//  }
+//     else {
+//       return s1lower[1] > s2lower[1] ? 1 : s1lower[1] < s2lower[1] ? -1 : 0;
+//  }
 
-  compare(a: Number | String, b: Number | String, isAsc: boolean, columnName: any) {
+//   }
+
+  compare(a: any, b: any, isAsc: boolean, columnName: any) {
     // if (columnName == "code" || columnName == "name") {
+
+
+    // if (!(a instanceof Number)) { a = a ?  (a.replace(/^\W+/).localeCompare(b.replace(/^\W+/))).toString().toUpperCase() : ''; }
+    // if (!(b instanceof Number)) { b = b ?  (b.replace(/^\W+/).localeCompare(a.replace(/^\W+/))).toString().toUpperCase() : ''; }
       if (!(a instanceof Number)) a = a ?  a.toString().toUpperCase() : '';
       if (!(b instanceof Number)) b = b ?  b.toString().toUpperCase() : '';
+
     // }
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
+
 
   pageSizeUpdated(_event) {
     setTimeout(() => {
