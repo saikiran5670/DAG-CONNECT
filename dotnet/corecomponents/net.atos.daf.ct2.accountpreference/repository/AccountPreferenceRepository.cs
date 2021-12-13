@@ -267,8 +267,8 @@ namespace net.atos.daf.ct2.accountpreference
                             ac.date_format_id,ac.time_format_id,ac.state,ac.landing_page_display_id,
                             COALESCE(i.id,0) as iconId,i.icon,ac.page_refresh_time as PageRefreshTime
                             FROM   master.accountpreference ac
-                            LEFT OUTER JOIN master.icon i
-                            ON i.id = ac.icon_id
+                            LEFT OUTER JOIN master.icon i ON i.id = ac.icon_id
+                            LEFT JOIN master.account A on A.preference_id=ac.id
                             WHERE ac.state = 'A'
                             AND ac.id = @id
                             ORDER BY 1 DESC

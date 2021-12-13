@@ -7,7 +7,7 @@
           {{ displayMessage }}
           </div>
           <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
-          <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon> 
+          <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
           </div>
       </div>
       <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
@@ -27,7 +27,7 @@
           </div>
           <div *ngIf="changePictureFlag" appDragDrop (files)="filesDroppedMethod($event)" style="background-color: rgb(241, 240, 240); box-sizing: content-box; width: 170px; height: 170px;">
             <input *ngIf="!isSelectPictureConfirm" type="file" accept="image/png, image/gif, image/jpeg" (change)="fileChangeEvent($event)" />
-            <image-cropper *ngIf="isAccountPictureSelected && !isSelectPictureConfirm" style="height: 100px; width: 170px;" 
+            <image-cropper *ngIf="isAccountPictureSelected && !isSelectPictureConfirm" style="height: 100px; width: 170px;"
               [imageChangedEvent]="imageChangedEvent" [imageBase64]="droppedImage" [maintainAspectRatio]="true" [aspectRatio]="1/ 1"
               [resizeToWidth]="100" format="png" roundCropper=true (imageCropped)="imageCropped($event)"
               (imageLoaded)="imageLoaded()" (cropperReady)="cropperReady()" (loadImageFailed)="loadImageFailed()">
@@ -53,7 +53,7 @@
                   (click)="onSelectPictureConfirm()">{{ translationData.lblConfirm  }}</button>
               </span>
             </div>
-            
+
           </div>
           <div fxLayout="row" *ngIf="!isSelectPictureConfirm">
             <span style="color: grey;">
@@ -67,7 +67,7 @@
             <a style='margin-left: 20px;'
               (click)="openChangePasswordPopup()">{{ translationData.lblChangePassword  }}</a>
           </div>
-          
+
         </div>
         <div fxLayout="column" class="areaWidth min-width-75-per accountInfo wordWrap">
           <div *ngIf="!editAccountSettingsFlag" fxLayout="row" fxLayoutAlign="space-between"
@@ -187,9 +187,9 @@
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg mobile-view" fxLayoutGap="10px">
               <div class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
                 <mat-label>{{ translationData.lblLoginEmail }}<span class='mandatoryColor'>*</span>
-                </mat-label>              
+                </mat-label>
                 <mat-form-field appearance="outline" class="full-width">
-                  <input maxlength="50" placeholder="{{ translationData.lblLoginEmail }}" matInput 
+                  <input maxlength="50" placeholder="{{ translationData.lblLoginEmail }}" matInput
                     formControlName="loginEmail" pattern="[a-zA-Z0-9.-_]{1,}@[a-zA-Z.-]{2,}[.]{1}[a-zA-Z]{2,}" required>
                 </mat-form-field>
                 <!-- <mat-error *ngIf="accountSettingsForm.get('loginEmail').hasError('required')">
@@ -220,8 +220,8 @@
             <div fxLayout="row" fxLayoutAlign="end end" class="areaWidth full-width mobile-view mobile-btn-align">
               <button class='resetCancelBtnColor margin-right-10 mobile-full-width mobile-margin-bottom-10' mat-raised-button color="primary"
                 (click)='onEditAccountSettingsCancel()'>{{ translationData.lblCancel  }}</button>
-              <button class='resetCancelBtnColor margin-right-10 mobile-full-width mobile-margin-bottom-10' mat-raised-button color="primary" 
-                (click)='onResetAccountSettings()'>{{ translationData.lblReset }}</button>  
+              <button class='resetCancelBtnColor margin-right-10 mobile-full-width mobile-margin-bottom-10' mat-raised-button color="primary"
+                (click)='onResetAccountSettings()'>{{ translationData.lblReset }}</button>
               <button class='mobile-full-width' mat-raised-button type="submit" color="primary" [disabled]="!accountSettingsForm.valid"
                 (click)='onAccountSettingsUpdate()'>{{ translationData.lblConfirm }}</button>
             </div>
@@ -233,7 +233,7 @@
       </div>
       <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
         <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblGeneralSettings  }}
-          (<span style='font-weight: normal;'>{{ translationData.lblOrganisationbasedsettings }}</span>)
+          (<span style='font-weight: normal;'>{{ translationData.lblDefaultorganizationbasedsettings }}</span>)
           <mat-icon *ngIf='!editGeneralSettingsFlag' (click)="editGeneralSettings()" style="cursor: pointer;">edit</mat-icon>
         </span>
       </div>
@@ -286,7 +286,7 @@
         </div>
       </div>
       <div *ngIf="!editGeneralSettingsFlag" fxLayout="row" fxLayoutAlign="space-between"
-        class="full-width margin-bottom-sm accountInfo__fNlN" fxLayoutGap="10px">  
+        class="full-width margin-bottom-sm accountInfo__fNlN" fxLayoutGap="10px">
         <!-- <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
           <mat-label>{{ translationData.lblVehicleDisplayDefault || 'Vehicle Display' }}</mat-label>
           <mat-label class='custom-font'>
@@ -314,7 +314,7 @@
         </div>
       </div>
       <!-- <div *ngIf="!editGeneralSettingsFlag" fxLayout="row" fxLayoutAlign="space-between"
-        class="full-width margin-bottom-sm accountInfo__fNlN" fxLayoutGap="10px">  
+        class="full-width margin-bottom-sm accountInfo__fNlN" fxLayoutGap="10px">
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
           <mat-label>{{ translationData.lblSetPageRefreshTime || 'Set Page Refresh Time' }}</mat-label>
           <mat-label class='custom-font'>
@@ -328,10 +328,10 @@
           <div  class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
             <mat-label>{{ translationData.lblLanguage  }}</mat-label>
              <mat-form-field appearance="outline" class="full-width">
-              
-              <mat-select placeholder="Language" 
+
+              <mat-select placeholder="Language"
                           formControlName="language"
-                           (selectionChange)="onDropdownChange($event, 'language')"> 
+                           (selectionChange)="onDropdownChange($event, 'language')">
                 <mat-option>
                   <ngx-mat-select-search (keyup)="filterLanguages(search.value)" placeholderLabel="{{ translationData.lblSearch }}" #search>
                     <mat-icon (click)="resetLanguageFilter()" ngxMatSelectSearchClear>close</mat-icon>
@@ -341,14 +341,14 @@
                   {{ rer.value }}
                 </mat-option>
               </mat-select>
-            
+
             </mat-form-field>
           </div>
           <div class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
             <mat-label>{{ translationData.lblTimeZone }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
-             
-              <mat-select placeholder="TimeZone" 
+
+              <mat-select placeholder="TimeZone"
                           formControlName="timeZone"
                            (selectionChange)="onDropdownChange($event, 'timeZone')">
                 <mat-option>
@@ -450,7 +450,7 @@
             <!-- <div fxLayout="row" fxLayoutAlign="left center"> -->
               <mat-form-field appearance="outline">
                 <input matInput maxlength="2" type="text" formControlName="pageRefreshTime" (keypress)="keyPressNumbers($event)">
-                <span matSuffix>min</span>   
+                <span matSuffix>min</span>
               </mat-form-field>
               <!-- <span style="margin: 10px 0px 0px 10px;">({{ translationData.lbl || 'minimum 1 min or maximum 60 min' }})</span> -->
             <!-- </div> -->
@@ -471,7 +471,7 @@
                 <button *ngIf="uploadLogo != '' && !isDefaultBrandLogo" class='actionBtn' mat-flat-button (click)="deleteBrandLogo()" matTooltip="{{ translationData.lblDelete }}">
                   <mat-icon>cancel</mat-icon>
                 </button>
-                <image-cropper *ngIf="uploadLogo != ''" [hidden]="hideImgCropper" style="height: 30px; width: 30px;" 
+                <image-cropper *ngIf="uploadLogo != ''" [hidden]="hideImgCropper" style="height: 30px; width: 30px;"
                   [imageChangedEvent]="brandLogoChangedEvent" [imageBase64]="droppedImage" [maintainAspectRatio]="true" [aspectRatio]="1/ 1"
                   [resizeToWidth]="100" format="png"
                   (imageLoaded)="brandLogoLoaded()" (cropperReady)="brandLogoCropperReady()" (loadImageFailed)="loadImageFailed()">
@@ -519,7 +519,7 @@
             <div [ngClass]="{'orgGrayDefault': orgDefaultFlag.landingPage}" fxLayout="row" fxLayoutAlign="left center">
               <mat-form-field appearance="outline" style='width: 35%'>
                 <input matInput maxlength="2" type="text" formControlName="pageRefreshTime" (keypress)="keyPressNumbers($event)">
-                <span matSuffix>min</span>   
+                <span matSuffix>min</span>
               </mat-form-field>
               <span style="margin: 10px 0px 0px 10px;">({{ translationData.lbl || 'minimum 1 min or maximum 60 min' }})</span>
             </div>
@@ -538,7 +538,7 @@
         <div fxLayout="row" fxLayoutAlign="end end" class="areaWidth full-width mobile-view mobile-btn-align">
           <button class='resetCancelBtnColor margin-right-10 mobile-full-width mobile-margin-bottom-10' mat-raised-button color="primary"
             (click)='onEditGeneralSettingsCancel()'>{{ translationData.lblCancel }}</button>
-          <button class='resetCancelBtnColor margin-right-10 mobile-full-width mobile-margin-bottom-10' mat-raised-button color="primary" 
+          <button class='resetCancelBtnColor margin-right-10 mobile-full-width mobile-margin-bottom-10' mat-raised-button color="primary"
                             (click)='onResetGeneralSettings()'>{{ translationData.lblReset}}</button>
           <button [disabled]='!userSettingsForm.valid' class='mobile-full-width' mat-raised-button color="primary" type="submit"
             (click)='onGeneralSettingsUpdate()'>{{ translationData.lblConfirm }}</button>
@@ -546,5 +546,5 @@
       </form>
     </mat-card-content>
   </mat-card>
-  <app-spinner *ngIf="showLoadingIndicator"></app-spinner>	
+  <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
 </div>
