@@ -45,9 +45,10 @@ export class TranslationDataUploadComponent implements OnInit {
   excelEmptyMsg: boolean = false;
   adminAccessType: any = {};
   userType: any = '';
-  addedCount: number= 0;
-  updatedCount: number= 0;
+  addedCount: number = 0;
+  updatedCount: number = 0;
   filterValue: string;
+  excelFileLengthFlag: boolean = false;
 
   constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private translationService: TranslationService) {
       this.defaultTranslation();
@@ -82,7 +83,7 @@ export class TranslationDataUploadComponent implements OnInit {
       menuId: 31 //-- for Translation mgnt
     }
 
-    this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
+    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
       this.loadInitData();
     })
@@ -193,10 +194,10 @@ export class TranslationDataUploadComponent implements OnInit {
     }, 5000);
   }
 
-  addfile(event)
-  {
+  addfile(event: any){
     if(event.target.files[0]){
       this.excelEmptyMsg = false;
+      this.excelFileLengthFlag = false;
       this.file = event.target.files[0];
       let fileReader = new FileReader();
       fileReader.readAsArrayBuffer(this.file);
@@ -214,6 +215,13 @@ export class TranslationDataUploadComponent implements OnInit {
         this.filelist = arraylist;
         if(this.filelist.length > 0){
           this.excelEmptyMsg = false;
+          let _fileName = this.uploadTranslationDataFormGroup.controls.uploadFile.value._fileNames;
+          if(_fileName && _fileName != '' && _fileName.includes('.xlsx')){
+            let charLength = _fileName.split('.xlsx')[0].length;
+            if(charLength > 45){ // file length error
+              this.excelFileLengthFlag = true;
+            }
+          }
         }
         else{
           this.excelEmptyMsg = true;

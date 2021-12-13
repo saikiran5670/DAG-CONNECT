@@ -103,6 +103,10 @@ namespace net.atos.daf.ct2.reports
         {
             return await _reportRepository.GetDriversByVIN(startDateTime, endDateTime, vin, organizationId);
         }
+        public async Task<List<Driver>> GetDriversByVINForEcoScore(long startDateTime, long endDateTime, List<string> vin, int organizationId)
+        {
+            return await _reportRepository.GetDriversByVINForEcoScore(startDateTime, endDateTime, vin, organizationId);
+        }
         public async Task<object> GetReportSearchParameterByVIN(int reportID, long startDateTime, long endDateTime, List<string> vin)
         {
             return await _reportRepository.GetReportSearchParameterByVIN(reportID, startDateTime, endDateTime, vin);

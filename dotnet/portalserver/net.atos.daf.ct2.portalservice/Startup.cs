@@ -110,6 +110,7 @@ namespace net.atos.daf.ct2.portalservice
                     OnRedirectToLogin = redirectContext =>
                     {
                         redirectContext.HttpContext.Response.StatusCode = 401;
+                        redirectContext.HttpContext.Response.Headers.Clear();
                         return Task.CompletedTask;
                     },
                     OnRedirectToAccessDenied = context =>

@@ -138,6 +138,14 @@ public class DafConstants {
 	
 	public static final String WARNING_DATA_PROCESS="warning.data.process";
 	
+	//public static final String MONITOR_COUNT_WINDOW = "monitor.count.window";
+	public static final String LIVEFLEET_WARNING_INSERT_NOT_EXIST = "INSERT INTO livefleet.livefleet_warning_statistics(trip_id , vin   , warning_time_stamp,	warning_class,	warning_number,	latitude,	longitude,	heading,	vehicle_health_status_type,	vehicle_driving_status_type,	driver1_id,	warning_type,	distance_until_next_service,	odometer_val,	lastest_processed_message_time_stamp,	created_at, modified_at,	message_type) SELECT ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? WHERE NOT EXISTS(SELECT id FROM livefleet.livefleet_warning_statistics WHERE vin=? \r\n"
+			+ "and warning_class=? and warning_number=? and warning_type='A')";
+	
+	public static final String PTO_ID="28";
+	public static final Integer DRIVER_CARD=2;
+	public static final String Monitor_DATA_PROCESS_rFMS="monitor.data_process.rFMS";
+	
 		
 		
 	

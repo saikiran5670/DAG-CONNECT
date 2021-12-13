@@ -58,7 +58,8 @@ export class UserManagementComponent implements OnInit {
   filterRoleList: any = [];
   filterRoleList2: any = [];
   editViewRoleList: any = [];
-
+  deleteRecord: boolean = false;
+  
   constructor(
     private dialogService: ConfirmDialogService,
     private translationService: TranslationService,
@@ -484,6 +485,7 @@ export class UserManagementComponent implements OnInit {
     this.dialogService.confirmedDel().subscribe((res) => {
       if (res) {
         this.accountService.deleteAccount(item).subscribe(d=>{
+          this.deleteRecord = true;
           this.successMsgBlink(this.getDeletMsg(name));
           this.loadUsersData();
         });
@@ -532,6 +534,7 @@ export class UserManagementComponent implements OnInit {
     this.userCreatedMsg = msg;
     setTimeout(() => {
       this.grpTitleVisible = false;
+      this.deleteRecord = false;
     }, 5000);
   }
 
