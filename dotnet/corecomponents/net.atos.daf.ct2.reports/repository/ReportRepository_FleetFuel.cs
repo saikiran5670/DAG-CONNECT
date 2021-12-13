@@ -133,6 +133,7 @@ namespace net.atos.daf.ct2.reports.repository
 																  , SUM(case when dpa_score>0 then 1 else 0 end)  as numoftripswithdpascore
                                                                   , SUM(case when veh_message_dpaanticipation_score>0 then 1 else 0 end)  as numoftripswithdpaanticipationscore
                                                                   , SUM(case when veh_message_dpabraking_score > 0 then 1 else 0 end)  as numoftripswithdpabrakingscore
+                                                                  ,SUM(heavy_throttle_duration>0 then 1 else 0) as numofheavythrottleduration          
                                                          		From
                                                          			tripdetail.trip_statistics ts
                                                                     Join master.vehicle v on ts.vin=v.vin                                                                    
@@ -164,7 +165,8 @@ namespace net.atos.daf.ct2.reports.repository
                                                          		  , round(fd.pto_duration,2)                             					as PTODuration
                                                          		  ,case when numoftripswithharshbreak>0 then round (fd.harsh_brake_duration/numoftripswithharshbreak, 5) 
 													  			      else round (fd.harsh_brake_duration/numoftripswithharshbreak,5) end  						    as HarshBrakeDuration
-                                                         		  , round(fd.heavy_throttle_duration/numberoftrips,2)                  					as HeavyThrottleDuration
+                                                         		 ,case when numofheavythrottleduration>0 then round(fd.heavy_throttle_duration/numofheavythrottleduration,2)
+                                                                       else round(fd.heavy_throttle_duration/numofheavythrottleduration,2) as HeavyThrottleDuration                                                               
                                                          		  , round(fd.cruise_control_distance_30_50,2)            					as CruiseControlDistance3050
                                                          		  , round(fd.cruise_control_distance_50_75,2)            					as CruiseControlDistance5075
                                                          		  , round(fd.cruise_control_distance_more_than_75,2)     					as CruiseControlDistance75
@@ -304,7 +306,8 @@ namespace net.atos.daf.ct2.reports.repository
 														  , SUM(case when dpa_score>0 then 1 else 0 end)  as numoftripswithdpascore
                                                           , SUM(case when veh_message_dpaanticipation_score>0 then 1 else 0 end)  as numoftripswithdpaanticipationscore
                                                           , SUM(case when veh_message_dpabraking_score > 0 then 1 else 0 end)  as numoftripswithdpabrakingscore
-                                                  		From
+                                                  	      ,SUM(heavy_throttle_duration>0 then 1 else 0) as numofheavythrottleduration   
+                                                          From
                                                   			tripdetail.trip_statistics ts
                                                        Join master.vehicle v on ts.vin=v.vin                                                                    
                                                                WHERE ts.end_time_stamp >= v.reference_date and (end_time_stamp >= @FromDate and end_time_stamp<= @ToDate) 
@@ -337,7 +340,9 @@ namespace net.atos.daf.ct2.reports.repository
                                                   		  , round(fd.pto_duration,2)                               					as PTODuration
                                                   		  ,case when numoftripswithharshbreak>0 then round (fd.harsh_brake_duration/numoftripswithharshbreak, 5) 
 													  			      else round (fd.harsh_brake_duration/numoftripswithharshbreak,5) end  				    as HarshBrakeDuration
-                                                  		  , round(fd.heavy_throttle_duration/numberoftrips,2)                    					as HeavyThrottleDuration
+                                                          ,case when numofheavythrottleduration>0 then round(fd.heavy_throttle_duration/numofheavythrottleduration,2)
+                                                                       else round(fd.heavy_throttle_duration/numofheavythrottleduration,2) as HeavyThrottleDuration   
+
                                                   		  , round(fd.cruise_control_distance_30_50,2)              					as CruiseControlDistance3050
                                                   		  , round(fd.cruise_control_distance_50_75,2)              					as CruiseControlDistance5075
                                                   		  , round(fd.cruise_control_distance_more_than_75,2)       					as CruiseControlDistance75
