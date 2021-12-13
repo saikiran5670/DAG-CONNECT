@@ -244,21 +244,22 @@ Refer : https://styleguide.daf.com/en/guidelines-for-developers/use-of-colors
 // }
 @media screen and (min-width: 1920px), (min-height: 1080px) {
     .loginPageContainer {
-        height: 95.6vh !important;
+        height: calc(100vh - 48px) !important;
     }
 }
 //----------- login style----------//
 .loginPageContainer{
     // height: 610px;
-    height: 93.8vh;
+    height: calc(100vh - 48px) !important;
     width: 100%;
-    .loginPageBg{
-        background-image: url(assets/images/DAF-login-background.jpg); 
+    background-image: url(assets/images/DAF-login-background.jpg); 
         background-repeat: no-repeat; 
         background-size: 100% 100%;
         //background-size:cover;
         background-position: fixed !important;
         background-attachment: fixed !important;
+    .loginPageBg{
+        
 
         .logo-icon{
             padding: 20px 30px;
@@ -455,18 +456,25 @@ footer{
             height: 30px;
             background-color: #4fa746;
             font-weight: normal;
+            // position: relative;
+            // padding: 0;
+            // .mat-button-wrapper {
+            //     background: #00529C !important;
+            //     line-height: 30px;
+            //     border-radius: 4px;
+            //     width: 100%;
+            //     display: block;
+            //     padding: 0 16px;
+            // }
         }
         @keyframes glowing {
             0% {
-              background-color: #ffffff;
               box-shadow: 0 0 3px #ffffff;
             }
             50% {
-              background-color: #ffffff;
               box-shadow: 0 0 10px #ffffff;
             }
             100% {
-              background-color: #ffffff;
               box-shadow: 0 0 3px #ffffff;
             }
         }
@@ -482,6 +490,9 @@ footer{
         z-index: -1;
         text-align: right;
         color: #fff;
+        min-height: 48px;
+        // position: fixed;
+        // left: 0;
         //margin-top: -47px;
         .pdfIcon{
             font-size: 20px;
