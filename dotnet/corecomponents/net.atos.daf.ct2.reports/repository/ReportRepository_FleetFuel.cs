@@ -137,7 +137,9 @@ namespace net.atos.daf.ct2.reports.repository
                                                          		From
                                                          			tripdetail.trip_statistics ts
                                                                     Join master.vehicle v on ts.vin=v.vin                                                                    
-                                                               WHERE ts.end_time_stamp >= v.reference_date and (end_time_stamp >= @FromDate and end_time_stamp<= @ToDate) 
+                                                               WHERE ts.end_time_stamp >= v.reference_date
+                                                                    and (end_time_stamp >= @FromDate and
+                                                                            end_time_stamp<= @ToDate) 
                                                                       and v.VIN=ANY(@Vins)
                                                          		GROUP BY
                                                          			v.VIN
@@ -476,7 +478,8 @@ namespace net.atos.daf.ct2.reports.repository
                         CAST((co2emission / totalworkingdays) as float) as Co2Emission,
                         CAST((fuelconsumed / totalworkingdays) as float) as FuelConsumed    
                         --CAST((totalaverageweightperprip / totalworkingdays) as float) as Averageweight
-                        from cte_workingdays";
+                        from cte_workingdays
+                        where (extract(epoch from startdate) * 1000)>=@FromDate";
                 List<FleetFuel_VehicleGraph> lstFleetDetails = (List<FleetFuel_VehicleGraph>)await _dataMartdataAccess.QueryAsync<FleetFuel_VehicleGraph>(query, parameterOfFilters);
                 return lstFleetDetails?.Count > 0 ? lstFleetDetails : new List<FleetFuel_VehicleGraph>();
             }

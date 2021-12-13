@@ -185,7 +185,13 @@ public class LiveFleetPosition implements Serializable {
 		else
 			stmt_insert_livefleet_position.setDouble(14, 0);
 		
-		stmt_insert_livefleet_position.setString(15, "I");
+		//stmt_insert_livefleet_position.setString(15, "I");
+		if (currentPosition.getVehMessageType() != null)
+			stmt_insert_livefleet_position.setString(15, currentPosition.getVehMessageType());
+		else
+			stmt_insert_livefleet_position.setString(15, "A");
+		
+		
 		
 		if (currentPosition.getVehicleMsgTriggerTypeId() != null)
 			stmt_insert_livefleet_position.setInt(16, currentPosition.getVehicleMsgTriggerTypeId());
@@ -253,13 +259,13 @@ public class LiveFleetPosition implements Serializable {
 		else
 			stmt_insert_livefleet_position.setString(28, "");
 		
-		if (currentPosition.getPto_id() != null)
-			stmt_insert_livefleet_position.setString(29, currentPosition.getPto_id());
+		if (currentPosition.getPtoId() != null)
+			stmt_insert_livefleet_position.setString(29, currentPosition.getPtoId());
 		else
 			stmt_insert_livefleet_position.setString(29, "");
 		
-		if (currentPosition.getTelltale_id() != null)
-			stmt_insert_livefleet_position.setInt(30, currentPosition.getTelltale_id());
+		if (currentPosition.getTelltaleId() != null)
+			stmt_insert_livefleet_position.setInt(30, currentPosition.getTelltaleId());
 		else
 			stmt_insert_livefleet_position.setInt(30, 0);
 		
@@ -268,8 +274,8 @@ public class LiveFleetPosition implements Serializable {
 		else
 			stmt_insert_livefleet_position.setString(31, "");
 		
-		if (currentPosition.getTelltale_state_id() != null)
-			stmt_insert_livefleet_position.setInt(32, currentPosition.getTelltale_state_id());
+		if (currentPosition.getTelltaleStateId() != null)
+			stmt_insert_livefleet_position.setInt(32, currentPosition.getTelltaleStateId());
 		else
 			stmt_insert_livefleet_position.setInt(32, 0);
 		
@@ -328,8 +334,8 @@ public class LiveFleetPosition implements Serializable {
 		else
 			stmt_insert_livefleet_position.setInt(43, 0);
 		
-		if (currentPosition.getDriver2_auth_equipment_type_id() != null)
-			stmt_insert_livefleet_position.setInt(44, currentPosition.getDriver2_auth_equipment_type_id());
+		if (currentPosition.getDriver2AuthEquipmentTypeId() != null)
+			stmt_insert_livefleet_position.setInt(44, currentPosition.getDriver2AuthEquipmentTypeId());
 		else
 			stmt_insert_livefleet_position.setInt(44, 0);
 		
