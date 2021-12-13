@@ -435,7 +435,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     if (poi.OrganizationId > 0)
                     {
                         parameterduplicate.Add("@organization_id", poi.OrganizationId);
-                        queryduplicate = @"SELECT id FROM master.landmark where state in ('A','I')  and type = 'P' and name=@name and organization_id=@organization_id;";
+                        queryduplicate = @"SELECT id FROM master.landmark where state in ('A','I')  and type = 'P' and name=@name and (organization_id=@organization_id or organization_id is null);";
                     }
                     else
                         queryduplicate = @"SELECT id FROM master.landmark where state in ('A','I')  and type = 'P' and name=@name;";
