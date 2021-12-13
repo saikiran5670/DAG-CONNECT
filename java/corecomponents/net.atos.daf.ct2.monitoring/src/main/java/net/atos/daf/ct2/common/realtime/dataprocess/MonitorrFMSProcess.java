@@ -72,7 +72,7 @@ public class MonitorrFMSProcess {
 				envParams = ParameterTool.fromPropertiesFile(params.get("input"));
 
 			final StreamExecutionEnvironment env = envParams.get("flink.streaming.evn").equalsIgnoreCase("default") ?
-					StreamExecutionEnvironment.getExecutionEnvironment() : FlinkUtil.createStreamExecutionEnvironment(envParams,envParams.get(DafConstants.MONITOR_JOB)); 
+					StreamExecutionEnvironment.getExecutionEnvironment() : FlinkUtil.createStreamExecutionEnvironment(envParams,envParams.get(DafConstants.MONITOR_JOB_rFMS)); 
 			
 			
 			log.debug("env :: " + env);

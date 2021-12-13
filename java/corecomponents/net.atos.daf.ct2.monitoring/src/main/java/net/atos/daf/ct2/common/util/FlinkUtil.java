@@ -49,7 +49,10 @@ public class FlinkUtil {
 		
 			 if(DafConstants.MONITOR_JOB.equals(jobName))
 				env.setStateBackend((StateBackend) new FsStateBackend(envParams.get(DafConstants.CHECKPOINT_DIRECTORY_MONITORING), true)); 
-			  else
+			 
+			 else if(DafConstants.MONITOR_JOB_rFMS.equals(jobName))
+					env.setStateBackend((StateBackend) new FsStateBackend(envParams.get(DafConstants.CHECKPOINT_DIRECTORY_MONITORING_rFMS), true));
+			 else
 				env.setStateBackend((StateBackend) new FsStateBackend(envParams.get(DafConstants.CHECKPOINT_DIRECTORY_WARNING_MONITORING), true));
 
 
