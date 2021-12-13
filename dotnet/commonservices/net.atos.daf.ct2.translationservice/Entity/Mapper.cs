@@ -87,9 +87,9 @@ namespace net.atos.daf.ct2.translationservice.Entity
                 {
                     //obj.File = ByteString.FromStream(str);
                     var Translations = Parse(translationupload.File);
-                    TranslationData objdata = new TranslationData();
                     foreach (var item in Translations)
                     {
+                        TranslationData objdata = new TranslationData();
                         objdata.Code = item.Code;
                         objdata.Type = item.Type;
                         objdata.Name = item.Name;
