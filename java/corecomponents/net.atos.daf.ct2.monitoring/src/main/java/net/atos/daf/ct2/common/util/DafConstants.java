@@ -144,7 +144,7 @@ public class DafConstants {
 	
 	public static final String PTO_ID="28";
 	public static final Integer DRIVER_CARD=2;
-	public static final String WARNING_DATA_PROCESS_rFMS="monitor.data_process.rFMS";
+	public static final String Monitor_DATA_PROCESS_rFMS="monitor.data_process.rFMS";
 	
 		
 		
