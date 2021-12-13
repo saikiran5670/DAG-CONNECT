@@ -133,12 +133,12 @@ namespace net.atos.daf.ct2.reports.repository
 																  , SUM(case when dpa_score>0 then 1 else 0 end)  as numoftripswithdpascore
                                                                   , SUM(case when veh_message_dpaanticipation_score>0 then 1 else 0 end)  as numoftripswithdpaanticipationscore
                                                                   , SUM(case when veh_message_dpabraking_score > 0 then 1 else 0 end)  as numoftripswithdpabrakingscore
-                                                                  ,SUM(heavy_throttle_duration>0 then 1 else 0) as numofheavythrottleduration          
+                                                                  ,SUM(case when heavy_throttle_duration>0 then 1 else 0 end) as numofheavythrottleduration          
                                                          		From
                                                          			tripdetail.trip_statistics ts
                                                                     Join master.vehicle v on ts.vin=v.vin                                                                    
                                                                WHERE ts.end_time_stamp >= v.reference_date and (end_time_stamp >= @FromDate and end_time_stamp<= @ToDate) 
-                                                                        and v.VIN=ANY(@Vins)
+                                                                      and v.VIN=ANY(@Vins)
                                                          		GROUP BY
                                                          			v.VIN
                                                          	)
@@ -164,9 +164,9 @@ namespace net.atos.daf.ct2.reports.repository
                                                                   , round(fd.idle_duration_percentage,2)                 					as IdleDurationPercentage
                                                          		  , round(fd.pto_duration,2)                             					as PTODuration
                                                          		  ,case when numoftripswithharshbreak>0 then round (fd.harsh_brake_duration/numoftripswithharshbreak, 5) 
-													  			      else round (fd.harsh_brake_duration/numoftripswithharshbreak,5) end  						    as HarshBrakeDuration
+													  			      else round (fd.harsh_brake_duration ,5) end  						    as HarshBrakeDuration
                                                          		 ,case when numofheavythrottleduration>0 then round(fd.heavy_throttle_duration/numofheavythrottleduration,2)
-                                                                       else round(fd.heavy_throttle_duration/numofheavythrottleduration,2) as HeavyThrottleDuration                                                               
+                                                                     else round(fd.heavy_throttle_duration,2) end as HeavyThrottleDuration                                                               
                                                          		  , round(fd.cruise_control_distance_30_50,2)            					as CruiseControlDistance3050
                                                          		  , round(fd.cruise_control_distance_50_75,2)            					as CruiseControlDistance5075
                                                          		  , round(fd.cruise_control_distance_more_than_75,2)     					as CruiseControlDistance75
@@ -176,7 +176,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                          		  , idling_consumption                                   					as IdlingConsumption
                                                          		  ,case when numoftripswithdpascore>0 then  round((dpa_score/numoftripswithdpascore),2)
 																      else dpa_score  end  								                    as DPAScore
-                                                                  ,case when numoftripswithdpaanticipationscore>0 then  round((fd.DPAAnticipationScore/numoftripswithdpaanticipationscore),2)
+                                                                 ,case when numoftripswithdpaanticipationscore>0 then  round((fd.DPAAnticipationScore/numoftripswithdpaanticipationscore),2)
                                                                      else fd.DPAAnticipationScore  end  		  as DPAAnticipationScore
                                                                   , round(fd.CCFuelDistance,2) 							 					as CCFuelDistance
                                                                   , round(fd.CCFuelConsumed,2) 							 					as CCFuelConsumed
@@ -306,12 +306,12 @@ namespace net.atos.daf.ct2.reports.repository
 														  , SUM(case when dpa_score>0 then 1 else 0 end)  as numoftripswithdpascore
                                                           , SUM(case when veh_message_dpaanticipation_score>0 then 1 else 0 end)  as numoftripswithdpaanticipationscore
                                                           , SUM(case when veh_message_dpabraking_score > 0 then 1 else 0 end)  as numoftripswithdpabrakingscore
-                                                  	      ,SUM(heavy_throttle_duration>0 then 1 else 0) as numofheavythrottleduration   
+                                                  	      ,SUM(case when heavy_throttle_duration>0 then 1 else 0 end) as numofheavythrottleduration   
                                                           From
                                                   			tripdetail.trip_statistics ts
                                                        Join master.vehicle v on ts.vin=v.vin                                                                    
                                                                WHERE ts.end_time_stamp >= v.reference_date and (end_time_stamp >= @FromDate and end_time_stamp<= @ToDate) 
-                                                                        and v.VIN=ANY(@Vins)
+                                                                     and v.VIN=ANY(@Vins)
                                                   		GROUP BY
                                                   			driver1_id
                                                   		  , v.VIN
@@ -339,9 +339,9 @@ namespace net.atos.daf.ct2.reports.repository
                                                          , round(fd.idle_duration,2)                               					as IdleDuration
                                                   		  , round(fd.pto_duration,2)                               					as PTODuration
                                                   		  ,case when numoftripswithharshbreak>0 then round (fd.harsh_brake_duration/numoftripswithharshbreak, 5) 
-													  			      else round (fd.harsh_brake_duration/numoftripswithharshbreak,5) end  				    as HarshBrakeDuration
-                                                          ,case when numofheavythrottleduration>0 then round(fd.heavy_throttle_duration/numofheavythrottleduration,2)
-                                                                       else round(fd.heavy_throttle_duration/numofheavythrottleduration,2) as HeavyThrottleDuration   
+													  			      else round (fd.harsh_brake_duration,5) end  				    as HarshBrakeDuration
+                                                         ,case when numofheavythrottleduration>0 then round(fd.heavy_throttle_duration/numofheavythrottleduration,2)
+                                                                    else round(fd.heavy_throttle_duration,2) end as HeavyThrottleDuration  
 
                                                   		  , round(fd.cruise_control_distance_30_50,2)              					as CruiseControlDistance3050
                                                   		  , round(fd.cruise_control_distance_50_75,2)              					as CruiseControlDistance5075
