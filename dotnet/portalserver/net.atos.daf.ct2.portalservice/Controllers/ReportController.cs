@@ -291,11 +291,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 request.OrganizationId = GetContextOrgId();
                 var data = await _reportServiceClient.GetFilteredTripDetailsAsync(request, headers);
 
-                data.TripData.Select(x =>
+                foreach (var trip in data.TripData)
                 {
-                    x = _hereMapAddressProvider.UpdateTripReportAddress(x);
-                    return x;
-                }).ToList();
+                    _hereMapAddressProvider.UpdateTripReportAddress(trip);
+                }
 
 
                 if (data?.TripData?.Count > 0)
