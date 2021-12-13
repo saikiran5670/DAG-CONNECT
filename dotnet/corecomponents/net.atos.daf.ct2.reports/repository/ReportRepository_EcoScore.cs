@@ -1354,7 +1354,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 AverageGrossweight as 
                                 (
-                                    select eco.driver1_id, CAST((SUM (eco.tacho_gross_weight_combination)/SUM(eco.gross_weight_combination_count))/COUNT (eco.trip_id) as double precision)  as AverageGrossweight
+                                    select eco.driver1_id, CAST((SUM(eco.tacho_gross_weight_combination)/SUM(eco.gross_weight_combination_count)) as double precision)  as AverageGrossweight
                                     FROM ecoscorequery eco
                                     GROUP BY eco.driver1_id
                                 ),
@@ -1648,7 +1648,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ) ,
 								 AverageGrossweight as 
                                 (
-                                    select eco.organization_id, CAST(SUM (eco.tacho_gross_weight_combination)/SUM(eco.gross_weight_combination_count)/COUNT (eco.trip_id) as double precision)   as AverageGrossweight
+                                    select eco.organization_id, CAST(SUM (eco.tacho_gross_weight_combination)/SUM(eco.gross_weight_combination_count) as double precision)   as AverageGrossweight
                                     FROM ecoscorequery eco
                                     GROUP BY eco.organization_id 
                                 ),
@@ -1941,7 +1941,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ), 
 								 AverageGrossweight as 
                                 (
-                                    select eco.vin, CAST(SUM (eco.tacho_gross_weight_combination)/SUM(eco.gross_weight_combination_count) as DOUBLE PRECISION)/COUNT (eco.trip_id)  as AverageGrossweight
+                                    select eco.vin, CAST(SUM (eco.tacho_gross_weight_combination)/SUM(eco.gross_weight_combination_count) as DOUBLE PRECISION)  as AverageGrossweight
                                     FROM ecoscorequery eco
                                     GROUP BY eco.vin
                                 ),
@@ -2237,7 +2237,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ) ,
 								 AverageGrossweight as 
                                 (
-                                    select eco.organization_id , eco.vin, (CAST(SUM (eco.tacho_gross_weight_combination)/SUM(gross_weight_combination_count) as DOUBLE PRECISION))/COUNT (eco.trip_id)  as AverageGrossweight
+                                    select eco.organization_id , eco.vin, (CAST(SUM (eco.tacho_gross_weight_combination)/SUM(gross_weight_combination_count) as DOUBLE PRECISION)) as AverageGrossweight
                                     FROM ecoscorequery eco
                                     GROUP BY eco.organization_id ,eco.vin
                                 ),
