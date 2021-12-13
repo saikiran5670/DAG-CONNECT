@@ -57,9 +57,12 @@
             </ng-container>
           
             <ng-container *ngIf="column == 'action'">
-                <mat-header-cell *matHeaderCellDef style="word-break: break-all;">{{ translationData['lbl'+columnLabels[i]] }}</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef style="word-break: break-all;">
+                    <span>{{ columnLabels[i] == 'Connected' ? translationData['lbl'+columnLabels[i]] + '(On/Off)' : translationData['lbl'+columnLabels[i]] }}</span>
+                    <!-- {{ translationData['lbl'+columnLabels[i]] }} -->                
+                </mat-header-cell>
                 <mat-cell *matCellDef="let row">
-                    <!-- Action Column template elements will be printed here -->
+                    <!-- Action Column template elements will be printed here -->             
                     <ng-container *ngTemplateOutlet='actionColumnElements; context: {rowData: row}'></ng-container>
                 </mat-cell>
             </ng-container>
