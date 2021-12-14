@@ -93,8 +93,7 @@
                     <span>{{ translationData.lblFuelConsumed || 'Fuel Consumed' }}</span>
                     <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('fuelconsumed')}}{{
                       (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr || ' l') : (prefUnitFormat ==
-                      'dunit_Imperial') ? (translationData.lblgal || 'mpg') : (translationData.lblgal
-                      || ' mpg') }}
+                      'dunit_Imperial') ? (translationData.lblgal) : (translationData.lblgal) }}
                       </span>
                   </div>
                   <div *ngIf="checkForPreference('summary_idledurationtotaltime')" class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
