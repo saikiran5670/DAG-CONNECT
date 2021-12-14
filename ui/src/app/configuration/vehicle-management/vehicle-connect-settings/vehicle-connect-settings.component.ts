@@ -245,15 +245,15 @@ export class VehicleConnectSettingsComponent implements OnInit {
 }
 
   
-  onChangeConnectedStatus(rowData: any){
-    const options = {
-      title: this.translationData.lblConfirmation || "Confirmation",
-      message: this.translationData.lblYouwanttoConnected || "Are you sure want to change status Connected  # '$' Vehicle?",   
-      cancelText: this.translationData.lblCancel || "Cancel",
-      confirmText: (rowData.status == "C" && rowData.opt_In == "I"|| rowData.status == "C" && rowData.opt_In == "H" || rowData.status == "N" && rowData.opt_In == "H") ? this.translationData.lblConfirm : "Confirm",
-      status: (rowData.status == "C" && rowData.opt_In == "I" || rowData.status == 'C'  && rowData.opt_In == "H"|| rowData.status == "N"  && rowData.opt_In == "H")? 'On to Off' : 'Off to On' ,
-      name: rowData.name
-    };
+onChangeConnectedStatus(rowData: any){
+  const options = {
+    title: this.translationData.lblConfirmation || "Confirmation",
+    message: this.translationData.lblYouwanttoConnected || "Are you sure want to change status Connected  # '$' Vehicle?",   
+    cancelText: this.translationData.lblCancel || "Cancel",
+    confirmText: (rowData.status == "C" && rowData.opt_In == "I"|| rowData.status == "C" && rowData.opt_In == "H" || rowData.status == "N" && rowData.opt_In == "H") ? this.translationData.lblConfirm : "Confirm",
+    status: (rowData.status == "C" && rowData.opt_In == "I" || rowData.status == 'C'  && rowData.opt_In == "H" || rowData.status == "N"  && rowData.opt_In == "H" || rowData.status == "N"  && rowData.opt_In == "I")? 'On to Off' : 'Off to On' ,
+    name: rowData.name
+  };
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
