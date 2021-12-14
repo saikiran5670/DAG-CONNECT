@@ -396,12 +396,12 @@ export class UserManagementComponent implements OnInit {
 
   compare(a: any, b: any, isAsc: boolean, columnName:any) {
     if(columnName == "userFullName"|| columnName == "emailId"){
-    if(!(a instanceof Number)) a = a.toString().toUpperCase();
-    if(!(b instanceof Number)) b = b.toString().toUpperCase();
+    if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, '').toString().toUpperCase();
+    if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, '').toString().toUpperCase();
   }
     if(columnName == "roleList" || columnName == "accountGroupList") { //Condition added for roles columns
       a=  a.toString().toUpperCase() ;
-      b= b.toString().toUpperCase();
+      b= b.toString().toUpperCase() ;
 
     }
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
