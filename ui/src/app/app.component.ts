@@ -1280,7 +1280,10 @@ export class AppComponent {
 
   transform(value: number): string {
     const minutes: number = Math.floor(value / 60);
-    return minutes + ':' + (value - minutes * 60);
+    let min: any = (minutes < 10) ? `0${minutes}` : `${minutes}`;
+    let sec: any = ((value - minutes * 60) < 10) ? `0${(value - minutes * 60)}` : `${(value - minutes * 60)}`;
+    return `${min}:${sec}`;
+    //return minutes + ':' + (value - minutes * 60);
   }
 
   clearMessages(): void {
