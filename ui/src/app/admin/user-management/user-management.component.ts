@@ -13,6 +13,7 @@ import { MatTableExporterDirective } from 'mat-table-exporter';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { Router, ActivatedRoute } from '@angular/router';
+import { Util } from 'src/app/shared/util';
 
 @Component({
   selector: 'app-user-management',
@@ -59,7 +60,8 @@ export class UserManagementComponent implements OnInit {
   filterRoleList2: any = [];
   editViewRoleList: any = [];
   deleteRecord: boolean = false;
-  
+  filterValue: string;
+
   constructor(
     private dialogService: ConfirmDialogService,
     private translationService: TranslationService,
@@ -402,6 +404,7 @@ export class UserManagementComponent implements OnInit {
       b= Object.keys(b).length > 0 ? b[0].name : "";
       if(!(a instanceof Number)) a = a.toUpperCase();
       if(!(b instanceof Number)) b = b.toUpperCase();
+
     }
     if(columnName == "accountGroups" && (Array.isArray(a) || Array.isArray(b))) { //Condition added for accountGroups columns
       a= Object.keys(a).length > 0 ? a[0].name : "";
@@ -409,7 +412,9 @@ export class UserManagementComponent implements OnInit {
     if(!(a instanceof Number)) a = a.toUpperCase();
     if(!(b instanceof Number)) b = b.toUpperCase();
     }
+    // return (a.replace(/^\W+/, 'z').localeCompare(b.replace(/^\W+/, 'z')) < b.replace(/^\W+/, 'z').localeCompare(a.replace(/^\W+/, 'z')) ? -1 : 1) * (isAsc ? 1 : -1);
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+
   }
 
   makeRoleAccountGrpList(initdata: any){
@@ -519,6 +524,14 @@ export class UserManagementComponent implements OnInit {
       this.dataSource = new MatTableDataSource(this.initData);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+      this.dataSource.filterPredicate = function(data: any, filter: string): boolean {
+        return (
+          data.roleList.toString().toLowerCase().includes(filter) ||
+          data.firstName.toLowerCase().includes(filter) ||
+          data.emailId.toString().toLowerCase().includes(filter)
+
+        );
+      }
       this.dataSource.sortData = (data: String[], sort: MatSort) => {
         const isAsc = sort.direction === 'asc';
         return data.sort((a: any, b: any) => {
@@ -526,6 +539,8 @@ export class UserManagementComponent implements OnInit {
           return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
         });
        }
+      Util.applySearchFilter(this.dataSource, this.displayedColumns ,this.filterValue );
+
     });
   }
 
@@ -573,6 +588,14 @@ export class UserManagementComponent implements OnInit {
       this.dataSource = new MatTableDataSource(this.initData);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+      this.dataSource.filterPredicate = function(data: any, filter: string): boolean {
+        return (
+          data.roleList.toString().toLowerCase().includes(filter) ||
+          data.firstName.toLowerCase().includes(filter) ||
+          data.emailId.toString().toLowerCase().includes(filter)
+
+        );
+      }
       this.dataSource.sortData = (data: String[], sort: MatSort) => {
         const isAsc = sort.direction === 'asc';
         return data.sort((a: any, b: any) => {

@@ -72,7 +72,7 @@ public class MonitorrFMSProcess {
 				envParams = ParameterTool.fromPropertiesFile(params.get("input"));
 
 			final StreamExecutionEnvironment env = envParams.get("flink.streaming.evn").equalsIgnoreCase("default") ?
-					StreamExecutionEnvironment.getExecutionEnvironment() : FlinkUtil.createStreamExecutionEnvironment(envParams,envParams.get(DafConstants.MONITOR_JOB)); 
+					StreamExecutionEnvironment.getExecutionEnvironment() : FlinkUtil.createStreamExecutionEnvironment(envParams,envParams.get(DafConstants.MONITOR_JOB_rFMS)); 
 			
 			
 			log.debug("env :: " + env);
@@ -88,27 +88,28 @@ public class MonitorrFMSProcess {
 			
 			
 
+			
 			log.debug("after addsink");
 			try {
 
 				
 				
-				/*
-				 * auditing = new AuditETLJobClient(envParams.get(DafConstants.GRPC_SERVER),
-				 * Integer.valueOf(envParams.get(DafConstants.GRPC_PORT)));
-				 * 
-				 * auditMap = createAuditMap(DafConstants.AUDIT_EVENT_STATUS_START,
-				 * "Realtime Data Monitoring processing Job Started");
-				 * 
-				 * auditing.auditTrialGrpcCall(auditMap); auditing.closeChannel();
-				 */
+				
+				  auditing = new AuditETLJobClient(envParams.get(DafConstants.GRPC_SERVER),
+				  Integer.valueOf(envParams.get(DafConstants.GRPC_PORT)));
+				  
+				  auditMap = createAuditMap(DafConstants.AUDIT_EVENT_STATUS_START,
+				  "Realtime Data Monitoring processing Job Started");
+				  
+				  auditing.auditTrialGrpcCall(auditMap); auditing.closeChannel();
+				 
 				 
 			} catch (Exception e) {
 				log.error("Issue while auditing :: " + e.getMessage());
 			}
 
 			//env.execute("Realtime_MonitorDataProcess");
-			env.execute(envParams.get(DafConstants.MONITOR_PROCESS));
+			env.execute(envParams.get(DafConstants.Monitor_DATA_PROCESS_rFMS));
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -118,15 +119,15 @@ public class MonitorrFMSProcess {
 			try {
 				
 				
-				/*
-				 * auditMap = createAuditMap(DafConstants.AUDIT_EVENT_STATUS_FAIL,
-				 * "Realtime Data Monitoring processing Job Failed, reason :: " +
-				 * e.getMessage());
-				 * 
-				 * auditing = new AuditETLJobClient(envParams.get(DafConstants.GRPC_SERVER),
-				 * Integer.valueOf(envParams.get(DafConstants.GRPC_PORT)));
-				 * auditing.auditTrialGrpcCall(auditMap); auditing.closeChannel();
-				 */
+				
+				  auditMap = createAuditMap(DafConstants.AUDIT_EVENT_STATUS_FAIL,
+				  "Realtime Data Monitoring processing Job Failed, reason :: " +
+				  e.getMessage());
+				  
+				  auditing = new AuditETLJobClient(envParams.get(DafConstants.GRPC_SERVER),
+				  Integer.valueOf(envParams.get(DafConstants.GRPC_PORT)));
+				  auditing.auditTrialGrpcCall(auditMap); auditing.closeChannel();
+				 
 				 
 				 
 			} catch (Exception ex) {
