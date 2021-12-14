@@ -396,8 +396,8 @@ export class UserManagementComponent implements OnInit {
 
   compare(a: any, b: any, isAsc: boolean, columnName:any) {
     if(columnName == "userFullName"|| columnName == "emailId"){
-    if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, '').toString().toUpperCase();
-    if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, '').toString().toUpperCase();
+    if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
+    if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
   }
     if(columnName == "roleList" || columnName == "accountGroupList") { //Condition added for roles columns
       a=  a.toString().toUpperCase() ;

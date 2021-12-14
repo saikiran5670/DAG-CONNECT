@@ -21,7 +21,7 @@ import { ActiveInactiveDailogComponent } from '../../shared/active-inactive-dail
 })
 
 export class UserGroupManagementComponent implements OnInit {
-  OrgId: any = 0; 
+  OrgId: any = 0;
   dialogRef: MatDialogRef<UserDetailTableComponent>;
   stepFlag: boolean = false;
   editFlag: boolean = false;
@@ -43,7 +43,7 @@ export class UserGroupManagementComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective
   inputText: any;
-  actionBtn:any; 
+  actionBtn:any;
   translationData: any = {};
   localStLanguage: any;
   showLoadingIndicator: any = false;
@@ -65,7 +65,7 @@ export class UserGroupManagementComponent implements OnInit {
   ) {
     // this.defaultTranslation();
     this.route.queryParams.subscribe(params => {
-      this.userDetailsType = params['UserDetails']; 
+      this.userDetailsType = params['UserDetails'];
    });
   }
 
@@ -107,7 +107,7 @@ export class UserGroupManagementComponent implements OnInit {
   //     lblSelectedVehicleGroupsVehicles: "Selected Vehicle Groups/Vehicles",
   //     lblBack: "Back",
   //     lblReset: "Reset",
-  //     lblNew: "New", 
+  //     lblNew: "New",
   //     lblDeleteGroup: "Delete Group",
   //     lblAreyousureyouwanttodeleteusergroup: "Are you sure you want to delete '$' account group?",
   //     lblDelete: "Delete",
@@ -147,15 +147,15 @@ export class UserGroupManagementComponent implements OnInit {
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data) => {
       this.processTranslation(data);
-    
-      if(this.userDetailsType != undefined){       
+
+      if(this.userDetailsType != undefined){
         let sessionVal = JSON.parse(sessionStorage.getItem('selectedRowItems'));
         this.editViewGroup(sessionVal, this.userDetailsType)
       }
       else{
-        this.router.navigate([]);       
-      }   
-      this.loadUserGroupData();  
+        this.router.navigate([]);
+      }
+      this.loadUserGroupData();
     });
   }
 
@@ -196,18 +196,18 @@ export class UserGroupManagementComponent implements OnInit {
     }
     if(this.userDetailsType == undefined){
       this.accountService.getAccountDesc(getAccGrpObj).subscribe((usrlist) => {
-        this.selectedRowData = usrlist[0];     
+        this.selectedRowData = usrlist[0];
         this.actionType = type;
-        this.createViewEditStatus = true;  
+        this.createViewEditStatus = true;
         sessionStorage.removeItem('selectedRowItems');
-        sessionStorage.setItem('selectedRowItems', JSON.stringify(this.selectedRowData))  
+        sessionStorage.setItem('selectedRowItems', JSON.stringify(this.selectedRowData))
       });
     }
     else{
         this.actionType = type;
-        this.createViewEditStatus = true;      
-        this.selectedRowData = element;   
-     }    
+        this.createViewEditStatus = true;
+        this.selectedRowData = element;
+     }
     }
 
   onClose() {
@@ -253,7 +253,7 @@ export class UserGroupManagementComponent implements OnInit {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
       this.dataSource.sortData = (data: String[], sort: MatSort) => {
-        const isAsc = sort.direction === 'asc';    
+        const isAsc = sort.direction === 'asc';
         let columnName = this.sort.active;
         return data.sort((a: any, b: any) => {
           return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
@@ -267,9 +267,9 @@ export class UserGroupManagementComponent implements OnInit {
     if(!(a instanceof Number)) a = a.toString().toUpperCase();
     if(!(b instanceof Number)) b = b.toString().toUpperCase();
    }
-    return (a < b ? -1 : 1) * (isAsc ? 1 : -1); 
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
-  
+
   openDeleteDialog(options: any, item: any) {
     // Model for delete
     let name = item.accountGroupName;
@@ -286,7 +286,7 @@ export class UserGroupManagementComponent implements OnInit {
                 title: this.translationData.lblAlert || 'Alert',
                 message: this.translationData.lblThisaccountgrouphasactiveassociationsandhencecannotbedeleted || "This account-group has active associations and hence cannot be deleted.",
                 name: name,
-                confirmText: this.translationData.lblOk || 'Ok' 
+                confirmText: this.translationData.lblOk || 'Ok'
               };
               const dialogConfig = new MatDialogConfig();
               dialogConfig.disableClose = true;
@@ -339,8 +339,8 @@ export class UserGroupManagementComponent implements OnInit {
   }
 
   onUserClick(data: any) {
-    const colsList = ['firstName', 'emailId', 'roles', 'accountGroupList'];
-    const colsName = [this.translationData.lblUserName, this.translationData.lblEmailId , this.translationData.lblUserRole, 
+    const colsList = ['firstName', 'emailId', 'roleList', 'accountGroupList'];
+    const colsName = [this.translationData.lblUserName, this.translationData.lblEmailId , this.translationData.lblUserRole,
     this.translationData.lblUserGroup ];
     const tableTitle = `${data.accountGroupName} - ${this.translationData.lblUsers }`;
     let obj: any = {
@@ -418,7 +418,7 @@ export class UserGroupManagementComponent implements OnInit {
     let currentDate = new Date().getTime();
     data.forEach(row => {
       if(row.createdAt){
-        let createdDate = parseInt(row.createdAt); 
+        let createdDate = parseInt(row.createdAt);
         let nextDate = createdDate + 86400000;
         if(currentDate > createdDate && currentDate < nextDate){
           row.newTag = true;
@@ -434,7 +434,7 @@ export class UserGroupManagementComponent implements OnInit {
     let newTrueData = data.filter(item => item.newTag == true);
     newTrueData.sort((userobj1, userobj2) => parseInt(userobj2.createdAt) - parseInt(userobj1.createdAt));
     let newFalseData = data.filter(item => item.newTag == false);
-    Array.prototype.push.apply(newTrueData, newFalseData); 
+    Array.prototype.push.apply(newTrueData, newFalseData);
     return newTrueData;
   }
 
@@ -444,25 +444,25 @@ export class UserGroupManagementComponent implements OnInit {
 
 exportAsPdf() {
   let DATA = document.getElementById('accountGroupMgmtData');
-    
+
   html2canvas( DATA , { onclone: (document) => {
     this.actionBtn = document.getElementsByClassName('action');
     for (let obj of this.actionBtn) {
-      obj.style.visibility = 'hidden';  }       
+      obj.style.visibility = 'hidden';  }
   }})
-  .then(canvas => { 
-      
+  .then(canvas => {
+
       let fileWidth = 208;
       let fileHeight = canvas.height * fileWidth / canvas.width;
-      
+
       const FILEURI = canvas.toDataURL('image/png')
       let PDF = new jsPDF('p', 'mm', 'a4');
       let position = 0;
       PDF.addImage(FILEURI, 'PNG', 0, position, fileWidth, fileHeight)
-      
+
       PDF.save('AccountGroupMgmt_Data.pdf');
       PDF.output('dataurlnewwindow');
-  });     
+  });
 }
 
 ngAfterViewInit() {
