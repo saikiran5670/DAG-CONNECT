@@ -310,7 +310,8 @@ namespace net.atos.daf.ct2.organization.repository
                             vd.id VehicleDisplay,
                             df.id DateFormatType,
                             l.id LanguageName,
-                            u.id Unit
+                            u.id Unit,
+                            a.page_refresh_time as PageRefreshTime
                             FROM master.organization o
                             left join  master.accountpreference a on o.preference_id=a.id
                             left join  master.currency c on c.id=a.currency_id
@@ -335,6 +336,7 @@ namespace net.atos.daf.ct2.organization.repository
                     preferenceResponse.Unit = item.Unit;
                     preferenceResponse.VehicleDisplay = item.VehicleDisplay;
                     preferenceResponse.DateFormatType = item.DateFormatType;
+                    preferenceResponse.PageRefreshTime = item.PageRefreshTime;
                 }
                 return preferenceResponse;
             }

@@ -212,10 +212,10 @@ export class VehicleConnectSettingsComponent implements OnInit {
     let connectedOffData = this.connectedOff.length != 0  ? this.connectedOff.length  + ' will be change the status from the connected On to Off!   ' : '';
     let connectedOnData = this.connectedOn.length != 0  ? this.connectedOn.length  + ' will be change the status from the connected Off to On!     ' : '';
     const options = {
-      title: this.translationData.lblConnected || "Confirmation",
+      title: this.translationData.lblConfirmation || "Confirmation",
       message: this.translationData.lblYouwanttoDetails || "Are you sure want to change all vehicle status? \n Out of "+ this.totalVehicles +" vehicles    "+ connectedOnData  + connectedOffData,   
       cancelText: this.translationData.lblCancel || "Cancel",
-      confirmText: this.translationData.lblConnected || "Confirm",
+      confirmText: this.translationData.lblConfirm || "Confirm",
       status: rowData.opt_In == 'I' ? 'On to Off' : 'Off to On' ,
       name: rowData.name
     };      
@@ -247,10 +247,10 @@ export class VehicleConnectSettingsComponent implements OnInit {
   
   onChangeConnectedStatus(rowData: any){
     const options = {
-      title: this.translationData.lblConnected || "Confirmation",
-      message: this.translationData.lblYouwanttoDetails || "Are you sure want to change status Connected  # '$' Vehicle?",   
+      title: this.translationData.lblConfirmation || "Confirmation",
+      message: this.translationData.lblYouwanttoConnected || "Are you sure want to change status Connected  # '$' Vehicle?",   
       cancelText: this.translationData.lblCancel || "Cancel",
-      confirmText: (rowData.status == "C" && rowData.opt_In == "I"|| rowData.status == "C" && rowData.opt_In == "H" || rowData.status == "N" && rowData.opt_In == "H") ? this.translationData.lblDeactivate || "Connected Off" : this.translationData.lblActivate || " Connected On",
+      confirmText: (rowData.status == "C" && rowData.opt_In == "I"|| rowData.status == "C" && rowData.opt_In == "H" || rowData.status == "N" && rowData.opt_In == "H") ? this.translationData.lblConfirm : "Confirm",
       status: (rowData.status == "C" && rowData.opt_In == "I" || rowData.status == 'C'  && rowData.opt_In == "H"|| rowData.status == "N"  && rowData.opt_In == "H")? 'On to Off' : 'Off to On' ,
       name: rowData.name
     };
@@ -280,6 +280,7 @@ export class VehicleConnectSettingsComponent implements OnInit {
             // this.loadVehicleData();
           });         
       }else {
+        this.updateRelationshipVehiclesData.emit(); 
         // this.loadVehicleData();
       }
     });
@@ -288,7 +289,7 @@ export class VehicleConnectSettingsComponent implements OnInit {
   onChangeTerminatedStatus(rowData: any){
     if(rowData.status != 'T'){    
     const options = {
-      title: this.translationData.lblConnected || "Confirmation",
+      title: this.translationData.lblConfirmation || "Confirmation",
       message: this.translationData.lblYouwanttoDetails || "Are you sure want to Terminated '$' Vehicle?",   
       cancelText: this.translationData.lblCancel || "Cancel",
       confirmText: (rowData.status == 'T') ? this.translationData.lblDeactivate || "Terminated Off" : this.translationData.lblActivate || " Terminated On",
@@ -313,6 +314,7 @@ export class VehicleConnectSettingsComponent implements OnInit {
             // this.loadVehicleData();
           });         
       }else {
+        this.updateRelationshipVehiclesData.emit(); 
         // this.loadVehicleData();
       }
     });  
