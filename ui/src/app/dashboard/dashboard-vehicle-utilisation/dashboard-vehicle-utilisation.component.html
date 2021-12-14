@@ -1,7 +1,7 @@
 <mat-expansion-panel class="full-width margin-bottom-20m" fxLayoutGap="10px" [expanded]="true">
   <mat-expansion-panel-header class="full-width">
     <mat-panel-title>
-      <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblVehiclesUtilisation
+      <span>{{ translationData.lblVehiclesUtilisation
         || 'Vehicles Utilisation' }}</span>
     </mat-panel-title>
   </mat-expansion-panel-header>
@@ -17,7 +17,7 @@
 
   <div *ngIf='vehicleUtilisationLength > 0' fxLayout="row" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
     <div [hidden]="!checkForVehiclePreference('distanceperday')" class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
-      <span style='font: 500 15px/30px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDistancePerDay }}</span>
+      <span class='section-txt-font margin-bottom-sm'>{{ translationData.lblDistancePerDay }}</span>
       <div *ngIf="distanceChartType =='bar'" class="chart-wrapper">
         <canvas id="myChart2" class="chart" baseChart [datasets]="barChartData1" [labels]="barChartLabels1" [options]="barChartOptions2"
           [plugins]="barChartPlugins" [legend]="barChartLegend" [chartType]="barChartType">
@@ -31,7 +31,7 @@
       </div>
     </div>
     <div [hidden]="!checkForVehiclePreference('activevehiclesperday')" class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
-      <span style='font: 500 15px/30px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblActiveVehiclesPerDay }}</span>
+      <span class='section-txt-font margin-bottom-sm'>{{ translationData.lblActiveVehiclesPerDay }}</span>
       <div *ngIf="vehicleChartType =='line'" class="chart-wrapper">
         <canvas class="chart" baseChart [datasets]="lineChartData2" [labels]="lineChartLabels2" [options]="lineChartOptions"
           [colors]="lineChartColors" [legend]="lineChartLegend" [chartType]="lineChartType"
@@ -45,8 +45,8 @@
       </div>
     </div>
     <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
-      <div [hidden]="!checkForVehiclePreference('timebasedutilizationrate')" fxLayout="column">
-        <span style='font: 500 14px/30px Roboto, "Helvetica Neue", sans-serif;padding-left: 10px;'>{{
+      <div [hidden]="!checkForVehiclePreference('timebasedutilizationrate')" fxLayout="column" fxLayoutAlign="center center">
+        <span class='section-txt-font margin-bottom-5'>{{
           translationData.lblTimeBasedUtilisationRate }}</span>
         <div *ngIf="timeDChartType =='doughnut' && !(timebasedThreshold==0)" class="chart-wrapper">
           <canvas baseChart [data]="doughnutChartData1" [chartType]="doughnutChartType" [labels]="doughnutChartLabels1"
@@ -63,8 +63,8 @@
           <i class="fa fa-exclamation-circle mr-1 warningIcon"></i> {{ translationData.lblThresholdError }}
         </div>
       </div>
-      <div [hidden]="!checkForVehiclePreference('distancebasedutilizationrate')" fxLayout="column">
-        <span style='font: 500 14px/30px Roboto, "Helvetica Neue", sans-serif;padding-left: 10px;'>{{
+      <div [hidden]="!checkForVehiclePreference('distancebasedutilizationrate')" fxLayout="column" fxLayoutAlign="center center">
+        <span class='section-txt-font margin-bottom-5'>{{
           translationData.lblDistanceBasedUtilisationRate }}</span>
         <div *ngIf="mileageDChartType == 'doughnut' && !(distancebasedThreshold==0)" class="chart-wrapper">
           <canvas baseChart [data]="doughnutChartData2" [chartType]="doughnutChartType" [labels]="doughnutChartLabels2"
@@ -91,7 +91,7 @@
 <mat-expansion-panel class="full-width" fxLayoutGap="10px" [expanded]="true">
   <mat-expansion-panel-header class="full-width">
     <mat-panel-title>
-      <span style='font: 500 15px/30px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAlertsLast24Hours }}
+      <span>{{ translationData.lblAlertsLast24Hours }}
       <span [hidden]="!checkForPreference('alertlast24hours_totalalerts')" >{{toatlSum}}</span></span>
       <div style='padding-left: 76%;' fxLayoutAlign="end">
       </div>
