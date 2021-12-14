@@ -478,8 +478,7 @@ namespace net.atos.daf.ct2.reports.repository
                         CAST((co2emission / totalworkingdays) as float) as Co2Emission,
                         CAST((fuelconsumed / totalworkingdays) as float) as FuelConsumed    
                         --CAST((totalaverageweightperprip / totalworkingdays) as float) as Averageweight
-                        from cte_workingdays
-                        where (extract(epoch from startdate) * 1000)>=@FromDate";
+                        from cte_workingdays";
                 List<FleetFuel_VehicleGraph> lstFleetDetails = (List<FleetFuel_VehicleGraph>)await _dataMartdataAccess.QueryAsync<FleetFuel_VehicleGraph>(query, parameterOfFilters);
                 return lstFleetDetails?.Count > 0 ? lstFleetDetails : new List<FleetFuel_VehicleGraph>();
             }

@@ -359,7 +359,7 @@
               <span
                 style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('fuelconsumed')}}{{
                 (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr ) : (prefUnitFormat ==
-                'dunit_Imperial') ? (translationData.lblgallonmile ) : (translationData.lblgallonmile) }}
+                'dunit_Imperial') ? (translationData.lblgal ) : (translationData.lblgal) }}
               </span>
             </div>
             <div *ngIf="checkForPreference('summary_idledurationtotaltime')"
@@ -696,8 +696,8 @@
                 }}
                 <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr) :
                   (prefUnitFormat ==
-                  'dunit_Imperial') ? (translationData.lblgallonmile ) : (translationData.lblgallonmile
-                  ) }})</span>
+                  'dunit_Imperial') ? (translationData.lblgal ) : (translationData.lblgal) 
+                }})</span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_fuelconsumed')">
                 <span>{{row.convertedFuelConsumed100Km}}</span>

@@ -327,8 +327,8 @@
               <span>{{ translationData.lblFuelConsumed || 'Fuel Consumed' }}</span>
 
               <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('fuelconsumed')}}{{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr || '
-                l') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgallonmile || 'gal') :
-                (translationData.lblgallonmile || ' gal') }} </span>
+                l') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgal || 'gal') :
+                (translationData.lblgal || ' gal') }} </span>
 
             </div>
 
@@ -814,8 +814,8 @@
               <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_fuelconsumed')">{{ translationData.lblFuelConsumed || 'Fuel Consumed' }}
 
                 <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr || '
-                  l') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgallonmile || 'gal') :
-                  (translationData.lblgallonmile || ' gal') }})</span>
+                  l') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgal || 'gal') :
+                  (translationData.lblgal || ' gal') }})</span>
 
               </mat-header-cell>
 

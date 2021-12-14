@@ -22,7 +22,7 @@ import { Util } from 'src/app/shared/util';
 })
 
 export class UserManagementComponent implements OnInit {
-  displayedColumns: string[] = ['firstName','emailId','roles','accountGroups','action'];
+  displayedColumns: string[] = ['userFullName','emailId','roleList','accountGroupList','action'];
   stepFlag: boolean = false;
   editFlag: boolean = false;
   viewFlag: boolean = false;
@@ -375,7 +375,7 @@ export class UserManagementComponent implements OnInit {
         this.dataSource.filterPredicate = function(data: any, filter: string): boolean {
           return (
             data.roleList.toString().toLowerCase().includes(filter) ||
-            data.firstName.toLowerCase().includes(filter) ||
+            data.userFullName.toLowerCase().includes(filter) ||
             data.emailId.toString().toLowerCase().includes(filter)
 
           );
@@ -395,24 +395,15 @@ export class UserManagementComponent implements OnInit {
   }
 
   compare(a: any, b: any, isAsc: boolean, columnName:any) {
-    if(columnName == "firstName" || columnName == "emailId"){
-    if(!(a instanceof Number)) a = a.toString().toUpperCase();
-    if(!(b instanceof Number)) b = b.toString().toUpperCase();
+    if(columnName == "userFullName"|| columnName == "emailId"){
+    if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
+    if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
   }
-    if(columnName == "roles" && (Array.isArray(a) || Array.isArray(b))) { //Condition added for roles columns
-      a= Object.keys(a).length > 0 ? a[0].name : "";
-      b= Object.keys(b).length > 0 ? b[0].name : "";
-      if(!(a instanceof Number)) a = a.toUpperCase();
-      if(!(b instanceof Number)) b = b.toUpperCase();
+    if(columnName == "roleList" || columnName == "accountGroupList") { //Condition added for roles columns
+      a=  a.toString().toUpperCase() ;
+      b= b.toString().toUpperCase() ;
 
     }
-    if(columnName == "accountGroups" && (Array.isArray(a) || Array.isArray(b))) { //Condition added for accountGroups columns
-      a= Object.keys(a).length > 0 ? a[0].name : "";
-      b= Object.keys(b).length > 0 ? b[0].name : "";
-    if(!(a instanceof Number)) a = a.toUpperCase();
-    if(!(b instanceof Number)) b = b.toUpperCase();
-    }
-    // return (a.replace(/^\W+/, 'z').localeCompare(b.replace(/^\W+/, 'z')) < b.replace(/^\W+/, 'z').localeCompare(a.replace(/^\W+/, 'z')) ? -1 : 1) * (isAsc ? 1 : -1);
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
 
   }
@@ -473,7 +464,7 @@ export class UserManagementComponent implements OnInit {
       else{
         row.newTag = false;
       }
-      // row.userFullName= row.firstName.toLowerCase()+" "+row.lastName.toLowerCase();
+      row.userFullName= row.firstName.toLowerCase()+" "+row.lastName.toLowerCase();
     });
     let newTrueData = data.filter(item => item.newTag == true);
     newTrueData.sort((userobj1,userobj2) => userobj2.createdAt - userobj1.createdAt);
@@ -588,21 +579,6 @@ export class UserManagementComponent implements OnInit {
       this.dataSource = new MatTableDataSource(this.initData);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
-      this.dataSource.filterPredicate = function(data: any, filter: string): boolean {
-        return (
-          data.roleList.toString().toLowerCase().includes(filter) ||
-          data.firstName.toLowerCase().includes(filter) ||
-          data.emailId.toString().toLowerCase().includes(filter)
-
-        );
-      }
-      this.dataSource.sortData = (data: String[], sort: MatSort) => {
-        const isAsc = sort.direction === 'asc';
-        return data.sort((a: any, b: any) => {
-            let columnName = sort.active;
-          return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
-        });
-       }
     });
   }
 
