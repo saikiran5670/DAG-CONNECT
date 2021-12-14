@@ -102,7 +102,7 @@ export class CreateEditViewVehicleAccountAccessRelationshipComponent implements 
     ${this.translationData.lblAccessRelationshipManagement ? this.translationData.lblAccessRelationshipManagement : 'Access Relationship Management'} /
     ${(type == 'view') ? (this.translationData.lblViewAccountAssociationDetails ? this.translationData.lblViewAccountAssociationDetails : 'View Account Association Details') : 
     (type == 'edit') ? (this.translationData.lblEditAccountAssociationDetails ? this.translationData.lblEditAccountAssociationDetails : 'Edit Account Association Details') :
-    (this.translationData.lblNewAccountAssociationDetails ? this.translationData.lblNewAccountAssociationDetails: 'New Account Association Details')}`;
+    (this.translationData.lblNewUserAssociationDetails ? this.translationData.lblNewUserAssociationDetails || 'New User Association Details': 'New User Association Details')}`;
   }
 
   

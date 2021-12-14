@@ -1,5 +1,8 @@
 package net.atos.daf.ct2.common.realtime.postgresql;
 
+import static net.atos.daf.ct2.common.util.Utils.convertDateToMillis;
+import static net.atos.daf.ct2.common.util.Utils.getCurrentTimeInUTC;
+
 import java.io.Serializable;
 import java.sql.Connection;
 import java.text.ParseException;
@@ -29,22 +32,10 @@ import net.atos.daf.postgre.dao.LivefleetCurrentTripStatisticsDao;
 public class LiveFleetPositionPostgreSink extends RichSinkFunction<KafkaRecord<Monitor>> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	Logger log = LoggerFactory.getLogger(MonitorDataProcess.class);
-
-	// String livefleetposition = "INSERT INTO
-	// livefleet.livefleet_position_statistics ( trip_id , vin
-	// ,message_time_stamp
-	// ,gps_altitude ,gps_heading ,gps_latitude ,gps_longitude ,co2_emission
-	// ,fuel_consumption , last_odometer_val ,distance_until_next_service ,
-	// created_at_m2m ,created_at_kafka ,created_at_dm ) VALUES (? ,? ,? ,? ,?
-	// ,? ,?
-	// ,? ,? ,? ,? ,? ,? ,? )";
+	Logger logger = LoggerFactory.getLogger(LiveFleetPositionPostgreSink.class);
 
 	String livefleetposition = null;
-
-	// private PreparedStatement statement;
 	Connection connection = null;
-
 	Connection masterConnection = null;
 	LiveFleetPosition positionDAO;
 	LivefleetCurrentTripStatisticsDao currentTripDAO;
@@ -52,71 +43,38 @@ public class LiveFleetPositionPostgreSink extends RichSinkFunction<KafkaRecord<M
 	Co2Master cmData;
 
 	LiveFleetPojo currentPosition;// later we have to implement it inside invoke
-
-	private List<Monitor> queue;
-	private List<Monitor> synchronizedCopy;
-
 	Long Fuel_consumption = 0L;
 
 	public void invoke(KafkaRecord<Monitor> monitor) throws Exception {
 
-		queue = new ArrayList<Monitor>();
-		synchronizedCopy = new ArrayList<Monitor>();
+
+
 
 		Monitor row = monitor.getValue();
+		Integer messageEight = new Integer(8);
+		if (messageEight.equals(row.getMessageType()) && (row.getVEvtID() == 26 )) {
 
-		try {
+			try {
 
-			queue.add(row);
+				currentPosition= new LiveFleetPojo();
 
-			cmData = cmDAO.read(row.getVid()); // CO2 coefficient data read from
-												// master table
+				currentPosition = tripCalculation(row);
 
-			if (queue.size() >= 1) {
+				positionDAO.insert(currentPosition);
 
-				synchronized (synchronizedCopy) {
-					synchronizedCopy = new ArrayList<Monitor>(queue);
-					queue.clear();
-					for (Monitor monitorData : synchronizedCopy) {
-						String tripID = "NOT AVAILABLE";
+				logger.info("Monitoring :: Live rFMS Monitoring record inserted successfully");
 
-						if (monitorData.getDocument().getTripID() != null) {
-							tripID = monitorData.getDocument().getTripID();
-						}
-						
-						Long drivingTime = 0L;
-						String vin;
-						if (monitorData.getVin() != null)
-							vin = monitorData.getVin();
-						else
-							vin = monitorData.getVid();
-						
-						CurrentTrip currentTripData = currentTripDAO.read(tripID);
-						
-
-						Fuel_consumption = currentTripData.getFuel_consumption();
-						drivingTime = currentTripData.getDriving_time();
-						currentPosition.setDrivingTime(drivingTime.intValue());
-						currentPosition = tripCalculation(row, currentPosition);
-
-						positionDAO.insert(currentPosition);
-						
-						log.info("Monitoring :: Live Fleet Position record inserted successfully");
-
-					}
-				}
+			} catch (Exception e) {
+				logger.info("Monitoring ::  Live rFMS Monitoring record insertion failed !!! {}",e);
 			}
-		} catch (Exception e) {
-			log.info("Monitoring :: Live Fleet Position record insertion failed !!! {}",e);
 		}
-		
 
 	}
 
 	@Override
 	public void open(org.apache.flink.configuration.Configuration parameters) throws Exception {
 
-		log.info("########## In Monitoring: LiveFleet Position  ##############");
+		logger.info("########## In Monitoring: LiveFleet Position  ##############");
 		ParameterTool envParams = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
 
 		livefleetposition = envParams.get(DafConstants.QUERY_LIVEFLEET_POSITION);
@@ -135,47 +93,35 @@ public class LiveFleetPositionPostgreSink extends RichSinkFunction<KafkaRecord<M
 
 			positionDAO.setConnection(connection);
 
-			masterConnection = PostgreDataSourceConnection.getInstance().getDataSourceConnection(
+			/*	masterConnection = PostgreDataSourceConnection.getInstance().getDataSourceConnection(
 					envParams.get(DafConstants.MASTER_POSTGRE_SERVER_NAME),
 					Integer.parseInt(envParams.get(DafConstants.MASTER_POSTGRE_PORT)),
 					envParams.get(DafConstants.MASTER_POSTGRE_DATABASE_NAME),
 					envParams.get(DafConstants.MASTER_POSTGRE_USER),
 					envParams.get(DafConstants.MASTER_POSTGRE_PASSWORD));
-			cmDAO.setConnection(masterConnection);
+			cmDAO.setConnection(masterConnection); */
 
 		} catch (Exception e) {
 
-			log.error("Error in Monitoring :: Live fleet position " + e.getMessage());
+			logger.error("Error in Monitoring :: Live fleet position " + e.getMessage());
 
 		}
 
 	}
 
-	public LiveFleetPojo tripCalculation(Monitor row, LiveFleetPojo currentPosition) {
-
-		int varVEvtid = 0;
-		if (row.getVEvtID() != null) {
-			varVEvtid = row.getVEvtID();
-		}
+	public LiveFleetPojo tripCalculation(Monitor row) {
 
 		double varGPSLongi = 0;
 		if (row.getGpsLongitude() != null) {
 			varGPSLongi = row.getGpsLongitude();
 		}
-		currentPosition.setTripId(row.getDocument().getTripID());
+		//currentPosition.setTripId(row.getDocument().getTripID());
 		currentPosition.setVid(row.getVid());
 		currentPosition.setVin(row.getVin());
-
-		try {
-			currentPosition.setMessageTimestamp((double) TimeFormatter.getInstance()
-					.convertUTCToEpochMilli(row.getEvtDateTime().toString(), DafConstants.DTM_TS_FORMAT));
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		currentPosition.setMessageTimestamp((double)convertDateToMillis(row.getEvtDateTime()));
 		currentPosition.setCreated_at_m2m(row.getReceivedTimestamp());
 		currentPosition.setCreated_at_kafka(Long.parseLong(row.getKafkaProcessingTS()));
-		currentPosition.setCreated_at_dm(TimeFormatter.getInstance().getCurrentUTCTimeInSec());
+		currentPosition.setCreated_at_dm(getCurrentTimeInUTC());
 
 		if (varGPSLongi == 255.0) {
 			currentPosition.setGpsAltitude(255.0); // gpsAltitude
@@ -209,77 +155,53 @@ public class LiveFleetPositionPostgreSink extends RichSinkFunction<KafkaRecord<M
 		currentPosition.setVehMessageType(DafConstants.Monitor);
 
 		currentPosition.setVehicleMsgTriggerTypeId(row.getVEvtID());
-
-		try {
-			currentPosition.setCreatedDatetime(TimeFormatter.getInstance()
-					.convertUTCToEpochMilli(row.getEvtDateTime().toString(), DafConstants.DTM_TS_FORMAT));
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
+		currentPosition.setCreatedDatetime(convertDateToMillis(row.getEvtDateTime()));
 		currentPosition.setReceivedDatetime(row.getReceivedTimestamp());
 
 		if (row.getDocument().getGpsSpeed() != null)
 			currentPosition.setGpsSpeed(row.getDocument().getGpsSpeed().doubleValue());
 
 		if (row.getGpsDateTime() != null) {
-			try {
-				currentPosition.setGpsDatetime(TimeFormatter.getInstance()
-						.convertUTCToEpochMilli(row.getGpsDateTime().toString(), DafConstants.DTM_TS_FORMAT));
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			currentPosition.setGpsDatetime(convertDateToMillis(row.getGpsDateTime()));
 		}
-
+		
 		if (row.getDocument().getVWheelBasedSpeed() != null)
 			currentPosition.setWheelbasedSpeed(row.getDocument().getVWheelBasedSpeed().doubleValue());
-		
-		if (row.getDocument().getDriverID() != null) {
-			currentPosition.setDriver1Id(row.getDocument().getDriverID());
-		} else {
-			currentPosition.setDriver1Id(null);
-		}
-
-		if (Fuel_consumption != null) {
-			double co2emission = (Fuel_consumption * cmData.getCoefficient()) / 1000;
-			currentPosition.setCo2Emission(co2emission); // co2emission
-			currentPosition.setFuelConsumption(Fuel_consumption.doubleValue());// fuel_consumption
-		} else {
-			currentPosition.setCo2Emission(0.0); // co2 emission
-			currentPosition.setFuelConsumption(0.0); // fuel_consumption
-		}
-
+				
 		if (row.getDocument().getVDist() != null) {
 			currentPosition.setLastOdometerValue(row.getDocument().getVDist().intValue());
 		} else {
 			currentPosition.setLastOdometerValue(null);
 		}
 
-		if (row.getDocument().getVDistanceUntilService() != null) {
-			currentPosition.setDistUntilNextService(row.getDocument().getVDistanceUntilService().intValue());
-		} else {
-			currentPosition.setDistUntilNextService(null);
-		}
 		
 		//vehicle status API fields
 		currentPosition.setTotal_vehicle_distance(row.getDocument().getVDist());
-		currentPosition.setTotal_engine_hours(row.getDocument().getVEngineTotalHours());
-		currentPosition.setTotal_engine_fuel_used(row.getDocument().getVCumulatedFuel());
-		currentPosition.setGross_combination_vehicle_weight(row.getDocument().getVGrossWeightCombination());
-		currentPosition.setEngine_speed(row.getDocument().getVEngineSpeed());
+		//currentPosition.setTotal_engine_hours(row.getDocument().getVEngineTotalHours());
+		//currentPosition.setTotal_engine_fuel_used(row.getDocument().getVCumulatedFuel());
+		//currentPosition.setGross_combination_vehicle_weight(row.getDocument().getVGrossWeightCombination());
+		//currentPosition.setEngine_speed(row.getDocument().getVEngineSpeed());
 		currentPosition.setFuel_level1(row.getDocument().getVFuelLevel1());
 		currentPosition.setCatalyst_fuel_level(row.getDocument().getVDEFTankLevel());
-		currentPosition.setDriver2_id(row.getDocument().getDriver2ID());
-		currentPosition.setDriver1_working_state(row.getDocument().getDriver1WorkingState());
-		currentPosition.setDriver2_working_state(row.getDocument().getDriver2WorkingState());
-		currentPosition.setAmbient_air_temperature(row.getDocument().getVAmbiantAirTemperature());
+		//currentPosition.setDriver2_id(row.getDocument().getDriver2ID());
+		//currentPosition.setDriver1_working_state(row.getDocument().getDriver1WorkingState());
+		//currentPosition.setDriver2_working_state(row.getDocument().getDriver2WorkingState());
+		//currentPosition.setAmbient_air_temperature(row.getDocument().getVAmbiantAirTemperature());
 		currentPosition.setEngine_coolant_temperature(row.getDocument().getVEngineCoolantTemperature());
 		currentPosition.setService_brake_air_pressure_circuit1(row.getDocument().getVServiceBrakeAirPressure1());
 		currentPosition.setService_brake_air_pressure_circuit2(row.getDocument().getVServiceBrakeAirPressure2());
 		
-		log.info("Monitoring :: Live Fleet Position calculated (to be inserted) ::\n" + currentPosition);
+		
+		
+		
+		currentPosition.setDriverAuthEquipmentTypeId(DafConstants.DRIVER_CARD);
+		currentPosition.setDriver2AuthEquipmentTypeId(DafConstants.DRIVER_CARD);
+		currentPosition.setPtoId(DafConstants.PTO_ID);
+		currentPosition.setTelltaleId(row.getDocument().getTtId());
+		currentPosition.setTelltaleStateId(row.getDocument().getTtValue());
+		//currentPosition.setCreated_at_dm(Fuel_consumption)
+		
+		logger.info("Monitoring :: rFMS Monitoring calculated (to be inserted) ::\n" + currentPosition);
 		
 		return currentPosition;
 
@@ -287,12 +209,15 @@ public class LiveFleetPositionPostgreSink extends RichSinkFunction<KafkaRecord<M
 
 	@Override
 	public void close() throws Exception {
-
-		connection.close();
-		masterConnection.close();
-
-		log.info("In Close");
-
+		if (connection != null) {
+			logger.debug("Releasing connection from rFMS Monitoring job");
+			connection.close();
+		}
+		
+		if (masterConnection != null) {
+			logger.debug("Releasing connection from rFMS Monitoring job");
+			masterConnection.close();
+		}
 	}
 
 }
