@@ -11,7 +11,7 @@ namespace net.atos.daf.ct2.rfms.response
         public OemDriverIdentification OemDriverIdentification { get; set; }
     }
 
-    public class DoorStatu
+    public class DoorStatus
     {
         public string DoorEnabledStatus { get; set; }
         public string DoorOpenStatus { get; set; }
