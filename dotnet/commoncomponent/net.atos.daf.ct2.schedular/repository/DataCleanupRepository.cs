@@ -45,13 +45,13 @@ namespace net.atos.daf.ct2.schedular.repository
 
                 using (NpgsqlConnection conn = new NpgsqlConnection(connectString))
                 {
-                    await conn.OpenAsync();
+                    await conn.OpenAsync().ConfigureAwait(false);
                     var parameter = new DynamicParameters();
                     parameter.Add("@days", UTCHandling.GetUTCFromDateTime(DateTime.Now.AddDays((-1) * dataCleanupConfiguration.RetentionPeriod)), System.Data.DbType.Int64);
-                    var query = String.Format("select count(*) from {0}.{1} where  {2}  < @days", dataCleanupConfiguration.SchemaName, dataCleanupConfiguration.TableName, dataCleanupConfiguration.ColumnName);
-                    //var queryStatement = @"WITH deleted AS(" + String.Format("delete from {0}.{1} where  to_timestamp(created_at /1000)::date < (now()::date -  @days)", dataCleanupConfiguration.SchemaName,
-                    //    dataCleanupConfiguration.TableName, dataCleanupConfiguration.ColumnName);
-                    //queryStatement += ") IS TRUE RETURNING *) SELECT count(*) FROM deleted";
+                    // var query = String.Format("select count(*) from {0}.{1} where  {2}  < @days", dataCleanupConfiguration.SchemaName, dataCleanupConfiguration.TableName, dataCleanupConfiguration.ColumnName);
+                    var query = @"WITH deleted AS(" + String.Format("delete from {0}.{1} where  {2} <  @days", dataCleanupConfiguration.SchemaName,
+                                                                    dataCleanupConfiguration.TableName, dataCleanupConfiguration.ColumnName);
+                    query += " IS TRUE RETURNING *) SELECT count(*) FROM deleted";
 
                     rowCount = await conn.QueryFirstOrDefaultAsync<int>(query, parameter);
                     Console.WriteLine(@"value of rowcount = {0}, tble name {2} , thread = {1}", rowCount, Thread.CurrentThread.ManagedThreadId, dataCleanupConfiguration.TableName);
@@ -59,7 +59,7 @@ namespace net.atos.daf.ct2.schedular.repository
 
                 return rowCount;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
