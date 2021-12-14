@@ -150,6 +150,19 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
                     return GenerateErrorResponse(HttpStatusCode.BadRequest, "VIN_VISIBILITY_FAILURE", message);
 
                 }
+                else if (!string.IsNullOrEmpty(vin))
+                {
+                    var validVin = visibleVehicles.Where(x => x.VIN == vin).Select(p => p.VIN).FirstOrDefault();
+                    if (string.IsNullOrEmpty(validVin))
+                    {
+                        var response = new RfmsVehicleStatus();
+                        var message = string.Format(RFMSResponseTypeConstants.GET_VIN_VISIBILITY_FAILURE_MSG, AccountId, OrgId);
+                        _logger.LogError(message);
+                        return Ok(message);
+
+                    }
+                }
+
                 var requestFilter = new RfmsVehiclePositionStatusFilter() { Vin = vin, LastVin = lastVin, LatestOnly = latestOnly, StartTime = starttime, StopTime = stoptime, TriggerFilter = triggerFilter, Type = datetype };
 
                 var selectedType = ValidateHeaderRequest(requestFilter, RFMSResponseTypeConstants.ACCEPT_TYPE_VEHICLE_POSITION_JSON, out bool isHeaderValid);
@@ -218,6 +231,18 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
                     _logger.LogError(message);
                     return Ok(message);
 
+                }
+                else if (!string.IsNullOrEmpty(vin))
+                {
+                    var validVin = visibleVehicles.Where(x => x.VIN == vin).Select(p => p.VIN).FirstOrDefault();
+                    if (string.IsNullOrEmpty(validVin))
+                    {
+                        var response = new RfmsVehicleStatus();
+                        var message = string.Format(RFMSResponseTypeConstants.GET_VIN_VISIBILITY_FAILURE_MSG, AccountId, OrgId);
+                        _logger.LogError(message);
+                        return Ok(message);
+
+                    }
                 }
 
                 var request = new RfmsVehiclePositionStatusFilter() { Vin = vin, LastVin = lastVin, LatestOnly = latestOnly, StartTime = starttime, StopTime = stoptime, TriggerFilter = triggerFilter, Type = datetype };
