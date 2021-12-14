@@ -130,8 +130,12 @@ export class CustomValidators {
       }else{
         NAME = formGroup.controls[name];
       }
+      if(name == 'vehicleGroupName'){
+        var regex = /[!@#\$%&*,]/;
+      }
+      else{
       var regex = /[!@#\$%&*]/;
-
+      }
       if (!NAME.value) {
         NAME.setErrors({ required: true });
       } else if (regex.test(NAME.value)) {
