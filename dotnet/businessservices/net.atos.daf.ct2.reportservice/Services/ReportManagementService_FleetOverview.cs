@@ -560,7 +560,10 @@ namespace net.atos.daf.ct2.reportservice.Services
                         {
                             healthStatus.DriverName = "Unknown";
                         }
-                        response.HealthStatus.Add(ToHealthStatusData(healthStatus));
+                        if (!string.IsNullOrEmpty(healthStatus.WarningName) && !string.IsNullOrEmpty(healthStatus.WarningAdvice))
+                        {
+                            response.HealthStatus.Add(ToHealthStatusData(healthStatus));
+                        }
                     }
                     /* string res = JsonConvert.SerializeObject(result);
                      response.HealthStatus.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehicleHealthStatusResponse>>(res,
