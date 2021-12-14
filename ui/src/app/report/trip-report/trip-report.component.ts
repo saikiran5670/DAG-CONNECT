@@ -212,7 +212,8 @@ export class TripReportComponent implements OnInit, OnDestroy {
 
     this._state = navigation.extras.state as {
       fromFleetUtilReport: boolean,
-      vehicleData: any
+      vehicleData: any,
+      vehicleDropDownId: any
     };
     if (this._state) {
       this.showBack = true;
@@ -1418,7 +1419,8 @@ export class TripReportComponent implements OnInit, OnDestroy {
   backToFleetUtilReport() {
     const navigationExtras: NavigationExtras = {
       state: {
-        fromTripReport: true
+        fromTripReport: true,
+        vehicleDropDownId: this._state.vehicleDropDownId
       }
     };
     this.router.navigate(['report/fleetutilisation'], navigationExtras);
