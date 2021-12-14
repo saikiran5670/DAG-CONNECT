@@ -624,11 +624,11 @@
           <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort #exporter="matTableExporter">
 
             <ng-container matColumnDef="driverName">
-              <!-- <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_drivername')">{{ translationData.lblDriverName || 'Driver Name' }}
-              </mat-header-cell> -->
+              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_drivername')">{{ translationData.lblDriverName || 'Driver Name' }}
+              </mat-header-cell>
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriverName || 'Driver Name' }}
               </mat-header-cell>
-              <mat-cell *matCellDef="let row">
+              <mat-cell *matCellDef="let row"  [hidden]="!checkForPreference('vehicledetails_drivername')">
                 <span class='navigatePoint' (click)='onDriverSelected(row)'>{{ row.unknownDriver ? 'Unknown' : row.driverName }}</span>
               </mat-cell>
               <!-- <mat-cell *matCellDef="let row">
