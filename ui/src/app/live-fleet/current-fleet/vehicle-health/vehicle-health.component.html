@@ -1,11 +1,11 @@
 <div>
-    <div fxLayout="row" fxLayoutAlign="space-between" style='margin-bottom: 2px;'>
+    <div fxLayout="row" fxLayoutAlign="space-between" style='margin-bottom: 13px;'>
       <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-        <span>{{ translationData.lblVehicleHealth || 'Vehicle Health' }}</span>
+        <span style='font-size: 16px; line-height: 24px;'>{{ translationData.lblVehicleHealth || 'Vehicle Health' }}</span>
       </div>
       <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
         <span class='custom-font' (click)="toBack()">
-            <span>
+            <span style='color: #29539c;'>
                 <&nbsp;</span>
                     <span class='backBtnCss'>{{ translationData.lblBack }}</span>
         </span>
@@ -26,7 +26,7 @@
             <mat-expansion-panel-header class="full-width">
               <mat-panel-title>
                 <span>
-                  <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSearchReportParameters || 'Search Report Parameters' }}</span>
+                  <span>{{ translationData.lblSearchReportParameters || 'Search Report Parameters' }}</span>
                   <!-- <span> ({{ translationData.lblMaxrange3months || 'Max range 3 months' }})</span> -->
                 </span>
               </mat-panel-title>
@@ -117,7 +117,7 @@
         (closed)="isSummaryOpen == false">
           <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
-              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSummary }}</span>
+              <span>{{ translationData.lblSummary }}</span>
             </mat-panel-title>
           </mat-expansion-panel-header>
           <div>
@@ -195,10 +195,10 @@
         (closed)="isMapOpen == false">
           <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
-              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblMapView }}</span>
+              <span>{{ translationData.lblMapView }}</span>
               <span style="margin-left: 10px; display: flex; place-content: center; align-items: center;">
                   <mat-icon class='margin-right-10'>info</mat-icon>
-                  <span>
+                  <span style="font-size: 14px; line-height: 21px; font-weight: 400; font-family: 'Helvetica Neue LT Std', 'Arial';">
                     {{translationData.lblYouCanSelectWarningFromBelowListToViewOnMap || 'You can select warning from below list to view on map'}}
                   </span>
               </span>
@@ -214,7 +214,7 @@
           (opened)="isWarningOpen == true" (closed)="isWarningOpen == false">
           <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
-              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (!isCurrent) &&
+              <span>{{ (!isCurrent) &&
                 (translationData.lblWarningHistory) || (translationData.lblCurrentWarning )
                 }}</span>
             </mat-panel-title>
