@@ -75,7 +75,7 @@ namespace net.atos.daf.ct2.schedularservice.ServiceSchedular
             var cts = new CancellationTokenSource(TimeSpan.FromSeconds(3));
             Parallel.ForEach(dataCleanupConfigurations, new ParallelOptions() { MaxDegreeOfParallelism = datamartConnectionString.Length, CancellationToken = cts.Token }, async node =>
             {
-                using (CancellationTokenSource cancel = new CancellationTokenSource())
+                using (CancellationTokenSource cancel = new CancellationTokenSource(2000))
                 {
                     var purgeSatrtTime = UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString());
                     DataPurgingTableLog logData = new DataPurgingTableLog();
@@ -90,6 +90,7 @@ namespace net.atos.daf.ct2.schedularservice.ServiceSchedular
                             state = rowCount == 0 ? "N" : "O";
                             logData = ToTableLog(node, purgeSatrtTime, rowCount, state);
                             await _dataCleanupManager.CreateDataPurgingTableLog(logData, masterConnectionString);
+
                             _logger.Info("Data deleted successfully from" + node.DatabaseName + "." + node.TableName + "nuber of records deeted : " + rowCount);
                             break;
                         }
@@ -112,12 +113,25 @@ namespace net.atos.daf.ct2.schedularservice.ServiceSchedular
                             _logger.Error(null, e);
 
                         }
-                        catch (Exception e)
+                        catch (Exception ex)
                         {
+                            state = ex.Message.ToString() == "The operation has timed out." ? "T" : "F";
+                            if (ex.InnerException is TimeoutException)
+                            {
+                                ex = ex.InnerException;
+                            }
+                            else if (ex is TaskCanceledException)
+                            {
+                                if ((ex as TaskCanceledException).CancellationToken == null || (ex as TaskCanceledException).CancellationToken.IsCancellationRequested == false)
+                                {
+                                    ex = new TimeoutException("Timeout occurred");
+                                    state = "T";
+                                }
+                            }
 
-                            state = e.Message.ToString() == "The operation has timed out." ? "T" : "F";
+                            //  state = ex.Message.ToString() == "The operation has timed out." ? "T" : "F";
                             _logger.Info("Data purge failed");
-                            _logger.Error(null, e);
+                            _logger.Error(null, ex);
                             logData = ToTableLog(node, purgeSatrtTime, rowCount, state);
                             attempts++;
                             if (attempts >= _purgingConfiguration.RetryCount)
