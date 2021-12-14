@@ -57,20 +57,34 @@ export class UserDetailTableComponent implements OnInit {
     Util.applySearchFilter(this.dataSource, this.data.colsList ,this.filterValue );
   }
 
-  compare(a: any, b: any, isAsc: boolean, columnName) {
-    if(columnName == "roles" && (Array.isArray(a) || Array.isArray(b))) {
-      a= Object.keys(a).length > 0 ? a[0].name : "";
-      b= Object.keys(b).length > 0 ? b[0].name : "";
-      a = a.toUpperCase();
-      b = b.toUpperCase();
-      // a.roles.forEach(rolesValue => {
-      //   a = rolesValue.name
-      // });
+  compare(a: any, b: any, isAsc: boolean, columnName: any) {
+
+    if(columnName == "roleList" || columnName == "accountGroupList") { //Condition added for roles columns
+      a=  a.toString().toUpperCase() ;
+      b= b.toString().toUpperCase();
     }
-    if(!(a instanceof Number)) a = a.toString().toUpperCase();
-    if(!(b instanceof Number)) b = b.toString().toUpperCase();
-    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+      if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toUpperCase();
+      if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toUpperCase();
+
+      return ( a < b ? -1 : 1) * (isAsc ? 1: -1);
   }
+
+
+
+  // compare(a: any, b: any, isAsc: boolean, columnName) {
+  //   if(columnName == "roles" && (Array.isArray(a) || Array.isArray(b))) {
+  //     a= Object.keys(a).length > 0 ? a[0].name : "";
+  //     b= Object.keys(b).length > 0 ? b[0].name : "";
+  //     a = a.toUpperCase();
+  //     b = b.toUpperCase();
+  //     // a.roles.forEach(rolesValue => {
+  //     //   a = rolesValue.name
+  //     // });
+  //   }
+  //   if(!(a instanceof Number)) a = a.toString().toUpperCase();
+  //   if(!(b instanceof Number)) b = b.toString().toUpperCase();
+  //   return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  // }
 
   onClose(val: boolean) {
     this.closePopup = val;
