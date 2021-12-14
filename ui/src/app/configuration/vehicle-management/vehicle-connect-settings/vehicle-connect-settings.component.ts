@@ -290,7 +290,7 @@ export class VehicleConnectSettingsComponent implements OnInit {
     if(rowData.status != 'T'){    
     const options = {
       title: this.translationData.lblConfirmation || "Confirmation",
-      message: this.translationData.lblYouwanttoDetails || "Are you sure want to Terminated '$' Vehicle?",   
+      message: this.translationData.lblVechicleTerminatedConfirmationAlert || "Termination of vehicle moves the Box in dead state. DCM/TCU is no longer able to send data. It is an irreversible process and once the DCM or TCU is terminated then it can only be replaced with a new one. Do you want to move this $ vehicle?",   
       cancelText: this.translationData.lblCancel || "Cancel",
       confirmText: (rowData.status == 'T') ? this.translationData.lblDeactivate || "Terminated Off" : this.translationData.lblActivate || " Terminated On",
       name: rowData.name
