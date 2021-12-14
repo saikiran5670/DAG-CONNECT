@@ -50,7 +50,7 @@ namespace net.atos.daf.ct2.schedularservice.ServiceSchedular
                 {
 
                     await DeleteDataFromTable();
-                    Console.Write("Datapurging paused for 5 min");
+                    _logger.Info("Datapurging paused for 5 min");
                     await Task.Delay(_purgingConfiguration.ThreadSleepTimeInSec); // 5 mins sleep mode
 
                 }
@@ -100,6 +100,7 @@ namespace net.atos.daf.ct2.schedularservice.ServiceSchedular
 
                             attempts++;
                             state = GetExceptionCode(neEx.SqlState.ToString());
+                            _logger.Info("Data purge failed with state " + state);
                             if (attempts >= _purgingConfiguration.RetryCount)
                             {
                                 logData = ToTableLog(node, purgeSatrtTime, rowCount, state);
@@ -130,7 +131,7 @@ namespace net.atos.daf.ct2.schedularservice.ServiceSchedular
                             }
 
                             //  state = ex.Message.ToString() == "The operation has timed out." ? "T" : "F";
-                            _logger.Info("Data purge failed");
+                            _logger.Info("Data purge failed with state " + state);
                             _logger.Error(null, ex);
                             logData = ToTableLog(node, purgeSatrtTime, rowCount, state);
                             attempts++;
