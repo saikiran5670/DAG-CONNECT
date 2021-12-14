@@ -1,4 +1,4 @@
-<mat-expansion-panel class="full-width margin-bottom-20m mb-10" fxLayoutGap="10px" [expanded]="true">
+<mat-expansion-panel class="full-width margin-bottom-xlg" fxLayoutGap="10px" [expanded]="true">
     <mat-expansion-panel-header class="full-width">
       <mat-panel-title>
         <span>{{ translationData.lblTodaysLiveVehicle
@@ -13,43 +13,43 @@
     <mat-error *ngIf="dataError">
       {{ translationData.lblTodaysLiveVehicleError || errorMessage }}
   </mat-error>
-    <div style='margin-bottom: 10px;' *ngIf='liveVehicleData && !dataError'>
+    <div class='margin-bottom-xlg' *ngIf='liveVehicleData && !dataError'>
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
-          <div [hidden]="!checkForPreference('distance')" class="areaWidth  divTile normalClass" fxLayout="column" fxLayoutAlign="left">
+          <div [hidden]="!checkForPreference('distance')" class="areaWidth divTile normalClass" fxLayout="column" fxLayoutAlign="center center">
             <span>
-              <div>{{ translationData.lblDistance || 'Distance' }} </div>
-              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{distance}} {{prefUnitFormat == 'dunit_Metric' ?  (this.translationData.lblkms || 'Km') : (this.translationData.lblmile || 'Miles')}} </div>
+              <div class='margin-bottom-5 section-txt-font'>{{ translationData.lblDistance || 'Distance' }} </div>
+              <div style='font-size: 16px;' class='font-helvetica-md'>{{distance}} {{prefUnitFormat == 'dunit_Metric' ?  (this.translationData.lblkms || 'Km') : (this.translationData.lblmile || 'Miles')}} </div>
             </span>
           </div>
-          <div [hidden]="!checkForPreference('drivingtime')" class="areaWidth  divTile normalClass" fxLayout="column" fxLayoutAlign="left">
+          <div [hidden]="!checkForPreference('drivingtime')" class="areaWidth divTile normalClass" fxLayout="column" fxLayoutAlign="center center">
             <span>
-              <div>{{ translationData.lblDrivingTime || 'Driving Time' }} </div>
-              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{drivingTime}}</div>
+              <div class='margin-bottom-5 section-txt-font'>{{ translationData.lblDrivingTime || 'Driving Time' }} </div>
+              <div style='font-size: 16px;' class='font-helvetica-md'>{{drivingTime}}</div>
             </span>
           </div>
-            <div [hidden]="!checkForPreference('drivers')" class="areaWidth  divTile normalClass" fxLayout="column" fxLayoutAlign="left">
+            <div [hidden]="!checkForPreference('drivers')" class="areaWidth divTile normalClass" fxLayout="column" fxLayoutAlign="left">
               <span>
-                <div>{{ translationData.lblDrivers || 'Drivers' }} </div>
-                <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{liveVehicleData.driverCount}}</div>
+                <div class='margin-bottom-5 section-txt-font'>{{ translationData.lblDrivers || 'Drivers' }} </div>
+                <div style='font-size: 16px;' class='font-helvetica-md'>{{liveVehicleData.driverCount}}</div>
               </span>
             </div>
-            <div [hidden]="!checkForPreference('criticalalerts')" class="areaWidth  divTile activeClass" fxLayout="column" fxLayoutAlign="left">
+            <div [hidden]="!checkForPreference('criticalalerts')" class="areaWidth divTile activeClass" fxLayout="column" fxLayoutAlign="left">
               <span>
-                <div>{{ translationData.lblCriticalAlerts || 'Critical Alerts' }}: </div>
-                <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{liveVehicleData.criticleAlertCount}}</div>
+                <div class='margin-bottom-5 section-txt-font'>{{ translationData.lblCriticalAlerts || 'Critical Alerts' }} </div>
+                <div style='font-size: 16px;' class='font-helvetica-md'>{{liveVehicleData.criticleAlertCount}}</div>
               </span>
             </div>
         </div>
     </div>
     <!-- Charts  -->
-    <div style='margin-bottom: 10px;'  *ngIf='liveVehicleData'>
+    <div class='margin-bottom-sm' *ngIf='liveVehicleData'>
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
-          <div [hidden]="!checkForPreference('activevehicles')" class="chartTile col-md-4"  [ngClass]="{'warningClass':(activeThreshold==0)}">
+          <!-- <div [hidden]="!checkForPreference('activevehicles')" class="chartTile col-md-4" [ngClass]="{'warningClass':(activeThreshold==0)}"> -->
+            <div [hidden]="!checkForPreference('activevehicles')" class="chartTile col-md-4 flex-css">
             <div class="textDiv">
-              <div>{{ translationData.lblActiveVehicles || 'Active Vehicles' }}</div>
-              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif; text-align: center;'>{{liveVehicleData.todayActiveVinCount}}</div>
+              <div class='section-txt-font'>{{ translationData.lblActiveVehicles || 'Active Vehicles' }}</div>
+              <div class='font-helvetica-md'>{{ liveVehicleData.todayActiveVinCount }}</div>
             </div>
-            
             <div class="col-md-8 chart-wrapper chartDimension" *ngIf='!(activeThreshold==0)'>
                 <canvas #chart1 baseChart
                   [data]="doughnutChartActiveVehicleData"
@@ -64,12 +64,12 @@
                 <i class="fa fa-exclamation-circle mr-1 warningIcon"></i> {{translationData.lblThresholdError || 'Chart not applicable for zero threshold value'}}
               </div>
           </div>
-          <div [hidden]="!checkForPreference('timebasedutilizationrate')" class="chartTile col-md-4"  [ngClass]="{'warningClass':(timeBasedThreshold==0)}">
+          <!-- <div [hidden]="!checkForPreference('timebasedutilizationrate')" class="chartTile col-md-4"  [ngClass]="{'warningClass':(timeBasedThreshold==0)}"> -->
+            <div [hidden]="!checkForPreference('timebasedutilizationrate')" class="chartTile col-md-4 flex-css">
             <div class="textDiv">
-              <div>{{ translationData.lblTimeBased || 'Time Based Utilisation Rate' }} </div>
-              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;'>{{timeBasedRate}}</div>
+              <div class='section-txt-font'>{{ translationData.lblTimeBased || 'Time Based Utilisation Rate' }} </div>
+              <div class='font-helvetica-md'>{{ timeBasedRate }}</div>
             </div>
-            
             <div class="col-md-8 chart-wrapper chartDimension" *ngIf='!(timeBasedThreshold==0)'>
                 <canvas #chart2 baseChart
                   [data]="doughnutChartTimeBasedData"
@@ -84,12 +84,12 @@
                 <i class="fa fa-exclamation-circle mr-1 warningIcon"></i> {{translationData.lblThresholdError || 'Chart not applicable for zero threshold value'}}
               </div>
           </div>
-          <div [hidden]="!checkForPreference('distancebasedutilizationrate')" class="chartTile col-md-4" [ngClass]="{'warningClass':(distanceBasedThreshold==0)}">
+          <!-- <div [hidden]="!checkForPreference('distancebasedutilizationrate')" class="chartTile col-md-4" [ngClass]="{'warningClass':(distanceBasedThreshold==0)}"> -->
+            <div [hidden]="!checkForPreference('distancebasedutilizationrate')" class="chartTile col-md-4 flex-css">
             <div class="textDiv">
-                <div>{{ translationData.lblDistanceBased || 'Distance Based Utilisation Rate' }} </div>
-                <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;'>{{distanceRate}}{{prefUnitFormat == 'dunit_Metric' ?  (this.translationData.lblkms || 'Km') : (this.translationData.lblmile || 'Miles')}} </div>
+                <div class='section-txt-font'>{{ translationData.lblDistanceBased || 'Distance Based Utilisation Rate' }} </div>
+                <div class='font-helvetica-md'>{{ distanceRate }} {{ prefUnitFormat == 'dunit_Metric' ?  (this.translationData.lblkms || 'Km') : (this.translationData.lblmile || 'Miles') }} </div>
             </div>
-              
             <div class="col-md-8 chart-wrapper chartDimension" *ngIf='!(distanceBasedThreshold==0)'>
                 <canvas #chart3 baseChart
                   [data]="doughnutChartDistanceBasedData"
