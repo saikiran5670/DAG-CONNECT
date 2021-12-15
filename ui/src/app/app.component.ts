@@ -1076,6 +1076,9 @@ export class AppComponent {
       if(menu.url == "information") {
         let selectedLanguage = JSON.parse(localStorage.getItem("language"));
         if(selectedLanguage.code == "nl-NL") {
+          menu.link = menu.link.replace('/en/','/nl-nl/');
+        }
+        if(selectedLanguage.code == "de-DE") {
           menu.link = menu.link.replace('/en/','/de-de/');
         }
       }

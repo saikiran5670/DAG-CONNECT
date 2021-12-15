@@ -323,7 +323,7 @@
   </div>
 </div>
     <!-- Advance filter -->
-    <div *ngIf="(alert_category_selected === 'F' && (alert_type_selected === 'A' || alert_type_selected === 'L' ||
+    <!-- <div *ngIf="(alert_category_selected === 'F' && (alert_type_selected === 'A' || alert_type_selected === 'L' ||
     alert_type_selected === 'T' || alert_type_selected === 'P' || alert_type_selected === 'I')
     || (alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X' || alert_type_selected === 'S')) )"
      fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
@@ -333,9 +333,9 @@
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
-    </div>
+    </div> -->
 
-    <!-- <div *ngIf="openAdvancedFilter" fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px"> -->
+    <!--not required <div *ngIf="openAdvancedFilter" fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px"> -->
         <!-- <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
             <mat-card  class='mat-elevation-z' style="background:#c3f1f7;">
                 <mat-panel-title>
@@ -346,7 +346,7 @@
                 </div>   
             </mat-card>
         </div> -->
-        <div *ngIf="openAdvancedFilter" class="full-width" >
+        <!-- <div *ngIf="openAdvancedFilter" class="full-width" >
           <mat-card class='mat-elevation-z' style="background:#c3f1f7;">
             <app-alert-advanced-filter 
             [translationData]='translationData'
@@ -360,7 +360,7 @@
             (isAdvancedAlertPayload) = 'onAdvancedAlertPayload($event)'>
           </app-alert-advanced-filter>
         </mat-card>
-    </div>
+    </div> -->
     
   </mat-expansion-panel>
 </mat-card>
@@ -814,7 +814,32 @@
                  (isValidityCalender) = 'onValidityCalender($event)'></app-period-selection-filter>
              </div>
            </div>
-          
+              <!-- Advance filter -->
+    <div
+      *ngIf="(alert_category_selected === 'F' && (alert_type_selected === 'A' || alert_type_selected === 'L' ||
+        alert_type_selected === 'T' || alert_type_selected === 'P' || alert_type_selected === 'I')
+        || (alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X' || alert_type_selected === 'S')) )"
+      fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+      <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+        <a *ngIf="actionType !=  'view'" class="linkBtn" (click)="onClickAdvancedFilter()" style="margin-top: 20px;">
+          Advanced Filter <mat-icon class='font-size-20'> {{ openAdvancedFilter ? 'keyboard_arrow_up' :
+            'keyboard_arrow_down' }}</mat-icon></a>
+        <span *ngIf="actionType == 'view'" style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+          translationData.lblAdvancedFilter }}</span>
+      </div>
+      <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
+      <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
+    </div>
+    <div *ngIf="openAdvancedFilter" class="full-width">
+      <mat-card class='mat-elevation-z' style="background:#c3f1f7;">
+        <app-alert-advanced-filter [translationData]='translationData' [alert_category_selected]='alert_category_selected'
+          [alert_type_selected]='alert_type_selected' [selectedRowData]='selectedRowData' [actionType]='actionType'
+          [prefUnitFormat]='prefUnitFormat' [periodSelectedDateTime]='periodSelectedDateTime'
+          [selectedApplyOn]='selectedApplyOnPeriod' (isAdvancedAlertPayload)='onAdvancedAlertPayload($event)'>
+        </app-alert-advanced-filter>
+      </mat-card>
+    </div>
+
     </mat-expansion-panel>
 </mat-card>
 </form>

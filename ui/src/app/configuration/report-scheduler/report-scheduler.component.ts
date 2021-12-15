@@ -60,7 +60,7 @@ export class ReportSchedulerComponent implements OnInit {
   accountPrefObj: any;
   @ViewChild('gridComp') gridComp: DataTableComponent
   filterValue: string;
-  
+
   constructor(
     private translationService: TranslationService,
     private dialog: MatDialog,
@@ -104,7 +104,7 @@ export class ReportSchedulerComponent implements OnInit {
           this.loadScheduledReports();
         });
       });
-     
+
       this.reportSchedulerService.getReportSchedulerParameter(this.accountId, this.accountOrganizationId).subscribe(parameterData => {
         this.reportSchedulerParameterData = parameterData;
         this.ReportTypeList = this.reportSchedulerParameterData["reportType"];
@@ -112,8 +112,8 @@ export class ReportSchedulerComponent implements OnInit {
       })
 
     }
-     
-    
+
+
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
     //console.log("process translationData:: ", this.translationData)
@@ -331,7 +331,7 @@ getUnique(arr, comp) {
 
       return data[sortHeaderId];
     };
-  
+
     setTimeout(()=>{
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
@@ -348,8 +348,8 @@ getUnique(arr, comp) {
 
   compare(a: Number  |String, b: Number |String, isAsc: boolean, columnName: any){
     if(columnName == "recipientList"){
-      if(!(a instanceof Number)) a = a.toString().toUpperCase();
-      if(!(b instanceof Number)) b= b.toString().toUpperCase();
+      if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
+      if(!(b instanceof Number)) b= b.replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
     }
     return (a < b ? -1 : 1) * (isAsc ? 1 :-1);
   }
