@@ -3,7 +3,7 @@
         <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
                 <span
-                    style="font-size:15px;margin-top:0px;letter-spacing: 0.3px;padding-right: 15px;">{{translationData.lblViewDetailsBy
+                    style="font-size: 16px; line-height: 24px; margin-top: 0px; letter-spacing: 0.3px; padding-right: 15px;">{{translationData.lblViewDetailsBy
                     }}</span>
             </mat-panel-title>
         </mat-expansion-panel-header>
@@ -20,7 +20,7 @@
             <form [formGroup]="filterVehicleForm">
                 <div fxLayout="row" fxLayoutAlign="space-between">
                     <mat-form-field appearance="outline" class="dropdown-filters">
-                        <input matInput (keyup)="applyFilter($event.target.value)"
+                        <input class='font-helvetica-lt' matInput (keyup)="applyFilter($event.target.value)"
                             placeholder="{{ translationData.lblSearch }}">
                         <span matPrefix>
                             <mat-icon>search</mat-icon>
