@@ -333,9 +333,9 @@ namespace net.atos.daf.ct2.rfms.response
         public UptimeData MapUptimeData(dynamic record)
         {
             var tellTaleStates = new List<TellTaleInfo>();
-            if (record.uptimetelltale_state != null && record.uptimetelltale_state.Count > 0)
+            if (record.uptimetelltale_state != null && record.uptimetelltale_state.Length > 0)
             {
-                for (var i = 0; i < record.uptimetelltale_state.Length; i++)
+                for (var i = 1; i < record.uptimetelltale_state.Length; i++)
 
                 {
                     tellTaleStates.Add(new TellTaleInfo() { TellTale = i.ToString(), State = record.uptimetelltale_state[i].ToString() });
