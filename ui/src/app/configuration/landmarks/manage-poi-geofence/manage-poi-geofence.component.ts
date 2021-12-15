@@ -21,6 +21,7 @@ import { ConfigService } from '@ngx-config/core';
 import { CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteData } from 'ng2-completer';
 import { HereService } from '../../../services/here.service';
 import { Util } from 'src/app/shared/util';
+import { DomSanitizer } from '@angular/platform-browser';
 
 declare var H: any;
 const createGpx = require('gps-to-gpx').default;
@@ -121,7 +122,8 @@ export class ManagePoiGeofenceComponent implements OnInit {
     private _snackBar: MatSnackBar,
     private _configService: ConfigService,
     private completerService: CompleterService,
-    private hereService: HereService
+    private hereService: HereService,
+    private domSanitizer: DomSanitizer
     ) {
       this.map_key = _configService.getSettings("hereMap").api_key;
       this.platform = new H.service.Platform({
@@ -467,7 +469,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
   }
 
   updatedPOITableData(tableData: any) {
-    tableData = this.getNewTagData(tableData);
+    tableData = this.getNewTagData(tableData, 'poi');
     this.poidataSource = new MatTableDataSource(tableData);
     setTimeout(() => {
       this.poidataSource.paginator = this.paginator.toArray()[0];
@@ -499,7 +501,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
   }
 
   updatedGeofenceTableData(tableData: any) {
-    tableData = this.getNewTagData(tableData);
+    tableData = this.getNewTagData(tableData, 'geofence');
     this.geofencedataSource = new MatTableDataSource(tableData);
     setTimeout(() => {
       this.geofencedataSource.paginator = this.paginator.toArray()[1];
@@ -522,7 +524,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
   return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
 }
 
-  getNewTagData(data: any) {
+  getNewTagData(data: any, type?: any) {
     let currentDate = new Date().getTime();
     if (data.length > 0) {
       data.forEach(row => {
@@ -534,6 +536,19 @@ export class ManagePoiGeofenceComponent implements OnInit {
         else {
           row.newTag = false;
         }
+
+        //------ Image icon ----------//
+        if(type && type == 'poi'){ //-- only for POI
+          if(row.icon && row.icon != ''){
+            let base64String = row.icon;
+            row.imageUrl = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + base64String);
+          }else{
+            let defaultIcon: any = 'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAACzUlEQVRYR6XXSeiWVRQG8J/QAEktwjAJbBdlk02LWphB5NQiISQ3STTSYK6URIokilqVE6lF1CYJwRbZhNCwyEXzoEU7BbEoXCQFDVA88f3h9fPe977f37N8z3nOed57z3RnmEzmYCVuxuU4bwT/Bd9iH17H0aFuZww0nIWncBfOaGD+wivYgF9b/ocQuBG7cH7L2Zj+J9yBj/pwLQK3YjfOnDD4lPmfuB1v1fB9BK7EJzhrmsGnYH/gBnxd8lMjcBq+GCVaLf5x/DBSXoyze4gmQa/GP+M2NQL3YkfF4SGsxR78PbI5HcvxHC6s4O7DzqEEvsOlBUef4xYcqwQ5F+/jmoL+AC4bQiDH+X3Bwe+Yh8ONnJiLg5hZsLukc23/q0tXcDdeKoA34dGBCfkCVhds78HL3e8lAk/jsQJ4Cd4dSGAx3inYPoP1LQKb8XABPL9WSgXblPBXhe9b8EiLwLOjLB/H34QPB57AQnxQsE2VrGsRuB8vFsAb8cRAAk/i8YLtA9jeIpCj/rIA/hkX4bcGiXPwI2YX7K4av5pSEubbEWT0jsubWNFpQOP6NKQ3cFsBmxF9Af5tnUD0z/eUXKbbg6Na7/pKj9iGTM+SpDTXjCtqrTgdK/27JvmLTzs2WU6uq/SVKR+xSYc9QfqmYWp+0cCka5m9h/SGk6SPwILWMtGK2tHnWj6elEDs30Y64KlIOuLSmoPWRpR7y16Q/WA6kvmfPaCaTy0CCdpXES1SxczvgoYQyKaT7M2YnUQytlNN2ZyqMoRAwMmDvY0y6wZJmS6rTMQTyAwlEFDmQ+bEEEm/T99vyiQEsuF8hmxMfZJF9Vpkg2rKJATi7Ars71nVs4Jfj2+akUcGkxII7E68WgmwCq8NDR676RAIbutoIHVjZRA9NEnwUyGQsZv+ni0pku0nc2PqnTCYx3RPIAHyBshzPJLneu2t0EvmP631ciExHHR4AAAAAElFTkSuQmCC'; 
+            row.imageUrl = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + defaultIcon);
+          }
+        }
+        //----------------------------//
+
       });
       let newTrueData = data.filter(item => item.newTag == true);
       newTrueData.sort((userobj1, userobj2) => parseInt(userobj2.createdAt) - parseInt(userobj1.createdAt));
