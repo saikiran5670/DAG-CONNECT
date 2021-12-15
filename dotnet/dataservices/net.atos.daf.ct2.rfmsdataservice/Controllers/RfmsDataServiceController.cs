@@ -152,7 +152,7 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
                 }
                 else if (!string.IsNullOrEmpty(vin))
                 {
-                    var validVin = visibleVehicles.Where(x => x.VIN == vin).Select(p => p.VIN).FirstOrDefault();
+                    var validVin = visibleVehicles.Where(x => x.VIN == vin.Trim()).Select(p => p.VIN).FirstOrDefault();
                     if (string.IsNullOrEmpty(validVin))
                     {
                         var response = new RfmsVehicleStatus();
@@ -190,7 +190,7 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
                 if (isValid)
                 {
                     var response = new RfmsVehiclePosition();
-                    response = await _rfmsManager.GetVehiclePosition(vehiclePositionRequest);
+                    response = await _rfmsManager.GetVehiclePosition(vehiclePositionRequest, visibleVehicles);
                     return Ok(_mapper.MapVehiclePositionResponse(response));
                 }
                 return GenerateErrorResponse(HttpStatusCode.BadRequest, field, "INVALID_PARAMETER");
@@ -234,7 +234,7 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
                 }
                 else if (!string.IsNullOrEmpty(vin))
                 {
-                    var validVin = visibleVehicles.Where(x => x.VIN == vin).Select(p => p.VIN).FirstOrDefault();
+                    var validVin = visibleVehicles.Where(x => x.VIN == vin.Trim()).Select(p => p.VIN).FirstOrDefault();
                     if (string.IsNullOrEmpty(validVin))
                     {
                         var response = new RfmsVehicleStatus();
@@ -273,7 +273,7 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
                 if (isValid)
                 {
                     var response = new RfmsVehicleStatus();
-                    response = await _rfmsManager.GetRfmsVehicleStatus(rfmsVehicleStatusRequest);
+                    response = await _rfmsManager.GetRfmsVehicleStatus(rfmsVehicleStatusRequest, visibleVehicles);
                     return Ok(response);
                 }
                 return GenerateErrorResponse(HttpStatusCode.BadRequest, field, "INVALID_PARAMETER");

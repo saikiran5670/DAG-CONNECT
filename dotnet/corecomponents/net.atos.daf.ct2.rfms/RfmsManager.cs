@@ -67,11 +67,11 @@ namespace net.atos.daf.ct2.rfms
         }
 
         //OPTIMIZE & CLEAN THE CODE
-        public async Task<RfmsVehiclePosition> GetVehiclePosition(RfmsVehiclePositionRequest rfmsVehiclePositionRequest)
+        public async Task<RfmsVehiclePosition> GetVehiclePosition(RfmsVehiclePositionRequest rfmsVehiclePositionRequest, List<VisibilityVehicle> visibleVehicles)
         {
             await _rfmsVehicleMasterTableCache.AddMasterDataToCache();
             LastVinId = 0;
-            var visibleVins = await GetVisibleVins(rfmsVehiclePositionRequest.RfmsVehiclePositionFilter, rfmsVehiclePositionRequest.AccountId, rfmsVehiclePositionRequest.OrgId) ?? string.Empty;
+            var visibleVins = await GetVisibleVins(rfmsVehiclePositionRequest.RfmsVehiclePositionFilter, visibleVehicles) ?? string.Empty;
             RfmsVehiclePosition rfmsVehiclePosition = await _rfmsRepository.GetVehiclePosition(rfmsVehiclePositionRequest, visibleVins, LastVinId);
 
             if (rfmsVehiclePosition.VehiclePositionResponse.VehiclePositions.Count() > rfmsVehiclePositionRequest.ThresholdValue)
@@ -101,13 +101,13 @@ namespace net.atos.daf.ct2.rfms
         }
 
 
-        public async Task<RfmsVehicleStatus> GetRfmsVehicleStatus(RfmsVehicleStatusRequest rfmsVehicleStatusRequest)
+        public async Task<RfmsVehicleStatus> GetRfmsVehicleStatus(RfmsVehicleStatusRequest rfmsVehicleStatusRequest, List<VisibilityVehicle> visibleVehicles)
         {
             await _rfmsVehicleMasterTableCache.AddMasterDataToCache();
 
             LastVinId = 0;
             DateTime currentdatetime = DateTime.Now;
-            var visibleVins = await GetVisibleVins(rfmsVehicleStatusRequest.RfmsVehicleStatusFilter, rfmsVehicleStatusRequest.AccountId, rfmsVehicleStatusRequest.OrgId) ?? string.Empty;
+            var visibleVins = await GetVisibleVins(rfmsVehicleStatusRequest.RfmsVehicleStatusFilter, visibleVehicles) ?? string.Empty;
 
             RfmsVehicleStatus rfmsVehicleStatus = await _rfmsRepository.GetRfmsVehicleStatus(rfmsVehicleStatusRequest, visibleVins, LastVinId);
             if (rfmsVehicleStatus.VehicleStatusResponse.VehicleStatuses.Count() > rfmsVehicleStatusRequest.ThresholdValue)
@@ -136,13 +136,13 @@ namespace net.atos.daf.ct2.rfms
         }
 
 
-        private async Task<string> GetVisibleVins(RfmsVehiclePositionStatusFilter rfmsVehicleStatusFilter, int accountId, int OrgId)
+        private async Task<string> GetVisibleVins(RfmsVehiclePositionStatusFilter rfmsVehicleStatusFilter, List<VisibilityVehicle> visibleVehicles)
         {
             string visibleVins = string.Empty;
 
             //CHECK VISIBLE VEHICLES FOR USER
-            var result = await _vehicleManager.GetVisibilityVehicles(accountId, OrgId);
-            var visibleVehicles = result.Values.SelectMany(x => x).Distinct(new ObjectComparer()).ToList();
+            //  var result = await _vehicleManager.GetVisibilityVehicles(accountId, OrgId);
+            // var visibleVehicles = result.Values.SelectMany(x => x).Distinct(new ObjectComparer()).ToList();
 
             //ADD MASTER DATA TO CACHE
             //AddMasterDataToCache();
