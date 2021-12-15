@@ -468,6 +468,7 @@ public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String
 public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   idleDurationSumConverted: any;
   filterValue: string;
+  _state: any;
 
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private router: Router, private organizationService: OrganizationService, private datePipe: DatePipe, private dataInterchangeService: DataInterchangeService) {
     // this.defaultTranslation();
@@ -481,11 +482,12 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       }
     });
     const navigation = this.router.getCurrentNavigation();
-    const state = navigation.extras.state as {
-      fromTripReport: boolean
+    this. _state = navigation.extras.state as {
+      fromTripReport: boolean,
+      vehicleDropDownId: any
     };
     //console.log(state)
-    if(state){
+    if(this._state){
       this.fromTripPageBack = true;
     }else{
       this.fromTripPageBack = false;
@@ -1338,7 +1340,15 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
 
   resetTripFormControlValue(){
     if(!this.internalSelection && this.fleetUtilizationSearchData.modifiedFrom !== ""){
-      this.tripForm.get('vehicle').setValue(this.fleetUtilizationSearchData.vehicleDropDownValue);
+      if (this._state && this._state.vehicleDropDownId != undefined && this.vehicleDD.length > 0) { // back from trip report
+        let _v = this.vehicleDD.filter(i => i.vehicleId == Number(this._state.vehicleDropDownId));
+        if (_v.length > 0) {
+          let id = _v[0].vehicleId;
+          this.tripForm.get('vehicle').setValue(id);
+        }
+      } else {
+        this.tripForm.get('vehicle').setValue(this.fleetUtilizationSearchData.vehicleDropDownValue);
+      }
       this.tripForm.get('vehicleGroup').setValue(this.fleetUtilizationSearchData.vehicleGroupDropDownValue);
     }else{
       this.tripForm.get('vehicle').setValue(0);
@@ -1433,8 +1443,16 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       // this.setGlobalSearchData(this.fleetUtilizationSearchData)
     }else {
       // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event));
+      if (this._state && this._state.vehicleDropDownId != undefined && this.vehicleDD.length > 0) {
+        let _v = this.vehicleDD.filter(i => i.vehicleId == Number(this._state.vehicleDropDownId));
+        if (_v.length > 0) {
+          let id = _v[0].vehicleId;
+          this.tripForm.get('vehicle').setValue(id);
+        }
+      }else{
+        this.tripForm.get('vehicle').setValue(parseInt(this.fleetUtilizationSearchData.vehicleDropDownValue));
+      }
       this.tripForm.get('vehicleGroup').setValue(parseInt(this.fleetUtilizationSearchData.vehicleGroupDropDownValue));
-      this.tripForm.get('vehicle').setValue(parseInt(this.fleetUtilizationSearchData.vehicleDropDownValue));
     }
   }
 
@@ -2011,7 +2029,8 @@ getAllSummaryData(){
     const navigationExtras: NavigationExtras = {
       state: {
         fromFleetUtilReport: true,
-        vehicleData: vehData
+        vehicleData: vehData,
+        vehicleDropDownId: this.tripForm.controls.vehicle.value
       }
     };
     this.router.navigate(['report/tripreport'], navigationExtras);
