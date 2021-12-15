@@ -732,7 +732,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
       this.tripForm.get('vehicleGroup').setValue(this.globalSearchFilterData.vehicleGroupDropDownValue);
     } else {
       if(this.vehicleDD.length >0){
-        this.tripForm.get('vehicle').setValue(this.vehicleDD[0].vehicleID);
+        this.tripForm.get('vehicle').setValue(this.vehicleDD[0].vehicleId);
       }
       else{
       this.tripForm.get('vehicle').setValue('');
@@ -759,7 +759,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
         }
       }
       if(this.vehicleDD.length >0){
-        this.tripForm.get('vehicle').setValue(this.vehicleDD[0].vehicleID);
+        this.tripForm.get('vehicle').setValue(this.vehicleDD[0].vehicleId);
       }
       else{
       this.tripForm.get('vehicle').setValue('');

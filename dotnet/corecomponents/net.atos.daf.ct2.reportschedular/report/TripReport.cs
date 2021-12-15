@@ -112,7 +112,10 @@ namespace net.atos.daf.ct2.account.report
             vehicleDetailsAccountVisibilty = vehicleDetailsAccountVisibilty.GroupBy(c => c.Vin, (key, c) => c.FirstOrDefault()).ToList();
 
             tripFilter.AlertVIN = vehicleDetailsAccountVisibilty.Where(x => x.Vin == VIN).Select(x => x.Vin).FirstOrDefault();
-
+            if (string.IsNullOrEmpty(tripFilter.AlertVIN))
+            {
+                throw new Exception(TripReportConstants.NO_ALERT_VISIBILITY_MSG);
+            }
             var result = await ReportManager.GetFilteredTripDetails(tripFilter, false);
             //string res = JsonConvert.SerializeObject(result);
             //var tripReportDetails = JsonConvert.DeserializeObject<List<TripReportDetails>>(res);

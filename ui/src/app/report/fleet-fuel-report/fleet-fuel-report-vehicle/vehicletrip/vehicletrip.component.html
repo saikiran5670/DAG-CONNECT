@@ -538,7 +538,7 @@
                 <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_averagetrafficlassification')">{{ translationData.lblAverageTrafficClassification || 'Average Traffic Classification' }}     
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_averagetrafficlassification')">     
-                  <span>{{row.averageTrafficClassificationValue}}</span>     
+                  <span>{{convertZeros(row.convertedDistance) == '*' ? '*' : row.averageTrafficClassificationValue}}</span>     
                 </mat-cell>      
               </ng-container>
               <ng-container matColumnDef="ccFuelConsumption">

@@ -292,7 +292,7 @@ onChangeConnectedStatus(rowData: any){
       title: this.translationData.lblConfirmation || "Confirmation",
       message: this.translationData.lblVechicleTerminatedConfirmationAlert || "Termination of vehicle moves the Box in dead state. DCM/TCU is no longer able to send data. It is an irreversible process and once the DCM or TCU is terminated then it can only be replaced with a new one. Do you want to move this $ vehicle?",   
       cancelText: this.translationData.lblCancel || "Cancel",
-      confirmText: (rowData.status == 'T') ? this.translationData.lblDeactivate || "Terminated Off" : this.translationData.lblActivate || " Terminated On",
+      confirmText: (rowData.status == 'T') ? this.translationData.lblDeactivate || "Terminated Off" : this.translationData.lblConfirm || " Terminated On",
       name: rowData.name
     };
     const dialogConfig = new MatDialogConfig();
