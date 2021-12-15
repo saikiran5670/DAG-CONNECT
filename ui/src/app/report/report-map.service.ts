@@ -1478,7 +1478,7 @@ export class ReportMapService {
  }
 
  convertKmphToMph(_data:any){
-  let data = _data *  0.62137119223733;
+  let data = _data *  0.62137119;
   return data.toFixed(2);
 }
 
@@ -1509,8 +1509,8 @@ export class ReportMapService {
   }
 
   meterToMile(_data: any){
-    let kmData= _data / 1000;
-    let data= kmData * 0.62137119223733; 
+    let kmData= (_data / 1000).toFixed(2);
+    let data= Number(kmData) * 0.62137119; 
     return data.toFixed(2);
   }
 

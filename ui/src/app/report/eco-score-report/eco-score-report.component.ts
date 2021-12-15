@@ -1671,7 +1671,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
 
   checkForConversion(val){
     if(this.prefUnitFormat === 'dunit_Imperial')
-      return (val * 0.62137119223733).toFixed(2);
+      return (val * 0.62137119).toFixed(2);
     return val;
   }
 
