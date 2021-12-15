@@ -9,8 +9,8 @@
     <div id="sidenav">
         <div class="example-sidenav-content"
         [ngClass]="userPreferencesFlag ? 'pref-expand' : 'pref-collapse' " >
-            <button type="button" mat-button (click)='userPreferencesSetting($event)'>
-                {{clickOpenClose}} </button>
+            <button class='font-helvetica-md' type="button" mat-button (click)='userPreferencesSetting($event)'>
+                {{ clickOpenClose }} </button>
         </div>
         <div>
         <app-fleet-overview-filters *ngIf="userPreferencesFlag" [fromVehicleHealth]="obj" [translationData]='translationData' [detailsData] ="detailsData" [vehInfoPrefData]='vehInfoPrefData'></app-fleet-overview-filters>
