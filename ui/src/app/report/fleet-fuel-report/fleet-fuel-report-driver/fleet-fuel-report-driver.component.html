@@ -962,7 +962,7 @@
 
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_averagetrafficlassification')">
 
-                <span>{{row.averageTrafficClassificationValue}}</span>
+                <span>{{convertZeros(row.convertedDistance) == '*' ? '*' : row.averageTrafficClassificationValue}}</span>
 
               </mat-cell>
 
