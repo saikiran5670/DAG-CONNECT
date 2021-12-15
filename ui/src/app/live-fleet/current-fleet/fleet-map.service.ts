@@ -802,7 +802,7 @@ export class FleetMapService {
           // for all objects that it contains
           startBubble = new H.ui.InfoBubble(evt.target.getGeometry(), {
             // read custom data
-            content: `<table style='width: 300px; font-size:12px;'>
+            content: `<table class='font-helvetica-lt' style='width: 300px; font-size: 14px;'>
               <tr>
                 <td style='width: 100px;'>Alert Name:</td> <td><b>${element.name}</b></td>
               </tr>
@@ -1874,7 +1874,7 @@ export class FleetMapService {
               _data = t.getData(),
 
               // tooltipContent = "<table class='cust-table' border='1'><thead><th></th><th>Trip</th><th>Start Date</th><th>End Date</th></thead><tbody>";
-              tooltipContent = `<table class='cust-table2' border='1'><thead><th>Sr No</th><th>${colName}</th></thead><tbody>`;
+              tooltipContent = `<table class='cust-table2 font-helvetica-lt' border='1'><thead><th>Sr No</th><th>${colName}</th></thead><tbody>`;
             var chkBxId = 0;
             _data.forEachDataPoint((p) => {
               if (colName == 'Vehicle Name') {
@@ -2034,7 +2034,7 @@ export class FleetMapService {
               _data = t.getData(),
 
               // tooltipContent = "<table class='cust-table' border='1'><thead><th></th><th>Trip</th><th>Start Date</th><th>End Date</th></thead><tbody>";
-              tooltipContent = `<table class='cust-table2' border='1'><thead><th>Sr No</th><th>${colName}</th></thead><tbody>`;
+              tooltipContent = `<table class='cust-table2 font-helvetica-lt' border='1'><thead><th>Sr No</th><th>${colName}</th></thead><tbody>`;
             var chkBxId = 0;
             _data.forEachEntry(
               (p) => {
