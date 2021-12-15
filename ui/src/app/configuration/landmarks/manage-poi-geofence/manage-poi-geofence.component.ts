@@ -112,7 +112,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
   dataService: any;
   searchMarker: any = {};
   filterValue: string;
-
+  defaultLayers: any;
 
   constructor(
     private dialogService: ConfirmDialogService,
@@ -215,18 +215,39 @@ export class ManagePoiGeofenceComponent implements OnInit {
   }
 
   initMap(){
-    let defaultLayers = this.platform.createDefaultLayers();
+    this.defaultLayers = this.platform.createDefaultLayers();
     this.map = new H.Map(this.mapElement.nativeElement,
-      defaultLayers.vector.normal.map, {
+      this.defaultLayers.raster.normal.map, {
       center: { lat: 51.43175839453286, lng: 5.519981221425336 },
       zoom: 4,
       pixelRatio: window.devicePixelRatio || 1
     });
     window.addEventListener('resize', () => this.map.getViewPort().resize());
     var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
-    this.ui = H.ui.UI.createDefault(this.map, defaultLayers);
-  }
+    this.ui = H.ui.UI.createDefault(this.map, this.defaultLayers);
+    var group = new H.map.Group();
 
+    this.ui.removeControl("mapsettings");
+    // create custom one
+    var ms = new H.ui.MapSettingsControl({
+        baseLayers : [ { 
+          label: this.translationData.lblNormal || "Normal", layer: this.defaultLayers.raster.normal.map
+        },{
+          label: this.translationData.lblSatellite || "Satellite", layer: this.defaultLayers.raster.satellite.map
+        }, {
+          label: this.translationData.lblTerrain || "Terrain", layer: this.defaultLayers.raster.terrain.map
+        }
+        ],
+      layers : [{
+            label: this.translationData.lblLayerTraffic || "Layer.Traffic", layer: this.defaultLayers.vector.normal.traffic
+        },
+        {
+            label: this.translationData.lblLayerIncidents || "Layer.Incidents", layer: this.defaultLayers.vector.normal.trafficincidents
+        }
+      ]
+    });
+    this.ui.addControl("customized", ms);
+  }
 
   checkboxClicked(event: any, row: any) {
     if(event.checked){ //-- add new marker
