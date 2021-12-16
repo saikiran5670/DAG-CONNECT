@@ -208,6 +208,10 @@ export class DataTableComponent implements OnInit {
 //   }
 
   compare(a: any, b: any, isAsc: boolean, columnName: any) {
+    if(columnName === "fileSize"){
+      if(!(a instanceof Number)) a = a.toString().toUpperCase();
+      if(!(b instanceof Number)) b = b.toString().toUpperCase();  
+    }
     if(columnName !== "lastScheduleRunDate" || columnName !== "nextScheduleRunDate"){
     // if (!(a instanceof Number)) { a = a ?  (a.replace(/^\W+/).localeCompare(b.replace(/^\W+/))).toString().toUpperCase() : ''; }
     // if (!(b instanceof Number)) { b = b ?  (b.replace(/^\W+/).localeCompare(a.replace(/^\W+/))).toString().toUpperCase() : ''; }
