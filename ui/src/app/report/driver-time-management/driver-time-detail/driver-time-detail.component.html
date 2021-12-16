@@ -11,22 +11,22 @@
   <mat-expansion-panel [(expanded)]="generalExpandPanel" class="full-width" fxLayoutGap="10px">
     <mat-expansion-panel-header class="full-width">
       <mat-panel-title >
-        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblGeneral  }}</span>
+        <span>{{ translationData.lblGeneral  }}</span>
       </mat-panel-title>
     </mat-expansion-panel-header>
     <div [ngClass]="{'reportTable': displayedColumns.length > 7}">
-      <div style='padding: 20px; margin-bottom: 10px; background: #eee9e9;'>
+      <div style='padding: 30px 20px; margin-bottom: 10px; background: #bee3f8;'>
         <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
           <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
             <span>
-              <span>{{ translationData.lblFrom  }}: </span>
-              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ driverDetails.fromDisplayDate }}</span>
+              <span>{{ translationData.lblFrom }}: </span>
+              <span class='font-helvetica-md'>{{ driverDetails.fromDisplayDate }}</span>
             </span>
           </div>
           <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
             <span>
               <span>{{ translationData.lblVehicleGroup }}: </span>
-              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ driverDetails.selectedDriverName }}</span>
+              <span class='font-helvetica-md'>{{ driverDetails.selectedDriverName }}</span>
             </span>
           </div>
         </div>
@@ -35,13 +35,13 @@
           <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
             <span>
               <span>{{ translationData.lblTo }}: </span>
-              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ driverDetails.toDisplayDate }}</span>
+              <span class='font-helvetica-md'>{{ driverDetails.toDisplayDate }}</span>
             </span>
           </div>
           <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
             <span>
               <span>{{ translationData.lblVehicle}}: </span>
-              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ driverDetails.selectedDriverId }}</span>
+              <span class='font-helvetica-md'>{{ driverDetails.selectedDriverId }}</span>
             </span>
           </div>
         </div>
@@ -49,34 +49,34 @@
       <div style='margin-bottom: 10px;' >
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
           
-          <div class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="left">
+          <div class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="center center">
             <span>
               <div>{{ translationData.lblTotalDriveTime }}: </div>
-              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ totalDriveTime }} (hh:mm)</div>
+              <div class='font-helvetica-md'>{{ totalDriveTime }} (hh:mm)</div>
             </span>
           </div>
-            <div class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="left">
+            <div class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="center center">
               <span>
                 <div>{{ translationData.lblTotalWorkTime  }}: </div>
-                <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ totalWorkTime }} (hh:mm)</div>
+                <div class='font-helvetica-md'>{{ totalWorkTime }} (hh:mm)</div>
               </span>
             </div>
-            <div class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="left">
+            <div class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="center center">
               <span>
                 <div>{{ translationData.lblTotalAvailableTime }}: </div>
-                <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ totalAvailableTime }} (hh:mm)</div>
+                <div class='font-helvetica-md'>{{ totalAvailableTime }} (hh:mm)</div>
               </span>
             </div>
-            <div  class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="left">
+            <div  class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="center center">
               <span>
                 <div>{{ translationData.lblTotalRestTime  }}: </div>
-                <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ totalRestTime }} (hh:mm)</div>
+                <div class='font-helvetica-md'>{{ totalRestTime }} (hh:mm)</div>
               </span>
             </div>
-            <div  class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="left">
+            <div  class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="center center">
               <span>
                 <div>{{ translationData.lblTotalServiceTime || 'lblTotalServiceTime' }}: </div>
-                <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ totalServiceTime }} (hh:mm)</div>
+                <div class='font-helvetica-md'>{{ totalServiceTime }} (hh:mm)</div>
               </span>
             </div>
         </div>
@@ -88,7 +88,7 @@
   <mat-expansion-panel [(expanded)]="chartExpandPanel" class="full-width" fxLayoutGap="10px">
     <mat-expansion-panel-header class="full-width">
       <mat-panel-title >
-        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblCharts || 'Charts' }}</span>
+        <span>{{ translationData.lblCharts || 'Charts' }}</span>
       </mat-panel-title>
     </mat-expansion-panel-header>
     <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
@@ -148,7 +148,7 @@
   <mat-expansion-panel [(expanded)]="tableExpandPanel" class="full-width" fxLayoutGap="10px">
     <mat-expansion-panel-header class="full-width">
       <mat-panel-title >
-        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllDetails || 'All Details' }}</span>
+        <span>{{ translationData.lblAllDetails || 'All Details' }}</span>
       </mat-panel-title>
     </mat-expansion-panel-header>
     
@@ -176,32 +176,32 @@
          
           <!-- <ng-container *ngIf="showField.startTime" matColumnDef="startTime">condition removed for pref update -->
           <ng-container matColumnDef="startTime">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDate || 'Date' }} <span style="font-weight: normal;"></span>
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDate || 'Date' }} 
             </mat-header-cell>
             <mat-cell *matCellDef="let row">{{ row.startTime != '' ? row.startTime : '-' }}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="driveTime">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriveTime || 'Drive Time' }} (hh:mm)
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriveTime || 'Drive Time' }} <span class='font-14-px'>(hh:mm)</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let row">{{ row.driveTime != '' ? row.driveTime : '-' }}</mat-cell>
           </ng-container>
           <ng-container  matColumnDef="workTime">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblWorkTime || 'Work Time' }} (hh:mm)
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblWorkTime || 'Work Time' }} <span class='font-14-px'>(hh:mm)</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let row">{{ row.workTime != '' ? row.workTime : '-' }}</mat-cell>
           </ng-container>
           <ng-container  matColumnDef="serviceTime">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblServiceTime || 'Service Time' }} (hh:mm)
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblServiceTime || 'Service Time' }} <span class='font-14-px'>(hh:mm)</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let row">{{ row.serviceTime != '' ? row.serviceTime : '-' }}</mat-cell>
           </ng-container>
           <ng-container  matColumnDef="restTime">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRestTime || 'Rest Time' }} (hh:mm)
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRestTime || 'Rest Time' }} <span class='font-14-px'>(hh:mm)</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let row">{{ row.restTime != '' ? row.restTime : '-' }}</mat-cell>
           </ng-container>
           <ng-container  matColumnDef="availableTime">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAvailableTime || 'Available Time' }} (hh:mm)
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAvailableTime || 'Available Time' }} <span class='font-14-px'>(hh:mm)</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let row">{{ row.availableTime != '' ? row.availableTime : '-' }}</mat-cell>
           </ng-container>

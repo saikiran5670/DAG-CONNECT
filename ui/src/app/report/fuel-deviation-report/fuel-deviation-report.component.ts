@@ -1744,21 +1744,21 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
       this.eventIconMarker.addEventListener('pointerenter', (evt)=> {
         iconInfoBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
           // read custom data
-          content:`<table style='width: 300px; font-size:12px;'>
+          content:`<table style='width: 300px;' class='font-14-px line-height-21px font-helvetica-lt'>
             <tr>
-              <td style='width: 100px;'>${this.translationData.lblDate}:</td> <td><b>${element.eventDate}</b></td>
+              <td style='width: 100px;'>${this.translationData.lblDate}:</td> <td class='font-helvetica-md'>${element.eventDate}</td>
             </tr>
             <tr>
-              <td style='width: 100px;'>${(this.vehVinRegChecker.length > 0 && this.vehVinRegChecker[0].attr == 'vin') ? (this.translationData.lblVIN ) : (this.vehVinRegChecker[0].attr == 'registrationNo') ? (this.translationData.lblRegPlateNumber ) : (this.translationData.lblVehicleName )}:</td> <td><b>${element[this.vehVinRegChecker[0].attr]}</b></td>
+              <td style='width: 100px;'>${(this.vehVinRegChecker.length > 0 && this.vehVinRegChecker[0].attr == 'vin') ? (this.translationData.lblVIN ) : (this.vehVinRegChecker[0].attr == 'registrationNo') ? (this.translationData.lblRegPlateNumber ) : (this.translationData.lblVehicleName )}:</td> <td class='font-helvetica-md'>${element[this.vehVinRegChecker[0].attr]}</td>
             </tr>
             <tr>
-              <td style='width: 100px;'>${this.translationData.lblPosition}:</td> <td><b>${element.geoLocationAddress}</b></td>
+              <td style='width: 100px;'>${this.translationData.lblPosition}:</td> <td class='font-helvetica-md'>${element.geoLocationAddress}</td>
             </tr>
             <tr>
-              <td style='width: 100px;'>${this.translationData.lblEventDescription}:</td> <td><b>${eventDescText.eventText}</b></td>
+              <td style='width: 100px;'>${this.translationData.lblEventDescription}:</td> <td class='font-helvetica-md'>${eventDescText.eventText}</td>
             </tr>
             <tr>
-              <td style='width: 100px;'>${this.translationData.lblDifference }:</td> <td><b>${element.convertedDifference}%</b></td>
+              <td style='width: 100px;'>${this.translationData.lblDifference }:</td> <td class='font-helvetica-md'>${element.convertedDifference}%</td>
             </tr>
           </table>`
         });
