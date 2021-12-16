@@ -14,7 +14,7 @@ style='padding:10px; color:#fff; background: #5dc24e;'>
   <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
     <span class='custom-font' (click)="toBack()">
       <span><&nbsp;</span>
-     <span class='backBtnCss'>  {{ translationData.lblVehicleUpdateBack || 'Back' }}     </span>
+     <span class='backBtnCss'>{{ translationData.lblVehicleUpdateBack || 'Back' }}     </span>
     </span>
   </div>
 </div>
@@ -23,7 +23,7 @@ style='padding:10px; color:#fff; background: #5dc24e;'>
     <mat-card-content>
       <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>
+          <span class='font-helvetica-md font-20-px line-height-30-px'>
             {{ translationData.lblVehicleUpdateDetails || 'Vehical Update Details' }}              
           </span>
         </div>
@@ -32,26 +32,26 @@ style='padding:10px; color:#fff; background: #5dc24e;'>
         <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
           <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
             <span>
-              <span>  {{ translationData.lblVehicleName || 'Vehicle Name:' }}: </span>
-              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{selectedVehicleUpdateDetails.vehicleName}}</span>
+              <span>{{ translationData.lblVehicleName || 'Vehicle Name:' }}: </span>
+              <span class='font-helvetica-md'>{{ selectedVehicleUpdateDetails.vehicleName }}</span>
             </span>
           </div>
           <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
             <span>
               <span>{{ translationData.lblregistrationNo || 'Registration Number:' }} </span>
-              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{selectedVehicleUpdateDetails.registrationNo}}</span>
+              <span class='font-helvetica-md'>{{ selectedVehicleUpdateDetails.registrationNo }}</span>
             </span>
           </div>
           <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
             <span>
               <span> {{ translationData.lblVehicleGroup || 'Vehicle Group:' }}: </span>
-              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{selectedVehicleUpdateDetails.vehicleGroupNames}}</span>
+              <span class='font-helvetica-md'>{{ selectedVehicleUpdateDetails.vehicleGroupNames }}</span>
             </span>
           </div>
           <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
             <span>
               <span>{{ translationData.lblvehicletype || 'Type:' }} </span>
-              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{selectedVehicleUpdateDetails.type}}</span>
+              <span class='font-helvetica-md'>{{ selectedVehicleUpdateDetails.type }}</span>
             </span>
           </div>
         </div>
@@ -59,20 +59,20 @@ style='padding:10px; color:#fff; background: #5dc24e;'>
           <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
             <span>
               <span>{{ translationData.lblmodelYear || 'Model Year:' }} </span>
-              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{selectedVehicleUpdateDetails.modelYear}}</span>
+              <span class='font-helvetica-md'>{{ selectedVehicleUpdateDetails.modelYear }}</span>
             </span>
           </div>
           <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
             <span>
               <span>{{ translationData.lblsoftwareStatus || 'Software Status:' }} </span>
-              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{selectedVehicleUpdateDetails.softwareStatus}}</span>
+              <span class='font-helvetica-md'>{{ selectedVehicleUpdateDetails.softwareStatus }}</span>
             </span>
           </div>
         </div>
       </div>
       <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblApplicableUpdate || 'Applicable Update(s)' }}</span>
+          <span class='font-helvetica-md font-20-px line-height-30-px'>{{ translationData.lblApplicableUpdate || 'Applicable Update(s)' }}</span>
         </div>
       </div>
       <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>
@@ -169,7 +169,7 @@ style='padding:10px; color:#fff; background: #5dc24e;'>
         <form [formGroup]="schedulerForm" style="border: 1px solid deepskyblue;">
           <mat-card class='mat-elevation-z no-padding'>
             <mat-card-content style="padding: 20px;">
-              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblScheduleDetails || 'Schedule Details'}}</span>
+              <span>{{ translationData.lblScheduleDetails || 'Schedule Details'}}</span>
               <mat-icon style='cursor: pointer; float: right;' matTooltip="Close" (click)="onCancel()">close</mat-icon>
               <div class="areaWidth full-width" fxLayout="column" fxLayoutAlign="left">
                 <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="3px"
