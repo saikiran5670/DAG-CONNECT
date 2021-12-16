@@ -1,5 +1,7 @@
 package net.atos.daf.ct2.common.realtime.postgresql;
 
+import static net.atos.daf.ct2.common.util.Utils.getCurrentTimeInUTC;
+
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -37,7 +39,7 @@ public class DriverTimeManagementSink extends RichSinkFunction<Monitor> implemen
 	// private PreparedStatement statement;
 	Connection connection = null;
 
-	Connection masterConnection = null;
+	//Connection masterConnection = null;
 
 	LiveFleetDriverActivityDao driverDAO;
 	private PreparedStatement statement;
@@ -48,7 +50,7 @@ public class DriverTimeManagementSink extends RichSinkFunction<Monitor> implemen
 	@Override
 	public void open(org.apache.flink.configuration.Configuration parameters) throws Exception {
 
-		logger.info("########## In LiveFleet Drive Time Management ##############");
+		//logger.info("########## In LiveFleet Drive Time Management ##############");
 		ParameterTool envParams = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
 		
 		 int pId = getRuntimeContext().getIndexOfThisSubtask();
@@ -128,12 +130,13 @@ public class DriverTimeManagementSink extends RichSinkFunction<Monitor> implemen
 		driverActivity.setDuration(row.getDuration()); // it will be null when record creates.
 
 
-		driverActivity.setCreatedAtDm(TimeFormatter.getInstance().getCurrentUTCTimeInSec());
+		driverActivity.setCreatedAtDm(getCurrentTimeInUTC());
+		
 		driverActivity.setCreatedAtKafka(Long.parseLong(row.getKafkaProcessingTS()));
 		driverActivity.setCreatedAtM2m(row.getReceivedTimestamp());
 		driverActivity.setModifiedAt(null); // it will be null when record
 											// creates.
-		driverActivity.setLastProcessedMessageTimestamp(TimeFormatter.getInstance().getCurrentUTCTimeInSec());
+		driverActivity.setLastProcessedMessageTimestamp(getCurrentTimeInUTC());
 		driverActivity.setVin(row.getVin());
 		return driverActivity;
 
@@ -149,10 +152,11 @@ public class DriverTimeManagementSink extends RichSinkFunction<Monitor> implemen
 			logger.debug("Releasing connection from DriverActivity job");
 			connection.close();
 		}
-		if (masterConnection != null) {
-			logger.debug("Releasing connection from DriverActivity job");
-			masterConnection.close();
-		}
+		/*
+		 * if (masterConnection != null) {
+		 * logger.debug("Releasing connection from DriverActivity job");
+		 * masterConnection.close(); }
+		 */
 
 	}
 
