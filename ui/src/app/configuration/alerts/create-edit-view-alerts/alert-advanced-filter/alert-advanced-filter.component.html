@@ -73,7 +73,11 @@
       [actionType]='actionType'></app-period-selection-filter>
     </div> -->
     <!-- </mat-expansion-panel> -->
-    <div *ngIf="selectedApplyOn =='C'" > 
+    <!-- <div *ngIf="selectedApplyOn =='C'" >  -->
+      <div *ngIf="((alert_category_selected + alert_type_selected == 'LN') ||
+      (alert_category_selected + alert_type_selected == 'LX') ||
+      (alert_category_selected + alert_type_selected == 'FA') ||
+      (alert_category_selected + alert_type_selected == 'FI'))" > 
       <app-period-selection-filter  #periodComponent
       [translationData] = 'translationData'
       [selectedRowData] = 'selectedRowData'
