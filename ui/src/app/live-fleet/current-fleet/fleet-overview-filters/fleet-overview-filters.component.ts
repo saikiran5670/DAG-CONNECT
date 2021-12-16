@@ -316,6 +316,7 @@ ngAfterViewInit(){
         let unknownandEmptyCount = 0;
         this.driversListGet = JSON.parse(JSON.stringify(data));
         for (let item of this.driversListGet) {
+          // condition's for Driver List
           if (item.driverName == "" && item.driver1Id == "") {
             unknownandEmptyCount = unknownandEmptyCount + 1;
           }
