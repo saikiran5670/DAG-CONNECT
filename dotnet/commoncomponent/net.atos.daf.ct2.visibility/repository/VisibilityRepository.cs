@@ -669,21 +669,21 @@ namespace net.atos.daf.ct2.visibility.repository
                         ),
                         cte_g_vehicles as
                         (
-	                        select rels.owner_org_id, gref.ref_id as vehicle_id, array_agg(rels.FeatureIds) as FeatureIdsG
+	                        select rels.owner_org_id, gref.ref_id as vehicle_id, array_agg(distinct rels.FeatureIds) as FeatureIdsG
 	                        from master.group grp
 	                        inner join master.groupref gref on grp.id = gref.group_id and grp.object_type = 'V' and grp.group_type = 'G'
 	                        inner join cte_org_rels rels on grp.id = rels.vehicle_group_id and grp.organization_id = rels.owner_org_id and rels.group_type = grp.group_type
-	                        group by rels.owner_org_id, gref.ref_id
+	                        group by rels.owner_org_id, gref.ref_id,rels.FeatureIds
                         ),
                         cte_d_vehicles as
                         (
-	                        select rels.owner_org_id, v.id as vehicle_id, array_agg(rels.FeatureIds) as FeatureIdsD
+	                        select rels.owner_org_id, v.id as vehicle_id, array_agg(distinct rels.FeatureIds) as FeatureIdsD
 	                        from master.group grp
 	                        inner join cte_org_rels rels on grp.id = rels.vehicle_group_id and grp.organization_id = rels.owner_org_id and rels.group_type = grp.group_type and grp.group_type = 'D'
 	                        inner join master.vehicle v on v.organization_id = rels.owner_org_id
 	                        group by rels.owner_org_id, v.id
                         )
-                        select vehicle_id, array_agg(FeatureIds) as FeatureIds
+                        select vehicle_id, array_agg(distinct FeatureIds) as FeatureIds
                         from
                         (
 	                        select owner_org_id, vehicle_id, unnest(FeatureIdsG) as FeatureIds from cte_g_vehicles
