@@ -371,7 +371,7 @@ export class DriverManagementComponent implements OnInit {
             break;
           }
           case "firstName":{
-            let objData: any = this.nameValidation(value, 30, 'First Name',index);
+            let objData: any = this.nameValidation(value, 120, 'First Name',index);
             fname = objData.status;
             if(!fname){
               item.returnMassage = objData.reason;
