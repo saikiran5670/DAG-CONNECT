@@ -24,7 +24,6 @@
         <flink.version>1.11.1</flink.version>
         <kafka.version>2.6.0</kafka.version>
         <lombok.version>1.18.14</lombok.version>
-        <log4j.version>2.7</log4j.version>
         <jackson.version>2.11.1</jackson.version>
         <curator.version>5.1.0</curator.version>
         <junit.version>5.4.2</junit.version>
@@ -67,18 +66,6 @@
             <groupId>io.debezium</groupId>
             <artifactId>debezium-connector-postgres</artifactId>
             <version>${debezium.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>${log4j.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-            <version>${log4j.version}</version>
         </dependency>
 
         <dependency>
