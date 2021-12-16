@@ -251,8 +251,7 @@
 
           <ng-container matColumnDef="fuelConsumption">
             <mat-header-cell [hidden]="!checkForPreference('vehicleranking_consumption')" *matHeaderCellDef
-              mat-sort-header>{{ translationData.lblConsumption }}
-              &nbsp; <span class='font-14-px line-height-21px'>({{(prefUnitFormat ==
+              mat-sort-header>{{ translationData.lblConsumption }} <span class='font-14-px line-height-21px'>({{(prefUnitFormat ==
                 'dunit_Metric') ? (translationData.lblltr100km) : (prefUnitFormat ==
                 'dunit_Imperial') ? (translationData.lblmpg) : (translationData.lblmpg
                 ) }})</span>
