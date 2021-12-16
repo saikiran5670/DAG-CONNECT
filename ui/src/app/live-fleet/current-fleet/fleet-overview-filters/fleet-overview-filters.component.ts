@@ -316,10 +316,22 @@ ngAfterViewInit(){
         let unknownandEmptyCount = 0;
         this.driversListGet = JSON.parse(JSON.stringify(data));
         for (let item of this.driversListGet) {
-          if (item.driverName == "" || item.driverName == "Unknown") {
+          // condition's for Driver List
+          if (item.driverName == "" && item.driver1Id == "") {
             unknownandEmptyCount = unknownandEmptyCount + 1;
-          } else {
-            this.driversListfilterGet.push({driverName: item.driverName, driver1Id: item.driver1Id});
+          }
+          if (item.driverName == "Unknown") {
+            unknownandEmptyCount = unknownandEmptyCount + 1;
+          }
+          if (item.driverName == "" && item.driver1Id == "Unknown") {
+            unknownandEmptyCount = unknownandEmptyCount + 1;
+          }
+
+          if (item.driverName != "" && item.driverName != "Unknown" ) {
+            this.driversListfilterGet.push({driverName: item.driverName});
+          }
+          if (item.driverName == "" && item.driver1Id != "" && item.driver1Id != "Unknown") {
+            this.driversListfilterGet.push({driverName: item.driver1Id});
           }
         }
         if (unknownandEmptyCount > 0) {
@@ -962,13 +974,24 @@ removeDuplicates(originalArray, prop) {
     // this.loadDriverData();
     this.vehicleListData = this.forFilterVehicleListData.filter(item => {
       if (val == "Unknown") {
-        if (item.driverName == "Unknown" || item.driverName == "") {
+        if (item.driverName == "" && item.driver1Id == "") {
+          return item;
+        }
+        if (item.driverName == "Unknown") {
+          return item;
+        }
+        if (item.driverName == "" && item.driver1Id == "Unknown") {
           return item;
         }
       } else if (val == "all") {
         return item;
-      } else if (val == item.driverName) {
-          return item;
+      } else if (val != "Unknown" && val != "all") {
+          if (val == item.driverName) {
+            return item;
+          }
+          if (val == item.driver1Id ) {
+            return item;
+          }
       }
     });
 
