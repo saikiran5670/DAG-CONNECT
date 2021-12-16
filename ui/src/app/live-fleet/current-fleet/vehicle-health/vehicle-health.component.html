@@ -13,7 +13,7 @@
     </div>
     <div class="tabs">
       <mat-tab-group [ngClass]="[ tabVisibilityStatus ? '' : 'hideTabHeader']" [(selectedIndex)]="selectedIndex" (selectedTabChange)="onTabChanged(selectedIndex);">
-        <mat-tab label="{{ translationData.lblCurrent || 'Current'}}">
+        <mat-tab label="{{ translationData.lblCurrent || 'Current' }}">
         </mat-tab>
         <mat-tab label="{{ translationData.lblHistory || 'History' }}">
         </mat-tab>
@@ -102,7 +102,7 @@
               </div>
               <div fxLayout="row" fxLayoutAlign="end" class='areaWidth'> 
                 <button class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
-                  (click)='onReset()'>{{translationData.lblReset }}</button>
+                  (click)='onReset()'>{{ translationData.lblReset }}</button>
                 <button class='no-margin' mat-raised-button color="primary"
                   (click)='onSearch()'>{{ translationData.lblSearch }}</button>
               </div>
@@ -126,13 +126,13 @@
                 <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                   <span>
                     <span>{{ translationData.lblFrom }}: </span>
-                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ fromDisplayDate }}</span>
+                    <span class='font-helvetica-md'>{{ fromDisplayDate }}</span>
                   </span>
                 </div>
                 <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                   <span>
                     <span>{{ translationData.lblWarningType }}: </span>
-                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ warningTypeDisplay }}</span>
+                    <span class='font-helvetica-md'>{{ warningTypeDisplay }}</span>
                   </span>
                 </div>
               </div>
@@ -140,7 +140,7 @@
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                   <span>
                     <span>{{ translationData.lblTo }}: </span>
-                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ toDisplayDate }}</span>
+                    <span class='font-helvetica-md'>{{ toDisplayDate }}</span>
                   </span>
                 </div>
               </div>
@@ -148,25 +148,25 @@
                 <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                   <span>
                     <span>{{ translationData.lblVIN }}: </span>
-                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{healthData.vin}}</span>
+                    <span class='font-helvetica-md'>{{ healthData.vin }}</span>
                   </span>
                 </div>
                 <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                   <span>
                     <span>{{ translationData.lblVehicleName }}: </span>
-                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ healthData.vehicleName }}</span>
+                    <span class='font-helvetica-md'>{{ healthData.vehicleName }}</span>
                   </span>
                 </div>
                 <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                   <span>
                     <span>{{ translationData.lblVehicleRegNo }}: </span>
-                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{healthData.registrationNo}}</span>
+                    <span class='font-helvetica-md'>{{ healthData.registrationNo }}</span>
                   </span>
                 </div>
                 <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                   <span>
                     <span>{{ translationData.lblDrivingStatus }}: </span>
-                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{healthData.vehicleDrivingStatusType}}</span>
+                    <span class='font-helvetica-md'>{{ healthData.vehicleDrivingStatusType }}</span>
                   </span>
                 </div>
               </div>
@@ -174,13 +174,13 @@
                 <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                   <span>
                     <span>{{ translationData.lblAlert }}: </span>
-                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{(healthData.fleetOverviewAlert).length}}</span>
+                    <span class='font-helvetica-md'>{{ (healthData.fleetOverviewAlert).length }}</span>
                   </span>
                 </div>
                 <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                   <span>
                     <span>{{ translationData.lblAddress }}: </span>
-                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{healthData.latestGeolocationAddress}}</span>
+                    <span class='font-helvetica-md'>{{ healthData.latestGeolocationAddress }}</span>
                   </span>
                 </div>
               </div>
@@ -234,44 +234,43 @@
               </div>
             </div>
             <div *ngIf='!obs'>
-              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;' fxLayout="row"
+              <div fxLayout="row"
                 fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound }}</div>
               <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{
                 translationData.lblSelectionMessage }}</div>
             </div>
-            <div *ngIf="obs" style="font: 500 16px/32px Roboto, 'Helvetica Neue', sans-serif;" 
-               class="full-width margin-bottom-xlg" fxLayoutGap="10px">
+            <div *ngIf="obs" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
               <div *ngFor="let warning of obs | async">
                 <div class="warning_block">
                 <mat-checkbox style="font-size: 14px;" (change)='checkboxClicked($event,warning)'> 
-                  {{translationData.lblViewOnMap || 'View on Map'}}
+                  {{ translationData.lblViewOnMap || 'View on Map' }}
                 </mat-checkbox>
                 <div class="areaWidth warning_history" fxLayout="column" fxLayoutAlign="left">
                   <div style="font-size: 14px; line-height: initial; padding: 10px 10px 0;">
                     <img src="assets/images/icons/vehicleHealthStatus/{{warning.iconName}}" style="float: left; height: 40px; width: 40px;">
-                    <span class="name_bold">{{warning.warningName}}&nbsp;</span>
+                    <span class="font-helvetica-md">{{ warning.warningName }}&nbsp;</span>
                   </div>
                   <div fxLayout="row" class="class_padding">
                     <div class="warning_time" fxLayout="column" fxLayoutAlign="left">
-                      <span  *ngIf='warning.warningType=="A"' [ngClass]="[isCurrent ? 'name_small warning_danger' : 'name_small']">Activated Time</span>
-                      <span  *ngIf='warning.warningType=="D"' [ngClass]="[isCurrent ? 'name_small warning_danger' : 'name_small']">Deactivated Time</span>
-                      <span style="font-size: 14px;">{{warning.warningTimetamp | date: 'yyyy/MM/dd h:mm:ss a'}}</span>
+                      <span  *ngIf='warning.warningType=="A"' [ngClass]="[isCurrent ? 'name_small warning_danger' : 'name_small']">{{ translationData.lblActivatedTime || 'Activated Time' }}</span>
+                      <span  *ngIf='warning.warningType=="D"' [ngClass]="[isCurrent ? 'name_small warning_danger' : 'name_small']">{{ translationData.lblDeactivatedTime || 'Deactivated Time' }}</span>
+                      <span style="font-size: 14px;">{{ warning.warningTimetamp | date: 'yyyy/MM/dd h:mm:ss a' }}</span>
                     </div>
                     <ng-container *ngIf="warning.warningDeactivatedTimestamp">
                       <div *ngIf='!isCurrent' class="warning_time" fxLayout="column" fxLayoutAlign="left">
-                        <span class="name_small warning_danger">Deactivated Time</span>
-                        <span style="font-size: 14px;">{{warning.warningDeactivatedTimestamp | date: 'yyyy/MM/dd h:mm:ss a'}}</span>
+                        <span class="name_small warning_danger">{{ translationData.lblDeactivatedTime || 'Deactivated Time' }}</span>
+                        <span style="font-size: 14px;">{{ warning.warningDeactivatedTimestamp | date: 'yyyy/MM/dd h:mm:ss a' }}</span>
                       </div>
                     </ng-container>
                   </div>
                   <div fxLayout="row" class="name_small class_padding">
-                    <span>Driver Name: </span>
-                    <span class="name_bold"> {{warning.driverName}}</span>
+                    <span>{{ translationData.lblDriverName || 'Driver Name' }}: </span>
+                    <span class="font-helvetica-md">{{ warning.driverName }}</span>
                   </div>
                   <div class="bottom_hr"></div>
                   <div class="warning_advice class_padding">
                     <p>
-                      <span class="name_bold">Advice:</span> {{warning.warningAdvice}}
+                      <span class="font-helvetica-md">{{ translationData.lblAdvice || 'Advice' }}:</span> {{ warning.warningAdvice }}
                     </p>
                   </div>
                 </div>
