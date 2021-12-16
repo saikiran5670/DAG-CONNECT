@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Injectable } from '@angular/core';
 // import { TranslateService } from "@ngx-translate/core"; 
 import {MatPaginatorModule, MatPaginatorIntl } from '@angular/material/paginator';
+import { TranslationService } from 'src/app/services/translation.service';
 
 @Component({
   selector: 'app-custom-pagination',
@@ -11,12 +12,12 @@ import {MatPaginatorModule, MatPaginatorIntl } from '@angular/material/paginator
 export class CustomPaginationComponent extends MatPaginatorIntl {
   @Input()
   showFirstLastButtons: boolean;
-  constructor() { 
+  constructor(private translationService: TranslationService) { 
     super()
   // this.nextPageLabel = ' My new label for next page';
   // this.previousPageLabel = ' My new label for previous page';
-  this.itemsPerPageLabel = 'View';
-  this.getRangeLabel = (page: number, pageSize: number, length: number) => `Page ${(page + 1).toString()} of ${length.toString()} lists`;
+  this.itemsPerPageLabel = translationService.applicationTranslationData.lblView;
+  this.getRangeLabel = (page: number, pageSize: number, length: number) => translationService.applicationTranslationData.lblPage +` ${(page + 1).toString()} `+ translationService.applicationTranslationData.lblOf +` ${length.toString()} `+translationService.applicationTranslationData.lblLists;
   }
   
 
