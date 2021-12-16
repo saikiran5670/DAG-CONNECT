@@ -852,7 +852,7 @@ message FleetFuelGraphsResponse {
 message FleetFuelGraphs {
         int64 VehicleID = 1;
         string VIN = 2;
-        int64 NumberofTrips = 3;
+        string NumberofTrips = 3;
         double FuelConsumed = 4;
         double Co2Emission = 5;
         double Distance = 6;

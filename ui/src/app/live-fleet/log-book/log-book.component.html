@@ -39,14 +39,14 @@
         <mat-expansion-panel-header class="full-width">
           <mat-panel-title>
             <span>
-              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSearchParameters }}</span>
+              <span>{{ translationData.lblSearchParameters }}</span>
             </span>
           </mat-panel-title>
         </mat-expansion-panel-header>
         <div>
           <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
             <div class="areaWidth min-width-65-per" fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ translationData.lblTimeRange }} <span class='mandatoryColor'>*</span></mat-label>
+              <mat-label class='font-16-px'>{{ translationData.lblTimeRange }} <span class='mandatoryColor'>*</span></mat-label>
               <div style='margin-top: 5px;'>
                 <button [disabled]="selectionTab == 'today'" (click)="selectionTimeRange('today')" [ngClass]="{'selectedBtn': selectionTab == 'today'}" class='margin-right-5 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblToday }}</button>
                 <button [disabled]="selectionTab == 'yesterday'" (click)="selectionTimeRange('yesterday')" [ngClass]="{'selectedBtn': selectionTab == 'yesterday'}" class='margin-right-5 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblYesterday }}</button>
@@ -56,7 +56,7 @@
               </div>
             </div>
             <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ translationData.lblVehicleGroup  }}</mat-label>
+              <mat-label class='font-16-px'>{{ translationData.lblVehicleGroup  }}</mat-label>
               <mat-form-field appearance="outline">
                 <mat-select [disabled]="vehicleGrpDD.length == 0 && fromAlertsNotifications == false" (selectionChange)="onVehicleGroupChange($event.value)" placeholder="{{ 'Select Vehicle Group' || 'Select  Group' }}"  formControlName="vehicleGroup">
                   <mat-option>
@@ -72,7 +72,7 @@
               </mat-form-field>
             </div>
             <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ translationData.lblVehicleName }} </mat-label>
+              <mat-label class='font-16-px'>{{ translationData.lblVehicleName }} </mat-label>
               <mat-form-field appearance="outline">
                 <!-- <mat-select [disabled]="vehicleDD.length == 0  && fromAlertsNotifications == false" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select  Name' }}" formControlName="vehicle"> -->
                  <mat-select [disabled]="vehicleGrpDD.length == 0  && fromAlertsNotifications == false" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle }}" formControlName="vehicle">
@@ -93,7 +93,7 @@
             <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                  <mat-label>{{ translationData.lblFrom }} <span class='mandatoryColor'>*</span></mat-label>
+                  <mat-label class='font-16-px'>{{ translationData.lblFrom }} <span class='mandatoryColor'>*</span></mat-label>
                   <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
                     <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
                       <mat-form-field appearance="outline">
@@ -113,7 +113,7 @@
                   </div>
                 </div>
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                  <mat-label>{{ translationData.lblTo }} <span class='mandatoryColor'>*</span></mat-label>
+                  <mat-label class='font-16-px'>{{ translationData.lblTo }} <span class='mandatoryColor'>*</span></mat-label>
                   <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
                     <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
                       <mat-form-field appearance="outline">
@@ -135,7 +135,7 @@
               </div>
             </div>
             <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ translationData.lblAlertLevel }}</mat-label>
+              <mat-label class='font-16-px'>{{ translationData.lblAlertLevel }}</mat-label>
               <mat-form-field appearance="outline">
                 <mat-select [disabled]="vehicleGrpDD.length == 0 && fromAlertsNotifications == false" (selectionChange)="onAlertLevelChange($event)" placeholder="{{ translationData.lblSelectVehicle }}" formControlName="alertLevel">
                   <mat-option value="all">{{translationData.lblAll }}</mat-option>
@@ -146,7 +146,7 @@
               </mat-form-field>
             </div>
             <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ translationData.lblAlertType }}</mat-label>
+              <mat-label class='font-16-px'>{{ translationData.lblAlertType }}</mat-label>
               <mat-form-field appearance="outline">
                 <mat-select [disabled]="vehicleGrpDD.length == 0 && fromAlertsNotifications == false" (selectionChange)="onAlertTypeChange($event)" placeholder="{{ translationData.lblSelectVehicle }}" formControlName="alertType">
                   <mat-option value="all">{{translationData.lblAll }}</mat-option>
@@ -161,7 +161,7 @@
             <div class="areaWidth min-width-65-per" fxLayout="column" fxLayoutAlign="left">
             </div>
             <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ translationData.lblAlertCategory }} </mat-label>
+              <mat-label class='font-16-px'>{{ translationData.lblAlertCategory }} </mat-label>
                 <mat-form-field appearance="outline">
                   <mat-select [disabled]="vehicleGrpDD.length == 0 && fromAlertsNotifications == false" (selectionChange)="onAlertCategoryChange($event)" placeholder="{{ translationData.lblSelectVehicle  }}" formControlName="alertCategory">
                     <mat-option value="all">{{translationData.lblAll }}</mat-option>
@@ -175,8 +175,6 @@
             </div>   
           </div>
         
-          
-          
           <div fxLayout="row" fxLayoutAlign="end" class='areaWidth'> 
             <button class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
               (click)='onReset()'>{{translationData.lblReset  }}</button>
@@ -192,8 +190,8 @@
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title>
           <span>
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif; margin-right: 20px;'>{{ translationData.lblMapView }}</span>
-            <span><mat-icon style='vertical-align: middle;'>info</mat-icon>&nbsp;{{ translationData.lblMapInfoText }}</span>
+            <span style="margin-right: 20px;">{{ translationData.lblMapView }}</span>
+            <span class='font-helvetica-lt' style="font-size: 14px; line-height: 21px;"><mat-icon style='vertical-align: middle; margin-top: -2px;'>info</mat-icon>&nbsp;{{ translationData.lblMapInfoText }}</span>
           </span>
         </mat-panel-title>
       </mat-expansion-panel-header>
@@ -281,11 +279,11 @@
     <mat-expansion-panel [(expanded)]="tableExpandPanel" class="full-width" fxLayoutGap="10px">
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title>
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblLogbookDetails }}</span>
+          <span>{{ translationData.lblLogbookDetails }}</span>
         </mat-panel-title>
       </mat-expansion-panel-header>
       <div *ngIf='initData.length == 0'>
-        <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;' fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound }}</div>
+        <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound }}</div>
         <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblSelectionMessage }}</div>
       </div>
       <div *ngIf='initData.length > 0' [ngClass]="{'reportTable': displayedColumns.length > 7}">
@@ -294,25 +292,25 @@
             <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <span>{{ translationData.lblFrom }}: </span>
-                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.fromDate }}</span>
+                <span class='font-helvetica-md'>{{ tableInfoObj.fromDate }}</span>
               </span>
             </div>
             <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <span>{{ translationData.lblVehicleGroup }}: </span>
-                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vehGroupName }}</span>
+                <span class='font-helvetica-md'>{{ tableInfoObj.vehGroupName }}</span>
               </span>
             </div>
             <div *ngIf='showField.alertLevel' class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <span>{{ translationData.lblAlertLevel }}: </span>
-                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.alertLevel }}</span>
+                <span class='font-helvetica-md'>{{ tableInfoObj.alertLevel }}</span>
               </span>
             </div>
             <div *ngIf='showField.alertCategory' class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <span>{{ translationData.lblAlertCategory }}: </span>
-                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.alertCategory }}</span>
+                <span class='font-helvetica-md'>{{ tableInfoObj.alertCategory }}</span>
               </span>
             </div>
           </div>
@@ -320,19 +318,19 @@
             <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <span>{{ translationData.lblTo }}: </span>
-                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.endDate }}</span>
+                <span class='font-helvetica-md'>{{ tableInfoObj.endDate }}</span>
               </span>
             </div>
             <div *ngIf='showField.vehicleName' class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <span>{{ translationData.lblVehicle }}: </span>
-                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vehicleName }}</span>
+                <span class='font-helvetica-md'>{{ tableInfoObj.vehicleName }}</span>
               </span>
             </div>
             <div *ngIf='showField.alertType' class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <span>{{ translationData.lblAlertType }}: </span>
-                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.alertType }}</span>
+                <span class='font-helvetica-md'>{{ tableInfoObj.alertType }}</span>
               </span>
             </div>           
           </div>

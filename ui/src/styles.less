@@ -9,7 +9,6 @@
     src: local("Helvetica Neue LT Std-Md"), url(assets/fonts/helveticaneueltstdblk/HelveticaNeueLTStd-Md.otf) format("opentype");
 }
 
-
 /* body {
     margin: 0;
     font-family: PT Sans, "PT Sans" !important;
@@ -912,7 +911,7 @@ input:-webkit-autofill {
         
         .mat-header-cell{
             // font-size: 1em;
-            font-weight: bold;
+            // font-weight: bold;
             font-size: 16px;
             color: #353C45;
             @media @mobile {
@@ -987,7 +986,7 @@ input:-webkit-autofill {
     min-width: 100px;
     min-height: 38px;
     line-height: 21px;
-    font-family: 'Helvetica Neue LT Std', 'Arial';
+    font-family: 'Helvetica Neue LT Std-Md', 'Arial';
  }}}
  //for sub pages only primary buttons
  .mat-button-base{
@@ -999,7 +998,7 @@ input:-webkit-autofill {
         min-width: 100px;
         min-height: 38px;
         line-height: 21px;
-        font-family: 'Helvetica Neue LT Std', 'Arial';
+        font-family: 'Helvetica Neue LT Std-Md', 'Arial';
     }}
 //  .mat-checkbox-indeterminate.mat-accent .mat-checkbox-background, .mat-checkbox-checked.mat-accent .mat-checkbox-background
  .mat-checkbox-checked,.mat-checkbox-indeterminate,.mat-checkbox {
@@ -1349,13 +1348,13 @@ mat-cell:first-of-type, mat-header-cell:first-of-type, mat-footer-cell:first-of-
         min-width: 100px;    
     }
     .mat-tab-label{
-        background: #c4c4c4;
+        background: #29539c; // #c4c4c4
         opacity: 0.9 !important;
         //color: #000 !important;
-        color: #000000de !important;
+        color: #fff !important; // #000000de !important;
         min-width: 90px!important;
         padding: 0px !important;
-        border: 1px solid #cacaca;
+        border: 1px solid #3764a5; // #cacaca
         height: 35px !important;  
         font-size: 14px;
         z-index: 999;
@@ -1363,6 +1362,7 @@ mat-cell:first-of-type, mat-header-cell:first-of-type, mat-footer-cell:first-of-
     }
     .mat-tab-label-active{
         background: #fff !important;
+        color: #353C45 !important;
     }
     .mat-tab-header{
         margin-bottom: 0px;
@@ -1459,7 +1459,7 @@ mat-card, mat-expansion-panel, mat-expansion-panel-header, mat-panel-title, .mat
 }
 
 .mat-tab-label, .mat-tab-link{
-    font-family: 'Helvetica Neue LT Std', 'Arial';
+    font-family: 'Helvetica Neue LT Std-Md', 'Arial';
 }
 
 .section-txt-font{
@@ -1471,8 +1471,49 @@ mat-card, mat-expansion-panel, mat-expansion-panel-header, mat-panel-title, .mat
 }
 
 .font-helvetica-md{
-    font-family: 'Helvetica Neue LT Std-Md', 'Arial'
+    font-family: 'Helvetica Neue LT Std-Md', 'Arial' !important;
 }
 .font-helvetica-lt{
-    font-family: 'Helvetica Neue LT Std', 'Arial'
+    font-family: 'Helvetica Neue LT Std', 'Arial' !important;
+}
+
+.mat-button{
+    font-family: 'Helvetica Neue LT Std-Md', 'Arial' !important;
+}
+
+.mat-checkbox, .mat-radio-button{
+    font-family: 'Helvetica Neue LT Std', 'Arial' !important;
+}
+
+.mat-form-field {
+    font-family: 'Helvetica Neue LT Std', 'Arial' !important;
+    color: #353C45 !important;
+}
+
+.font-16-px{
+    font-size: 16px !important;
+}
+
+.line-height-24-px{
+    line-height: 24px !important;
+}
+
+.font-20-px{
+    font-size: 20px !important;
+}
+
+.line-height-30-px{
+    line-height: 30px !important;
+}
+
+.mat-card{
+    font-family: 'Helvetica Neue LT Std', 'Arial';
+}
+
+.font-14-px{
+    font-size: 14px !important;
+}
+
+.line-height-21px{
+    line-height: 21px !important;
 }

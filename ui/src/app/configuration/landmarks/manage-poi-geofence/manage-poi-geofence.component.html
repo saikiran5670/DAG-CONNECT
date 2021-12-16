@@ -137,7 +137,10 @@
             <ng-container matColumnDef="Icon">
               <mat-header-cell *matHeaderCellDef class="max-width-8-per">{{ translationData.lblIcon || 'Icon' }}</mat-header-cell>
               <mat-cell *matCellDef="let row" class="max-width-8-per">
-                <mat-icon>place</mat-icon>
+                <span>
+                  <mat-icon *ngIf="row.imageUrl && row.imageUrl == ''">place</mat-icon>
+                  <img *ngIf="row.imageUrl && row.imageUrl != ''" [src]='row.imageUrl' alt='' width='20px' height='20px'>
+                </span>
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="name">

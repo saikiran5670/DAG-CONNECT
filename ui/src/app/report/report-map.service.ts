@@ -166,18 +166,18 @@ export class ReportMapService {
         let bubble: any;
         categoryPOIMarker.addEventListener('pointerenter', function (evt) {
           bubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
-            content:`<table style='width: 350px;'>
+            content:`<table style='width: 350px;' class='font-helvetica-lt font-14-px line-height-21px'>
             <tr>
-              <td style='width: 100px;'>${translationData.lblPOIName || 'POI Name'}:</td> <td><b>${element.poiName}</b></td>
+              <td style='width: 100px;'>${translationData.lblPOIName || 'POI Name'}:</td> <td class='font-helvetica-md'>${element.poiName}</td>
             </tr>
             <tr>
-              <td style='width: 100px;'>${translationData.lblCategory || 'Category'}:</td> <td><b>${element.categoryName}</b></td>
+              <td style='width: 100px;'>${translationData.lblCategory || 'Category'}:</td> <td class='font-helvetica-md'>${element.categoryName}</td>
             </tr>
             <tr>
-              <td style='width: 100px;'>${translationData.lblSubCategory || 'Sub-Category'}:</td> <td><b>${element.subCategoryName != '' ? element.subCategoryName : '-'}</b></td>
+              <td style='width: 100px;'>${translationData.lblSubCategory || 'Sub-Category'}:</td> <td class='font-helvetica-md'>${element.subCategoryName != '' ? element.subCategoryName : '-'}</td>
             </tr>
             <tr>
-              <td style='width: 100px;'>${translationData.lblAddress || 'Address'}:</td> <td><b>${element.poiAddress != '' ? element.poiAddress : '-'}</b></td>
+              <td style='width: 100px;'>${translationData.lblAddress || 'Address'}:</td> <td class='font-helvetica-md'>${element.poiAddress != '' ? element.poiAddress : '-'}</td>
             </tr>
           </table>`
           });
@@ -327,15 +327,15 @@ export class ReportMapService {
             // for all objects that it contains
             startBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
               // read custom data
-              content:`<table style='width: 350px;'>
+              content:`<table style='width: 350px;' class='font-helvetica-lt font-14-px line-height-21px'>
                 <tr>
-                  <td style='width: 100px;'>${translationData.lblStartLocation || 'Start Location'}:</td> <td><b>${elem.startPosition}</b></td>
+                  <td style='width: 100px;'>${translationData.lblStartLocation || 'Start Location'}:</td> <td class='font-helvetica-md'>${elem.startPosition}</td>
                 </tr>
                 <tr>
-                  <td style='width: 100px;'>${translationData.lblStartDate || 'Start Date'}:</td> <td><b>${elem.convertedStartTime}</b></td>
+                  <td style='width: 100px;'>${translationData.lblStartDate || 'Start Date'}:</td> <td class='font-helvetica-md'>${elem.convertedStartTime}</td>
                 </tr>
                 <tr>
-                  <td style='width: 100px;'>${translationData.lblTotalAlerts || 'Total Alerts'}:</td> <td><b>${elem.totalAlerts}</b></td>
+                  <td style='width: 100px;'>${translationData.lblTotalAlerts || 'Total Alerts'}:</td> <td class='font-helvetica-md'>${elem.totalAlerts}</td>
                 </tr>
               </table>`
             });
@@ -352,15 +352,15 @@ export class ReportMapService {
             // for all objects that it contains
             endBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
               // read custom data
-              content:`<table style='width: 350px;'>
+              content:`<table style='width: 350px;' class='font-helvetica-lt font-14-px line-height-21px'>
                 <tr>
-                  <td style='width: 100px;'>${translationData.lblEndLocation || 'End Location'}:</td> <td><b>${elem.endPosition}</b></td>
+                  <td style='width: 100px;'>${translationData.lblEndLocation || 'End Location'}:</td> <td class='font-helvetica-md'>${elem.endPosition}</td>
                 </tr>
                 <tr>
-                  <td style='width: 100px;'>${translationData.lblEndDate || 'End Date'}:</td> <td><b>${elem.convertedEndTime}</b></td>
+                  <td style='width: 100px;'>${translationData.lblEndDate || 'End Date'}:</td> <td class='font-helvetica-md'>${elem.convertedEndTime}</td>
                 </tr>
                 <tr>
-                  <td style='width: 100px;'>${translationData.lblTotalAlerts || 'Total Alerts'}:</td> <td><b>${elem.totalAlerts}</b></td>
+                  <td style='width: 100px;'>${translationData.lblTotalAlerts || 'Total Alerts'}:</td> <td class='font-helvetica-md'>${elem.totalAlerts}</td>
                 </tr>
               </table>`
             });
@@ -447,18 +447,18 @@ export class ReportMapService {
           // for all objects that it contains
           startBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
             // read custom data
-            content:`<table style='width: 300px; font-size:12px;'>
+            content:`<table style='width: 300px;' class='font-helvetica-lt font-14-px line-height-21px'>
               <tr>
-                <td style='width: 100px;'>${translationData.lblAlertName || 'Alert Name'}:</td> <td><b>${element.alertName ? element.alertName : '-' }</b></td>
+                <td style='width: 100px;'>${translationData.lblAlertName || 'Alert Name'}:</td> <td class='font-helvetica-md'>${element.alertName ? element.alertName : '-' }</td>
               </tr>
               <tr>
-                <td style='width: 100px;'>${translationData.lblAlertType || 'Alert Type'}:</td> <td><b>${_obj.type}</b></td>
+                <td style='width: 100px;'>${translationData.lblAlertType || 'Alert Type'}:</td> <td class='font-helvetica-md'>${_obj.type}</td>
               </tr>
               <tr>
-                <td style='width: 100px;'>${translationData.lblAlertLevel || 'Alert Level'}:</td> <td><b>${_obj.level}</b></td>
+                <td style='width: 100px;'>${translationData.lblAlertLevel || 'Alert Level'}:</td> <td class='font-helvetica-md'>${_obj.level}</td>
               </tr>
               <tr>
-                <td style='width: 100px;'>${translationData.lblAlertTime || 'Alert Time'}:</td> <td><b>${element.convertedAlertTime}</b></td>
+                <td style='width: 100px;'>${translationData.lblAlertTime || 'Alert Time'}:</td> <td class='font-helvetica-md'>${element.convertedAlertTime}</td>
               </tr>
             </table>`
           });
@@ -927,7 +927,7 @@ export class ReportMapService {
               screenPosition = this.hereMap.geoToScreen(point),
               t = event.target,
               _data = t.getData(),
-              tooltipContent = "<table class='cust-table' border='1'><thead><th></th><th>Trip</th><th>Start Date</th><th>End Date</th></thead><tbody>"; 
+              tooltipContent = "<table class='cust-table font-helvetica-lt' border='1'><thead><th></th><th>Trip</th><th>Start Date</th><th>End Date</th></thead><tbody>"; 
               var chkBxId = 0;
               _data.forEachEntry(
               (p) => 
@@ -1478,7 +1478,7 @@ export class ReportMapService {
  }
 
  convertKmphToMph(_data:any){
-  let data = _data *  0.62137119223733;
+  let data = _data *  0.62137119;
   return data.toFixed(2);
 }
 
@@ -1509,8 +1509,8 @@ export class ReportMapService {
   }
 
   meterToMile(_data: any){
-    let kmData= _data / 1000;
-    let data= kmData * 0.62137119223733; 
+    let kmData= (_data / 1000).toFixed(2);
+    let data= Number(kmData) * 0.62137119; 
     return data.toFixed(2);
   }
 

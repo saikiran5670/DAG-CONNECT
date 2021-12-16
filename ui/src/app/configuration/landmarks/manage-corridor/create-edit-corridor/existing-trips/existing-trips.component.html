@@ -355,7 +355,7 @@
             <!-- <mat-cell *matCellDef="let row" class="max-width-8-per">dfd</mat-cell> -->
           </ng-container>
           <!-- <div *ngIf="covertedDateValue.length > 0" > -->
-          <ng-container matColumnDef="date">
+          <ng-container matColumnDef="startTimeStamp">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDate}}</mat-header-cell>
             <mat-cell *matCellDef="let row">
               <!-- <div *ngFor="let dateValue of covertedDateValue;let i = index">{{dateValue[i]}}</div> -->
@@ -364,14 +364,14 @@
             <!-- <mat-cell *matCellDef="let row">sdsf</mat-cell> -->
           </ng-container>
           <!-- </div> -->
-          <ng-container matColumnDef="startPoint">
+          <ng-container matColumnDef="startAddress">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStartPoint}}
             </mat-header-cell>
             <!-- <mat-cell *matCellDef="let row" class="max-width-8-per">{{ row.startPositionlattitude }},{{ row.startPositionLongitude }}</mat-cell> -->
             <mat-cell *matCellDef="let row" style="margin-right: 10px;" matTooltip="{{row.startAddress }}"
               class="max-width-8-per text-truncate">{{row.startAddress}}</mat-cell>
           </ng-container>
-          <ng-container matColumnDef="endPoint">
+          <ng-container matColumnDef="endAddress">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEndPoint}}
             </mat-header-cell>
             <!-- <mat-cell *matCellDef="let row" class="max-width-8-per">{{ row.endPositionLattitude }},{{ row.endPositionLongitude }}</mat-cell> -->
