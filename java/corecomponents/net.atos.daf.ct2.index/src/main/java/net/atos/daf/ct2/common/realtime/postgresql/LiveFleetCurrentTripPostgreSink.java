@@ -37,8 +37,8 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<Index> imp
 	String readtrip = null;
 	String readposition = null;
 
-	private List<Index> queue = new ArrayList<Index>();
-	private List<Index> synchronizedCopy = new ArrayList<Index>();
+	//private List<Index> queue = new ArrayList<Index>();
+	//private List<Index> synchronizedCopy = new ArrayList<Index>();
 
 	LivefleetCurrentTripStatisticsDao currentTripDAO = null;
 	//LiveFleetPosition positionDAO = null;
