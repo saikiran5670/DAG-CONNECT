@@ -22,6 +22,7 @@ import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { MapFunctionsService } from '../../map-functions.service';
 import { ReplaySubject } from 'rxjs';
+import { Util } from 'src/app/shared/util';
 
 @Component({
   selector: 'app-existing-trips',
@@ -63,7 +64,7 @@ export class ExistingTripsComponent implements OnInit {
   dataSource: any = new MatTableDataSource([]);
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
-  displayedColumns = ['All', 'DriverName', 'distance', 'date', 'startPoint', 'endPoint'];
+  displayedColumns = ['All', 'DriverName', 'distance', 'startTimeStamp', 'startAddress', 'endAddress'];
   existingTripData: any = [];
   dataColValue: any = [];
   createEditStatus = false;
@@ -118,7 +119,9 @@ export class ExistingTripsComponent implements OnInit {
   organizationId: number;
   corridorId: number = 0;
   // localStLanguage: any;
-  accountId: any = JSON.parse(localStorage.getItem("accountId"));;
+  accountId: any = JSON.parse(localStorage.getItem("accountId"));
+  filterValue: string;
+;
   hereMap: any;
   distanceinKM = 0;
   viaRouteCount: boolean = false;
@@ -1188,16 +1191,25 @@ export class ExistingTripsComponent implements OnInit {
         const isAsc = sort.direction === 'asc';
         return data.sort((a: any, b: any) => {
             let columnName = sort.active;
+            // if(columnName === date){
+            //   return this.compare(a[sort.active], b[sort.active], isAsc , date);
+            // }
             return this.compare(a[sort.active], b[sort.active], isAsc , columnName);
         });
       }
     });
+    Util.applySearchFilter(this.dataSource, this.displayedColumns ,this.filterValue );
   }
-  compare(a: Number | String, b: Number | String, isAsc: boolean, columnName: any) {
-
+  compare(a: any , b: any , isAsc: boolean, columnName: any) {
+    // if(columnName == "roleList" || columnName == "accountGroupList") {
+    //   if(!(a instanceof Number)) a = a.toString().toUpperCase();
+    //   if(!(b instanceof Number)) b = b.toString().toUpperCase();  
+    // }
     if(!(a instanceof Number)) a = a.toString().toUpperCase();
-    if(!(b instanceof Number)) b = b.toString().toUpperCase();
-
+    if(!(b instanceof Number)) b = b.toString().toUpperCase();  
+    //if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toUpperCase();
+    // if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toUpperCase();
+  
   return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
 }
 
