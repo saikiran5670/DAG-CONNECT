@@ -2,7 +2,7 @@
     <div class="preferences-container" *ngIf="userPreferencesFlag" [ngStyle]="{'width': userPreferencesFlag ? '1000px' : '0px' }">
         <div fxLayout="row" style="background: rgb(209, 208, 208); padding: 10px 25px;" >
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-                <span class='custom-font'>{{ translationData.lblPreferences }} ({{ translationData.lblPersonaliseyourowndisplaysettings || 'Personalise your own display settings' }})</span>
+                <span class='font-helvetica-md font-14-px line-height-21px'>{{ translationData.lblPreferences }} <span class='font-14-px line-height-21px'>({{ translationData.lblPersonaliseyourowndisplaysettings || 'Personalise your own display settings' }})</span></span>
             </div>
         </div>
         <div style="background: rgb(241, 242, 243); padding: 0px 25px;">

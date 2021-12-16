@@ -6,8 +6,8 @@
             [checked]='selectionForTripColumns.hasValue() && isAllSelectedForColumns()'
             [indeterminate]='selectionForTripColumns.hasValue() && !isAllSelectedForColumns()'
             [aria-label]='checkboxLabelForColumns()' [disabled]='!editFlag'><span class='headerFont'>{{
-                translationData.lblTripReportDetails }} ({{
-                translationData.lblTablecolumnviewsettings }})</span>
+                translationData.lblTripReportDetails }} <span class='font-14-px'>({{
+                translationData.lblTablecolumnviewsettings }})</span></span>
         </mat-checkbox>
     </div>
 </div>
