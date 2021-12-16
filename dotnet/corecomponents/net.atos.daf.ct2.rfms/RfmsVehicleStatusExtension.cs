@@ -23,7 +23,7 @@ namespace net.atos.daf.ct2.rfms
 
             if (!rfmsVehicleStatus.MoreDataAvailable)
             {
-                rfmsVehicleStatus.MoreDataAvailableLink = "/vehiclestatus?LatestOnly=true&lastVin=" + lastVin;
+                rfmsVehicleStatus.MoreDataAvailableLink = "/vehiclestatus?LatestOnly=true&startTime=" + lastReceivedDateTime + "&lastVin=" + lastVin;
                 rfmsVehicleStatus.MoreDataAvailable = true;
             }
             else
@@ -89,7 +89,7 @@ namespace net.atos.daf.ct2.rfms
                     string state = _rfmsVehicleMasterTableCache.GetMasterDataValueFromCache(MasterMemoryObjectCacheConstants.TALE_TELL_STATE, vehiclePos.TriggerType.TellTaleInfo.State, false);
                     vehiclePos.TriggerType.TellTaleInfo.State = state;
                 }
-                if (vehiclePos.UptimeData.TellTaleInfo.Count > 0)
+                if (vehiclePos.UptimeData?.TellTaleInfo?.Count > 0)
                 {
                     foreach (var item in vehiclePos.UptimeData.TellTaleInfo)
                     {
