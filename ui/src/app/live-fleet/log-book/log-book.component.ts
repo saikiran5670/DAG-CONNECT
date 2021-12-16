@@ -2012,7 +2012,7 @@ let prepare = []
         // for all objects that it contains
         iconBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
           // read custom data
-          content:`<table style='width: 300px; font-size:12px;'>
+          content:`<table style='width: 300px; font-size:14px; line-height: 21px; font-weight: 400;' class='font-helvetica-lt'>
             <tr>
               <td style='width: 100px;'>${this.translationData.lblVehicleName}:</td> <td><b>${elem.vehicleName}</b></td>
             </tr>

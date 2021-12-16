@@ -14,7 +14,7 @@
         <form [formGroup]="vehicleUpdatesForm">               
           <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>
+                <span class='font-helvetica-md font-20-px line-height-30-px'>
                     {{ translationData.lblVehicleStatusList || 'Vehicle Status List' }}                 
                 </span>
             </div>
@@ -28,7 +28,7 @@
               </div> 
            
             <div class="areaWidth" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-              <mat-label style='display: flex; place-content: space-between;'>
+              <mat-label class='font-helvetica-lt font-16-px line-height-24-px' style='display: flex; place-content: space-between;'>
                   {{ translationData.lblVehicleGroup || 'Vehicle Group' }}
               </mat-label>
               <mat-form-field appearance="outline" class="full-width">
@@ -47,7 +47,7 @@
         </mat-form-field>             
           </div> 
           <div class="areaWidth" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-            <mat-label style='display: flex; place-content: space-between;'>
+            <mat-label class='font-helvetica-lt font-16-px line-height-24-px' style='display: flex; place-content: space-between;'>
                 {{ translationData.lblVehicleName || 'Vehicle Name' }}
             </mat-label>
             <mat-form-field appearance="outline" class="full-width">
@@ -66,7 +66,7 @@
       </mat-form-field>             
         </div>         
             <div class="areaWidth" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                <mat-label style='display: flex; place-content: space-between;'>
+                <mat-label class='font-helvetica-lt font-16-px line-height-24-px' style='display: flex; place-content: space-between;'>
                     {{ translationData.lblVehicleSoftwareStatus || 'Vehicle Software Status' }}
                 </mat-label>
                 <mat-form-field appearance="outline" class="full-width" >
@@ -78,7 +78,7 @@
                 </mat-option>   
                 <mat-checkbox value='all' [(ngModel)]="allSelected" style="padding-left: 16px;"
                                   [ngModelOptions]="{standalone: true}"
-                                  (change)="toggleAllSelection()">Select All</mat-checkbox>         
+                                  (change)="toggleAllSelection()">{{ translationData.lblSelectAll || 'Select All' }}</mat-checkbox>         
                 <mat-option
                 *ngFor="let soft of filteredSoftwareStatus | async" [value]="soft.value.toLowerCase()">
                     &nbsp;{{ soft.value }}
