@@ -374,6 +374,9 @@
                       </mat-option>
                     </mat-select>
                   </mat-form-field>
+                  <mat-error *ngIf="showError">
+                    {{ translationData.lblPleaseSelectSingleVehicle || 'Please select single vehicle'}}
+                </mat-error>
                 </div>
               </div>
 
