@@ -79,6 +79,7 @@ export class CreateEditViewGeofenceComponent implements OnInit {
   dataService: any;
   searchMarker: any = {};
   accessType: any = {};
+  defaultLayers: any;
 
   @ViewChild("map")
   public mapElement: ElementRef;
@@ -857,23 +858,38 @@ export class CreateEditViewGeofenceComponent implements OnInit {
   }
 
   initMap(){
-    let defaultLayers = this.platform.createDefaultLayers();
-    //Step 2: initialize a map - this map is centered over Europe
+    this.defaultLayers = this.platform.createDefaultLayers();
     this.hereMap = new H.Map(this.mapElement.nativeElement,
-      defaultLayers.vector.normal.map, {
+      this.defaultLayers.raster.normal.map, {
       center: { lat: 51.43175839453286, lng: 5.519981221425336 },
-      //center:{lat:41.881944, lng:-87.627778},
       zoom: 4,
       pixelRatio: window.devicePixelRatio || 1
     });
-
-    // add a resize listener to make sure that the map occupies the whole container
     window.addEventListener('resize', () => this.hereMap.getViewPort().resize());
-
-    // Behavior implements default interactions for pan/zoom (also on mobile touch environments)
     var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.hereMap));
-    var ui = H.ui.UI.createDefault(this.hereMap, defaultLayers);
-    this.uiElem = ui;
+    this.ui = H.ui.UI.createDefault(this.hereMap, this.defaultLayers);
+    
+    this.ui.removeControl("mapsettings");
+    // create custom one
+    var ms = new H.ui.MapSettingsControl({
+        baseLayers : [ { 
+          label: this.translationData.lblNormal || "Normal", layer: this.defaultLayers.raster.normal.map
+        },{
+          label: this.translationData.lblSatellite || "Satellite", layer: this.defaultLayers.raster.satellite.map
+        }, {
+          label: this.translationData.lblTerrain || "Terrain", layer: this.defaultLayers.raster.terrain.map
+        }
+        ],
+      layers : [{
+            label: this.translationData.lblLayerTraffic || "Layer.Traffic", layer: this.defaultLayers.vector.normal.traffic
+        },
+        {
+            label: this.translationData.lblLayerIncidents || "Layer.Incidents", layer: this.defaultLayers.vector.normal.trafficincidents
+        }
+      ]
+    });
+    this.ui.addControl("customized", ms);
+    this.uiElem = this.ui;
   }
 
   createResizableCircle(_radius: any, rowData: any) {
