@@ -3,7 +3,7 @@
     <span>{{ breadcumMsg }}</span>
   </div>
   <div *ngIf="actionType == 'view'" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
-    <span class='custom-font' (click)="onCancel()">
+    <span (click)="onCancel()">
       <span><&nbsp;</span>
       <span class='backBtnCss'>{{ translationData.lblBack }}</span></span>
   </div>
@@ -13,7 +13,7 @@
     <mat-card-content>
       <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (actionType == 'edit') ? (translationData.lblEditDriverDetails ) : (translationData.lblViewDriverDetails) }}</span>
+          <span class='font-18-px line-height-27px font-helvetica-md'>{{ (actionType == 'edit') ? (translationData.lblEditDriverDetails ) : (translationData.lblViewDriverDetails) }}</span>
         </div>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
           <span style='color: red;'>*{{ translationData.lblAlldetailsaremandatory }}</span>
@@ -21,7 +21,7 @@
       </div>
       <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData.lblDriverID }}<span class='mandatoryColor'>*</span></mat-label>
+          <mat-label class='font-16-px line-height-24px'>{{ translationData.lblDriverID }}<span class='mandatoryColor'>*</span></mat-label>
           <div *ngIf="actionType != 'view'">
             <mat-form-field appearance="outline" class="full-width">
               <input maxlength="19" placeholder="{{ translationData.lblDriverID }}" matInput formControlName="driverId" required>
@@ -31,11 +31,11 @@
             </mat-error>
           </div>
           <div *ngIf="actionType == 'view'">
-            <span style='font-weight: 500!important; white-space: pre;'>{{ driverData.driverIdExt }}</span>
+            <span class='font-helvetica-md' style='white-space: pre;'>{{ driverData.driverIdExt }}</span>
           </div>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData.lblEmailID }}<span class='mandatoryColor'>*</span></mat-label>
+          <mat-label class='font-16-px line-height-24px'>{{ translationData.lblEmailID }}<span class='mandatoryColor'>*</span></mat-label>
           <div *ngIf="actionType != 'view'">
             <mat-form-field appearance="outline" class="full-width">
               <input maxlength="100" placeholder="{{ translationData.lblEmailId }}" matInput formControlName="emailId" pattern="[a-zA-Z0-9-_.]{1,}@[a-zA-Z0-9-_.]{2,}[.]{1}[a-zA-Z]{2,}">
@@ -51,11 +51,11 @@
             </mat-error>
           </div>
           <div *ngIf="actionType == 'view'">
-            <span style='font-weight: 500!important;'>{{ driverData.email != '' ? driverData.email : '--' }}</span>
+            <span class='font-helvetica-md'>{{ driverData.email != '' ? driverData.email : '--' }}</span>
           </div>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData.lblDriverIDConsentStatus }}<span class='mandatoryColor'>*</span></mat-label>
+          <mat-label class='font-16-px line-height-24px'>{{ translationData.lblDriverIDConsentStatus }}<span class='mandatoryColor'>*</span></mat-label>
           <div *ngIf="actionType != 'view'" style='margin-top: 8px;'>
             <mat-radio-group (change)='onConsentChange($event)' class='margin-top-10' formControlName="consentStatus">
               <mat-radio-button style='margin-right: 20px;' [checked]="selectedConsentType === 'H' ? true : false" value="H" (click)='changeOptStatus(driverData,"H")' >{{ translationData.lblInherit }}</mat-radio-button>
@@ -64,13 +64,13 @@
             </mat-radio-group>
            </div>
           <div *ngIf="actionType == 'view'">
-            <span style='font-weight: 500!important;'>{{ (driverData.status == 'I') ? (translationData.lblOptIn ) : (driverData.status == 'U') ? (translationData.lblOptOut) : (translationData.lblInherit ) }}</span>
+            <span class='font-helvetica-md'>{{ (driverData.status == 'I') ? (translationData.lblOptIn ) : (driverData.status == 'U') ? (translationData.lblOptOut) : (translationData.lblInherit ) }}</span>
           </div>
         </div>
       </div>
       <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData.lblFirstName }}<span class='mandatoryColor'>*</span></mat-label>
+          <mat-label class='font-16-px line-height-24px'>{{ translationData.lblFirstName }}<span class='mandatoryColor'>*</span></mat-label>
           <div *ngIf="actionType != 'view'">
             <mat-form-field appearance="outline" class="full-width">
               <input maxlength="30" placeholder="{{ translationData.lblFirstName}}" matInput formControlName="firstName">
@@ -92,11 +92,11 @@
              </mat-error> -->
           </div>
           <div *ngIf="actionType == 'view'">
-            <span style='font-weight: 500!important;'>{{ driverData.firstName != '' ? driverData.firstName : '--' }}</span>
+            <span class='font-helvetica-md'>{{ driverData.firstName != '' ? driverData.firstName : '--' }}</span>
           </div>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData.lblLastName }}<span class='mandatoryColor'>*</span></mat-label>
+          <mat-label class='font-16-px line-height-24px'>{{ translationData.lblLastName }}<span class='mandatoryColor'>*</span></mat-label>
           <div *ngIf="actionType != 'view'">
             <mat-form-field appearance="outline" class="full-width">
               <input maxlength="20" placeholder="{{ translationData.lblLastName }}" matInput formControlName="lastName">
@@ -118,7 +118,7 @@
              </mat-error> -->
           </div>
           <div *ngIf="actionType == 'view'">
-            <span style='font-weight: 500!important;'>{{ driverData.lastName != '' ? driverData.lastName : '--' }}</span>
+            <span class='font-helvetica-md'>{{ driverData.lastName != '' ? driverData.lastName : '--' }}</span>
           </div>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
