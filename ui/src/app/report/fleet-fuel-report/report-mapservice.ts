@@ -367,7 +367,7 @@ export class MapService {
         }
       }
 
-      initMap(mapElement) {
+      initMap(mapElement, translationData: any) {
         //Step 2: initialize a map - this map is centered over Europe
         this.defaultLayers  = this.platform.createDefaultLayers();
         this.hereMap = new H.Map(mapElement.nativeElement,
@@ -394,18 +394,18 @@ export class MapService {
         // create custom one
         var ms = new H.ui.MapSettingsControl( {
             baseLayers : [ { 
-              label: "Normal", layer: this.defaultLayers.raster.normal.map
+              label: translationData.lblNormal, layer: this.defaultLayers.raster.normal.map
             },{
-              label: "Satellite", layer: this.defaultLayers.raster.satellite.map
+              label: translationData.lblSatellite, layer: this.defaultLayers.raster.satellite.map
             }, {
-              label: "Terrain", layer: this.defaultLayers.raster.terrain.map
+              label: translationData.lblTerrain, layer: this.defaultLayers.raster.terrain.map
             }
             ],
           layers : [{
-                label: "Layer.Traffic", layer: this.defaultLayers.vector.normal.traffic
+                label: translationData.lblLayerTraffic, layer: this.defaultLayers.vector.normal.traffic
             },
             {
-                label: "Layer.Incidents", layer: this.defaultLayers.vector.normal.trafficincidents
+                label: translationData.lblLayerIncidents, layer: this.defaultLayers.vector.normal.trafficincidents
             }
           ]
         });

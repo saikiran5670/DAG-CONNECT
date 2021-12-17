@@ -1633,7 +1633,7 @@ createEndMarker(){
       if(!this.showMapPanel){ //- map panel not shown already
         this.showMapPanel = true;
         setTimeout(() => {
-          this.mapService.initMap(this.mapElement);
+          this.mapService.initMap(this.mapElement, this.translationData);
         }, 0);
       }else{
         this.mapService.clearRoutesFromMap();
