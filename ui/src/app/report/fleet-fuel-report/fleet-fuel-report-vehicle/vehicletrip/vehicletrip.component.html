@@ -369,8 +369,8 @@
                   <ng-container matColumnDef="vehicleRegistrationNo">      
                    <mat-header-cell class="text-truncate" *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_vehicleregistrationno')">{{ translationData.lblPlateNo || 'Vehicle Registration Number' }}          
                     </mat-header-cell>          
-                    <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{ tableInfoObj.vehicleRegistrationNo }}"  [hidden]="!checkForPreference('singlevehicledetails_vehicleregistrationno')">          
-                      <span>{{ tableInfoObj.vehicleRegistrationNo }}</span>          
+                    <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{ row.vehicleRegistrationNo }}" >          
+                      <span>{{ row.vehicleRegistrationNo }}</span>          
                    </mat-cell>                   
                   </ng-container>
                   <ng-container matColumnDef="startDate">      
