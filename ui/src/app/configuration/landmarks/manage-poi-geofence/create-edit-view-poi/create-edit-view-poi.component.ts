@@ -212,7 +212,7 @@ export class CreateEditViewPoiComponent implements OnInit {
     }
     if(this.actionType != 'view'){
       var bubble = new H.ui.InfoBubble({ lng: 13.4050, lat: 52.5200 }, {
-          content: '<b>Click on map to create POI position</b>'
+          content: `<span class='font-14-px line-height-21px font-helvetica-md'>${this.translationData.lblClickonmaptocreatePOIposition || 'Click on map to create POI position'}</span>`
       });
       // Add info bubble to the UI:
       ui.addBubble(bubble);

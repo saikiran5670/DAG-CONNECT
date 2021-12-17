@@ -10,6 +10,7 @@ using net.atos.daf.ct2.corridorservice;
 using net.atos.daf.ct2.mapservice;
 using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.portalservice.Entity.Corridor;
+using net.atos.daf.ct2.portalservice.Entity.POI;
 using Newtonsoft.Json;
 using Alert = net.atos.daf.ct2.alertservice;
 
@@ -118,8 +119,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, $"{ex.Message} {ex.StackTrace}");
+                _logger.Error($"{nameof(GetCorridorList)}: With Error:-", ex);
+                return StatusCode(500, LandmarkConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -170,8 +171,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                          "AddRouteCorridor method in Landmark Corridor controller", 0, 0, JsonConvert.SerializeObject(request),
                                           _userDetails);
 
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(AddRouteCorridor)}: With Error:-", ex);
+                return StatusCode(500, LandmarkConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -223,8 +224,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                          "AddExistingTripCorridor method in Landmark Corridor controller", 0, 0, JsonConvert.SerializeObject(request),
                                           _userDetails);
 
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(AddExistingTripCorridor)}: With Error:-", ex);
+                return StatusCode(500, LandmarkConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -271,8 +272,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                          "UpdateExistingTripCorridor method in Landmark Corridor controller", 0, 0, JsonConvert.SerializeObject(request),
                                           _userDetails);
 
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(UpdateExistingTripCorridor)}: With Error:-", ex);
+                return StatusCode(500, LandmarkConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -327,8 +328,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                          "Corridor service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                          "DeleteCorridor method in Landmark Corridor controller", 0, 0, JsonConvert.SerializeObject(request),
                                           _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(DeleteCorridor)}: With Error:-", ex);
+                return StatusCode(500, LandmarkConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -374,8 +375,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                          "Corridor service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                          "UpdateRouteCorridor method in Landmark Corridor controller", 0, 0, JsonConvert.SerializeObject(request),
                                           _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, $"{ex.Message}  {ex.StackTrace}");
+                _logger.Error($"{nameof(UpdateRouteCorridor)}: With Error:-", ex);
+                return StatusCode(500, LandmarkConstants.INTERNAL_SERVER_MSG);
             }
         }
     }

@@ -114,12 +114,15 @@ namespace net.atos.daf.ct2.reportservice.Services
                 //                              = await _visibilityManager
                 //                                 .GetVehicleByAccountVisibilityTemp(request.AccountId, loggedInOrgId, request.OrganizationId, 0);
 
-                IEnumerable<visibility.entity.VehicleDetailsAccountVisibilityForAlert> vehicleAccountVisibiltyList
-                   = await _visibilityManager.GetVehicleByAccountVisibilityForAlert(request.AccountId, loggedInOrgId, request.OrganizationId, alertFeatureIds.ToArray());
-                //append visibile vins
-                vehicleDetailsAccountVisibilty.AddRange(vehicleAccountVisibiltyList);
-                //remove duplicate vins by key as vin
-                vehicleDetailsAccountVisibilty = vehicleDetailsAccountVisibilty.GroupBy(c => c.Vin, (key, c) => c.FirstOrDefault()).ToList();
+                IEnumerable<visibility.entity.VehicleDetailsAccountVisibilityForAlert> vehicleAccountVisibiltyList = null;
+                if (alertFeatureIds != null && alertFeatureIds.Count() > 0)
+                {
+                    vehicleAccountVisibiltyList = await _visibilityManager.GetVehicleByAccountVisibilityForAlert(request.AccountId, loggedInOrgId, request.OrganizationId, alertFeatureIds.ToArray());
+                    //append visibile vins
+                    vehicleDetailsAccountVisibilty.AddRange(vehicleAccountVisibiltyList);
+                    //remove duplicate vins by key as vin
+                    vehicleDetailsAccountVisibilty = vehicleDetailsAccountVisibilty.GroupBy(c => c.Vin, (key, c) => c.FirstOrDefault()).ToList();
+                }
                 //var vehVisibility = vehicleDetailsAccountVisibilty.Where(x => x.Vin == request.VIN).ToList();
                 TripResponse response = new TripResponse();
                 _logger.Info("Get GetAllTripDetails.");
@@ -129,7 +132,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                     StartDateTime = request.StartDateTime,
                     EndDateTime = request.EndDateTime,
                     FeatureIds = alertFeatureIds,
-                    AlertVIN = vehicleDetailsAccountVisibilty.Where(x => x.Vin == request.VIN).Select(x => x.Vin).FirstOrDefault(),
+                    AlertVIN = vehicleAccountVisibiltyList != null ? vehicleDetailsAccountVisibilty.Where(x => x.Vin == request.VIN).Select(x => x.Vin).FirstOrDefault() : request.VIN,
                     OrganizationId = request.OrganizationId
                 };
 
