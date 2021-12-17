@@ -23,7 +23,7 @@
     <mat-expansion-panel [(expanded)]="showMap" class="full-width" fxLayoutGap="10px">
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title>
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblMapView }}</span>
+          <span class='font-18-px line-height-27px font-helvetica-md'>{{ translationData.lblMapView }}</span>
         </mat-panel-title>
       </mat-expansion-panel-header>
 
@@ -33,7 +33,7 @@
     <mat-card class='mat-elevation-z' *ngIf='!createEditStatus'>
         <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblCorridorList || 'Corridor List'
+              <span class='font-18-px line-height-27px font-helvetica-md'>{{ translationData.lblCorridorList || 'Corridor List'
               }}  </span>
             </div>
             <div *ngIf="adminAccessType.adminFullAccess" class="groupDetails margin-bottom-sm" fxLayout="row" fxLayoutAlign="space-between">
