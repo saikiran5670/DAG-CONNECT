@@ -987,7 +987,7 @@ PoiCheckboxClicked(event: any, row: any) {
         // for all objects that it contains
         bubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
           // read custom data
-          content:`<div width:310px; class='font-16-px line-height-24px'>
+          content:`<div style='width:310px;' class='font-14-px line-height-21px'>
           <span class='font-helvetica-md'>POI Name:</span> ${element.name}<br>
           <span class='font-helvetica-md'>Category:</span> ${element.categoryName}<br>
           <span class='font-helvetica-md'>Sub-Category:</span> ${element.subCategoryName}<br>
@@ -1100,7 +1100,7 @@ PoiCheckboxClicked(event: any, row: any) {
       // for all objects that it contains
       bubble =  new H.ui.InfoBubble({lat:rowData.latitude,lng:rowData.longitude}, {
         // read custom data
-        content:`<div  width:310px; class='font-16-px line-height-24px'>
+        content:`<div style='width:310px;' class='font-14-px line-height-21px'>
         <span class='font-helvetica-md'>Geofence Name:</span> ${rowData.name}<br>
         <span class='font-helvetica-md'>Category:</span> ${rowData.categoryName}<br>
         <span class='font-helvetica-md'>Sub-Category:</span> ${rowData.subCategoryName}<br>
@@ -1164,7 +1164,7 @@ PoiCheckboxClicked(event: any, row: any) {
           
           bubble =  new H.ui.InfoBubble({ lat: rowData.latitude, lng: rowData.longitude } , {
             // read custom data
-            content:`<div  width:310px; class='font-16-px line-height-24px'>
+            content:`<div style='width:310px;' class='font-14-px line-height-21px'>
               <span class='font-helvetica-md'>Geofence Name:</span> ${rowData.name}<br>
               <span class='font-helvetica-md'>Category:</span> ${rowData.categoryName}<br>
               <span class='font-helvetica-md'>Sub-Category:</span> ${rowData.subCategoryName}<br>
