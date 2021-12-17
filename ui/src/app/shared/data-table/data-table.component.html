@@ -49,7 +49,7 @@
             </ng-container>
 
             <ng-container *ngIf="column == 'viewstatus'">
-                <mat-header-cell *matHeaderCellDef style="word-break: break-all;">{{ translationData['lbl'+columnLabels[i]] }}</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef mat-sort-header style="word-break: break-all;">{{ translationData['lbl'+columnLabels[i]] }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                     <!-- Action Column template elements will be printed here -->
                     <ng-container *ngTemplateOutlet='viewStatusColumnElements; context: {rowData: row}'></ng-container>
