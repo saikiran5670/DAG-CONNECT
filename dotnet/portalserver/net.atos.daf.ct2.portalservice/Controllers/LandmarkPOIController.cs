@@ -77,8 +77,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, $"{ex.Message} {ex.StackTrace}");
+                _logger.Error($"{nameof(GetAllGlobalPoi)}: With Error:-", ex);
+                return StatusCode(500, LandmarkConstants.INTERNAL_SERVER_MSG);
             }
         }
         [HttpPost]
@@ -131,12 +131,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  "POI service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  "Create  method in POI controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
                   _userDetails);
+                _logger.Error($"{nameof(CreatePOI)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(_socketException))
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, LandmarkConstants.INTERNAL_SERVER_MSG);
             }
         }
         [HttpPut]
@@ -195,12 +196,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  "POI service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  "Update method in POI controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
                   _userDetails);
+                _logger.Error($"{nameof(UpdatePOI)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(_socketException))
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, LandmarkConstants.INTERNAL_SERVER_MSG);
             }
         }
         //[HttpDelete]
@@ -304,12 +306,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  "POI service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  "DeletePOIBulk method in POI controller", 0, 0, JsonConvert.SerializeObject(ids),
                   _userDetails);
+                _logger.Error($"{nameof(DeletePOIBulk)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(_socketException))
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, LandmarkConstants.INTERNAL_SERVER_MSG);
             }
         }
         [HttpGet]
@@ -347,8 +350,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, $"{ex.Message} {ex.StackTrace}");
+                _logger.Error($"{nameof(DownLoadPOIForExcel)}: With Error:-", ex);
+                return StatusCode(500, LandmarkConstants.INTERNAL_SERVER_MSG);
             }
         }
         [HttpGet]
@@ -392,8 +395,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, $"{ex.Message} {ex.StackTrace}");
+                _logger.Error($"{nameof(GetPOIs)}: With Error:-", ex);
+                return StatusCode(500, LandmarkConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -441,7 +444,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 // "POI service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                 // "Create  method in POI controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
                 //  Request);
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(UploadExcel)}: With Error:-", ex);
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
@@ -450,7 +453,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, LandmarkConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -482,8 +485,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, $"{ex.Message} {ex.StackTrace}");
+                _logger.Error($"{nameof(GetAllTripDetails)}: With Error:-", ex);
+                return StatusCode(500, LandmarkConstants.INTERNAL_SERVER_MSG);
             }
         }
     }
