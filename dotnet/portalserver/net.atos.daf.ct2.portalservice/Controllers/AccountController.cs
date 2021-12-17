@@ -145,7 +145,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                           "Create Account method in Account controller", 0, 0, JsonConvert.SerializeObject(request),
                                            _userDetails);
 
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Create)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
                 {
@@ -238,7 +238,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                            "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                            "Update Account method in Account controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
                                             _userDetails);
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Update)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
                 {
@@ -282,8 +282,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                          "Account service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                          "Delete Account method in Account controller", AccountId, AccountId, JsonConvert.SerializeObject(accountRequest),
                                           _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(Delete)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -326,8 +326,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                              "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                              "ChangePassword  method in Account controller", _userDetails.AccountId, _userDetails.AccountId, JsonConvert.SerializeObject(request),
                                               _userDetails);//accountid requred here
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(ChangePassword)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -369,8 +369,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(Get)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
         [HttpPost]
@@ -456,7 +456,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                             "Account service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                             "AddAccountOrg  method in Account controller", 0, 0, JsonConvert.SerializeObject(request),
                                              _userDetails);
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(AddAccountOrg)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
                 {
@@ -467,7 +467,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -664,8 +664,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetMenuFeatures)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -710,13 +710,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                           "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                           "SaveProfilePicture  method in Account controller", accountBlobRequest.AccountId, accountBlobRequest.AccountId, JsonConvert.SerializeObject(accountBlobRequest),
                                            _userDetails);
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(SaveProfilePicture)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -754,13 +754,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetProfilePicture)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -782,13 +782,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetProfileImageTest)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -836,13 +836,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                         "Account service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                         "CreateAccountPreference  method in Account controller", 0, 0, JsonConvert.SerializeObject(request),
                                          _userDetails);
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(CreateAccountPreference)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -884,13 +884,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                        "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                        "UpdateAccountPreference  method in Account controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
                                         _userDetails);
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(UpdateAccountPreference)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -931,13 +931,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                      "Account service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                      "DeleteAccountPreference  method in Account controller", preferenceId, preferenceId, JsonConvert.SerializeObject(request),
                                       _userDetails);
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(DeleteAccountPreference)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -973,8 +973,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetAccountPreference)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -1025,13 +1025,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                      "CreateVehicleAccessRelationship  method in Account controller", request.Id, 0, JsonConvert.SerializeObject(request),
                                       _userDetails);
 
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(CreateVehicleAccessRelationship)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
                 {
                     return BadRequest("F01");
                 }
-                return StatusCode(500, string.Empty);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -1069,13 +1069,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                    "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                    "UpdateVehicleAccessRelationship  method in Account controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
                                     _userDetails);
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(UpdateVehicleAccessRelationship)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
                 {
                     return StatusCode(400, PortalConstants.ResponseError.BAD_REQUEST);
                 }
-                return StatusCode(500, string.Empty);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -1154,13 +1154,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                "Account service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                "CreateAccountAccessRelationshipAsync  method in Account controller", 0, request.Id, JsonConvert.SerializeObject(request),
                                 _userDetails);
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(CreateAccountAccessRelationshipAsync)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
                 {
                     return StatusCode(400, PortalConstants.ResponseError.KEY_CONSTRAINT_ERROR);
                 }
-                return StatusCode(500, string.Empty);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
         // update vehicle access relationship
@@ -1197,13 +1197,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                               "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                               "UpdateAccountAccessRelationship  method in Account controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
                                _userDetails);
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(UpdateAccountAccessRelationship)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
                 {
                     return StatusCode(400, PortalConstants.ResponseError.KEY_CONSTRAINT_ERROR);
                 }
-                return StatusCode(500, string.Empty);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -1275,13 +1275,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetAccessRelationship)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
                 {
                     return StatusCode(400, PortalConstants.ResponseError.KEY_CONSTRAINT_ERROR);
                 }
-                return StatusCode(500, string.Empty);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -1316,13 +1316,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetAccountVehicleAccessRelationship)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
                 {
                     return StatusCode(400, PortalConstants.ResponseError.KEY_CONSTRAINT_ERROR);
                 }
-                return StatusCode(500, string.Empty);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -1417,8 +1417,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                         "UpdateAccountGroup  method in Account controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
                          _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(UpdateAccountGroup)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -1496,8 +1496,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                      "Account service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                      "DeleteAccountGroup  method in Account controller", 0, request.Id, JsonConvert.SerializeObject(request),
                       _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(DeleteAccountGroup)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -1540,13 +1540,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                   "Account service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                   "AddAccountsToGroup  method in Account controller", 0, 0, JsonConvert.SerializeObject(request),
                    _userDetails);//verify
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(AddAccountsToGroup)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -1584,13 +1584,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                          "Account service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                          "DeleteAccountFromGroup  method in Account controller", id, id, JsonConvert.SerializeObject(request),
                           _userDetails);
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(DeleteAccountFromGroup)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -1624,8 +1624,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetAccountGroup)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -1653,8 +1653,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetAccountGroupDetails)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -1700,13 +1700,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         "Account service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                         "AddRoles  method in Account controller", request.AccountId, request.AccountId, JsonConvert.SerializeObject(request),
                          _userDetails);
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(AddRoles)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -1746,13 +1746,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                        "Account service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                        "RemoveRoles  method in Account controller", request.AccountId, request.AccountId, JsonConvert.SerializeObject(request),
                         _userDetails);
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(RemoveRoles)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -1787,8 +1787,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetRoles)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -1903,10 +1903,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 int sRoleId = _userDetails.RoleId;
                 int sOrgId = _userDetails.OrgId;
 
-               await _auditHelper.AddLogs(DateTime.Now, "Account Component",
-                              "Account controller", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                              "SwitchOrgContext method in Account controller", _userDetails.AccountId, _userDetails.AccountId,
-                              _userDetails.ToString(), _userDetails);
+                await _auditHelper.AddLogs(DateTime.Now, "Account Component",
+                               "Account controller", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                               "SwitchOrgContext method in Account controller", _userDetails.AccountId, _userDetails.AccountId,
+                               _userDetails.ToString(), _userDetails);
 
                 if (request.AccountId != sAccountId)
                     return BadRequest("Account Id mismatched");
@@ -2006,8 +2006,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                             "Get Country Details method in Package controller", 0, 0, JsonConvert.SerializeObject(countryFilter),
                                              _userDetails);
 
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetCountryDetail)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -2027,8 +2027,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                             "Account service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                             "Account migration activity", 0, 0, ex.Message, _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(CreateMigratedUsersInKeyCloak)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
     }

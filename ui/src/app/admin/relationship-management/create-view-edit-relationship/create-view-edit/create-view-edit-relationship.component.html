@@ -13,7 +13,7 @@
         <mat-card-content>
             <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
                 <div>
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ title }}</span>
+                    <span class='font-18-px line-height-27px font-helvetica-md'>{{ title }}</span>
                     <button *ngIf="viewRelationshipFromOrg" class='actionBtn' mat-flat-button
                     (click)="editRelationship(selectedRowFromRelationship)" matTooltip="Edit">
                     <mat-icon>create</mat-icon>
@@ -22,13 +22,13 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="start" class="full-width margin-bottom-sm" fxLayoutGap="50px">
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>{{ translationData.lblRelationshipName  }}</mat-label>
-                    <mat-label class='custom-font'>{{ this.gridData[0].name }}</mat-label>
+                    <mat-label class='font-16-px line-height-24px'>{{ translationData.lblRelationshipName }}</mat-label>
+                    <mat-label class='font-helvetica-md'>{{ this.gridData[0].name }}</mat-label>
                 </div>
                 <div class="areaWidth full-width" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>{{ translationData.lblRelationshipDescription  }}
+                    <mat-label class='font-16-px line-height-24px'>{{ translationData.lblRelationshipDescription  }}
                     </mat-label>
-                    <mat-label class='custom-font'>{{ this.gridData[0].description ? this.gridData[0].description : '--'
+                    <mat-label class='font-helvetica-md'>{{ this.gridData[0].description ? this.gridData[0].description : '--'
                         }}</mat-label>
                 </div>
             </div>
@@ -37,13 +37,12 @@
                 <div *ngIf="userType == 'Admin#Platform' || userType == 'Admin#Global'" fxLayout="row" fxLayoutAlign="start"
                 class="full-width margin-bottom-sm" fxLayoutGap="50px">
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>{{ translationData.lblLevel  }}</mat-label>
-                    <mat-label class='custom-font'>{{ this.gridData[0].levelVal }}</mat-label>
+                    <mat-label class='font-16-px line-height-24px'>{{ translationData.lblLevel  }}</mat-label>
+                    <mat-label class='font-helvetica-md'>{{ this.gridData[0].levelVal }}</mat-label>
                 </div>
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>{{ translationData.lblCode 
-                        }}</mat-label>
-                    <mat-label class='custom-font'>{{ this.gridData[0].code }}</mat-label>
+                    <mat-label class='font-16-px line-height-24px'>{{ translationData.lblCode }}</mat-label>
+                    <mat-label class='font-helvetica-md'>{{ this.gridData[0].code }}</mat-label>
                 </div>
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
             </div>
@@ -53,12 +52,12 @@
         <mat-card-content>
             <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ title }}</span>
+                    <span class='font-18-px line-height-27px font-helvetica-md'>{{ title }}</span>
                 </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="50px">
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>{{ createStatus ? (translationData.lblNewRelationshipName ) :
+                    <mat-label class='font-16-px line-height-24px'>{{ createStatus ? (translationData.lblNewRelationshipName ) :
                         (translationData.lblRelationshipName ) }}<span
                             class='mandatoryColor'>*</span></mat-label>
                     <mat-form-field appearance="outline" class="full-width">
@@ -86,7 +85,7 @@
                 </div>
                 <div class="areaWidth full-width" fxLayout="column" fxLayoutAlign="left">
                     <mat-label style='display: flex; place-content: space-between;'>
-                        <span>{{ translationData.lblRelationshipDescription }}</span>
+                        <span class='font-16-px line-height-24px'>{{ translationData.lblRelationshipDescription }}</span>
                         <span>{{ translationData.lbl100CharMax }}</span>
                     </mat-label>
                     <mat-form-field appearance="outline" class="full-width">
@@ -105,7 +104,7 @@
                 <div *ngIf="userType == 'Admin#Platform' || userType == 'Admin#Global'" fxLayout="row" fxLayoutAlign="start"
                 class="full-width" fxLayoutGap="50px">
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>
+                    <mat-label class='font-16-px line-height-24px'>
                         {{ translationData.lblLevel }}<span class='mandatoryColor'>*</span>
                     </mat-label>
                     <mat-form-field appearance="outline" class="full-width">
@@ -120,7 +119,7 @@
                     </mat-form-field>
                 </div>
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>
+                    <mat-label class='font-16-px line-height-24px'>
                         {{ translationData.lblCode }}<span
                             class='mandatoryColor'>*</span>
                     </mat-label>
@@ -164,7 +163,7 @@
     <mat-card class='mat-elevation-z'>
         <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ createStatus ? (
+                <span class='font-18-px line-height-27px font-helvetica-md'>{{ createStatus ? (
                     translationData.lblSelectFeatures ) : (translationData.lblSelectedFeatures ) }}</span>
             </div>
         </div>

@@ -7,15 +7,15 @@
         <mat-expansion-panel [(expanded)]="detailsExpandPanel" class="full-width" fxLayoutGap="10px">
             <mat-expansion-panel-header class="full-width">
                 <mat-panel-title>
-                    <span *ngIf="search" style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+                    <span *ngIf="search">{{
                         translationData[searchResult.lbl] || searchResult.performanceTypeLabel }}</span>
-                    <span *ngIf="!search" style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+                    <span *ngIf="!search">{{
                         translationData.lblVehiclePerformanceDetails || 'Vehicle Performance Details' }}</span>
                 </mat-panel-title>
             </mat-expansion-panel-header>
 
             <div *ngIf='!search'>
-                <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;' fxLayout="row"
+                <div fxLayout="row"
                     fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound || '' }}</div>
                 <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{
                     translationData.lblSelectionMessage || 'Please select and search required fields from top to view
@@ -27,22 +27,22 @@
                     <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
                         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                             <span>
-                                <span>{{ translationData.lblFrom || 'From' }}: </span>
-                                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+                                <span class='font-16-px line-height-24px'>{{ translationData.lblFrom || 'From' }}: </span>
+                                <span class='font-helvetica-md'>{{
                                     searchResult.startDate  }}</span>
                             </span>
                         </div>
                         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                             <span>
-                                <span>{{ translationData.lblVehicleGroup || 'Vehicle Group' }}: </span>
-                                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+                                <span class='font-16-px line-height-24px'>{{ translationData.lblVehicleGroup || 'Vehicle Group' }}: </span>
+                                <span class='font-helvetica-md'>{{
                                     searchResult.vehicleGroup }}</span>
                             </span>
                         </div>
                         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                             <span>
-                                <span>{{ translationData.lblVehicleVIN || 'Model Type' }}: </span>
-                                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+                                <span class='font-16-px line-height-24px'>{{ translationData.lblVehicleVIN || 'Model Type' }}: </span>
+                                <span class='font-helvetica-md'>{{
                                     searchResult.modelType }}</span>
                             </span>
                         </div>
@@ -50,32 +50,32 @@
                     <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
                         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                             <span>
-                                <span>{{ translationData.lblTo || 'To' }}: </span>
-                                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+                                <span class='font-16-px line-height-24px'>{{ translationData.lblTo || 'To' }}: </span>
+                                <span class='font-helvetica-md'>{{
                                     searchResult.endDate }}</span>
                             </span>
                         </div>
                         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                             <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleName'">
-                                <span>{{ translationData.lblVehicleName || 'Vehicle Name' }}: </span>
-                                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+                                <span class='font-16-px line-height-24px'>{{ translationData.lblVehicleName || 'Vehicle Name' }}: </span>
+                                <span class='font-helvetica-md'>{{
                                     searchResult.vehicleName }}</span>
                             </span>
                             <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber'">
-                                <span>{{ translationData.lblVin || 'VIN' }}: </span>
-                                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+                                <span class='font-16-px line-height-24px'>{{ translationData.lblVin || 'VIN' }}: </span>
+                                <span class='font-helvetica-md'>{{
                                     searchResult.vin }}</span>
                             </span>
                             <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber'">
-                                <span>{{ translationData.lblRegistrationNumber || 'Vehicle Registration Number' }}: </span>
-                                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+                                <span class='font-16-px line-height-24px'>{{ translationData.lblRegistrationNumber || 'Vehicle Registration Number' }}: </span>
+                                <span class='font-helvetica-md'>{{
                                     searchResult.registrationNo }}</span>
                             </span>
                         </div>
                         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                             <span>
-                                <span>{{ translationData.lblRegPlateNumber || 'Engine Type' }}: </span>
-                                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+                                <span class='font-16-px line-height-24px'>{{ translationData.lblRegPlateNumber || 'Engine Type' }}: </span>
+                                <span class='font-helvetica-md'>{{
                                     searchResult.engineType }}</span>
                             </span>
                         </div>
@@ -91,7 +91,7 @@
         <mat-expansion-panel [(expanded)]="chartsExpandPanel" class="full-width" fxLayoutGap="10px">
             <mat-expansion-panel-header class="full-width">
                 <mat-panel-title>
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+                    <span>{{
                         translationData.lblCharts || 'Charts' }}</span>
                 </mat-panel-title>
             </mat-expansion-panel-header>

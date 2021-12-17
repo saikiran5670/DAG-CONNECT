@@ -4,7 +4,7 @@
             <mat-expansion-panel-header class="full-width">
                 <mat-panel-title>
                     <span>
-                        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+                        <span>{{
                             translationData.lblSearchReportParameters || 'Search Report Parameters' }}</span>
                     </span>
                 </mat-panel-title>
@@ -13,7 +13,7 @@
                 <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg"
                     fxLayoutGap="10px">
                     <div class="areaWidth min-width-70-per" fxLayout="column" fxLayoutAlign="left">
-                        <mat-label>{{ translationData.lblTimeRange || 'Time Range' }} <span
+                        <mat-label class='font-16-px line-height-24px'>{{ translationData.lblTimeRange || 'Time Range' }} <span
                                 class='mandatoryColor'>*</span></mat-label>
                         <div style='margin-top: 5px;'>
                             <button [disabled]="selectionTab == 'today'" (click)="selectionTimeRange('today')"
@@ -39,7 +39,7 @@
                         </div>
                     </div>
                     <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
-                        <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} <span
+                        <mat-label class='font-16-px line-height-24px'>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} <span
                                 class='mandatoryColor'>*</span></mat-label>
                         <mat-form-field appearance="outline">
                             <mat-select (selectionChange)="onVehicleGroupChange($event)"
@@ -60,7 +60,7 @@
                         </mat-error>
                     </div>
                     <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
-                        <mat-label>{{ translationData.lblVehicleName || 'Vehicle Name' }} <span
+                        <mat-label class='font-16-px line-height-24px'>{{ translationData.lblVehicleName || 'Vehicle Name' }} <span
                                 class='mandatoryColor'>*</span>
                         </mat-label>
                         <mat-form-field appearance="outline">
@@ -89,7 +89,7 @@
                     <div class="areaWidth min-width-70-per" fxLayout="column" fxLayoutAlign="left">
                         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
                             <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
-                                <mat-label>{{ translationData.lblFrom || 'From' }} <span class='mandatoryColor'>*</span>
+                                <mat-label class='font-16-px line-height-24px'>{{ translationData.lblFrom || 'From' }} <span class='mandatoryColor'>*</span>
                                 </mat-label>
                                 <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
                                     <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
@@ -119,7 +119,7 @@
                                 </div>
                             </div>
                             <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
-                                <mat-label>{{ translationData.lblTo || 'To' }} <span class='mandatoryColor'>*</span>
+                                <mat-label class='font-16-px line-height-24px'>{{ translationData.lblTo || 'To' }} <span class='mandatoryColor'>*</span>
                                 </mat-label>
                                 <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
                                     <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
@@ -150,7 +150,7 @@
                         </div>
                     </div>
                     <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                        <mat-label>{{ translationData.lblPerformanceType || 'Performance Type' }} <span
+                        <mat-label class='font-16-px line-height-24px'>{{ translationData.lblPerformanceType || 'Performance Type' }} <span
                                 class='mandatoryColor'>*</span>
                         </mat-label>
                         <mat-form-field appearance="outline">

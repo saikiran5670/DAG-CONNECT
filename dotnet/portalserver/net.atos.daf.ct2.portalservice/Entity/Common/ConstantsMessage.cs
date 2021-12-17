@@ -14,6 +14,7 @@
 
         public static class ExceptionKeyWord
         {
+            public const string INTERNAL_SERVER_MSG = "Error occured, Please check with DAF IT team for more info.";
             public const string FK_CONSTRAINT = "violates foreign key constraint";
             public const string SOCKET_EXCEPTION = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
         }
