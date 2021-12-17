@@ -8,7 +8,7 @@
   <mat-card class='mat-elevation-z' *ngIf='!createEditViewSubscriptionFlag'>
     <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSubscriptionDetails }}</span>
+          <span class='font-18-px line-height-27px font-helvetica-md'>{{ translationData.lblSubscriptionDetails }}</span>
         </div>
     </div>
     <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
@@ -22,9 +22,9 @@
           <mat-form-field appearance="outline" class="full-width">
             <!-- <mat-select [(value)]="accountOrganizationId" (selectionChange)="applyFilterOnOrganization($event.value)" [disabled] = "organisationData.length == 1" > -->
             <mat-select placeholder="{{ translationData.lblOrganisation || 'Organisation' }}" [disabled]="contextOrgId == 0" (selectionChange)="applyFilterOnOrganization($event.value)">
-              <mat-option value="0">{{translationData.lblAll || 'All'}}</mat-option>
+              <mat-option value="0">{{ translationData.lblAll || 'All' }}</mat-option>
               <mat-option *ngFor="let options of organisationData" [value]="options.id" >
-                {{options.name}}
+                {{ options.name }}
               </mat-option>
             </mat-select>
             <!-- <mat-select placeholder="{{ translationData.lblSelectOrganisation || 'Select Organisation' }}" (selectionChange)="applyFilterOnOrganization($event.value)" >
@@ -38,7 +38,7 @@
           <mat-form-field appearance="outline" class="full-width">
             <mat-select placeholder="{{ translationData.lblSelectType }}" (selectionChange)="applyFilterOnType(1,$event.value)">
               <mat-option *ngFor="let options of TypeList" [value]="options.value">
-                {{options.name}}
+                {{ options.name }}
               </mat-option>
             </mat-select>
           </mat-form-field>
@@ -47,7 +47,7 @@
         <mat-form-field appearance="outline" class="full-width">
           <mat-select placeholder="{{ translationData.lblSelectStatus }}" (selectionChange)="applyFilterOnStatus($event.value)">
             <mat-option *ngFor="let options of StatusList" [value]="options.value">
-              {{options.name}}
+              {{ options.name }}
             </mat-option>
           </mat-select>
         </mat-form-field>
