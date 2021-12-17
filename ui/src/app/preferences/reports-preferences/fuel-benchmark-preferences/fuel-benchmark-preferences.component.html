@@ -3,7 +3,7 @@
     <div *ngIf='fuelBenchmarkComponentPrefData.length > 0' fxLayout="row" class='areaWidth full-width padding-10'
         fxLayoutAlign="left center" style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
         <div fxLayout="column" class='min-width-33-3-per' fxLayoutGap="3px" fxLayoutAlign="left">
-            <span class='headerFont'>{{ translationData.lblCompoent }}</span>
+            <span class='headerFont'>{{ translationData.lblComponent || 'Component' }}</span>
         </div>
         <div fxLayout="column" class='min-width-33-3-per' fxLayoutGap="3px" fxLayoutAlign="left">
             <span class='headerFont'>{{ translationData.lblThresholdTarget  }}</span>

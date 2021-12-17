@@ -13,6 +13,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.ToString;
 
+import javax.persistence.Transient;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
         "schema",
@@ -99,4 +101,7 @@ public class CdcPayloadWrapper implements Serializable {
         this.additionalProperties.put(name, value);
     }
 
+    public void setAdditionalProperties(Map<String, Object> additionalProperties) {
+        this.additionalProperties = additionalProperties;
+    }
 }

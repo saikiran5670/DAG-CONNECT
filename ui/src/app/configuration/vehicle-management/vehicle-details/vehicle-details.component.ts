@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges, ViewChild, ChangeDetectorRef, HostListener } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -15,7 +15,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 // import { TableVirtualScrollDataSource } from 'ng-table-virtual-scroll';
 import { HttpClient } from "@angular/common/http";
-
+import { _isNumberValue } from '@angular/cdk/coercion';
 
 @Component({
   selector: 'app-vehicle-details',
@@ -25,7 +25,7 @@ import { HttpClient } from "@angular/common/http";
 
 export class VehicleDetailsComponent implements OnInit {
   columnCodes = ['name', 'vin', 'licensePlateNumber', 'modelId', 'relationShip', 'viewstatus', 'action'];
-  columnLabels = ['Vehicle','VIN', 'RegistrationNumber', 'Model', 'Relationship', 'Status', 'Action'];
+  columnLabels = ['Vehicle', 'VIN', 'RegistrationNumber', 'Model', 'Relationship', 'Status', 'Action'];
   actionType: any = '';
   selectedRowData: any = [];
   displayedColumns: string[] = ['name', 'vin', 'licensePlateNumber', 'modelId', 'relationShip', 'status', 'action'];
@@ -45,7 +45,7 @@ export class VehicleDetailsComponent implements OnInit {
   titleVisible: boolean = false;
   showLoadingIndicator: any = false;
   // localStLanguage: any;
-  actionBtn:any;
+  actionBtn: any;
   updateViewStatus: boolean = false;
   adminAccessType: any = {};
   userType: any = localStorage.getItem("userType");
@@ -54,8 +54,12 @@ export class VehicleDetailsComponent implements OnInit {
   @ViewChild(CdkVirtualScrollViewport) viewport: CdkVirtualScrollViewport;
   index: number;
   // itemSize = 8;
-  
- 
+  showFilterCount: boolean = false;
+  public getScreenWidth: any;
+  public getScreenHeight: any;
+  tableHeight: number;
+
+
   constructor(private cd: ChangeDetectorRef, private scrollDispatcher: ScrollDispatcher,private httpClient: HttpClient, private vehicleService: VehicleService, private dialogService: ConfirmDialogService, private translationService: TranslationService, ) {
     // this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.defaultTranslation();
@@ -95,8 +99,17 @@ export class VehicleDetailsComponent implements OnInit {
     // });
     // this.initData = this.updateStatusName(this.relationshipVehiclesData);
     // this.updateDataSource(this.relationshipVehiclesData);
-    
-    }
+    this.getScreenWidth = window.innerWidth;
+    this.getScreenHeight = window.innerHeight;
+    this.tableHeight = this.getScreenHeight - 291;
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onWindowResize() {
+    this.getScreenWidth = window.innerWidth;
+    this.getScreenHeight = window.innerHeight;
+    this.tableHeight = this.getScreenHeight - 291;
+  }
 
   // processTranslation(transData: any) {
   //   this.translationData = transData.reduce((acc: any, cur: any) => ({ ...acc, [cur.name]: cur.value }),{});
@@ -108,7 +121,7 @@ export class VehicleDetailsComponent implements OnInit {
 
   getRelationshipVehiclesData() {
     this.updateRelationshipVehiclesData.emit()
-  } 
+  }
 
   onScroll(event) {
     this.index = 0;
@@ -116,33 +129,44 @@ export class VehicleDetailsComponent implements OnInit {
     // const buffer = Math.floor(this.viewport.getViewportSize() / this.itemSize);
     // console.log(buffer, 'event');
     // console.log((this.viewport.getRenderedRange()), "range start");
-}
+  }
+
+  // onsortChange(event) {
+  //   this.showProcessingFlag = false;
+  //   this.updateDataSource(this.relationshipVehiclesData);
+  // }
+
+  // onClickVIN() {
+  //   console.log("clikc called", this.showProcessingFlag);
+  //   this.showProcessingFlag = true;
+  //   setTimeout(() => { this.showProcessingFlag = false, 3000 });
+  // }
 
   updateStatusName(relationshipVehiclesData) {
     if(relationshipVehiclesData && relationshipVehiclesData.length>0){
       for(let item of relationshipVehiclesData){
         // relationshipVehiclesData.forEach(item => {
-          if(item.status == 'T'){
-            item.viewstatus = 'Terminate';
-            break;
-          } else if(item.status == 'N'){
-            item.viewstatus = 'Opt-In + OTA';
-            break;
-          } else if(item.status == 'A'){
-            item.viewstatus = 'OTA';
-            break;
-          } else if(item.status == 'C'){
-            item.viewstatus = 'Opt-In';
-            break;
-          }  else if(item.status == 'O'){
-            item.viewstatus = 'Opt-Out';
-            break;
-          }
+        if(item.status == 'T'){
+          item.viewstatus = 'Terminate';
+          break;
+        } else if(item.status == 'N'){
+          item.viewstatus = 'Opt-In + OTA';
+          break;
+        } else if(item.status == 'A'){
+          item.viewstatus = 'OTA';
+          break;
+        } else if(item.status == 'C'){
+          item.viewstatus = 'Opt-In';
+          break;
+        }  else if(item.status == 'O'){
+          item.viewstatus = 'Opt-Out';
+          break;
+        }
+      }
+      return relationshipVehiclesData;
+      // });
     }
-    return relationshipVehiclesData;
-    // });
-  }
-   return [];
+    return [];
   }
 
   updateDataSource(tableData: any) {
@@ -176,6 +200,11 @@ export class VehicleDetailsComponent implements OnInit {
     filterValue = filterValue.trim(); // Remove whitespace
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
     this.dataSource.filter = filterValue;
+    if (this.dataSource.filteredData.length !== this.initData.length) {
+      this.showFilterCount = true;
+    } else {
+      this.showFilterCount = false;
+    }
     // this.dataSource1.filter = filterValue;
   }
 
@@ -223,84 +252,84 @@ export class VehicleDetailsComponent implements OnInit {
     }, 5000);
   }
 
-//   exportAsCSV(){
-//     console.log("Yes, It is working Properly");
-//     this.matTableExporter.exportTable('csv', {fileName:'VehicleMgmt_Data', sheet: 'sheet_name'});
+  //   exportAsCSV(){
+  //     console.log("Yes, It is working Properly");
+  //     this.matTableExporter.exportTable('csv', {fileName:'VehicleMgmt_Data', sheet: 'sheet_name'});
 
-// }
+  // }
 
-exportAsCSV(){
-  const title = 'Vehicle Details';
+  exportAsCSV(){
+    const title = 'Vehicle Details';
 
-  const header = ['Vehicle','VIN', 'Registration Number', 'Model', 'Relationship','Status'];
+    const header = ['Vehicle','VIN', 'Registration Number', 'Model', 'Relationship','Status'];
 
-  //Create workbook and worksheet
-  let workbook = new Workbook();
-  let worksheet = workbook.addWorksheet('Vehicle Management');
-  //Add Row and formatting
-  let titleRow = worksheet.addRow([title]);
-  worksheet.addRow([]);
-  titleRow.font = { name: 'sans-serif', family: 4, size: 14, underline: 'double', bold: true }
+    //Create workbook and worksheet
+    let workbook = new Workbook();
+    let worksheet = workbook.addWorksheet('Vehicle Management');
+    //Add Row and formatting
+    let titleRow = worksheet.addRow([title]);
+    worksheet.addRow([]);
+    titleRow.font = { name: 'sans-serif', family: 4, size: 14, underline: 'double', bold: true }
 
-  worksheet.addRow([]);
-  let headerRow = worksheet.addRow(header);
-  headerRow.eachCell((cell, number) => {
-    cell.fill = {
-      type: 'pattern',
-      pattern: 'solid',
-      fgColor: { argb: 'FFFFFF00' },
-      bgColor: { argb: 'FF0000FF' }
+    worksheet.addRow([]);
+    let headerRow = worksheet.addRow(header);
+    headerRow.eachCell((cell, number) => {
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFFFFF00' },
+        bgColor: { argb: 'FF0000FF' }
+      }
+      cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+    })
+    this.initData.forEach(item => {
+      let status1 = '';
+      if(item.status == 'T'){
+        status1 = 'Terminate'
+      } else if(item.status == 'N'){
+        status1 = 'Opt-In + OTA'
+      } else if(item.status == 'A'){
+        status1 = 'OTA'
+      } else if(item.status == 'C'){
+        status1 = 'Opt-In'
+      }  else if(item.status == 'O'){
+        status1 = 'Opt-Out'
+      }
+      worksheet.addRow([item.name,item.vin, item.licensePlateNumber, item.modelId, item.relationShip, status1]);
+    });
+    worksheet.mergeCells('A1:D2');
+    for (var i = 0; i < header.length; i++) {
+      worksheet.columns[i].width = 20;
     }
-    cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
-  })
-  this.initData.forEach(item => {
-    let status1 = '';
-    if(item.status == 'T'){
-     status1 = 'Terminate'
-    } else if(item.status == 'N'){
-      status1 = 'Opt-In + OTA'
-    } else if(item.status == 'A'){
-      status1 = 'OTA'
-    } else if(item.status == 'C'){
-      status1 = 'Opt-In'
-    }  else if(item.status == 'O'){
-      status1 = 'Opt-Out'
-    }
-    worksheet.addRow([item.name,item.vin, item.licensePlateNumber, item.modelId, item.relationShip, status1]);
-  });
-  worksheet.mergeCells('A1:D2');
-  for (var i = 0; i < header.length; i++) {
-    worksheet.columns[i].width = 20;
+    worksheet.addRow([]);
+    workbook.xlsx.writeBuffer().then((data) => {
+      let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      fs.saveAs(blob, 'VehicleMgmt_Data.xlsx');
+    })
   }
-  worksheet.addRow([]);
-  workbook.xlsx.writeBuffer().then((data) => {
-    let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    fs.saveAs(blob, 'VehicleMgmt_Data.xlsx');
- })
-}
 
 
-exportAsPdf() {
-  let DATA = document.getElementById('vehicleMgmtData');
+  exportAsPdf() {
+    let DATA = document.getElementById('vehicleMgmtData');
 
-  html2canvas( DATA , { onclone: (document) => {
-    this.actionBtn = document.getElementsByClassName('action');
-    for (let obj of this.actionBtn) {
-      obj.style.visibility = 'hidden';  }
-  }})
-  .then(canvas => {
+    html2canvas( DATA , { onclone: (document) => {
+        this.actionBtn = document.getElementsByClassName('action');
+        for (let obj of this.actionBtn) {
+          obj.style.visibility = 'hidden';  }
+      }})
+      .then(canvas => {
 
-      let fileWidth = 208;
-      let fileHeight = canvas.height * fileWidth / canvas.width;
+        let fileWidth = 208;
+        let fileHeight = canvas.height * fileWidth / canvas.width;
 
-      const FILEURI = canvas.toDataURL('image/png')
-      let PDF = new jsPDF('p', 'mm', 'a4');
-      let position = 0;
-      PDF.addImage(FILEURI, 'PNG', 0, position, fileWidth, fileHeight)
+        const FILEURI = canvas.toDataURL('image/png')
+        let PDF = new jsPDF('p', 'mm', 'a4');
+        let position = 0;
+        PDF.addImage(FILEURI, 'PNG', 0, position, fileWidth, fileHeight)
 
-      PDF.save('VehicleMgmt_Data.pdf');
-      PDF.output('dataurlnewwindow');
-  });
-}
+        PDF.save('VehicleMgmt_Data.pdf');
+        PDF.output('dataurlnewwindow');
+      });
+  }
 
 }

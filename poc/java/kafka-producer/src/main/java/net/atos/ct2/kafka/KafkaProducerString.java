@@ -48,7 +48,7 @@ public class KafkaProducerString {
                     try {
                         for (int i = 0; i < Integer.valueOf(env.getProperty("conti.set.msg.limit")); i++) {
                             conti = new ContiMsg();
-                            String tripId = UUID.randomUUID().toString()+"_lost";
+                            String tripId = UUID.randomUUID()+"_CDC";
                             long timeMillis = System.currentTimeMillis();
                             conti = mapper.readValue(json, ContiMsg.class);
                             conti.getDocument().setTripID(tripId);

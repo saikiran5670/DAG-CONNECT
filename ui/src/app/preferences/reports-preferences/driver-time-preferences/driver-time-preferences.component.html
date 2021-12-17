@@ -7,8 +7,8 @@
             [indeterminate]='selectionForAllDriver.hasValue() && !isAllSelectedForAllDetailsColumns()'
             [aria-label]='checkboxLabelForColumns()' [disabled]='!editFlag'>
             <span class='headerFont'>{{
-                translationData.lblAllDetails }} ({{
-                translationData.lblTablecolumnviewsettings }})</span>
+                translationData.lblAllDetails }} <span class='font-14-px line-height-21px'>({{
+                translationData.lblTablecolumnviewsettings }})</span></span>
             <!-- <span class='headerFont'>{{
                 allDetailsData ? allDetailsData.translatedName : 'All Details' }} ({{
                     translationData.lblTablecolumnviewsettings || 'Table column view settings' }})</span> -->
