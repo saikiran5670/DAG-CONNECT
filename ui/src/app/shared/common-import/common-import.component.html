@@ -15,7 +15,7 @@
     <form [formGroup]="importPackageFormGroup">
         <div class='margin-bottom-sm' fxLayout="row" fxLayoutAlign="space-between">
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ importTranslationData.importTitle}}</span>
+                <span class='font-16-px line-height-24px font-helvetica-md'>{{ importTranslationData.importTitle }}</span>
             </div>
            
       
@@ -73,7 +73,7 @@
   
     <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
         <div style='width:95%;' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ importTranslationData.importedFileDetails }} ({{filelist.length}})</span>
+            <span class='font-16-px line-height-24px font-helvetica-md'>{{ importTranslationData.importedFileDetails }} ({{filelist.length}})</span>
         </div>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
             <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
