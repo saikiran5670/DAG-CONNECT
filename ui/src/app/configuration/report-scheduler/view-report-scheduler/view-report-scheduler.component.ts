@@ -6,6 +6,7 @@ import * as moment from 'moment';
 import { OrganizationService } from 'src/app/services/organization.service';
 import { ReportSchedulerService } from 'src/app/services/report.scheduler.service';
 import { TranslationService } from 'src/app/services/translation.service';
+import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dialog.service';
 import { Util } from 'src/app/shared/util';
 
 @Component({
@@ -22,6 +23,8 @@ export class ViewReportSchedulerComponent implements OnInit {
   @Input() prefDateFormat: any;
   @Input() completePrefData: any;
   @Output() backToPage = new EventEmitter<any>();
+  @Output() editReportSchedule = new EventEmitter<any>();
+  @Input() adminAccessType : any;
 
   vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   startDate: any;
@@ -47,7 +50,8 @@ export class ViewReportSchedulerComponent implements OnInit {
 
   constructor(private translationService: TranslationService,
               private organizationService: OrganizationService,
-              private reportSchedulerService: ReportSchedulerService) { }
+              private reportSchedulerService: ReportSchedulerService,
+              private dialogService: ConfirmDialogService) { }
 
   ngOnInit(): void {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -206,6 +210,39 @@ export class ViewReportSchedulerComponent implements OnInit {
     }  
     this.backToPage.emit(emitObj);
   }
+
+  editReport(){
+    this.editReportSchedule.emit();
+  }
+
+  onDeleteReportScheduler() {
+    const options = {
+      title: this.translationData.lblDeleteReportScheduler || "Delete Report Scheduler",
+      message: this.translationData.lblAreousureyouwanttodeletescheduledreport || "Are you sure you want to delete this scheduled report  '$' ? ",
+      cancelText: this.translationData.lblCancel || "Cancel",
+      confirmText: this.translationData.lblDelete || "Delete"
+    };
+    let name = this.selectedRowData[0].reportName;
+    this.dialogService.DeleteModelOpen(options, name);
+    this.dialogService.confirmedDel().subscribe((res) => {
+    if (res) {
+      this.reportSchedulerService.deleteScheduledReport(this.selectedRowData[0].id).subscribe((res) => {
+          let emitObj = {
+            stepFlag: false,
+            successMsg: this.getDeletMsg(name)
+          }  
+          this.backToPage.emit(emitObj);
+        }, error => {        });
+    }
+   });
+  }
+
+  getDeletMsg(reportSchedulerName: any){
+    if(this.translationData.lblReportSchedulerDelete)
+      return this.translationData.lblReportSchedulerDelete.replace('$', reportSchedulerName);
+    else
+      return ("Scheduled '$' deleted successfully ").replace('$', reportSchedulerName);
+}
 
   timeRangeSelection(timeRange){
     switch(timeRange){

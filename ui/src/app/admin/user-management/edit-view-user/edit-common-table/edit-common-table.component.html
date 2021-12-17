@@ -4,7 +4,7 @@
         <div fxLayout="row" fxLayoutAlign="start space-around"
             style='padding: 10px 20px !important; background: #65c3f8; color: #fff;'>
             <div class='half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                <span class='custom-font'>{{ data.tableHeader }} ({{ selectionData.selected.length }})</span>
+                <span class='font-16-px line-height-24px font-helvetica-md'>{{ data.tableHeader }} ({{ selectionData.selected.length }})</span>
             </div>
             <div class='half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center flex-end">
                 <mat-icon matTooltip="{{ data.translationData.lblClose }}" (click)='onClose(false)' style='cursor: pointer; color: #000;'>close</mat-icon>

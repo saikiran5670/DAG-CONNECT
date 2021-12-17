@@ -13,12 +13,12 @@
     <mat-card-content>
       <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ actionType == 'create' ? (translationData.lblAddNewUserGroup ) : actionType == 'edit' ? (translationData.lblEditUserGroup ) : (translationData.lblViewUserGroup ) }}</span>
+            <span class='font-18-px line-height-27px font-helvetica-md'>{{ actionType == 'create' ? (translationData.lblAddNewUserGroup ) : actionType == 'edit' ? (translationData.lblEditUserGroup ) : (translationData.lblViewUserGroup ) }}</span>
         </div>
       </div>
       <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
         <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData.lblUserGroupName }} <span class='mandatoryColor'>*</span>
+          <mat-label class='font-16-px line-height-24px'>{{ translationData.lblUserGroupName }} <span class='mandatoryColor'>*</span>
           </mat-label>
             <div *ngIf="actionType != 'view'">
               <mat-form-field appearance="outline" class="full-width">
@@ -40,11 +40,11 @@
               </mat-error>
             </div>
             <div *ngIf="actionType == 'view'">
-              <span style='font-weight: 500!important;'>{{ selectedRowData.name ? selectedRowData.name : '--' }}</span>
+              <span class='font-helvetica-md'>{{ selectedRowData.name ? selectedRowData.name : '--' }}</span>
             </div>
           </div>
         <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData.lblGroupType }}<span class='mandatoryColor'>*</span></mat-label>
+          <mat-label class='font-16-px line-height-24px'>{{ translationData.lblGroupType }}<span class='mandatoryColor'>*</span></mat-label>
           <div *ngIf="actionType != 'view'">  
             <mat-form-field appearance="outline" class="full-width">
                 <mat-select (selectionChange)="groupTypeChange($event)" placeholder="{{ translationData.lblGroupType  }}" formControlName="groupType" required>
@@ -58,12 +58,12 @@
               </mat-error>
           </div>
           <div *ngIf="actionType == 'view'">
-            <span style='font-weight: 500!important;'>{{ selectedRowData.groupType ? (selectedRowData.groupType == 'G' ? 'Group' : 'Dynamic') : '--' }}</span>
+            <span class='font-helvetica-md'>{{ selectedRowData.groupType ? (selectedRowData.groupType == 'G' ? 'Group' : 'Dynamic') : '--' }}</span>
           </div>
         </div>
         <div class="areaWidth min-width-50-per" fxLayout="column" fxLayoutAlign="left">
           <mat-label style='display: flex; place-content: space-between;'>
-            <span>{{translationData.lblUserGroupDescriptionOptional
+            <span class='font-16-px line-height-24px'>{{translationData.lblUserGroupDescriptionOptional
               }}</span>
             <span *ngIf="actionType != 'view'">{{ translationData.lbl100CharMax }}</span>
           </mat-label>
@@ -81,7 +81,7 @@
           </mat-error>
           </div>
           <div *ngIf="actionType == 'view'">
-            <span style='font-weight: 500!important;'>{{ selectedRowData.description ? selectedRowData.description : '--' }}</span>
+            <span class='font-helvetica-md'>{{ selectedRowData.description ? selectedRowData.description : '--' }}</span>
           </div>
         </div>
       </div>
@@ -89,9 +89,9 @@
     <mat-card-actions class='no-margin no-padding' *ngIf="actionType != 'view'">
       <div fxLayout="row" fxLayoutAlign="space-between center">
         <div fxLayout="column" fxLayoutAlign="left">
-          <div *ngIf='showUserList' fxLayout="row" fxLayoutAlign='center center'>
+          <div *ngIf='showUserList' class='font-14-px line-height-21px' fxLayout="row" fxLayoutAlign='center center'>
             <mat-icon class='margin-right-10'>info</mat-icon>
-            <span>{{translationData.lblUserGroupManagementInfo }}</span>
+            <span>{{ translationData.lblUserGroupManagementInfo }}</span>
           </div>
         </div>
         <div fxLayout="column" fxLayoutAlign="end">
@@ -112,7 +112,7 @@
       </div>
       <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-            <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (actionType == 'view') ? (translationData.lblSelectedUser ) : (translationData.lblSelectUser ) }}</span>&nbsp;<span>{{ translationData.lblOptional  }}</span></span>
+            <span><span class='font-16-px line-height-24px font-helvetica-md'>{{ (actionType == 'view') ? (translationData.lblSelectedUser ) : (translationData.lblSelectUser ) }}</span>&nbsp;<span>{{ translationData.lblOptional  }}</span></span>
         </div>
       </div>
       

@@ -918,7 +918,7 @@ proceedStep(prefData: any, preference: any){
   loadMap() {
     if(this.alert_type_selected == 'C'){
       setTimeout(() => {
-        this.mapFunctions.initMap(this.mapElement);
+        this.mapFunctions.initMap(this.mapElement, this.translationData);
         }, 0);
     }
     else{

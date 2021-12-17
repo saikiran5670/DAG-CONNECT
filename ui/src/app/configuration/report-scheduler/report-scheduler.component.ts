@@ -275,7 +275,7 @@ export class ReportSchedulerComponent implements OnInit {
     initdata[index].driverList = driverTxt.slice(0, -2);
     initdata[index].vehicleGroupAndVehicleList = vehicleGroupTxt == "" ? vehicleGroupTxt : vehicleGroupTxt.slice(0, -2);
     initdata[index].lastScheduleRunDate= element.lastScheduleRunDate == 0 ? '-' : Util.convertUtcToDateFormat(element.lastScheduleRunDate, this.prefDateFormat, this.prefTimeZone);
-    initdata[index].nextScheduleRunDate= element.nextScheduleRunDate == 0 ? '-' : Util.convertUtcToDateFormat(element.nextScheduleRunDate, this.prefDateFormat, this.prefTimeZone);
+    //initdata[index].nextScheduleRunDate= element.nextScheduleRunDate == 0 ? '-' : Util.convertUtcToDateFormat(element.nextScheduleRunDate, this.prefDateFormat, this.prefTimeZone);
     initdata[index].isDriver = this.ReportTypeList.filter(item => item.id == initdata[index].reportId)[0].isDriver == 'Y' ? true : false;
   });
 
@@ -406,11 +406,13 @@ getUnique(arr, comp) {
         return ("Scheduled '$' deleted successfully ").replace('$', reportSchedulerName);
   }
 
+  rowData: any;
   onViewReportScheduler(row: any, action: any) {
     this.rowsData= [];
     this.viewStatus= true;
     this.actionType = action;
     this.rowsData.push(row);
+    this.rowData = row;
   }
 
   onEditReportScheduler(row: any, action : string) {
@@ -419,6 +421,12 @@ getUnique(arr, comp) {
     this.actionType = 'edit';
     this.titleText = this.translationData.lblEditReportScheduler || "Edit Report Scheduler";
     this.rowsData.push(row);
+  }
+
+  editReport(){
+    this.createEditStatus = false;
+    this.viewStatus = false;
+    this.onEditReportScheduler(this.rowData, '');
   }
 
    successMsgBlink(msg: any){

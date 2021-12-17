@@ -2,13 +2,13 @@
     <mat-expansion-panel  [(expanded)]="generalExpandPanel" class="full-width" fxLayoutGap="10px">
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title >
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblCompare  }}{{ '(' + compareDriverCount + ')'}}</span>
+          <span>{{ translationData.lblCompare  }}{{ '(' + compareDriverCount + ')'}}</span>
         </mat-panel-title>
         </mat-expansion-panel-header>
         <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
-            <span class='custom-font'> &nbsp;{{ translationData.lblGeneral  }} </span>
+            <span class='font-18-px line-height-27px font-helvetica-md'> &nbsp;{{ translationData.lblGeneral  }} </span>
             <div class='areaWidth' fxLayout="column" fxLayoutAlign="end">
-                <span class='custom-font' (click)="backToMainPageCall()">
+                <span (click)="backToMainPageCall()">
                     <span> &nbsp;</span>
                     <span class='backBtnCss'><{{ translationData.lblBack  }}</span>
                 </span>
@@ -24,7 +24,7 @@
           </div>
           <br/>
           <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
-            <span class='custom-font'> &nbsp;{{ translationData.lblDriverPerformance  }} </span>
+            <span class='font-18-px line-height-27px font-helvetica-md'> &nbsp;{{ translationData.lblDriverPerformance  }} </span>
           </div>
           <div class="container-fluid" id="grid_performance_table1">
             <angular-slickgrid gridId="grid_performance_table"

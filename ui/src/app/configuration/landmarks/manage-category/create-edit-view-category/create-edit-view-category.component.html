@@ -16,14 +16,14 @@
     <mat-card-content>
       <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ actionType == 'create' ? (translationData.lblAddNewCategory || 'Add New Category') : actionType == 'edit' ? (translationData.lblEditCategoryDetails || 'Edit Category Details') : (translationData.lblViewCategoryDetails || 'View Category Details') }}</span>
+            <span class='font-18-px line-height-27px font-helvetica-md'>{{ actionType == 'create' ? (translationData.lblAddNewCategory || 'Add New Category') : actionType == 'edit' ? (translationData.lblEditCategoryDetails || 'Edit Category Details') : (translationData.lblViewCategoryDetails || 'View Category Details') }}</span>
         </div>
       </div>
       <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
         <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
           <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
             <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ translationData.lblName || 'Name' }} <span class='mandatoryColor'>*</span>
+              <mat-label class='font-16-px line-height-24px'>{{ translationData.lblName || 'Name' }} <span class='mandatoryColor'>*</span>
               </mat-label>
                 <div *ngIf="actionType != 'view'">
                   <mat-form-field appearance="outline" class="full-width">
@@ -44,11 +44,11 @@
                   </mat-error>
                 </div>
                 <div *ngIf="actionType == 'view'">
-                  <span style='font-weight: 500!important;'>{{ (selectedRowData.subCategoryId == 0) ? selectedRowData.parentCategoryName : selectedRowData.subCategoryName }}</span>
+                  <span class='font-helvetica-md'>{{ (selectedRowData.subCategoryId == 0) ? selectedRowData.parentCategoryName : selectedRowData.subCategoryName }}</span>
                 </div>
             </div>
             <div *ngIf="(userType == 'Admin#Platform' || userType == 'Admin#Global')" class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ translationData.lblType || 'Type' }} <span class='mandatoryColor'>*</span>
+              <mat-label class='font-16-px line-height-24px'>{{ translationData.lblType || 'Type' }} <span class='mandatoryColor'>*</span>
               </mat-label>
                 <div *ngIf="actionType != 'view'">
                   <mat-form-field appearance="outline" class="full-width">
@@ -60,13 +60,13 @@
                 </mat-form-field>
                 </div>
                 <div *ngIf="actionType == 'view'">
-                  <span style='font-weight: 500!important;'>{{ selectedRowData.organizationId ? (selectedRowData.organizationId > 0 ? (translationData.lblRegular || 'Regular') : (translationData.lblGlobal || 'Global')) : (translationData.lblGlobal || 'Global') }}</span>
+                  <span class='font-helvetica-md'>{{ selectedRowData.organizationId ? (selectedRowData.organizationId > 0 ? (translationData.lblRegular || 'Regular') : (translationData.lblGlobal || 'Global')) : (translationData.lblGlobal || 'Global') }}</span>
                 </div>
             </div>
           </div>
           <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
             <div class="areaWidth full-width" fxLayout="column" fxLayoutAlign="left">
-              <mat-label style='margin-bottom: 5px;'>{{ translationData.lblCategoryType || 'Category Type' }} <span class='mandatoryColor'>*</span>
+              <mat-label class='font-16-px line-height-24px' style='margin-bottom: 5px;'>{{ translationData.lblCategoryType || 'Category Type' }} <span class='mandatoryColor'>*</span>
               </mat-label>
                 <div *ngIf="actionType != 'view'">
                   <mat-radio-group (change)='onCategoryChange($event)' formControlName="categoryType">
@@ -79,7 +79,7 @@
                   </mat-radio-group>
                 </div>
                 <div *ngIf="actionType == 'view'">
-                  <span style='font-weight: 500!important;'>{{ (selectedCategoryType ===  'category') ? (translationData.lblCategory || 'Category') : (translationData.lblSubCategory || 'Sub-Category') }}</span>
+                  <span class='font-helvetica-md'>{{ (selectedCategoryType ===  'category') ? (translationData.lblCategory || 'Category') : (translationData.lblSubCategory || 'Sub-Category') }}</span>
                 </div>
             </div>
           </div>
@@ -88,7 +88,7 @@
           <div class='full-width' fxLayout="column" fxLayoutGap="0px" fxLayoutAlign="left">
               <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start" *ngIf="actionType != 'view'">
                   <div class='areaWidth full-width myform-wrappe uploadArea' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                      <mat-label>{{ translationData.lblSelectAndUploadIcon || 'Select And Upload Icon' }}</mat-label>
+                      <mat-label class='font-16-px line-height-24px'>{{ translationData.lblSelectAndUploadIcon || 'Select And Upload Icon' }}</mat-label>
                       <mat-form-field appearance="outline">
                           <ngx-mat-file-input #removableInput (change)="addfile($event, removableInput)" [accept]="'.png, .jpg, .gif'" formControlName="uploadFile" placeholder="Upload Icon" ></ngx-mat-file-input>
                           <button mat-flat-button color="primary" matSuffix>{{ translationData.lblbrowse || 'Browse' }}</button>
@@ -110,7 +110,7 @@
                   </div>
             </div>
             <div *ngIf="actionType == 'view'">
-              <mat-label>{{ translationData.lblSelectedIcon || 'Selected Icon'}}</mat-label>
+              <mat-label class='font-16-px line-height-24px'>{{ translationData.lblSelectedIcon || 'Selected Icon'}}</mat-label>
               <span style='display: flex; margin-bottom: 3px;'>
                 <img matTooltip={{uploadIconName}} [src]='uploadIcon' alt='' width='20px' height='20px'>
                 &nbsp; &nbsp;{{ uploadIconName }}
@@ -121,8 +121,8 @@
       </div>
       <div *ngIf="selectedCategoryType == 'subcategory'" fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
         <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label *ngIf="actionType != 'view'">{{ translationData.lblSelectParentCategory || 'Select Parent Category' }} <span class='mandatoryColor'>*</span></mat-label>
-          <mat-label *ngIf="actionType == 'view'">{{ translationData.lblSelectedParentCategory || 'Selected Parent Category' }} <span class='mandatoryColor'>*</span></mat-label>
+          <mat-label class='font-16-px line-height-24px' *ngIf="actionType != 'view'">{{ translationData.lblSelectParentCategory || 'Select Parent Category' }} <span class='mandatoryColor'>*</span></mat-label>
+          <mat-label class='font-16-px line-height-24px' *ngIf="actionType == 'view'">{{ translationData.lblSelectedParentCategory || 'Selected Parent Category' }} <span class='mandatoryColor'>*</span></mat-label>
           <div *ngIf="actionType != 'view'">
             <mat-form-field [disabled]="isDisabledType" appearance="outline" class='full-width'>
               <mat-select [disabled]="actionType == 'edit'" formControlName="parentCategory" (selectionChange)="onParentCategoryChange()" placeholder="{{ translationData.lblSelectParentCategory || 'Select Parent Category' }}">
@@ -133,16 +133,16 @@
             </mat-form-field>
           </div>
           <div *ngIf="actionType == 'view'">
-            <span style='font-weight: 500!important;'>{{ selectedRowData.parentCategoryName ? selectedRowData.parentCategoryName : '--' }}</span>
+            <span class='font-helvetica-md'>{{ selectedRowData.parentCategoryName ? selectedRowData.parentCategoryName : '--' }}</span>
           </div>
           <div class="areaWidth min-width-50-per" fxLayout="column" fxLayoutAlign="left"></div>
         </div>
       </div>
       <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
         <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label style='display: flex; place-content: space-between;'>
+          <mat-label class='font-16-px line-height-24px' style='display: flex; place-content: space-between;'>
             <span>{{ translationData.lblDescriptionOptional || 'Description (Optional)' }}</span>
-            <span *ngIf="actionType != 'view'">{{ translationData.lbl100CharMax || '100 characters max' }}</span>
+            <span class='font-14-px' *ngIf="actionType != 'view'">{{ translationData.lbl100CharMax || '100 characters max' }}</span>
           </mat-label>
           <div *ngIf="actionType != 'view'">
             <mat-form-field appearance="outline" class="full-width">
@@ -158,7 +158,7 @@
           </mat-error>
           </div>
           <div *ngIf="actionType == 'view'">
-            <span style='font-weight: 500!important;'>{{ selectedRowData.description ? selectedRowData.description : '--' }}</span>
+            <span class='font-helvetica-md'>{{ selectedRowData.description ? selectedRowData.description : '--' }}</span>
           </div>
         </div>
         <div class="areaWidth min-width-50-per" fxLayout="column" fxLayoutAlign="left"></div>
@@ -170,7 +170,7 @@
           <div fxLayout="row" class='areaWidth'>
             <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel}}</button>
             <button *ngIf="actionType == 'edit'" class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
-              (click)='onReset()'>{{translationData.lblReset}}</button>
+              (click)='onReset()'>{{ translationData.lblReset }}</button>
             <button class='no-margin' [disabled]="!categoryForm.valid || imageMaxMsg" mat-raised-button color="primary"
               (click)='onCreateUpdate()'>{{ actionType == 'create' ? (translationData.lblCreate) :
               (translationData.lblConfirm ) }}</button>

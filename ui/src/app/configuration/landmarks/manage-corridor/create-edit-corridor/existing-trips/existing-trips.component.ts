@@ -277,7 +277,7 @@ export class ExistingTripsComponent implements OnInit {
     // this.subscribeWidthValue();
     // this.existingTripForm.controls.widthInput.setValue(this.corridorWidthKm);
     setTimeout(() => {
-      this.mapFunctions.initMap(this.mapElement);
+      this.mapFunctions.initMap(this.mapElement, this.translationData);
     }, 0);
   }
 

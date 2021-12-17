@@ -37,6 +37,8 @@ export class CreateEditReportSchedulerComponent implements OnInit {
   RecipientList: any= [];
   selectedIndex: number = 0;
   tabVisibilityStatus: boolean = true;
+  tripReportFlag: boolean = false;
+  showError: boolean = false;
   selectionTab: string = 'D';
   startTimeDisplay: any = '00:00:00';
   endTimeDisplay: any = '23:59:59';
@@ -491,6 +493,13 @@ export class CreateEditReportSchedulerComponent implements OnInit {
   }
 
   onChangeReportType(value){
+    let data = this.ReportTypeList.filter(item => item.id == value);
+    if(data[0].reportName == 'Trip Report' && data[0].isVehicle){
+    this.tripReportFlag = true; }
+    else{
+      this.tripReportFlag = false;
+      this.showError = false;
+    }
     this.showDriverList = this.ReportTypeList.filter(item => item.id == value)[0].isDriver == 'Y' ? true : false;
   }
 
@@ -632,9 +641,12 @@ export class CreateEditReportSchedulerComponent implements OnInit {
         }
         scheduledReportRecipient.push(scheduledReportRecipientObj);
       });
-     
-
-      let scheduledReportVehicleRef = [
+      let scheduledReportVehicleRef;
+      if(this.reportSchedulerForm.controls.vehicle.value == 0 && this.tripReportFlag){
+          this.showError = true;
+      }
+      else{
+       scheduledReportVehicleRef = [
         {
           "scheduleReportId": 0,
           "vehicleGroupId": this.reportSchedulerForm.controls.vehicleGroup.value,
@@ -646,6 +658,7 @@ export class CreateEditReportSchedulerComponent implements OnInit {
           "modifiedBy": 0
         }
       ]
+    }
 
       let scheduledReportDriverRef = [
         {

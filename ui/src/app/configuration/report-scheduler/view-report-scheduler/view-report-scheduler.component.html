@@ -11,10 +11,16 @@
 <div class='margin-bottom-sm'>
   <mat-card class='mat-elevation-z'>
     <mat-card-content>
-      <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
-        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
+      <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm' fxLayoutGap="5px" fxLayoutAlign="start">
+        <!-- <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start"> -->
             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblViewScheduleDetails || 'View Schedule Details' }}</span>
-        </div>
+        <!-- </div> -->
+        <button *ngIf="!adminAccessType.adminReadOnlyAccess" class='actionBtn' mat-flat-button (click)="editReport()" matTooltip="{{ translationData.lblEdit || 'Edit' }}">
+          <mat-icon>create</mat-icon>
+        </button>
+        <button *ngIf="adminAccessType.adminFullAccess" class='actionBtn' mat-flat-button (click)="onDeleteReportScheduler()" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
+          <mat-icon class="deleteIcon">delete_outline</mat-icon>
+        </button>
       </div>
       <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
