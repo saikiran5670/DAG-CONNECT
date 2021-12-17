@@ -924,18 +924,36 @@ proceedStep(prefData: any, preference: any){
     else{
       let defaultLayers = this.platform.createDefaultLayers();
       setTimeout(() => {
-        this.map = new H.Map(
-          this.mapElement.nativeElement,
-          defaultLayers.vector.normal.map,
-          {
-            center: { lat: 51.43175839453286, lng: 5.519981221425336 },
-            zoom: 4,
-            pixelRatio: window.devicePixelRatio || 1
-          }
-        );
+        this.map = new H.Map(this.mapElement.nativeElement,
+          defaultLayers.raster.normal.map, {
+          center: { lat: 51.43175839453286, lng: 5.519981221425336 },
+          zoom: 4,
+          pixelRatio: window.devicePixelRatio || 1
+        });
         window.addEventListener('resize', () => this.map.getViewPort().resize());
         var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
-        this.ui = H.ui.UI.createDefault(this.map, defaultLayers);  
+        this.ui = H.ui.UI.createDefault(this.map, defaultLayers);
+        
+        this.ui.removeControl("mapsettings");
+        // create custom one
+        var ms = new H.ui.MapSettingsControl({
+            baseLayers : [ { 
+              label: this.translationData.lblNormal || "Normal", layer: defaultLayers.raster.normal.map
+            },{
+              label: this.translationData.lblSatellite || "Satellite", layer: defaultLayers.raster.satellite.map
+            }, {
+              label: this.translationData.lblTerrain || "Terrain", layer: defaultLayers.raster.terrain.map
+            }
+            ],
+          layers : [{
+                label: this.translationData.lblLayerTraffic || "Layer.Traffic", layer: defaultLayers.vector.normal.traffic
+            },
+            {
+                label: this.translationData.lblLayerIncidents || "Layer.Incidents", layer: defaultLayers.vector.normal.trafficincidents
+            }
+          ]
+        });
+        this.ui.addControl("customized", ms);
       }, 1000);
     }
 }
@@ -969,11 +987,11 @@ PoiCheckboxClicked(event: any, row: any) {
         // for all objects that it contains
         bubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
           // read custom data
-          content:`<div>
-          <b>POI Name: ${element.name}</b><br>
-          <b>Category: ${element.categoryName}</b><br>
-          <b>Sub-Category: ${element.subCategoryName}</b><br>
-          <b>Address: ${element.address}</b>
+          content:`<div width:310px; class='font-16-px line-height-24px'>
+          <span class='font-helvetica-md'>POI Name:</span> ${element.name}<br>
+          <span class='font-helvetica-md'>Category:</span> ${element.categoryName}<br>
+          <span class='font-helvetica-md'>Sub-Category:</span> ${element.subCategoryName}<br>
+          <span class='font-helvetica-md'>Address:</span> ${element.address}
           </div>`
         });
         // show info bubble
@@ -1082,10 +1100,10 @@ PoiCheckboxClicked(event: any, row: any) {
       // for all objects that it contains
       bubble =  new H.ui.InfoBubble({lat:rowData.latitude,lng:rowData.longitude}, {
         // read custom data
-        content:`<div>
-        <b>Geofence Name: ${rowData.name}</b><br>
-        <b>Category: ${rowData.categoryName}</b><br>
-        <b>Sub-Category: ${rowData.subCategoryName}</b><br>
+        content:`<div  width:310px; class='font-16-px line-height-24px'>
+        <span class='font-helvetica-md'>Geofence Name:</span> ${rowData.name}<br>
+        <span class='font-helvetica-md'>Category:</span> ${rowData.categoryName}<br>
+        <span class='font-helvetica-md'>Sub-Category:</span> ${rowData.subCategoryName}<br>
         </div>`
       });
       // show info bubble
@@ -1146,10 +1164,10 @@ PoiCheckboxClicked(event: any, row: any) {
           
           bubble =  new H.ui.InfoBubble({ lat: rowData.latitude, lng: rowData.longitude } , {
             // read custom data
-            content:`<div>
-            <b>Geofence Name: ${rowData.name}</b><br>
-              <b>Category: ${rowData.categoryName}</b><br>
-              <b>Sub-Category: ${rowData.subCategoryName}</b><br>
+            content:`<div  width:310px; class='font-16-px line-height-24px'>
+              <span class='font-helvetica-md'>Geofence Name:</span> ${rowData.name}<br>
+              <span class='font-helvetica-md'>Category:</span> ${rowData.categoryName}<br>
+              <span class='font-helvetica-md'>Sub-Category:</span> ${rowData.subCategoryName}<br>
             </div>`
           });
           // show info bubble
