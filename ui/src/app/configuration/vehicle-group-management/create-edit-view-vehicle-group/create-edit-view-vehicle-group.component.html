@@ -13,12 +13,12 @@
     <mat-card-content>
       <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ actionType == 'create' ? (translationData.lblNewVehicleGroup || 'New Vehicle Group') : actionType == 'edit' ? (translationData.lblEditVehicleGroupDetails || 'Edit Vehicle Group Details') : (translationData.lblViewVehicleGroupDetails || 'View Vehicle Group Details') }}</span>
+            <span class='font-18-px line-height-27px font-helvetica-md'>{{ actionType == 'create' ? (translationData.lblNewVehicleGroup || 'New Vehicle Group') : actionType == 'edit' ? (translationData.lblEditVehicleGroupDetails || 'Edit Vehicle Group Details') : (translationData.lblViewVehicleGroupDetails || 'View Vehicle Group Details') }}</span>
         </div>
       </div>
       <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
         <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData.lblGroupName || 'Group Name' }} <span class='mandatoryColor'>*</span>
+          <mat-label class='font-16-px line-height-24px'>{{ translationData.lblGroupName || 'Group Name' }} <span class='mandatoryColor'>*</span>
           </mat-label>
             <div *ngIf="actionType != 'view'">
               <mat-form-field appearance="outline" class="full-width">
@@ -39,11 +39,11 @@
             </mat-error>
             </div>
             <div *ngIf="actionType == 'view'">
-              <span style='font-weight: 500!important;'>{{ selectedRowData.groupName ? selectedRowData.groupName : '--' }}</span>
+              <span class='font-helvetica-md'>{{ selectedRowData.groupName ? selectedRowData.groupName : '--' }}</span>
             </div>
           </div>
         <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData.lblGroupType || 'Group Type' }}<span class='mandatoryColor'>*</span></mat-label>
+          <mat-label class='font-16-px line-height-24px'>{{ translationData.lblGroupType || 'Group Type' }}<span class='mandatoryColor'>*</span></mat-label>
           <div *ngIf="actionType != 'view'">  
             <mat-form-field appearance="outline" class="full-width">
                 <mat-select (selectionChange)="vehGroupTypeChange($event)" placeholder="{{ translationData.lblGroupType || 'Group Type' }}" formControlName="vehicleGroupType" required>
@@ -57,11 +57,11 @@
               </mat-error>
           </div>
           <div *ngIf="actionType == 'view'">
-            <span style='font-weight: 500!important;'>{{ selectedRowData.groupType ? (selectedRowData.groupType == 'G' ? 'Group' : 'Dynamic') : '--' }}</span>
+            <span class='font-helvetica-md'>{{ selectedRowData.groupType ? (selectedRowData.groupType == 'G' ? 'Group' : 'Dynamic') : '--' }}</span>
           </div>
         </div>
         <div *ngIf='!showVehicleList' class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData.lblMethod || 'Method' }}<span class='mandatoryColor'>*</span></mat-label>
+          <mat-label class='font-16-px line-height-24px'>{{ translationData.lblMethod || 'Method' }}<span class='mandatoryColor'>*</span></mat-label>
           <div *ngIf="actionType != 'view'">  
             <mat-form-field appearance="outline" class="full-width">
                 <mat-select (selectionChange)="methodTypeChange($event)" placeholder="{{ translationData.lblMethod || 'Method' }}" formControlName="methodType">
@@ -75,12 +75,12 @@
               </mat-error> -->
           </div>
           <div *ngIf="actionType == 'view'">
-            <span style='font-weight: 500!important;'>{{ selectedRowData.functionEnum ? (selectedRowData.functionEnum == 'A' ? 'All' : (selectedRowData.functionEnum == 'O') ? 'Owned Vehicles' : 'Visible Vehicles') : '--' }}</span>
+            <span class='font-helvetica-md'>{{ selectedRowData.functionEnum ? (selectedRowData.functionEnum == 'A' ? 'All' : (selectedRowData.functionEnum == 'O') ? 'Owned Vehicles' : 'Visible Vehicles') : '--' }}</span>
           </div>
         </div>
         <div [ngClass]="showVehicleList ? 'min-width-50-per' : 'min-width-40-per'" class="areaWidth" fxLayout="column" fxLayoutAlign="left">
           <mat-label style='display: flex; place-content: space-between;'>
-            <span><span>{{ translationData.lblGroupDescription || 'Group Description' }}</span>&nbsp;<span *ngIf="actionType != 'view'">{{ translationData.lblOptional || '(Optional)' }}</span></span>
+            <span><span class='font-16-px line-height-24px'>{{ translationData.lblGroupDescription || 'Group Description' }}</span>&nbsp;<span class='font-14-px' *ngIf="actionType != 'view'">{{ translationData.lblOptional || '(Optional)' }}</span></span>
             <span *ngIf="actionType != 'view'">{{ translationData.lbl100CharMax || '100 characters max' }}</span>
           </mat-label>
           <div *ngIf="actionType != 'view'">
@@ -94,7 +94,7 @@
             </mat-error>
           </div>
           <div *ngIf="actionType == 'view'">
-            <span style='font-weight: 500!important;'>{{ selectedRowData.description ? selectedRowData.description : '--' }}</span>
+            <span class='font-helvetica-md'>{{ selectedRowData.description ? selectedRowData.description : '--' }}</span>
           </div>
         </div>
       </div>
@@ -125,7 +125,7 @@
       </div>
       <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectedVehicleList || 'Selected Vehicle List' }}</span>
+            <span class='font-16-px line-height-24px font-helvetica-md'>{{ translationData.lblSelectedVehicleList || 'Selected Vehicle List' }}</span>
         </div>
       </div>
       <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>
