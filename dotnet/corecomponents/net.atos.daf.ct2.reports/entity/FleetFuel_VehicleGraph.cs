@@ -8,7 +8,7 @@ namespace net.atos.daf.ct2.reports.entity
     {
         public int VehicleID { get; set; }
         public string VIN { get; set; }
-        public int NumberofTrips { get; set; }
+        public string NumberofTrips { get; set; }
         public double FuelConsumed { get; set; }
         public double Co2Emission { get; set; }
         public double Distance { get; set; }

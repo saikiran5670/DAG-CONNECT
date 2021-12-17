@@ -8,7 +8,7 @@
                 <mat-expansion-panel-header class="full-width">
                     <mat-panel-title>
                         <span>
-                            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>
+                            <span class='font-18-px line-height-27px'>
                                 {{ translationData.lblDashboard || 'Dashboard'}}</span>
                             <span style='margin-left: 10px; vertical-align: middle;'>
                                 <mat-icon *ngIf='!editDashboardFlag' (click)="editDashboardPreferences()"
@@ -37,12 +37,12 @@
                             [indeterminate]='selectionForFleetKPIColumns.hasValue() && !isAllSelected("FleetKPI")'
                             [disabled]='!editDashboardFlag'>
                             <span class='headerFont'>{{
-                                translationData.lblFleetKPI }} <span class='font-weight-normal'>({{ translationData.lblComponentviewsettings }})</span></span>
+                                translationData.lblFleetKPI }} <span class='font-14-px'>({{ translationData.lblComponentviewsettings }})</span></span>
                         </mat-checkbox>
                     </div>
 
                     <div fxLayout="column" fxLayoutGap="3px" class='min-width-25-per headerFont'>
-                        {{translationData.lblTargetPerDayPerVehicle || 'Target Per Day Per Vehicle'}}
+                        {{ translationData.lblTargetPerDayPerVehicle || 'Target Per Day Per Vehicle' }}
                     </div>
 
                     <div fxLayout="column" fxLayoutGap="3px" class='min-width-25-per headerFont'>
@@ -148,7 +148,7 @@
                             [indeterminate]='selectionForTodayLiveVehicleColumns.hasValue() && !isAllSelected("TodayLiveVehicle")'
                             [disabled]='!editDashboardFlag'>
                             <span class='headerFont'>{{
-                                translationData.lblTodayLiveVehicle }} <span class='font-weight-normal'>({{ translationData.lblComponentviewsettings }})</span></span>
+                                translationData.lblTodayLiveVehicle }} <span class='font-14-px'>({{ translationData.lblComponentviewsettings }})</span></span>
                         </mat-checkbox>
                     </div>
 
@@ -252,7 +252,7 @@
                             [indeterminate]='selectionForVehicleUtilizationColumns.hasValue() && !isAllSelected("VehicleUtilization")'
                             [disabled]='!editDashboardFlag'>
                             <span class='headerFont'>{{
-                                translationData.lblVehicleUtilization }} <span class='font-weight-normal'>({{ translationData.lblComponentviewsettings }})</span></span>
+                                translationData.lblVehicleUtilization }} <span class='font-14-px'>({{ translationData.lblComponentviewsettings }})</span></span>
                         </mat-checkbox>
                     </div>
                     <div fxLayout="column" fxLayoutGap="3px"  class='min-width-25-per headerFont'>
@@ -362,7 +362,7 @@
                             [indeterminate]='selectionForAlertLast24HoursColumns.hasValue() && !isAllSelected("AlertLast24Hours")'
                             [disabled]='!editDashboardFlag'>
                             <span class='headerFont'>{{
-                                translationData.lblAlertLast24Hours }} <span class='font-weight-normal'>({{ translationData.lblComponentviewsettings }})</span></span>
+                                translationData.lblAlertLast24Hours }} <span class='font-14-px'>({{ translationData.lblComponentviewsettings }})</span></span>
                         </mat-checkbox>
                     </div>
                 </div>

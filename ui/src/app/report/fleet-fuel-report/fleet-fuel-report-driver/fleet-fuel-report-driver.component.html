@@ -6,14 +6,14 @@
         <mat-expansion-panel-header class="full-width">
           <mat-panel-title>
             <span>
-              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSearchReportParameters || 'Search Report Parameters' }}</span>
+              <span>{{ translationData.lblSearchReportParameters || 'Search Report Parameters' }}</span>
             </span>
           </mat-panel-title>
         </mat-expansion-panel-header>
         <div>
           <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
             <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ translationData.lblTimeRange || 'Time Range' }}
+              <mat-label class='font-16-px line-height-24px'>{{ translationData.lblTimeRange || 'Time Range' }}
                 <span class='mandatoryColor'>*</span>
               </mat-label>
               <div style='margin-top: 5px;'>
@@ -31,7 +31,7 @@
             </div>
 
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} <span class='mandatoryColor'>*</span></mat-label>
+              <mat-label class='font-16-px line-height-24px'>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} <span class='mandatoryColor'>*</span></mat-label>
               <mat-form-field appearance="outline">
                 <mat-select (selectionChange)="onVehicleGroupChange($event)" placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}"
                   formControlName="vehicleGroup">
@@ -55,7 +55,7 @@
             <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
                 <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
-                  <mat-label>{{ translationData.lblFrom || 'From' }}
+                  <mat-label class='font-16-px line-height-24px'>{{ translationData.lblFrom || 'From' }}
                     <span class='mandatoryColor'>*</span>
                   </mat-label>
                   <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
@@ -84,7 +84,7 @@
                 </div>
 
                 <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
-                  <mat-label>{{ translationData.lblTo || 'To' }}
+                  <mat-label class='font-16-px line-height-24px'>{{ translationData.lblTo || 'To' }}
                     <span class='mandatoryColor'>*</span>
                   </mat-label>
 
@@ -133,7 +133,7 @@
 
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
 
-              <mat-label>{{ translationData.lblVehicle || 'Vehicle' }} <span class='mandatoryColor'>*</span></mat-label>
+              <mat-label class='font-16-px line-height-24px'>{{ translationData.lblVehicle || 'Vehicle' }} <span class='mandatoryColor'>*</span></mat-label>
 
               <mat-form-field appearance="outline">
 
@@ -198,7 +198,7 @@
 
           <mat-panel-title>
 
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllDetails || 'All Details' }}</span>
+            <span>{{ translationData.lblAllDetails || 'All Details' }}</span>
 
           </mat-panel-title>
 
@@ -206,7 +206,7 @@
 
         <div *ngIf='displayData.length == 0'>
 
-          <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;' fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound || '' }}
+          <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound || '' }}
 
           </div>
 
@@ -231,7 +231,7 @@
 
           <mat-panel-title>
 
-            <span  style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSummary || 'Summary' }}
+            <span>{{ translationData.lblSummary || 'Summary' }}
 
             </span>
 
@@ -242,7 +242,7 @@
 
         <div *ngIf='displayData.length > 0'>
 
-          <div style='padding: 20px; margin-bottom: 10px; background: #f7f3f3;'>
+          <div style='padding: 30px 20px; margin-bottom: 10px; background: #bee3f8;'>
 
             <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
 
@@ -252,7 +252,7 @@
 
                   <span>{{ translationData.lblFrom || 'From' }}: </span>
 
-                  <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.fromDate }}
+                  <span class='font-helvetica-md'>{{ tableInfoObj.fromDate }}
                   </span>
 
                 </span>
@@ -265,7 +265,7 @@
 
                   <span>{{ translationData.lblTo || 'To' }}: </span>
 
-                  <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.endDate }}</span>
+                  <span class='font-helvetica-md'>{{ tableInfoObj.endDate }}</span>
 
                 </span>
 
@@ -277,7 +277,7 @@
 
                   <span>{{ translationData.lblVehicleGroup || 'Vehicle Group' }}: </span>
 
-                  <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vehGroupName }}
+                  <span class='font-helvetica-md'>{{ tableInfoObj.vehGroupName }}
                   </span>
 
                 </span>
@@ -290,7 +290,7 @@
 
                   <span>{{ translationData.lblVehicleName || 'Vehicle Name' }}: </span>
 
-                  <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vehicleName }}
+                  <span class='font-helvetica-md'>{{ tableInfoObj.vehicleName }}
                   </span>
 
                 </span>
@@ -309,7 +309,7 @@
 
               <span>{{ translationData.lblNumberOfTrips || 'Number Of Trips' }}</span>
 
-              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('noOfTrips')}}</span>
+              <span class='font-helvetica-md'>{{sumOfColumns('noOfTrips')}}</span>
 
             </div>
 
@@ -317,7 +317,7 @@
 
               <span>{{ translationData.lblDistance || 'Distance' }}</span>
 
-              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ convertZeros(sumOfColumns('distance'))}}{{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || ' km') : (prefUnitFormat
+              <span class='font-helvetica-md'>{{ convertZeros(sumOfColumns('distance'))}} {{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || ' km') : (prefUnitFormat
                 == 'dunit_Imperial') ? (translationData.lblmile || ' mile') : (translationData.lblmile || ' mile') }}</span>
 
             </div>
@@ -326,7 +326,7 @@
 
               <span>{{ translationData.lblFuelConsumed || 'Fuel Consumed' }}</span>
 
-              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('fuelconsumed')}}{{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr || '
+              <span class='font-helvetica-md'>{{sumOfColumns('fuelconsumed')}} {{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr || '
                 l') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgal || 'gal') :
                 (translationData.lblgal || ' gal') }} </span>
 
@@ -336,7 +336,7 @@
 
               <span>{{ translationData.lblIdleDuration || 'Idle Duration' }}</span>
 
-              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('idleDuration')}} hh:mm</span>
+              <span class='font-helvetica-md'>{{sumOfColumns('idleDuration')}} hh:mm</span>
 
             </div>
 
@@ -344,7 +344,7 @@
 
               <span>{{ translationData.lblFuelConsumption || 'Fuel Consumption' }}</span>
 
-              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('fuelConsumption')}}{{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || '
+              <span class='font-helvetica-md'>{{sumOfColumns('fuelConsumption')}} {{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || '
                 Ltrs/100km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmpg || 'mpg') :
                 (translationData.lblmpg || ' mpg') }}</span>
 
@@ -354,7 +354,7 @@
 
               <span>{{ translationData.lblCO2Emission}}</span>
 
-              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('co2emission')}}{{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblton || ' t') :
+              <span class='font-helvetica-md'>{{sumOfColumns('co2emission')}} {{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblton || ' t') :
                 (prefUnitFormat == 'dunit_Imperial') ? (translationData.lbltons || ' Ton') : (translationData.lbltons ||' Ton') }} </span>
 
             </div>
@@ -383,7 +383,7 @@
 
           <mat-panel-title>
 
-            <span id= "chartHeader" style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblCharts || 'Charts' }}</span>
+            <span id= "chartHeader">{{ translationData.lblCharts || 'Charts' }}</span>
 
           </mat-panel-title>
 
@@ -394,7 +394,7 @@
           <div *ngIf="checkForPreference('chart_fuelconsumed')" class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right" fxFlex="0 1 calc(50% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32px)"
           fxFlex.lt-sm="100%">
 
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;padding-top: 20px'>{{ translationData.lblFuelConsumed || 'Fuel Consumed' }}</span>
+            <span style='text-align: center; padding-top: 20px;' class='font-16-px line-height-24px'>{{ translationData.lblFuelConsumed || 'Fuel Consumed' }}</span>
 
             <div *ngIf="ConsumedChartType =='Line'" class="chart-wrapper">
 
@@ -419,7 +419,7 @@
           <div *ngIf="checkForPreference('chart_numberoftrips')" class="areaWidth areaWidth half-width" fxLayout="column" fxLayoutAlign="right" fxFlex="0 1 calc(50% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32px)"
           fxFlex.lt-sm="100%">
 
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;padding-top: 20px'>{{ translationData.lblNumberOfTrips || 'Number Of Trips' }}</span>
+            <span style='text-align: center; padding-top: 20px;' class='font-16-px line-height-24px'>{{ translationData.lblNumberOfTrips || 'Number Of Trips' }}</span>
 
             <div *ngIf="TripsChartType =='Bar'" class="chart-wrapper">
 
@@ -450,7 +450,7 @@
           <div *ngIf="checkForPreference('chart_co2emission')" class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right" fxFlex="0 1 calc(50% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32px)"
           fxFlex.lt-sm="100%">
 
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;padding-top: 20px'>{{ translationData.lblCO2Emission }}</span>
+            <span style='text-align: center; padding-top: 20px;' class='font-16-px line-height-24px'>{{ translationData.lblCO2Emission }}</span>
 
             <div *ngIf="Co2ChartType =='Line'" class="chart-wrapper">
 
@@ -475,7 +475,7 @@
           <div *ngIf="checkForPreference('chart_distance')" class="areaWidth areaWidth half-width" fxLayout="column" fxLayoutAlign="right" fxFlex="0 1 calc(50% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32px)"
           fxFlex.lt-sm="100%">
 
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;padding-top: 20px'>{{ translationData.lblDistance || 'Distance' }}</span>
+            <span style='text-align: center; padding-top: 20px;' class='font-16-px line-height-24px'>{{ translationData.lblDistance || 'Distance' }}</span>
 
             <div *ngIf="DistanceChartType =='Line'" class="chart-wrapper">
 
@@ -506,7 +506,7 @@
           <div *ngIf="checkForPreference('chart_fuelconsumption')" class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right" fxFlex="0 1 calc(50% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32px)"
           fxFlex.lt-sm="100%">
 
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;padding-top: 20px;'>{{ translationData.lblFuelConsumption || 'Fuel Consumption' }}</span>
+            <span style='text-align: center; padding-top: 20px;' class='font-16-px line-height-24px'>{{ translationData.lblFuelConsumption || 'Fuel Consumption' }}</span>
 
             <div *ngIf="ConsumptionChartType =='Line'" class="chart-wrapper">
 
@@ -531,7 +531,7 @@
           <div *ngIf="checkForPreference('chart_idledurationtotaltime')" class="areaWidth areaWidth half-width" fxLayout="column" fxLayoutAlign="right" fxFlex="0 1 calc(50% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32px)"
           fxFlex.lt-sm="100%">
 
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;padding-top: 20px'>{{ translationData.lblIdleDuration || 'Idle Duration' }}</span>
+            <span style='text-align: center; padding-top: 20px;' class='font-16-px line-height-24px'>{{ translationData.lblIdleDuration || 'Idle Duration' }}</span>
 
             <div *ngIf="DurationChartType =='Line'" class="chart-wrapper">
 
@@ -573,7 +573,7 @@
 
           <mat-panel-title>
 
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllDetails || 'All Details' }}</span>
+            <span>{{ translationData.lblAllDetails || 'All Details' }}</span>
 
           </mat-panel-title>
 
@@ -664,7 +664,7 @@
 
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_vehiclename')">
 
-                <span>{{row.vehicleName}}</span>
+                <span>{{ row.vehicleName }}</span>
 
               </mat-cell>
 
@@ -694,7 +694,7 @@
 
               <mat-cell *matCellDef="let row" matTooltip="{{ row.vehicleRegistrationNo }}" [hidden]="!checkForPreference('vehicledetails_vehicleregistrationno')">
 
-                <span>{{row.vehicleRegistrationNo}}</span>
+                <span>{{ row.vehicleRegistrationNo }}</span>
 
               </mat-cell>
 
@@ -706,13 +706,13 @@
 
               <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_distance')">{{ translationData.lblDistance || 'Distance' }}
 
-                <span style="font-weight: normal;">({{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial')
+                <span class='font-14-px'>({{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial')
                   ? (translationData.lblmile || 'mile') : (translationData.lblmile || 'mile') }})</span>
               </mat-header-cell>
 
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_distance')">
 
-                <span>{{ convertZeros(row.convertedDistance)}}</span>
+                <span>{{ convertZeros(row.convertedDistance) }}</span>
 
               </mat-cell>
 
@@ -724,7 +724,7 @@
 
               <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_averagedistanceperday')">{{ translationData.lblAverageDistancePerDay || 'Average Distance Per Day' }}
 
-                <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm ||
+                <span class='font-14-px'>({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm ||
                     'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') :
                     (translationData.lblmile || 'mile') }})</span>
               </mat-header-cell>
@@ -743,7 +743,7 @@
 
               <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_averagespeed')">{{ translationData.lblAverageSpeed || 'Average Speed' }}
 
-                <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh || 'km/h') : (prefUnitFormat == 'dunit_Imperial')
+                <span class='font-14-px'>({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh || 'km/h') : (prefUnitFormat == 'dunit_Imperial')
                   ? (translationData.lblmileh || 'mph') : (translationData.lblmileh || 'mph') }})</span>
               </mat-header-cell>
 
@@ -761,7 +761,7 @@
 
               <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_maxspeed')">{{ translationData.lblMaxSpeed || 'Max Speed' }}
 
-                <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh || 'km/h') : (prefUnitFormat == 'dunit_Imperial')
+                <span class='font-14-px'>({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh || 'km/h') : (prefUnitFormat == 'dunit_Imperial')
                   ? (translationData.lblmileh || 'mph') : (translationData.lblmileh || 'mph') }})</span>
               </mat-header-cell>
 
@@ -813,7 +813,7 @@
 
               <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_fuelconsumed')">{{ translationData.lblFuelConsumed || 'Fuel Consumed' }}
 
-                <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr || '
+                <span class='font-14-px'>({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr || '
                   l') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgal || 'gal') :
                   (translationData.lblgal || ' gal') }})</span>
 
@@ -833,7 +833,7 @@
 
               <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_fuelconsumption')">{{ translationData.lblFuelConsumption || ' Fuel Consumption' }}
 
-                <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || '
+                <span class='font-14-px'>({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || '
                   Ltrs/100km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmpg || 'mpg') :
                   (translationData.lblmpg || ' mpg') }})</span>
 
@@ -851,7 +851,7 @@
 
             <ng-container matColumnDef="cO2Emission" >
               <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_co2emission')">{{ translationData.lblCO2Emission}}
-                <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblton || 't') :
+                <span class='font-14-px'>({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblton || 't') :
                     (prefUnitFormat == 'dunit_Imperial') ? (translationData.lbltons || 'Ton') : (translationData.lbltons ||
                     'Ton') }})</span>
               </mat-header-cell>
@@ -867,7 +867,7 @@
 
                 <!-- <span
 
-            style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkg || 'kg') :
+             class='font-14-px'>({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkg || 'kg') :
 
             (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblpound || 'pound') : (translationData.lblpound ||
 
@@ -929,7 +929,7 @@
 
             <ng-container matColumnDef="cruiseControlDistance3050">
               <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference(prefUnitFormat == 'dunit_Metric' ? 'vehicledetails_cruisecontroldistance3050' : 'vehicledetails_cruisecontroldistance1530')">{{translationData.lblCruiseControlDistance}} {{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblCruiseControlDistance3050metric) : (translationData.lblCruiseControlDistance1530imperial)}}
-                <span style="font-weight: normal;">{{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh) : (translationData.lblmileh)}} (%)</span>
+                <span class='font-14-px'>{{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh) : (translationData.lblmileh)}} (%)</span>
                 </mat-header-cell>
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference(prefUnitFormat == 'dunit_Metric' ? 'vehicledetails_cruisecontroldistance3050' : 'vehicledetails_cruisecontroldistance1530')">
                 <span>{{row.cruiseControlDistance3050}}</span>
@@ -938,7 +938,7 @@
 
             <ng-container matColumnDef="cruiseControlDistance5075">
               <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference(prefUnitFormat == 'dunit_Metric' ? 'vehicledetails_cruisecontroldistance5075' : 'vehicledetails_cruisecontroldistance3045')">{{translationData.lblCruiseControlDistance}} {{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblCruiseControlDistance5075metric) : (translationData.lblCruiseControlDistance3045imperial)}}
-                <span style="font-weight: normal;">{{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh) : (translationData.lblmileh)}} (%)</span>
+                <span class='font-14-px'>{{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh) : (translationData.lblmileh)}} (%)</span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference(prefUnitFormat == 'dunit_Metric' ? 'vehicledetails_cruisecontroldistance5075' : 'vehicledetails_cruisecontroldistance3045')">
                 <span>{{row.cruiseControlDistance5075}}</span>
@@ -947,7 +947,7 @@
 
             <ng-container matColumnDef="cruiseControlDistance75">
               <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference(prefUnitFormat == 'dunit_Metric' ? 'vehicledetails_cruisecontroldistance75' : 'vehicledetails_cruisecontroldistance45')">{{translationData.lblCruiseControlDistance}} {{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblCruiseControlDistance75metric) : (translationData.lblCruiseControlDistance45imperial)}}
-                <span style="font-weight: normal;">{{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh) : (translationData.lblmileh)}} (%)</span>
+                <span class='font-14-px'>{{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh) : (translationData.lblmileh)}} (%)</span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference(prefUnitFormat == 'dunit_Metric' ? 'vehicledetails_cruisecontroldistance75' : 'vehicledetails_cruisecontroldistance45')">
                 <span>{{row.cruiseControlDistance75}}</span>
@@ -980,7 +980,7 @@
             <ng-container matColumnDef="ccFuelConsumption">
                 <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_ccfuelconsumption')">{{ translationData.lblCCFuelConsumption || 'CC Fuel
                   Consumption' }}
-                  <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || ' Ltrs/100km') : (prefUnitFormat ==
+                  <span class='font-14-px'>({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || ' Ltrs/100km') : (prefUnitFormat ==
                 'dunit_Imperial') ? (translationData.lblmpg || 'mpg') : (translationData.lblmpg
                 || ' mpg') }})</span>
                 </mat-header-cell>
@@ -993,7 +993,7 @@
                 <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_fuelconsumptionccnonactive')">{{ translationData.lblFuelconsumptionCCnonactive ||
                   'Fuel
                   Consumption CC non active' }}
-                  <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || ' Ltrs/100km') : (prefUnitFormat ==
+                  <span class='font-14-px'>({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || ' Ltrs/100km') : (prefUnitFormat ==
                     'dunit_Imperial') ? (translationData.lblmpg || 'mpg') : (translationData.lblmpg
                     || ' mpg') }})</span>
                 </mat-header-cell>
@@ -1097,7 +1097,7 @@
 
               <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_co2emmision')">{{ translationData.lblCO2emmisiongrkm || 'CO2 emmision gr/km' }}
 
-                <!-- <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkg || 'kg') :
+                <!-- <span class='font-14-px'>({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkg || 'kg') :
 
             (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblpound || 'pound') : (translationData.lblpound ||
 
@@ -1118,7 +1118,7 @@
             <ng-container matColumnDef="idlingConsumptionWithPTO">
                 <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idlingconsumptionwithpto')">{{ translationData.lblidlingConsumptionValue ||
                   'Idling Consumption With PTO' }}
-                  <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblltrper100km || 'Ltr/100km') :
+                  <span class='font-14-px'>({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblltrper100km || 'Ltr/100km') :
                     (translationData.lblmpg || 'mpg')  }})</span>
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingconsumptionwithpto')">

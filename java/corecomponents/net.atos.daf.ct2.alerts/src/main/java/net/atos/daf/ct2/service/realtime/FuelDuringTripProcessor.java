@@ -1,6 +1,8 @@
 package net.atos.daf.ct2.service.realtime;
 
 
+import static net.atos.daf.ct2.props.AlertConfigProp.INCOMING_MESSAGE_UUID;
+
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Objects;
@@ -19,9 +21,6 @@ import net.atos.daf.common.ct2.utc.TimeFormatter;
 import net.atos.daf.ct2.models.AlertFuelMeasurement;
 import net.atos.daf.ct2.pojo.standard.Index;
 import net.atos.daf.ct2.props.AlertConfigProp;
-
-import static net.atos.daf.ct2.props.AlertConfigProp.INCOMING_MESSAGE_UUID;
-import static net.atos.daf.ct2.util.Utils.convertDateToMillis;
 
 public class FuelDuringTripProcessor extends ProcessWindowFunction<Index, Index, String, TimeWindow> {
 	private static final long serialVersionUID = 1L;
@@ -65,7 +64,7 @@ public class FuelDuringTripProcessor extends ProcessWindowFunction<Index, Index,
 						logger.info("measurementTime {} , current time:: {}, previousTime:{},  timeMeasurementVal :{}", measurementTime, TimeFormatter.getInstance().convertUTCToEpochMilli(msgIndex.getEvtDateTime(),
 								AlertConfigProp.DATE_FORMAT) , vFuelPrevTripRecData.getEvtDateTime(), timeMeasurementVal);
 						if (TimeFormatter.getInstance().convertUTCToEpochMilli(msgIndex.getEvtDateTime(),
-								AlertConfigProp.DATE_FORMAT) >= measurementTime) {
+								AlertConfigProp.DATE_FORMAT) >= measurementTime || AlertConfigProp.INDEX_TRIP_END == msgIndex.getVEvtID()) {
 							// 5 mins measurement
 							if (Objects.nonNull(msgIndex.getDocument())
 									&& Objects.nonNull(msgIndex.getDocument().getVFuelLevel1())) {

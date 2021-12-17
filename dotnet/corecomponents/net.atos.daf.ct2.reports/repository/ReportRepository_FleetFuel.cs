@@ -482,6 +482,7 @@ namespace net.atos.daf.ct2.reports.repository
                 string query = @"WITH cte_workingdays AS(
                                     select
                                     end_time_stamp as startdate,
+                                    end_time_stamp as date,
                                     1 as totalworkingdays,
                                     v.vin as vehiclecount,
                                     trip_id as tripcount,
@@ -500,6 +501,7 @@ namespace net.atos.daf.ct2.reports.repository
                                     )
                                     select
                                     '' as VIN,
+                                    date,
                                     startdate,
                                     totalworkingdays,
                                     vehiclecount,

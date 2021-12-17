@@ -131,4 +131,8 @@ public class VehicleAlertRefSchema implements Serializable {
     public int hashCode() {
         return Objects.hash(alertId);
     }
+
+    public void setAdditionalProperties(Map<String, String> additionalProperties) {
+        this.additionalProperties = additionalProperties;
+    }
 }

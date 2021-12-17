@@ -961,6 +961,7 @@ export class AppComponent {
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
+    this.translationService.applicationTranslationData = this.translationData;
   }
 
   ngOnInit() {

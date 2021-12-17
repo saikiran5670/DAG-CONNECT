@@ -51,11 +51,11 @@ public class FuelDeviationDuringTripCalculation
 						Long measurementTime = TimeFormatter.getInstance()
 								.addSecondsToUTCTime(vFuelPrevTripRecData.getEvtDateTime(), timeMeasurementVal);
 
-						if (vFuelTripObj.getEvtDateTime() >= measurementTime) {
-							// 5 mins measurement
+						if (vFuelTripObj.getEvtDateTime() >= measurementTime || FuelDeviationConstants.INDEX_TRIP_END == vFuelTripObj.getVEvtId()) {
+							// 5 mins measurement 
 							fuelDeviationMeasurementState.put(vFuelTripObj.getVin(), createFuelMeasurementObj(vFuelTripObj));
 							
-							logger.info("fuelMeasurementAfterUpdate Obj ::{}", fuelDeviationMeasurementState.get(vFuelTripObj.getVin()));
+							logger.debug("fuelMeasurementAfterUpdate Obj ::{}", fuelDeviationMeasurementState.get(vFuelTripObj.getVin()));
 							
 							if (vFuelTripObj.getVFuelLevel() != null && vFuelPrevTripRecData.getVFuelLevel() != null) {
 								BigDecimal fuelIncreaseDiff = vFuelTripObj.getVFuelLevel()
@@ -64,8 +64,7 @@ public class FuelDeviationDuringTripCalculation
 								logger.info("Fuel Increase during Trip, tripStartFuel ::{} , vFuelPrevTripRecData ::{}, fuelIncreaseDeviation ::{}", vFuelTripObj.getVFuelLevel()
 										, vFuelPrevTripRecData.getVFuelLevel(), fuelIncreaseDiff);
 
-								if (fuelIncreaseDiff.compareTo(BigDecimal.ZERO) > 0
-										&& fuelIncreaseDiff.compareTo(tripIncreaseThresholdVal) > 0) {
+								if (fuelIncreaseDiff.compareTo(tripIncreaseThresholdVal) > 0) {
 
 									FuelDeviation fuelIncreaseEvt = createFuelDeviationEvtObj(vFuelTripObj,
 											FuelDeviationConstants.FUEL_DEVIATION_INCREASE_EVENT,
@@ -73,15 +72,16 @@ public class FuelDeviationDuringTripCalculation
 									fuelIncreaseEvt.setFuelDiff(fuelIncreaseDiff.doubleValue());
 									
 									out.collect(fuelIncreaseEvt);
-								} else {
+								}
+								//else {
 
 									BigDecimal fuelDecreaseDiff = (vFuelPrevTripRecData.getVFuelLevel()
 											.subtract(vFuelTripObj.getVFuelLevel()));
 									logger.info("Fuel Loss during Trip, tripStartFuel ::{}, vFuelPrevTripRecData ::{}, fuelLossDeviation ::{} ", vFuelTripObj.getVFuelLevel()
 											, vFuelPrevTripRecData.getVFuelLevel(), fuelDecreaseDiff);
 
-									BigDecimal fuelDecreaseDiffAbsVal = fuelDecreaseDiff.abs();
-									if (fuelDecreaseDiffAbsVal.compareTo(tripDecreaseThresholdVal) > 0) {
+									//BigDecimal fuelDecreaseDiffAbsVal = fuelDecreaseDiff.abs();
+									if (fuelDecreaseDiff.compareTo(tripDecreaseThresholdVal) > 0) {
 
 										FuelDeviation fuelDecreaseEvt = createFuelDeviationEvtObj(vFuelTripObj,
 												FuelDeviationConstants.FUEL_DEVIATION_DECREASE_EVENT,
@@ -90,7 +90,7 @@ public class FuelDeviationDuringTripCalculation
 										
 										out.collect(fuelDecreaseEvt);
 									}
-								}
+								//}
 							}
 
 						} else {
