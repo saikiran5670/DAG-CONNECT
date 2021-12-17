@@ -25,8 +25,7 @@
     <mat-expansion-panel [(expanded)]="showMap" class="full-width" fxLayoutGap="10px">
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title>
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblMapView || 'Map
-            View' }}</span>
+          <span>{{ translationData.lblMapView || 'Map View' }}</span>
         </mat-panel-title>
       </mat-expansion-panel-header>
       <div class="searchBoxContainer">
@@ -43,7 +42,7 @@
       <mat-card class='mat-elevation-z margin-bottom-xlg' *ngIf='!createEditViewPoiFlag'>
         <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
           <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblPOI || 'POI' }} ({{ poiInitData.length }})</span>
+            <span class='font-18-px line-height-27px font-helvetica-md'>{{ translationData.lblPOI || 'POI' }} ({{ poiInitData.length }})</span>
           </div>
 
           <div *ngIf='adminAccessType.adminFullAccess' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
@@ -190,7 +189,7 @@
       <mat-card class='mat-elevation-z' *ngIf='!createEditViewPoiFlag'>
         <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
           <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblGeofence || 'Geofence' }} ({{ geoInitData.length }})</span>
+            <span class='font-18-px line-height-27px font-helvetica-md'>{{ translationData.lblGeofence || 'Geofence' }} ({{ geoInitData.length }})</span>
           </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>

@@ -217,13 +217,11 @@ export class EditViewUserComponent implements OnInit {
   }
 
   compare(a: any, b: any, isAsc: boolean, columnName:any) {
-    if(columnName === "roleName"){
+    if(columnName === "roleName" || columnName === "accountGroupName"){
     if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toUpperCase();
     if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toUpperCase();
     }
 
-    if(!(a instanceof Number)) a = a.toString().toUpperCase();
-    if(!(b instanceof Number)) b = b.toString().toUpperCase();
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 
@@ -242,6 +240,7 @@ export class EditViewUserComponent implements OnInit {
         });
        }
     });
+    Util.applySearchFilter(this.selectedRoleDataSource, this.displayedColumnsUserGrpConfirm ,this.filterValue );
   }
 
   filterRoleTableData(){

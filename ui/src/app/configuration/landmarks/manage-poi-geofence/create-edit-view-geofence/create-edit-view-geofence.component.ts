@@ -652,7 +652,7 @@ export class CreateEditViewGeofenceComponent implements OnInit {
     //if(this.actionType == 'create'){
       var bubble = new H.ui.InfoBubble({ lng: 13.4050, lat: 52.5200 }, {
         //content: this.polygoanGeofence ? (this.translationData.lblPolygonInfoText || '<b>Click on map to create polygon points</b>') : (this.translationData.lblCircularInfoText || '<b>Select POI from below list to map with this Geofence</b>')
-        content: (this.translationData.lblCircularInfoText || '<b>Select POI from below list to map with this Geofence</b>')
+        content: `<span class='font-14-px line-height-21px font-helvetica-md'>${this.translationData.lblCircularInfoText || 'Select POI from below list to map with this Geofence'}</span>`
       });
       this.uiElem.addBubble(bubble);
       // if(this.polygoanGeofence){
