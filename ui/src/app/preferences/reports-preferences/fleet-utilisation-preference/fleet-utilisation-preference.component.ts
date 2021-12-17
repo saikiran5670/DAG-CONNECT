@@ -42,32 +42,11 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
   timeDisplay: any = '00:00';
   fleetUtilForm: FormGroup;
   chartIndex: any = {};
-  lineBarDD: any = [{
-    type: 'L',
-    name: 'Line Chart'
-  },
-  {
-    type: 'B',
-    name: 'Bar Chart'
-  }];
+  lineBarDD: any = [];
   
-  donutPieDD: any = [{
-    type: 'D',
-    name: 'Donut Chart'
-  },
-  {
-    type: 'P',
-    name: 'Pie Chart'
-  }];
+  donutPieDD: any = [];
 
-  upperLowerDD: any = [{
-    type: 'L',
-    name: 'Lower'
-  },
-  {
-    type: 'U',
-    name: 'Upper'
-  }];
+  upperLowerDD: any = [];
   showLoadingIndicator: boolean = false;
   accountPreference: any;
   prefUnitFormat: any = 'dunit_Metric';
@@ -83,6 +62,8 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
     this.roleID = parseInt(localStorage.getItem('accountRoleId'));
     let repoId: any = this.reportListData.filter(i => i.name == 'Fleet Utilisation Report');
     
+    this.setTranslationFunction();
+
     this.getUnitFormat(this.accountPreference);
     
     this.fleetUtilForm = this._formBuilder.group({
@@ -110,6 +91,35 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
       console.error("No report id found!")
     }
     // this.translationUpdate();
+  }
+
+  setTranslationFunction() {
+    this.lineBarDD = [{
+      type: 'L',
+      name: this.translationData.lblLineChart
+    },
+    {
+      type: 'B',
+      name: this.translationData.lblBarChart
+    }];
+    
+    this.donutPieDD = [{
+      type: 'D',
+      name: this.translationData.lblDonutChart
+    },
+    {
+      type: 'P',
+      name: this.translationData.lblPieChart
+    }];
+  
+    this.upperLowerDD = [{
+      type: 'L',
+      name: this.translationData.lblLower
+    },
+    {
+      type: 'U',
+      name: this.translationData.lblUpper
+    }];
   }
 
   getUnitFormat(accPref: any){
