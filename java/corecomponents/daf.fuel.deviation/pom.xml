@@ -7,7 +7,6 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-
 	<name>daf.fuel.deviation</name>
 	<url>http://maven.apache.org</url>
 
@@ -45,12 +44,6 @@
 			<version>${flink.version}</version>
 			<scope>provided</scope>
 		</dependency>
-		
-		<dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
-            <version>2.9.0</version>
-        </dependency>
 
 		<dependency>
 			<groupId>org.apache.flink</groupId>
