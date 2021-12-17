@@ -4,7 +4,7 @@
             <div fxLayout="row" fxLayoutAlign="start space-around"
                 style='padding: 10px 20px !important; background: #65c3f8; color: #fff;'>
                 <div class='half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span class='custom-font'>{{ data.translationData.lblDriverIDConsent }}</span>
+                    <span class='font-16-px line-height-24px font-helvetica-md'>{{ data.translationData.lblDriverIDConsent }}</span>
                 </div>
                 <div class='half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center flex-end">
                     <mat-icon (click)='onCancel()' style='cursor: pointer; color: #000;'>close</mat-icon>
@@ -12,24 +12,24 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="30px" class='margin-20'>
                 <div *ngIf='!data.actionType' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span>{{ data.translationData.lblName }}</span>
-                    <span class='custom-font'>{{ data.driverData.firstName }} {{ data.driverData.lastName }}</span>
+                    <span class='font-16-px line-height-24px'>{{ data.translationData.lblName }}</span>
+                    <span class='font-helvetica-md'>{{ data.driverData.firstName }} {{ data.driverData.lastName }}</span>
                 </div>
                 <div *ngIf='!data.actionType' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span>{{ data.translationData.lblDriverId }}</span>
-                    <span class='custom-font'>{{ data.driverData.driverIdExt }}</span>
+                    <span class='font-16-px line-height-24px'>{{ data.translationData.lblDriverId }}</span>
+                    <span class='font-helvetica-md'>{{ data.driverData.driverIdExt }}</span>
                 </div>
                 <div *ngIf='data.actionType' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span>{{ data.translationData.lblOrgnization }}</span>
-                    <span class='custom-font'>{{ organizationName }}</span>
+                    <span class='font-16-px line-height-24px'>{{ data.translationData.lblOrgnization }}</span>
+                    <span class='font-helvetica-md'>{{ organizationName }}</span>
                 </div>
                 <div *ngIf='data.actionType' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span>{{ data.translationData.lblTotalDrivers }}</span>
-                    <span class='custom-font'>{{ totalDrivers }}</span>
+                    <span class='font-16-px line-height-24px'>{{ data.translationData.lblTotalDrivers }}</span>
+                    <span class='font-helvetica-md'>{{ totalDrivers }}</span>
                 </div>
                 <div fxLayout="column" fxLayoutGap="7px" fxLayoutAlign="left">
                     <div fxLayout="row" fxLayoutAlign="space-between">
-                        <span>{{ data.translationData.lblCurrentConsentStatusForSubscriber  }} 'DAF Connect'= {{ 
+                        <span class='font-16-px line-height-24px'>{{ data.translationData.lblCurrentConsentStatusForSubscriber  }} 'DAF Connect'= {{ 
                             (data.actionType == true) ? 
                             ((data.consentType === 'U') ? 
                             (data.translationData.lblOptOutAll ) : 

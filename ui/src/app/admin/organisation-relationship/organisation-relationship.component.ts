@@ -192,6 +192,10 @@ export class OrganisationRelationshipComponent implements OnInit {
 
   }
   compare(a: Number | String, b: Number | String, isAsc: boolean, columnName: any) {
+      if(columnName === 'relationshipName' ){
+      if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
+      if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
+  }
 
       if(!(a instanceof Number)) a = a.toString().toUpperCase();
       if(!(b instanceof Number)) b = b.toString().toUpperCase();

@@ -97,8 +97,8 @@
           </div>
                    
         </cdk-virtual-scroll-viewport>
-        <span *ngIf="!showFilterCount"style="margin-top:5px;">Total Count - {{initData.length}} </span>
-        <span *ngIf='showFilterCount'style="margin-top:5px;">Total Count - {{ this.dataSource.filteredData.length}} of {{initData.length}} </span>
+        <div *ngIf="!showFilterCount" class="bottomText">Total Count - {{initData.length}} </div>
+        <div *ngIf='showFilterCount'class="bottomText">Total Count - {{ this.dataSource.filteredData.length}} of {{initData.length}} </div>
         <!-- <span style="margin-top:5px;">Index of First Row - {{index}} </span> -->
 
     

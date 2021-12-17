@@ -12,7 +12,7 @@
   <mat-card class='mat-elevation-z' *ngIf='!createVehicleAccountAccessRelation'> 
     <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
       <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllAccessRelationshipDetails  }}</span>
+        <span class='font-18-px line-height-27px font-helvetica-md'>{{ translationData.lblAllAccessRelationshipDetails  }}</span>
       </div>
     </div>
     <div fxLayout="row" fxLayoutGap="25px" fxLayoutAlign="space-between" class='margin-bottom-sm'>
@@ -23,7 +23,7 @@
           </mat-form-field>
         </div>
         <div *ngIf="!isViewListDisabled" class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center">
-          <span class='radioLabel'>{{ translationData.lblViewlistby  }}:</span>
+          <span class='font-16-px line-height-24px radioLabel'>{{ translationData.lblViewlistby  }}:</span>
           <mat-radio-group (change)='onVehicleListChange($event)'>
             <mat-radio-button style='margin-right: 20px;' value="group"
               [checked]="selectedVehicleViewType ===  'group' ? true : false">{{ translationData.lblGroup  }}
@@ -36,7 +36,7 @@
           </mat-radio-group>
         </div>
         <div *ngIf="isViewListDisabled" class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center">
-          <span class='radioLabel'>{{ translationData.lblViewlistby  }}:</span>
+          <span class='font-16-px line-height-24px radioLabel'>{{ translationData.lblViewlistby }}:</span>
           <mat-radio-group (change)='onAccountListChange($event)'>
             <mat-radio-button style='margin-right: 20px;' value="group"
               [checked]="selectedAccountViewType ===  'group' ? true : false">{{ translationData.lblGroup  }}
