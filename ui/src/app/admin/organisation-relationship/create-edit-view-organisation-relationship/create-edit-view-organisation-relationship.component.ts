@@ -140,9 +140,9 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
 
   }
   compareData(a: Number | String, b: Number | String, isAsc: boolean, columnName: any) {
-
-    if(!(a instanceof Number)) a = a.toString().toUpperCase();
-    if(!(b instanceof Number)) b = b.toString().toUpperCase();
+    if(columnName === 'groupName' || columnName === 'organizationName' )
+    if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
+    if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
 
   return ( a < b ? -1 : 1) * (isAsc ? 1: -1);
 }
