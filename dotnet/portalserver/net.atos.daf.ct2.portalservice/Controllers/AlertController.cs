@@ -123,7 +123,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (ex.Message.Contains(AlertConstants.SOCKET_EXCEPTION_MSG))
                 {
                     return StatusCode(500, string.Format(AlertConstants.ACTIVATED_ALERT_SUCCESS_MSG, 2));
-                }                
+                }
                 return StatusCode(500, AlertConstants.INTERNAL_SERVER_MSG);
             }
         }
@@ -168,7 +168,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (ex.Message.Contains(AlertConstants.SOCKET_EXCEPTION_MSG))
                 {
                     return StatusCode(500, string.Format(AlertConstants.INTERNAL_SERVER_ERROR_MSG, 2));
-                }                
+                }
                 return StatusCode(500, AlertConstants.INTERNAL_SERVER_MSG);
             }
         }
