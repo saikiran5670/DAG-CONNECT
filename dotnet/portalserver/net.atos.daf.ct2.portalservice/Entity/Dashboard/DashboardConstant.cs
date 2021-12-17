@@ -7,6 +7,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Dashboard
 {
     public static class DashboardConstant
     {
+        public const string INTERNAL_SERVER_MSG = "Error occured, Please check with DAF IT team for more info.";
         public const string ALERT_FEATURE_STARTWITH = "Alerts.";
         public const string GET_DASBHOARD_VALIDATION_STARTDATE_MSG = "Invalid start date.";
         public const string GET_DASBHOARD_VALIDATION_ENDDATE_MSG = "Invalid end date.";
