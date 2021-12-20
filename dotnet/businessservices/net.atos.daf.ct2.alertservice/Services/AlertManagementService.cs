@@ -231,10 +231,10 @@ namespace net.atos.daf.ct2.alertservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(UpdateAlert)}: With Error:-", ex);
                 return await Task.FromResult(new AlertResponse
                 {
-                    Message = "Exception :-" + ex.Message,
+                    Message = AlertConstants.INTERNAL_SERVER_MSG,
                     Code = ResponseCode.Failed,
                     AlertRequest = null
                 });
@@ -290,10 +290,10 @@ namespace net.atos.daf.ct2.alertservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(CreateAlert)}: With Error:-", ex);
                 return await Task.FromResult(new AlertResponse
                 {
-                    Message = "Exception :-" + ex.Message,
+                    Message = AlertConstants.INTERNAL_SERVER_MSG,
                     Code = ResponseCode.Failed,
                     AlertRequest = null
                 });
@@ -353,11 +353,11 @@ namespace net.atos.daf.ct2.alertservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetAlertList)}: With Error:-", ex);
                 return await Task.FromResult(new AlertListResponse
                 {
                     Code = ResponseCode.Failed,
-                    Message = "Get alert list fail : " + ex.Message
+                    Message = AlertConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -376,9 +376,9 @@ namespace net.atos.daf.ct2.alertservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(DuplicateAlertType)}: With Error:-", ex);
                 alertResponse.Code = ResponseCode.InternalServerError;
-                alertResponse.Message = String.Format(AlertConstants.DUPLICATE_ALERT_FAILURE_MSG, request.AlertId, ex.Message);
+                alertResponse.Message = String.Format(AlertConstants.DUPLICATE_ALERT_FAILURE_MSG, request.AlertId, AlertConstants.INTERNAL_SERVER_MSG);
             }
             return alertResponse;
         }
@@ -401,9 +401,9 @@ namespace net.atos.daf.ct2.alertservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(IsLandmarkActiveInAlert)}: With Error:-", ex);
                 landmarkResponse.Code = ResponseCode.InternalServerError;
-                landmarkResponse.Message = String.Format("IsLandmarkActiveInAlert Method in alert service", request.LandmarkId, ex.Message);
+                landmarkResponse.Message = String.Format("IsLandmarkActiveInAlert Method in alert service", request.LandmarkId, AlertConstants.INTERNAL_SERVER_MSG);
             }
             return landmarkResponse;
         }
@@ -438,11 +438,11 @@ namespace net.atos.daf.ct2.alertservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetNotificationTemplate)}: With Error:-", ex);
                 return await Task.FromResult(new NotificationTemplateResponse
                 {
                     Code = ResponseCode.Failed,
-                    Message = "Get Notification Template fail : " + ex.Message
+                    Message = AlertConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -468,11 +468,11 @@ namespace net.atos.daf.ct2.alertservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetRecipientLabelList)}: With Error:-", ex);
                 return await Task.FromResult(new NotificationRecipientResponse
                 {
                     Code = ResponseCode.Failed,
-                    Message = "Get notification recipient list fail : " + ex.Message
+                    Message = AlertConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -540,11 +540,11 @@ namespace net.atos.daf.ct2.alertservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetAlertCategoryFilter)}: With Error:-", ex);
                 return await Task.FromResult(new AlertCategoryFilterResponse
                 {
                     Code = ResponseCode.InternalServerError,
-                    Message = ex.Message
+                    Message = AlertConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -568,10 +568,10 @@ namespace net.atos.daf.ct2.alertservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(InsertViewNotification)}: With Error:-", ex);
                 return await Task.FromResult(new NotificationViewResponse
                 {
-                    Message = "Exception :-" + ex.Message,
+                    Message = AlertConstants.INTERNAL_SERVER_MSG,
                     Code = ResponseCode.Failed
                 });
             }
@@ -606,10 +606,10 @@ namespace net.atos.daf.ct2.alertservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetOfflinePushNotification)}: With Error:-", ex);
                 return await Task.FromResult(new OfflineNotificationResponse
                 {
-                    Message = "Exception :-" + ex.Message,
+                    Message = AlertConstants.INTERNAL_SERVER_MSG,
                     Code = ResponseCode.Failed
                 });
             }
