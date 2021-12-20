@@ -211,12 +211,15 @@ export class DataTableComponent implements OnInit {
   //   if(columnName === "fileSize"){
   //   //   if(!(a instanceof Number)) a = a.toString().toUpperCase();
   //   //   if(!(b instanceof Number)) b = b.toString().toUpperCase();
-    
+
   //  }
-  
-   if(columnName === "reportName" || columnName === "vehicleGroupAndVehicleList" || columnName === "recipientList"){
-    // if (!(a instanceof Number)) { a = a ?  (a.replace(/^\W+/).localeCompare(b.replace(/^\W+/))).toString().toUpperCase() : ''; }
-    // if (!(b instanceof Number)) { b = b ?  (b.replace(/^\W+/).localeCompare(a.replace(/^\W+/))).toString().toUpperCase() : ''; }
+    if(columnName === "recipientList"){
+      if (!(a instanceof Number)) a = a ?  a.replace(/\s/g, '').replace(/[^\w\s]/gi, 'z').toString().toUpperCase() : '';
+      if (!(b instanceof Number)) b = b ?  b.replace(/\s/g, '').replace(/[^\w\s]/gi, 'z').toString().toUpperCase() : '';
+
+    }
+
+    if(columnName === "reportName" || columnName === "vehicleGroupAndVehicleList"){
       if (!(a instanceof Number)) a = a ?  a.replace(/[^\w\s]/gi, 'z').toString().toUpperCase() : '';
       if (!(b instanceof Number)) b = b ?  b.replace(/[^\w\s]/gi, 'z').toString().toUpperCase() : '';
 
