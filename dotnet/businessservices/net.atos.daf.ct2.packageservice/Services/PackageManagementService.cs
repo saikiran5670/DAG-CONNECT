@@ -10,6 +10,7 @@ using net.atos.daf.ct2.kafkacdc;
 using net.atos.daf.ct2.package;
 using net.atos.daf.ct2.package.entity;
 using net.atos.daf.ct2.packageservice.Common;
+using net.atos.daf.ct2.packageservice.entity;
 using Newtonsoft.Json;
 
 namespace net.atos.daf.ct2.packageservice
@@ -66,9 +67,10 @@ namespace net.atos.daf.ct2.packageservice
             }
             catch (Exception ex)
             {
+                _logger.Error($"{nameof(Create)}: With Error:-", ex);
                 return await Task.FromResult(new PackageResponse
                 {
-                    Message = "Exception " + ex.Message,
+                    Message = PackageConstants.INTERNAL_SERVER_MSG,
                     Code = Responsecode.Failed
                 });
             }
@@ -127,9 +129,10 @@ namespace net.atos.daf.ct2.packageservice
             }
             catch (Exception ex)
             {
+                _logger.Error($"{nameof(Update)}: With Error:-", ex);
                 return await Task.FromResult(new PackageResponse
                 {
-                    Message = "Exception " + ex.Message
+                    Message = PackageConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -166,11 +169,11 @@ namespace net.atos.daf.ct2.packageservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Delete)}: With Error:-", ex);
                 return await Task.FromResult(new PackageResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "Package Deletion Failed due to - " + ex.Message,
+                    Message = PackageConstants.INTERNAL_SERVER_MSG,
 
                 });
             }
@@ -208,10 +211,10 @@ namespace net.atos.daf.ct2.packageservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Get)}: With Error:-", ex);
                 return await Task.FromResult(new GetPackageResponce
                 {
-                    Message = "Exception " + ex.Message,
+                    Message = PackageConstants.INTERNAL_SERVER_MSG,
                     Code = Responsecode.Failed
                 });
             }
@@ -272,10 +275,10 @@ namespace net.atos.daf.ct2.packageservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Import)}: With Error:-", ex);
                 return await Task.FromResult(new ImportPackageResponce
                 {
-                    Message = "Exception " + ex.Message,
+                    Message = PackageConstants.INTERNAL_SERVER_MSG,
                     Code = Responsecode.Failed
                 });
             }
@@ -322,9 +325,10 @@ namespace net.atos.daf.ct2.packageservice
             }
             catch (Exception ex)
             {
+                _logger.Error($"{nameof(UpdatePackageState)}: With Error:-", ex);
                 return await Task.FromResult(new UpdatePackageStateResponse
                 {
-                    Message = "Exception " + ex.Message
+                    Message = PackageConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
