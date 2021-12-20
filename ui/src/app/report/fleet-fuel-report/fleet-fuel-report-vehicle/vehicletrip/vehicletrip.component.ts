@@ -1810,7 +1810,7 @@ createEndMarker(){
         hoverBackgroundColor: '#7BC5EC', }];
   }
   if(this.ConsumptionChartType == 'Bar'){
-    let data4 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblLtrsperkm || 'Ltrs /100 km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblMilesPerGallon || 'Miles per gallon') : (this.translationData.lblMilesPerGallon || 'Miles per gallon');
+    let data4 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || 'Ltrs /100 km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblMilesPerGallon || 'Miles per gallon') : (this.translationData.lblMilesPerGallon || 'Miles per gallon');
     this.barChartOptions5.scales.yAxes= [{
       id: "y-axis-1",
       position: 'left',
@@ -1891,7 +1891,7 @@ createEndMarker(){
   }
     if(this.Co2ChartType == 'Line')
     {
-     let data2 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblTon || 'Ton') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblTon || 'Ton') : (this.translationData.lblTon || 'Ton');
+     let data2 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton || 'Ton') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblton || 'Ton') : (this.translationData.lblton || 'Ton');
      this.lineChartOptions4.scales.yAxes= [{
       id: "y-axis-1",
       position: 'left',
@@ -1950,7 +1950,7 @@ createEndMarker(){
   }
     if(this.ConsumptionChartType == 'Line')
     {
-      let data4 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblLtrsperkm || 'Ltrs /100 km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblMilesPerGallon || 'Miles per gallon') : (this.translationData.lblMilesPerGallon || 'Miles per gallon');
+      let data4 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || 'Ltrs /100 km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblMilesPerGallon || 'Miles per gallon') : (this.translationData.lblMilesPerGallon || 'Miles per gallon');
       this.lineChartOptions5.scales.yAxes= [{
         id: "y-axis-1",
         position: 'left',

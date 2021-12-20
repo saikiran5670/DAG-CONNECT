@@ -1142,7 +1142,7 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
   }
   if(this.Co2ChartType == 'Bar'){
     let data2 = this.translationData.lblton || 'Ton';
-    this.lineChartOptions4.scales.yAxes= [{
+    this.barChartOptions4.scales.yAxes= [{
     id: "y-axis-1",
     position: 'left',
     type: 'linear',
