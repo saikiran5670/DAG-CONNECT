@@ -56,10 +56,11 @@ namespace net.atos.daf.ct2.dashboardservice
             }
             catch (Exception ex)
             {
+                _logger.Error($"{nameof(GetFleetKPIDetails)}: With Error:-", ex);
                 return await Task.FromResult(new FleetKpiResponse
                 {
                     Code = Responsecode.InternalServerError,
-                    Message = ex.Message
+                    Message = DashboardConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -117,10 +118,11 @@ namespace net.atos.daf.ct2.dashboardservice
             }
             catch (Exception ex)
             {
+                _logger.Error($"{nameof(GetLastAlert24Hours)}: With Error:-", ex);
                 return await Task.FromResult(new Alert24HoursResponse
                 {
                     Code = Responsecode.InternalServerError,
-                    Message = string.Format(DashboardConstants.GET_ALERTLAST_24HOURS_FAILURE_MSG, ex.Message)
+                    Message = string.Format(DashboardConstants.GET_ALERTLAST_24HOURS_FAILURE_MSG, DashboardConstants.INTERNAL_SERVER_MSG)
                 });
             }
 
@@ -171,11 +173,11 @@ namespace net.atos.daf.ct2.dashboardservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetTodayLiveVinData)}: With Error:-", ex);
                 return await Task.FromResult(new TodayLiveVehicleResponse
                 {
                     Code = Responsecode.InternalServerError,
-                    Message = string.Format(DashboardConstants.GET_TODAY_LIVE_VEHICLE_FAILURE_MSG, ex.Message)
+                    Message = string.Format(DashboardConstants.GET_TODAY_LIVE_VEHICLE_FAILURE_MSG, DashboardConstants.INTERNAL_SERVER_MSG)
                 });
             }
         }
@@ -204,10 +206,11 @@ namespace net.atos.daf.ct2.dashboardservice
             }
             catch (Exception ex)
             {
+                _logger.Error($"{nameof(GetFleetUtilizationDetails)}: With Error:-", ex);
                 return await Task.FromResult(new FleetUtilizationResponse
                 {
                     Code = Responsecode.InternalServerError,
-                    Message = ex.Message
+                    Message = DashboardConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -256,8 +259,8 @@ namespace net.atos.daf.ct2.dashboardservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                response.Message = ex.Message;
+                _logger.Error($"{nameof(GetVisibleVins)}: With Error:-", ex);
+                response.Message = DashboardConstants.INTERNAL_SERVER_MSG;
                 response.Code = Responsecode.InternalServerError;
                 response.VehicleDetailsWithAccountVisibiltyList.Add(new List<VehicleDetailsWithAccountVisibilty>());
                 response.VinTripList.Add(new List<VehicleFromTripDetails>());
@@ -288,11 +291,11 @@ namespace net.atos.daf.ct2.dashboardservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(CreateDashboardUserPreference)}: With Error:-", ex);
                 return new DashboardUserPreferenceCreateResponse()
                 {
                     Code = Responsecode.InternalServerError,
-                    Message = $"{nameof(CreateDashboardUserPreference)} failed due to - " + ex.Message
+                    Message = DashboardConstants.INTERNAL_SERVER_MSG
                 };
             }
         }
@@ -319,7 +322,7 @@ namespace net.atos.daf.ct2.dashboardservice
                 }
                 catch (Exception ex)
                 {
-                    _logger.Error(null, ex);
+                    _logger.Error($"{nameof(GetDashboardUserPreference)}: With Error(1):-", ex);
                     throw new Exception("Error occurred while parsing the report user preferences or data is missing.");
                 }
 
@@ -327,11 +330,11 @@ namespace net.atos.daf.ct2.dashboardservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetDashboardUserPreference)}: With Error:-", ex);
                 return new DashboardUserPreferenceResponse()
                 {
                     Code = Responsecode.InternalServerError,
-                    Message = $"{nameof(GetDashboardUserPreference)} failed due to - " + ex.Message
+                    Message = DashboardConstants.INTERNAL_SERVER_MSG
                 };
             }
         }
@@ -371,11 +374,11 @@ namespace net.atos.daf.ct2.dashboardservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(CheckIfSubReportExist)}: With Error:-", ex);
                 return new CheckIfSubReportExistResponse()
                 {
                     Code = Responsecode.InternalServerError,
-                    Message = $"{nameof(CheckIfSubReportExist)} failed due to - " + ex.Message
+                    Message = DashboardConstants.INTERNAL_SERVER_MSG
                 };
             }
         }
