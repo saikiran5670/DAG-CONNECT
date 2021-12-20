@@ -100,12 +100,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                        "Role service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                        "Create  method in Role controller", 0, request.RoleId, JsonConvert.SerializeObject(request),
                         _userDetails);
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Create)}: With Error:-", ex);
                 if (ex.Message.Contains(_fk_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
-                return StatusCode(500, "Please contact system administrator. ");
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -163,13 +163,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                    "Role service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                    "Update  method in Role controller", roleMaster.RoleId, roleMaster.RoleId, JsonConvert.SerializeObject(roleMaster),
                     _userDetails);
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Update)}: With Error:-", ex);
                 //auditlog.AddLogs(DateTime.Now, 2, "Role Component", "Role Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "Create method in Role manager", roleMaster.RoleId, 0, JsonConvert.SerializeObject(roleMaster));
                 if (ex.Message.Contains("foreign key"))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
-                return StatusCode(500, "Internal Server Error.");
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -206,8 +206,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     "Delete  method in Role controller", ObjRole.RoleID, ObjRole.RoleID, JsonConvert.SerializeObject(ObjRole),
                      _userDetails);
                 //await auditlog.AddLogs(DateTime.Now, 2, "Role Component", "Role Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.FAILED, "Create method in Role manager", 0, 0, JsonConvert.SerializeObject(roleId));
-                _logger.Error(null, ex);
-                return StatusCode(500, "Internal Server Error.");
+                _logger.Error($"{nameof(Delete)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -256,8 +256,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.ToString());
+                _logger.Error($"{nameof(Get)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -276,8 +276,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.ToString());
+                _logger.Error($"{nameof(GetCodes)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
     }
