@@ -6,6 +6,7 @@ using Grpc.Core;
 using log4net;
 using net.atos.daf.ct2.features;
 using net.atos.daf.ct2.features.entity;
+using net.atos.daf.ct2.featureservice.entity;
 
 namespace net.atos.daf.ct2.featureservice
 {
@@ -53,9 +54,10 @@ namespace net.atos.daf.ct2.featureservice
             }
             catch (Exception ex)
             {
+                _logger.Error($"{nameof(CreateFeatureSet)}: With Error:-", ex);
                 return await Task.FromResult(new FeatureSetResponce
                 {
-                    Message = "Exception :-" + ex.Message,
+                    Message = FeatureConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }
@@ -134,9 +136,10 @@ namespace net.atos.daf.ct2.featureservice
             }
             catch (Exception ex)
             {
+                _logger.Error($"{nameof(GetFeatures)}: With Error:-", ex);
                 return await Task.FromResult(new FeaturesListResponce
                 {
-                    Message = "Exception " + ex.Message,
+                    Message = FeatureConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
 
@@ -212,9 +215,10 @@ namespace net.atos.daf.ct2.featureservice
             }
             catch (Exception ex)
             {
+                _logger.Error($"{nameof(Create)}: With Error:-", ex);
                 return await Task.FromResult(new FeatureResponce
                 {
-                    Message = "Exception :-" + ex.Message,
+                    Message = FeatureConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }
@@ -262,9 +266,10 @@ namespace net.atos.daf.ct2.featureservice
             }
             catch (Exception ex)
             {
+                _logger.Error($"{nameof(Update)}: With Error:-", ex);
                 return await Task.FromResult(new FeatureResponce
                 {
-                    Message = "Exception :-" + ex.Message,
+                    Message = FeatureConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }
@@ -311,11 +316,11 @@ namespace net.atos.daf.ct2.featureservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(UpdateFeatureSet)}: With Error:-", ex);
 
                 return await Task.FromResult(new FeatureSetResponce
                 {
-                    Message = "Exception :-" + ex.Message,
+                    Message = FeatureConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }
@@ -341,10 +346,10 @@ namespace net.atos.daf.ct2.featureservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(DeleteFeatureSet)}: With Error:-", ex);
                 return await Task.FromResult(new FeatureSetResponce
                 {
-                    Message = featureSetRequest.FeatureSetID.ToString() + " Delete failed",
+                    Message = featureSetRequest.FeatureSetID.ToString() + $" Delete failed. {FeatureConstants.INTERNAL_SERVER_MSG}",
                     Code = Responcecode.Failed,
                     FeatureSetID = featureSetRequest.FeatureSetID
 
@@ -386,10 +391,10 @@ namespace net.atos.daf.ct2.featureservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Delete)}: With Error:-", ex);
                 return await Task.FromResult(new FeatureResponce
                 {
-                    Message = featureSetRequest.Id.ToString() + " Delete failed",
+                    Message = featureSetRequest.Id.ToString() + $" Delete failed. {FeatureConstants.INTERNAL_SERVER_MSG}",
                     Code = Responcecode.Failed,
                     FeatureID = featureSetRequest.Id
 
@@ -430,10 +435,10 @@ namespace net.atos.daf.ct2.featureservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(ChangeFeatureState)}: With Error:-", ex);
                 return await Task.FromResult(new FeatureStateResponce
                 {
-                    Message = featureSetRequest.Featureid.ToString() + " Feature state change failed",
+                    Message = featureSetRequest.Featureid.ToString() + $" Feature state change failed. {FeatureConstants.INTERNAL_SERVER_MSG}",
                     Code = Responcecode.Failed
 
                 });
