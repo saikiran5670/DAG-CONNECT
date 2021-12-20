@@ -82,10 +82,10 @@ namespace net.atos.daf.ct2.notificationservice.services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetAlertMessageStream)}: With Error:-", ex);
                 await Task.FromResult(new AlertMessageData
                 {
-                    Message = "Exception :-" + ex.Message,
+                    Message = NotificationConstants.INTERNAL_SERVER_MSG,
                     Code = ResponseCode.InternalServerError
                 });
             }
@@ -110,11 +110,11 @@ namespace net.atos.daf.ct2.notificationservice.services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetEligibleAccountForAlert)}: With Error:-", ex);
                 return await Task.FromResult(new AlertVehicleDetails
                 {
                     Code = ResponseCode.Failed,
-                    Message = "Get alert vehicle fail : " + ex.Message
+                    Message = NotificationConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -161,7 +161,7 @@ namespace net.atos.daf.ct2.notificationservice.services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetVehicleByAccountVisibility)}: With Error:-", ex);
                 return await Task.FromResult(new AssociatedVehicleResponse
                 {
                     Code = ResponseCode.Failed
@@ -199,7 +199,7 @@ namespace net.atos.daf.ct2.notificationservice.services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetVehicleAccountVisibilityByVIN)}: With Error:-", ex);
                 return await Task.FromResult(new AccountSignalRClientMapperResponse
                 {
                     Code = ResponseCode.Failed
