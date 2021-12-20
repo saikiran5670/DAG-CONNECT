@@ -125,8 +125,9 @@ namespace net.atos.daf.ct2.notificationservice.services
             {
                 var response = new AssociatedVehicleResponse();
                 var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Get("logged_in_orgid").Value);
+                List<string> featureEnum = new List<string>();
                 List<visibility.entity.VehicleDetailsAccountVisibilityForAlert> vehicleDetailsAccountVisibilty = new List<visibility.entity.VehicleDetailsAccountVisibilityForAlert>();
-                if (request.FeatureIds != null)
+                if (request.FeatureIds != null && request.FeatureIds.Count() > 0)
                 {
                     //foreach (int featureId in request.FeatureIds)
                     //{
@@ -137,10 +138,9 @@ namespace net.atos.daf.ct2.notificationservice.services
                     //remove duplicate vins by key as vin
                     vehicleDetailsAccountVisibilty = vehicleDetailsAccountVisibilty.GroupBy(c => c.Vin, (key, c) => c.FirstOrDefault()).ToList();
                     //}
+
+                    featureEnum = await _notificationIdentifierManager.GetFeatureEnumForAlert(request.FeatureIds.ToList());
                 }
-
-                List<string> featureEnum = await _notificationIdentifierManager.GetFeatureEnumForAlert(request.FeatureIds.ToList());
-
                 if (featureEnum.Any())
                 {
                     var res = JsonConvert.SerializeObject(featureEnum);

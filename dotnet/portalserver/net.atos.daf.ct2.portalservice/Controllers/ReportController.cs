@@ -80,12 +80,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 // $"GetUserPreferenceReportDataColumn method Failed. Error:{ex.Message}", 1, 2, Convert.ToString(accountId),
                 //  Request);
                 // check for fk violation
+                _logger.Error($"{nameof(GetReportDetails)}: With Error:-", ex);
                 if (ex.Message.Contains(_socketException))
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -129,8 +130,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                      "Report service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                      $"GetUserPreferenceReportDataColumn method Failed. Error:{ex.Message}", 1, 2, Convert.ToString(reportId),
                       _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetUserPreferenceReportDataColumn)}: With Error:-", ex);
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
             }
         }
         #endregion
@@ -169,8 +170,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                  "Report service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                  $"createuserpreference method Failed. Error:{ex.Message}", 0, 0, JsonConvert.SerializeObject(objUserPreferenceCreateRequest),
                                   _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, $"{ex.Message} {ex.StackTrace}");
+                _logger.Error($"{nameof(CreateUserPreference)}: With Error:-", ex);
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
             }
         }
         #endregion
@@ -224,12 +225,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 // $"GetVinsFromTripStatisticsAndVehicleDetails method Failed. Error:{ex.Message}", 1, 2, Convert.ToString(accountId),
                 //  Request);
                 // check for fk violation
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetVinsFromTripStatisticsAndVehicleDetails)}: With Error:-", ex);
                 if (ex.Message.Contains(_socketException))
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -257,12 +258,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
                 // check for fk violation
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetVisibility)}: With Error:-", ex);
                 if (ex.Message.Contains(_socketException))
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -309,8 +310,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetFilteredTripDetails)}: With Error:-", ex);
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
             }
         }
         #endregion
@@ -345,8 +346,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetDriverActivity)}: With Error:-", ex);
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -378,8 +379,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetDriverActivity)}: With Error:-", ex);
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -410,8 +411,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetDriverActivityChartDetails)}: With Error:-", ex);
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -468,8 +469,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetDriverActivityParameters)}: With Error:-", ex);
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -504,8 +505,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetReportSearchParameter)}: With Error:-", ex);
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
             }
         }
         #endregion
@@ -572,8 +573,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
                                 "Report service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED, ReportConstants.GET_ECOSCORE_PROFILE_KPI_SUCCESS_MSG, 0, 0, Convert.ToString(profileId),
                                  _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetEcoScoreProfileKPIs)}: With Error:-", ex);
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -598,8 +599,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
                                 "Report service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED, "Eco Score profile created successfully", 0, 0, JsonConvert.SerializeObject(request),
                                  _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(Create)}: CreateEcoScoreProfile With Error:-", ex);
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -627,8 +628,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
                                 "Report service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED, "Eco Score profile updated successfully", 0, 0, JsonConvert.SerializeObject(request),
                                  _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(Update)}: UpdateEcoScoreProfile With Error:-", ex);
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
             }
         }
         #endregion
@@ -654,8 +655,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
                                 "Report service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED, ReportConstants.DELETE_ECOSCORE_PROFILE_KPI_SUCCESS_MSG, 0, 0, Convert.ToString(request.ProfileId),
                                  _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(DeleteEcoScoreProfile)}: With Error:-", ex);
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -690,8 +691,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetEcoScoreReportByAllDrivers)}: With Error:-", ex);
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
             }
         }
         #endregion
@@ -726,8 +727,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetEcoScoreReportCompareDrivers)}: With Error:-", ex);
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
             }
         }
         #endregion
@@ -761,8 +762,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetEcoScoreReportSingleDriver)}: With Error:-", ex);
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -794,8 +795,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetEcoScoreReportTrendlines)}: With Error:-", ex);
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
             }
         }
         #endregion
@@ -834,8 +835,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                  "Report service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                  $"{ nameof(CreateReportUserPreference) } method Failed. Error : {ex.Message}", 0, 0, JsonConvert.SerializeObject(objUserPreferenceCreateRequest),
                                   _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, $"{ex.Message} {ex.StackTrace}");
+                _logger.Error($"{nameof(CreateReportUserPreference)}: With Error:-", ex);
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -910,8 +911,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  "Report service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  $"{ nameof(GetReportUserPreference) } method Failed. Error:{ex.Message}", 1, 2, Convert.ToString(_userDetails.AccountId),
                   _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetReportUserPreference)}: With Error:-", ex);
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -947,8 +948,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetFleetUtilizationDetails)}: With Error:-", ex);
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -979,8 +980,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetCalenderData)}: With Error:-", ex);
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
             }
         }
         #endregion
@@ -1038,8 +1039,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  ReportConstants.FLEETOVERVIEW_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  $"{ nameof(GetFleetOverviewFilter) } method Failed. Error : {ex.Message}", 1, 2, Convert.ToString(_userDetails.AccountId),
                   _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetFleetOverviewFilter)}: With Error:-", ex);
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -1124,8 +1125,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  ReportConstants.FLEETOVERVIEW_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  $"{ nameof(GetFleetOverviewDetails) } method Failed. Error : {ex.Message}", 1, 2, Convert.ToString(_userDetails.AccountId),
                   _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetFleetOverviewDetails)}: With Error:-", ex);
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -1159,8 +1160,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetFleetFuelDetailsByVehicle)}: With Error:-", ex);
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -1192,8 +1193,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetFleetFuelDetailsByDriver)}: With Error:-", ex);
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -1224,8 +1225,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetFleetFuelDetailsForVehicleGraphs)}: With Error:-", ex);
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -1256,8 +1257,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetFleetFuelDetailsForDriverGraphs)}: With Error:-", ex);
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -1301,8 +1302,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetFleetFuelTripByVehicle)}: With Error:-", ex);
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
             }
         }
         [HttpPost]
@@ -1347,8 +1348,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetFleetFuelTripByDriver)}: With Error:-", ex);
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
             }
         }
         #endregion
@@ -1422,8 +1423,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 ReportConstants.FLEETOVERVIEW_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                 $"{ nameof(GetVehicleHealthReport) } method Failed. Error : {ex.Message}", 1, 2, Convert.ToString(request),
                  _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, $"{ex.Message} {ex.StackTrace}");
+                _logger.Error($"{nameof(GetVehicleHealthReport)}: With Error:-", ex);
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
             }
         }
         #endregion
@@ -1484,8 +1485,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
                                 "Report service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED, ReportConstants.GET_FUEL_DEVIATION_FAIL_MSG, 0, 0, string.Empty,
                                  _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetFuelDeviationFilterData)}: With Error:-", ex);
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
             }
         }
         #endregion
@@ -1518,8 +1519,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
 
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetFuelDeviationChartData)}: With Error:-", ex);
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
             }
         }
         #endregion
@@ -1569,8 +1570,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  ReportConstants.FLEETOVERVIEW_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  $"{ nameof(GetFleetOverviewFilter) } method Failed. Error : {ex.Message}", 1, 2, Convert.ToString(_userDetails.AccountId),
                   _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetLogBookFilter)}: With Error:-", ex);
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -1625,8 +1626,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 ReportConstants.FLEETOVERVIEW_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                 $"{ nameof(GetLogbookDetails) } method Failed. Error : {ex.Message}", 1, 2, Convert.ToString(_userDetails.AccountId),
                  _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetLogbookDetails)}: With Error:-", ex);
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
             }
 
         }
@@ -1693,8 +1694,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetFuelBenchmarkByVehicleGroup)}: With Error:-", ex);
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -1769,8 +1770,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetFuelBenchmarkByTimePeriod)}: With Error:-", ex);
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
             }
         }
         #endregion
@@ -1803,8 +1804,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetVehiclePerformanceChartTemplate)}: With Error:-", ex);
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
             }
         }
         [HttpPost]
@@ -1839,8 +1840,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 ReportConstants.FLEETOVERVIEW_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                 $"{ nameof(GetVehPerformanceBubbleChartData) } method Failed. Error : {ex.Message}", 1, 2, Convert.ToString(_userDetails.AccountId),
                  _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetVehPerformanceBubbleChartData)}: With Error:-", ex);
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -1869,8 +1870,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 ReportConstants.FLEETOVERVIEW_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                 $"{ nameof(GetVehPerformancetype) } method Failed. Error : {ex.Message}", 1, 2, Convert.ToString(_userDetails.AccountId),
                  _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetVehPerformancetype)}: With Error:-", ex);
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
             }
         }
         #endregion
