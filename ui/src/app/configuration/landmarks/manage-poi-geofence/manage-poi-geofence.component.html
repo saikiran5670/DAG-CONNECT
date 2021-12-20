@@ -100,7 +100,7 @@
             </mat-menu>
           </div>
           <div [ngClass]="{'opacity-0': !adminAccessType.adminFullAccess}">
-            <button style="margin-top: 6px;" mat-flat-button (click)="importPOIExcel()">
+            <button style="margin-top: 6px;" mat-button (click)="importPOIExcel()">
               <mat-icon>file_download</mat-icon>{{ translationData.lblImport || 'Import' }}
             </button>
           </div>
@@ -236,7 +236,7 @@
             </mat-menu>
           </div>
           <div [ngClass]="{'opacity-0': !adminAccessType.adminFullAccess}">
-            <button style="margin-top: 6px;" mat-flat-button (click)="importGeofence()">
+            <button style="margin-top: 6px;" mat-button (click)="importGeofence()">
               <mat-icon>file_download</mat-icon>{{ translationData.lblImport || 'Import' }}
             </button>
           </div>
