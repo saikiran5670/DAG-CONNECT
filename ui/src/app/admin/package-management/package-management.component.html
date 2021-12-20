@@ -20,7 +20,7 @@
   
     <ng-template #topRightElements>
       <div *ngIf="adminAccessType.adminFullAccess">
-        <button mat-flat-button (click)="importPackageCSV()">
+        <button mat-button (click)="importPackageCSV()">
           <mat-icon>file_download</mat-icon>{{ translationData.lblImport }}
         </button>
       </div>

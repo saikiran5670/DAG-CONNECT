@@ -300,6 +300,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 AccountBusinessService.ChangePasswordRequest changePasswordRequest = new AccountBusinessService.ChangePasswordRequest();
                 changePasswordRequest.EmailId = request.EmailId;
                 changePasswordRequest.Password = request.Password;
+                changePasswordRequest.OldPassword = request.OldPassword;
                 changePasswordRequest.OrgId = GetUserSelectedOrgId();
                 var response = await _accountClient.ChangePasswordAsync(changePasswordRequest);
                 if (response.Code == AccountBusinessService.Responcecode.Success)
