@@ -4,6 +4,7 @@ import { ErrorComponent } from './error/error.component';
 
 const routes: Routes = [
   { path:'', redirectTo:'auth/login', pathMatch: 'full'},
+  { path:'assets', redirectTo:'auth/login', pathMatch: 'full'},
   { path: 'auth', loadChildren: () => import('./authentication/authentication.module').then(m => m.AuthenticationModule) },
   { path: 'downloadreport/:token', loadChildren: () => import('./download-report/download-report.module').then(m => m.DownloadReportModule) },
   { path: 'unsubscribereport/:token/:id/:emailId', loadChildren: () => import('./unsubscribe-report/unsubscribe-report.module').then(m => m.UnsubscribeReportModule) },
