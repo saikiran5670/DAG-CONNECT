@@ -68,12 +68,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetSubscriptionDetails)}: With Error:-", ex);
                 await _auditHelper.AddLogs(DateTime.Now, "Subscription Component",
                           "Subscription service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                           "GetSubscriptionDetails method in Subscription controller", _userDetails.AccountId, _userDetails.AccountId,
                           null, _userDetails);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
     }

@@ -67,7 +67,7 @@ export class ChangePasswordComponent implements OnInit {
           this.errorMsg= "Password must not be equal to any of last 6 passwords."
         }
         else if(error.status == 403){
-          this.errorMsg= "You can change password once in every 24 hours only."
+          this.errorMsg= "Your password needs to be at least one day old before it can be changed."
         }
         else if(error.status == 404){
           this.errorMsg= "Wrong email id."
