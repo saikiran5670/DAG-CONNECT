@@ -141,7 +141,7 @@ export class ManageCorridorComponent implements OnInit {
 
   public ngAfterViewInit() {
     setTimeout(() => {
-    this.mapFunctions.initMap(this.mapElement);
+    this.mapFunctions.initMap(this.mapElement, this.translationData);
     }, 0);
   }
 
@@ -383,7 +383,7 @@ export class ManageCorridorComponent implements OnInit {
     }
     this.loadCorridorData();
     setTimeout(() => {
-      this.mapFunctions.initMap(this.mapElement);
+      this.mapFunctions.initMap(this.mapElement, this.translationData);
       }, 0);
   }
 

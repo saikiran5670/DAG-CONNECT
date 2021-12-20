@@ -868,9 +868,9 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       minutes = parseInt(minutes);
       seconds = seconds % 60;
       //console.log( hours+":"+minutes+":"+seconds);
-      return `${hours < 10 ? '0'+hours : hours} h ${minutes < 10 ? '0'+minutes : minutes} m`;
+      return `${hours < 10 ? '0'+hours : hours} ${this.translationData.lblHour} ${minutes < 10 ? '0'+minutes : minutes} ${this.translationData.lblMinute}`;
     }else{
-      return '00 h 00 m';
+      return `'00 ${this.translationData.lblHour} 00 ${this.translationData.lblMinute}'`;
     }
   }
 

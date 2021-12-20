@@ -96,7 +96,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  "Create  method in Geofence controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
                   _userDetails);
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(CreatePolygonGeofence)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(_fk_Constraint))
                 {
@@ -107,7 +107,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, LandmarkConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -174,7 +174,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  "Create  method in Geofence controller", request[0].Id, request[0].Id, JsonConvert.SerializeObject(request),
                   _userDetails);
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(CreateCircularGeofence)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(_fk_Constraint))
                 {
@@ -185,7 +185,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, LandmarkConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -236,7 +236,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  "Delete  method in Geofence controller", 0, 0, JsonConvert.SerializeObject(request),
                   _userDetails);
-
+                _logger.Error($"{nameof(DeleteGeofence)}: With Error:-", ex);
                 //// check for fk violation
                 if (ex.Message.Contains(_fk_Constraint))
                 {
@@ -247,7 +247,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, LandmarkConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -293,7 +293,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                 "GetGeofenceByGeofenceID  method in Geofence controller", Convert.ToInt32(request.GeofenceId), Convert.ToInt32(request.OrganizationId), JsonConvert.SerializeObject(request),
                  _userDetails);
-
+                _logger.Error($"{nameof(GetGeofenceByGeofenceID)}: With Error:-", ex);
                 if (ex.Message.Contains(_fk_Constraint))
                 {
                     return StatusCode(500, "Internal Server Error.(01)");
@@ -303,7 +303,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, LandmarkConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -337,6 +337,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                 "GetAllGeofence  method in Geofence controller", Convert.ToInt32(request.OrganizationId), Convert.ToInt32(request.CategoryId), JsonConvert.SerializeObject(request),
                  _userDetails);
+                _logger.Error($"{nameof(GetAllGeofence)}: With Error:-", ex);
                 if (ex.Message.Contains(_fk_Constraint))
                 {
                     return StatusCode(500, "Internal Server Error.(01)");
@@ -346,7 +347,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, LandmarkConstants.INTERNAL_SERVER_MSG);
             }
 
         }
@@ -410,7 +411,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  "Update polygon method in Geofence controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
                   _userDetails);
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(UpdatePolygonGeofence)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(_fk_Constraint))
                 {
@@ -421,7 +422,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, LandmarkConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -452,7 +453,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.BULK, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  $"BulkImportGeofence method Failed", 1, 2, JsonConvert.SerializeObject(requests),
                   _userDetails);
-                //_logger.Error(null, ex);
+                _logger.Error($"{nameof(BulkImportGeofence)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(_fk_Constraint))
                 {
@@ -463,7 +464,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
-                return StatusCode(500, "Unknown: There is error while processing the request. please try again later. If issue persist, then contact DAF support team.");
+                return StatusCode(500, LandmarkConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -526,7 +527,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  "Update Circular method in Geofence controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
                   _userDetails);
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(UpdateCircularGeofence)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(_fk_Constraint))
                 {
@@ -537,7 +538,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, LandmarkConstants.INTERNAL_SERVER_MSG);
             }
         }
         [HttpGet]
@@ -579,11 +580,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                 "GetAllGeofences  method in Geofence controller", request.OrganizationId, request.OrganizationId, JsonConvert.SerializeObject(request),
                  _userDetails);
+                _logger.Error($"{nameof(GetAllGeofences)}: With Error:-", ex);
                 if (ex.Message.Contains(_socketException))
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, LandmarkConstants.INTERNAL_SERVER_MSG);
             }
 
         }
