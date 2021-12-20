@@ -587,6 +587,18 @@ namespace net.atos.daf.ct2.account
             return await Task.FromResult(accToken);
         }
 
+        public async Task<bool> IsValidateCurrentPassword(IdentityEntity.Identity user)
+        {
+            bool isPasswordValid = false;
+            //generate idp token 
+            IdentityEntity.Response idpResponse = await _autheticator.AccessToken(user);
+            if (idpResponse.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                isPasswordValid = true;
+            }
+            return await Task.FromResult(isPasswordValid);
+        }
+
         private Account GetAccountByEmail(string email)
         {
             Account account = new Account();
