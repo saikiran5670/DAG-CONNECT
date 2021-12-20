@@ -115,13 +115,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  "RelationshipManagement service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  "CreateRelationship  method in Organnization controller", 0, 0, JsonConvert.SerializeObject(request),
                 _userDetails);
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(CreateRelationship)}: With Error:-", ex);
                 if (ex.Message.Contains(_fk_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
 
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, OrganizationConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -181,13 +181,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                      "RelationshipManagement service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                      "UPDATERelationship  method in Organnization controller", request.Id, request.Id, JsonConvert.SerializeObject(request), _userDetails);
 
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(UpdateRelationship)}: With Error:-", ex);
                 if (ex.Message.Contains(_fk_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
 
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, OrganizationConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -221,9 +221,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetRelationship)}: With Error:-", ex);
 
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, OrganizationConstants.INTERNAL_SERVER_MSG);
             }
         }
         [HttpGet]
@@ -258,9 +258,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetRelationshipLevelCode)}: With Error:-", ex);
 
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, OrganizationConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -297,8 +297,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "RelationshipManagement Component",
                   "RelationshipManagement service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                   "DeleteRelationship  method in Organnization controller", relationshipId, relationshipId, JsonConvert.SerializeObject(relationshipRequest), _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(DeleteRelationship)}: With Error:-", ex);
+                return StatusCode(500, OrganizationConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -355,13 +355,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Organization Component",
                  "Organization service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  "Create  method in Organnization controller", 0, 0, JsonConvert.SerializeObject(request), _userDetails);
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Create)}: With Error:-", ex);
                 if (ex.Message.Contains(_fk_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
 
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, OrganizationConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -426,14 +426,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Organization Component",
           "Organization service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
           "Update  method in Organnization controller", request.Id, request.Id, JsonConvert.SerializeObject(request), _userDetails);
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Update)}: With Error:-", ex);
                 //  await auditlog.AddLogs(DateTime.Now,2,"Organization Component","Organization Service",AuditTrailEnum.Event_type.DELETE,AuditTrailEnum.Event_status.FAILED,"Update method in organization manager",0,0,JsonConvert.SerializeObject(request));      
                 if (ex.Message.Contains(_fk_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
                 //return StatusCode(500,"Internal Server Error.");
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, OrganizationConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -461,9 +461,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Get)}: With Error:-", ex);
                 //return StatusCode(500,"Internal Server Error.");
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, OrganizationConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -490,8 +490,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetOrganizationInfo)}: With Error:-", ex);
+                return StatusCode(500, OrganizationConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -514,8 +514,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetAll)}: With Error:-", ex);
+                return StatusCode(500, OrganizationConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -535,8 +535,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetAllOrganizationsForContext)}: With Error:-", ex);
+                return StatusCode(500, OrganizationConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -576,13 +576,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Organization Component",
                       "Organization service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                       "CreatePreference  method in Organnization controller", 0, 0, JsonConvert.SerializeObject(request), _userDetails);
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(CreatePreference)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(_fk_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, OrganizationConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -628,13 +628,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Organization Component",
                    "Organization service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                    "UpdatePreference  method in Organnization controller", request.Id, request.Id, JsonConvert.SerializeObject(request), _userDetails);
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(UpdatePreference)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(_fk_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, OrganizationConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -674,13 +674,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Organization Component",
                   "Organization service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                   "DeletePreference  method in Organnization controller", preferenceId, preferenceId, JsonConvert.SerializeObject(request), _userDetails);
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(DeletePreference)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(_fk_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, OrganizationConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -708,8 +708,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, "Internal Server Error.");
+                _logger.Error($"{nameof(GetPreference)}: With Error:-", ex);
+                return StatusCode(500, OrganizationConstants.INTERNAL_SERVER_MSG);
             }
         }
         // End - Account Preference    
@@ -774,13 +774,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Organization Component",
                  "Organization service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  "CreateOrgRelationShip  method in Organnization controller", 0, 0, JsonConvert.SerializeObject(request), _userDetails);
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(CreateOrgRelationShip)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(_fk_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, OrganizationConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -816,13 +816,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Organization Component",
                "Organization service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                "EndOrganizationRelationShip  method in Organnization controller", 0, 0, JsonConvert.SerializeObject(request), _userDetails);
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(EndOrganizationRelationShip)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(_fk_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, OrganizationConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -858,13 +858,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                        "Organization service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                        "AllowChaining  method in Organnization controller", request.OrgRelationID, request.OrgRelationID, JsonConvert.SerializeObject(request), _userDetails);
 
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(AllowChaining)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(_fk_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, OrganizationConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -929,13 +929,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetOrganizationDetails)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(_fk_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, OrganizationConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -963,9 +963,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetRelationshipMapping)}: With Error:-", ex);
 
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, OrganizationConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -990,8 +990,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetAllOrganizations)}: With Error:-", ex);
+                return StatusCode(500, OrganizationConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -1012,8 +1012,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetOrganizations)}: With Error:-", ex);
+                return StatusCode(500, OrganizationConstants.INTERNAL_SERVER_MSG);
             }
         }
 

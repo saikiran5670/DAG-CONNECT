@@ -49,6 +49,7 @@ export class CreateEditViewPoiComponent implements OnInit {
   country: any;
   types = ['Regular', 'Global'];
   userCreatedMsg: any = '';
+  defaultLayers: any;
   hereMapService: any;
   organizationId: any = 0;
   latitude: any;
@@ -183,25 +184,38 @@ export class CreateEditViewPoiComponent implements OnInit {
   }
 
   public ngAfterViewInit() {
-    let defaultLayers = this.platform.createDefaultLayers();
-    //Step 2: initialize a map - this map is centered over Europe
+    this.defaultLayers = this.platform.createDefaultLayers();
     this.map = new H.Map(this.mapElement.nativeElement,
-      defaultLayers.vector.normal.map, {
+      this.defaultLayers.raster.normal.map, {
       center: { lat: 51.43175839453286, lng: 5.519981221425336 },
-      // center: {lat:37.37634, lng:-122.03405},
       zoom: 4,
       pixelRatio: window.devicePixelRatio || 1
     });
-    // add a resize listener to make sure that the map occupies the whole container
     window.addEventListener('resize', () => this.map.getViewPort().resize());
-
-    // Behavior implements default interactions for pan/zoom (also on mobile touch environments)
     var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
+    this.ui = H.ui.UI.createDefault(this.map, this.defaultLayers);
+    
+    this.ui.removeControl("mapsettings");
+    // create custom one
+    var ms = new H.ui.MapSettingsControl({
+        baseLayers : [ { 
+          label: this.translationData.lblNormal || "Normal", layer: this.defaultLayers.raster.normal.map
+        },{
+          label: this.translationData.lblSatellite || "Satellite", layer: this.defaultLayers.raster.satellite.map
+        }, {
+          label: this.translationData.lblTerrain || "Terrain", layer: this.defaultLayers.raster.terrain.map
+        }
+        ],
+      layers : [{
+            label: this.translationData.lblLayerTraffic || "Layer.Traffic", layer: this.defaultLayers.vector.normal.traffic
+        },
+        {
+            label: this.translationData.lblLayerIncidents || "Layer.Incidents", layer: this.defaultLayers.vector.normal.trafficincidents
+        }
+      ]
+    });
+    this.ui.addControl("customized", ms);
 
-    // Create the default UI components
-    var ui = H.ui.UI.createDefault(this.map, defaultLayers);
-   
-    var searchbox = ui.getControl("searchbox");
     if (this.actionType == 'edit' || this.actionType == 'view') {
       this.removeMapObjects();
       this.drawMarkerOnMap();
@@ -215,8 +229,8 @@ export class CreateEditViewPoiComponent implements OnInit {
           content: `<span class='font-14-px line-height-21px font-helvetica-md'>${this.translationData.lblClickonmaptocreatePOIposition || 'Click on map to create POI position'}</span>`
       });
       // Add info bubble to the UI:
-      ui.addBubble(bubble);
-      this.setUpClickListener(this.map, behavior, this.selectedMarker, this.hereService, this.poiFlag, this.data, this, bubble, ui);
+      this.ui.addBubble(bubble);
+      this.setUpClickListener(this.map, behavior, this.selectedMarker, this.hereService, this.poiFlag, this.data, this, bubble, this.ui);
     }
   }
 
