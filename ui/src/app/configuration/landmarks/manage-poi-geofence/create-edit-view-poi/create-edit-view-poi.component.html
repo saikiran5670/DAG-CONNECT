@@ -14,8 +14,7 @@
 <mat-card class='mat-elevation-z'>
   <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-      <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblMapView || 'Map
-        View' }}</span>
+      <span class='font-18-px line-height-27px font-helvetica-md'>{{ translationData.lblMapView || 'Map View' }}</span>
     </div>
   </div>
   <div class="searchBoxContainer">
@@ -37,26 +36,26 @@
   <mat-card class="card">
     <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm' *ngIf="actionType == 'create'">
       <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAddNewPOI || 'Add
+        <span class='font-18-px line-height-27px font-helvetica-md'>{{ translationData.lblAddNewPOI || 'Add
           New POI' }}</span>
       </div>
     </div>
     <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm' *ngIf="actionType == 'edit'">
       <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblEditPOI || 'Edit
+        <span class='font-18-px line-height-27px font-helvetica-md'>{{ translationData.lblEditPOI || 'Edit
           POI Details' }}</span>
       </div>
     </div>
     <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm' *ngIf="actionType == 'view'">
       <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblViewPOI || 'View
+        <span class='font-18-px line-height-27px font-helvetica-md'>{{ translationData.lblViewPOI || 'View
           POI Details' }}</span>
       </div>
     </div>
     <mat-card-content>
       <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm">
         <div class="areaWidth min-width-30-per" fxLayout="column">
-          <mat-label><span>{{ translationData.lblName || 'Name' }}</span><span *ngIf="actionType != 'view'"
+          <mat-label class='font-16-px line-height-24px'><span>{{ translationData.lblName || 'Name' }}</span><span *ngIf="actionType != 'view'"
               class='mandatoryColor'>*</span></mat-label>
           <div *ngIf="actionType != 'view'">
             <mat-form-field appearance="outline" class="full-width">
@@ -80,12 +79,12 @@
             </mat-error>
           </div>
           <div *ngIf="actionType == 'view'">
-            <span style='font-weight: 500!important;'>{{ selectedElementData.name ? selectedElementData.name : '--' }}</span>
+            <span class='font-helvetica-md'>{{ selectedElementData.name ? selectedElementData.name : '--' }}</span>
           </div>
         </div>
 
         <div class="areaWidth min-width-30-per" fxLayout="column">
-          <mat-label>{{ translationData.lblType || 'Type' }} <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
+          <mat-label class='font-16-px line-height-24px'>{{ translationData.lblType || 'Type' }} <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
           </mat-label>
             <div *ngIf="actionType != 'view'">
               <mat-form-field appearance="outline" class="full-width">
@@ -97,15 +96,12 @@
               </mat-form-field>
             </div>
             <div *ngIf="actionType == 'view'">
-              <span style='font-weight: 500!important;'>{{ (accessType.globalPOIAccess) ? (selectedElementData.organizationId == 0) ? (types.length > 1) ? types[1] : types[0] : types[0] : (selectedElementData.organizationId == 0) ? 'Global' : 'Regular' }}</span>
+              <span class='font-helvetica-md'>{{ (accessType.globalPOIAccess) ? (selectedElementData.organizationId == 0) ? (types.length > 1) ? types[1] : types[0] : types[0] : (selectedElementData.organizationId == 0) ? 'Global' : 'Regular' }}</span>
             </div>
         </div>
 
-
-
-
         <div class="areaWidth min-width-30-per" fxLayout="column">
-          <mat-label>
+          <mat-label class='font-16-px line-height-24px'>
             <span>{{ translationData.lblCategory || 'Category' }}</span><span
               class='mandatoryColor'>*</span>
           </mat-label>
@@ -123,13 +119,13 @@
             </mat-error>
           </div>
           <div *ngIf="actionType == 'view'">
-            <span style='font-weight: 500!important;'>{{ selectedElementData.categoryName ? selectedElementData.categoryName : '--' }}</span>
+            <span class='font-helvetica-md'>{{ selectedElementData.categoryName ? selectedElementData.categoryName : '--' }}</span>
           </div>
         </div>
       </div>
       <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
         <div class="areaWidth min-width-30-per" fxLayout="column">
-          <mat-label>
+          <mat-label class='font-16-px line-height-24px'>
             <span>{{ translationData.lblSubCategory || 'Sub-Category' }}</span>
             <!-- <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span> -->
           </mat-label>
@@ -144,11 +140,11 @@
             </mat-form-field>
           </div>
           <div *ngIf="actionType == 'view'">
-            <span style='font-weight: 500!important;'>{{ selectedElementData.subCategoryName ? selectedElementData.subCategoryName : '--' }}</span>
+            <span class='font-helvetica-md'>{{ selectedElementData.subCategoryName ? selectedElementData.subCategoryName : '--' }}</span>
           </div>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column">
-          <mat-label>
+          <mat-label class='font-16-px line-height-24px'>
             <span>{{ translationData.lblAddress || 'Address' }}</span>
           </mat-label>
           <div *ngIf="actionType != 'view'">
@@ -158,11 +154,11 @@
             </mat-form-field>
           </div>
           <div *ngIf="actionType == 'view'">
-            <span style='font-weight: 500!important;'>{{ selectedElementData.address ? selectedElementData.address : '--' }}</span>
+            <span class='font-helvetica-md'>{{ selectedElementData.address ? selectedElementData.address : '--' }}</span>
           </div>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column">
-          <mat-label>
+          <mat-label class='font-16-px line-height-24px'>
             <span>{{ translationData.lblZipCode || 'Zip-Code' }}</span>
           </mat-label>
           <div *ngIf="actionType != 'view'">
@@ -172,13 +168,13 @@
             </mat-form-field>
           </div>
           <div *ngIf="actionType == 'view'">
-            <span style='font-weight: 500!important;'>{{ selectedElementData.zipcode ? selectedElementData.zipcode : '--' }}</span>
+            <span class='font-helvetica-md'>{{ selectedElementData.zipcode ? selectedElementData.zipcode : '--' }}</span>
           </div>
         </div>
       </div>
       <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-xlg'>
         <div class="areaWidth min-width-30-per" fxLayout="column">
-          <mat-label>
+          <mat-label class='font-16-px line-height-24px'>
             <span>{{ translationData.lblCity || 'City' }}</span>
           </mat-label>
           <div *ngIf="actionType != 'view'">
@@ -188,11 +184,11 @@
             </mat-form-field>
           </div>
           <div *ngIf="actionType == 'view'">
-            <span style='font-weight: 500!important;'>{{ selectedElementData.city ? selectedElementData.city : '--' }}</span>
+            <span class='font-helvetica-md'>{{ selectedElementData.city ? selectedElementData.city : '--' }}</span>
           </div>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column">
-          <mat-label>
+          <mat-label class='font-16-px line-height-24px'>
             <span>{{ translationData.lblCountry || 'Country' }}</span>
           </mat-label>
           <div *ngIf="actionType != 'view'">
@@ -202,11 +198,11 @@
             </mat-form-field>
           </div>
           <div *ngIf="actionType == 'view'">
-            <span style='font-weight: 500!important;'>{{ selectedElementData.country ? selectedElementData.country : '--' }}</span>
+            <span class='font-helvetica-md'>{{ selectedElementData.country ? selectedElementData.country : '--' }}</span>
           </div>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column">
-          <mat-label>
+          <mat-label class='font-16-px line-height-24px'>
             <span>{{ translationData.lblLatitude || 'Latitude' }}</span>
             <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
           </mat-label>
@@ -217,13 +213,13 @@
             </mat-form-field>
           </div>
           <div *ngIf="actionType == 'view'">
-            <span style='font-weight: 500!important;'>{{ selectedElementData.latitude ? selectedElementData.latitude : '--' }}</span>
+            <span class='font-helvetica-md'>{{ selectedElementData.latitude ? selectedElementData.latitude : '--' }}</span>
           </div>
         </div>
       </div>
       <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-xlg'>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>
+          <mat-label class='font-16-px line-height-24px'>
             <span>{{ translationData.lblLongitude || 'Longitude' }}</span><span *ngIf="actionType != 'view'"
               class='mandatoryColor'>*</span>
             </mat-label>
@@ -234,7 +230,7 @@
             </mat-form-field>
           </div>
           <div *ngIf="actionType == 'view'">
-            <span style='font-weight: 500!important;'>{{ selectedElementData.longitude ? selectedElementData.longitude : '--' }}</span>
+            <span class='font-helvetica-md'>{{ selectedElementData.longitude ? selectedElementData.longitude : '--' }}</span>
           </div>
         </div>
       </div>

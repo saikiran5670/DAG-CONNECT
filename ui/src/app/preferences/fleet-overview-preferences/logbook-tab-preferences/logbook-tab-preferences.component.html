@@ -6,8 +6,8 @@
             [checked]='selectionForLoogbookColumns.hasValue() && isAllSelectedForLogbookColumns()'
             [indeterminate]='selectionForLoogbookColumns.hasValue() && !isAllSelectedForLogbookColumns()'
             [aria-label]='checkboxLabelForColumns()' [disabled]='!editFlag'><span class='headerFont'>{{
-                translationData.lblDetails }} ({{
-                translationData.lblTablecolumnviewsettings }})</span>
+                translationData.lblDetails }} <span class='font-14-px line-height-21px'>({{
+                translationData.lblTablecolumnviewsettings }})</span></span>
         </mat-checkbox>
     </div>
 </div>

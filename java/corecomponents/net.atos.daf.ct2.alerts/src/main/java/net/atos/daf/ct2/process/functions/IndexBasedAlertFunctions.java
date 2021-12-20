@@ -144,8 +144,8 @@ public class IndexBasedAlertFunctions implements Serializable {
     							fuelIncreaseDiff = currentFuelVal.subtract(vFuelStopPrevVal);
     						logger.info("Fuel Stop Deviation, tripStartFuel: {} , vFuelStopPrevVal:{}, stopIncreaseThresholdVal: {}, vEvtId: {}  ",currentFuelVal,  vFuelStopPrevVal, schema.getThresholdValue(), originalIdxMsg.getVEvtID());
 
-    						//1 when fuelIncreaseDiff > threshold
-    						if(fuelIncreaseDiff.compareTo(BigDecimal.ZERO) > 0 && fuelIncreaseDiff.compareTo(BigDecimal.valueOf(schema.getThresholdValue())) > 0){
+    						//1 when fuelIncreaseDiff > threshold , removed fuelIncreaseDiff.compareTo(BigDecimal.ZERO) > 0 &&
+    						if( fuelIncreaseDiff.compareTo(BigDecimal.valueOf(schema.getThresholdValue())) > 0){
     							logger.info("Raising alert for fuelIncreaseDuringStop fuelIncreaseDiff: {} thereshold: {} ",fuelIncreaseDiff,schema.getThresholdValue());
     							return getTarget(originalIdxMsg, schema, fuelIncreaseDiff);
     						}
@@ -184,8 +184,8 @@ public class IndexBasedAlertFunctions implements Serializable {
     							fuelDecreaseDiff = vFuelEndVal.subtract(currentFuelVal);
     						logger.info("Fuel Decrease Stop Deviation, currentFuelVal: {} , vFuelEndVal:{}, stopIncreaseThresholdVal: {}, vEvtId: {}  ",currentFuelVal,  vFuelEndVal, schema.getThresholdValue(), originalIdxMsg.getVEvtID());
 
-    						//1 when fuelIncreaseDiff > threshold
-    						if(fuelDecreaseDiff.compareTo(BigDecimal.ZERO) > 0 && fuelDecreaseDiff.compareTo(BigDecimal.valueOf(schema.getThresholdValue())) > 0){
+    						//1 when fuelIncreaseDiff > threshold, removed fuelDecreaseDiff.compareTo(BigDecimal.ZERO) > 0 &&
+    						if(fuelDecreaseDiff.compareTo(BigDecimal.valueOf(schema.getThresholdValue())) > 0){
     							logger.info("Raising alert for fuelDecreaseDuringStop fuelIncreaseDiff: {} thereshold: {} ",fuelDecreaseDiff, schema.getThresholdValue());
     							return getTarget(originalIdxMsg, schema, fuelDecreaseDiff);
     						}
@@ -227,8 +227,8 @@ public class IndexBasedAlertFunctions implements Serializable {
 							
 							logger.info("Fuel decrease during Trip, vFuelPrevVal: {}, currentFuelVal: {}, fuelDecreaseDiff:{} ", vFuelPrevVal, currentFuelVal, fuelDecreaseDiff);
 
-							if (fuelDecreaseDiff.compareTo(BigDecimal.ZERO) > 0
-									&& fuelDecreaseDiff.compareTo(BigDecimal.valueOf(schema.getThresholdValue())) > 0) {
+							//fuelDecreaseDiff.compareTo(BigDecimal.ZERO) > 0 &&
+							if ( fuelDecreaseDiff.compareTo(BigDecimal.valueOf(schema.getThresholdValue())) > 0) {
 
 								logger.info("Raising alert for fuelDecreaseDuringTrip fuelDecreadeDiff: {} thereshold: {} ",fuelDecreaseDiff,schema.getThresholdValue());
     							return getTarget(originalIdxMsg, schema, fuelDecreaseDiff);

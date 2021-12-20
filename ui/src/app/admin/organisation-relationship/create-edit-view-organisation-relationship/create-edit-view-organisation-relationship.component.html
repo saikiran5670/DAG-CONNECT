@@ -1,17 +1,17 @@
 <form [formGroup]="OrganisationRelationshipFormGroup">
     <mat-card *ngIf="createStatus" class='mat-elevation-z margin-bottom-xlg'>
       <mat-card-content>
-        <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+        <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
           <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-            <mat-label style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+            <mat-label class='font-18-px line-height-27px font-helvetica-md'>{{
               translationData.lblAddNewRelationsip }}
             </mat-label>
           </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
           <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-            <mat-label style='font: 200 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
-              translationData.lblRelationsip  }} <span *ngIf="createStatus" class='mandatoryColor'>*</span>
+            <mat-label class='font-16-px line-height-24px'>{{
+              translationData.lblRelationsip }} <span *ngIf="createStatus" class='mandatoryColor'>*</span>
             </mat-label>
           </div>
         </div>
@@ -33,8 +33,7 @@
           
             <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center">
                 <!-- <span>{{ translationData.lblViewby || 'View by' }}:</span> -->
-                  <span
-                    style='font: 300 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{translationData.lblChainRelationship }}
+                  <span class='font-16-px line-height-24px'>{{translationData.lblChainRelationship }}
                 <mat-radio-group (change)='onChange($event)'>
                   <!-- <mat-radio-button style='margin-right: 20px;' value="active"
                     [checked]="selectedType ===  'active' ? true : false">{{ translationData.lblActive || 'Active' }}
@@ -58,7 +57,7 @@
           <div fxLayout="column" fxLayoutAlign="left">
             <div fxLayout="row" fxLayoutAlign='center center'>
               <mat-icon class='margin-right-10'>info</mat-icon>
-              <span>{{translationData.lblRelationshipInfo }}</span>
+              <span>{{ translationData.lblRelationshipInfo }}</span>
             </div>
           </div>
           <div fxLayout="column" fxLayoutAlign="end">
@@ -80,9 +79,9 @@
     <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
 
       <div fxLayout="column" style="width: 50%" fxLayoutGap="3px" fxLayoutAlign="left">
-        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectVehicleGroup }}<span *ngIf="createStatus" class='mandatoryColor'>*</span></span>
+        <span class='font-16-px line-height-24px font-helvetica-md'>{{ translationData.lblSelectVehicleGroup }}<span *ngIf="createStatus" class='mandatoryColor'>*</span></span>
      
-        <div fxLayout="row"  class='margin-bottom-sm'>
+        <div fxLayout="row" class='margin-bottom-sm'>
           <div class='areaWidth' fxLayoutAlign="left">
             <mat-form-field appearance="outline">
                 <input matInput (keyup)="applyFilterOnVehicle($event.target.value)" placeholder="{{ translationData.lblSearch }}">
@@ -126,7 +125,7 @@
       </div>
 
     <div fxLayout="column" style="width: 50%" fxLayoutGap="3px" fxLayoutAlign="left">
-      <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectOrganisation }}<span *ngIf="createStatus" class='mandatoryColor'>*</span></span>
+      <span class='font-16-px line-height-24px font-helvetica-md'>{{ translationData.lblSelectOrganisation }}<span *ngIf="createStatus" class='mandatoryColor'>*</span></span>
   
       <div fxLayout="row"  class='margin-bottom-sm'>
         <div class='areaWidth' fxLayoutAlign="left">

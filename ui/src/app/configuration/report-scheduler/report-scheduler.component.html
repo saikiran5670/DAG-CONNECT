@@ -12,7 +12,7 @@
       <mat-card class='mat-elevation-z'>
         <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
           <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblScheduledReportList || 'Scheduled Report List' }}
+              <span class='font-18-px line-height-27px font-helvetica-md'>{{ translationData.lblScheduledReportList || 'Scheduled Report List' }}
                   <!-- ({{ dataSource.filteredData.length }}) -->
               </span>
           </div>
@@ -230,6 +230,6 @@
   </div>
   <div *ngIf='viewStatus'>
     <app-view-report-scheduler [translationData]='translationData' [selectedRowData]="rowsData" [completePrefData]='completePrefData' [prefTimeFormat]='prefTimeFormat' [prefTimeZone]='prefTimeZone' [prefDateFormat]='prefDateFormat'
-      (backToPage)='onBackToPage($event)'></app-view-report-scheduler>
+      (backToPage)='onBackToPage($event)' (editReportSchedule)='editReport()' [adminAccessType]="adminAccessType"></app-view-report-scheduler>
 </div>
 </div>

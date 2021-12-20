@@ -353,7 +353,7 @@
             <div *ngIf="checkForPreference('summary_idledurationtotaltime')"
               class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
               <span>{{ translationData.lblIdleDuration }}</span>
-              <span class='font-helvetica-md'>{{ sumOfColumns('idleDuration') }} hh:mm</span>
+              <span class='font-helvetica-md'>{{ sumOfColumns('idleDuration') }} {{ translationData.lblhhmm }}</span>
             </div>
             <div *ngIf="checkForPreference('summary_fuelconsumption')" class="areaWidth min-width-15-per colData"
               fxLayout="column" fxLayoutAlign="left">
@@ -729,7 +729,7 @@
 
             <ng-container matColumnDef="ptoDuration">
               <mat-header-cell *matHeaderCellDef mat-sort-header
-                [hidden]="!checkForPreference('vehicledetails_ptoduration')">{{ translationData.lblPTODuration }}
+                [hidden]="!checkForPreference('vehicledetails_ptoduration')">{{ translationData.lblPTODuration }} (%)
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_ptoduration')">
                 <span>{{ row.ptoDuration.toFixed(2) }}</span>
@@ -739,7 +739,7 @@
             <ng-container matColumnDef="harshBrakeDuration">
               <mat-header-cell *matHeaderCellDef mat-sort-header
                 [hidden]="!checkForPreference('vehicledetails_harshbrakeduration')">{{
-                translationData.lblHarshBrakeDuration }}
+                translationData.lblHarshBrakeDuration }} (%)
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_harshbrakeduration')">
                 <span>{{ row.harshBrakeDuration }}</span>
@@ -749,7 +749,7 @@
             <ng-container matColumnDef="heavyThrottleDuration">
               <mat-header-cell *matHeaderCellDef mat-sort-header
                 [hidden]="!checkForPreference('vehicledetails_heavythrottleduration')">{{
-                translationData.lblHeavyThrottleDuration }}
+                translationData.lblHeavyThrottleDuration }} (%)
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_heavythrottleduration')">
                 <span>{{ row.heavyThrottleDuration }}</span>
@@ -878,7 +878,7 @@
 
             <ng-container matColumnDef="idlingPTOScore">
               <mat-header-cell *matHeaderCellDef mat-sort-header
-                [hidden]="!checkForPreference('vehicledetails_idlingwithpto')">{{ translationData.lblIdlingwithPTOscore }}
+                [hidden]="!checkForPreference('vehicledetails_idlingwithpto')">{{ translationData.lblIdlingwithPTOscore }} (hh:mm:ss)
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingwithpto')">
                 <span>{{ row.convertedIdlingPTOScore }}</span>
@@ -887,7 +887,7 @@
 
             <ng-container matColumnDef="idlingPTO">
               <mat-header-cell *matHeaderCellDef mat-sort-header
-                [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingwithPTOPercent }}
+                [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingwithPTO }} (%)
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">
                 <span>{{ row.idlingPTO }}</span>
@@ -896,7 +896,7 @@
 
             <ng-container matColumnDef="idlingWithoutPTO">
               <mat-header-cell *matHeaderCellDef mat-sort-header
-                [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingwithoutPTO }}
+                [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingwithoutPTO }} (hh:mm:ss)
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">
                 <span>{{ row.convertedIdlingWithoutPTO }}</span>
@@ -905,7 +905,7 @@
 
             <ng-container matColumnDef="idlingWithoutPTOpercent">
               <mat-header-cell *matHeaderCellDef mat-sort-header
-                [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingWithoutPTOPercent }}
+                [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingwithoutPTO }} (%)
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">
                 <span>{{ row.idlingWithoutPTOpercent }}</span>
@@ -923,7 +923,7 @@
 
             <ng-container matColumnDef="cO2Emmision">
               <mat-header-cell *matHeaderCellDef mat-sort-header
-                [hidden]="!checkForPreference('vehicledetails_co2emmision')">{{ translationData.lblCO2emmisiongrkm }}
+                [hidden]="!checkForPreference('vehicledetails_co2emmision')">{{ translationData.lblCO2emmisiongrkm }} {{translationData.lblgmpkm}}
                 <span class="font-14-px"></span>
               </mat-header-cell>
 

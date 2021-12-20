@@ -6,7 +6,7 @@
     <!-- <mat-expansion-panel class="full-width" fxLayoutGap="10px">
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title>
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+          <span class='font-16-px line-height-24px font-helvetica-md'>{{
             translationData.lblPeriod }}<span class='mandatoryColor'>*</span></span>
         </mat-panel-title>
       </mat-expansion-panel-header> -->
@@ -93,7 +93,7 @@
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title>
           <mat-checkbox (change)="onChangeDistance($event)" [checked]="isDistanceSelected">
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+            <span class='font-16-px line-height-24px font-helvetica-md'>{{
               translationData.lblDistance }}<span class='mandatoryColor'>*</span></span>
           </mat-checkbox>
         </mat-panel-title>
@@ -124,7 +124,7 @@
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title>
           <mat-checkbox (change)="onChangeOccurence($event)" [checked]="isOccurenceSelected">
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+            <span class='font-16-px line-height-24px font-helvetica-md'>{{
               translationData.lblNumberofoccurences }}<span
                 class='mandatoryColor'>*</span></span>
           </mat-checkbox>
@@ -155,7 +155,7 @@
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title>
           <mat-checkbox (change)="onChangeDuration($event)" [checked]="isDurationSelected">
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+            <span class='font-16-px line-height-24px font-helvetica-md'>{{
               translationData.lblDuration }}<span class='mandatoryColor'>*</span></span>
           </mat-checkbox>
         </mat-panel-title>
@@ -188,12 +188,12 @@
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title *ngIf="actionType != 'view'">
           <mat-checkbox (change)="onChangePOI($event)" [checked]="isPoiSelected">
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+            <span class='font-16-px line-height-24px font-helvetica-md'>{{
               translationData.lblPOICondition }}<span class='mandatoryColor'>*</span></span>
           </mat-checkbox>
         </mat-panel-title>
         <mat-panel-title *ngIf="actionType == 'view'">
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+            <span class='font-16-px line-height-24px font-helvetica-md'>{{
               translationData.lblLandmarkDetails }}<span class='mandatoryColor'>*</span></span>
         </mat-panel-title>
       </mat-expansion-panel-header>
@@ -236,7 +236,7 @@
             <mat-expansion-panel-header class="full-width">
               <mat-panel-title>
                 <span><span
-                    style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{(translationData.lblSelectPOI) }}</span> <span class='mandatoryColor'>*</span></span>
+                    class='font-16-px line-height-24px font-helvetica-md'>{{(translationData.lblSelectPOI) }}</span> <span class='mandatoryColor'>*</span></span>
               </mat-panel-title>
             </mat-expansion-panel-header>
             <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>
@@ -309,7 +309,7 @@
           <mat-expansion-panel class="full-width" fxLayoutGap="10px" [expanded]="true">
             <mat-expansion-panel-header class="full-width">
               <mat-panel-title>
-                <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (actionType == 'view')
+                <span><span class='font-16-px line-height-24px font-helvetica-md'>{{ (actionType == 'view')
                     ?
                     (translationData.lblSelectedGeofence) : (translationData.lblSelectGeofence) }}</span> <span class='mandatoryColor'>*</span></span>
               </mat-panel-title>
@@ -378,7 +378,7 @@
           <mat-expansion-panel class="full-width" fxLayoutGap="10px" [expanded]="true">
             <mat-expansion-panel-header class="full-width">
               <mat-panel-title>
-                <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (actionType == 'view')
+                <span><span class='font-16-px line-height-24px font-helvetica-md'>{{ (actionType == 'view')
                     ? (translationData.lblSelectedGroup) : (translationData.lblSelectGroup) }}</span> <span class='mandatoryColor'>*</span></span>
               </mat-panel-title>
             </mat-expansion-panel-header>
@@ -451,7 +451,7 @@
   <mat-expansion-panel-header class="full-width"> -->
     <mat-card *ngIf="actionType == 'view'" class='mat-elevation-z'>
     <!-- <mat-panel-title> -->
-      <!-- <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+      <!-- <span class='font-16-px line-height-24px font-helvetica-md'>{{
         translationData.lblAdvanceFilterDetails || 'Advance Filter Details' }}</span> -->
     <!-- </mat-panel-title>
   </mat-expansion-panel-header> -->

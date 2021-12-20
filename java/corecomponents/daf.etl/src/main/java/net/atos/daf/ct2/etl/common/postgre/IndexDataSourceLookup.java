@@ -124,24 +124,33 @@ public class IndexDataSourceLookup extends RichFlatMapFunction<TripAggregatedDat
 
 		long vDistDiff = 0;
 		long prevVDist = 0;
+		long vTimeDiff = 0;
+		long prevVTime = 0;
 		
 		String driver2Id = null;
 		String driverId = null;
 		Long grossWtRec = ETLConstants.ZERO_VAL;
 		Integer maxSpeed =0;
+		Double avgSpeed = 0.0;
+		Double maxAvgSpeed = 0.0;
 		Double vGrossWtSum = 0.0;
 		Double calAvgGrossWtSum = 0.0;
-		Long calVDistDiff =0L;
+		Long calVDistDiff = 0L;
+		int recCounter = 0;
 		
 		for (IndexTripData indxData : indxLst) {
 			
-			if(4 != indxData.getVEvtId()){
+			//if(4 != indxData.getVEvtId()){
+			if(0 != recCounter){
 				vDistDiff =indxData.getVDist() - prevVDist ;
+				vTimeDiff =indxData.getEvtDateTime() - prevVTime;
 				
 				/*if(vDistDiff == 0)
 					vDistDiff = 1;*/
 			}
 			prevVDist = indxData.getVDist();
+			prevVTime = indxData.getEvtDateTime();
+			recCounter++;
 			
 			if (vGrossWtThreshold.compareTo(indxData.getVGrossWeightCombination()) < 0) {
 				indxData.setVGrossWeightCombination(0L);
@@ -156,6 +165,13 @@ public class IndexDataSourceLookup extends RichFlatMapFunction<TripAggregatedDat
 			
 			if(indxData.getVTachographSpeed() > maxSpeed)
 				maxSpeed = indxData.getVTachographSpeed();
+			
+			if(0 != vTimeDiff)
+				avgSpeed = Double.valueOf(vDistDiff)/vTimeDiff;
+			
+			if(avgSpeed > maxAvgSpeed)
+				maxAvgSpeed = avgSpeed;
+			
 			vGrossWtSum = vGrossWtSum + indxData.getVGrossWeightCombination();
 			calAvgGrossWtSum  = calAvgGrossWtSum + (Double.valueOf(indxData.getVGrossWeightCombination()) * vDistDiff);
 			
@@ -173,7 +189,13 @@ public class IndexDataSourceLookup extends RichFlatMapFunction<TripAggregatedDat
 		else
 			stsData.setVGrossWeightCombination(0.0);
 		
-		stsData.setVTachographSpeed(Double.valueOf(maxSpeed));
+		//stsData.setVTachographSpeed(Double.valueOf(maxSpeed));
+		
+		if(maxAvgSpeed > maxSpeed){
+			stsData.setVTachographSpeed(maxAvgSpeed);
+		}else{
+			stsData.setVTachographSpeed(Double.valueOf(maxSpeed));
+		}
 		
 		/*if(0 != stsData.getTripCalDist())
 			stsData.setTripCalAvgGrossWtComb(calAvgGrossWtSum/stsData.getTripCalDist());

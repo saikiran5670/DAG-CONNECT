@@ -53,6 +53,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
+                _logger.Error($"{nameof(GetVehicleSoftwareStatus)}: With Error:-", ex);
                 await _auditHelper.AddLogs(DateTime.Now, OTASoftwareUpdateConstants.OTA_CONTROLLER_NAME,
                  OTASoftwareUpdateConstants.OTA_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  string.Format(OTASoftwareUpdateConstants.OTA_EXCEPTION_LOG_MSG, "GetVehicleSoftwareStatus", ex.Message), 1, 2, string.Empty,
@@ -62,7 +63,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, String.Format(OTASoftwareUpdateConstants.INTERNAL_SERVER_ERROR_MSG, 2));
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, OTASoftwareUpdateConstants.INTERNAL_SERVER_MSG);
             }
         }
         #endregion
@@ -101,6 +102,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
+                _logger.Error($"{nameof(GetVehicleStatusList)}: With Error:-", ex);
                 await _auditHelper.AddLogs(DateTime.Now, OTASoftwareUpdateConstants.OTA_CONTROLLER_NAME,
                  OTASoftwareUpdateConstants.OTA_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  string.Format(OTASoftwareUpdateConstants.OTA_EXCEPTION_LOG_MSG, "GetVehicleStatusList", ex.Message), 1, 2, string.Empty,
@@ -110,7 +112,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, String.Format(OTASoftwareUpdateConstants.INTERNAL_SERVER_ERROR_MSG, 2));
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, OTASoftwareUpdateConstants.INTERNAL_SERVER_MSG);
             }
         }
         #endregion
@@ -139,6 +141,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
+                _logger.Error($"{nameof(GetVehicleUpdateDetails)}: With Error:-", ex);
                 await _auditHelper.AddLogs(DateTime.Now, OTASoftwareUpdateConstants.OTA_CONTROLLER_NAME,
                  OTASoftwareUpdateConstants.OTA_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  string.Format(OTASoftwareUpdateConstants.OTA_EXCEPTION_LOG_MSG, "GetVehicleUpdateDetails", ex.Message), 1, 2, vin,
@@ -148,7 +151,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, String.Format(OTASoftwareUpdateConstants.INTERNAL_SERVER_ERROR_MSG, 2));
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, OTASoftwareUpdateConstants.INTERNAL_SERVER_MSG);
             }
         }
         #endregion
@@ -180,6 +183,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
+                _logger.Error($"{nameof(GetSoftwareReleaseNote)}: With Error:-", ex);
                 await _auditHelper.AddLogs(DateTime.Now, OTASoftwareUpdateConstants.OTA_CONTROLLER_NAME,
                  OTASoftwareUpdateConstants.OTA_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  string.Format(OTASoftwareUpdateConstants.OTA_EXCEPTION_LOG_MSG, "GetSoftwareReleaseNotes", ex.Message), 1, 2, vin,
@@ -189,7 +193,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, String.Format(OTASoftwareUpdateConstants.INTERNAL_SERVER_ERROR_MSG, 2));
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, OTASoftwareUpdateConstants.INTERNAL_SERVER_MSG);
             }
         }
         #endregion
@@ -219,6 +223,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
+                _logger.Error($"{nameof(GetScheduleSoftwareUpdate)}: With Error:-", ex);
                 await _auditHelper.AddLogs(DateTime.Now, OTASoftwareUpdateConstants.OTA_CONTROLLER_NAME,
                  OTASoftwareUpdateConstants.OTA_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  string.Format(OTASoftwareUpdateConstants.OTA_EXCEPTION_LOG_MSG, "getschedulesoftwareupdate", ex.Message), 1, 2, string.Empty,
@@ -228,7 +233,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, String.Format(OTASoftwareUpdateConstants.INTERNAL_SERVER_ERROR_MSG, 2));
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, OTASoftwareUpdateConstants.INTERNAL_SERVER_MSG);
             }
         }
         #endregion

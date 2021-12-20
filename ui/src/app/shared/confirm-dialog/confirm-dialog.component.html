@@ -2,13 +2,13 @@
   <div fxLayoutGap="3px" fxLayoutAlign="flex-end">
     <mat-icon (click)='cancel()' style='cursor: pointer;'>close</mat-icon>
   </div>
-  <div class="header">
+  <div class="font-18-px line-height-24px font-helvetica-md">
     <h1 mat-dialog-title>{{ data.title  }}</h1>
   </div>
   <div mat-dialog-content>
 
     <mat-form-field>
-      <mat-label>User Group Name</mat-label>
+      <mat-label class='font-14-px line-height-21px'>User Group Name</mat-label>
       <input matInput id="name" [(ngModel)]="data.inputText" required #name="ngModel">
     </mat-form-field>
     <!-- <span *ngIf="name.invalid && name.touched">User group Name is required</span> -->

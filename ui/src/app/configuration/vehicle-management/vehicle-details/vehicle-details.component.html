@@ -23,8 +23,8 @@
                 <span matPrefix>
                   <mat-icon>search</mat-icon>
                 </span>
-              </mat-form-field>
-            </div>
+              </mat-form-field>             
+            </div>          
             <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
                 <button *ngIf='initData.length > 0' mat-button [matMenuTriggerFor]="menu"><mat-icon>file_upload</mat-icon>Export<mat-icon>more_vert</mat-icon></button>
                 <mat-menu #menu="matMenu">
@@ -33,8 +33,9 @@
                 </mat-menu>
               </div>
           </div>
+          <!-- <div *ngIf='showProcessingFlag'>Processing...</div> -->
           <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
-          <cdk-virtual-scroll-viewport [itemSize]="48" style="height: 400px;"  (scrolledIndexChange)="onScroll($event)">
+          <cdk-virtual-scroll-viewport [itemSize]="48" autosize [style.height.px]="tableHeight" (scrolledIndexChange)="onScroll($event)">
           <div *ngIf='initData.length > 0' id="vehicleMgmtData">
             <mat-table matTableExporter [dataSource]="dataSource" matSort #exporter="matTableExporter" [hiddenColumns]="[6]">
               <ng-container matColumnDef="name">
@@ -91,12 +92,13 @@
               <mat-header-row *matHeaderRowDef="displayedColumns;sticky: true" ></mat-header-row>
               <mat-row *matRowDef="let row; columns: displayedColumns;">
               </mat-row>
-          </mat-table>
-          <span style="margin-top:5px;">Total Count - {{initData.length}} </span>
+          </mat-table>    
           <!-- <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator> -->
           </div>
-          
+                   
         </cdk-virtual-scroll-viewport>
+        <div *ngIf="!showFilterCount" class="bottomText">Total Count - {{initData.length}} </div>
+        <div *ngIf='showFilterCount'class="bottomText">Total Count - {{ this.dataSource.filteredData.length}} of {{initData.length}} </div>
         <!-- <span style="margin-top:5px;">Index of First Row - {{index}} </span> -->
 
     

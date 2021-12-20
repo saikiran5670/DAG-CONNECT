@@ -13,14 +13,14 @@
         <mat-card-content>
             <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ title }}</span>
+                    <span class='font-18-px line-height-27px font-helvetica-md'>{{ title }}</span>
                 </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                   <!-- <mat-label>{{ translationData.lblSalutation }}</mat-label> -->
-                  <mat-label>{{ translationData.lblUserRoleName }}</mat-label>
-                  <mat-label class='custom-font'>{{ this.gridData[0].roleName  }}</mat-label>
+                  <mat-label class='font-16-px line-height-24px'>{{ translationData.lblUserRoleName }}</mat-label>
+                  <mat-label class='font-helvetica-md'>{{ this.gridData[0].roleName  }}</mat-label>
                 </div>
                 <!-- <div *ngIf="loggedInUser == 'admin'" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>{{ translationData.lblUserRoleType || 'Role Type' }}</mat-label>
@@ -32,23 +32,23 @@
                 </div> -->
 
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>{{ translationData.lblUserRoleType}}</mat-label>
-                    <mat-label class='custom-font'>{{ (this.gridData[0].organizationId == 0) ? translationData.lblGlobal || 'Global' : translationData.lblOrganisation || 'Organisation' }}</mat-label>
+                    <mat-label class='font-16-px line-height-24px'>{{ translationData.lblUserRoleType}}</mat-label>
+                    <mat-label class='font-helvetica-md'>{{ (this.gridData[0].organizationId == 0) ? translationData.lblGlobal || 'Global' : translationData.lblOrganisation || 'Organisation' }}</mat-label>
                 </div>
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>{{ translationData.lblUserRoleDescriptionOptional }}</mat-label>
-                    <mat-label class='custom-font'>{{ this.gridData[0].description ? this.gridData[0].description : '--' }}</mat-label>
+                    <mat-label class='font-18-px line-height-27px'>{{ translationData.lblUserRoleDescriptionOptional }}</mat-label>
+                    <mat-label class='font-helvetica-md'>{{ this.gridData[0].description ? this.gridData[0].description : '--' }}</mat-label>
                 </div>
             </div>  
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>{{ translationData.lblLevel || 'Level' }}</mat-label>
-                    <mat-label class='custom-font'>{{ this.gridData[0].levelName }}</mat-label>
+                    <mat-label class='font-16-px line-height-24px'>{{ translationData.lblLevel || 'Level' }}</mat-label>
+                    <mat-label class='font-helvetica-md'>{{ this.gridData[0].levelName }}</mat-label>
                 </div>
                 <!-- <div *ngIf="userLevel < 30 || (gridData && gridData.length > 0 && gridData[0].code)" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"> -->
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>{{ translationData.lblCode || 'Code' }}</mat-label>
-                    <mat-label class='custom-font'>{{ this.gridData[0].code }}</mat-label>
+                    <mat-label class='font-16-px line-height-24px'>{{ translationData.lblCode || 'Code' }}</mat-label>
+                    <mat-label class='font-helvetica-md'>{{ this.gridData[0].code }}</mat-label>
                 </div>
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
             </div>  
@@ -58,12 +58,12 @@
         <mat-card-content style='margin-bottom: 30px;'>
             <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ title }}</span>
+                    <span class='font-18-px line-height-27px font-helvetica-md'>{{ title }}</span>
                 </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>{{ createStatus ? (translationData.lblNewUserRoleName ) : (translationData.lblUserRoleName) }}<span class='mandatoryColor'>*</span></mat-label>
+                    <mat-label class='font-16-px line-height-24px'>{{ createStatus ? (translationData.lblNewUserRoleName ) : (translationData.lblUserRoleName) }}<span class='mandatoryColor'>*</span></mat-label>
                     <mat-form-field appearance="outline" class="full-width">
                         <input placeholder="{{ translationData.lblEnterUserRoleName  }}" (keyup)="isUserRoleExist=false; doneFlag=false"  matInput formControlName="userRoleName" required maxlength="60">
                     <mat-icon style='color:green;' matSuffix *ngIf="doneFlag">done</mat-icon>
@@ -82,8 +82,8 @@
                      </mat-error>
                 </div>
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>
-                        {{ translationData.lblUserRoleType}}<span class='mandatoryColor'>*</span>
+                    <mat-label class='font-16-px line-height-24px'>
+                        {{ translationData.lblUserRoleType }}<span class='mandatoryColor'>*</span>
                     </mat-label>
                     <mat-form-field appearance="outline" class="full-width">
                         <mat-select formControlName="roleType" [disabled]="(!adminAccessType.adminFullAccess) || (!createStatus && !duplicateFlag)">
@@ -98,7 +98,7 @@
                 </div>
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label style='display: flex; place-content: space-between;'>
-                        <span>{{ translationData.lblUserRoleDescriptionOptional }}</span>
+                        <span class='font-16-px line-height-24px'>{{ translationData.lblUserRoleDescriptionOptional }}</span>
                         <span *ngIf="showCount"> {{textLengthCounter }}  out of max 100 characters</span>
                         <span *ngIf="!showCount"> {{ translationData.lbl120CharMax }}</span>
                     </mat-label>
@@ -112,7 +112,7 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-top-10" fxLayoutGap="10px">
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>
+                    <mat-label class='font-16-px line-height-24px'>
                         {{ translationData.lblLevel || 'Level' }}<span class='mandatoryColor'>*</span>
                     </mat-label>
                     <mat-form-field appearance="outline" class="full-width">
@@ -127,7 +127,7 @@
                     </mat-error>
                 </div>
                 <div *ngIf="userLevel < 30" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>
+                    <mat-label class='font-16-px line-height-24px'>
                         {{ translationData.lblCode || 'Code' }}
                         <!-- <span class='mandatoryColor'>*</span> -->
                     </mat-label>
@@ -164,7 +164,7 @@
                 <div fxLayout="column" fxLayoutAlign="left">
                     <div fxLayout="row" fxLayoutAlign='center center'>
                         <mat-icon class='margin-right-10'>info</mat-icon>
-                        <span>{{ translationData.lblHintMessage}}<span class='mandatoryColor'>*</span></span>
+                        <span>{{ translationData.lblHintMessage }}<span class='mandatoryColor'>*</span></span>
                     </div>
                 </div>
                 <div fxLayout="column" fxLayoutAlign="end">
@@ -182,7 +182,7 @@
     <mat-card class='mat-elevation-z'>
         <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ createStatus ? ( translationData.lblSelectRoleAccess ) : (translationData.lblSelectedRoleAccess ) }}</span>
+                <span class='font-16-px line-height-24px font-helvetica-md'>{{ createStatus ? ( translationData.lblSelectRoleAccess ) : (translationData.lblSelectedRoleAccess ) }}</span>
             </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>

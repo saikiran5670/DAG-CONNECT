@@ -621,7 +621,7 @@ namespace net.atos.daf.ct2.alertservice.Services
             {
                 List<visibility.entity.VehicleDetailsAccountVisibilityForAlert> vehicleDetailsAccountVisibilty = new List<visibility.entity.VehicleDetailsAccountVisibilityForAlert>();
                 List<string> visibleVin = new List<string>();
-                if (featureIds != null)
+                if (featureIds != null && featureIds.Count() > 0)
                 {
                     //foreach (int featureId in featureIds)
                     //{

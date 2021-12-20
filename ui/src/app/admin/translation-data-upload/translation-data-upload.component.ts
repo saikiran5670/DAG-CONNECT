@@ -132,7 +132,7 @@ export class TranslationDataUploadComponent implements OnInit {
     Util.applySearchFilter(this.dataSource, this.displayedColumns ,this.filterValue );
   }
   compare(a: Number| String, b:Number | String, isAsc: boolean, columnName: any){
-    if(columnName == "fileName" || columnName == "description"){
+    if(columnName == "fileName" || columnName == "description" || columnName == "filesize"){
       if(!(a instanceof Number)) a = a.toString().toUpperCase();
       if(!(b instanceof Number)) b = b.toString().toUpperCase();
     }
