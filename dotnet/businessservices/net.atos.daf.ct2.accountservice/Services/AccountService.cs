@@ -273,9 +273,20 @@ namespace net.atos.daf.ct2.accountservice
                 account.Password = request.Password;
                 account.Organization_Id = request.OrgId;
                 account.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;
-                var identityResult = await _accountmanager.ChangePassword(account);
+                Identity user = new Identity();
+                user.UserName = request.EmailId;
+                user.Password = request.OldPassword;
+                bool isvalidOldPassword = await _accountIdentityManager.IsValidateCurrentPassword(user);
                 // response 
                 AccountResponse response = new AccountResponse();
+                if (!isvalidOldPassword)
+                {
+                    response.Code = Responcecode.BadRequest;
+                    response.Message = "Entered password incorrect. Please check and try again.";
+                    return await Task.FromResult(response);
+                }
+                var identityResult = await _accountmanager.ChangePassword(account);
+
                 if (identityResult.StatusCode == System.Net.HttpStatusCode.NoContent)
                 {
                     response.Code = Responcecode.Success;
