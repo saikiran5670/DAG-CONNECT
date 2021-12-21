@@ -10,6 +10,7 @@ using net.atos.daf.ct2.poigeofence.entity;
 using net.atos.daf.ct2.poigeofenceservice.entity;
 using net.atos.daf.ct2.kafkacdc;
 using net.atos.daf.ct2.poigeofenceservice.common;
+using net.atos.daf.ct2.poigeofenceservice.Entity;
 
 namespace net.atos.daf.ct2.geofenceservice
 {
@@ -65,7 +66,7 @@ namespace net.atos.daf.ct2.geofenceservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(DeleteGeofence)}: With Error:-", ex);
                 //response.Message = "Not Deleted";
             }
             return await Task.FromResult(response);
@@ -104,11 +105,11 @@ namespace net.atos.daf.ct2.geofenceservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(CreatePolygonGeofence)}: With Error:-", ex);
                 return await Task.FromResult(new GeofenceResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "Geofence Creation Failed due to - " + ex.Message,
+                    Message = POIGeofenceConstants.INTERNAL_SERVER_MSG,
                 });
             }
         }
@@ -135,7 +136,7 @@ namespace net.atos.daf.ct2.geofenceservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetAllGeofence)}: With Error:-", ex);
             }
             return await Task.FromResult(response);
         }
@@ -182,7 +183,7 @@ namespace net.atos.daf.ct2.geofenceservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetGeofenceByGeofenceID)}: With Error:-", ex);
             }
             return await Task.FromResult(response);
         }
@@ -214,11 +215,11 @@ namespace net.atos.daf.ct2.geofenceservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(CreateCircularGeofence)}: With Error:-", ex);
                 return await Task.FromResult(new CircularGeofenceResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "Circular Geofence Creation Failed due to - " + ex.Message,
+                    Message = POIGeofenceConstants.INTERNAL_SERVER_MSG,
                 });
             }
         }
@@ -264,11 +265,11 @@ namespace net.atos.daf.ct2.geofenceservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(UpdatePolygonGeofence)}: With Error:-", ex);
                 return await Task.FromResult(new GeofencePolygonUpdateResponce
                 {
                     Code = Responsecode.Failed,
-                    Message = "Geofence Creation Failed due to - " + ex.Message,
+                    Message = POIGeofenceConstants.INTERNAL_SERVER_MSG,
                 });
             }
         }
@@ -299,13 +300,13 @@ namespace net.atos.daf.ct2.geofenceservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(BulkImportGeofence)}: With Error:-", ex);
                 response.Code = Responsecode.Failed;
                 response.FailureCount = 0;
                 response.AddedCount = 0;
                 response.UpdatedCount = 0;
                 foreach (var item in requests.GeofenceRequest)
-                    item.Message = ex.Message;
+                    item.Message = POIGeofenceConstants.INTERNAL_SERVER_MSG;
                 response.FailureResult.AddRange(requests.GeofenceRequest);
             }
             return response;
@@ -352,11 +353,11 @@ namespace net.atos.daf.ct2.geofenceservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(UpdateCircularGeofence)}: With Error:-", ex);
                 return await Task.FromResult(new GeofenceCircularUpdateResponce
                 {
                     Code = Responsecode.Failed,
-                    Message = "Geofence Creation Failed due to - " + ex.Message,
+                    Message = POIGeofenceConstants.INTERNAL_SERVER_MSG,
                 });
             }
         }
@@ -383,9 +384,9 @@ namespace net.atos.daf.ct2.geofenceservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetAllGeofences)}: With Error:-", ex);
                 response.Code = Responsecode.Failed;
-                response.Message = ex.Message;
+                response.Message = POIGeofenceConstants.INTERNAL_SERVER_MSG;
             }
             return await Task.FromResult(response);
         }
