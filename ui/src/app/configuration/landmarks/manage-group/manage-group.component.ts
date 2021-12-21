@@ -76,10 +76,10 @@ export class ManageGroupComponent implements OnInit {
 
   loadInitData() {
     this.showLoadingIndicator = true;
-     let objData = { 
+     let objData = {
         organizationid : this.organizationId,
      };
-  
+
     this.landmarkGroupService.getLandmarkGroups(objData).subscribe((data: any) => {
       this.hideloader();
       if(data){
@@ -94,8 +94,8 @@ export class ManageGroupComponent implements OnInit {
 
   updateDatasource(data){
     if(data && data.length > 0){
-      this.initData = this.getNewTagData(data); 
-    } 
+      this.initData = this.getNewTagData(data);
+    }
     this.dataSource = new MatTableDataSource(this.initData);
     this.dataSource.filterPredicate = function(data: any, filter: string): boolean {
       return (
@@ -112,15 +112,15 @@ export class ManageGroupComponent implements OnInit {
         let columnName = this.sort.active;
         return data.sort((a : any, b: any) => {
           return this.compare(a[sort.active], b[sort.active], isAsc,columnName);
-        }); 
+        });
       }
 
     });
   }
   compare(a:Number | String, b: Number | String, isAsc: boolean, columnName: any){
     if(columnName == "name"){
-      if(!(a instanceof Number)) a = a.toString().toUpperCase();
-      if(!(b instanceof Number)) b = b.toString().toUpperCase();
+      if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toUpperCase();
+      if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toUpperCase();
     }
     return (a< b ? -1 : 1) * (isAsc ? 1: -1);
   }
@@ -130,7 +130,7 @@ export class ManageGroupComponent implements OnInit {
     let currentDate = new Date().getTime();
     data.forEach(row => {
       if(row.createdAt){
-        let createdDate = parseInt(row.createdAt); 
+        let createdDate = parseInt(row.createdAt);
         let nextDate = createdDate + 86400000;
         if(currentDate >= createdDate && currentDate < nextDate){
           row.newTag = true;
@@ -146,7 +146,7 @@ export class ManageGroupComponent implements OnInit {
     let newTrueData = data.filter(item => item.newTag == true);
     newTrueData.sort((userobj1, userobj2) => parseInt(userobj2.createdAt) - parseInt(userobj1.createdAt));
     let newFalseData = data.filter(item => item.newTag == false);
-    Array.prototype.push.apply(newTrueData, newFalseData); 
+    Array.prototype.push.apply(newTrueData, newFalseData);
     return newTrueData;
   }
 
@@ -154,7 +154,7 @@ export class ManageGroupComponent implements OnInit {
     const colsList = ['icon', 'landmarkname', 'categoryname', 'subcategoryname', 'address'];
     const colsName = [this.translationData.lblIcon || 'Icon', this.translationData.lblName || 'Name', this.translationData.lblCategory || 'Category', this.translationData.lblSubCategory || 'Sub-Category', this.translationData.lblAddress || 'Address'];
     const tableTitle = this.translationData.lblPOI || 'POI';
-    let objData = { 
+    let objData = {
       organizationid : this.organizationId,
       groupid : row.id
    };
@@ -180,7 +180,7 @@ export class ManageGroupComponent implements OnInit {
     const colsList = ['landmarkname', 'categoryname', 'subcategoryname'];
     const colsName = ['Name', this.translationData.lblCategory || 'Category', this.translationData.lblSubCategory || 'Sub-Category'];
     const tableTitle = this.translationData.lblGeofence || 'Geofence';
-    let objData = { 
+    let objData = {
       organizationid : this.organizationId,
       groupid : row.id
    };
@@ -233,7 +233,7 @@ export class ManageGroupComponent implements OnInit {
 
   editViewlandmarkGroup(row: any, actionType: any){
     this.tabVisibility.emit(false);
-    let objData = { 
+    let objData = {
       organizationid : this.organizationId,
       groupid : row.id
    };
@@ -255,7 +255,7 @@ export class ManageGroupComponent implements OnInit {
   successMsgBlink(msg: any){
     this.grpTitleVisible = true;
     this.displayMessage = msg;
-    setTimeout(() => {  
+    setTimeout(() => {
       this.grpTitleVisible = false;
     }, 5000);
   }
@@ -293,20 +293,20 @@ export class ManageGroupComponent implements OnInit {
 
 exportAsPdf() {
   let DATA = document.getElementById('accountRoleData');
-    
+
   html2canvas(DATA).then(canvas => {
-      
+
       let fileWidth = 208;
       let fileHeight = canvas.height * fileWidth / canvas.width;
-      
+
       const FILEURI = canvas.toDataURL('image/png')
       let PDF = new jsPDF('p', 'mm', 'a4');
       let position = 0;
       PDF.addImage(FILEURI, 'PNG', 0, position, fileWidth, fileHeight)
-      
+
       PDF.save('AccountRole_Data.pdf');
       PDF.output('dataurlnewwindow');
-  });     
+  });
 }
 
 

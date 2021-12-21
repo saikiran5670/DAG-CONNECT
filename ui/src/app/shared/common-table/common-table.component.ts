@@ -36,13 +36,28 @@ export class CommonTableComponent implements OnInit {
   ) {
     this.updateDataSource();
   }
-  
+
   updateDataSource() {
     this.dataSource = new MatTableDataSource(this.data.tableData);
-    setTimeout(() => {
+    setTimeout(()=>{
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+      this.dataSource.sortData = (data:String[], sort: MatSort) => {
+        const isAsc = sort.direction === "asc";
+        let columnName = this.sort.active;
+        return data.sort((a : any, b: any) => {
+          return this.compare(a[sort.active], b[sort.active], isAsc,columnName);
+        });
+      }
+
     });
+  }
+  compare(a:Number | String, b: Number | String, isAsc: boolean, columnName: any){
+
+      if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toUpperCase();
+      if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toUpperCase();
+
+      return (a< b ? -1 : 1) * (isAsc ? 1: -1);
   }
 
   onClose(val: boolean) {
@@ -54,7 +69,7 @@ export class CommonTableComponent implements OnInit {
   public onEsc() {
     this.onClose(false);
   }
-  
+
   ngAfterViewInit() {
     //this.dataSource.paginator = this.paginator;
     //this.dataSource.sort = this.sort;

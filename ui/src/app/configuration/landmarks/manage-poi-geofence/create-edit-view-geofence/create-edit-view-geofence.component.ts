@@ -280,11 +280,11 @@ export class CreateEditViewGeofenceComponent implements OnInit {
       Util.applySearchFilter(this.dataSourceForPOI, this.displayedColumns ,this.filterValue );
   });
 }
-  compare(a: Number | String, b: Number | String, isAsc: boolean, columnName: any) {
-
-    if(!(a instanceof Number)) a = a.toString().toUpperCase();
-    if(!(b instanceof Number)) b = b.toString().toUpperCase();
-
+  compare(a: any, b: any, isAsc: boolean, columnName: any) {
+    if(columnName === 'name' || columnName === 'categoryName' || columnName === 'categoryName' || columnName === 'address'){
+    if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toUpperCase();
+    if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toUpperCase();
+    }
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
 }
 
@@ -868,11 +868,11 @@ export class CreateEditViewGeofenceComponent implements OnInit {
     window.addEventListener('resize', () => this.hereMap.getViewPort().resize());
     var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.hereMap));
     this.ui = H.ui.UI.createDefault(this.hereMap, this.defaultLayers);
-    
+
     this.ui.removeControl("mapsettings");
     // create custom one
     var ms = new H.ui.MapSettingsControl({
-        baseLayers : [ { 
+        baseLayers : [ {
           label: this.translationData.lblNormal || "Normal", layer: this.defaultLayers.raster.normal.map
         },{
           label: this.translationData.lblSatellite || "Satellite", layer: this.defaultLayers.raster.satellite.map
