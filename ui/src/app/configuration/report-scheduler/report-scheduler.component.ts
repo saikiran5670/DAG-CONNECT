@@ -348,8 +348,8 @@ getUnique(arr, comp) {
 
   compare(a: Number  |String, b: Number |String, isAsc: boolean, columnName: any){
     if(columnName == "recipientList"){
-      if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
-      if(!(b instanceof Number)) b= b.replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
+      if(!(a instanceof Number)) a = a.replace(/\s/g, '').replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
+      if(!(b instanceof Number)) b= b.replace(/\s/g, '').replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
     }
     return (a < b ? -1 : 1) * (isAsc ? 1 :-1);
   }
