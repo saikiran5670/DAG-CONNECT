@@ -59,7 +59,7 @@ export class UserDetailTableComponent implements OnInit {
 
   compare(a: any, b: any, isAsc: boolean, columnName: any) {
 
-    if(columnName === "roleList" || columnName === "accountGroupList" ||  columnName === "roles") { //Condition added for roles columns
+    if(columnName === "roleList" || columnName === "accountGroupList" ||  columnName === "roles" || columnName === "licensePlateNumber") { //Condition added for roles columns
       a=  a.toString().toUpperCase() ;
       b= b.toString().toUpperCase();
     }
