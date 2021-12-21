@@ -1291,6 +1291,21 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
   }
     if(this.TripsChartType == 'Line')
     {
+      let data2 = this.translationData.lblNoOfTrips
+      this.lineChartOptions.scales.yAxes= [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          steps: 10,
+          stepSize: 5,
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: data2    
+        }
+      }];
     this.lineChartOptions.scales.xAxes= [{
         type:'time',
         time:
@@ -1303,7 +1318,7 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
            },
         }
       }];
-      this.lineChartOptions.scales.yAxes[0].scaleLabel.labelString = this.translationData.lblNoOfTrips || 'No Of Trips'
+      // this.lineChartOptions.scales.yAxes[0].scaleLabel.labelString = this.translationData.lblNoOfTrips || 'No Of Trips'
     this.lineChartData2= [{ data: this.barData, label: this.translationData.lblNoOfTrips || 'No Of Trips' }, ];
   }
     if(this.Co2ChartType == 'Line')

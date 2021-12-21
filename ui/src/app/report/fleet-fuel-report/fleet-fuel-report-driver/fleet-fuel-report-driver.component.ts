@@ -1224,7 +1224,7 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
         hoverBackgroundColor: '#7BC5EC', }];
   }
   if(this.Co2ChartType == 'Bar'){
-    let data2 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblTon || 'Ton') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblTon || 'Ton') : (this.translationData.lblTon || 'Ton');
+    let data2 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton || 'Ton') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblton || 'Ton') : (this.translationData.lblton || 'Ton');
     this.barChartOptions4.scales.yAxes= [{
       id: "y-axis-1",
       position: 'left',
@@ -1397,6 +1397,22 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
   }
     if(this.TripsChartType == 'Line')
     {
+      let data2 = this.translationData.lblNoOfTrips || 'Number Of Trips';
+
+      this.lineChartOptions.scales.yAxes= [{
+      id: "y-axis-1",
+      position: 'left',
+      type: 'linear',
+      ticks: {
+        steps: 10,
+        stepSize: 5,
+        beginAtZero:true
+      },
+      scaleLabel: {
+        display: true,
+        labelString: data2
+      }
+    }];
       this.lineChartOptions.scales.xAxes= [{
         type:'time',
         time:
