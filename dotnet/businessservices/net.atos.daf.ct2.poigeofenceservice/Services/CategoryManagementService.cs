@@ -8,6 +8,7 @@ using net.atos.daf.ct2.poigeofence;
 using net.atos.daf.ct2.poigeofence.entity;
 using net.atos.daf.ct2.poigeofences;
 using net.atos.daf.ct2.poigeofenceservice.entity;
+using net.atos.daf.ct2.poigeofenceservice.Entity;
 
 namespace net.atos.daf.ct2.poigeofenservice
 {
@@ -68,7 +69,7 @@ namespace net.atos.daf.ct2.poigeofenservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(AddCategory)}: With Error:-", ex);
                 //response.Message = "Not Deleted";
             }
             return await Task.FromResult(response);
@@ -110,7 +111,7 @@ namespace net.atos.daf.ct2.poigeofenservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(EditCategory)}: With Error:-", ex);
                 //response.Message = "Not Deleted";
             }
             return await Task.FromResult(response);
@@ -152,7 +153,7 @@ namespace net.atos.daf.ct2.poigeofenservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(DeleteCategory)}: With Error:-", ex);
             }
             return await Task.FromResult(response);
         }
@@ -190,7 +191,7 @@ namespace net.atos.daf.ct2.poigeofenservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetCategoryType)}: With Error:-", ex);
             }
             return await Task.FromResult(response);
         }
@@ -240,7 +241,7 @@ namespace net.atos.daf.ct2.poigeofenservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetCategoryDetails)}: With Error:-", ex);
             }
             return await Task.FromResult(response);
         }
@@ -315,9 +316,9 @@ namespace net.atos.daf.ct2.poigeofenservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetCategoryWisePOI)}: With Error:-", ex);
                 objCategoryWisePOIResponse.Code = Responsecode.Failed;
-                objCategoryWisePOIResponse.Message = string.Format(POIGeoFenceServiceConstants.GET_POI_DETAILS_FAILURE_MSG, ex.Message);
+                objCategoryWisePOIResponse.Message = string.Format(POIGeoFenceServiceConstants.GET_POI_DETAILS_FAILURE_MSG, POIGeofenceConstants.INTERNAL_SERVER_MSG);
             }
             return await Task.FromResult(objCategoryWisePOIResponse);
         }

@@ -75,7 +75,7 @@ namespace net.atos.daf.ct2.organizationservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetAllOrganizations)}: With Error:-", ex);
                 throw;
             }
         }
@@ -105,11 +105,11 @@ namespace net.atos.daf.ct2.organizationservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(CreateRelationship)}: With Error:-", ex);
                 return await Task.FromResult(new RelationshipCreateResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Organization Relationship Creation failed due to - " + ex.Message,
+                    Message = OrganizationConstants.INTERNAL_SERVER_MSG,
                     Relationship = null
                 });
             }
@@ -141,11 +141,11 @@ namespace net.atos.daf.ct2.organizationservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(UpdateRelationship)}: With Error:-", ex);
                 return await Task.FromResult(new RelationshipCreateResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Organization Relationship Updation failed due to - " + ex.Message,
+                    Message = OrganizationConstants.INTERNAL_SERVER_MSG,
                     Relationship = null
                 });
             }
@@ -186,10 +186,10 @@ namespace net.atos.daf.ct2.organizationservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetRelationship)}: With Error:-", ex);
                 return await Task.FromResult(new RelationshipGetResponse
                 {
-                    Message = "Exception " + ex.Message,
+                    Message = OrganizationConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }
@@ -218,11 +218,11 @@ namespace net.atos.daf.ct2.organizationservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(DeleteRelationship)}: With Error:-", ex);
                 return await Task.FromResult(new RelationshipDeleteResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Relationship Deletion Failed due to - " + ex.Message,
+                    Message = OrganizationConstants.INTERNAL_SERVER_MSG,
 
                 });
             }
@@ -310,11 +310,11 @@ namespace net.atos.daf.ct2.organizationservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(CreateOrgRelationship)}: With Error:-", ex);
                 return await Task.FromResult(new OrgRelationshipCreateResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Relationship Create Failed due to - " + ex.Message,
+                    Message = OrganizationConstants.INTERNAL_SERVER_MSG,
                 });
             }
         }
@@ -338,10 +338,11 @@ namespace net.atos.daf.ct2.organizationservice
             }
             catch (Exception ex)
             {
+                _logger.Error($"{nameof(EndOrgRelationShip)}: With Error:-", ex);
                 return await Task.FromResult(new EndOrgRelationshipResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Relationship Create Failed due to - " + ex.Message,
+                    Message = OrganizationConstants.INTERNAL_SERVER_MSG,
 
                 });
                 throw;
@@ -362,11 +363,11 @@ namespace net.atos.daf.ct2.organizationservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(AllowChaining)}: With Error:-", ex);
                 return await Task.FromResult(new ChainingResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Allow chaining failed due to - " + ex.Message,
+                    Message = OrganizationConstants.INTERNAL_SERVER_MSG,
 
                 });
                 throw;
@@ -411,10 +412,10 @@ namespace net.atos.daf.ct2.organizationservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetOrgRelationshipMapping)}: With Error:-", ex);
                 return await Task.FromResult(new OrgRelationshipGetResponse
                 {
-                    Message = "Exception " + ex.Message,
+                    Message = OrganizationConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }
@@ -446,11 +447,11 @@ namespace net.atos.daf.ct2.organizationservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Create)}: With Error:-", ex);
                 return await Task.FromResult(new OrganizationCreateData
                 {
                     Code = Responcecode.Failed,
-                    Message = "Organization Creation failed due to - " + ex.Message,
+                    Message = OrganizationConstants.INTERNAL_SERVER_MSG,
                     Organization = null
                 });
             }
@@ -487,11 +488,11 @@ namespace net.atos.daf.ct2.organizationservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Update)}: With Error:-", ex);
                 return await Task.FromResult(new OrganizationUpdateData
                 {
                     Code = Responcecode.Failed,
-                    Message = "Organization update failed due to - " + ex.Message,
+                    Message = OrganizationConstants.INTERNAL_SERVER_MSG,
                     Organization = null
                 });
             }
@@ -588,11 +589,11 @@ namespace net.atos.daf.ct2.organizationservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetAllOrganizationsForContext)}: With Error:-", ex);
                 return await Task.FromResult(new GetAllContextOrgsResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Get all context orgs failed due to - " + ex.Message
+                    Message = OrganizationConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -616,11 +617,11 @@ namespace net.atos.daf.ct2.organizationservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(CreatePreference)}: With Error:-", ex);
                 return await Task.FromResult(new AccountPreferenceResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Preference Creation Failed due to - " + ex.Message,
+                    Message = OrganizationConstants.INTERNAL_SERVER_MSG,
                     AccountPreference = null
                 });
             }
@@ -644,11 +645,11 @@ namespace net.atos.daf.ct2.organizationservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(UpdatePreference)}: With Error:-", ex);
                 return await Task.FromResult(new AccountPreferenceResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Preference update Failed due to - " + ex.Message,
+                    Message = OrganizationConstants.INTERNAL_SERVER_MSG,
                     AccountPreference = null
                 });
             }
@@ -675,11 +676,11 @@ namespace net.atos.daf.ct2.organizationservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(DeletePreference)}: With Error:-", ex);
                 return await Task.FromResult(new AccountPreferenceResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Preference Deletion Failed due to - " + ex.Message,
+                    Message = OrganizationConstants.INTERNAL_SERVER_MSG,
                     AccountPreference = null
                 });
             }
@@ -703,11 +704,11 @@ namespace net.atos.daf.ct2.organizationservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetPreference)}: With Error:-", ex);
                 return await Task.FromResult(new OrganizationPreferenceResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Organization Preference Get Failed due to - " + ex.Message
+                    Message = OrganizationConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
