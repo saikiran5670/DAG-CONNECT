@@ -233,16 +233,18 @@ export class ManageGroupComponent implements OnInit {
 
   editViewlandmarkGroup(row: any, actionType: any){
     this.tabVisibility.emit(false);
+
+    this.actionType = actionType;
+    this.selectedRowData = row;
+    this.createViewEditStatus = true;
     let objData = {
-      organizationid : this.organizationId,
-      groupid : row.id
-   };
-      this.landmarkGroupService.getLandmarkGroups(objData).subscribe((groupDetails) => {
-      this.titleText = (actionType == 'view') ? (this.translationData.lblViewGroupDetails || "View Group Details") : (this.translationData.lblEditGroupDetails || "Edit Group Details") ;
-      this.selectedRowData = groupDetails["groups"][0];
-      this.actionType = actionType;
-      this.createViewEditStatus = true;
-    });
+    organizationid : this.organizationId,
+    groupid : row.id
+    };
+    this.landmarkGroupService.getLandmarkGroups(objData).subscribe((groupDetails) => {
+    this.titleText = (actionType == 'view') ? (this.translationData.lblViewGroupDetails || "View Group Details") : (this.translationData.lblEditGroupDetails || "Edit Group Details") ;
+    this.selectedRowData = groupDetails["groups"][0];
+     });
   }
 
   getDeletMsg(groupName: any){

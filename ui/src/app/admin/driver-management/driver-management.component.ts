@@ -25,7 +25,7 @@ const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.
 })
 
 export class DriverManagementComponent implements OnInit {
-  columnCodes = ['driverIdExt', 'fullName', 'email', 'viewstatus', 'action'];
+  columnCodes = ['driverIdExt', 'fullName', 'email', 'status', 'action'];
   columnLabels = ['DriverId','DriverName', 'EmailID', 'Consent', 'Action'];
   @ViewChild('gridComp') gridComp: DataTableComponent;
   driverRestData: any = [];
@@ -716,10 +716,17 @@ export class DriverManagementComponent implements OnInit {
           // this.updateGridData(this.initData);
         // }
         if(res.consentMsg) {
+          var msg = '';
           if(dialogConfig.data.consentType == 'H' || dialogConfig.data.consentType == 'I') {
-            var msg = res.tableData.length + " drivers were successfully Opted-In.";
+            if(res.tableData.length === 1)
+              msg = res.consentMsg;
+            else
+              msg = res.tableData.length + " drivers were successfully Opted-In.";
           } else if(dialogConfig.data.consentType == 'U') {
-            var msg = res.tableData.length + " drivers were successfully Opted-Out.";
+            if(res.tableData.length === 1)
+              msg = res.consentMsg;
+            else
+              msg = res.tableData.length + " drivers were successfully Opted-Out.";
           }
         }
         this.successMsgBlink(msg);

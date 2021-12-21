@@ -10,6 +10,7 @@ using net.atos.daf.ct2.httpclientfactory.Entity.ota22;
 using net.atos.daf.ct2.httpclientservice.Entity.ota22;
 using net.atos.daf.ct2.httpclientfactory.entity.ota14;
 using net.atos.daf.ct2.httpclientservice.Entity.ota14;
+using net.atos.daf.ct2.httpclientservice.Entity;
 
 namespace net.atos.daf.ct2.httpclientservice
 {
@@ -54,11 +55,11 @@ namespace net.atos.daf.ct2.httpclientservice
             }
             catch (Exception ex)
             {
-                _logger.Error($"HttpClientManagementService:GetVehiclesStatusOverview.Error:-{ex.Message}");
+                _logger.Error($"{nameof(GetVehiclesStatusOverview)}: With Error:-", ex);
                 return await Task.FromResult(new VehiclesStatusOverviewResponse
                 {
                     HttpStatusCode = 500,
-                    Message = $"HttpClientManagementService:GetVehiclesStatusOverview- Error:-{ex.Message}"
+                    Message = HttpClientConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -76,11 +77,11 @@ namespace net.atos.daf.ct2.httpclientservice
             }
             catch (Exception ex)
             {
-                _logger.Error($"HttpClientManagementService:GetVehicleUpdateDetails.Error:-{ex.Message}");
+                _logger.Error($"{nameof(GetVehicleUpdateDetails)}: With Error:-", ex);
                 return await Task.FromResult(new VehicleUpdateDetailsResponse
                 {
                     HttpStatusCode = 500,
-                    Message = $"HttpClientManagementService:GetVehicleUpdateDetails- Error:-{ex.Message}"
+                    Message = HttpClientConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -99,11 +100,11 @@ namespace net.atos.daf.ct2.httpclientservice
             }
             catch (Exception ex)
             {
-                _logger.Error($"HttpClientManagementService:GetSoftwareReleaseNote.Error:-{ex.Message}");
+                _logger.Error($"{nameof(GetSoftwareReleaseNote)}: With Error:-", ex);
                 return await Task.FromResult(new CampiagnSoftwareReleaseNoteResponse
                 {
                     HttpStatusCode = 500,
-                    Message = $"HttpClientManagementService:GetSoftwareReleaseNote- Error:-{ex.Message}"
+                    Message = HttpClientConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -120,11 +121,11 @@ namespace net.atos.daf.ct2.httpclientservice
             }
             catch (Exception ex)
             {
-                _logger.Error($"HttpClientManagementService:GetSoftwareReleaseNote.Error:-{ex.Message}");
+                _logger.Error($"{nameof(GetScheduleSoftwareUpdate)}: With Error:-", ex);
                 return await Task.FromResult(new ScheduleSoftwareUpdateResponse
                 {
                     HttpStatusCode = 500,
-                    Message = $"HttpClientManagementService:GetSoftwareReleaseNote- Error:-{ex.Message}"
+                    Message = HttpClientConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
