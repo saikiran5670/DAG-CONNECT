@@ -264,6 +264,9 @@ export class DriverTimeDetailComponent implements OnInit {
           panning: true,
           panKey: 'shift'
         },
+        credits: {
+          enabled: false
+        },
         // exporting: {
         //   enabled: false
         // },
