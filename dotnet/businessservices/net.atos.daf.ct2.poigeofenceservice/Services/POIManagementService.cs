@@ -9,6 +9,7 @@ using net.atos.daf.ct2.poigeofence;
 using net.atos.daf.ct2.poigeofence.entity;
 using net.atos.daf.ct2.poigeofenceservice.common;
 using net.atos.daf.ct2.poigeofenceservice.entity;
+using net.atos.daf.ct2.poigeofenceservice.Entity;
 using net.atos.daf.ct2.poiservice;
 
 namespace net.atos.daf.ct2.poigeofenceservice
@@ -66,11 +67,11 @@ namespace net.atos.daf.ct2.poigeofenceservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetAllGobalPOI)}: With Error:-", ex);
                 return await Task.FromResult(new POIResponseList
                 {
                     Code = Responsecode.Failed,
-                    Message = $"Exception while retrieving data from GetAllGobalPOI : {ex.Message}"
+                    Message = POIGeofenceConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -96,7 +97,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetAllPOI)}: With Error:-", ex);
                 throw;
             }
         }
@@ -140,11 +141,11 @@ namespace net.atos.daf.ct2.poigeofenceservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(CreatePOI)}: With Error:-", ex);
                 return await Task.FromResult(new POIResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "POI Creation Failed due to - " + ex.Message,
+                    Message = POIGeofenceConstants.INTERNAL_SERVER_MSG,
                 });
             }
         }
@@ -181,11 +182,11 @@ namespace net.atos.daf.ct2.poigeofenceservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(UpdatePOI)}: With Error:-", ex);
                 return await Task.FromResult(new POIResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "POI Updation Failed due to - " + ex.Message,
+                    Message = POIGeofenceConstants.INTERNAL_SERVER_MSG,
                 });
             }
             return response;
@@ -212,7 +213,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(DeletePOI)}: With Error:-", ex);
                 //response.Message = "Not Deleted";
             }
             return await Task.FromResult(response);
@@ -249,7 +250,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(DeletePOIBulk)}: With Error:-", ex);
                 //response.Message = "Not Deleted";
             }
             return await Task.FromResult(response);
@@ -285,7 +286,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(DownloadPOIForExcel)}: With Error:-", ex);
                 throw;
             }
         }
@@ -310,11 +311,11 @@ namespace net.atos.daf.ct2.poigeofenceservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(UploadPOIExcel)}: With Error:-", ex);
                 return await Task.FromResult(new POIUploadResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "POI Creation Failed due to - " + ex.Message,
+                    Message = POIGeofenceConstants.INTERNAL_SERVER_MSG,
                 });
             }
         }
@@ -342,11 +343,11 @@ namespace net.atos.daf.ct2.poigeofenceservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetAllTripDetails)}: With Error:-", ex);
                 return await Task.FromResult(new TripResponce
                 {
                     Code = Responsecode.Failed,
-                    Message = "GetAllTripDetails get failed due to - " + ex.Message
+                    Message = POIGeofenceConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -365,11 +366,11 @@ namespace net.atos.daf.ct2.poigeofenceservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(UpdateTripAddress)}: With Error:-", ex);
                 return await Task.FromResult(new AddTripAddressResponse
                 {
                     Responsecode = Responsecode.Failed,
-                    Message = "Update tripdetail.trip_statistics start position and end position get failed due to - " + ex.Message
+                    Message = POIGeofenceConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
