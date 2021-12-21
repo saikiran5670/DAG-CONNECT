@@ -7,6 +7,7 @@ namespace net.atos.daf.ct2.reportschedulerservice.Entity
 {
     public static class ReportSchedulerConstant
     {
+        public const string INTERNAL_SERVER_MSG = "Error occured, Please check with DAF IT team for more info.";
         public const string REPORT_SCHEDULER_FEATURE_NAME = "Configuration.ReportScheduler";
         public const string REPORT_SCHEDULER_GET_SUCCESS_MSG = "Report Scheduler data retrieved.";
         public const string REPORT_SCHEDULER_GET_CALLED_MSG = "Get method in report scheduler called.";

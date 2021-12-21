@@ -9,6 +9,7 @@ using net.atos.daf.ct2.features;
 using net.atos.daf.ct2.features.entity;
 using net.atos.daf.ct2.role;
 using net.atos.daf.ct2.role.entity;
+using net.atos.daf.ct2.roleservice.entity;
 
 namespace net.atos.daf.ct2.roleservice
 {
@@ -63,10 +64,10 @@ namespace net.atos.daf.ct2.roleservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Create)}: With Error:-", ex);
                 return await Task.FromResult(new RoleResponce
                 {
-                    Message = "Exception :-" + ex.Message,
+                    Message = RoleConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }
@@ -103,10 +104,10 @@ namespace net.atos.daf.ct2.roleservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Update)}: With Error:-", ex);
                 return await Task.FromResult(new RoleResponce
                 {
-                    Message = "Exception :-" + ex.Message,
+                    Message = RoleConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }
@@ -151,10 +152,10 @@ namespace net.atos.daf.ct2.roleservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Delete)}: With Error:-", ex);
                 return await Task.FromResult(new DeleteRoleResponce
                 {
-                    Message = "Exception :-" + ex.Message,
+                    Message = RoleConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }
@@ -199,10 +200,10 @@ namespace net.atos.daf.ct2.roleservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Get)}: With Error:-", ex);
                 return await Task.FromResult(new RoleListResponce
                 {
-                    Message = "Exception " + ex.Message,
+                    Message = RoleConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }
@@ -257,10 +258,10 @@ namespace net.atos.daf.ct2.roleservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetCodes)}: With Error:-", ex);
                 return await Task.FromResult(new RoleCodeResponse
                 {
-                    Message = "Exception " + ex.Message,
+                    Message = RoleConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }

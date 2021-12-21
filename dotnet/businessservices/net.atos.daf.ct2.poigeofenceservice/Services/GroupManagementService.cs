@@ -11,7 +11,7 @@ using net.atos.daf.ct2.poigeofence.entity;
 using net.atos.daf.ct2.poigeofenceservice.entity;
 using net.atos.daf.ct2.kafkacdc;
 using net.atos.daf.ct2.poigeofenceservice.common;
-
+using net.atos.daf.ct2.poigeofenceservice.Entity;
 
 namespace net.atos.daf.ct2.poigeofenceservice.Services
 {
@@ -80,9 +80,9 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Create)}: With Error:-", ex);
                 //response.Message = "Not Deleted";
-                response.Message = ex.ToString();
+                response.Message = POIGeofenceConstants.INTERNAL_SERVER_MSG;
                 response.Code = Responcecodes.Failed;
             }
             return await Task.FromResult(response);
@@ -136,9 +136,9 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Update)}: With Error:-", ex);
                 //response.Message = "Not Deleted";
-                response.Message = ex.ToString();
+                response.Message = POIGeofenceConstants.INTERNAL_SERVER_MSG;
                 response.Code = Responcecodes.Failed;
             }
             return await Task.FromResult(response);
@@ -168,9 +168,9 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Delete)}: With Error:-", ex);
                 //response.Message = "Not Deleted";
-                response.Message = ex.ToString();
+                response.Message = POIGeofenceConstants.INTERNAL_SERVER_MSG;
                 response.Code = Responcecodes.Failed;
             }
             return await Task.FromResult(response);
@@ -227,8 +227,8 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                response.Message = ex.ToString();
+                _logger.Error($"{nameof(Get)}: With Error:-", ex);
+                response.Message = POIGeofenceConstants.INTERNAL_SERVER_MSG;
                 response.Code = Responcecodes.Failed;
             }
             return await Task.FromResult(response);
