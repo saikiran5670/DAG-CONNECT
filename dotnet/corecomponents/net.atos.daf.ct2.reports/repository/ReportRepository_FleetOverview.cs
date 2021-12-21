@@ -473,7 +473,7 @@ namespace net.atos.daf.ct2.reports.repository
                     CWVR.vin as lcts_vin,
                     'N' as lcts_VehicleDrivingStatusType,
                     case when warning_class >=4 and warning_class <= 7 then 'T'
-                    when warning_class >=8 and warning_class <= 10 then 'V'
+                    when warning_class >=8 and warning_class <= 11 then 'V'
                     else 'N' end as lcts_VehicleHealthStatusType,                                
                     CWVR.warning_class as lcts_LatestWarningClass,
                     CWVR.warning_number as lcts_LatestWarningNumber,
