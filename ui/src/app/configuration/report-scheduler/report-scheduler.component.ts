@@ -20,14 +20,14 @@ import { Util } from 'src/app/shared/util';
 })
 
 export class ReportSchedulerComponent implements OnInit {
-  columnCodes = ['reportName','vehicleGroupAndVehicleList','frequencyTypeName','recipientList','driverList','lastScheduleRunDate','nextScheduleRunDate', 'viewstatus', 'action'];
+  columnCodes = ['reportName','vehicleGroupAndVehicleList','frequencyTypeName','recipientList','driverList','lastScheduleRunDate','nextScheduleRunDate', 'status', 'action'];
   columnLabels = ['ReportType','VehicleGroupVehicle', 'Frequency', 'Recipient', 'Driver', 'LastRun', 'NextRun', 'Status', 'Action'];
   // displayedColumns: string[] = ['reportName','vehicleGroupAndVehicleList','frequencyType','recipientList','driverList','lastScheduleRunDate','nextScheduleRunDate','status','action'];
   grpTitleVisible : boolean = false;
   errorMsgVisible: boolean = false;
   displayMessage: any;
   createEditStatus: boolean = false;
-  viewStatus: boolean= false;
+  status: boolean= false;
   showLoadingIndicator: any = false;
   actionType: any = '';
   selectedRowData: any= [];
@@ -191,7 +191,7 @@ export class ReportSchedulerComponent implements OnInit {
 
   onBackToPage(objData){
     this.createEditStatus = objData.actionFlag;
-    this.viewStatus = objData.actionFlag;
+    this.status = objData.actionFlag;
     if(objData.successMsg && objData.successMsg != ''){
       this.successMsgBlink(objData.successMsg);
     }
@@ -348,8 +348,8 @@ getUnique(arr, comp) {
 
   compare(a: Number  |String, b: Number |String, isAsc: boolean, columnName: any){
     if(columnName == "recipientList"){
-      if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
-      if(!(b instanceof Number)) b= b.replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
+      if(!(a instanceof Number)) a = a.replace(/\s/g, '').replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
+      if(!(b instanceof Number)) b= b.replace(/\s/g, '').replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
     }
     return (a < b ? -1 : 1) * (isAsc ? 1 :-1);
   }
@@ -409,7 +409,7 @@ getUnique(arr, comp) {
   rowData: any;
   onViewReportScheduler(row: any, action: any) {
     this.rowsData= [];
-    this.viewStatus= true;
+    this.status= true;
     this.actionType = action;
     this.rowsData.push(row);
     this.rowData = row;
@@ -425,7 +425,7 @@ getUnique(arr, comp) {
 
   editReport(){
     this.createEditStatus = false;
-    this.viewStatus = false;
+    this.status = false;
     this.onEditReportScheduler(this.rowData, '');
   }
 

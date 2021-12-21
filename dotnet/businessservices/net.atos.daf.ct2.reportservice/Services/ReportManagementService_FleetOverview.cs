@@ -136,11 +136,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetFleetOverviewFilter)}: With Error:-", ex);
                 return await Task.FromResult(new FleetOverviewFilterResponse
                 {
                     Code = Responsecode.InternalServerError,
-                    Message = ex.Message
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -482,11 +482,11 @@ namespace net.atos.daf.ct2.reportservice.Services
 
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetFleetOverviewDetails)}: With Error:-", ex);
                 return await Task.FromResult(new FleetOverviewDetailsResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "GetFleetOverviewDetails get failed due to - " + ex.Message
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -590,11 +590,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetVehicleHealthReport)}: With Error:-", ex);
                 return await Task.FromResult(new VehicleHealthStatusListResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = $"GetVehicleHealthReport get failed due to - {ex.Message}"
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 });
             }
         }

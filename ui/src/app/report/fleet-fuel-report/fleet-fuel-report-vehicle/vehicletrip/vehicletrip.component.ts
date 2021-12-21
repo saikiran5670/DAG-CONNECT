@@ -249,6 +249,7 @@ herePOIList: any = [];
 displayPOIList: any = [];
 internalSelection: boolean = false;
 herePOIArr: any = [];
+chartDataSet:any=[];
 @ViewChild("map")
 public mapElement: ElementRef;
 tripTraceArray: any = [];
@@ -1188,10 +1189,12 @@ createEndMarker(){
       this.hideloader();
     });
     this.reportService.getGraphDetails(getFleetFuelObj).subscribe((graphData: any) => {
-      this.setChartData(graphData["fleetfuelGraph"]);
-      this.graphData = graphData;
-      this.showGraph = true;
-    });
+      this.chartDataSet=[];
+     this.chartDataSet = this.reportMapService.getChartData(graphData["fleetfuelGraph"], this.prefTimeZone);  
+     this.setChartData(this.chartDataSet);
+     this.graphData = graphData;
+     this.showGraph = true;
+   });
   }
    
  
@@ -1603,9 +1606,10 @@ createEndMarker(){
      graphData.forEach(e => {
       var date = new Date(e.date);
       //let resultDate = `${date.getDate()}/${date.getMonth()+1}/ ${date.getFullYear()}`;
-      let resultDate= Util.getMillisecondsToUTCDate(date, this.prefTimeZone); //Util.convertDateToUtc(date); 
-      resultDate =  this.datePipe.transform(resultDate,'MM/dd/yyyy'); 
-
+      // let resultDate= Util.getMillisecondsToUTCDate(date, this.prefTimeZone); //Util.convertDateToUtc(date); 
+      // resultDate =  this.datePipe.transform(resultDate,'MM/dd/yyyy');  
+      let resultDate = e.date;
+     
      // this.barChartLabels.push(resultDate);
       this.barData.push({ x:resultDate , y:e.numberofTrips });
       // let convertedFuelConsumed = e.fuelConsumed / 1000;
@@ -1810,7 +1814,7 @@ createEndMarker(){
         hoverBackgroundColor: '#7BC5EC', }];
   }
   if(this.ConsumptionChartType == 'Bar'){
-    let data4 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblLtrsperkm || 'Ltrs /100 km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblMilesPerGallon || 'Miles per gallon') : (this.translationData.lblMilesPerGallon || 'Miles per gallon');
+    let data4 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || 'Ltrs /100 km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblMilesPerGallon || 'Miles per gallon') : (this.translationData.lblMilesPerGallon || 'Miles per gallon');
     this.barChartOptions5.scales.yAxes= [{
       id: "y-axis-1",
       position: 'left',
@@ -1875,6 +1879,21 @@ createEndMarker(){
   }
     if(this.TripsChartType == 'Line')
     {
+      let data2 = this.translationData.lblNoOfTrips
+      this.lineChartOptions.scales.yAxes= [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          steps: 10,
+          stepSize: 5,
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: data2    
+        }
+      }];
       this.lineChartOptions.scales.xAxes= [{
         type:'time',
         time:
@@ -1887,11 +1906,11 @@ createEndMarker(){
            },             
         }
     }]; 
-    this.lineChartData2= [{ data: this.barData, label: 'No Of Trips' }, ];
+    this.lineChartData2= [{ data: this.barData, label: this.translationData.lblNoOfTrips }, ];
   }
     if(this.Co2ChartType == 'Line')
     {
-     let data2 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblTon || 'Ton') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblTon || 'Ton') : (this.translationData.lblTon || 'Ton');
+     let data2 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton || 'Ton') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblton || 'Ton') : (this.translationData.lblton || 'Ton');
      this.lineChartOptions4.scales.yAxes= [{
       id: "y-axis-1",
       position: 'left',
@@ -1950,7 +1969,7 @@ createEndMarker(){
   }
     if(this.ConsumptionChartType == 'Line')
     {
-      let data4 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblLtrsperkm || 'Ltrs /100 km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblMilesPerGallon || 'Miles per gallon') : (this.translationData.lblMilesPerGallon || 'Miles per gallon');
+      let data4 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || 'Ltrs /100 km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblMilesPerGallon || 'Miles per gallon') : (this.translationData.lblMilesPerGallon || 'Miles per gallon');
       this.lineChartOptions5.scales.yAxes= [{
         id: "y-axis-1",
         position: 'left',

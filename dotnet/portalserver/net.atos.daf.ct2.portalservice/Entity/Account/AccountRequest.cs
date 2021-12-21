@@ -59,6 +59,7 @@ namespace net.atos.daf.ct2.portalservice.Account
     {
         public string EmailId { get; set; }
         public string Password { get; set; }
+        public string OldPassword { get; set; }
     }
 
     public class AccountOrganizationRequest

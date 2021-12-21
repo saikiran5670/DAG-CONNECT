@@ -18,5 +18,6 @@ namespace net.atos.daf.ct2.account
         Task<SSOResponse> ValidateSSOToken(string tokenGuid);
         Task<SSOResponseForNamelist> ValidateSSOTokenForNamelist(string tokenGuid);
         Task<AccountIdentity> ValidateUser(Identity user);
+        Task<bool> IsValidateCurrentPassword(Identity user);
     }
 }

@@ -83,8 +83,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, "Internal Server Error.");
+                _logger.Error($"{nameof(GetTranslations)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -124,8 +124,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, "Internal Server Error.");
+                _logger.Error($"{nameof(GetCommonTranslations)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -165,8 +165,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, "Internal Server Error.");
+                _logger.Error($"{nameof(GetLangagugeTranslationByKey)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -199,8 +199,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, "Failed to fetch translations");
+                _logger.Error($"{nameof(GetKeyTranslationByLanguageCode)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -239,8 +239,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, "Failed to fetch translations for dropdown");
+                _logger.Error($"{nameof(GetTranslationsForDropDowns)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
 
         }
@@ -291,8 +291,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, "Failed to fetch translations");
+                _logger.Error($"{nameof(GetTranslationsFormultipleDropDowns)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
 
         }
@@ -327,8 +327,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, "Failed to fetch translations");
+                _logger.Error($"{nameof(GetTranslationsPreferencDropDowns)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -358,8 +358,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, "Failed to fetch langauges");
+                _logger.Error($"{nameof(GetAllLanguagecodes)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
 
 
@@ -411,8 +411,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, "Failed to upload translations details");
+                _logger.Error($"{nameof(InsertTranslationFileDetails)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -444,10 +444,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return StatusCode(500, "Failed to fetch file details");
                 }
             }
-            catch (Exception Ex)
+            catch (Exception ex)
             {
-                _logger.Error(null, Ex);
-                return StatusCode(500, "Failed to fetch file details");
+                _logger.Error($"{nameof(GetFileUploadDetails)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -500,12 +500,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                       "Translation service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                       "ImportDTCWarningData  method in Translation controller", 0, 0, JsonConvert.SerializeObject(request),
                        _userDetails);
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(ImportDTCWarningData)}: With Error:-", ex);
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
-                return StatusCode(500, "Please contact system administrator. " + ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
 
         }
@@ -539,8 +539,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetDTCWarningData)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -584,12 +584,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                      "Translation service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                      "UpdateDTCWarningData  method in Translation controller", 0, 0, JsonConvert.SerializeObject(request),
                       _userDetails);
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(UpdateDTCWarningData)}: With Error:-", ex);
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
-                return StatusCode(500, "Please contact system administrator. " + ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -649,12 +649,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                         "AddUserAcceptedTermCondition  method in Translation controller", 0, 0,
                                         JsonConvert.SerializeObject(request),
                                          _userDetails);
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(AddUserAcceptedTermCondition)}: With Error:-", ex);
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
-                return StatusCode(500, "Please contact system administrator. " + ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
 
         }
@@ -708,8 +708,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetAllVersionNo)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -743,8 +743,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetTermConditionForVersionNo)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -780,8 +780,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetAcceptedTermConditionByUser)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -818,8 +818,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetLatestTermCondition)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -859,8 +859,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, $"{ex.Message} {ex.StackTrace}");
+                _logger.Error($"{nameof(CheckUserAcceptedTermCondition)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -970,12 +970,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                      "Translation service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                      "UpdateDTCTranslationIcon  method in Translation controller", 0, 0, JsonConvert.SerializeObject(request),
                       _userDetails);
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(UpdateDTCTranslationIcon)}: With Error:-", ex);
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
-                return StatusCode(500, "Please contact system administrator. " + ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
 
         }
@@ -1015,8 +1015,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetDTCTranslationIcon)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 

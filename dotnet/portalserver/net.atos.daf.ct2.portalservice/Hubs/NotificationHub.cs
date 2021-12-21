@@ -231,7 +231,7 @@ namespace net.atos.daf.ct2.portalservice.hubs
                         if (response != null)
                         {
                             //Console.WriteLine(response.Message.Value);
-                            tripAlert = JsonConvert.DeserializeObject<TripAlert>(response.Message.Value);                            
+                            tripAlert = JsonConvert.DeserializeObject<TripAlert>(response.Message.Value);
 
                             if (tripAlert != null && (tripAlert.Alertid > 0 || (tripAlert.Alertid == 0 && tripAlert.CategoryType == "O")))
                             {
