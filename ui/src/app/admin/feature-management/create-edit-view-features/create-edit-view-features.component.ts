@@ -79,9 +79,9 @@ export class CreateEditViewFeaturesComponent implements OnInit {
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } /
     ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} /
     ${this.translationData.lblFeatureManagement ? this.translationData.lblFeatureManagement : "Feature Management"} /
-    ${(type == 'view') ? (this.translationData.lblViewFeatureRelationship ? this.translationData.lblViewFeatureRelationship : 'View Feature Relationship') :
-    (type == 'edit') ? (this.translationData.lblEditFeatureRelationship ? this.translationData.lblEditFeatureRelationship : 'Edit Feature Relationship') :
-    (this.translationData.lblNewFeatureRelationship ? this.translationData.lblNewFeatureRelationship : 'New Feature Relationship')}`;
+    ${(type == 'view') ? (this.translationData.lblViewFeatureRelationship ? this.translationData.lblViewFeatureRelationshipdetails || 'View Feature Relationship Details' : 'View Feature Relationship Details') :
+    (type == 'edit') ? (this.translationData.lblEditFeatureRelationship ? this.translationData.lblEditFeatureRelationshipdetails || 'Edit Feature Relationship Details' : 'Edit Feature Relationship Details') :
+    (this.translationData.lblNewFeatureRelationship ? this.translationData.lblNewFeatureRelationship : 'Add New Feature Relationship')}`;
   }
 
   loadGridData(tableData: any){
