@@ -51,10 +51,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
+                _logger.Error($"{nameof(GetReportDetails)}: With Error:-", ex);
                 return await Task.FromResult(new ReportDetailsResponse
                 {
                     Code = Responsecode.InternalServerError,
-                    Message = ex.Message
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -86,10 +87,10 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetUserPreferenceReportDataColumn)}: With Error:-", ex);
                 return new UserPreferenceDataColumnResponse
                 {
-                    Message = ex.Message,
+                    Message = ReportConstants.INTERNAL_SERVER_MSG,
                     Code = Responsecode.InternalServerError
                 };
             }
@@ -121,7 +122,7 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(CreateUserPreference)}: With Error:-", ex);
                 return await Task.FromResult(new UserPreferenceCreateResponse
                 {
                     Message = String.Format(ReportConstants.USER_PREFERENCE_CREATE_FAILURE_MSG, objUserPreferenceCreateRequest.AccountId, objUserPreferenceCreateRequest.ReportId),
@@ -166,11 +167,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetReportSearchParameter)}: With Error:-", ex);
                 return await Task.FromResult(new ReportSearchParameterResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "GetDriverActivityParameters failed due to - " + ex.Message
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 });
             }
             return await Task.FromResult(response);
