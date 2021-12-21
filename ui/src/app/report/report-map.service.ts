@@ -1653,7 +1653,7 @@ export class ReportMapService {
 
 
   getConvertedFleetFuelDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
-    gridData.forEach(element => {
+    gridData.forEach(element => {      
       element.convertedStartTime = this.getStartTime(element.startDate, dateFormat, timeFormat, timeZone,true);
       element.convertedEndTime = this.getEndTime(element.endDate, dateFormat, timeFormat, timeZone,true);
       element.convertedAverageSpeed = this.convertSpeedUnits(element.averageSpeed, unitFormat);
@@ -2013,7 +2013,30 @@ export class ReportMapService {
     }
     return _date; //returns dateTime if addTime is true or date if addTime is false
   }
-   
+  
+  getChartData(graphData: any, prefTimeZone:any){
+  let newGraphData:any =[]; 
+  graphData.forEach(element => {
+   // let newdate: any = Util.getMillisecondsToUTCDate(new Date(element.date), prefTimeZone); 
+   // newdate = Util.convertUtcToDateFormat2(newdate,'MM/DD/YYYY');
+    let newdate = Util.convertUtcToDateAndTimeFormat( element.date, prefTimeZone, 'MM/DD/YYYY');
+    element.date = newdate[0];
+    element.numberofTrips = 1;    
+    let graphDataIndex = newGraphData.map(item => item.date).indexOf(element.date);
+    if(graphDataIndex != -1){    
+      newGraphData[graphDataIndex].co2Emission += Number(element.co2Emission);
+      newGraphData[graphDataIndex].distance += Number(element.distance);
+      newGraphData[graphDataIndex].fuelConsumed += Number(element.fuelConsumed);
+      newGraphData[graphDataIndex].fuelConsumtion += Number(element.fuelConsumtion);
+      newGraphData[graphDataIndex].idleDuration += Number(element.idleDuration);    
+      newGraphData[graphDataIndex].numberofTrips += Number(element.numberofTrips); 
+    }else{
+      newGraphData.push(element);
+     }        
+  });
+  return newGraphData; 
+}
+
   getTimeInSeconds(timeValue, unit){
     let seconds: any;
     switch(unit){

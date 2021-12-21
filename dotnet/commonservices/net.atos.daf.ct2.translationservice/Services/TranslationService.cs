@@ -68,7 +68,7 @@ namespace net.atos.daf.ct2.translationservice
                 return await Task.FromResult(new TranslationsResponce
                 {
                     Code = Responcecode.Failed,
-                    Message = "GetTranslations Failed due to - " + ex.Message
+                    Message = TranslationConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -101,7 +101,7 @@ namespace net.atos.daf.ct2.translationservice
                 return await Task.FromResult(new CodeResponce
                 {
                     Code = Responcecode.Failed,
-                    Message = "GetCommonTranslations Failed due to - " + ex.Message
+                    Message = TranslationConstants.INTERNAL_SERVER_MSG
                 });
 
             }
@@ -135,7 +135,7 @@ namespace net.atos.daf.ct2.translationservice
                 return await Task.FromResult(new KeyResponce
                 {
                     Code = Responcecode.Failed,
-                    Message = "GetLangagugeTranslationByKey Failed due to - " + ex.Message
+                    Message = TranslationConstants.INTERNAL_SERVER_MSG
                 });
 
             }
@@ -169,7 +169,7 @@ namespace net.atos.daf.ct2.translationservice
                 return await Task.FromResult(new KeyCodeResponce
                 {
                     Code = Responcecode.Failed,
-                    Message = "GetKeyTranslationByLanguageCode Failed due to - " + ex.Message
+                    Message = TranslationConstants.INTERNAL_SERVER_MSG
                 });
             }
 
@@ -202,7 +202,7 @@ namespace net.atos.daf.ct2.translationservice
                 return await Task.FromResult(new dropdownnameResponce
                 {
                     Code = Responcecode.Failed,
-                    Message = "GetTranslationsForDropDowns Failed due to - " + ex.Message
+                    Message = TranslationConstants.INTERNAL_SERVER_MSG
                 });
             }
 
@@ -247,7 +247,7 @@ namespace net.atos.daf.ct2.translationservice
                 return await Task.FromResult(new dropdownarrayResponce
                 {
                     Code = Responcecode.Failed,
-                    Message = "GetTranslationsFormultipleDropDowns Failed due to - " + ex.Message
+                    Message = TranslationConstants.INTERNAL_SERVER_MSG
                 });
             }
 
@@ -416,7 +416,7 @@ namespace net.atos.daf.ct2.translationservice
                 return await Task.FromResult(new PreferenceResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "GetTranslationsPreferencDropDowns Failed due to - " + ex.Message
+                    Message = TranslationConstants.INTERNAL_SERVER_MSG
                 });
             }
 
@@ -449,7 +449,7 @@ namespace net.atos.daf.ct2.translationservice
                 return await Task.FromResult(new TranslationListResponce
                 {
                     Code = Responcecode.Failed,
-                    Message = "GetAllLangaugecodes Failed due to - " + ex.Message
+                    Message = TranslationConstants.INTERNAL_SERVER_MSG
                 });
 
             }
@@ -485,7 +485,7 @@ namespace net.atos.daf.ct2.translationservice
                 return await Task.FromResult(new TranslationUploadResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "InsertTranslationFileDetails Failed due to - " + ex.Message
+                    Message = TranslationConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -526,7 +526,7 @@ namespace net.atos.daf.ct2.translationservice
                 return await Task.FromResult(new FileUploadDetailsResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "GetFileUploadDetails Failed due to - " + ex.Message
+                    Message = TranslationConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -602,7 +602,7 @@ namespace net.atos.daf.ct2.translationservice
                 return await Task.FromResult(new WarningDataResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "ImportDTCWarningData Failed due to - " + ex.Message
+                    Message = TranslationConstants.INTERNAL_SERVER_MSG
                 });
             }
 
@@ -640,7 +640,7 @@ namespace net.atos.daf.ct2.translationservice
                 return await Task.FromResult(new WarningGetResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "GetTranslationsForDropDowns Failed due to - " + ex.Message
+                    Message = TranslationConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -698,7 +698,7 @@ namespace net.atos.daf.ct2.translationservice
                 return await Task.FromResult(new WarningDataResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "UpdateDTCWarningData Failed due to - " + ex.Message
+                    Message = TranslationConstants.INTERNAL_SERVER_MSG
                 });
             }
 
@@ -730,7 +730,7 @@ namespace net.atos.daf.ct2.translationservice
                 return await Task.FromResult(new AcceptedTermConditionResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "AddUserAcceptedTermCondition Failed due to - " + ex.Message
+                    Message = TranslationConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -761,7 +761,7 @@ namespace net.atos.daf.ct2.translationservice
                 return await Task.FromResult(new VersionNoResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "GetAllVersionNo Failed due to - " + ex.Message
+                    Message = TranslationConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -798,7 +798,7 @@ namespace net.atos.daf.ct2.translationservice
                 return await Task.FromResult(new TermCondDetailsReponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "GetTermConditionForVersionNo Failed due to - " + ex.Message
+                    Message = TranslationConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -840,7 +840,7 @@ namespace net.atos.daf.ct2.translationservice
                 return await Task.FromResult(new TermCondDetailsReponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "GetAcceptedTermConditionByUser Failed due to - " + ex.Message
+                    Message = TranslationConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -891,7 +891,7 @@ namespace net.atos.daf.ct2.translationservice
                 return await Task.FromResult(new IconUpdateResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "UpdateDTCTranslationIcon Failed due to - " + ex.Message
+                    Message = TranslationConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -944,7 +944,7 @@ namespace net.atos.daf.ct2.translationservice
                 return await Task.FromResult(new IconGetResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "GetDTCTranslationIcon Failed due to - " + ex.Message
+                    Message = TranslationConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -1001,7 +1001,7 @@ namespace net.atos.daf.ct2.translationservice
                 return await Task.FromResult(new UploadTermandConditionResponseList
                 {
                     Code = Responcecode.Failed,
-                    Message = $"UploadTermsAndCondition Failed due to - {ex.Message}"
+                    Message = TranslationConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -1039,7 +1039,7 @@ namespace net.atos.daf.ct2.translationservice
                 return await Task.FromResult(new TermCondDetailsReponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "GetLatestTermCondition Failed due to - " + ex.Message
+                    Message = TranslationConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -1063,7 +1063,7 @@ namespace net.atos.daf.ct2.translationservice
                 return await Task.FromResult(new UserAcceptedTermConditionResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = $"GetLatestTermCondition Failed due to - {ex.Message}"
+                    Message = TranslationConstants.INTERNAL_SERVER_MSG
                 });
             }
         }

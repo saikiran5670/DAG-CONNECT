@@ -39,11 +39,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetFuelBenchmarkByVehicleGroup)}: With Error:-", ex);
                 return await Task.FromResult(new FuelBenchmarkResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "GetFuelBenchmarkByVehicleGroup get failed due to - " + ex.Message
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -103,11 +103,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetFuelBenchmarkByTimePeriod)}: With Error:-", ex);
                 return await Task.FromResult(new FuelBenchmarkResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "GetFuelBenchmarkByVehicleGroup get failed due to - " + ex.Message
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -140,11 +140,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetAssociatedVehiclGroup)}: With Error:-", ex);
                 return await Task.FromResult(new AssociatedVehicleResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "GetFuelBenchmarkByVehicleGroup get failed due to - " + ex.Message
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 });
             }
         }

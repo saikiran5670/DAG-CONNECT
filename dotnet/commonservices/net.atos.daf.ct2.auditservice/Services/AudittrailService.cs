@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.entity;
 using net.atos.daf.ct2.audit.Enum;
+using net.atos.daf.ct2.auditservice.entity;
 //using Google.Protobuf.WellKnownTypes;
 
 
@@ -64,7 +65,7 @@ namespace net.atos.daf.ct2.auditservice.Services
                 return await Task.FromResult(new AuditResponce
                 {
                     Code = Responcecode.Failed,
-                    Message = "Addlogs Failed due to - " + ex.Message
+                    Message = AuditConstants.INTERNAL_SERVER_MSG
                 });
 
             }
@@ -109,7 +110,7 @@ namespace net.atos.daf.ct2.auditservice.Services
                 return await Task.FromResult(new AuditLogResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "GetAllLangaugecodes Failed due to - " + ex.Message
+                    Message = AuditConstants.INTERNAL_SERVER_MSG
                 });
             }
 
