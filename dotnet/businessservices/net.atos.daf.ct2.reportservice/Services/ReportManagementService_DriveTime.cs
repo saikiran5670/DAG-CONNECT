@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using VisibleEntity = net.atos.daf.ct2.visibility.entity;
 using ReportComponent = net.atos.daf.ct2.reports;
 using ProtobufCollection = Google.Protobuf.Collections;
+using net.atos.daf.ct2.reportservice.entity;
 
 namespace net.atos.daf.ct2.reportservice.Services
 {
@@ -50,11 +51,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetDriverActivity)}: With Error:-", ex);
                 return await Task.FromResult(new DriverActivityResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "GetDriversActivity get failed due to - " + ex.Message
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -94,11 +95,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetDriverActivity)}: With Error:-", ex);
                 return await Task.FromResult(new DriverActivityResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "GetDriverActivity get failed due to - " + ex.Message
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -154,11 +155,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetDriverActivityParameters)}: With Error:-", ex);
                 return await Task.FromResult(new DriverListAndVehicleDetailsResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "GetDriverActivityParameters failed due to - " + ex.Message
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 });
             }
             return await Task.FromResult(response);
@@ -216,11 +217,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetDriverEcoScoreParameters)}: With Error:-", ex);
                 return await Task.FromResult(new DriverListAndVehicleDetailsResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "GetDriverEcoScoreParameters failed due to - " + ex.Message
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 });
             }
             return await Task.FromResult(response);
@@ -272,11 +273,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetDriverActivityChartDetails)}: With Error:-", ex);
                 return await Task.FromResult(new DriverActivityChartResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "GetDriverActivityChartDetails got failed due to - " + ex.Message
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 });
             }
         }

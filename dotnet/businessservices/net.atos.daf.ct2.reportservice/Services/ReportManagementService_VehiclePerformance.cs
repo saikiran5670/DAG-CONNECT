@@ -59,11 +59,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetVehiclePerformanceChartTemplate)}: With Error:-", ex);
                 return await Task.FromResult(new VehPerformanceResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "GetVehiclePerformanceChartTemplate get failed due to - " + ex.Message
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 });
 
             }
@@ -123,11 +123,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetVehPerformanceBubbleChartData)}: With Error:-", ex);
                 return await Task.FromResult(new BubbleChartDataResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "GetVehPerformanceBubbleChartData get failed due to - " + ex.Message
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 });
 
             }
@@ -163,11 +163,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetVehPerformanceType)}: With Error:-", ex);
                 return await Task.FromResult(new VehPerformanceTypeResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "GetVehiclePerformanceChartTemplate get failed due to - " + ex.Message
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 });
             }
         }

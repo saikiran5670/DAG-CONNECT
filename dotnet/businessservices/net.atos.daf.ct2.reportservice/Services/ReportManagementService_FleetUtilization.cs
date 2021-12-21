@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using VisibleEntity = net.atos.daf.ct2.visibility.entity;
 using ReportComponent = net.atos.daf.ct2.reports;
 using ProtobufCollection = Google.Protobuf.Collections;
+using net.atos.daf.ct2.reportservice.entity;
 
 namespace net.atos.daf.ct2.reportservice.Services
 {
@@ -47,11 +48,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetFleetUtilizationDetails)}: With Error:-", ex);
                 return await Task.FromResult(new FleetUtilizationDetailsResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "GetFleetUtilizationDetails get failed due to - " + ex.Message
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -92,11 +93,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetFleetCalenderDetails)}: With Error:-", ex);
                 return await Task.FromResult(new FleetUtilizationCalenderResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "GetFleetUtilizationDetails get failed due to - " + ex.Message
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 });
             }
         }

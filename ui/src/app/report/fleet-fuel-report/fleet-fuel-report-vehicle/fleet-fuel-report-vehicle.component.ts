@@ -66,6 +66,7 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
   validTableEntry: any = [];
   FuelData: any;
   graphData: any;
+  chartDataSet:any=[];
   selectedTrip = new SelectionModel(true, []);
   dataSource: any = new MatTableDataSource([]);
   dataSource2: any = new MatTableDataSource([]);
@@ -918,12 +919,14 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
       "endDateTime": _endTime,
       "viNs": _vinData,
       "LanguageCode": "EN-GB"
-    }
+    }    
     this.showLoadingIndicator=true;
-    this.reportService.getGraphDetails(searchDataParam).subscribe((graphData: any) => {
-      this.setChartData(graphData["fleetfuelGraph"]);
-      this.graphData= graphData;
-      this.showGraph = true;
+    this.reportService.getGraphDetails(searchDataParam).subscribe((graphData: any) => {   
+    this.chartDataSet=[];
+    this.chartDataSet = this.reportMapService.getChartData(graphData["fleetfuelGraph"], this.prefTimeZone);  
+    this.setChartData(this.chartDataSet);
+    this.graphData = graphData;
+    this.showGraph = true;
       this.hideloader();
     }, (error)=>{
       this.hideloader();
@@ -1035,10 +1038,11 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
     this.distanceChart=[];this.fuelConsumptionChart=[];this.idleDuration=[];
 
     graphData.forEach(e => {
-      var date = new Date(e.date);
+      //var date = new Date(e.date);
      // let resultDate = `${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`;
-      let resultDate= Util.getMillisecondsToUTCDate(date, this.prefTimeZone);//Util.convertDateToUtc(date);
-      resultDate =  this.datePipe.transform(resultDate,'MM/dd/yyyy');
+      //let resultDate= Util.getMillisecondsToUTCDate(date, this.prefTimeZone);//Util.convertDateToUtc(date);
+      //let resultDate =  this.datePipe.transform(e.date,'MM/dd/yyyy');
+      let resultDate = e.date;
       this.barChartLabels.push(resultDate);
 
       this.barData.push({ x:resultDate , y:e.numberofTrips });
@@ -1291,6 +1295,21 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
   }
     if(this.TripsChartType == 'Line')
     {
+      let data2 = this.translationData.lblNoOfTrips
+      this.lineChartOptions.scales.yAxes= [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          steps: 10,
+          stepSize: 5,
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: data2    
+        }
+      }];
     this.lineChartOptions.scales.xAxes= [{
         type:'time',
         time:
@@ -1303,7 +1322,7 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
            },
         }
       }];
-      this.lineChartOptions.scales.yAxes[0].scaleLabel.labelString = this.translationData.lblNoOfTrips || 'No Of Trips'
+     // this.lineChartOptions.scales.yAxes[0].scaleLabel.labelString = this.translationData.lblNoOfTrips || 'No Of Trips'
     this.lineChartData2= [{ data: this.barData, label: this.translationData.lblNoOfTrips || 'No Of Trips' }, ];
   }
     if(this.Co2ChartType == 'Line')
