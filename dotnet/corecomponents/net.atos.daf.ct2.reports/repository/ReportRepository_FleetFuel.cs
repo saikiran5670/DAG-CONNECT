@@ -532,41 +532,77 @@ namespace net.atos.daf.ct2.reports.repository
                 parameterOfFilters.Add("@ToDate", fleetFuelFilters.EndDateTime);
                 parameterOfFilters.Add("@Vins", fleetFuelFilters.VINs);
 
+                //          string query = @"WITH cte_workingdays AS(
+                //                  select
+                //                  date_trunc('day', to_timestamp(end_time_stamp/1000)) as startdate,
+                //                  count(distinct date_trunc('day', to_timestamp(end_time_stamp/1000))) as totalworkingdays,
+                //Count(distinct v.vin)                                   as vehiclecount,
+                //Count(distinct trip_id)                                 as tripcount,
+                //                  sum(etl_gps_distance)                                   as totaldistance,
+                //                  sum(idle_duration)                                      as totalidleduration,
+                //(SUM(etl_gps_fuel_consumed)/case when SUM(etl_gps_distance) >0 then SUM(etl_gps_distance) else 1 end) as fuelconsumption,
+                //                  sum(etl_gps_fuel_consumed)                              as fuelconsumed,
+                //sum(co2_emission)                                       as co2emission	
+                //                  FROM tripdetail.trip_statistics CT
+                //Join master.vehicle v
+                //on CT.vin = v.vin and CT.end_time_stamp >= v.reference_date
+                //                  Left join master.driver dr on
+                //dr.driver_id = CT.driver1_id
+                //                  where (end_time_stamp >= @FromDate 
+                //	   and end_time_stamp<= @ToDate) 
+                //and CT.vin=ANY(@vins)
+                //                  group by date_trunc('day', to_timestamp(end_time_stamp/1000))  
+                //                  )
+                //                  select
+                //                  '' as VIN,
+                //                  startdate,
+                //extract(epoch from startdate) * 1000 as Date,
+                //                 	totalworkingdays,
+                //vehiclecount,
+                //                  tripcount as NumberofTrips,
+                //                  CAST((totaldistance / totalworkingdays) as float)                   as Distance,
+                //                  CAST((totalidleduration / totalworkingdays) as float)               as IdleDuration ,
+                //                  CAST((fuelconsumption / totalworkingdays) as float)                 as FuelConsumtion ,
+                //                  CAST((co2emission / totalworkingdays) as float)                     as Co2Emission,
+                //                  CAST((fuelconsumed / totalworkingdays) as float)                    as FuelConsumed  
+                //                  --CAST((totalaverageweightperprip / totalworkingdays) as float)     as Averageweight
+                //                  from cte_workingdays";
+
                 string query = @"WITH cte_workingdays AS(
-                        select
-                        date_trunc('day', to_timestamp(end_time_stamp/1000)) as startdate,
-                        count(distinct date_trunc('day', to_timestamp(end_time_stamp/1000))) as totalworkingdays,
-						Count(distinct v.vin)                                   as vehiclecount,
-						Count(distinct trip_id)                                 as tripcount,
-                        sum(etl_gps_distance)                                   as totaldistance,
-                        sum(idle_duration)                                      as totalidleduration,
-						(SUM(etl_gps_fuel_consumed)/case when SUM(etl_gps_distance) >0 then SUM(etl_gps_distance) else 1 end) as fuelconsumption,
-                        sum(etl_gps_fuel_consumed)                              as fuelconsumed,
-						sum(co2_emission)                                       as co2emission	
-                        FROM tripdetail.trip_statistics CT
-						Join master.vehicle v
-						on CT.vin = v.vin and CT.end_time_stamp >= v.reference_date
-                        Left join master.driver dr on
-						dr.driver_id = CT.driver1_id
-                        where (end_time_stamp >= @FromDate 
-							   and end_time_stamp<= @ToDate) 
-						and CT.vin=ANY(@vins)
-                        group by date_trunc('day', to_timestamp(end_time_stamp/1000))  
-                        )
-                        select
-                        '' as VIN,
-                        startdate,
-						extract(epoch from startdate) * 1000 as Date,
-                       	totalworkingdays,
-						vehiclecount,
-                        tripcount as NumberofTrips,
-                        CAST((totaldistance / totalworkingdays) as float)                   as Distance,
-                        CAST((totalidleduration / totalworkingdays) as float)               as IdleDuration ,
-                        CAST((fuelconsumption / totalworkingdays) as float)                 as FuelConsumtion ,
-                        CAST((co2emission / totalworkingdays) as float)                     as Co2Emission,
-                        CAST((fuelconsumed / totalworkingdays) as float)                    as FuelConsumed  
-                        --CAST((totalaverageweightperprip / totalworkingdays) as float)     as Averageweight
-                        from cte_workingdays";
+                                    select
+                                    end_time_stamp as startdate,
+                                    1 as totalworkingdays,
+						            v.vin                                   as vehiclecount,
+						            trip_id                                 as tripcount,
+                                    etl_gps_distance                                   as totaldistance,
+                                    idle_duration                                      as totalidleduration,
+						            etl_gps_fuel_consumed/case when etl_gps_distance >0 then etl_gps_distance else 1 end as fuelconsumption,
+                                    etl_gps_fuel_consumed                              as fuelconsumed,
+						            co2_emission                                       as co2emission	
+                                    FROM tripdetail.trip_statistics CT
+						            Join master.vehicle v
+						            on CT.vin = v.vin and CT.end_time_stamp >= v.reference_date
+                                    Left join master.driver dr on
+						            dr.driver_id = CT.driver1_id
+                                    where (end_time_stamp >= @FromDate 
+							               and end_time_stamp<= @ToDate) 
+						            and CT.vin=ANY(@vins)
+                                    --group by date_trunc('day', to_timestamp(end_time_stamp/1000))  
+                                    )
+                                    select
+                                    '' as VIN,
+                                    startdate,
+						            startdate as Date,
+                       	            totalworkingdays,
+						            vehiclecount,
+                                    tripcount as NumberofTrips,
+                                    CAST((totaldistance / totalworkingdays) as float)                   as Distance,
+                                    CAST((totalidleduration / totalworkingdays) as float)               as IdleDuration ,
+                                    CAST((fuelconsumption / totalworkingdays) as float)                 as FuelConsumtion ,
+                                    CAST((co2emission / totalworkingdays) as float)                     as Co2Emission,
+                                    CAST((fuelconsumed / totalworkingdays) as float)                    as FuelConsumed  
+                                    --CAST((totalaverageweightperprip / totalworkingdays) as float)     as Averageweight
+                                    from cte_workingdays";
                 List<FleetFuel_VehicleGraph> lstFleetDetails = (List<FleetFuel_VehicleGraph>)await _dataMartdataAccess.QueryAsync<FleetFuel_VehicleGraph>(query, parameterOfFilters);
                 return lstFleetDetails?.Count > 0 ? lstFleetDetails : new List<FleetFuel_VehicleGraph>();
             }
