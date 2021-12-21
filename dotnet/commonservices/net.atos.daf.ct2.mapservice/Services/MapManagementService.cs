@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using net.atos.daf.ct2.map;
 using net.atos.daf.ct2.map.entity;
+using net.atos.daf.ct2.mapservice.entity;
 
 namespace net.atos.daf.ct2.mapservice
 {
@@ -63,7 +64,7 @@ namespace net.atos.daf.ct2.mapservice
                 return await Task.FromResult(new GetMapResponse
                 {
                     LookupAddresses = new GetMapRequest(),
-                    Message = "Exception " + ex.Message,
+                    Message = MapConstants.INTERNAL_SERVER_MSG,
                     Code = MapResponsecode.Failed
                 });
             }
