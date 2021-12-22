@@ -1130,6 +1130,45 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("fleetoverview/getfilterpoidetails")]
+        public async Task<IActionResult> GetFleetOverviewPoiFilter()
+        {
+            try
+            {
+                ReportFleetOverviewPoiFilter reportFleetOverviewFilter = new ReportFleetOverviewPoiFilter();
+                poiservice.POIRequest poiRequest = new poiservice.POIRequest();
+                poiRequest.OrganizationId = GetContextOrgId(); //36;
+                poiRequest.Type = "POI";
+                var data = await _poiServiceClient.GetAllPOIAsync(poiRequest);
+                reportFleetOverviewFilter.UserPois = new List<POI.POIResponse>();
+                reportFleetOverviewFilter.GlobalPois = new List<POI.POIResponse>();
+                foreach (var item in data.POIList)
+                {
+                    if (item.OrganizationId > 0)
+                        reportFleetOverviewFilter.UserPois.Add(_mapper.ToPOIEntity(item));
+                    else
+                        reportFleetOverviewFilter.GlobalPois.Add(_mapper.ToPOIEntity(item));
+                }
+                if (data == null)
+                    return StatusCode(500, "Internal Server Error.(01)");
+                if (data.Code.ToString() == Responsecode.Success.ToString())
+                    return Ok(reportFleetOverviewFilter);
+                if (data.Code.ToString() == Responsecode.InternalServerError.ToString())
+                    return StatusCode((int)data.Code, String.Format(ReportConstants.FLEETOVERVIEW_FILTER_FAILURE_MSG, data.Message));
+                return StatusCode((int)data.Code, data.Message);
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
+                 ReportConstants.FLEETOVERVIEW_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                 $"{ nameof(GetFleetOverviewPoiFilter) } method Failed. Error : {ex.Message}", 1, 2, Convert.ToString(_userDetails.AccountId),
+                  _userDetails);
+                _logger.Error($"{nameof(GetFleetOverviewPoiFilter)}: With Error:-", ex);
+                return StatusCode(500, ReportConstants.INTERNAL_SERVER_MSG);
+            }
+        }
+
         #endregion
 
         #region Fleet Fuel Report Details
