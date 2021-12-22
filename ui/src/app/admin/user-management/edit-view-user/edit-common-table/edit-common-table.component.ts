@@ -51,7 +51,7 @@ export class EditCommonTableComponent implements OnInit {
         });
 
     }
-    Util.applySearchFilter(this.dataSource, this.columns ,this.filterValue );
+    Util.applySearchFilterForUser(this.dataSource, this.data.colsList ,this.filterValue );
 
     this.selectTableRows();
   });
