@@ -999,6 +999,10 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
       vehName = vehCount[0].vehicleName;
       vin = vehCount[0].vin;
       plateNo = vehCount[0].registrationNo;
+    } else {
+      vehName = this.translationData.lblAll;
+      vin = this.translationData.lblAll;
+      plateNo = this.translationData.lblAll;
     }
 
     // if(parseInt(this.tripForm.controls.vehicleGroup.value) == 0){
