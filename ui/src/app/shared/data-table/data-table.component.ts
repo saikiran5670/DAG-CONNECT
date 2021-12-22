@@ -209,8 +209,11 @@ export class DataTableComponent implements OnInit {
 
   compare(a: any, b: any, isAsc: boolean, columnName: any) {
     if(columnName === "createdAt"){
-      if(!(a instanceof Number)) a = a.toString().toUpperCase();
-      if(!(b instanceof Number)) b = b.toString().toUpperCase();
+      // if(!(a instanceof Number)) a = a.toString().toUpperCase();
+      // if(!(b instanceof Number)) b = b.toString().toUpperCase();
+      var aa = a.split('/').reverse().join();
+      var bb = b.split('/').reverse().join();
+      return (aa < bb ? -1 : 1) * (isAsc ? 1 : -1);
    }
 
     if(columnName === "recipientList" || columnName === "fileName" || columnName === "description"){
@@ -228,8 +231,17 @@ export class DataTableComponent implements OnInit {
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 
+//  sortUploadedDate(a,b,isAsc?,col?){
+//    console.log("It is going inside");
+//   return new Date(a).valueOf() - new Date(b).valueOf();
+//  }
 
-  pageSizeUpdated(_event) {
+// tryThis(a, b, isAsc?, col?){
+  
+// };
+
+
+pageSizeUpdated(_event) {
     setTimeout(() => {
       document.getElementsByTagName('mat-sidenav-content')[0].scrollTo(0, 0)
     }, 100);

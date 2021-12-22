@@ -48,7 +48,7 @@ export class UserDetailTableComponent implements OnInit {
         const isAsc = sort.direction === 'asc';
         let columnName = this.sort.active
         return data.sort((a: any, b: any) => {
-          return this.sortAlphaNum(a[sort.active], b[sort.active], isAsc, columnName);
+          return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
         });
 
        }
@@ -59,7 +59,21 @@ export class UserDetailTableComponent implements OnInit {
 
   compare(a: any, b: any, isAsc: boolean, columnName: any) {
 
-    if(columnName === "roleList" || columnName === "accountGroupList" ||  columnName === "roles" || columnName === "licensePlateNumber") { //Condition added for roles columns
+    if(columnName === "licensePlateNumber"){
+      let reA = /[^a-zA-Z]/g;
+      let reN = /[^0-9]/g;
+      let aA = a.replace(reA, "").toUpperCase();
+      let bA = b.replace(reA, "").toUpperCase();
+      if (aA === bA) {
+        var aN = parseInt(a.replace(reN, ""), 10);
+        var bN = parseInt(b.replace(reN, ""), 10);
+        return (aN === bN ? 0 : aN > bN ? 1 : -1) * (isAsc ? 1: -1) ;
+      } else {
+        return (aA > bA ? 1 : -1) * (isAsc ? 1: -1);
+      }
+    }
+
+    if(columnName === "roleList" || columnName === "accountGroupList" ||  columnName === "roles") { //Condition added for roles columns
       a=  a.toString().toUpperCase() ;
       b= b.toString().toUpperCase();
    
@@ -70,21 +84,9 @@ export class UserDetailTableComponent implements OnInit {
       return ( a < b ? -1 : 1) * (isAsc ? 1: -1);
   }
 
+//  sortAlphaNum(a, b,isAsc?,col?) {
  
-
- sortAlphaNum(a, b,isAsc?,col?) {
-  let reA = /[^a-zA-Z]/g;
-  let reN = /[^0-9]/g;
-  let aA = a.replace(reA, "").toUpperCase();
-  let bA = b.replace(reA, "").toUpperCase();
-  if (aA === bA) {
-    var aN = parseInt(a.replace(reN, ""), 10);
-    var bN = parseInt(b.replace(reN, ""), 10);
-    return (aN === bN ? 0 : aN > bN ? 1 : -1) * (isAsc ? 1: -1) ;
-  } else {
-    return (aA > bA ? 1 : -1) * (isAsc ? 1: -1);
-  }
- }
+//  }
 
 
 
