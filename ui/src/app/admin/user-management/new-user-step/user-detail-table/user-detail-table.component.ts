@@ -48,7 +48,7 @@ export class UserDetailTableComponent implements OnInit {
         const isAsc = sort.direction === 'asc';
         let columnName = this.sort.active
         return data.sort((a: any, b: any) => {
-          return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
+          return this.sortAlphaNum(a[sort.active], b[sort.active], isAsc, columnName);
         });
 
        }
@@ -62,12 +62,30 @@ export class UserDetailTableComponent implements OnInit {
     if(columnName === "roleList" || columnName === "accountGroupList" ||  columnName === "roles" || columnName === "licensePlateNumber") { //Condition added for roles columns
       a=  a.toString().toUpperCase() ;
       b= b.toString().toUpperCase();
+   
     }
       if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toUpperCase();
       if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toUpperCase();
 
       return ( a < b ? -1 : 1) * (isAsc ? 1: -1);
   }
+
+ 
+
+ sortAlphaNum(a, b,isAsc?,col?) {
+  let reA = /[^a-zA-Z]/g;
+  let reN = /[^0-9]/g;
+  let aA = a.replace(reA, "").toUpperCase();
+  let bA = b.replace(reA, "").toUpperCase();
+  if (aA === bA) {
+    var aN = parseInt(a.replace(reN, ""), 10);
+    var bN = parseInt(b.replace(reN, ""), 10);
+    return (aN === bN ? 0 : aN > bN ? 1 : -1) * (isAsc ? 1: -1) ;
+  } else {
+    return (aA > bA ? 1 : -1) * (isAsc ? 1: -1);
+  }
+ }
+
 
 
 

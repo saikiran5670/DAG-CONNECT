@@ -636,7 +636,7 @@ export class EditViewUserComponent implements OnInit {
     dialogConfig.autoFocus = true;
     dialogConfig.data = {
       tableData: tableData,
-      colsList: ['firstName','emailId','roles'],
+      colsList: ['firstName','emailId','roleList'],
       colsName: [this.translationData.lblUserName , this.translationData.lblEmailID , this.translationData.lblUserRole],
       tableTitle: `${rowData.accountGroupName} - ${this.translationData.lblUsers }`
     }
