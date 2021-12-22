@@ -61,6 +61,7 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
   showGraph: boolean = false;
   searchExpandPanel: boolean = true;
   initData: any = [];
+  chartDataSet:any=[];
   FuelData: any;
   graphData: any;
   selectedTrip = new SelectionModel(true, []);
@@ -930,10 +931,13 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
     }
     this.showLoadingIndicator=true;
    this.reportService.getdriverGraphDetails(searchDataParam).subscribe((graphData: any) => {
-      this.setChartData(graphData["fleetfuelGraph"]);
-      this.graphData = graphData;
-      this.showGraph = true;
-      this.hideloader();
+     this.chartDataSet = [];
+     this.chartDataSet = this.reportMapService.getChartData(graphData["fleetfuelGraph"], this.prefTimeZone);
+     this.setChartData(this.chartDataSet);
+     this.graphData = graphData;
+     this.showGraph = true;
+     this.hideloader();
+
     }, (error)=>{
       this.hideloader();
     });
@@ -1094,11 +1098,10 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
     this.distanceChart=[];this.fuelConsumptionChart=[];this.idleDuration=[];
 
     graphData.forEach(e => {
-      var date = new Date(e.date);
-     // let resultDate = `${date.getDate()}/${date.getMonth()+1}/ ${date.getFullYear()}`;
-      let resultDate= Util.getMillisecondsToUTCDate(date, this.prefTimeZone); //Util.convertDateToUtc(date);
-      resultDate =  this.datePipe.transform(resultDate,'MM/dd/yyyy');
-
+      // var date = new Date(e.date);
+      // let resultDate= Util.getMillisecondsToUTCDate(date, this.prefTimeZone); //Util.convertDateToUtc(date);
+      // resultDate =  this.datePipe.transform(resultDate,'MM/dd/yyyy');
+      let resultDate = e.date;
      // this.barChartLabels.push(resultDate);
       this.barData.push({ x:resultDate , y:e.numberofTrips});
       // let convertedFuelConsumed = e.fuelConsumed / 1000;
