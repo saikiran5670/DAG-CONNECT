@@ -165,9 +165,9 @@ export class ManageCategoryComponent implements OnInit , AfterViewInit{
   }
 
   compare(a: Number | String , b: Number  | String, isAsc: boolean, columnName: any){
-    if(columnName == 'parentCategoryName'){
-      if(!(a instanceof Number)) a = a.toString().toUpperCase();
-      if(!(b instanceof Number)) b = b.toString().toUpperCase();
+    if(columnName ==='parentCategoryName' || columnName ==='subCategoryName'){
+      if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toUpperCase();
+      if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toUpperCase();
     }
     return (a < b ? -1 : 1 ) * (isAsc ? 1 : -1);
   }
