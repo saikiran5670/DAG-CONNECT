@@ -60,6 +60,7 @@ export class DetailDriverReportComponent implements OnInit {
   @Input() prefDateFormat: any;
   @Input() prefUnitFormat: any = 'dunit_Metric';
   @Input() wholeTripData: any;
+  chartDataSet:any=[];
 
   public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
@@ -1260,9 +1261,12 @@ createEndMarker(){
       "LanguageCode": "EN-GB"
     }
    this.reportService.getdriverGraphDetails(searchDataParam).subscribe((graphData: any) => {
-      this.setChartData(graphData["fleetfuelGraph"]);
-      this.graphData = graphData;
-      this.showGraph= true;
+      this.chartDataSet = [];
+     this.chartDataSet = this.reportMapService.getChartData(graphData["fleetfuelGraph"], this.prefTimeZone);
+     this.setChartData(this.chartDataSet);
+     this.graphData = graphData;
+     this.showGraph = true;
+     this.hideloader();
     });
   }
 
@@ -1706,11 +1710,10 @@ createEndMarker(){
 
   setChartData(graphData: any){
     graphData.forEach(e => {
-      var date = new Date(e.date);
-     // let resultDate = `${date.getDate()}/${date.getMonth()+1}/ ${date.getFullYear()}`;
-      let resultDate= Util.getMillisecondsToUTCDate(date, this.prefTimeZone); //Util.convertDateToUtc(date);
-      resultDate =  this.datePipe.transform(resultDate,'MM/dd/yyyy');
-
+      // var date = new Date(e.date);
+      // let resultDate= Util.getMillisecondsToUTCDate(date, this.prefTimeZone); //Util.convertDateToUtc(date);
+      // resultDate =  this.datePipe.transform(resultDate,'MM/dd/yyyy');
+      let resultDate = e.date;
      // this.barChartLabels.push(resultDate);
       this.barData.push({ x:resultDate , y:e.numberofTrips});
       // let convertedFuelConsumed = e.fuelConsumed / 1000;
