@@ -1841,7 +1841,7 @@ export class ReportMapService {
       }
       
       case 'dunit_Imperial':{
-        _fuelConsumption = (dt/FuelConsumpt);
+        _fuelConsumption = (FuelConsumpt/dt);
         break;
       }
       default:{
@@ -2033,6 +2033,13 @@ export class ReportMapService {
     }else{
       newGraphData.push(element);
      }        
+  });
+  newGraphData.forEach(ele => {
+    let graphIndex = newGraphData.map(item => item.date).indexOf(ele.date);
+    if(graphIndex != -1){  
+      newGraphData[graphIndex].fuelConsumtion = Number(newGraphData[graphIndex].fuelConsumed)/Number(newGraphData[graphIndex].distance);
+    }    
+     //console.log(ele);
   });
   return newGraphData; 
 }
