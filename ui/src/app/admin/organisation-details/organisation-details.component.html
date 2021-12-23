@@ -97,16 +97,16 @@
                     </div>
                 </div>
             </div>
-            <div *ngIf="organisationData && userLevel == 10" style='padding: 20px; position: relative;'>
+            <div *ngIf="organisationData && (userLevel == 10 || userLevel == 20)" style='padding: 20px; position: relative;'>
                 <mat-divider></mat-divider>
             </div>
-            <div *ngIf="organisationData && userLevel == 10">
+            <div *ngIf="organisationData && (userLevel == 10 || userLevel == 20)">
                 <form [formGroup]="orgDetailsPreferenceForm">
                     <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
                         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
                             <span class='font-18-px line-height-27px font-helvetica-md' style='display: flex; align-items: center;'>{{ translationData.lblPreferencesSettings }}
                                 <!-- <mat-icon *ngIf='!editPrefereneceFlag && !adminAccessType.adminReadOnlyAccess' (click)="onPreferenceEdit()" style="cursor: pointer; margin: 0px 0px 5px 5px;">edit</mat-icon> -->
-                                <mat-icon *ngIf="!editPrefereneceFlag && userLevel == 10" (click)="onPreferenceEdit()" style="cursor: pointer; margin: 0px 0px 5px 5px;">edit</mat-icon>
+                                <mat-icon *ngIf="!editPrefereneceFlag && (userLevel == 10  || userLevel == 20)" (click)="onPreferenceEdit()" style="cursor: pointer; margin: 0px 0px 5px 5px;">edit</mat-icon>
                             </span>
                         </div>
                     </div>
