@@ -150,9 +150,14 @@
       </div> -->
 
       <app-data-table *ngIf="!showLoadingIndicator" [tableData]="initData" [translationData]="translationData"
-        [columnCodes]="columnCodes" [columnLabels]="columnLabels" [actionColumnElements]="actionColumnElements" [topRightElements]="topRightElements" [topLeftElements]="topLeftElements"
-        [viewStatusColumnElements]="viewStatusColumnElements" [action2ColumnElements]="action2ColumnElements" [showExport]="false" #gridComp>
- 
+      [columnCodes]="columnCodes" [columnLabels]="columnLabels" [actionColumnElements]="actionColumnElements" [topRightElements]="topRightElements" [topLeftElements]="topLeftElements"
+      [viewStatusColumnElements]="viewStatusColumnElements" [action2ColumnElements]="action2ColumnElements" [selectColumnDataElements]="selectColumnDataElements" [showExport]="false" #gridComp>
+      <ng-template #selectColumnDataElements let-gridData='rowData'>
+        <ng-container *ngIf="gridData.hasOwned">
+          <input type="checkbox" class="vehiclecheck" [disabled]='gridData.status == "T"' [value]="gridData.id" (change)="onCheckboxChange($event)" />
+        </ng-container>
+      </ng-template>   
+
         <ng-template #topLeftElements let-gridData='rowData'>
           <div class='areaWidth' fxLayoutAlign="center center">
             <mat-form-field appearance="outline">
@@ -213,7 +218,7 @@
               <span style='padding-top: 2px;'>{{ translationData.lblConnected || 'Connected' }}</span>
               <mat-slide-toggle [disabled]='adminAccessType.adminReadOnlyAccess' color="primary" value="false" class='actionBtn' mat-flat-button style="padding: 0 8px;"
                 (click)="onChangeConnectedAllStatus($event)"
-                matTooltip="{{ translationData.lblClicktoactivate || 'Select list checkbox for changing the status' }}"
+                matTooltip="{{ this.translationData.lblselectCheckBoxMsg || 'Select list checkbox for changing the status' }}"
                 [(ngModel)]="connectedAll">
               </mat-slide-toggle>
           </div>
