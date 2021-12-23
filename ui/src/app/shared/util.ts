@@ -308,7 +308,7 @@ export class Util {
         let diff = localTimeZoneOffset + PrefTzToGMT;
         let PrefTimeAsPerSelected = moment(_dateWithoutMiliSeconds).utcOffset(diff);
         let _convertedUtc = PrefTimeAsPerSelected['_d'].getTime();
-        console.log('_convertedUtc:' +_convertedUtc );             
+        console.log('_convertedUtc:' +_convertedUtc );
         return _convertedUtc;
         //}
         // let gmt_val:any =moment.utc(_dateWithoutMiliSeconds).valueOf();
@@ -401,6 +401,32 @@ public static applySearchFilter(filterData:any, columns:any, filterValue:string)
 
    for(let col of columns) {
   if(data[col]) {
+    if(data[col] instanceof Number && data[col].toLowerCase().includes(filter.toLowerCase())) {
+
+      return data;
+
+    }
+
+    if(!(data[col] instanceof Number) && data[col].toString().toLowerCase().includes(filter)) {
+
+      return data;
+    }
+  }
+
+}
+
+  }
+
+}
+public static applySearchFilterForUser(filterData:any, columns:any, filterValue:string){
+
+  filterData.filter = filterValue;
+
+  filterData.filterPredicate = (data: any, filter: string): boolean => {
+
+   for(let col of columns) {
+     if(col === 'roleName'|| col ==='accountGroupName' || col ==='accountCount' )
+  if(data[col] ) {
     if(data[col] instanceof Number && data[col].toLowerCase().includes(filter.toLowerCase())) {
 
       return data;
