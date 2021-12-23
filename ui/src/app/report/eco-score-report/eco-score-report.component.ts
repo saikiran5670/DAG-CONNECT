@@ -132,6 +132,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   noSingleDriverData: boolean=false;
   isSearched: boolean=false;
   singleVehicle: any = [];
+  rowData: any = [];
   prefMapData: any = [
     {
       key: 'da_report_alldriver_general_driverscount',
@@ -696,7 +697,8 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
         this.reportService.getEcoScoreDetails(searchDataParam).subscribe((_ecoScoreDriverData: any) => {
         this.hideloader();
           this.setGeneralDriverValue();
-          this.updateDataSource(_ecoScoreDriverData.driverRanking);
+          this.rowData = _ecoScoreDriverData.driverRanking;
+          this.updateDataSource(this.rowData);
 
         }, (error)=>{
           this.isSearched=true;
@@ -1620,17 +1622,36 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
 
   rowSelected(event: any, row: any){
     if(event.checked){
-      this.selectedEcoScore.select(row);
       const numSelected = this.selectedEcoScore.selected.length;
-      if(numSelected <= 4)
+      if(numSelected < 4){
+        this.rowData.forEach( element => {
+          element['disabled'] = false;
+        });
+        this.selectedEcoScore.select(row);
         this.selectedDriversEcoScore.push(row);
+      } 
+      if( this.selectedEcoScore.selected.length == 4){
+        this.toggleCheckbox();
+     }
     } else {
+      this.rowData.forEach( element => {
+        element['disabled'] = false;
+      });
       this.selectedEcoScore.deselect(row);
       const index: number = this.selectedDriversEcoScore.indexOf(row);
       if(index !== -1)
         this.selectedDriversEcoScore.splice(index, 1);
     }
     this.toggleCompareButton();
+  }
+
+  toggleCheckbox(){
+    this.rowData.forEach( element => {
+      if(!this.selectedEcoScore.isSelected(element))
+        element['disabled'] = true;
+      else
+        element['disabled'] = false;
+    });
   }
 
   deselectDriver(driver: any){
