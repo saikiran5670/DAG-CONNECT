@@ -102,7 +102,7 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
         });
         // (error) => { });
         // this.doneFlag = this.createStatus ? false : true;
-        // this.breadcumMsg = this.getBreadcum();
+        this.breadcumMsg = this.getBreadcum();
   }
 
   loadVehicleGridData(tableData: any){
@@ -149,7 +149,7 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
 
 
   getBreadcum(){
-    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblRelationshipManagement ? this.translationData.lblRelationshipManagement : "Relationship Management"} / ${this.translationData.lblRelationshipDetails ? this.translationData.lblRelationshipDetails : 'Relationship Details'}`;
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblOrganizationRelationshipManagement || 'Organization Relationship Management' ? this.translationData.lblOrganizationRelationshipManagement || 'Organization Relationship Management' : " Organisation Relationship Management"} / ${this.translationData.lblNewRelationshipDetails || 'Add New Relationship' ? this.translationData.lblNewRelationshipDetails || 'Add New Relationship' : 'Add New Relationship'}`;
   }
 
   onReset(){
