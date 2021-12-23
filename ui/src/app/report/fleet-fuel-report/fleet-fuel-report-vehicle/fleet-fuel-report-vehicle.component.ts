@@ -163,6 +163,10 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
           displayFormats: {
             day:  this.chartLabelDateFormat,
            },
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.translationData.lblDates
         }
     }]
     }
@@ -203,6 +207,10 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
           displayFormats: {
             day:  this.chartLabelDateFormat,
            },
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.translationData.lblDates
         }
     }]
     }
@@ -241,6 +249,10 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
           displayFormats: {
             day:  this.chartLabelDateFormat,
            },
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.translationData.lblDates
         }
     }]
     }
@@ -279,6 +291,10 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
           displayFormats: {
             day:  this.chartLabelDateFormat,
            },
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.translationData.lblDates
         }
     }]
     }
@@ -317,6 +333,10 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
           displayFormats: {
             day:  this.chartLabelDateFormat,
            },
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.translationData.lblDates
         }
     }]
     }
@@ -355,6 +375,10 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
           displayFormats: {
             day:  this.chartLabelDateFormat,
            },
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.translationData.lblDates
         }
     }]
     }
@@ -400,6 +424,10 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
           displayFormats: {
             day:  this.chartLabelDateFormat,
            },
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.translationData.lblDates
         }
     }]
     },
@@ -433,6 +461,10 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
           displayFormats: {
             day:  this.chartLabelDateFormat,
            },
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.translationData.lblDates
         }
     }]
     },
@@ -466,6 +498,10 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
           displayFormats: {
             day:  this.chartLabelDateFormat,
            },
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.translationData.lblDates
         }
     }]
     },
@@ -499,6 +535,10 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
           displayFormats: {
             day:  this.chartLabelDateFormat,
            },
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.translationData.lblDates
         }
     }]
     },
@@ -532,6 +572,10 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
           displayFormats: {
             day:  this.chartLabelDateFormat,
            },
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.translationData.lblDates
         }
     }]
     },
@@ -565,6 +609,10 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
           displayFormats: {
             day:  this.chartLabelDateFormat,
            },
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.translationData.lblDates
         }
     }]
     }
@@ -1119,6 +1167,10 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
           displayFormats: {
             day:  this.chartLabelDateFormat,
            },
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.translationData.lblDates
         }
       }];
       this.barChartData1= [
@@ -1139,6 +1191,10 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
         displayFormats: {
           day:  this.chartLabelDateFormat,
          },
+      },
+      scaleLabel: {
+        display: true,
+        labelString: this.translationData.lblDates
       }
     }];
     this.barChartOptions.scales.yAxes[0].scaleLabel.labelString = this.translationData.lblNoOfTrips || 'No Of Trips'
@@ -1173,6 +1229,10 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
         displayFormats: {
           day:  this.chartLabelDateFormat,
          },
+      },
+      scaleLabel: {
+        display: true,
+        labelString: this.translationData.lblDates
       }
     }];
     this.barChartData3= [
@@ -1205,6 +1265,10 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
         displayFormats: {
           day:  this.chartLabelDateFormat,
          },
+      },
+      scaleLabel: {
+        display: true,
+        labelString: this.translationData.lblDates
       }
     }];
     this.barChartData4= [
@@ -1237,6 +1301,10 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
         displayFormats: {
           day:  this.chartLabelDateFormat,
          },
+      },
+      scaleLabel: {
+        display: true,
+        labelString: this.translationData.lblDates
       }
     }];
     this.barChartData5= [
@@ -1257,6 +1325,10 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
         displayFormats: {
           day:  this.chartLabelDateFormat,
          },
+      },
+      scaleLabel: {
+        display: true,
+        labelString: this.translationData.lblDates
       }
     }];
     this.barChartOptions1.scales.yAxes[0].scaleLabel.labelString = this.translationData.lblMinutes || 'Minutes';
@@ -1292,6 +1364,10 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
           displayFormats: {
             day:  this.chartLabelDateFormat,
            },
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.translationData.lblDates || 'Dates'
         }
       }];
 
@@ -1324,6 +1400,10 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
           displayFormats: {
             day:  this.chartLabelDateFormat,
            },
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.translationData.lblDates
         }
       }];
      // this.lineChartOptions.scales.yAxes[0].scaleLabel.labelString = this.translationData.lblNoOfTrips || 'No Of Trips'
@@ -1354,6 +1434,10 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
           displayFormats: {
             day:  this.chartLabelDateFormat,
            },
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.translationData.lblDates
         }
       }];
     this.lineChartData3= [{ data: this.co2Chart, label: this.translationData.lblton || 'Ton' }];
@@ -1382,6 +1466,10 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
           displayFormats: {
             day:  this.chartLabelDateFormat,
            },
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.translationData.lblDates
         }
       }];
 
@@ -1411,6 +1499,10 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
           displayFormats: {
             day:  this.chartLabelDateFormat,
            },
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.translationData.lblDates
         }
       }];
     this.lineChartData5= [{ data: this.fuelConsumptionChart, label: this.prefUnitFormat == 'dunit_Metric' ? (this.translationData.lblltr100km || 'Ltrs /100 km') : (this.translationData.lblMilesPerGallon || 'Miles per gallon') }];
@@ -1427,6 +1519,10 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
           displayFormats: {
             day:  this.chartLabelDateFormat,
            },
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.translationData.lblDates
         }
       }];
       this.lineChartOptions1.scales.yAxes[0].scaleLabel.labelString = this.translationData.lblMinutes || 'Minutes'

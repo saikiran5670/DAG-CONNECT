@@ -159,6 +159,10 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
           displayFormats: {
             day:  this.chartLabelDateFormat,
            },
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.translationData.lblDates
         }
     }]
     }
@@ -199,6 +203,10 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
           displayFormats: {
             day:  this.chartLabelDateFormat,
            },
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.translationData.lblDates
         }
     }]
     }
@@ -237,6 +245,10 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
           displayFormats: {
             day:  this.chartLabelDateFormat,
            },
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.translationData.lblDates
         }
     }]
     }
@@ -275,6 +287,10 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
           displayFormats: {
             day:  this.chartLabelDateFormat,
            },
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.translationData.lblDates || 'Dates'
         }
     }]
     }
@@ -313,6 +329,10 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
           displayFormats: {
             day:  this.chartLabelDateFormat,
            },
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.translationData.lblDates
         }
     }]
     }
@@ -351,6 +371,10 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
           displayFormats: {
             day:  this.chartLabelDateFormat,
            },
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.translationData.lblDates
         }
     }]
     }
@@ -398,6 +422,10 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
           displayFormats: {
             day:  this.chartLabelDateFormat,
            },
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.translationData.lblDates
         }
     }]
   }
@@ -434,6 +462,10 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
           displayFormats: {
             day:  this.chartLabelDateFormat,
            },
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.translationData.lblDates
         }
     }]
   }
@@ -470,6 +502,10 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
           displayFormats: {
             day:  this.chartLabelDateFormat,
            },
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.translationData.lblDates
         }
     }]
   }
@@ -506,6 +542,10 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
           displayFormats: {
             day:  this.chartLabelDateFormat,
            },
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.translationData.lblDates
         }
     }]
   }
@@ -542,6 +582,10 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
           displayFormats: {
             day:  this.chartLabelDateFormat,
            },
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.translationData.lblDates
         }
     }]
   }
@@ -578,6 +622,10 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
           displayFormats: {
             day:  this.chartLabelDateFormat,
            },
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.translationData.lblDates
         }
     }]
   }
@@ -1181,6 +1229,10 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
            displayFormats: {
              day:  this.chartLabelDateFormat,
             },
+         },
+         scaleLabel: {
+           display: true,
+           labelString: this.translationData.lblDates
          }
      }];
     this.barChartData1= [
@@ -1218,6 +1270,10 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
          displayFormats: {
            day:  this.chartLabelDateFormat,
           },
+       },
+       scaleLabel: {
+         display: true,
+         labelString: this.translationData.lblDates
        }
    }];
     this.barChartData2= [
@@ -1254,6 +1310,10 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
           displayFormats: {
             day:  this.chartLabelDateFormat,
            },
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.translationData.lblDates
         }
      }];
     this.barChartData3= [
@@ -1290,6 +1350,10 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
          displayFormats: {
            day:  this.chartLabelDateFormat,
           },
+       },
+       scaleLabel: {
+         display: true,
+         labelString: this.translationData.lblDates
        }
    }];
      this.barChartData4= [
@@ -1325,6 +1389,10 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
         displayFormats: {
           day:  this.chartLabelDateFormat,
          },
+      },
+      scaleLabel: {
+        display: true,
+        labelString: this.translationData.lblDates
       }
   }];
   this.barChartData6= [{ data: this.idleDuration, label: this.translationData.lblMinutes || 'Minutes', backgroundColor: '#7BC5EC',
@@ -1359,6 +1427,10 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
       displayFormats: {
         day:  this.chartLabelDateFormat,
        },
+    },
+    scaleLabel: {
+      display: true,
+      labelString: this.translationData.lblDates
     }
 }];
      this.barChartData5= [
@@ -1394,6 +1466,10 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
           displayFormats: {
             day:  this.chartLabelDateFormat,
            },
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.translationData.lblDates
         }
     }]
     this.lineChartData1= [{ data: this.fuelConsumedChart, label: data1 },];
@@ -1426,6 +1502,10 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
           displayFormats: {
             day:  this.chartLabelDateFormat,
            },
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.translationData.lblDates
         }
     }]
     this.lineChartData2= [{ data: this.barData, label: this.translationData.lblNoOfTrips || 'Number Of Trips' }];
@@ -1456,6 +1536,10 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
         displayFormats: {
           day:  this.chartLabelDateFormat,
          },
+      },
+      scaleLabel: {
+        display: true,
+        labelString: this.translationData.lblDates
       }
   }]
     this.lineChartData3= [{ data: this.co2Chart, label: data2 },];
@@ -1485,6 +1569,10 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
           displayFormats: {
             day:  this.chartLabelDateFormat,
            },
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.translationData.lblDates
         }
     }]
     this.lineChartData4= [{ data: this.distanceChart, label: data3 }, ];
@@ -1514,6 +1602,10 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
           displayFormats: {
             day:  this.chartLabelDateFormat,
            },
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.translationData.lblDates
         }
     }]
     this.lineChartData5= [{ data: this.fuelConsumptionChart, label: data4 }, ];
@@ -1530,6 +1622,10 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
           displayFormats: {
             day:  this.chartLabelDateFormat,
            },
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.translationData.lblDates
         }
     }]
     this.lineChartOptions1.scales.yAxes[0].scaleLabel.labelString = this.translationData.lblMinutes || 'Minutes'
