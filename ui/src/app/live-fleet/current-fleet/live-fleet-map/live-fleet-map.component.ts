@@ -63,6 +63,7 @@ export class LiveFleetMapComponent implements OnInit {
   searchStr: null;
   suggestionData : any;
   @Input() filterData : any;
+  @Input() filterPOIData : any;
   globalPOIList : any = [];
   displayGlobalPOIList : any =[];
   prefTimeFormat: any; //-- coming from pref setting
@@ -273,9 +274,9 @@ export class LiveFleetMapComponent implements OnInit {
   }
 
   loadUserPOI() {
-    if(this.filterData){
-      if(this.filterData['userPois']){
-        this.userPOIList = this.makeUserCategoryPOIList(this.filterData['userPois']);
+    if(this.filterPOIData){
+      if(this.filterPOIData['userPois']){
+        this.userPOIList = this.makeUserCategoryPOIList(this.filterPOIData['userPois']);
       }
       else{
         this.userPOIList = [];
@@ -289,9 +290,9 @@ export class LiveFleetMapComponent implements OnInit {
   }
 
   loadGlobalPOI(){
-    if(this.filterData){
-      if(this.filterData['globalPois']){
-        this.globalPOIList = this.makeUserCategoryPOIList(this.filterData['globalPois']);
+    if(this.filterPOIData){
+      if(this.filterPOIData['globalPois']){
+        this.globalPOIList = this.makeUserCategoryPOIList(this.filterPOIData['globalPois']);
       }
       else{
         this.globalPOIList = [];

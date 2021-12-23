@@ -42,6 +42,7 @@ export class CurrentFleetComponent implements OnInit {
   preferenceObject : any;
   _state: any;
   filterData : any;
+  filterPOIData : any;
   showLoadingIndicator: boolean = false;
 
   // detailsData =[
@@ -210,11 +211,11 @@ export class CurrentFleetComponent implements OnInit {
       this.hideLoader();
       let _preferencesData = data['userPreferences'];
       this.getTranslatedColumnName(_preferencesData);
-      this.getFilterData();
+      this.getFilterPOIData();
     }, (error)=>{
       console.log('Pref not found...');
       this.hideLoader();
-      this.getFilterData();
+      this.getFilterPOIData();
     });
   }
 
@@ -287,6 +288,19 @@ export class CurrentFleetComponent implements OnInit {
     }, (err) => {
       this.hideLoader();
     });
+  }
+
+  getFilterPOIData(){
+    this.showLoadingIndicator = true;
+    this.reportService.getFilterPOIDetails().subscribe((data: any) => {
+      this.hideLoader();
+      this.filterPOIData = data;
+      this.getFleetOverviewDetails();
+    }, (error) => {
+      this.hideLoader();
+      this.getFleetOverviewDetails();
+    });
+
   }
 
   getFilterData(){
