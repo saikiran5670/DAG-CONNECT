@@ -54,17 +54,7 @@ export class DriverManagementComponent implements OnInit {
   localStLanguage: any;
   actionType: any = '';
   showLoadingIndicator: any = false;
-  consentSelectionList: any = [
-    {
-      name: 'All'
-    },
-    {
-      name: 'Opt-In'
-    },
-    {
-      name: 'Opt-Out'
-    }
-  ];
+  consentSelectionList: any = [];
   selectedConsentType: any = '';
   importedDriverlist: any = [];
   rejectedDriverList: any = [];
@@ -109,7 +99,23 @@ export class DriverManagementComponent implements OnInit {
       this.loadDriverData();
       this.getOrganizationDetail();
       this.setConsentDropdown();
+      this.getConsentList();
     });
+    
+  }
+
+  getConsentList() {
+    this.consentSelectionList= [
+      {
+        name: this.translationData.lblAll
+      },
+      {
+        name: this.translationData.lblOptIn
+      },
+      {
+        name: this.translationData.lblOptOut
+      }
+    ];
   }
 
   getOrganizationDetail(){
