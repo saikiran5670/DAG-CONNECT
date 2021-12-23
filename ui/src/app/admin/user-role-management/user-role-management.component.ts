@@ -11,6 +11,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { ActiveInactiveDailogComponent } from 'src/app/shared/active-inactive-dailog/active-inactive-dailog.component';
+import { Util } from 'src/app/shared/util';
 
 @Component({
   selector: 'app-user-role-management',
@@ -151,6 +152,15 @@ export class UserRoleManagementComponent implements OnInit {
                 data.roleName.toString().toLowerCase().includes(filter) ||  data.description.toString().toLowerCase().includes(filter)
               );
             };
+            this.dataSource.sortData = (data: String[], sort: MatSort) => {
+              const isAsc = sort.direction === 'asc';
+              return data.sort((a: any, b: any) => {
+                  let columnName = sort.active;
+                return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
+              });
+
+          }
+
 
       });
     }, (error) => {
@@ -159,6 +169,16 @@ export class UserRoleManagementComponent implements OnInit {
     });
 
   }
+
+  compare(a: any, b: any, isAsc: boolean, columnName:any) {
+    if(columnName === 'roleName' || columnName ==='description'){
+      if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toUpperCase();
+      if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toUpperCase();
+    }
+
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  }
+
 
 
   getNewTagData(data: any){

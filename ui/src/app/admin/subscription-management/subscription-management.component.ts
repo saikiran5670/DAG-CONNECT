@@ -113,7 +113,7 @@ export class SubscriptionManagementComponent implements OnInit {
           }),
           observe: "response" as 'body',
       };
-      return this.httpClient.post(`${this.domainUrl}`, null, httpOptions);
+      return this.httpClient.post(`${this.domainUrl}`, { "featureName": "Shop"}, httpOptions);
     }
 
   // defaultTranslation(){
