@@ -56,7 +56,7 @@ export class DashboardVehicleUtilisationComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: 'Vehicles'    
+          labelString: this.translationData.lblVehicles    
         }
         }
       ],
@@ -84,7 +84,7 @@ export class DashboardVehicleUtilisationComponent implements OnInit {
       // },          
       scaleLabel: {
         display: true,
-        labelString: 'Dates'   
+        labelString: this.translationData.lblDate   
       }      
     }]
       }
@@ -111,7 +111,7 @@ export class DashboardVehicleUtilisationComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: 'km'    
+          labelString: this.translationData.lblkms    
         }
         }
       ],
@@ -130,7 +130,7 @@ export class DashboardVehicleUtilisationComponent implements OnInit {
               },
           scaleLabel: {
            display: true,
-           labelString: "Date",
+           labelString: this.translationData.lblDate,
           },  
     }]
     }
@@ -170,7 +170,7 @@ lineChartOptions = {
       },
       scaleLabel: {
         display: true,
-        labelString: 'Vehicles'    
+        labelString: this.translationData.lblVehicles    
       }
     }],
     xAxes: [{
@@ -189,7 +189,7 @@ lineChartOptions = {
     },           
     scaleLabel: {
       display: true,
-      labelString: 'Dates'   
+      labelString: this.translationData.lblDate   
     }      
   }]
   }
@@ -217,7 +217,7 @@ lineChartOptions2 = {
       },
       scaleLabel: {
         display: true,
-        labelString: 'Km'    
+        labelString: this.translationData.lblkms    
       }
     }],
     xAxes: [{
@@ -236,7 +236,7 @@ lineChartOptions2 = {
         },           
         scaleLabel: {
           display: true,
-          labelString: 'Dates'   
+          labelString: this.translationData.lblDate   
         }      
   }]
   }
@@ -1130,10 +1130,10 @@ if(this.prefTimeFormat == 12){
 
   let label3;
   if(this.prefUnitFormat == 'dunit_Metric'){
-    label3 = 'Km'
+    label3 = this.translationData.lblkms
   }
   else{
-    label3 = 'Miles'
+    label3 = this.translationData.lblmile
   }
   if(this.mileageDChartType =='doughnut'){
     this.doughnutChartLabels2 = [`${this.translationData.lblFullUtilisation || 'Full Utilisation'} >${this.reportMapService.convertDistanceUnits(this.totalThresholdDistance,this.prefUnitFormat)}${label3}`,`${this.translationData.lblUnderUtilisation || 'Under Utilisation'} <${this.reportMapService.convertDistanceUnits(this.totalThresholdDistance,this.prefUnitFormat)}${label3}`];
@@ -1230,7 +1230,7 @@ if(this.prefTimeFormat == 12){
     let convertedTimeDisplay = '';
     if(convertedTime){
       if(convertedTime.indexOf(":") != -1){
-        convertedTimeDisplay = convertedTime.split(':')[0] + ' Hr ' + convertedTime.split(':')[1] + ' min';
+        convertedTimeDisplay = convertedTime.split(':')[0] + ' ' + this.translationData.lblHr + ' ' + convertedTime.split(':')[1] + ' ' + this.translationData.lblMin;
       }
     }
     else{
