@@ -329,12 +329,12 @@
               matSort #exporter="matTableExporter">
               <ng-container matColumnDef="select">
                 <mat-header-cell *matHeaderCellDef>
-                  <mat-checkbox (change)='$event ? masterToggleForEcoScore() : null' ></mat-checkbox>
+                  <mat-checkbox (change)='$event ? masterToggleForEcoScore() : null' [disabled]='initData.length > 4 ? true : null'></mat-checkbox>
                   <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll }}</span>
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row">
                   <span [ngClass]="{ 'marginLeft-14': row.newTag }"></span>
-                  <mat-checkbox (change)='rowSelected($event, row)'  [checked]='selectedEcoScore.isSelected(row)'></mat-checkbox>
+                  <mat-checkbox (change)='rowSelected($event, row)' [disabled]='row.disabled == true ? true : null'  [checked]='selectedEcoScore.isSelected(row)'></mat-checkbox>
                 </mat-cell>
               </ng-container>
               <ng-container *ngIf='showField.ranking' matColumnDef="ranking">
