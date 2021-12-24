@@ -179,10 +179,10 @@ style='padding:10px; color:#fff; background: #5dc24e;'>
                     <mat-label>{{ translationData.lblDate || 'Date'}} <span class='mandatoryColor'>*</span></mat-label>
                     <mat-form-field appearance="outline" class="full-width">
                       <input matInput [(ngModel)]="scheduledDate" (dateChange)="changeScheduleDateEvent($event)"
-                      [min]="today" [matDatepicker]="startPicker" formControlName="date">
+                      [min]="minDate" [max]="maxDate" placeholder="Choose a date" [matDatepicker]="startPicker" formControlName="date">
                       <mat-datepicker-toggle matSuffix [for]="startPicker" style="margin-top: 5px;">
                       </mat-datepicker-toggle>
-                      <mat-datepicker #startPicker></mat-datepicker>
+                      <mat-datepicker #startPicker></mat-datepicker>                  
                     </mat-form-field>
                   </div>
                   <div class="areaWidth max-width-45-per" fxLayout="column" fxLayoutAlign="left"
@@ -190,7 +190,7 @@ style='padding:10px; color:#fff; background: #5dc24e;'>
                     <mat-label>{{ translationData.lblTime || 'Time'}} <span class='mandatoryColor'>*</span></mat-label>
                     <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" class="timepicker">
                       <span class='timeAdjustSpan'></span>
-                      <input class='inputBox' [(ngModel)]="scheduledTime" [format]="prefTimeFormat"
+                      <input class='inputBox' [(ngModel)]="scheduledTime" [format]="prefTimeFormat" [min]="minTime"
                         [ngxTimepicker]="toggleStartTimepicker" [disableClick]="true" formControlName="time" readonly
                         style="margin-top: 5px!important;">
                       <ngx-material-timepicker-toggle [for]="toggleStartTimepicker"></ngx-material-timepicker-toggle>

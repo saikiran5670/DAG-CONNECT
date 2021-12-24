@@ -16,7 +16,7 @@ import * as moment from 'moment-timezone';
 import { ScheduleConfirmComponent } from './schedule-confirm/schedule-confirm.component';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { OrganizationService } from '../../services/organization.service';
-
+import {formatDate } from '@angular/common';
 
 
 @Component({
@@ -49,8 +49,7 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
   scheduledDate: any;
   prefTimeFormat: any = 12; //-- coming from pref setting
   prefDateFormat: any = 'ddateformat_dd/mm/yyyy'; //-- coming from pref setting
-  prefTimeZone: any; //-- coming from pref setting  
-  schedulerData: any ={
+    schedulerData: any ={
     campaignName: "",
     vehicalName: "",
     baseLineId: "",
@@ -70,6 +69,7 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
   @Input('mdePopoverPositionX') positionX;
   @Input() prefDefaultTimeFormat: any;
   @Input() prefDefaultDateFormat: any;
+  @Input() prefTimeZone: any; //-- coming from pref setting  
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   dialogRef: MatDialogRef<ReleaseNoteComponent>;
@@ -84,8 +84,10 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
   displayMessage : any = '';
   formattedDate: any;
   adminRight:boolean;
-  
- 
+  minDate:any;
+  maxDate:any;
+  minTime:any;
+  newDateFormat:any;
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats,private translationService: TranslationService, public fb: FormBuilder, private dialog: MatDialog, private dialogService: ConfirmDialogService,
     private otaSoftwareService: OtaSoftwareUpdateService, private organizationService: OrganizationService) {
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
@@ -109,7 +111,7 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
     this.schedulerForm = this.fb.group({
       date: [''],
       time: ['']
-    });
+    });   
     this.breadcumMsg = this.getBreadcum();    
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
@@ -144,11 +146,11 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
     }
     this.setDefaultStartEndTime();
     this.setPrefFormatDate();
-    this.setDefaultTodayDate();
+    this.setDefaultTodayDate();   
   }
 
   ngOnChanges() {
-    this.loadVehicleDetailsData(this.selectedVehicleUpdateDetailsData);
+     this.loadVehicleDetailsData(this.selectedVehicleUpdateDetailsData);
   }
 
   setDefaultStartEndTime() {
@@ -184,26 +186,31 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
       case 'dd/mm/yyyy': {
         this.dateFormats.display.dateInput = "DD/MM/YYYY";
         this.dateFormats.parse.dateInput = "DD/MM/YYYY";
+        this.newDateFormat = "dd/MM'yyyy";
         break;
       }
       case 'mm/dd/yyyy': {
         this.dateFormats.display.dateInput = "MM/DD/YYYY";
         this.dateFormats.parse.dateInput = "MM/DD/YYYY";
+        this.newDateFormat = "MM/dd/yyyy";
         break;
       }
       case 'dd-mm-yyyy': {
         this.dateFormats.display.dateInput = "DD-MM-YYYY";
         this.dateFormats.parse.dateInput = "DD-MM-YYYY";
+        this.newDateFormat = "dd-MM-yyyy";
         break;
       }
       case 'mm-dd-yyyy': {
         this.dateFormats.display.dateInput = "MM-DD-YYYY";
         this.dateFormats.parse.dateInput = "MM-DD-YYYY";
+        this.newDateFormat = "MM-dd-yyyy";
         break;
       }
       default: {
         this.dateFormats.display.dateInput = "MM/DD/YYYY";
         this.dateFormats.parse.dateInput = "MM/DD/YYYY";
+        this.newDateFormat = "MM/dd/yyyy";
       }
     }
   }
@@ -262,13 +269,13 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
   }
 
   loadVehicleDetailsData(selectedVehicleUpdateDetailsData: any) {
-    this.initData=[];
+    this.initData=[];   
     this.showLoadingIndicator = true;
-    if (selectedVehicleUpdateDetailsData) {
+     if (selectedVehicleUpdateDetailsData) {
       var todaysDate = moment();
       todaysDate = Util.convertUtcToDateFormat(todaysDate,this.dateFormats.display.dateInput, this.prefTimeZone);
       selectedVehicleUpdateDetailsData.campaigns.forEach(element => {
-        if (element.endDate) {        
+        if (element.endDate) {            
           element.endDate = Util.convertUtcToDateFormat(element.endDate,this.dateFormats.display.dateInput, this.prefTimeZone);
          if(moment(element.endDate).isBefore(todaysDate)){
             element.campaignOverFlag = true;
@@ -285,11 +292,11 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
           element.scheduleDateTime = '-';
         }
 
-      });
+      });     
       this.initData = selectedVehicleUpdateDetailsData.campaigns;
       this.selectedVin = this.selectedVehicleUpdateDetails.vin;
       this.adminRight = this.selectedVehicleUpdateDetails.isAdminRight;
-      this.selectedVehicalName = this.selectedVehicleUpdateDetails.vehicleName;
+      this.selectedVehicalName = this.selectedVehicleUpdateDetails.vehicleName;    
       this.updateDataSource(this.initData);
     }
     this.hideloader();
@@ -352,15 +359,35 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
       console.log("error:: ", error)
     });
   }
-
-  openScheduler(rowData: any) {   
+ 
+  openScheduler(rowData: any) {
+  this.minDate = new Date();  
+  this.maxDate= new Date(rowData.endDate); 
+  if (this.prefTimeFormat == 24) {
+    this.minTime = "00:00";
+  } else {
+    this.minTime = "12:00 AM";
+  }
   this.schedulerData.campaignName = rowData.campaignSubject;
   this.schedulerData.baseLineId = rowData.baselineAssignmentId;
   this.schedulerData.campaignID = rowData.campaignID;
-  this.schedulerData.vin = this.selectedVin;  
+  this.schedulerData.vin = this.selectedVin; 
   }
  
   changeScheduleDateEvent (event: MatDatepickerInputEvent<any>) {
+    let currentDate = formatDate(this.minDate, this.newDateFormat, 'en-US');
+    let currentTime = formatDate(this.minDate, 'HH:MM', 'en-US');
+    let selectedDate = formatDate(event.value, this.newDateFormat, 'en-US');  
+    if(selectedDate != currentDate){
+      if (this.prefTimeFormat == 24) {
+        this.minTime = "00:00";
+      } else {
+        this.minTime = "12:00 AM";
+      }
+    }
+    else{
+         this.minTime = currentTime;
+    }
     this.scheduledDate = this.setStartEndDateTime(event.value._d, this.scheduledTime, 'start');
   }
 
@@ -412,7 +439,7 @@ onCancel(){
   // this.trigger.destroyPopover();
 }
 showConfirmDailog(schedulerData: any) {
-  let scheduledDateTime = this.scheduledDate +  this.scheduledTime;
+  let scheduledDateTime = this.scheduledDate +  this.scheduledTime; 
   this.formattedDate = moment(this.scheduledDate).format(this.dateFormats.display.dateInput).toString();
   const isoDate = moment(this.formattedDate +' '+ this.scheduledTime).toISOString();
   this.schedulerData.scheduleDateTime = isoDate;
@@ -428,7 +455,7 @@ showConfirmDailog(schedulerData: any) {
       scheduledDate:this.formattedDate,
       scheduledTime:this.scheduledTime
     }
-
+    
     this.dialogRefConfirm = this.dialog.open(ScheduleConfirmComponent, dialogScheduler);
     this.dialogRefConfirm.afterClosed().subscribe(res => {
       this.showLoadingIndicator = true;
@@ -442,7 +469,7 @@ showConfirmDailog(schedulerData: any) {
             if (data  && data.vehicleUpdateDetails && data.vehicleUpdateDetails !== null) {
               this.loadVehicleDetailsData(data)
             }
-
+        
           }, (error) => {
             this.hideloader();
           })

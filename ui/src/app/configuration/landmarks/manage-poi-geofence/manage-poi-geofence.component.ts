@@ -274,16 +274,21 @@ export class ManagePoiGeofenceComponent implements OnInit {
       let marker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: this.getSVGIcon() });
       this.map.addObject(marker);
       var bubble;
+      console.log('t1',this.translationData);
+      let translatedPoiName = this.translationData.lblPOIName;
+      let translatedCategory = this.translationData.lblCategory;
+      let translatedSubCategory = this.translationData.lblSubCategory;
+      let translatedAddress = this.translationData.lblAddress;
       marker.addEventListener('pointerenter', function (evt) {
         // event target is the marker itself, group is a parent event target
         // for all objects that it contains
         bubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
           // read custom data
           content:`<div>
-            POI Name: <b>${element.name}</b><br>
-            Category: <b>${element.categoryName}</b><br>
-            Sub-Category: <b>${element.subCategoryName}</b><br>
-            Address: <b>${element.address}</b>
+            ${translatedPoiName}: <b>${element.name}</b><br>
+            ${translatedCategory}: <b>${element.categoryName}</b><br>
+            ${translatedSubCategory}: <b>${element.subCategoryName}</b><br>
+            ${translatedAddress}: <b>${element.address}</b>
           </div>`
         });
         // show info bubble

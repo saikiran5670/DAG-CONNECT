@@ -156,7 +156,7 @@
         </mat-card>   
     </div>
     <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
-    <app-vehicle-update-details *ngIf="showVehicalDetails" [translationData]='translationData'
+    <app-vehicle-update-details *ngIf="showVehicalDetails" [translationData]='translationData' [prefTimeZone]='prefTimeZone'
     [actionType]='actionType'  [selectedVehicleUpdateDetails]='selectedVehicleUpdateDetails' [selectedVehicleUpdateDetailsData]='selectedVehicleUpdateDetailsData' 
     (backToPage)='onBackToPage($event)' [prefDefaultTimeFormat]='prefTimeFormat' [prefDefaultDateFormat]='prefDateFormat' ></app-vehicle-update-details>
   </div> 
