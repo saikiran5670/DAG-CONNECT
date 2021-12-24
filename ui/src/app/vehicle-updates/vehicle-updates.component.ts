@@ -167,7 +167,7 @@ export class VehicleUpdatesComponent implements OnInit {
     let vehicleStatusObj = {
       languageCode: 'en',
       retention: 'active'
-    }  
+    }     
       this.otaSoftwareUpdateService.getVehicleStatusList(vehicleStatusObj).subscribe((data) => {
       this.showLoadingIndicator = false;
       this.vehicleStatusList = data["vehicleStatusList"];
@@ -248,6 +248,7 @@ export class VehicleUpdatesComponent implements OnInit {
     this.showLoadingIndicator = true;
     this.showVehicalDetails = true;   
        // Uncomment for Actual API
+    this.selectedVehicleUpdateDetailsData=[];
     this.otaSoftwareUpdateService.getvehicleupdatedetails(selectedVehicleUpdateDetails.vin).subscribe((data: any) => {
       // this.otaSoftwareUpdateService.getvehicleupdatedetails('XLR000000BE000080').subscribe((data: any) => {
         if (data  && data.vehicleUpdateDetails && data.vehicleUpdateDetails !== null) {

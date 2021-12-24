@@ -121,7 +121,7 @@ export class FleetkpiComponent implements OnInit {
             var dataset = data['datasets'][0];
             var percent = 100;
            // let icon = '<i class="fas fa-sort-down"></i>'
-           return 'Last Change: ' + percent;
+           return this.translationData.lblLastChange+': ' + percent;
           }
         },
         filter: function(item, data) {
@@ -190,7 +190,7 @@ export class FleetkpiComponent implements OnInit {
               var dataset = data['datasets'][0];
               var percent = 100;
              // let icon = '<i class="fas fa-sort-down"></i>'
-             return 'Last Change: ' + percent;
+             return this.translationData.lblLastChange+': ' + percent;
             }
           },
           filter: function(item, data) {
@@ -260,7 +260,7 @@ export class FleetkpiComponent implements OnInit {
             var dataset = data['datasets'][0];
             var percent = 100;
            // let icon = '<i class="fas fa-sort-down"></i>'
-           return 'Last Change: ' + percent;
+           return this.translationData.lblLastChange+': ' + percent;
           }
         },
         filter: function(item, data) {
@@ -694,10 +694,10 @@ export class FleetkpiComponent implements OnInit {
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
-            let _str = `<div class='dashboardTT'><div>Target: ` + targetValue.toFixed(2) + ` T`+
+            let _str = `<div class='dashboardTT'><div>`+this.translationData.lblTarget+`: ` + targetValue.toFixed(2) + ` `+this.translationData.lblton+
             `</div>`;
             if(showLastChange){
-              _str += `<div>Last Change: ` + lastChangePercent.toFixed(2) + '%'+
+              _str += `<div>`+this.translationData.lblLastChange+`: ` + lastChangePercent.toFixed(2) + '%'+
               `<span>${caretIcon}</span></div>`;
             }
             tooltipEl.innerHTML = _str;
@@ -921,10 +921,10 @@ export class FleetkpiComponent implements OnInit {
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
-            let _str = `<div class='dashboardTT'><div>Target: ` +  convertTargetValue + 
+            let _str = `<div class='dashboardTT'><div>`+this.translationData.lblTarget+`: ` +  convertTargetValue + 
             `</div>`;
             if(showLastChange){
-              _str += `<div>Last Change: ` + lastChangePercent.toFixed(2) + '%'+
+              _str += `<div>`+this.translationData.lblLastChange+`: ` + lastChangePercent.toFixed(2) + '%'+
               `<span>${caretIcon}</span></div>`;
             }
            
@@ -1149,10 +1149,10 @@ export class FleetkpiComponent implements OnInit {
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
-            let _str = `<div class='dashboardTT'><div>Target: ` + convertTargetValue + 
+            let _str = `<div class='dashboardTT'><div>`+this.translationData.lblTarget+`: ` + convertTargetValue + 
             '</div>';
             if(showLastChange){
-              _str += `<div>Last Change: ` + lastChangePercent.toFixed(2) + '%'+
+              _str += `<div>`+this.translationData.lblLastChange+`: ` + lastChangePercent.toFixed(2) + '%'+
               `<span>${caretIcon}</span></div>`;
             }
             tooltipEl.innerHTML = _str;
@@ -1375,10 +1375,10 @@ export class FleetkpiComponent implements OnInit {
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
-            let _str =  `<div class='dashboardTT'><div>Target: ` + (targetValue)+ ' '+ targetUnit +
+            let _str =  `<div class='dashboardTT'><div>`+this.translationData.lblTarget+`: ` + (targetValue)+ ' '+ targetUnit +
             '</div>';
             if(showLastChange){
-              _str += `<div>Last Change: ` + lastChangePercent.toFixed(2) + '%'+
+              _str += `<div>`+this.translationData.lblLastChange+`: ` + lastChangePercent.toFixed(2) + '%'+
             `<span>${caretIcon}</span></div>`;
             }
             tooltipEl.innerHTML = _str;
@@ -1603,10 +1603,10 @@ export class FleetkpiComponent implements OnInit {
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
-            let _str = `<div class='dashboardTT'><div>Target: ` + (targetValue) + ` ` + targetUnit
+            let _str = `<div class='dashboardTT'><div>`+this.translationData.lblTarget+`: ` + (targetValue) + ` ` + targetUnit
             '</div>';
             if(showLastChange){
-              _str += '<div>Last Change: ' + lastChangePercent.toFixed(2) + '%'+
+              _str += '<div>'+this.translationData.lblLastChange+': ' + lastChangePercent.toFixed(2) + '%'+
               `<span>${caretIcon}</span></div>`;
             }
             tooltipEl.innerHTML = _str;
@@ -1828,10 +1828,10 @@ export class FleetkpiComponent implements OnInit {
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
-            let _str =  `<div class='dashboardTT'><div>Target: ` + (targetValue) + ' ' + targetUnit
+            let _str =  `<div class='dashboardTT'><div>`+this.translationData.lblTarget+`: ` + (targetValue) + ' ' + targetUnit
             '</div>';
             if(showLastChange){
-              _str += '<div>Last Change: ' + lastChangePercent.toFixed(2) + '%'+
+              _str += '<div>'+this.translationData.lblLastChange+': ' + lastChangePercent.toFixed(2) + '%'+
               `<span>${caretIcon}</span></div>`;
             }
             tooltipEl.innerHTML = _str;
@@ -2053,10 +2053,10 @@ export class FleetkpiComponent implements OnInit {
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
-            let _str = `<div class='dashboardTT'><div>Target: ` + targetValue + ' ' + targetUnit;
+            let _str = `<div class='dashboardTT'><div>`+this.translationData.lblTarget+`: ` + targetValue + ' ' + targetUnit;
             '</div>';
             if(showLastChange){
-              _str += '<div>Last Change: ' + lastChangePercent.toFixed(2) + '%'+
+              _str += '<div>'+this.translationData.lblLastChange+': ' + lastChangePercent.toFixed(2) + '%'+
               `<span>${caretIcon}</span></div>`;
             }
             tooltipEl.innerHTML = _str;
@@ -2325,7 +2325,7 @@ export class FleetkpiComponent implements OnInit {
     let convertedTimeDisplay = '';
     if(convertedTime){
       if(convertedTime.indexOf(":") != -1){
-        convertedTimeDisplay = convertedTime.split(':')[0] + ' Hr ' + convertedTime.split(':')[1] + ' min';
+        convertedTimeDisplay = convertedTime.split(':')[0] + ' ' + this.translationData.lblHr + ' ' + convertedTime.split(':')[1] + ' '+this.translationData.lblMin;
       }
     }
     else{

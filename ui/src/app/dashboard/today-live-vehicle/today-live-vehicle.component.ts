@@ -307,7 +307,7 @@ doughnutDistanceColors: Color[] = [
     let convertedTimeDisplay = '';
     if(convertedTime){
       if(convertedTime.indexOf(":") != -1){
-        convertedTimeDisplay = convertedTime.split(':')[0] + ' hr ' + convertedTime.split(':')[1] + ' min';
+        convertedTimeDisplay = convertedTime.split(':')[0] + ' ' + this.translationData.lblHr + ' ' + convertedTime.split(':')[1] + ' ' + this.translationData.lblMin;
       }
     }
     else{
@@ -389,8 +389,8 @@ doughnutDistanceColors: Color[] = [
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
-            tooltipEl.innerHTML = `<div class='dashboardTT'><div>Target: ` + vehicleTarget + 
-            '</div><div>Last Change: ' + activeVehicleChangePercent.toFixed(2) + '%'+
+            tooltipEl.innerHTML = `<div class='dashboardTT'><div>`+this.translationData.lblTarget+`: ` + vehicleTarget + 
+            '</div><div>'+this.translationData.lblLastChange+': ' + activeVehicleChangePercent.toFixed(2) + '%'+
             `<span>${caretIcon}</span></div>`;
             this._chart.canvas.parentNode.appendChild(tooltipEl);
           }
@@ -556,7 +556,7 @@ doughnutDistanceColors: Color[] = [
     let timeRateTarget = '';
     if(timeTarget){
       if(timeTarget.indexOf(":") != -1){
-        timeRateTarget = timeTarget.split(':')[0] + ' Hr ' + timeTarget.split(':')[1] + ' min';
+        timeRateTarget = timeTarget.split(':')[0] + ' ' + this.translationData.lblHr + ' ' + timeTarget.split(':')[1] + ' ' + this.translationData.lblMin;
       }
     }
     else{
@@ -565,7 +565,7 @@ doughnutDistanceColors: Color[] = [
     let _timeBasedRate = Util.getHhMmTimeFromMS(todayTimeRate);
     if(_timeBasedRate){
       if(_timeBasedRate.indexOf(":") != -1){
-        this.timeBasedRate = _timeBasedRate.split(':')[0] + ' Hr ' + _timeBasedRate.split(':')[1] + ' min';
+        this.timeBasedRate = _timeBasedRate.split(':')[0] + ' ' + this.translationData.lblHr + ' ' + _timeBasedRate.split(':')[1] + ' ' + this.translationData.lblMin;
       }
     }else{
       this.timeBasedRate = '--';
@@ -617,8 +617,8 @@ doughnutDistanceColors: Color[] = [
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
-            tooltipEl.innerHTML = `<div class='dashboardTT'><div>Target: ` + timeRateTarget + 
-            '</div><div>Last Change: ' + timeChangePercent.toFixed(2) + '%'+
+            tooltipEl.innerHTML = `<div class='dashboardTT'><div>`+this.translationData.lblTarget+`: ` + timeRateTarget + 
+            '</div><div>'+this.translationData.lblLastChange+': ' + timeChangePercent.toFixed(2) + '%'+
             `<span>${caretIcon}</span></div>`;
             this._chart.canvas.parentNode.appendChild(tooltipEl);
           }
@@ -830,8 +830,8 @@ doughnutDistanceColors: Color[] = [
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
-            tooltipEl.innerHTML = `<div class='dashboardTT'><div>Target: ` + distanceTarget + 
-            '</div><div>Last Change: ' + changePercent.toFixed(2) + '%'+
+            tooltipEl.innerHTML = `<div class='dashboardTT'><div>`+this.translationData.lblTarget+`: ` + distanceTarget + 
+            '</div><div>'+this.translationData.lblLastChange+': ' + changePercent.toFixed(2) + '%'+
             `<span>${caretIcon}</span></div>`;
             //this.chart3.ElementRef.nativeElement.appendChild()
             this._chart.canvas.parentNode.appendChild(tooltipEl);
