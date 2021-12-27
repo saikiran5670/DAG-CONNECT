@@ -55,14 +55,14 @@
                     <ng-container *ngTemplateOutlet='viewStatusColumnElements; context: {rowData: row}'></ng-container>
                 </mat-cell>
             </ng-container>
-          
+
             <ng-container *ngIf="column == 'action'">
                 <mat-header-cell *matHeaderCellDef style="word-break: break-all;">
                     <span>{{ columnLabels[i] == 'Connected' ? translationData['lbl'+columnLabels[i]] + '(On/Off)' : translationData['lbl'+columnLabels[i]] }}</span>
-                    <!-- {{ translationData['lbl'+columnLabels[i]] }} -->                
+                    <!-- {{ translationData['lbl'+columnLabels[i]] }} -->
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row">
-                    <!-- Action Column template elements will be printed here -->             
+                    <!-- Action Column template elements will be printed here -->
                     <ng-container *ngTemplateOutlet='actionColumnElements; context: {rowData: row}'></ng-container>
                 </mat-cell>
             </ng-container>
@@ -74,15 +74,15 @@
                     <ng-container *ngTemplateOutlet='action2ColumnElements; context: {rowData: row}'></ng-container>
                 </mat-cell>
             </ng-container>
-                      
+
             <ng-container *ngIf="column == 'nextScheduleRunDate'">
                 <mat-header-cell *matHeaderCellDef mat-sort-header style="word-break: break-all;">{{ translationData['lbl'+columnLabels[i]] }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                     <ng-container *ngTemplateOutlet='nextScheduleRunDateColumnElements; context: {rowData: row}'></ng-container>
                 </mat-cell>
            </ng-container>
-            <ng-container *ngIf="column == 'isExclusive'">
-                <mat-header-cell *matHeaderCellDef style="word-break: break-all;">{{ translationData['lbl'+columnLabels[i]]  }}
+            <ng-container  *ngIf="column == 'isExclusive'">
+                <mat-header-cell mat-sort-header *matHeaderCellDef style="word-break: break-all;">{{ translationData['lbl'+columnLabels[i]]  }}
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row">{{ row.isExclusive ? translationData.lblExclusive : translationData.lblInclusive }}</mat-cell>
            </ng-container>

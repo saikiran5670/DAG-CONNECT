@@ -222,7 +222,7 @@ export class DataTableComponent implements OnInit {
 
     }
 
-    if(columnName === "reportName" || columnName === "vehicleGroupAndVehicleList"){
+    if(columnName === "reportName" || columnName === "name" ||columnName === "vehicleGroupAndVehicleList"){
       if (!(a instanceof Number)) a = a ?  a.replace(/[^\w\s]/gi, 'z').toString().toUpperCase() : '';
       if (!(b instanceof Number)) b = b ?  b.replace(/[^\w\s]/gi, 'z').toString().toUpperCase() : '';
 
@@ -237,7 +237,7 @@ export class DataTableComponent implements OnInit {
 //  }
 
 // tryThis(a, b, isAsc?, col?){
-  
+
 // };
 
 
