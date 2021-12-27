@@ -139,12 +139,12 @@ style='padding:10px; color:#fff; background: #5dc24e;'>
           <ng-container matColumnDef="action">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAction || 'Action' }} </mat-header-cell>
             <mat-cell *matCellDef="let row">
-              <button class='actionBtn' mat-flat-button (click)="releaseNote(row)" matTooltip="View Release Note">
+              <button class='actionBtn' mat-flat-button (click)="releaseNote(row)" matTooltip="{{ translationData.lbllblViewReleaseNote || 'View Release Note' }}">
                 <mat-icon>message</mat-icon>
               </button>
               <mde-popover-target #appElement="mdePopoverTarget">
-              <div matTooltip="{{row.campaignOverFlag ? 'Not allowed, campaign date has passed' : 'Click to Schedule'}}">
-                <button *ngIf="row.scheduleDateTime == '-'" [disabled]="row.campaignOverFlag == true" class='actionBtn' class="target" mat-flat-button
+              <div matTooltip="{{ row.campaignOverFlag ? 'Not allowed, campaign date has passed' : translationData.lblClicktoschedule }}">
+                <button *ngIf="row.scheduleDateTime == '-'" [disabled]="row.campaignOverFlag == true" class='actionBtn target' mat-flat-button
                   [mdePopoverTriggerFor]="schedulerPopover" mdePopoverTriggerOn="click" [mdePopoverTargetAt]="appElement"
                   #popoverTrigger="mdePopoverTrigger" (click)="openScheduler(row)" >
                   <mat-icon [attr.style]="(row.campaignOverFlag == true ? 'color: unset !important' : '') | safeStyle">date_range</mat-icon>
@@ -152,7 +152,7 @@ style='padding:10px; color:#fff; background: #5dc24e;'>
               </div>
             </mde-popover-target>
               <button style="margin-left: 14px;" *ngIf="row.scheduleDateTime !== '-' " class='actionBtn' mat-flat-button
-                matTooltip="Scheduled">
+                matTooltip="{{ translationData.lblScheduled || 'Scheduled' }}">
                 <mat-icon>check</mat-icon>
               </button>
             </mat-cell>
@@ -170,7 +170,7 @@ style='padding:10px; color:#fff; background: #5dc24e;'>
           <mat-card class='mat-elevation-z no-padding'>
             <mat-card-content style="padding: 20px;">
               <span>{{ translationData.lblScheduleDetails || 'Schedule Details'}}</span>
-              <mat-icon style='cursor: pointer; float: right;' matTooltip="Close" (click)="onCancel()">close</mat-icon>
+              <mat-icon style='cursor: pointer; float: right;' matTooltip="{{ translationData.lblClose || 'Close' }}" (click)="onCancel()">close</mat-icon>
               <div class="areaWidth full-width" fxLayout="column" fxLayoutAlign="left">
                 <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="3px"
                   style='padding: 10px !important; background: #ECF7FE;'>
@@ -190,7 +190,7 @@ style='padding:10px; color:#fff; background: #5dc24e;'>
                     <mat-label>{{ translationData.lblTime || 'Time'}} <span class='mandatoryColor'>*</span></mat-label>
                     <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" class="timepicker">
                       <span class='timeAdjustSpan'></span>
-                      <input class='inputBox' [(ngModel)]="scheduledTime" [format]="prefTimeFormat" [min]="minTime"
+                      <input class='inputBox' [(ngModel)]="scheduledTime" [format]="prefDefaultTimeFormat" [min]="minTime"
                         [ngxTimepicker]="toggleStartTimepicker" [disableClick]="true" formControlName="time" readonly
                         style="margin-top: 5px!important;">
                       <ngx-material-timepicker-toggle [for]="toggleStartTimepicker"></ngx-material-timepicker-toggle>
@@ -201,8 +201,8 @@ style='padding:10px; color:#fff; background: #5dc24e;'>
                 </div>
               </div>
               <div style="margin-top: 10px;">
-                <button mat-flat-button color="primary" style='margin-right: 10px;' (click)=onCancel()>{{ translationData.lblCancel || 'Cancel'}} </button>
-                <button mat-flat-button color="primary" style='margin-right: 10px;' (click)=onSubmitScheduler()>{{ translationData.lblSchedule || 'Schedule'}} 
+                <button mat-flat-button color="primary" style='margin-right: 10px;' (click)=onCancel()>{{ translationData.lblCancel || 'Cancel' }} </button>
+                <button mat-flat-button color="primary" style='margin-right: 10px;' (click)=onSubmitScheduler()>{{ translationData.lblSchedule || 'Schedule' }} 
                 </button>
               </div>
             </mat-card-content>

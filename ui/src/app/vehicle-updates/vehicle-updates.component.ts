@@ -49,7 +49,7 @@ export class VehicleUpdatesComponent implements OnInit {
   actionType: any;
   accountPrefObj: any;
   selectedVehicleUpdateDetails: any = [];
-  selectedVehicleUpdateDetailsData: any;
+  selectedVehicleUpdateDetailsData: any = {};
   viewVehicleUpdateDetailsFlag: boolean = false;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;  
@@ -239,23 +239,25 @@ export class VehicleUpdatesComponent implements OnInit {
 
 
   onViewVehicleList(rowData: any, type: any) {
-    this.actionType = type;
+    //this.actionType = type;
     this.selectedVehicleUpdateDetails = rowData;
-    this.getVehicleUpdateDetails(this.selectedVehicleUpdateDetails);
+    this.getVehicleUpdateDetails(this.selectedVehicleUpdateDetails, type);
   }
 
-  getVehicleUpdateDetails(selectedVehicleUpdateDetails: any) {
+  getVehicleUpdateDetails(selectedVehicleUpdateDetails: any, type?: any) {
     this.showLoadingIndicator = true;
     this.showVehicalDetails = true;   
        // Uncomment for Actual API
-    this.selectedVehicleUpdateDetailsData=[];
+    this.selectedVehicleUpdateDetailsData = {};
     this.otaSoftwareUpdateService.getvehicleupdatedetails(selectedVehicleUpdateDetails.vin).subscribe((data: any) => {
       // this.otaSoftwareUpdateService.getvehicleupdatedetails('XLR000000BE000080').subscribe((data: any) => {
-        if (data  && data.vehicleUpdateDetails && data.vehicleUpdateDetails !== null) {
+        if (data && data.vehicleUpdateDetails && data.vehicleUpdateDetails !== null) {
         this.selectedVehicleUpdateDetailsData = data.vehicleUpdateDetails;
       }
+      this.actionType = type;
       this.hideloader();
     }, (error) => {
+      this.actionType = type;
       this.hideloader();
       console.log("error:: ", error)
     });
