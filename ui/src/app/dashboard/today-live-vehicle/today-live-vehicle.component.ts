@@ -339,6 +339,9 @@ doughnutDistanceColors: Color[] = [
     let activeVehicleChangePercent = this.dashboardService.calculateLastChange(activeVehicleCount,yesterdayCount);
     let activeVehicleCaretColor = 'caretGreen';
     let caretIcon = ''
+    let transTarget = this.translationData.lblTarget;
+    let transTon = this.translationData.lblton;
+    let transLastChange = this.translationData.lblLastChange;
     if( activeVehicleChangePercent > 0){
       activeVehicleCaretColor = 'caretGreen';
       caretIcon = `<i class="fa fa-caret-up tooltipCaret caretClass ${activeVehicleCaretColor}"></i>`;
@@ -389,8 +392,8 @@ doughnutDistanceColors: Color[] = [
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
-            tooltipEl.innerHTML = `<div class='dashboardTT'><div>`+this.translationData.lblTarget+`: ` + vehicleTarget + 
-            '</div><div>'+this.translationData.lblLastChange+': ' + activeVehicleChangePercent.toFixed(2) + '%'+
+            tooltipEl.innerHTML = `<div class='dashboardTT'><div>${transTarget}: ` + vehicleTarget + 
+            '</div><div>'+transLastChange+': ' + activeVehicleChangePercent.toFixed(2) + '%'+
             `<span>${caretIcon}</span></div>`;
             this._chart.canvas.parentNode.appendChild(tooltipEl);
           }
@@ -576,6 +579,9 @@ doughnutDistanceColors: Color[] = [
 
     let activeVehicleCaretColor = 'caretGreen';
     let caretIcon = ''
+    let transTarget = this.translationData.lblTarget;
+    let transTon = this.translationData.lblton;
+    let transLastChange = this.translationData.lblLastChange;
     if( timeChangePercent > 0){
       activeVehicleCaretColor = 'caretGreen';
       caretIcon = `<i class="fa fa-caret-up tooltipCaret caretClass ${activeVehicleCaretColor}"></i>`;
@@ -617,8 +623,8 @@ doughnutDistanceColors: Color[] = [
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
-            tooltipEl.innerHTML = `<div class='dashboardTT'><div>`+this.translationData.lblTarget+`: ` + timeRateTarget + 
-            '</div><div>'+this.translationData.lblLastChange+': ' + timeChangePercent.toFixed(2) + '%'+
+            tooltipEl.innerHTML = `<div class='dashboardTT'><div>${transTarget}: ` + timeRateTarget + 
+            '</div><div>'+transLastChange+': ' + timeChangePercent.toFixed(2) + '%'+
             `<span>${caretIcon}</span></div>`;
             this._chart.canvas.parentNode.appendChild(tooltipEl);
           }
@@ -789,6 +795,9 @@ doughnutDistanceColors: Color[] = [
    
     let activeVehicleCaretColor = 'caretGreen';
     let caretIcon = ''
+    let transTarget = this.translationData.lblTarget;
+    let transTon = this.translationData.lblton;
+    let transLastChange = this.translationData.lblLastChange;
     if( changePercent > 0){
       activeVehicleCaretColor = 'caretGreen';
       caretIcon = `<i class="fa fa-caret-up tooltipCaret caretClass ${activeVehicleCaretColor}"></i>`;
@@ -830,8 +839,8 @@ doughnutDistanceColors: Color[] = [
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
-            tooltipEl.innerHTML = `<div class='dashboardTT'><div>`+this.translationData.lblTarget+`: ` + distanceTarget + 
-            '</div><div>'+this.translationData.lblLastChange+': ' + changePercent.toFixed(2) + '%'+
+            tooltipEl.innerHTML = `<div class='dashboardTT'><div>${transTarget}: ` + distanceTarget + 
+            '</div><div>'+transLastChange+': ' + changePercent.toFixed(2) + '%'+
             `<span>${caretIcon}</span></div>`;
             //this.chart3.ElementRef.nativeElement.appendChild()
             this._chart.canvas.parentNode.appendChild(tooltipEl);
