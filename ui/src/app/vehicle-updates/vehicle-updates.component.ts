@@ -114,7 +114,7 @@ export class VehicleUpdatesComponent implements OnInit {
       if (this.translationData != undefined) {
         vehicleSoftStatusArr.forEach(element => {
           if (element.enum == "U") {
-            element["value"] = 'Up-to-Date';
+            element["value"] = this.translationData[element["key"]]; // 'Up-to-Date';
           }
           else {
             element["value"] = this.translationData[element["key"]];
