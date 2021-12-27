@@ -151,7 +151,7 @@
 
       <app-data-table *ngIf="!showLoadingIndicator" [tableData]="initData" [translationData]="translationData"
       [columnCodes]="columnCodes" [columnLabels]="columnLabels" [actionColumnElements]="actionColumnElements" [topRightElements]="topRightElements" [topLeftElements]="topLeftElements"
-      [viewStatusColumnElements]="viewStatusColumnElements" [action2ColumnElements]="action2ColumnElements" [selectColumnDataElements]="selectColumnDataElements" [showExport]="false" #gridComp>
+      [nextScheduleRunDateColumnElements]="nextScheduleRunDateColumnElements" [action2ColumnElements]="action2ColumnElements" [selectColumnDataElements]="selectColumnDataElements" [showExport]="false" #gridComp>
       <ng-template #selectColumnDataElements let-gridData='rowData'>
         <ng-container *ngIf="gridData.hasOwned">
           <input type="checkbox" class="vehiclecheck" [disabled]='gridData.status == "T"' [value]="gridData.id" (change)="onCheckboxChange($event)" />
@@ -224,11 +224,11 @@
           </div>
         </ng-template>
     
-        <ng-template #viewStatusColumnElements let-gridData='rowData'>
+        <ng-template #nextScheduleRunDateColumnElements let-gridData='rowData'>
           <span *ngIf="gridData.status == 'O'">
             <img matTooltip="{{ translationData.lblOptOut  }}"
               src='assets/images/icons/vehicleStatus/Opt_Out.svg' style="width: 25px; height: 25px; margin-left: 5px;" />
-          </span>
+             </span>
           <span *ngIf="gridData.status == 'C'">
             <img matTooltip="{{ translationData.lblOptIn  }}" src='assets/images/icons/vehicleStatus/Opt_In.svg'
               style="width: 25px; height: 25px; margin-left: 5px;" />
@@ -236,7 +236,7 @@
           <span *ngIf="gridData.status == 'N'">
             <img matTooltip="{{ translationData.lblOptInOTA  }}"
               src='assets/images/icons/vehicleStatus/Ota+Optin.svg' style="width: 25px; height: 25px; margin-left: 5px;" />
-          </span>
+           </span>
           <span *ngIf="gridData.status == 'A'">
             <img matTooltip="{{ translationData.lblOTA }}" src='assets/images/icons/vehicleStatus/Ota.svg'
               style="width: 25px; height: 25px; margin-left: 5px;" />
@@ -244,7 +244,7 @@
           <span *ngIf="gridData.status == 'T'">
             <img matTooltip="{{ translationData.lblTerminate  }}"
               src='assets/images/icons/vehicleStatus/Terminate.svg' style="width: 25px; height: 25px; margin-left: 5px;" />
-          </span>
+              </span>
         </ng-template>
         
         <ng-template #actionColumnElements let-gridData='rowData'>

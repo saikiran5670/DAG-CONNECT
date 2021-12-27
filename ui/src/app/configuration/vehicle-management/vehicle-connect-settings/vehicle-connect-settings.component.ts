@@ -19,7 +19,7 @@ export class VehicleConnectSettingsComponent implements OnInit {
   actionType: any = '';
   selectedRowData: any = [];
   // displayedColumns: string[] = ['name', 'vin', 'licensePlateNumber', 'modelId', 'status', 'connected', 'terminated'];
-  columnCodes = ['select','name', 'vin', 'licensePlateNumber', 'modelId', 'viewstatus', 'action', 'action2'];
+  columnCodes = ['select','name', 'vin', 'licensePlateNumber', 'modelId', 'nextScheduleRunDate', 'action', 'action2'];
   columnLabels = ['','Vehicle','VIN', 'RegistrationNumber', 'Model', 'Status', 'Connected', 'Terminated'];
   @ViewChild('gridComp') gridComp: DataTableComponent;
   dataSource: any = new MatTableDataSource([]);
