@@ -14,7 +14,7 @@
 <div>
     <div class="full-width vehicleList-div" *ngIf='gridData'>
         <div class="vehicleList-icon">
-            <span id="steps" class="step-image" [innerHTML]="gridData.icon"  matTooltip="Health Status: {{gridData.vehicleHealthStatusType}} 
+            <span id="steps" class="step-image" [innerHTML]="gridData.icon"  matTooltip="{{translationData.lblHealthStatus}}: {{gridData.vehicleHealthStatusType}} 
             &#13; Alert: {{gridData.alertName}}"> </span>
         </div>
         <div class="vehicleList-details">

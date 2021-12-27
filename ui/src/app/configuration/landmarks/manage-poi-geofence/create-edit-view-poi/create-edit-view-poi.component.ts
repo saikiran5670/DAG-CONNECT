@@ -157,9 +157,9 @@ export class CreateEditViewPoiComponent implements OnInit {
       });
     this.breadcumMsg = this.getBreadcum(this.actionType);
     if(this.accessType && !this.accessType.globalPOIAccess){
-      this.types = ['Regular'];
+      this.types = [this.translationData.lblRegular];
     }else{
-      this.types = ['Regular', 'Global'];
+      this.types = [this.translationData.lblRegular, this.translationData.lblGlobal];
     }
 
     if(this.actionType == 'create'){
@@ -199,18 +199,18 @@ export class CreateEditViewPoiComponent implements OnInit {
     // create custom one
     var ms = new H.ui.MapSettingsControl({
         baseLayers : [ { 
-          label: this.translationData.lblNormal || "Normal", layer: this.defaultLayers.raster.normal.map
+          label: this.translationData.lblNormal, layer: this.defaultLayers.raster.normal.map
         },{
-          label: this.translationData.lblSatellite || "Satellite", layer: this.defaultLayers.raster.satellite.map
+          label: this.translationData.lblSatellite, layer: this.defaultLayers.raster.satellite.map
         }, {
-          label: this.translationData.lblTerrain || "Terrain", layer: this.defaultLayers.raster.terrain.map
+          label: this.translationData.lblTerrain, layer: this.defaultLayers.raster.terrain.map
         }
         ],
       layers : [{
-            label: this.translationData.lblLayerTraffic || "Layer.Traffic", layer: this.defaultLayers.vector.normal.traffic
+            label: this.translationData.lblLayerTraffic, layer: this.defaultLayers.vector.normal.traffic
         },
         {
-            label: this.translationData.lblLayerIncidents || "Layer.Incidents", layer: this.defaultLayers.vector.normal.trafficincidents
+            label: this.translationData.lblLayerIncidents, layer: this.defaultLayers.vector.normal.trafficincidents
         }
       ]
     });
