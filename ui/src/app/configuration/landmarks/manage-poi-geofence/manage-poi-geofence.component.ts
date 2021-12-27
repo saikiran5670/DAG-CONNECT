@@ -180,18 +180,28 @@ export class ManagePoiGeofenceComponent implements OnInit {
   }
 
   getBreadcumPOI() {
-    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} /
-    ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} /
-    ${this.translationData.lblLandmark ? this.translationData.lblLandmark : "Landmark"} /
-    ${this.translationData.lblImportPOI ? this.translationData.lblImportPOI : "Import POI"}`;
+    let transHome = this.translationData.lblHome;
+    let transConfiguration = this.translationData.lblConfiguration;
+    let transLandmark = this.translationData.lblLandmarks;
+    let transImportPOI = this.translationData.lblImportPOI;
+
+    return `${transHome} /
+    ${transConfiguration} /
+    ${transLandmark} /
+    ${transImportPOI}`;
   }
 
 
   getBreadcumGeofence() {
-    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} /
-    ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} /
-    ${this.translationData.lblLandmark ? this.translationData.lblLandmark : "Landmark"} /
-    ${this.translationData.lblImportGeofence ? this.translationData.lblImportGeofence : "Import Geofence"}`;
+    let transHome = this.translationData.lblHome;
+    let transConfiguration = this.translationData.lblConfiguration;
+    let transLandmark = this.translationData.lblLandmarks;
+    let transImportGeofence = this.translationData.lblImportGeofence;
+
+    return `${transHome} /
+    ${transConfiguration} /
+    ${transLandmark} /
+    ${transImportGeofence}`;
   }
 
   loadPoiData() {
@@ -334,7 +344,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
       if(element.type == "C"){ //-- add circular geofence on map
         this.marker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: this.getSVGIcon() });
         this.map.addObject(this.marker);
-        this.createResizableCircle(element.distance, element, this.ui);
+        this.createResizableCircle(element.distance, element,this, this.ui);
       }
       else{ //-- add polygon geofence on map
         let polyPoints: any = [];
@@ -348,7 +358,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
     });
   }
 
-  createResizableCircle(_radius: any, rowData: any, ui :any) {
+  createResizableCircle(_radius: any, rowData: any, thisRef: any,ui :any) {
     var circle = new H.map.Circle(
         { lat: rowData.latitude, lng: rowData.longitude },
         _radius,
@@ -376,12 +386,15 @@ export class ManagePoiGeofenceComponent implements OnInit {
     circle.addEventListener('pointerenter', function (evt) {
       // event target is the marker itself, group is a parent event target
       // for all objects that it contains
+      let transgeofencename = thisRef.translationData.lblGeofenceName;
+      let transcategory = thisRef.translationData.lblCategory;
+      let transsubcategory = thisRef.translationData.lblSubCategory;
       bubble =  new H.ui.InfoBubble({lat:rowData.latitude,lng:rowData.longitude}, {
         // read custom data
         content:`<div>
-          Geofence Name: <b>${rowData.name}</b><br>
-          Category: <b>${rowData.categoryName}</b><br>
-          Sub-Category: <b>${rowData.subCategoryName}</b><br>
+          ${transgeofencename}: <b>${rowData.name}</b><br>
+          ${transcategory}: <b>${rowData.categoryName}</b><br>
+          ${transsubcategory}: <b>${rowData.subCategoryName}</b><br>
         </div>`
       });
       // show info bubble
@@ -438,13 +451,15 @@ export class ManagePoiGeofenceComponent implements OnInit {
       }
       // show vertice markers
       verticeGroup.setVisibility(true);
-
+      let transgeofencename = thisRef.translationData.lblGeofenceName;
+      let transcategory = thisRef.translationData.lblCategory;
+      let transsubcategory = thisRef.translationData.lblSubCategory;
       bubble =  new H.ui.InfoBubble({ lat: rowData.latitude, lng: rowData.longitude } , {
         // read custom data
         content:`<div>
-          Geofence Name: <b>${rowData.name}</b><br>
-          Category: <b>${rowData.categoryName}</b><br>
-          Sub-Category: <b>${rowData.subCategoryName}</b><br>
+        ${transgeofencename}: <b>${rowData.name}</b><br>
+        ${transcategory}: <b>${rowData.categoryName}</b><br>
+        ${transsubcategory}: <b>${rowData.subCategoryName}</b><br>
         </div>`
       });
       // show info bubble
@@ -1139,7 +1154,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
   // }
   exportAsExcelFile(){
     //const title = 'POIData';
-    const   poiData = ['Name', 'Latitude', 'Longitude', 'CategoryName', 'SubCategoryName', 'Address','Zipcode', 'City', 'Country'];
+    const   poiData = [`${this.translationData.lblName}`, `${this.translationData.lblLatitude}`, `${this.translationData.lblLongitude}`, `${this.translationData.lblCategoryName}`, `${this.translationData.lblSubCategoryName}`, `${this.translationData.lblAddress}`,`${this.translationData.lblZipCode}`, `${this.translationData.lblCity}`, `${this.translationData.lblCountry}`];
     let workbook = new Workbook();
     let worksheet = workbook.addWorksheet('PoiData');
     //Add Row and formatting
@@ -1346,7 +1361,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
       this.importTranslationData.downloadTemplateInstruction = this.translationData.lbldownloadTemplateInstruction || 'Each line is required to have at least X column: POI Name, Latitude, Longitude and Category separated by either a column or semicolon. You can also optionally specify a description and a XXXX for each POI.';
       this.importTranslationData.selectUpdatedFile = this.translationData.lblselectUpdatedFile || 'Upload Updated Excel File';
       this.importTranslationData.browse = this.translationData.lblbrowse || 'Browse';
-      this.importTranslationData.uploadButtonText = this.translationData.lbluploadPackage || 'Upload';
+      this.importTranslationData.uploadButtonText = this.translationData.lblupload || 'Upload';
       this.importTranslationData.selectFile = this.translationData.lblPleaseSelectAFile || 'Please select a file';
       this.importTranslationData.totalSizeMustNotExceed = this.translationData.lblTotalSizeMustNotExceed || 'The total size must not exceed';
       this.importTranslationData.emptyFile = this.translationData.lblEmptyFile || 'Empty File';
@@ -1379,7 +1394,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
       this.importTranslationData.downloadTemplateInstruction = this.translationData.lbldownloadTemplateInstruction || 'Please fill required details and upload updated file again.';
       this.importTranslationData.selectUpdatedFile = this.translationData.lblselectUpdatedGeofenceFile || 'Upload Updated .GPX File';
       this.importTranslationData.browse = this.translationData.lblbrowse || 'Browse';
-      this.importTranslationData.uploadButtonText = this.translationData.lbluploadPackage || 'Upload';
+      this.importTranslationData.uploadButtonText = this.translationData.lblupload || 'Upload';
       this.importTranslationData.selectFile = this.translationData.lblPleaseSelectAFile || 'Please select a file';
       this.importTranslationData.totalSizeMustNotExceed = this.translationData.lblTotalSizeMustNotExceed || 'The total size must not exceed';
       this.importTranslationData.emptyFile = this.translationData.lblEmptyFile || 'Empty File';

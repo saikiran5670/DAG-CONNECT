@@ -11,7 +11,7 @@ export class LandmarksComponent implements OnInit {
   localStLanguage: any;
   accountOrganizationId: any;
   translationData: any = {};
-  selectedIndex: number = 0;
+  selectedIndex: number;
   tabVisibilityStatus: boolean = true;
   
   constructor(private translationService: TranslationService) { }
@@ -30,6 +30,7 @@ export class LandmarksComponent implements OnInit {
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
+      this.selectedIndex=0;
     });
   }
 

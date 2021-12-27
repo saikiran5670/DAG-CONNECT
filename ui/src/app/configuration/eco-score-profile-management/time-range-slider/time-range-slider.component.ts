@@ -15,6 +15,7 @@ export class TimeRangeSliderComponent implements OnInit {
   @Input() actionType: any;
   @Input() selectedElementData: any;
   @Input() kpiId: any;
+  @Input() translationData: any;
   // @Input() createStatus: boolean;
   // @Input() viewFlag: boolean;
   @Output() createKPIEmit = new EventEmitter<object>();
