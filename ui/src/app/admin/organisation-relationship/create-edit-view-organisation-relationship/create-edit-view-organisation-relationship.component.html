@@ -1,9 +1,4 @@
-<div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
-  <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-    <span>{{ breadcumMsg }}</span>
-  </div>
-</div>
-
+<app-common-breadcrumbs [breadcrumb]="breadcumMsg"></app-common-breadcrumbs>
 <form [formGroup]="OrganisationRelationshipFormGroup">
     <mat-card *ngIf="createStatus" class='mat-elevation-z margin-bottom-xlg'>
       <mat-card-content>
