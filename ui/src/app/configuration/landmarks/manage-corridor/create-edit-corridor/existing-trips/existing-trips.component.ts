@@ -433,9 +433,9 @@ export class ExistingTripsComponent implements OnInit {
       if(event.value._d.getTime() <= this.endDateValue.getTime()){ // CurTime < endDateValue
         dateTime = event.value._d;
       }else{
-        dateTime = this.endDateValue; 
+        dateTime = this.endDateValue;
       }
-    }else{ 
+    }else{
       dateTime = this.last3MonthDate;
     }
     this.startDateValue = this.setStartEndDateTime(dateTime, this.selectedStartTime, 'start');
@@ -447,7 +447,7 @@ export class ExistingTripsComponent implements OnInit {
       if(event.value._d.getTime() >= this.startDateValue.getTime()){ // EndTime < startDateValue
         dateTime = event.value._d;
       }else{
-        dateTime = this.startDateValue; 
+        dateTime = this.startDateValue;
       }
     }else{
       dateTime = this.todayDate;
@@ -1201,13 +1201,13 @@ export class ExistingTripsComponent implements OnInit {
     Util.applySearchFilter(this.dataSource, this.displayedColumns ,this.filterValue );
   }
   compare(a: any , b: any , isAsc: boolean, columnName: any) {
-    if(columnName == "startTimeStamp" ) {
+    if(columnName == "startTimeStamp" || columnName == "distance") {
       if(!(a instanceof Number)) a = a.toString().toUpperCase();
-      if(!(b instanceof Number)) b = b.toString().toUpperCase();  
+      if(!(b instanceof Number)) b = b.toString().toUpperCase();
     }
     if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toUpperCase();
     if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toUpperCase();
-  
+
   return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
 }
 
