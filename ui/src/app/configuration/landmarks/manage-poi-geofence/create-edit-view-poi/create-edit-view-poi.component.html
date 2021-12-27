@@ -96,7 +96,7 @@
               </mat-form-field>
             </div>
             <div *ngIf="actionType == 'view'">
-              <span class='font-helvetica-md'>{{ (accessType.globalPOIAccess) ? (selectedElementData.organizationId == 0) ? (types.length > 1) ? types[1] : types[0] : types[0] : (selectedElementData.organizationId == 0) ? 'Global' : 'Regular' }}</span>
+              <span class='font-helvetica-md'>{{ (accessType.globalPOIAccess) ? (selectedElementData.organizationId == 0) ? (types.length > 1) ? types[1] : types[0] : types[0] : (selectedElementData.organizationId == 0) ? translationData.lblGlobal : translationData.lblRegular }}</span>
             </div>
         </div>
 

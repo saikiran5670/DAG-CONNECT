@@ -50,10 +50,11 @@ import { CommonImportComponent } from './common-import/common-import.component';
 import { CommonMapComponent } from './common-map/common-map.component';
 import { DataTableComponent } from './data-table/data-table.component';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
+import { CommonBreadcrumbsComponent } from './common-breadcrumbs/common-breadcrumbs.component';
 
 
 @NgModule({
-  declarations: [CommonFilterComponent, RemoveDuplicatesPipe, SafeStylePipe, CustomPaginationComponent, SpinnerComponent, ActiveInactiveDailogComponent,CommonImportComponent, CommonMapComponent, DataTableComponent],
+  declarations: [CommonFilterComponent, RemoveDuplicatesPipe, SafeStylePipe, CustomPaginationComponent, SpinnerComponent, ActiveInactiveDailogComponent,CommonImportComponent, CommonMapComponent, DataTableComponent, CommonBreadcrumbsComponent],
   imports: [
     CommonModule,
     FlexLayoutModule,
@@ -144,7 +145,8 @@ import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
     SpinnerComponent,
     CommonImportComponent,
     CommonMapComponent,
-    DataTableComponent
+    DataTableComponent,
+    CommonBreadcrumbsComponent
   ],
   providers: [{ provide: MatPaginatorIntl, useClass: CustomPaginationComponent}],
 })

@@ -130,9 +130,9 @@ export class CreateEditViewGeofenceComponent implements OnInit {
       });
     //this.initMap();
     if(this.accessType && !this.accessType.globalPOIAccess){
-      this.types = ['Regular'];
+      this.types = [this.translationData.lblRegular];
     }else{
-      this.types = ['Regular', 'Global'];
+      this.types = [this.translationData.lblRegular, this.translationData.lblGlobal];
     }
 
     this.breadcumMsg = this.getBreadcum(this.actionType);

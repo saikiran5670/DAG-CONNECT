@@ -86,7 +86,7 @@
               </div>
               <div *ngIf="actionType == 'view'">
                 <!-- <span class='font-helvetica-md'>{{ (selectedElementData.organizationId == 0) ? types[1] : types[0] }}</span> -->
-                <span class='font-helvetica-md'>{{ (accessType.globalPOIAccess) ? (selectedElementData.organizationId == 0) ? (types.length > 1) ? types[1] : types[0] : types[0] : (selectedElementData.organizationId == 0) ? 'Global' : 'Regular' }}</span>
+                <span class='font-helvetica-md'>{{ (accessType.globalPOIAccess) ? (selectedElementData.organizationId == 0) ? (types.length > 1) ? types[1] : types[0] : types[0] : (selectedElementData.organizationId == 0) ? translationData.lblGlobal : translationData.lblRegular }}</span>
               </div>
           </div>
           <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
@@ -240,7 +240,7 @@
               </div>
               <div *ngIf="actionType == 'view'">
                 <!-- <span class='font-helvetica-md'>{{ (selectedElementData.organizationId == 0) ? types[1] : types[0] }}</span> -->
-                <span class='font-helvetica-md'>{{ (accessType.globalPOIAccess) ? (selectedElementData.organizationId == 0) ? (types.length > 1) ? types[1] : types[0] : types[0] : (selectedElementData.organizationId == 0) ? 'Global' : 'Regular' }}</span>
+                <span class='font-helvetica-md'>{{ (accessType.globalPOIAccess) ? (selectedElementData.organizationId == 0) ? (types.length > 1) ? types[1] : types[0] : types[0] : (selectedElementData.organizationId == 0) ? translationData.lblGlobal : translationData.lblRegular }}</span>
               </div>
           </div>
           <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
