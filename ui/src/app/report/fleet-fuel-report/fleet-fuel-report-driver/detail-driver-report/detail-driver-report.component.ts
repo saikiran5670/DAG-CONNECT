@@ -2824,7 +2824,7 @@ setVehicleGroupAndVehiclePreSelection() {
         this.initData.forEach(item => {
           let idleDurations = Util.getHhMmTime(parseFloat(item.idleDuration));
           worksheet.addRow([ item.vehicleName,item.vin, item.vehicleRegistrationNo,item.convertedStartTime,item.convertedEndTime,item.convertedAverageSpeed,
-            item.convertedMaxSpeed,this.convertZeros(item.convertedDistance),item.startPosition,item.endPosition,item.convertedFuelConsumed100Km,item.convertedFuelConsumption,item.cO2Emission,idleDurations,
+            item.convertedMaxSpeed,this.convertZeros(item.convertedDistance),item.startPosition,item.endPosition,item.convertedFuelConsumed100Km,item.convertedFuelConsumption,item.cO2Emission,item.idleDurationPercentage,
             item.ptoDuration.toFixed(2),item.cruiseControlDistance3050,item.cruiseControlDistance5075,item.cruiseControlDistance75,
             item.heavyThrottleDuration,item.harshBrakeDuration,item.convertedAverageGrossWeightComb,this.convertZeros(item.convertedDistance)=='*'?'':item.averageTrafficClassificationValue,
             item.convetedCCFuelConsumption,item.convertedFuelConsumptionCCNonActive,item.idlingConsumptionValue,item.dpaScore,item.dpaAnticipationScore,item.dpaBrakingScore, item.convertedIdlingPTOScore, item.idlingPTO,item.convertedIdlingWithoutPTO,item.idlingWithoutPTOpercent,
@@ -3096,7 +3096,7 @@ setVehicleGroupAndVehiclePreSelection() {
               break;
             }
             case 'idleDuration' :{
-              tempObj.push(e.convertedIdleDuration);
+              tempObj.push(e.idleDurationPercentage);
               break;
             }
             case 'ptoDuration' :{
