@@ -376,7 +376,7 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
  
   changeScheduleDateEvent (event: MatDatepickerInputEvent<any>) {
     let currentDate = formatDate(this.minDate, this.newDateFormat, 'en-US');
-    let currentTime = formatDate(this.minDate, 'HH:MM', 'en-US');
+    let currentTime = this.minDate.getHours()+":"+ this.minDate.getMinutes();
     let selectedDate = formatDate(event.value, this.newDateFormat, 'en-US');  
     if(selectedDate != currentDate){
       if (this.prefTimeFormat == 24) {
@@ -384,9 +384,11 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
       } else {
         this.minTime = "12:00 AM";
       }
+      this.scheduledTime = this.minTime;
     }
     else{
          this.minTime = currentTime;
+         this.scheduledTime = this.minTime;
     }
     this.scheduledDate = this.setStartEndDateTime(event.value._d, this.scheduledTime, 'start');
   }
