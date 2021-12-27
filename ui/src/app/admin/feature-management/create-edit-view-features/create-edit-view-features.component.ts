@@ -410,5 +410,8 @@ export class CreateEditViewFeaturesComponent implements OnInit {
     }
   }
 
+  removeDuplicateErronType(evt) {
+    this.duplicateEmailMsg = false;
+  }
 
 }

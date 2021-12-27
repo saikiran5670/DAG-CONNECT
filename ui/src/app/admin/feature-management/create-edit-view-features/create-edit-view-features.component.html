@@ -32,13 +32,17 @@
                         </div>
                         <span *ngIf="actionType != 'view'">{{ translationData.lbl250CharMax }}</span>
                     </mat-label>
-                    <mat-error *ngIf="duplicateEmailMsg">{{translationData.lblDuplicateDataAttributeSetName }}</mat-error>
+                    <!-- <mat-error *ngIf="duplicateEmailMsg">{{translationData.lblDuplicateDataAttributeSetName }}</mat-error> -->
                     <div *ngIf="actionType != 'view'">
                         <mat-form-field appearance="outline" class="full-width">
                             <input maxlength="250"
                                 placeholder="{{ translationData.lblEnterDataAttributeSetName }}"
-                                matInput formControlName="dataAttributeSetName">
+                                matInput formControlName="dataAttributeSetName"
+                                (keyup)="removeDuplicateErronType($event)">
                         </mat-form-field>
+                        <mat-error *ngIf="duplicateEmailMsg && !featureFormGroup.get('dataAttributeSetName').hasError('required') && 
+                        !featureFormGroup.get('dataAttributeSetName').hasError('whitespace') && !featureFormGroup.get('dataAttributeSetName').hasError('maxlength') &&
+                        !featureFormGroup.get('dataAttributeSetName').hasError('specialCharsNotAllowed') && !isDataAttributeSetExist">{{translationData.lblDuplicateDataAttributeSetName }}</mat-error>
                         <mat-error *ngIf="featureFormGroup.get('dataAttributeSetName').hasError('required')">
                             {{ translationData.lblPleasenterdatattributesetname }}
                         </mat-error>
