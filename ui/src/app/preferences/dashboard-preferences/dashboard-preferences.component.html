@@ -71,14 +71,14 @@
                                         placeholder="{{ 'Set Target' }}">
                                     <span *ngIf="field.key =='rp_db_dashboard_fleetkpi_co2emission'" matSuffix>{{translationData.lblTon || 'Ton'}}</span>
                                     <span *ngIf="field.key =='rp_db_dashboard_fleetkpi_fuelconsumption'" matSuffix>
-                                        {{prefUnit == 'Metric' ? (translationData.lblltr100km || 'ltr/100km' ) :
+                                        {{prefUnit == 'dunit_Metric' ? (translationData.lblltr100km || 'ltr/100km' ) :
                                         (translationData.lblmpg || 'mpg')}}
                                     </span>
                                     <span *ngIf="field.key =='rp_db_dashboard_fleetkpi_totaldistance'" matSuffix>
-                                        {{prefUnit == 'Metric' ? (translationData.lblkms ) : (translationData.lblmile)}} </span>
+                                        {{prefUnit == 'dunit_Metric' ? (translationData.lblkms ) : (translationData.lblmile)}} </span>
                                     <span *ngIf="field.key =='rp_db_dashboard_fleetkpi_fuelusedidling' || 
                         field.key =='rp_db_dashboard_fleetkpi_fuelconsumed'" matSuffix>
-                                        {{prefUnit == 'Metric' ? (translationData.lblltr || 'ltr' ) : (translationData.lblgal || 'gal')}}
+                                        {{prefUnit == 'dunit_Metric' ? (translationData.lblltr || 'ltr' ) : (translationData.lblgal || 'gal')}}
                                     </span>
                                     <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValue').hasError('min')">
                                         {{translationData.lblNoNegativeValuesAllowed || 'No negative values allowed'}}

@@ -2241,7 +2241,7 @@ setVehicleGroupAndVehiclePreSelection() {
       let idleDurations = Util.getHhMmTime(parseFloat(item.idleDuration));
       worksheet.addRow([item.vehicleName,item.vin, item.vehicleRegistrationNo, this.convertZeros(item.convertedDistance),
       item.convertedAverageDistance, item.convertedAverageSpeed, item.convertedMaxSpeed, item.numberOfTrips,
-      item.convertedAverageGrossWeightComb, item.convertedFuelConsumed100Km, item.convertedFuelConsumption,item.cO2Emission,idleDurations,
+      item.convertedAverageGrossWeightComb, item.convertedFuelConsumed100Km, item.convertedFuelConsumption,item.cO2Emission,item.idleDurationPercentage,
        item.ptoDuration.toFixed(2),
       item.harshBrakeDuration, item.heavyThrottleDuration, item.cruiseControlDistance3050,item.cruiseControlDistance5075,
       item.cruiseControlDistance75, this.convertZeros(item.convertedDistance)=='*'?'':item.averageTrafficClassificationValue, item.convetedCCFuelConsumption, item.convertedFuelConsumptionCCNonActive,
@@ -2551,8 +2551,8 @@ setVehicleGroupAndVehiclePreSelection() {
             break;
           }
           case 'idleDuration' :{
-            let idleDurations = Util.getHhMmTime(parseFloat(e.idleDuration));
-            tempObj.push(idleDurations);
+            // let idleDurations = Util.getHhMmTime(parseFloat(e.idleDuration));
+            tempObj.push(e.idleDurationPercentage);
             break;
           }
           case 'ptoDuration' :{
