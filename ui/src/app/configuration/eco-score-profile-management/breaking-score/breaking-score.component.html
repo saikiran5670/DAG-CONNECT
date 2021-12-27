@@ -10,38 +10,38 @@
             <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm' fxLayoutGap="10px">
                 <div fxLayout="column" fxLayoutAlign="left" class="areaWidth min-width-5-per">
                     <mat-label style='display: flex;' class='font-16-px line-height-24px'>
-                        <span>Min</span>
+                        <span>{{ translationData.lblMin || 'Min' }}</span>
                     </mat-label>
                     <mat-form-field appearance="outline" class="half-width">
                         <input maxlength="50" matInput formControlName="limitValue"
                             (focusout)="changeMin(ecoScoreProfileKPIForm.valid ? $event.target.value : value)">
                     </mat-form-field>
                     <mat-error *ngIf="ecoScoreProfileKPIForm.get('limitValue').hasError('cannotExceedMaxValue')">
-                        Min Value cannot be greater than target value
+                        {{ translationData.lblMinValuecannotbegreaterthantargetvalue || 'Min Value cannot be greater than target value' }} 
                      </mat-error>
                      <mat-error *ngIf="ecoScoreProfileKPIForm.get('limitValue').hasError('cannotExceedMinValue')">
-                        Min Value cannot be lesser than lower value
+                        {{ translationData.lblMinValuecannotbelesserthanlowervalue || 'Min Value cannot be lesser than lower value' }} 
                      </mat-error>
                      <mat-error *ngIf="ecoScoreProfileKPIForm.get('limitValue').hasError('noNegativeValueAllowed')">
-                        Min Value cannot be negative
+                        {{ translationData.lblMinValuecannotbenegative || 'Min Value cannot be negative' }} 
                      </mat-error>
                 </div>
                 <div fxLayout="column" fxLayoutAlign="right" class="areaWidth min-width-5-per">
                     <mat-label style='display: flex;' class='font-16-px line-height-24px'>
-                        <span>Target</span>
+                        <span>{{ translationData.lblTarget || 'Target' }} </span>
                     </mat-label>
                     <mat-form-field appearance="outline" class="half-width">
                         <input maxlength="50" matInput formControlName="targetValue"
                             (focusout)="changeTarget(ecoScoreProfileKPIForm.valid ? $event.target.value : maxvalue)">
                     </mat-form-field>
                     <mat-error *ngIf="ecoScoreProfileKPIForm.get('targetValue').hasError('cannotExceedMaxValue')">
-                        Target Value cannot be greater than upper value
+                        {{ translationData.lblTargetValuecannotbegreaterthanuppervalue || 'Target Value cannot be greater than upper value' }} 
                      </mat-error>
                      <mat-error *ngIf="ecoScoreProfileKPIForm.get('targetValue').hasError('cannotExceedMinValue')">
-                        Target Value cannot be less than min value
+                        {{ translationData.lblTargetValuecannotbelessthanminvalue || 'Target Value cannot be less than min value' }}
                      </mat-error>
                      <mat-error *ngIf="ecoScoreProfileKPIForm.get('targetValue').hasError('noNegativeValueAllowed')">
-                        Target Value cannot be negative
+                        {{ translationData.lblTargetValuecannotbenegative || 'Target Value cannot be negative' }}
                      </mat-error>
                 </div>
             </div>
@@ -52,38 +52,38 @@
             <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm' fxLayoutGap="10px">
                 <div fxLayout="column" fxLayoutAlign="left" class="areaWidth min-width-5-per">
                     <mat-label style='display: flex;' class='font-16-px line-height-24px'>
-                        <span>Lower Value</span>
+                        <span>{{ translationData.lblLowerValue || 'Lower Value' }}</span>
                     </mat-label>
                     <mat-form-field appearance="outline" class="half-width">
                         <input maxlength="50" matInput formControlName="lowerValue"
                             (focusout)="changeLower(ecoScoreProfileKPIForm.valid ? $event.target.value : options.floor)">
                     </mat-form-field>
                     <mat-error *ngIf="ecoScoreProfileKPIForm.get('lowerValue').hasError('cannotExceedMaxValue')">
-                        Lower Value cannot be greater than Min value
+                        {{ translationData.lblLowerValuecannotbegreaterthanMinvalue || 'Lower Value cannot be greater than Min value' }}
                      </mat-error>
                      <mat-error *ngIf="ecoScoreProfileKPIForm.get('lowerValue').hasError('cannotExceedMinValue')">
-                        Lower Value cannot be negative
+                        {{ translationData.lblLowerValuecannotbenegative || 'Lower Value cannot be negative' }}
                      </mat-error>
                      <mat-error *ngIf="ecoScoreProfileKPIForm.get('lowerValue').hasError('noNegativeValueAllowed')">
-                        Lower Value cannot be negative
+                        {{ translationData.lblLowerValuecannotbenegative || 'Lower Value cannot be negative' }}
                      </mat-error>
                 </div>
                 <div fxLayout="column" fxLayoutAlign="right" class="areaWidth min-width-5-per">
                     <mat-label style='display: flex;' class='font-16-px line-height-24px'>
-                        <span>Upper Value</span>
+                        <span>{{ translationData.lblUpperValue || 'Upper Value' }}</span>
                     </mat-label>
                     <mat-form-field appearance="outline" class="half-width">
                         <input maxlength="50" matInput formControlName="upperValue"
                             (focusout)="changeUpper(ecoScoreProfileKPIForm.valid ? $event.target.value : options.ceil)">
                     </mat-form-field>
                     <mat-error *ngIf="ecoScoreProfileKPIForm.get('upperValue').hasError('cannotExceedMaxValue')">
-                       Upper Value cannot be greater than Max upper value
+                        {{ translationData.lblUpperValuecannotbegreaterthanMaxuppervalue || 'Upper Value cannot be greater than Max upper value' }}
                     </mat-error>
                     <mat-error *ngIf="ecoScoreProfileKPIForm.get('upperValue').hasError('cannotExceedMinValue')">
-                        Upper Value cannot be lesser than Target upper value
+                        {{ translationData.lblUpperValuecannotbelesserthanTargetuppervalue || 'Upper Value cannot be lesser than Target upper value' }}
                      </mat-error>
                     <mat-error *ngIf="ecoScoreProfileKPIForm.get('upperValue').hasError('noNegativeValueAllowed')">
-                        Upper Value cannot be negative
+                        {{ translationData.lblUpperValuecannotbenegative || 'Upper Value cannot be negative' }}
                      </mat-error>
                 </div>
             </div>
