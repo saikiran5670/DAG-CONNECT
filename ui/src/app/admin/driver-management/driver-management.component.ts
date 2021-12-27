@@ -751,7 +751,8 @@ export class DriverManagementComponent implements OnInit {
       tableData: driverList,
       colsList: ['countryCode', 'driverNumber', 'firstName', 'lastName', 'email', 'returnMassage'],
       colsName: [this.translationData.lblDriverIDCountryCode , this.translationData.lblDriverIDNumber , this.translationData.lblFirstName , this.translationData.lblLastName, this.translationData.lblEmail , this.translationData.lblFailReason],
-      tableTitle: this.translationData.lblRejectedDriverDetails
+      tableTitle: this.translationData.lblRejectedDriverDetails,
+      translationData: this.translationData
     }
     this.driverDialogRef = this.dialog.open(CommonTableComponent, dialogConfig);
   }

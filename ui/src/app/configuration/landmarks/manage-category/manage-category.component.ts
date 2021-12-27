@@ -388,7 +388,8 @@ export class ManageCategoryComponent implements OnInit , AfterViewInit{
       tableData: tableData,
       colsList: colsList,
       colsName: colsName,
-      tableTitle: tableTitle
+      tableTitle: tableTitle,
+      translationData: this.translationData
     }
     this.dialogRef = this.dialog.open(CommonTableComponent, dialogConfig);
   }
