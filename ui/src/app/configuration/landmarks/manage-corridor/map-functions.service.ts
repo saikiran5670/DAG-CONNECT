@@ -146,10 +146,14 @@ export class MapFunctionsService {
   group = new H.map.Group();
   viaRoutePlottedPoints = [];
 
-  viewSelectedRoutes(_selectedRoutes, accountOrganizationId?, isRCorridor?) {
+  viewSelectedRoutes(_selectedRoutes, accountOrganizationId?, isRCorridor?, translationData?: any) {
     let corridorName = '';
     let startAddress = '';
     let endAddress = '';
+    let transcorridorname = translationData.lblCorridorName;
+    let transstartpoint = translationData.lblStartPoint;
+    let transendpoint = translationData.lblEndPoint;
+    let transwidth = translationData.lblWidth;
     this.organizationId = accountOrganizationId;
     this.hereMap.removeLayer(this.defaultLayers.vector.normal.traffic);
     this.hereMap.removeLayer(this.defaultLayers.vector.normal.truck);
@@ -213,10 +217,11 @@ export class MapFunctionsService {
         this.endMarker = new H.map.Marker({ lat: this.endAddressPositionLat, lng: this.endAddressPositionLong }, { icon: iconEnd });
         let endMarkerHtml = `<div class='font-14-px line-height-21px font-helvetica-lt'>
         <table>
-        <tr><td class='font-helvetica-md'>Corridor Name:</td> <td>${corridorName} </td></tr>
-        <tr><td class='font-helvetica-md'>Start Point:</td><td>${startAddress}</td></tr>
-        <tr><td class='font-helvetica-md'>End Point:</td><td>${endAddress}</td></tr>
-        <tr><td class='font-helvetica-md'>Width:</td><td>${this.corridorWidthKm} km</td></tr>
+    let transcorridorname = translationData.lblCorridorName;
+        <tr><td class='font-helvetica-md'>${transcorridorname}:</td> <td>${corridorName} </td></tr>
+        <tr><td class='font-helvetica-md'>${transstartpoint}:</td><td>${startAddress}</td></tr>
+        <tr><td class='font-helvetica-md'>${transendpoint}:</td><td>${endAddress}</td></tr>
+        <tr><td class='font-helvetica-md'>${transwidth}:</td><td>${this.corridorWidthKm} km</td></tr>
         </table>
         </div>`
         this.endMarker.setData(endMarkerHtml);
@@ -315,8 +320,8 @@ export class MapFunctionsService {
     }
   }
 
-  viewSelectedRoutesCorridor(_selectedRoutes, accountOrganizationId?){
-        this.viewSelectedRoutes(_selectedRoutes, accountOrganizationId, true);
+  viewSelectedRoutesCorridor(_selectedRoutes, accountOrganizationId?, translationData?: any){
+        this.viewSelectedRoutes(_selectedRoutes, accountOrganizationId, true, translationData);
   }
 
   addTruckRouteShapeToMapEdit(gpsLineString){
