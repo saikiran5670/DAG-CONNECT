@@ -510,8 +510,6 @@ export class FleetkpiComponent implements OnInit {
 
   ngOnInit(): void {
     this.setInitialPref(this.prefData,this.preference);
-   
-
   }
 
   setInitialPref(prefData,preference){
@@ -638,6 +636,9 @@ export class FleetkpiComponent implements OnInit {
     let lastChangePercent = 0;
     let caretColor = 'caretGreen';
     let caretIcon = '';
+    let transTarget = this.translationData.lblTarget;
+    let transTon = this.translationData.lblton;
+    let transLastChange = this.translationData.lblLastChange;
     if(this.kpiData['fleetKpis']?.lastChangeKpi){
       let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['co2Emission'];
       lastChangePercent = this.dashboardService.calculateLastChange(currentValue,lastValue);
@@ -694,10 +695,9 @@ export class FleetkpiComponent implements OnInit {
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
-            let _str = `<div class='dashboardTT'><div>`+this.translationData.lblTarget+`: ` + targetValue.toFixed(2) + ` `+this.translationData.lblton+
-            `</div>`;
+            let _str = `<div class='dashboardTT'><div>${transTarget}: ` + targetValue.toFixed(2) + ` ${transTon}</div>`;
             if(showLastChange){
-              _str += `<div>`+this.translationData.lblLastChange+`: ` + lastChangePercent.toFixed(2) + '%'+
+              _str += `<div>${transLastChange}: ` + lastChangePercent.toFixed(2) + '%'+
               `<span>${caretIcon}</span></div>`;
             }
             tooltipEl.innerHTML = _str;
@@ -863,6 +863,10 @@ export class FleetkpiComponent implements OnInit {
     let caretColor = 'caretGreen';
     let caretIcon = '';
 
+    let transTarget = this.translationData.lblTarget;
+    let transTon = this.translationData.lblton;
+    let transLastChange = this.translationData.lblLastChange;
+
     if(this.kpiData['fleetKpis']?.lastChangeKpi){
     let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['idlingTime'];
       
@@ -921,10 +925,10 @@ export class FleetkpiComponent implements OnInit {
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
-            let _str = `<div class='dashboardTT'><div>`+this.translationData.lblTarget+`: ` +  convertTargetValue + 
+            let _str = `<div class='dashboardTT'><div>${transTarget}: ` +  convertTargetValue + 
             `</div>`;
             if(showLastChange){
-              _str += `<div>`+this.translationData.lblLastChange+`: ` + lastChangePercent.toFixed(2) + '%'+
+              _str += `<div>${transLastChange}: ` + lastChangePercent.toFixed(2) + '%'+
               `<span>${caretIcon}</span></div>`;
             }
            
@@ -1090,6 +1094,9 @@ export class FleetkpiComponent implements OnInit {
     let lastChangePercent = 0;
     let caretColor = 'caretGreen';
     let caretIcon = '';
+    let transTarget = this.translationData.lblTarget;
+    let transTon = this.translationData.lblton;
+    let transLastChange = this.translationData.lblLastChange;
 
     if(this.kpiData['fleetKpis']?.lastChangeKpi){
       let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['drivingTime'];
@@ -1149,10 +1156,10 @@ export class FleetkpiComponent implements OnInit {
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
-            let _str = `<div class='dashboardTT'><div>`+this.translationData.lblTarget+`: ` + convertTargetValue + 
+            let _str = `<div class='dashboardTT'><div>${transTarget}: ` + convertTargetValue + 
             '</div>';
             if(showLastChange){
-              _str += `<div>`+this.translationData.lblLastChange+`: ` + lastChangePercent.toFixed(2) + '%'+
+              _str += `<div>${transLastChange}: ` + lastChangePercent.toFixed(2) + '%'+
               `<span>${caretIcon}</span></div>`;
             }
             tooltipEl.innerHTML = _str;
@@ -1318,6 +1325,10 @@ export class FleetkpiComponent implements OnInit {
     let caretColor = 'caretGreen';
     let caretIcon = '';
 
+    let transTarget = this.translationData.lblTarget;
+    let transTon = this.translationData.lblton;
+    let transLastChange = this.translationData.lblLastChange;
+
     if(this.kpiData['fleetKpis']?.lastChangeKpi){
     let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['distance'];
 
@@ -1375,10 +1386,10 @@ export class FleetkpiComponent implements OnInit {
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
-            let _str =  `<div class='dashboardTT'><div>`+this.translationData.lblTarget+`: ` + (targetValue)+ ' '+ targetUnit +
+            let _str =  `<div class='dashboardTT'><div>${transTarget}: ` + (targetValue)+ ' '+ targetUnit +
             '</div>';
             if(showLastChange){
-              _str += `<div>`+this.translationData.lblLastChange+`: ` + lastChangePercent.toFixed(2) + '%'+
+              _str += `<div>${transLastChange}: ` + lastChangePercent.toFixed(2) + '%'+
             `<span>${caretIcon}</span></div>`;
             }
             tooltipEl.innerHTML = _str;
@@ -1544,6 +1555,10 @@ export class FleetkpiComponent implements OnInit {
     let caretColor = 'caretGreen';
     let caretIcon = '';
 
+    let transTarget = this.translationData.lblTarget;
+    let transTon = this.translationData.lblton;
+    let transLastChange = this.translationData.lblLastChange;
+
     if(this.kpiData['fleetKpis']?.lastChangeKpi){
       
     let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['fuelConsumed'];
@@ -1603,10 +1618,10 @@ export class FleetkpiComponent implements OnInit {
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
-            let _str = `<div class='dashboardTT'><div>`+this.translationData.lblTarget+`: ` + (targetValue) + ` ` + targetUnit
+            let _str = `<div class='dashboardTT'><div>${transTarget}: ` + (targetValue) + ` ` + targetUnit
             '</div>';
             if(showLastChange){
-              _str += '<div>'+this.translationData.lblLastChange+': ' + lastChangePercent.toFixed(2) + '%'+
+              _str += '<div>'+transLastChange+': ' + lastChangePercent.toFixed(2) + '%'+
               `<span>${caretIcon}</span></div>`;
             }
             tooltipEl.innerHTML = _str;
@@ -1770,6 +1785,10 @@ export class FleetkpiComponent implements OnInit {
     let caretColor = 'caretGreen';
     let caretIcon = '';
 
+    let transTarget = this.translationData.lblTarget;
+    let transTon = this.translationData.lblton;
+    let transLastChange = this.translationData.lblLastChange;
+
     if(this.kpiData['fleetKpis']?.lastChangeKpi){
     let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['idlingfuelconsumption'];
 
@@ -1828,10 +1847,10 @@ export class FleetkpiComponent implements OnInit {
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
-            let _str =  `<div class='dashboardTT'><div>`+this.translationData.lblTarget+`: ` + (targetValue) + ' ' + targetUnit
+            let _str =  `<div class='dashboardTT'><div>${transTarget}: ` + (targetValue) + ' ' + targetUnit
             '</div>';
             if(showLastChange){
-              _str += '<div>'+this.translationData.lblLastChange+': ' + lastChangePercent.toFixed(2) + '%'+
+              _str += '<div>'+transLastChange+': ' + lastChangePercent.toFixed(2) + '%'+
               `<span>${caretIcon}</span></div>`;
             }
             tooltipEl.innerHTML = _str;
@@ -1997,6 +2016,10 @@ export class FleetkpiComponent implements OnInit {
     let caretColor = 'caretGreen';
     let caretIcon = '';
 
+    let transTarget = this.translationData.lblTarget;
+    let transTon = this.translationData.lblton;
+    let transLastChange = this.translationData.lblLastChange;
+
     if(this.kpiData['fleetKpis']?.lastChangeKpi){
       let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['fuelConsumption'];
 
@@ -2053,10 +2076,10 @@ export class FleetkpiComponent implements OnInit {
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
-            let _str = `<div class='dashboardTT'><div>`+this.translationData.lblTarget+`: ` + targetValue + ' ' + targetUnit;
+            let _str = `<div class='dashboardTT'><div>${transTarget}: ` + targetValue + ' ' + targetUnit;
             '</div>';
             if(showLastChange){
-              _str += '<div>'+this.translationData.lblLastChange+': ' + lastChangePercent.toFixed(2) + '%'+
+              _str += '<div>'+transLastChange+': ' + lastChangePercent.toFixed(2) + '%'+
               `<span>${caretIcon}</span></div>`;
             }
             tooltipEl.innerHTML = _str;
