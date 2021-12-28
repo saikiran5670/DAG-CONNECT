@@ -334,7 +334,7 @@
                     <mat-label class='font-16-px line-height-24px'>{{ translationData.lblVehicleGroup || 'Vehicle Group' }}<span class='mandatoryColor'>*</span></mat-label>
                     <mat-form-field appearance="outline">
                         <mat-select placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}" (selectionChange)="onChangeVehicleGroup($event)" formControlName="vehicleGroup">
-                            <mat-option [value]="0">All</mat-option>
+                            <mat-option [value]="0">{{translationData.lblAll || 'All'}}</mat-option>
                             <mat-option *ngFor="let rer of VehicleGroupList" [value]="rer.vehicleGroupId">
                                 {{rer.vehicleGroupName}}
                             </mat-option>
@@ -361,7 +361,7 @@
                   <mat-label class='font-16-px line-height-24px'>{{ translationData.lblVehicle || 'Vehicle' }}<span class='mandatoryColor'>*</span></mat-label>
                   <mat-form-field appearance="outline">
                     <mat-select placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" formControlName="vehicle">
-                      <mat-option [value]="0">All</mat-option>
+                      <mat-option [value]="0">{{translationData.lblAll || 'All'}}</mat-option>
                       <mat-option *ngFor="let rer of VehicleList" [value]="rer.vehicleId">
                         <!-- {{rer.vin}} -->
                         <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleName' && rer.vehicleId !==0"> {{rer.vehicleName}}
@@ -388,7 +388,7 @@
                     <mat-form-field appearance="outline">
                         <input placeholder="{{ translationData.lblEnterRecipientEmail || 'Enter Recipient Email' }}"  matInput (focusout)="validateRecipientEmails($event.target.value)" formControlName="recipientEmail">
                     </mat-form-field>
-                    <span style="color: grey;">Please enter (,) seperated email Ids</span>
+                    <span style="color: grey;">{{translationData.lblPleaseEntercommaseparatedemailID || 'Please enter (,) seperated email Ids'}}</span>
                     <!-- <div class="ng-autocomplete">
                       <ng-autocomplete [data]="RecipientList" [searchKeyword]="keyword"
                           [itemTemplate]="itemTemplateRecipientEmail" formControlName="recipientEmail">
