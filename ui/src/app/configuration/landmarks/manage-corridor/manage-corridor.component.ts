@@ -281,7 +281,7 @@ export class ManageCorridorComponent implements OnInit {
         this.selectedCorridors.select(row);
         this.markerArray.push(row);
       });
-      this.mapFunctions.viewSelectedRoutes(this.markerArray,this.accountOrganizationId);
+      this.mapFunctions.viewSelectedRoutes(this.markerArray,this.accountOrganizationId,this.translationData);
       this.showMap = true;
     }
   //  console.log(this.markerArray);
@@ -316,7 +316,7 @@ export class ManageCorridorComponent implements OnInit {
       let arr = this.markerArray.filter(item => item.id != row.id);
       this.markerArray = arr;
       }
-      this.mapFunctions.viewSelectedRoutesCorridor(this.markerArray,this.accountOrganizationId);
+      this.mapFunctions.viewSelectedRoutesCorridor(this.markerArray,this.accountOrganizationId,this.translationData);
     // this.mapFunctions.viewSelectedRoutes(this.markerArray,this.accountOrganizationId);
 
      // this.addPolylineToMap();

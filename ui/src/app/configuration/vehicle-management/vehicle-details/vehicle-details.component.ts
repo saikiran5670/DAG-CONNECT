@@ -261,7 +261,7 @@ export class VehicleDetailsComponent implements OnInit {
   exportAsCSV(){
     const title = 'Vehicle Details';
 
-    const header = ['Vehicle','VIN', 'Registration Number', 'Model', 'Relationship','Status'];
+    const header = [`${this.translationData.lblVehicle}`,`${this.translationData.lblVIN}`, `${this.translationData.lblRegistrationNumber}`, `${this.translationData.lblModel}`, `${this.translationData.lblRelationship}`,`${this.translationData.lblStatus}`];
 
     //Create workbook and worksheet
     let workbook = new Workbook();
