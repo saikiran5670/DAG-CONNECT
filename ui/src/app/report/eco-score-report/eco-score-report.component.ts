@@ -633,6 +633,8 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   onDriverChange(event: any){ }
 
   onSearch(){
+    this.selectedDriversEcoScore = [];
+    this.selectedEcoScore = new SelectionModel(true, []);
     this.driverSelected = false;
     this.ecoScoreDriver = false;
     this.isSearched=false;
