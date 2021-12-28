@@ -590,7 +590,8 @@ export class UserManagementComponent implements OnInit {
       tableData: tableData,
       colsList: ['firstName','emailId','role'],
       colsName: [this.translationData.lblFirstName,this.translationData.lblEmailID,this.translationData.lblRole],
-      tableTitle: this.translationData.lblUserDetails
+      tableTitle: this.translationData.lblUserDetails,
+      translationData: this.translationData
     }
     this.dialogRef = this.dialog.open(CommonTableComponent, dialogConfig);
   }

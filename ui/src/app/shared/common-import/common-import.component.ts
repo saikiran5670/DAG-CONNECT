@@ -1185,7 +1185,8 @@ export class CommonImportComponent implements OnInit {
       tableData: populateRejectedList,
       colsList: this.tableColumnList,
       colsName: this.tableColumnName,
-      tableTitle: this.tableTitle
+      tableTitle: this.tableTitle,
+      translationData: this.translationData
     }
     this.rejectedDialogRef = this.dialog.open(CommonTableComponent, dialogConfig);
   }
