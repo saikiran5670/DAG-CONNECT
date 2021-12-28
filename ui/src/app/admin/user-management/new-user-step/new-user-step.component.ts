@@ -243,7 +243,7 @@ export class NewUserStepComponent implements OnInit {
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } /
     ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} /
     ${this.translationData.lblAccountManagement ? this.translationData.lblAccountManagement : "Account Management"} /
-    ${(this.fromCreate == 'Create') ? (this.translationData.lblCreate ? 'Create '+ this.translationData.lblNewUser : 'New Account') :'Create New Account'}`;
+    ${(this.fromCreate == 'Create') ? (this.translationData.lblCreate ? this.translationData.lblCreateNewUser : 'New Account') :'Create New Account'}`;
     // ${this.translationData.lblAccountDetails ? this.translationData.lblAccountDetails : 'Account Details'}`;
   }
 
