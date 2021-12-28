@@ -7,6 +7,7 @@ import { Component, OnInit,Input } from '@angular/core';
 })
 export class CommonBreadcrumbsComponent implements OnInit {
   @Input() breadcrumb;
+  @Input() topRightElements;
   constructor() { }
 
   ngOnInit(): void {
