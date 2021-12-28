@@ -311,8 +311,8 @@ export class UserGroupManagementComponent implements OnInit {
   }
 
   getDeleteMsg(grpName: any){
-    if(this.translationData.lblUserGroupDelete)
-      return this.translationData.lblUserGroupDelete.replace('$', grpName);
+    if(this.translationData.lblUserGroupSuccessfullyDeleted)
+      return this.translationData.lblUserGroupSuccessfullyDeleted.replace('$', grpName);
     else
       return ("Account Group '$' was successfully deleted").replace('$', grpName);
   }
