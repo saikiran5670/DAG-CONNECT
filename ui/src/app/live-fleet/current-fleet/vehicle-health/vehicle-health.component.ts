@@ -862,19 +862,19 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
           // read custom data
           content:`<table style='width: 300px; font-size:12px;'>
             <tr>
-              <td style='width: 100px;'>Warning Name: </td> <td><b>${elem.warningName}</b></td>
+              <td style='width: 100px;'>${this.translationData.lblWarningName}: </td> <td><b>${elem.warningName}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>Activated Time: </td> <td><b>${activatedTime}</b></td>
+              <td style='width: 100px;'>${this.translationData.lblActivatedTime}: </td> <td><b>${activatedTime}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>Deactivated Time: </td> <td><b>${deactivatedTime}</b></td>
+              <td style='width: 100px;'>${this.translationData.lblDeactivatedTime}: </td> <td><b>${deactivatedTime}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>Vehicle Name: </td> <td><b>${elem.vehicleName} km</b></td>
+              <td style='width: 100px;'>${this.translationData.lblVehicleName}: </td> <td><b>${elem.vehicleName} km</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>Position: </td> <td><b>${elem.warningAddress}</b></td>
+              <td style='width: 100px;'>${this.translationData.lblPosition}: </td> <td><b>${elem.warningAddress}</b></td>
             </tr>
           </table>`
         });
