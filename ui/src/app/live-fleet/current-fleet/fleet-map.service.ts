@@ -641,7 +641,7 @@ export class FleetMapService {
     }
   }
 
-  viewSelectedRoutes(_selectedRouteData: any, _ui: any, trackType?: any, _displayRouteView?: any, _displayPOIList?: any, _searchMarker?: any, _herePOI?: any, alertsChecked?: boolean, showIcons?: boolean, _globalPOIList?: any) {
+  viewSelectedRoutes(_selectedRouteData: any, _ui: any, trackType?: any, _displayRouteView?: any, _displayPOIList?: any, _searchMarker?: any, _herePOI?: any, alertsChecked?: boolean, showIcons?: boolean, _globalPOIList?: any, translationData?: any) {
     this.clearRoutesFromMap();
     let _selectedRoutes: any = [];
     if(_selectedRouteData && _selectedRouteData.length > 0){
@@ -671,8 +671,8 @@ export class FleetMapService {
     }
     if (showIcons && _selectedRoutes && _selectedRoutes.length > 0) { //to show initial icons on map
       //let _iconCount: any = _selectedRoutes.filter(_elem => (_elem.vehicleDrivingStatusType != 'N' || _elem.vehicleDrivingStatusType != 'Never Moved') && (_elem.latestWarningClass != 0 || _elem.fleetOverviewAlert.length > 0));
-      this.drawIcons(_selectedRoutes, _ui);
-      this.makeCluster(_selectedRoutes, _ui);
+      this.drawIcons(_selectedRoutes, _ui, translationData);
+      this.makeCluster(_selectedRoutes, _ui, translationData);
       let objArr = this.group.getObjects();
       if (objArr && objArr.length > 0) {
         this.hereMap.addObject(this.group);
@@ -1177,7 +1177,7 @@ export class FleetMapService {
   }
 
 
-  drawIcons(_selectedRoutes, _ui) {
+  drawIcons(_selectedRoutes, _ui, translationData) {
     let newDataSet = _selectedRoutes.slice();
     // let removeValFromIndex: any = [];
     // newDataSet.forEach((element, index, object) => { //removing never moved type of records having no alert/warnings
@@ -1238,28 +1238,28 @@ export class FleetMapService {
           // read custom data
           content: `<table style='width: 300px; font-size:12px;'>
             <tr>
-              <td style='width: 100px;'>Vehicle:</td> <td><b>${_vehicleName}</b></td>
+              <td style='width: 100px;'>${translationData.lblVehicle}:</td> <td><b>${_vehicleName}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>Driving Status:</td> <td><b>${_drivingStatus}</b></td>
+              <td style='width: 100px;'>${translationData.lblDrivingStatus}:</td> <td><b>${_drivingStatus}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>Current Mileage:</td> <td><b>${_mileage} ${distanceUnit}</b></td>
+              <td style='width: 100px;'>${translationData.lblCurrentMileage}:</td> <td><b>${_mileage} ${distanceUnit}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>Next Service in:</td> <td><b>${_distanceNextService} ${distanceUnit}</b></td>
+              <td style='width: 100px;'>${translationData.lblNextServiceIn}:</td> <td><b>${_distanceNextService} ${distanceUnit}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>Health Status:</td> <td><b>${_healthStatus}</b></td>
+              <td style='width: 100px;'>${translationData.lblHealthStatus}:</td> <td><b>${_healthStatus}</b></td>
             </tr>
             <tr class='warningClass'>
-              <td style='width: 100px;'>Warning Name:</td> <td><b>${_type}</b></td>
+              <td style='width: 100px;'>${translationData.lblWarningName}:</td> <td><b>${_type}</b></td>
             </tr>
             <tr>
-            <td style='width: 100px;'>Activated Time:</td> <td><b>${activatedTime}</b></td>
+            <td style='width: 100px;'>${translationData.lblActivatedTime}:</td> <td><b>${activatedTime}</b></td>
             </tr>
             <tr>
-            <td style='width: 100px;'>Driver Name:</td> <td><b>${_driverName}</b></td>
+            <td style='width: 100px;'>${translationData.lblDriverName}:</td> <td><b>${_driverName}</b></td>
             </tr>
           </table>`
         });
@@ -1542,7 +1542,7 @@ export class FleetMapService {
     return healthColor;
   }
 
-  makeCluster(_selectedRoutes: any, _ui: any) {
+  makeCluster(_selectedRoutes: any, _ui: any, translationData: any) {
     let newRoutes = _selectedRoutes.slice();
     // let removeValFromIndex: any = [];
     // newRoutes.forEach((element, index, object) => { //removing never moved type of records having no alert/warnings
@@ -1561,7 +1561,7 @@ export class FleetMapService {
     //   this.afterPlusClick(newRoutes, _ui);
     // }
     if (newRoutes.length > 1) {
-      this.clusterAllPoints(newRoutes, _ui);
+      this.clusterAllPoints(newRoutes, _ui, translationData);
     }
   }
 
@@ -1811,7 +1811,7 @@ export class FleetMapService {
     });
   }
 
-  clusterAllPoints(data: any, ui: any) {
+  clusterAllPoints(data: any, ui: any, translationData: any) {
     let dataPoints = data.map((item) => {
       item.lat = (item.liveFleetPosition.length > 1) ? item.liveFleetPosition[item.liveFleetPosition.length - 1].gpsLatitude : item.latestReceivedPositionLattitude;
       item.lng = (item.liveFleetPosition.length > 1) ? item.liveFleetPosition[item.liveFleetPosition.length - 1].gpsLongitude : item.latestReceivedPositionLongitude;
@@ -1860,13 +1860,13 @@ export class FleetMapService {
             this.removedDisabledGroup();
             let colName: any;
             if (this.vehicleDisplayPreference == 'dvehicledisplay_VehicleName') {
-              colName = 'Vehicle Name';
+              colName = translationData.lblVehicleName;
             }
             else if (this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber') {
-              colName = 'Vin';
+              colName = translationData.lblVIN;
             }
             else {
-              colName = 'Vehicle Registration No';
+              colName = translationData.lblVehicleRegNo;
             }
             var point = event.target.getGeometry(),
               screenPosition = this.hereMap.geoToScreen(point),
@@ -1874,7 +1874,7 @@ export class FleetMapService {
               _data = t.getData(),
 
               // tooltipContent = "<table class='cust-table' border='1'><thead><th></th><th>Trip</th><th>Start Date</th><th>End Date</th></thead><tbody>";
-              tooltipContent = `<table class='cust-table2 font-helvetica-lt' border='1'><thead><th>Sr No</th><th>${colName}</th></thead><tbody>`;
+              tooltipContent = `<table class='cust-table2 font-helvetica-lt' border='1'><thead><th>${translationData.lblSrno}</th><th>${colName}</th></thead><tbody>`;
             var chkBxId = 0;
             _data.forEachDataPoint((p) => {
               if (colName == 'Vehicle Name') {
