@@ -1,4 +1,15 @@
-<div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+<app-common-breadcrumbs [breadcrumb]="breadcumMsg" [topRightElements]="topRightElements">
+    <ng-template #topRightElements>
+        <div *ngIf="actionType == 'view'" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+            <span class='custom-font' (click)="toBack()">
+                <span>
+                    <&nbsp;</span>
+                        <span class='backBtnCss'>{{ translationData.lblBack }}</span>
+            </span>
+        </div>
+</ng-template>
+</app-common-breadcrumbs>
+<!-- <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
         <span>{{ breadcumMsg }}</span>
     </div>
@@ -9,7 +20,7 @@
                     <span class='backBtnCss'>{{ translationData.lblBack }}</span>
         </span>
     </div>
-</div>
+</div> -->
 <form *ngIf="!showLoadingIndicator" [formGroup]="packageFormGroup">
     <mat-card class='mat-elevation-z'>
         <mat-card-content>

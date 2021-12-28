@@ -106,11 +106,10 @@ export class VehicleUpdatesComponent implements OnInit {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
   }
   getVehicleSoftStatus() {
-    this.showLoadingIndicator=true;
+ 
     this.vehicleSoftwareStatus = [];
     this.otaSoftwareUpdateService.getVehicleSoftwareStatus().subscribe((data) => {
-      this.showLoadingIndicator=false;
-      let vehicleSoftStatusArr = data['vehicleSoftwareStatus'];
+     let vehicleSoftStatusArr = data['vehicleSoftwareStatus'];
       if (this.translationData != undefined) {
         vehicleSoftStatusArr.forEach(element => {
           if (element.enum == "U") {
@@ -120,11 +119,11 @@ export class VehicleUpdatesComponent implements OnInit {
             element["value"] = this.translationData[element["key"]];
           }
           this.vehicleSoftwareStatus.push(element);
-        });
+        });    
       }     
     }, (error) => {
-      this.showLoadingIndicator=false;
-    })   
+      this.hideloader();
+    })  
   }
 
   searchAllDataFilter() {
@@ -167,9 +166,8 @@ export class VehicleUpdatesComponent implements OnInit {
     let vehicleStatusObj = {
       languageCode: 'en',
       retention: 'active'
-    }     
+    }       
       this.otaSoftwareUpdateService.getVehicleStatusList(vehicleStatusObj).subscribe((data) => {
-      this.showLoadingIndicator = false;
       this.vehicleStatusList = data["vehicleStatusList"];
       this.vehicleStatusList.filter((element) => {
       this.vehicleGroupArr.push(element.vehicleGroupNames);
@@ -191,10 +189,11 @@ export class VehicleUpdatesComponent implements OnInit {
       this.searchAllDataFilter();
       this.resetSoftStatusFilter();
       this.resetVehicleGroupFilter();
-      this.resetVehicleNameFilter();      
+      this.resetVehicleNameFilter(); 
+      this.hideloader();     
     }, (error) => {
       this.showLoadingIndicator = false; 
-    })
+    })   
   }
 
   removeDuplicates(originalArray, prop) {

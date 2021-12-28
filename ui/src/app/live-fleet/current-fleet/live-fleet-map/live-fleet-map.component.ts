@@ -179,7 +179,7 @@ export class LiveFleetMapComponent implements OnInit {
 
 
     this.fleetMapService.clearRoutesFromMap();
-    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons, this.displayGlobalPOIList);
+    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons, this.displayGlobalPOIList,this.translationData);
 
     //this.fleetMapService.setIconsOnMap();
     //this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
@@ -252,7 +252,7 @@ export class LiveFleetMapComponent implements OnInit {
   changeAlertSelection(_event){
     this.alertsChecked = _event.checked
     let _ui = this.fleetMapService.getUI();
-    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons, this.displayGlobalPOIList);
+    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons, this.displayGlobalPOIList,this.translationData);
   }
   makeHerePOIList(){
     this.herePOIList = [{
@@ -372,7 +372,7 @@ export class LiveFleetMapComponent implements OnInit {
       }
     });
     let _ui = this.fleetMapService.getUI();
-    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons, this.displayGlobalPOIList);
+    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons, this.displayGlobalPOIList,this.translationData);
 
     this.fleetMapService.showCategoryPOI(this.displayPOIList,_ui);
   }
@@ -445,7 +445,7 @@ export class LiveFleetMapComponent implements OnInit {
     });
     let _ui = this.fleetMapService.getUI();
     this.fleetMapService.showCategoryPOI(this.displayPOIList,_ui);
-    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons, this.displayGlobalPOIList);
+    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons, this.displayGlobalPOIList,this.translationData);
     }
   }
 
@@ -489,7 +489,7 @@ export class LiveFleetMapComponent implements OnInit {
       }
     });
     let _ui = this.fleetMapService.getUI();
-    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons, this.displayGlobalPOIList);
+    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons, this.displayGlobalPOIList,this.translationData);
 
     this.fleetMapService.showCategoryPOI(this.displayPOIList,_ui);
   }
@@ -563,7 +563,7 @@ export class LiveFleetMapComponent implements OnInit {
     });
     let _ui = this.fleetMapService.getUI();
     this.fleetMapService.showCategoryPOI(this.displayPOIList,_ui);
-    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons, this.displayGlobalPOIList);
+    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons, this.displayGlobalPOIList,this.translationData);
     }
   }
 
@@ -578,7 +578,7 @@ export class LiveFleetMapComponent implements OnInit {
 
   searchPlaces() {
     let _ui = this.fleetMapService.getUI();
-    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons, this.displayGlobalPOIList);
+    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons, this.displayGlobalPOIList,this.translationData);
   }
 
   onMapRepresentationChange(event: any) {
@@ -594,7 +594,7 @@ export class LiveFleetMapComponent implements OnInit {
   onDisplayChange(event: any) {
     this.displayRouteView = event.value;
     let _ui = this.fleetMapService.getUI();
-    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons, this.displayGlobalPOIList);
+    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons, this.displayGlobalPOIList,this.translationData);
   }
 
 }

@@ -177,6 +177,7 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
   }
 
   setDefaultTodayDate() {
+    this.hideloader();
     this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
     this.todayDate = this.getTodayDate();
   }
@@ -277,9 +278,9 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
   }
 
   loadVehicleDetailsData(selectedVehicleUpdateDetailsData: any) {
-    this.initData=[];   
-    this.showLoadingIndicator = true;
-     if (selectedVehicleUpdateDetailsData && selectedVehicleUpdateDetailsData.campaigns) {
+     this.initData=[];
+     if (selectedVehicleUpdateDetailsData) {
+      this.showLoadingIndicator = true;
       var todaysDate = moment();
       todaysDate = Util.convertUtcToDateFormat(todaysDate,this.dateFormats.display.dateInput, this.prefTimeZone);
       selectedVehicleUpdateDetailsData.campaigns.forEach(element => {
@@ -298,16 +299,18 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
           element.scheduleDateTime = this.formStartDate(element.scheduleDateTime, this.prefDefaultTimeFormat, this.prefDefaultDateFormat);
         } else {
           element.scheduleDateTime = '-';
-        }
-
-      });     
+        }      
+      }, (error) => {
+        this.hideloader();
+      });
       this.initData = selectedVehicleUpdateDetailsData.campaigns;
       this.selectedVin = this.selectedVehicleUpdateDetails.vin;
       this.adminRight = this.selectedVehicleUpdateDetails.isAdminRight;
       this.selectedVehicalName = this.selectedVehicleUpdateDetails.vehicleName;    
-      this.updateDataSource(this.initData);
+      this.updateDataSource(this.initData);    
+      this.hideloader(); 
     }
-    this.hideloader();
+   
   } 
 
   updateDataSource(tableData: any) {
@@ -467,27 +470,25 @@ showConfirmDailog(schedulerData: any) {
     }
     
     this.dialogRefConfirm = this.dialog.open(ScheduleConfirmComponent, dialogScheduler);
-    this.dialogRefConfirm.afterClosed().subscribe(res => {
-      this.showLoadingIndicator = true;
+    this.dialogRefConfirm.afterClosed().subscribe(res => {     
       if(res){ 
+        this.initData=[];
+        this.showLoadingIndicator = true;
         this.otaSoftwareService.getschedulesoftwareupdate(this.schedulerData).subscribe((sheduleData: any) => {
           // this.hideloader();
           let successMsg =`${this.schedulerData.campaignID} ${this.formattedDate} ${this.scheduledTime} scheduled successfully.`
           this.successMsgBlink(successMsg);
             this.otaSoftwareService.getvehicleupdatedetails(this.selectedVehicleUpdateDetails.vin).subscribe((data: any) =>{
-            this.hideloader();
-            if (data && data.vehicleUpdateDetails && data.vehicleUpdateDetails !== null) {
-              this.loadVehicleDetailsData(data)
-            }
-        
+            if (data  && data.vehicleUpdateDetails && data.vehicleUpdateDetails !== null) {
+              this.loadVehicleDetailsData(data['vehicleUpdateDetails']);            
+            }   
+            this.hideloader();     
           }, (error) => {
-            this.hideloader();
-          })
-          
-
-        }, (error) => {
-          this.hideloader();
-          // let successMsg =`${this.schedulerData.campaignID} ${this.formattedDate} ${this.scheduledTime} scheduled successfully.`
+            this.hideloader();  
+         })        
+        }, (error) => { 
+          this.hideloader();         
+         // let successMsg =`${this.schedulerData.campaignID} ${this.formattedDate} ${this.scheduledTime} scheduled successfully.`
           // this.successMsgBlink(successMsg);
           console.log("error:: ", error);
         });
