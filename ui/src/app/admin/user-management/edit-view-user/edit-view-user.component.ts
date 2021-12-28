@@ -194,7 +194,7 @@ export class EditViewUserComponent implements OnInit {
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } /
     ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} /
     ${this.translationData.lblAccountManagement ? this.translationData.lblAccountManagement : "Account Management"} /
-    ${(this.fromEdit == 'edit') ? (this.translationData.lblAccountDetails ? 'Edit '+this.translationData.lblAccountDetails : 'Edit Account Details') : (this.fromEdit == 'view') ? (this.translationData.lblAccountDetails ? 'View '+this.translationData.lblAccountDetails : 'View Account Details') : ''}`;
+    ${(this.fromEdit == 'edit') ? (this.translationData.lblAccountDetails ? this.translationData.lblEditAccountDetails : 'Edit Account Details') : (this.fromEdit == 'view') ? (this.translationData.lblAccountDetails ? this.translationData.lblViewAccountDetails : 'View Account Details') : ''}`;
     // ${this.translationData.lblAccountDetails ? this.translationData.lblAccountDetails : 'Account Details'}`;
   }
 
