@@ -245,7 +245,23 @@ export class SubscriptionManagementComponent implements OnInit {
 
   updatedTableData(tableData : any) {
     this.initData = tableData;
-
+    this.initData.forEach((ele,index) => {
+      if(ele.state == 'A'){
+        this.initData[index]["status"] = 'active';
+      }
+      if(ele.state == 'I'){
+        this.initData[index]["status"] = 'inactive';
+      }
+      if(ele.type == 'O'){
+        this.initData[index]["orgType"] = 'organisation';
+      }
+      else if(ele.type == 'V'){
+        this.initData[index]["orgType"] = 'org+vin';
+      }
+      else if(ele.type != 'O' && ele.type != 'V') {
+        this.initData[index]["orgType"] = 'vin';
+      }
+    });
     setTimeout(()=>{
       this.dataSource = new MatTableDataSource(tableData);
       this.dataSource.paginator = this.paginator;
@@ -254,8 +270,10 @@ export class SubscriptionManagementComponent implements OnInit {
            return data.packageCode.toString().toLowerCase().includes(filter) ||
                data.subscriptionId.toLowerCase().includes(filter) ||
                data.name.toLowerCase().toLowerCase().includes(filter) ||
-               data.type.toLowerCase().includes(filter) ||
-               data.state.toLowerCase().includes(filter)  ||
+              //  data.type.toLowerCase().includes(filter) ||
+              //  data.state.toLowerCase().includes(filter)  ||
+               data.orgType.toLowerCase().includes(filter) ||
+               data.status.toLowerCase().includes(filter)  ||
                data.count.toString().includes(filter) ||
                (getDt(data.subscriptionStartDate)).toString().toLowerCase().includes(filter) ||
               (getDt(data.subscriptionEndDate)).toString().toLowerCase().includes(filter)

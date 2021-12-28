@@ -932,6 +932,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       this.hideloader();
       this.wholeTripData = tripData;
       this.filterDateData();
+      this.updateDataSource(this.dataSource);
     }, (error)=>{
       this.hideloader();
       this.wholeTripData.vinTripList = [];
@@ -1381,6 +1382,21 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+      this.dataSource.filterPredicate = function(data, filter: any){
+        return data.vehicleName.toString().toLowerCase().includes(filter) ||
+            data.vin.toString().toLowerCase().includes(filter) ||
+            data.registrationNumber.toString().toLowerCase().includes(filter) ||
+            data.convertedDistance.toString().toLowerCase().includes(filter) ||
+            data.numberOfTrips.toString().toLowerCase().includes(filter)  ||
+            data.convertedTripTime.toString().toLowerCase().includes(filter) ||
+            data.convertedDrivingTime.toString().toLowerCase().includes(filter)  ||
+            data.convertedIdleDuration.toString().toLowerCase().includes(filter) ||
+            data.convertedStopTime.toLowerCase().toString().includes(filter) ||
+            data.convertedAverageDistance.toLowerCase().toString().includes(filter) ||
+            data.convertedAverageSpeed.toLowerCase().toString().includes(filter) ||
+            data.convertedAverageWeight.toLowerCase().toString().includes(filter) ||
+            data.convertedOdometer.toLowerCase().toString().includes(filter)
+   }
       this.dataSource.sortData = (data: String[], sort: MatSort) => {
         const isAsc = sort.direction === 'asc';
         return data.sort((a: any, b: any) => {
