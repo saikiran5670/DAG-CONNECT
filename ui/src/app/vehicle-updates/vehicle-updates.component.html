@@ -72,7 +72,7 @@
                 <mat-form-field appearance="outline" class="full-width" >
                 <mat-select (selectionChange)="optionClick('softwareStatus', $event.value)" placeholder="Select or search details"  #select  multiple formControlName="softStatus">
                 <mat-option value=''>
-                    <ngx-mat-select-search (keyup)="filterVehicleSoft(softStatus.value)" placeholderLabel="{{ translationData.lblSearchLanguage || 'Search software status' }}" #softStatus>
+                    <ngx-mat-select-search (keyup)="filterVehicleSoft(softStatus.value)" placeholderLabel="{{ translationData.lblSearchsoftwarestatus || 'Search software status' }}" #softStatus>
                         <mat-icon (click)="resetSoftStatusFilter()" ngxMatSelectSearchClear>close</mat-icon>
                     </ngx-mat-select-search>
                 </mat-option>   

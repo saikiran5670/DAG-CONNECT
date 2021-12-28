@@ -30,7 +30,8 @@ export class CommonTableComponent implements OnInit {
       tableData: any,
       colsList: any,
       colsName: any,
-      tableTitle: any
+      tableTitle: any,
+      translationData:any
     },
     private mdDialogRef: MatDialogRef<CommonTableComponent>
   ) {

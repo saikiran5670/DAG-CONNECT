@@ -29,7 +29,6 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
   public selectedIndex: number = 0;
   dataSource: any;
   displayedColumns: string[] = ['campaignId', 'subject', 'affectedSystem(s)', 'type', 'category', 'status', 'endDate', 'scheduledDateTime', 'action'];
-  translationData: any = {};
   localStLanguage: any;
   initData: any = [];
   showLoadingIndicator: boolean = false;
@@ -47,8 +46,8 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
   endTimeDisplay: any = '23:59:59';
   scheduledTime: any;
   scheduledDate: any;
-  prefTimeFormat: any = 12; //-- coming from pref setting
-  prefDateFormat: any = 'ddateformat_dd/mm/yyyy'; //-- coming from pref setting
+  //prefTimeFormat: any = 12; //-- coming from pref setting
+  //prefDateFormat: any = 'ddateformat_dd/mm/yyyy'; //-- coming from pref setting
     schedulerData: any ={
     campaignName: "",
     vehicalName: "",
@@ -69,6 +68,7 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
   @Input('mdePopoverPositionX') positionX;
   @Input() prefDefaultTimeFormat: any;
   @Input() prefDefaultDateFormat: any;
+  @Input() translationData: any;
   @Input() prefTimeZone: any; //-- coming from pref setting  
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -99,58 +99,66 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.accountRoleId = localStorage.getItem('accountRoleId') ? parseInt(localStorage.getItem('accountRoleId')) : 0;
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
-    let translationObj = {
-      id: 0,
-      code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
-      type: "Menu",
-      name: "",
-      value: "",
-      filter: "",
-      menuId: 17 //-- for alerts
-    }
+    // let translationObj = {
+    //   id: 0,
+    //   code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
+    //   type: "Menu",
+    //   name: "",
+    //   value: "",
+    //   filter: "",
+    //   menuId: 45 //-- for alerts
+    // }
     this.schedulerForm = this.fb.group({
       date: [''],
       time: ['']
     });   
     this.breadcumMsg = this.getBreadcum();    
-    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-      this.processTranslation(data);
-      this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
-        if (this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != '') { // account pref
-          this.proceedStep(prefData, this.accountPrefObj.accountPreference);
-        } else { // org pref
-          this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any) => {
-            this.proceedStep(prefData, orgPref);
-          }, (error) => { // failed org API
-            let pref: any = {};
-            this.proceedStep(prefData, pref);
-          });
-        }  
-      });
-    });
+    this.toBeProceed();
+    //this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+      //this.processTranslation(data);
+      // this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
+      //   if (this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != '') { // account pref
+      //     this.proceedStep(prefData, this.accountPrefObj.accountPreference);
+      //   } else { // org pref
+      //     this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any) => {
+      //       this.proceedStep(prefData, orgPref);
+      //     }, (error) => { // failed org API
+      //       let pref: any = {};
+      //       this.proceedStep(prefData, pref);
+      //     });
+      //   }  
+      // });
+    //});
   }
+
   proceedStep(prefData: any, preference: any) {
     let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
     if (_search.length > 0) {
       //this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
-      this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
+      //this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
       //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
-      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
-      this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+      //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
+      //this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
     } else {
       //this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
-      this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
+      //this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
       //this.prefTimeZone = prefData.timezone[0].value;
-      this.prefTimeZone = prefData.timezone[0].name;
-      this.prefDateFormat = prefData.dateformat[0].name;
+      //this.prefTimeZone = prefData.timezone[0].name;
+      //this.prefDateFormat = prefData.dateformat[0].name;
     }
+    // this.setDefaultStartEndTime();
+    // this.setPrefFormatDate();
+    // this.setDefaultTodayDate();   
+  }
+
+  toBeProceed(){
     this.setDefaultStartEndTime();
     this.setPrefFormatDate();
-    this.setDefaultTodayDate();   
+    this.setDefaultTodayDate(); 
   }
 
   ngOnChanges() {
-     this.loadVehicleDetailsData(this.selectedVehicleUpdateDetailsData);
+    this.loadVehicleDetailsData(this.selectedVehicleUpdateDetailsData);
   }
 
   setDefaultStartEndTime() {
@@ -158,7 +166,7 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
   }
 
   setPrefFormatTime() {
-    if (this.prefTimeFormat == 24) {
+    if (this.prefDefaultTimeFormat == 24) {  //prefTimeFormat
       this.startTimeDisplay = '00:00:00';
       this.selectedStartTime = "00:00";
     } else {
@@ -182,7 +190,7 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
   }
   
   setPrefFormatDate() {
-    switch (this.prefDateFormat) {
+    switch (this.prefDefaultDateFormat){ // this.prefDateFormat
       case 'dd/mm/yyyy': {
         this.dateFormats.display.dateInput = "DD/MM/YYYY";
         this.dateFormats.parse.dateInput = "DD/MM/YYYY";
@@ -271,7 +279,7 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
   loadVehicleDetailsData(selectedVehicleUpdateDetailsData: any) {
     this.initData=[];   
     this.showLoadingIndicator = true;
-     if (selectedVehicleUpdateDetailsData) {
+     if (selectedVehicleUpdateDetailsData && selectedVehicleUpdateDetailsData.campaigns) {
       var todaysDate = moment();
       todaysDate = Util.convertUtcToDateFormat(todaysDate,this.dateFormats.display.dateInput, this.prefTimeZone);
       selectedVehicleUpdateDetailsData.campaigns.forEach(element => {
@@ -363,7 +371,7 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
   openScheduler(rowData: any) {
   this.minDate = new Date();  
   this.maxDate= new Date(rowData.endDate); 
-  if (this.prefTimeFormat == 24) {
+  if (this.prefDefaultTimeFormat == 24) { // prefTimeFormat
     this.minTime = "00:00";
   } else {
     this.minTime = "12:00 AM";
@@ -379,7 +387,7 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
     let currentTime = this.minDate.getHours()+":"+ this.minDate.getMinutes();
     let selectedDate = formatDate(event.value, this.newDateFormat, 'en-US');  
     if(selectedDate != currentDate){
-      if (this.prefTimeFormat == 24) {
+      if (this.prefDefaultTimeFormat == 24) { // prefTimeFormat
         this.minTime = "00:00";
       } else {
         this.minTime = "12:00 AM";
@@ -396,7 +404,7 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
   setStartEndDateTime(date: any, timeObj: any, type: any) {
     let _x = timeObj.split(":")[0];
     let _y = timeObj.split(":")[1];
-    if (this.prefTimeFormat == 12) {
+    if (this.prefDefaultTimeFormat == 12) { // prefTimeFormat
       if(_y.split(' ')[1] == 'AM'){
         if (_x == 12) {
           date.setHours(0);
@@ -468,7 +476,7 @@ showConfirmDailog(schedulerData: any) {
           this.successMsgBlink(successMsg);
             this.otaSoftwareService.getvehicleupdatedetails(this.selectedVehicleUpdateDetails.vin).subscribe((data: any) =>{
             this.hideloader();
-            if (data  && data.vehicleUpdateDetails && data.vehicleUpdateDetails !== null) {
+            if (data && data.vehicleUpdateDetails && data.vehicleUpdateDetails !== null) {
               this.loadVehicleDetailsData(data)
             }
         
