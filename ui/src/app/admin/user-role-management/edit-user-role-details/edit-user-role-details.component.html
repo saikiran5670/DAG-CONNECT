@@ -99,7 +99,7 @@
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label style='display: flex; place-content: space-between;'>
                         <span class='font-16-px line-height-24px'>{{ translationData.lblUserRoleDescriptionOptional }}</span>
-                        <span *ngIf="showCount"> {{textLengthCounter }}  out of max 100 characters</span>
+                        <span *ngIf="showCount"> {{textLengthCounter }}  {{translationData.lblmaxoutchars || 'out of max 100 characters'}}</span>
                         <span *ngIf="!showCount"> {{ translationData.lbl120CharMax }}</span>
                     </mat-label>
                     <mat-form-field appearance="outline" class="full-width">
