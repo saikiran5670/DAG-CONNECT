@@ -236,7 +236,7 @@ export class VehicleGroupManagementComponent implements OnInit {
   deleteVehicleGroup(rowData: any){
     const options = {
       title: this.translationData.lblDelete || "Delete",
-      message: this.translationData.lblvehiclegrpdeletemsg || "Are you sure you want to delete '$' Vehicle Group?",
+      message: this.translationData.lblvehiclegrpconfirmdeletemsg || "Are you sure you want to delete '$' Vehicle Group?",
       cancelText: this.translationData.lblCancel || "Cancel",
       confirmText: this.translationData.lblDelete || "Delete"
     };
