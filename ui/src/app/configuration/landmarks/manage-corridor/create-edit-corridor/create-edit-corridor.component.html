@@ -1,4 +1,15 @@
-<div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+<app-common-breadcrumbs [breadcrumb]="breadcumMsg" [topRightElements]="topRightElements">
+    <ng-template #topRightElements>
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+            <span class='custom-font' (click)="backToCorridorList()">
+                <span>
+                    <&nbsp;</span>
+                        <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span>
+            </span>
+        </div>
+</ng-template>
+</app-common-breadcrumbs>
+<!-- <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
         <span>{{ breadcumMsg }}</span>
     </div>
@@ -9,9 +20,9 @@
                     <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span>
         </span>
     </div>
-</div>
+</div> -->
 
-    <mat-card class='mat-elevation-z' class="custom-style" *ngIf="actionType==='create'">
+    <mat-card class='mat-elevation-z'  *ngIf="actionType==='create'">
         <mat-card-content>
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="margin-bottom-xlg">
                 <span class='font-18-px line-height-27px font-helvetica-md' >{{ translationData.lblAddNewCorridor || 'Add New Corridor' }}</span>
