@@ -542,11 +542,11 @@ export class AppComponent {
       }
       if (elem.subMenus.length > 0) { //-- If subMenus
         elem.subMenus.forEach(subMenuItem => {
-          landingPageMenus.push({ id: subMenuItem.menuId, value: `${elem.translatedName}.${subMenuItem.translatedName}`, url:`${elem.url}/${subMenuItem.url}` });
+          landingPageMenus.push({ menuLabelKey:elem.key, subMenuLabelKey:subMenuItem.key, id: subMenuItem.menuId, value: `${elem.translatedName}.${subMenuItem.translatedName}`, url:`${elem.url}/${subMenuItem.url}` });
         });
       } else {
         if (!elem.externalLink) { //-- external link not added
-          landingPageMenus.push({ id: elem.menuId, value: `${elem.translatedName}`, url:`${elem.url}` });
+          landingPageMenus.push({ menuLabelKey:elem.key, id: elem.menuId, value: `${elem.translatedName}`, url:`${elem.url}` });
         }
       }
     })

@@ -200,6 +200,13 @@ export class UserManagementComponent implements OnInit {
     this.showLoadingIndicator = true;
     let languageCode = this.localStLanguage.code;
     let accountNavMenu = localStorage.getItem("accountNavMenu") ? JSON.parse(localStorage.getItem("accountNavMenu")) : [];
+    accountNavMenu.forEach(element => {
+      if(element.subMenuLabelKey) {
+        element.transName = this.translationService.applicationTranslationData[element.menuLabelKey]+'.'+this.translationService.applicationTranslationData[element.subMenuLabelKey];
+      } else {
+        element.transName = this.translationService.applicationTranslationData[element.menuLabelKey];
+      }
+    });
     this.translationService.getPreferences(languageCode).subscribe(data => {
       this.hideloader();
       this.defaultSetting = {

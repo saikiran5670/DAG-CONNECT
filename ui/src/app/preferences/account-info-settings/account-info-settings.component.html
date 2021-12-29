@@ -294,7 +294,7 @@
         <div class="areaWidth min-width-30-per font-16-px line-height-24px" fxLayout="column" fxLayoutAlign="left">
           <mat-label>{{ translationData.lblLandingPageDisplayDefault  }}</mat-label>
           <mat-label class='font-helvetica-md'>
-            {{ !landingPageDisplayData ? '--' : landingPageDisplayData.length > 0 ? landingPageDisplayData[0].value : landingPageDisplayDropdownData[0].value }}
+            {{ !landingPageDisplayData ? '--' : landingPageDisplayData.length > 0 ? landingPageDisplayData[0].value : landingPageDisplayDropdownData[0].transName }}
           </mat-label>
         </div>
         <div class="areaWidth min-width-30-per font-16-px line-height-24px" fxLayout="column" fxLayoutAlign="left">
@@ -436,7 +436,7 @@
                   </ngx-mat-select-search>
                 </mat-option>
                 <mat-option *ngFor="let rer of filteredLandingPageDisplay | async " [value]="rer.id">
-                  {{ rer.value }}
+                  {{ rer.transName }}
                 </mat-option>
               </mat-select>
             </mat-form-field>
