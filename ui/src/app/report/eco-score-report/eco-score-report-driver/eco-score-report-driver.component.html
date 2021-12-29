@@ -220,7 +220,7 @@
                   <mat-form-field appearance="outline" class="full-width">
                     <mat-select [(value)]="vehicleSelected" [disabled]="vehicleListGeneral.length <= 1" (selectionChange)="loadPieChart($event.value)">
                       <mat-option *ngFor="let vehicle of vehicleListGeneral" [value]="vehicle.id">
-                        {{ vehicle.name }}
+                        {{ vehicle.name == 'Overall Driver' ? translationData.lblOverallDriver : vehicle.name }}
                       </mat-option>
                     </mat-select>
                   </mat-form-field>
@@ -312,7 +312,7 @@
                 <mat-form-field appearance="outline" class="full-width">
                   <mat-select [(value)]="vehicleSelected" [disabled]="vehicleListGeneral.length <= 1" (selectionChange)="loadPieChartPerformance($event.value)">
                     <mat-option *ngFor="let vehicle of vehicleListGeneral" [value]="vehicle.id">
-                      {{ vehicle.name }}
+                      {{ vehicle.name == 'Overall Driver' ? translationData.lblOverallDriver : vehicle.name }}
                     </mat-option>
                   </mat-select>
                 </mat-form-field>
