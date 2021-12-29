@@ -88,7 +88,7 @@
            </ng-container>
 
             <ng-container *ngIf="column == 'select'">
-                <mat-header-cell *matHeaderCellDef style="word-break: break-all;">
+                <mat-header-cell mat-sort-header *matHeaderCellDef style="word-break: break-all;">
                     <!-- Action Column template elements will be printed here -->
                     <ng-container *ngTemplateOutlet='selectColumnHeaderElements'></ng-container>
                 </mat-header-cell>
