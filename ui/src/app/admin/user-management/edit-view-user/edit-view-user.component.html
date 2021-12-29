@@ -79,7 +79,7 @@
               <!-- <img [src]="croppedImage" style="display: block; margin: auto; width: 120px; height: 120px; border-radius: 50%;" /> -->
               <div *ngIf="editAccountInfoFlag" appDragDrop (files)="filesDroppedMethod($event)" style="background-color: rgb(241, 240, 240); box-sizing: content-box; width: 170px; height: 170px;">
                 <div class="upload-btn-wrapper">
-                  <button class="btn">{{translationData.lblChooseFile || 'Choose File'}}</button>
+                  <button class="btn">{{translationData.lblChooseFile || 'Choose File'}}</button> {{selectedFileName}}
                   <input *ngIf="!isSelectPictureConfirm" type="file" accept="image/png, image/gif, image/jpeg" (change)="fileChangeEvent($event)" />
                 </div>
                 <image-cropper *ngIf="isAccountPictureSelected && !isSelectPictureConfirm" style="height: 100px; width: 170px;" 
@@ -269,7 +269,7 @@
           </div> -->
           <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
             <mat-label class='font-16-px line-height-24px'>{{ translationData.lblLandingPageDisplayDefault  }}</mat-label>
-            <mat-label class='font-helvetica-md'>{{ !landingPageDisplayData ? '--' : landingPageDisplayData.length > 0 ? landingPageDisplayData[0].value : defaultSetting.landingPageDisplayDropdownData[0].value }}</mat-label>
+            <mat-label class='font-helvetica-md'>{{ !landingPageDisplayData ? '--' : landingPageDisplayData.length > 0 ? landingPageDisplayData[0].value : defaultSetting.landingPageDisplayDropdownData[0].transName }}</mat-label>
           </div>
           <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
             <mat-label class='font-16-px line-height-24px'>{{ translationData.lblSetPageRefreshTime }}</mat-label>
@@ -368,7 +368,7 @@
                 <mat-form-field appearance="outline" class="full-width">
                   <mat-select (selectionChange)="onDropdownChange($event, 'landingPage')" placeholder="{{ translationData.lblLandingPageDisplayDefault }}" formControlName="landingPage">
                     <mat-option *ngFor="let rer of defaultSetting.landingPageDisplayDropdownData" [value]="rer.id">
-                      {{ rer.value }}
+                      {{ rer.transName }}
                     </mat-option>
                   </mat-select>
                 </mat-form-field>

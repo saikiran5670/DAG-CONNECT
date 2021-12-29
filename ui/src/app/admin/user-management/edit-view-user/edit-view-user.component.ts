@@ -75,6 +75,7 @@ export class EditViewUserComponent implements OnInit {
   grpTitleVisible: boolean = false;
   adminAccessType: any = {};
   filterValue: string;
+  selectedFileName:string;
 
   constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private accountService: AccountService, private domSanitizer: DomSanitizer, private router: Router) { }
 
@@ -539,6 +540,7 @@ export class EditViewUserComponent implements OnInit {
       return false;
     this.isAccountPictureSelected = true;
     this.imageChangedEvent = event;
+    this.selectedFileName = event.target.files[0].name;
   }
 
   onSelectPictureCancel(){
