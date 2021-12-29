@@ -107,6 +107,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
   obs: Observable<any>;
   healthDdataSource: MatTableDataSource<any>;
   map_key: any = '';
+  getvehiclehealthstatusservicecall;
   @Output() backToPage = new EventEmitter<object>();
 
 
@@ -127,11 +128,12 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     // console.log(this.healthData);
+    let warningType:any;
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
-    this.getWarningData();
+    this.getWarningData(warningType='C');
     this.vehicleHealthForm = this._formBuilder.group({
       warningType: ['AllWarnings', [Validators.required]],
       startDate: ['', []],
@@ -695,17 +697,28 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
     this.markerArray = [];
     if (event == 0) {
       this.isCurrent = true;
+      this.getWarningData('C');
     } else {
       this.isCurrent = false;
+      this.getWarningData('H');
     }
     this.onSearch();
   }
   
-  getWarningData() {
+  getWarningData(warningdata) {
+    if(this.getvehiclehealthstatusservicecall) {
+      this.getvehiclehealthstatusservicecall.unsubscribe();
+    }
     this.showLoadingIndicator=true;
-    this.reportService.getvehiclehealthstatus(this.healthData.vin, this.localStLanguage.code).subscribe((res) => {
-      this.currentHealthData = this.processDataForActivatedAndDeactivatedTime(res);
-      this.historyHealthData = res;
+    this.getvehiclehealthstatusservicecall = this.reportService.getvehiclehealthstatus(this.healthData.vin, this.localStLanguage.code, warningdata).subscribe((res) => {
+      if(warningdata=='C') {
+        this.currentHealthData = res;
+        this.applyDatatoCardPaginator(this.currentHealthData);
+      } else {
+        this.historyHealthData = res;
+      }
+      // this.currentHealthData = this.processDataForActivatedAndDeactivatedTime(res);
+      
       this.onSearch();
       this.showLoadingIndicator=false;
     }, (error) => {

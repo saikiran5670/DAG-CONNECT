@@ -487,7 +487,14 @@ showConfirmDailog(schedulerData: any) {
             this.hideloader();  
          })        
         }, (error) => { 
-          this.hideloader();         
+          this.otaSoftwareService.getvehicleupdatedetails(this.selectedVehicleUpdateDetails.vin).subscribe((data: any) =>{
+          if (data  && data.vehicleUpdateDetails && data.vehicleUpdateDetails !== null) {
+            this.loadVehicleDetailsData(data['vehicleUpdateDetails']);            
+          }             
+          this.hideloader();   
+         }, (error) => {
+          this.hideloader();  
+       })        
          // let successMsg =`${this.schedulerData.campaignID} ${this.formattedDate} ${this.scheduledTime} scheduled successfully.`
           // this.successMsgBlink(successMsg);
           console.log("error:: ", error);
