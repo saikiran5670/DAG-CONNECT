@@ -1397,24 +1397,24 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
             data.convertedAverageWeight.toLowerCase().toString().includes(filter) ||
             data.convertedOdometer.toLowerCase().toString().includes(filter)
    }
-      this.dataSource.sortData = (data: String[], sort: MatSort) => {
-        const isAsc = sort.direction === 'asc';
-        return data.sort((a: any, b: any) => {
-            let columnName = sort.active;
-            return this.compareData(a[sort.active], b[sort.active], isAsc, columnName);
-        });
-      }
+      // this.dataSource.sortData = (data: String[], sort: MatSort) => {
+      //   const isAsc = sort.direction === 'asc';
+      //   return data.sort((a: any, b: any) => {
+      //       let columnName = sort.active;
+      //       return this.compareData(a[sort.active], b[sort.active], isAsc, columnName);
+      //   });
+      // }
       });
       Util.applySearchFilter(this.dataSource, this.displayedColumns ,this.filterValue );
     }
 
-    compareData(a: Number | String, b: Number | String, isAsc: boolean, columnName: any) {
+    // compareData(a: Number | String, b: Number | String, isAsc: boolean, columnName: any) {
 
-        if(!(a instanceof Number)) a = a.toString().toUpperCase();
-        if(!(b instanceof Number)) b = b.toString().toUpperCase();
+    //     if(!(a instanceof Number)) a = a.toString().toUpperCase();
+    //     if(!(b instanceof Number)) b = b.toString().toUpperCase();
 
-      return ( a < b ? -1 : 1) * (isAsc ? 1: -1);
-    }
+    //   return ( a < b ? -1 : 1) * (isAsc ? 1: -1);
+    // }
   idleDurationCount(){
     let idleDuration=0;
     this.initData.forEach(item => {
