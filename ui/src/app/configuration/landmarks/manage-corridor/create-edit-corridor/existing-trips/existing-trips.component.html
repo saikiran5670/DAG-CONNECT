@@ -322,7 +322,7 @@
                 [checked]='selectedCorridors.hasValue() && isAllSelectedForCorridor()'
                 [indeterminate]='selectedCorridors.hasValue() && !isAllSelectedForCorridor()'
                 [aria-label]='checkboxLabelForCorridor()'
-                matTooltip="{{ translationData.lblcheckboxViewTooltipmsg }}">
+                matTooltip="{{ translationData.lblCheckboxFunctionTooltipMsg }}">
               </mat-checkbox>
               <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll}}</span>
             </mat-header-cell>
@@ -336,7 +336,7 @@
               <mat-checkbox (click)='$event.stopPropagation()'
                 (change)='$event ? selectedCorridors.toggle(row) : null; checkboxClicked($event, row)'
                 [checked]='selectedCorridors.isSelected(row)' [aria-label]='checkboxLabelForCorridor(row)'
-                matTooltip="{{ translationData.lblcheckboxViewTooltipmsg }}">
+                matTooltip="{{ translationData.lblCheckboxFunctionTooltipMsg }}">
               </mat-checkbox>
             </mat-cell>
           </ng-container>

@@ -81,7 +81,7 @@
                   <span [ngClass]="{ 'marginLeft-14': row.newTag }"></span>
                   <mat-checkbox (click)='$event.stopPropagation()'
                     (change)='$event ? selectedCorridors.toggle(row) : null; checkboxClicked($event, row)'
-                    [checked]='selectedCorridors.isSelected(row)' [aria-label]='checkboxLabelForCorridor(row)' matTooltip="{{ translationData.lblcheckboxViewTooltipmsg}}">
+                    [checked]='selectedCorridors.isSelected(row)' [aria-label]='checkboxLabelForCorridor(row)' matTooltip="{{ translationData.lblCheckboxFunctionTooltipMsg}}">
                   </mat-checkbox>
                 </mat-cell>
               </ng-container>

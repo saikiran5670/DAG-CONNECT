@@ -262,7 +262,7 @@ export class VehicleDetailsComponent implements OnInit {
   // }
 
   exportAsCSV(){
-    const title = 'Vehicle Details';
+    const title = this.translationData.lblVehicleDetails;
 
     const header = [`${this.translationData.lblVehicle}`,`${this.translationData.lblVIN}`, `${this.translationData.lblRegistrationNumber}`, `${this.translationData.lblModel}`, `${this.translationData.lblRelationship}`,`${this.translationData.lblStatus}`];
 
