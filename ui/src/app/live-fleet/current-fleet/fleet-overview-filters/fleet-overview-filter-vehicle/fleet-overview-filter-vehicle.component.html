@@ -13,12 +13,12 @@
         <div class="full-width vehicleList-div" *ngFor="let item of vehicleListData" (click) ='openVehicleDetails(item)'>
             <div class="vehicleList-icon" *ngIf= "!drivingStatus">
                 <span id="steps" class="step-image" [innerHTML]="item.icon"  matTooltip="{{translationData.lblHealthStatus}}: {{item.vehicleHealthStatusType}} 
-                &#13; Alert: {{item.alertName}}"> </span>
+                &#13; {{translationData.lblAlert || 'Alert'}}: {{item.alertName}}"> </span>
             </div>
             <div class='rippleSVG'  *ngIf= "drivingStatus">
             <div class="vehicleList-icon">
                 <span id="steps" class="step-image" [innerHTML]="item.icon"  matTooltip="{{translationData.lblHealthStatus}}: {{item.vehicleHealthStatusType}} 
-                &#13; Alert: {{item.alertName}}"> </span>
+                &#13; {{translationData.lblAlert || 'Alert'}}: {{item.alertName}}"> </span>
             </div>
         </div>
             <div class="vehicleList-details">
