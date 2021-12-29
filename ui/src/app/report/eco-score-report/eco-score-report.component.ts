@@ -305,27 +305,27 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
-       this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
-        if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
-          this.proceedStep(prefData, this.accountPrefObj.accountPreference);
-        }else{ // org pref
-          this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
-            this.proceedStep(prefData, orgPref);
-          }, (error) => { // failed org API
-            let pref: any = {};
-            this.proceedStep(prefData, pref);
-          });
-        }
-
-        let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
-        if(vehicleDisplayId) {
-          let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
-          if(vehicledisplay.length != 0) {
-            this.vehicleDisplayPreference = vehicledisplay[0].name;
-          }
-        }
-
+    });
+    this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
+     if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
+       this.proceedStep(prefData, this.accountPrefObj.accountPreference);
+     }else{ // org pref
+       this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
+         this.proceedStep(prefData, orgPref);
+       }, (error) => { // failed org API
+         let pref: any = {};
+         this.proceedStep(prefData, pref);
        });
+     }
+
+     let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
+     if(vehicleDisplayId) {
+       let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+       if(vehicledisplay.length != 0) {
+         this.vehicleDisplayPreference = vehicledisplay[0].name;
+       }
+     }
+
     });
     this.isSearched=true;
   }

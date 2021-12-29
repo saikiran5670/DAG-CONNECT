@@ -88,6 +88,7 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
   maxDate:any;
   minTime:any;
   newDateFormat:any;
+  errorVisible: boolean = false;
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats,private translationService: TranslationService, public fb: FormBuilder, private dialog: MatDialog, private dialogService: ConfirmDialogService,
     private otaSoftwareService: OtaSoftwareUpdateService, private organizationService: OrganizationService) {
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
@@ -487,6 +488,8 @@ showConfirmDailog(schedulerData: any) {
             this.hideloader();  
          })        
         }, (error) => { 
+          let errorMsg = this.translationData.lblManagerApprovalCampaignID ? this.translationData.lblManagerApprovalCampaignID : 'The manager approval of Campaign ID: '+ this.schedulerData.campaignID +' has failed. Please try again !';
+          this.errorMsgBlink(errorMsg);
           this.otaSoftwareService.getvehicleupdatedetails(this.selectedVehicleUpdateDetails.vin).subscribe((data: any) =>{
           if (data  && data.vehicleUpdateDetails && data.vehicleUpdateDetails !== null) {
             this.loadVehicleDetailsData(data['vehicleUpdateDetails']);            
@@ -509,6 +512,15 @@ showConfirmDailog(schedulerData: any) {
       this.titleVisible = false;
     }, 5000);
   }
+
+  errorMsgBlink(errorMsg: any) {
+    this.errorVisible = true;
+    this.displayMessage = errorMsg;
+    setTimeout(() => {
+      this.errorVisible = false;
+    }, 5000);
+  }
+
   onClose() {
     this.titleVisible = false;
   }
