@@ -7,6 +7,15 @@ style='padding:10px; color:#fff; background: #5dc24e;'>
 <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
 </div>
 </div>
+<div *ngIf='errorVisible' fxLayout="row" fxLayoutAlign="center center"
+style='padding:10px; color:#fff; background: #FF0000;'>
+<div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center" style='width:95%;'>
+{{ displayMessage }}
+</div>
+<div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
+<mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
+</div>
+</div>
 <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
   <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
     <span>{{ breadcumMsg }}</span>
