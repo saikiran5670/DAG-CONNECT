@@ -414,6 +414,11 @@ export class VehicleUpdatesComponent implements OnInit {
     this.dataSource.filter = JSON.stringify(this.filterListValues);
 
   }
+  onReload(){
+    this.initData=[];
+    this.loadVehicleStatusData();
+  }
+
   createFilter() {
     let filterFunction = function (data: any, filter: string): boolean {
       let searchTerms = JSON.parse(filter);

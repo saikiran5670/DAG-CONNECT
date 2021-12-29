@@ -217,7 +217,6 @@ export class MapFunctionsService {
         this.endMarker = new H.map.Marker({ lat: this.endAddressPositionLat, lng: this.endAddressPositionLong }, { icon: iconEnd });
         let endMarkerHtml = `<div class='font-14-px line-height-21px font-helvetica-lt'>
         <table>
-    let transcorridorname = translationData.lblCorridorName;
         <tr><td class='font-helvetica-md'>${transcorridorname}:</td> <td>${corridorName} </td></tr>
         <tr><td class='font-helvetica-md'>${transstartpoint}:</td><td>${startAddress}</td></tr>
         <tr><td class='font-helvetica-md'>${transendpoint}:</td><td>${endAddress}</td></tr>
