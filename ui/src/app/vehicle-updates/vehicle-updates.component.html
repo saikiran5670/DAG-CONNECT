@@ -20,7 +20,7 @@
             </div>
           </div>
           <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm vehicleStatusList_filter'>
-              <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" style="margin-top: 24px;">
+              <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" style="margin-top: 26px;">
                 <mat-form-field appearance="outline">
                     <input matInput [formControl]="searchFilter" placeholder="{{ translationData.lblSearch || 'Search' }}">
                     <span matPrefix><mat-icon>search</mat-icon></span>
@@ -85,8 +85,13 @@
                 </mat-option>
             </mat-select>  
           </mat-form-field>             
-            </div>                     
-          </div>        
+            </div>      
+            <div class="areaWidth" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+              <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)="onReload()" style="top:26px;">
+              <span class="reload"><i class="fa fa-refresh" aria-hidden="true"></i>{{ translationData.lblReload || 'Reload' }}</span></button>
+            </div>     
+          </div>  
+          
         </form>       
          <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found'}}</div>
           <div *ngIf='initData.length > 0' id="vehicleListData">
