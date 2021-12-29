@@ -1,5 +1,5 @@
-import { Component, EventEmitter, Input, OnInit, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Component, EventEmitter, Input, OnInit,ViewEncapsulation, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
+  import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ChangeDetectorRef } from '@angular/core';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
@@ -18,7 +18,8 @@ import { ReplaySubject } from 'rxjs';
 @Component({
   selector: 'app-new-user-step',
   templateUrl: './new-user-step.component.html',
-  styleUrls: ['./new-user-step.component.less']
+  styleUrls: ['./new-user-step.component.less'],
+  encapsulation:ViewEncapsulation.None
 })
 
 export class NewUserStepComponent implements OnInit {
@@ -243,7 +244,7 @@ export class NewUserStepComponent implements OnInit {
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } /
     ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} /
     ${this.translationData.lblAccountManagement ? this.translationData.lblAccountManagement : "Account Management"} /
-    ${(this.fromCreate == 'Create') ? (this.translationData.lblCreate ? this.translationData.lblCreateNewUser : 'New Account') :'Create New Account'}`;
+    ${(this.fromCreate == 'Create') ? (this.translationData.lblCreate ? this.translationData.lblCreateNewUser||'Create New Account' : 'Create New Account') :'Create New Account'}`;
     // ${this.translationData.lblAccountDetails ? this.translationData.lblAccountDetails : 'Account Details'}`;
   }
 
