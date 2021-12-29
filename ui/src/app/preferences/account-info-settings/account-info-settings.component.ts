@@ -215,6 +215,13 @@ export class AccountInfoSettingsComponent implements OnInit {
     let languageCode = this.localStLanguage.code;
     let preferenceId = this.accountInfo[0]["preferenceId"];
     let accountNavMenu = localStorage.getItem("accountNavMenu") ? JSON.parse(localStorage.getItem("accountNavMenu")) : [];
+    accountNavMenu.forEach(element => {
+      if(element.subMenuLabelKey) {
+        element.transName = this.translationService.applicationTranslationData[element.menuLabelKey]+'.'+this.translationService.applicationTranslationData[element.subMenuLabelKey];
+      } else {
+        element.transName = this.translationService.applicationTranslationData[element.menuLabelKey];
+      }
+    });
     this.translationService.getPreferences(languageCode).subscribe((data: any) => {
       let dropDownData = data;
       this.languageDropdownData = dropDownData.language;

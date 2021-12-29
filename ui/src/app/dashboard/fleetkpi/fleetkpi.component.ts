@@ -1584,7 +1584,7 @@ export class FleetkpiComponent implements OnInit {
 
     this.doughnutChartFuelConsumedData = [[currentPercent,(nextPercent)]]
 
-    let targetUnit = (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblGallons || 'g') : (this.translationData.lblLtrs || 'L');
+    let targetUnit = (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblgallons || 'g') : (this.translationData.lblLtrs || 'L');
 
     this.doughnutChartFuelConsumedPlugins = [{
       afterDraw(chart) {
@@ -1831,7 +1831,7 @@ export class FleetkpiComponent implements OnInit {
       }
     }];
 
-    let targetUnit = (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblGallons || 'g') : (this.translationData.lblLtrs || 'L');
+    let targetUnit = (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblgallons || 'g') : (this.translationData.lblLtrs || 'L');
     
     this.doughnutChartFuelUsedOptions= {
       responsive: true,
