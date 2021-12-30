@@ -1044,16 +1044,16 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   }
 
   exportAsExcelFile(){      
-  const title = 'Driver Time Report';
-  const summary = 'Summary Section';
-  const detail = 'Detail Section';
+  const title = this.translationData.lblDriverTimeReport;
+  const summary = this.translationData.lblSummarySection;
+  const detail = this.translationData.lblAllDetails;
   // const header = ['Driver Name', 'Driver Id', 'Start Time', 'End Time', 'Drive Time(hh:mm)', 'Work Time(hh:mm)', 'Service Time(hh:mm)', 'Rest Time(hh:mm)', 'Available Time(hh:mm)'];
   // const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Drivers Count', 'Total Drive Time(hh:mm)', 'Total Work Time(hh:mm)', 'Total Available Time(hh:mm)', 'Total Rest Time(hh:mm)'];
   const header = this.getPDFExcelHeader();
   const summaryHeader = this.getExcelSummaryHeader();
 
   this.summaryObj=[
-    ['Driver Time Report', this.reportMapService.getStartTime(Date.now(), this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true), this.fromDisplayDate, this.toDisplayDate,
+    [this.translationData.lblDriverTimeReport, this.reportMapService.getStartTime(Date.now(), this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true), this.fromDisplayDate, this.toDisplayDate,
       this.selectedVehicleGroup, this.selectedVehicle, this.totalDriverCount, this.tableInfoObj.driveTime, 
       this.tableInfoObj.workTime, this.tableInfoObj.availableTime, this.tableInfoObj.restTime
     ]
@@ -1120,13 +1120,13 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
 
 getPDFExcelHeader(){
   let col: any = [];
-  col = [`${this.translationData.lblDriverName || 'Driver Name'}`, `${this.translationData.lblDriverId || 'Driver Id'}`, `${this.translationData.lblStartTime || 'Start Time'}`, `${this.translationData.lblEndTime || 'End Time' }`, `${this.translationData.lblDriveTimehhmm || 'Drive Time(hh:mm)' }`, `${this.translationData.lblWorkTimehhmm || 'Work Time(hh:mm)' }`, `${this.translationData.lblServiceTimehhmm || 'Service Time(hh:mm)' }`, `${this.translationData.lblRestTimehhmm || 'Rest Time(hh:mm)' }`, `${this.translationData.lblAvailableTimehhmm || 'Available Time(hh:mm)' }`];
+  col = [`${this.translationData.lblDriverName || 'Driver Name'}`, `${this.translationData.lblDriverId || 'Driver Id'}`, `${this.translationData.lblStartTime || 'Start Time'}`, `${this.translationData.lblEndTime || 'End Time' }`, `${this.translationData.lblDriveTime + ' (' + this.translationData.lblhhmm + ')' }`, `${this.translationData.lblWorkTime + ' (' + this.translationData.lblhhmm + ')' }`, `${this.translationData.lblServiceTime + ' (' + this.translationData.lblhhmm + ')' }`, `${this.translationData.lblRestTime + ' (' + this.translationData.lblhhmm + ')' }`, `${this.translationData.lblAvailableTime + ' (' + this.translationData.lblhhmm + ')' }`];
   return col;
 }
 
 getExcelSummaryHeader(){
   let col: any = [];
-  col = [`${this.translationData.lblReportName || 'Report Name'}`, `${this.translationData.lblReportCreated || 'Report Created'}`, `${this.translationData.lblReportStartTime || 'Report Start Time'}`, `${this.translationData.lblReportEndTime || 'Report End Time' }`, `${this.translationData.lblVehicleGroup || 'Vehicle Group' }`, `${this.translationData.lblVehicleName || 'Vehicle Name' }`, `${this.translationData.lblDriversCount|| 'Drivers Count' }`, `${this.translationData.lblTotalDriveTimehhmm || 'Total Drive Time(hh:mm)' }`, `${this.translationData.lblTotalWorkTimehhmm || 'Total Work Time(hh:mm)' }`, `${this.translationData.lblTotalAvailableTimehhmm || 'Total Available Time(hh:mm)' }`, `${this.translationData.lblTotalRestTimehhmm || 'Total Rest Time(hh:mm)' }`];
+  col = [`${this.translationData.lblReportName || 'Report Name'}`, `${this.translationData.lblReportCreated || 'Report Created'}`, `${this.translationData.lblReportStartTime || 'Report Start Time'}`, `${this.translationData.lblReportEndTime || 'Report End Time' }`, `${this.translationData.lblVehicleGroup || 'Vehicle Group' }`, `${this.translationData.lblVehicleName || 'Vehicle Name' }`, `${this.translationData.lblDriversCount|| 'Drivers Count' }`, `${this.translationData.lblTotalDriveTime + ' (' + this.translationData.lblhhmm + ')' }`, `${this.translationData.lblTotalWorkTime + ' (' + this.translationData.lblhhmm + ')' }`, `${this.translationData.lblTotalAvailableTime + ' (' + this.translationData.lblhhmm + ')' }`, `${this.translationData.lblTotalRestTime + ' (' + this.translationData.lblhhmm + ')' }`];
   return col;
 }
   exportAsPDFFile(){
@@ -1141,7 +1141,7 @@ getExcelSummaryHeader(){
       didDrawPage: function(data) {     
           // Header
           doc.setFontSize(16);
-          var fileTitle = "Driver Details";
+          var fileTitle = this.translationData.lblDriverTimeReport;
           var img = "/assets/logo.png";
           doc.addImage(img, 'JPEG',10,8,0,0);
  
