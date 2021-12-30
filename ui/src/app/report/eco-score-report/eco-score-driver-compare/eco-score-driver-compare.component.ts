@@ -337,7 +337,7 @@ export class EcoScoreDriverCompareComponent implements OnInit {
     //   key = value;
     //   value = "rp_cruisecontrolusage";
     // }
-    var foundValue = this.translationData.value || this.translationDataLocal.filter(obj=>obj.key === value);
+    var foundValue = this.translationData.value; // || this.translationDataLocal.filter(obj=>obj.key === value);
 
     if(foundValue === undefined || foundValue === null || foundValue.length === 0)
       value = value;

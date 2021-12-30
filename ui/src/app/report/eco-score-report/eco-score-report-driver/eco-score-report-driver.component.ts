@@ -763,24 +763,24 @@ titleStyle: any = { name: 'sans-serif', family: 4, size: 11, bold: true };
   tableColumns(){
     this.columnDefinitions = [
       {
-        id: 'Category', name: (this.translationData.lblCategory), field: 'key',
+        id: this.translationData.lblCategory, name: this.translationData.lblCategory, field: 'key',
         type: FieldType.string, formatter: this.treeFormatter, excludeFromHeaderMenu: true, width: 225
       },
       {
-        id: 'Target', name: (this.translationData.lblTarget ), field: 'targetValue',
+        id: this.translationData.lblTarget, name: this.translationData.lblTarget, field: 'targetValue',
         type: FieldType.string, formatter: this.getTarget, excludeFromHeaderMenu: true, sortable: true
       }
     ];
     this.columnDefinitionsGen = [
       {
-        id: 'Category', name: (this.translationData.lblCategory ), field: 'key',
+        id: this.translationData.lblCategory, name: this.translationData.lblCategory , field: 'key',
         type: FieldType.string, formatter: this.treeFormatter, excludeFromHeaderMenu: true, width: 225
       }
     ];
     
-    this.columnPerformance.push({columnId: 'Category'});
-    this.columnPerformance.push({columnId: 'Target'});
-    this.columnGeneral.push({columnId: 'Category'})
+    this.columnPerformance.push({columnId: this.translationData.lblCategory});
+    this.columnPerformance.push({columnId: this.translationData.lblTarget});
+    this.columnGeneral.push({columnId: this.translationData.lblCategory})
     if(this.driverDetails !== undefined && this.driverDetails !== null){
       for(var i=0; i<this.driverDetails.length;i++){
         this.columnPerformance.push({columnId: 'driver_'+i});
@@ -1287,7 +1287,9 @@ this.barChartOptionsPerformance = {
   loadPieChart(index){
     if(this.ecoScoreDriverDetails.averageGrossWeightChart.chartDataSet.length > 0){
       this.pieChartData = this.ecoScoreDriverDetails.averageGrossWeightChart.chartDataSet[index].data;
-      this.pieChartData.push(this.ecoScoreDriverDetails.averageGrossWeightChart.chartDataSet[index].label);
+      let label = this.ecoScoreDriverDetails.averageGrossWeightChart.chartDataSet[index].label;
+      label = (label && label.toLowerCase().indexOf("overall driver")) !== -1 ? this.translationData.lblOverallDriver : label;
+      this.pieChartData.push(label);
       this.pieChartLabels = this.ecoScoreDriverDetails.averageGrossWeightChart.xAxisLabel;
     }
   }
@@ -1300,7 +1302,9 @@ this.barChartOptionsPerformance = {
     if(this.ecoScoreDriverDetails.averageDrivingSpeedChart.chartDataSet.length > 0){
       this.pieChartDataPerformance = this.ecoScoreDriverDetails.averageDrivingSpeedChart.chartDataSet[index].data;
       // this.pieCharDatatLabelPerformance = this.ecoScoreDriverDetails.averageDrivingSpeedChart.chartDataSet[index].label;
-      this.pieChartDataPerformance.push(this.ecoScoreDriverDetails.averageDrivingSpeedChart.chartDataSet[index].label);
+      let label = this.ecoScoreDriverDetails.averageDrivingSpeedChart.chartDataSet[index].label;
+      label = (label && label.toLowerCase().indexOf("overall driver")) !== -1 ? this.translationData.lblOverallDriver : label;
+      this.pieChartDataPerformance.push(label);
       this.pieChartLabelsPerformance = this.ecoScoreDriverDetails.averageDrivingSpeedChart.xAxisLabel;
     }
   }
@@ -1328,8 +1332,8 @@ this.barChartOptionsPerformance = {
    exportAsExcelFile(){
     //Create workbook and worksheet
     let workbook = new Workbook();
-    let worksheet = workbook.addWorksheet(this.translationData.lblEcoScoreReport || 'Eco-Score Report');
-    const title = this.translationData.lblEcoScoreReport || 'Eco-Score Report';
+    let worksheet = workbook.addWorksheet(this.translationData.lblEcoScoreReport);
+    const title = this.translationData.lblEcoScoreReport;
     //Add Row and formatting
     let titleRow = worksheet.addRow([title]);
     worksheet.addRow([]);
@@ -1375,7 +1379,7 @@ this.barChartOptionsPerformance = {
     let genTableTitle=worksheet.addRow([this.translationData.lblGeneral]);
     genTableTitle.font = this.titleStyle;
     let genColList = [];
-    let perfVinList=['', '', this.translationData.lblOverall || 'Overall', this.translationData.lblOverall || 'Overall'];
+    let perfVinList=['', '', 'Overall', 'Overall'];
     this.columnGeneral.forEach((col, index) => {
       genColList.push(col.columnId);
       if(index>1) {
@@ -1385,12 +1389,13 @@ this.barChartOptionsPerformance = {
     });
     let newGenColList:any=[]; 
     perfVinList.forEach(element => { 
-      if(element==''||element=='Overall'){
-      newGenColList.push(element)
+      if(element == '' || element == 'Overall'){
+        element = element && element == 'Overall' ? this.translationData.lblOverall : element;
+        newGenColList.push(element)
       }
     });    
     this.driverDetails.forEach(element => {
-      if(element.vin !=''){       
+      if(element.vin != ''){       
           newGenColList.push(element.vin);
       }
     });
@@ -1456,7 +1461,7 @@ this.barChartOptionsPerformance = {
     worksheet.addRow([]);
     workbook.xlsx.writeBuffer().then((data) => {
       let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-      fs.saveAs(blob, 'Eco-Score_Report.xlsx');
+      fs.saveAs(blob, this.translationData.lblExportName+'.xlsx');
     })    
   }
   
@@ -1540,7 +1545,8 @@ this.barChartOptionsPerformance = {
         didDrawPage: function(data) {     
             // Header
             doc.setFontSize(14);
-            var fileTitle = "Eco-Score report - Driver Details";
+            var fileTitle = this.translationData.lblPdfTitle;
+            // var fileTitle = 'pdf';
             var img = "/assets/logo.png";
             doc.addImage(img, 'JPEG',10,10,0,0);
   
@@ -1563,7 +1569,7 @@ this.barChartOptionsPerformance = {
       // doc.addImage(chartKPIHref, 'PNG', 150, 40, fileWidth, fileHeight);
       doc.addPage('a2','p');
 
-      let perfVinList=['', '', this.translationData.lblOverall || 'Overall', this.translationData.lblOverall || 'Overall'];
+      let perfVinList=['', '', this.translationData.lblOverall, this.translationData.lblOverall];
       let pdfColumns=[];
       this.columnGeneral.forEach((col, index) => {
         pdfColumns.push(col.columnId);
@@ -1574,7 +1580,7 @@ this.barChartOptionsPerformance = {
       });
       let newGenColList:any=[]; 
       perfVinList.forEach(element => { 
-        if(element==''||element=='Overall'){
+        if(element == '' || element == 'Overall'){
         newGenColList.push(element)
         }
       });    
@@ -1649,7 +1655,7 @@ this.barChartOptionsPerformance = {
       });
       doc.addPage('a4','p');
       doc.addImage(performanceBarHref, 'PNG', 10, 40, oWidth, performanceBarHeight) ;
-      doc.save('Eco-Score_Report.pdf');
+      doc.save(this.translationData.lblExportName+'.pdf');
     });
   }
 }
