@@ -76,7 +76,7 @@ export class EditViewUserComponent implements OnInit {
   adminAccessType: any = {};
   filterValue: string;
   selectedFileName:string;
-
+  emailErrorMsg:string;
   constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private accountService: AccountService, private domSanitizer: DomSanitizer, private router: Router) { }
 
   ngOnInit() {
@@ -255,6 +255,7 @@ export class EditViewUserComponent implements OnInit {
   }
 
   setDefaultAccountInfo(){
+    this.emailErrorMsg='';
     if(this.accountInfoData){
       this.accountInfoForm.get('salutation').setValue(this.accountInfoData.salutation ? this.accountInfoData.salutation : '--');
       this.accountInfoForm.get('firstName').setValue(this.accountInfoData.firstName ? this.accountInfoData.firstName : '--');
@@ -422,6 +423,7 @@ export class EditViewUserComponent implements OnInit {
   }
 
   onAccountInfoUpdate(){
+    this.emailErrorMsg='';
     let objData: any = {
         id: this.accountInfoData.id,
         emailId: this.accountInfoForm.controls.loginEmail.value,
@@ -439,6 +441,9 @@ export class EditViewUserComponent implements OnInit {
       // this.isSelectPictureConfirm = true;
       this.editAccountInfoFlag = false;
       this.successMsgBlink(this.getSuccessMsg('accountInfo'));
+     }, (error) => {
+       this.emailErrorMsg=error.error;
+       console.log('error:',error);
     });
   }
 

@@ -1905,6 +1905,7 @@ getAllSummaryData(){
     this.dontShow = true;
   var doc = new jsPDF('p', 'mm', 'a4');
   let pdfColumns = this.getPDFExcelHeader();
+  let transHeaderNamePdf = this.translationData.lblTripFleetUtilisationReport;
   let prepare = []
     // this.initData.forEach(e => {
     //   var tempObj = [];
@@ -1989,7 +1990,7 @@ getAllSummaryData(){
         didDrawPage: function(data) {
             // Header
             doc.setFontSize(16);
-            var fileTitle = "Trip Fleet Utilisation Details";
+            var fileTitle = transHeaderNamePdf;
             var img = "/assets/logo.png";
             doc.addImage(img, 'JPEG',10,10,0,0);
 

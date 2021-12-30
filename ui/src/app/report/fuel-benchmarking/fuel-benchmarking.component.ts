@@ -860,7 +860,7 @@ export class FuelBenchmarkingComponent implements OnInit {
       this.reportService.getBenchmarkDataByTimePeriod(requestObj).subscribe((data: any) => {
         // this.showLoadingIndicator = true;
         let withConvertedDataObj;
-        withConvertedDataObj = this.reportMapService.getConvertedFuelBenchmarkingData(data, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat, this.prefTimeZone);
+        withConvertedDataObj = this.reportMapService.getConvertedFuelBenchmarkingData(data, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat, this.prefTimeZone, this.translationData);
         //console.log("---api hit and get data for time period range---", data)
         //console.log("-----withConvertedDataObj---++++++",withConvertedDataObj);
         data = withConvertedDataObj;
@@ -903,7 +903,7 @@ export class FuelBenchmarkingComponent implements OnInit {
       this.reportService.getBenchmarkDataByVehicleGroup(requestObj).subscribe((data: any) => {
         this.showLoadingIndicator = true;
         let withConvertedDataObj;
-        withConvertedDataObj = this.reportMapService.getConvertedFuelBenchmarkingData(data, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat, this.prefTimeZone);
+        withConvertedDataObj = this.reportMapService.getConvertedFuelBenchmarkingData(data, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat, this.prefTimeZone, this.translationData);
         //console.log("---api hit and get data for vehicle group---", data)
         //console.log("-----withConvertedDataObj---++++++",withConvertedDataObj);
         data = withConvertedDataObj;

@@ -68,7 +68,7 @@
               </mat-error>
             </div>
             <div *ngIf="actionType == 'view'">
-              <span class='font-helvetica-md'>{{ alertCategoryName }}</span>
+              <span class='font-helvetica-md'>{{ translationData.lblalertCategoryName }}</span>
             </div>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
@@ -98,14 +98,14 @@
               <div class="margin-bottom-sm">
                   <mat-radio-group (change)='onApplyOnChange($event)' formControlName="applyOn">
                       <mat-radio-button style='margin-right: 20px;' value="G">
-                          {{ translationData.lblVehicleGroup }}
+                          {{ translationData.lblVehicleGroup  || 'Vehicle Group'}}
                       </mat-radio-button>
                       <mat-radio-button style='margin-right: 20px;' value="S">
                           {{ translationData.lblVehicle }}
                       </mat-radio-button>
                   </mat-radio-group>
               </div>
-              <p style="color: darkgray;">Select alert to apply alert on a single vehicle or a group of vehicles.</p>
+              <p style="color: darkgray;">{{translationData.lblselectsinglevehorgroup ||'Select alert to apply alert on a single vehicle or a group of vehicles'}}</p>
             </div>
             <div *ngIf="actionType == 'view'">
               <span class='font-helvetica-md'>{{ selectedRowData.applyOn == 'G' ? 'Group' : 'Vehicle' }}</span>
@@ -310,7 +310,7 @@
   <div fxLayout="row" fxLayoutAlign="space-between"
   class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
   <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
-    Validity Type : <span class='font-helvetica-md'>{{ this.selectedRowData.alertUrgencyLevelRefs[0].periodType == 'A' ? (translationData.lblAlways) :  (translationData.lblCustom) }}</span>
+    {{translationData.lblValidity || 'Validity Type'}} : <span class='font-helvetica-md'>{{ this.selectedRowData.alertUrgencyLevelRefs[0].periodType == 'A' ? (translationData.lblAlways) :  (translationData.lblCustom) }}</span>
     </div>
   </div>
   <div fxLayout="row" *ngIf="this.selectedRowData.alertUrgencyLevelRefs[0].periodType == 'C'" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
@@ -394,7 +394,7 @@
                 <div *ngIf="actionType == 'view'">
                   <span class='font-helvetica-md'>{{ selectedRowData.alertUrgencyLevelRefs[0].urgencyLevelType == 'C' ? (translationData.lblCritical ) : (selectedRowData.alertUrgencyLevelRefs[0].urgencyLevelType == 'W' ? (translationData.lblWarning ) : (translationData.lblAdvisory )) }}</span>
                 </div>
-                <p *ngIf="alert_category_selected != 'R' && actionType != 'view'" style="color: darkgray;">Choose appropriate urgency level for this alert</p>
+                <p *ngIf="alert_category_selected != 'R' && actionType != 'view'" style="color: darkgray;">{{translationData.lblChooseLevel || 'Choose Appropriate Urgency level for this alert'}}</p>
                 <p *ngIf="alert_category_selected == 'R' && actionType != 'view'" style="color: darkgray;">It's default selection for all '{{alertTypeName}}' alerts</p>
             </div>
           </div>
@@ -625,20 +625,20 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="name">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{translationData.lblName || 'Name'}}</mat-header-cell>
                     <!-- <mat-cell *matCellDef="let row">{{ row.geofenceName }}</mat-cell> -->
                     <mat-cell *matCellDef="let row">{{ row.name }}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="categoryName">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>Category</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{translationData.lblCategory || 'Category'}}</mat-header-cell>
                     <mat-cell *matCellDef="let row">{{ row.categoryName }}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="subCategoryName">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>Sub-Category</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{translationData.lblSubCategory || 'Sub Category'}}</mat-header-cell>
                     <mat-cell *matCellDef="let row">{{ row.subCategoryName }}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="address">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>Address</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{translationData.lblAddress || 'Address'}}</mat-header-cell>
                   <mat-cell *matCellDef="let row">{{ row.address }}, {{ row.city }}, {{ row.country }}</mat-cell>
                 </ng-container>
                 <mat-header-row *matHeaderRowDef="displayedColumnsGeofence"></mat-header-row>
@@ -822,7 +822,7 @@
       fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
       <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
         <a *ngIf="actionType !=  'view'" class="linkBtn font-16-px line-height-24px" (click)="onClickAdvancedFilter()" style="margin-top: 20px;">
-          Advanced Filter <mat-icon class='font-size-20'> {{ openAdvancedFilter ? 'keyboard_arrow_up' :
+         {{translationData.lblAdvancedFilter|| 'Advanced Filter'}}<mat-icon class='font-size-20'> {{ openAdvancedFilter ? 'keyboard_arrow_up' :
             'keyboard_arrow_down' }}</mat-icon></a>
         <span *ngIf="actionType == 'view'" style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
           translationData.lblAdvancedFilter }}</span>

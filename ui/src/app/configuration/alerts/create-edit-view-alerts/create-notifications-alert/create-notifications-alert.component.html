@@ -15,17 +15,17 @@
         <div class="areaWidth" fxLayout="row" fxLayoutAlign="left">
             <div class="areaWidth areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
                 <mat-checkbox [checked]="criticalLevel" [disabled]="criticalLevel == false"
-                    (change)="onChangeCriticalLevel($event)">Critical
+                    (change)="onChangeCriticalLevel($event)">{{translationData.lblCritical || 'Critical'}}
                 </mat-checkbox>
             </div>
             <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
                 <mat-checkbox [checked]="warningLevel" [disabled]="warningLevel == false"
-                    (change)="onChangeWarningLevel($event)">Warning
+                    (change)="onChangeWarningLevel($event)">{{translationData.lblWarning || 'Warning'}}
                 </mat-checkbox>
             </div>
             <div class="areaWidth areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
                 <mat-checkbox [checked]="advisoryLevel" [disabled]="advisoryLevel == false"
-                    (change)="onChangeAdvisoryLevel($event)">Advisory
+                    (change)="onChangeAdvisoryLevel($event)">{{translationData.lblAdvisory || 'Advisory'}}
                 </mat-checkbox>
             </div>
         </div>
@@ -691,7 +691,7 @@
                     </div>
                     <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
                         <mat-label>{{ translationData.lblNotificationModeType }}</mat-label>
-                        <span style='font-weight: 500!important;'>Email</span>
+                        <span style='font-weight: 500!important;'>{{translationData.lblEmail || 'Email'}}</span>
                     </div>
                 </div>
                 <div fxLayout="row" fxLayoutAlign="space-between"
@@ -769,7 +769,7 @@
                     </div>
                     <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
                         <mat-label>{{ translationData.lblNotificationModeType }}</mat-label>
-                        <span style='font-weight: 500!important;'>SMS</span>
+                        <span style='font-weight: 500!important;'>{{translationData.lblSMS || 'SMS'}}</span>
                     </div>
                 </div>
                 <div fxLayout="row" fxLayoutAlign="space-between"

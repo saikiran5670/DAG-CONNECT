@@ -397,7 +397,7 @@
                   [checked]='selectedFuelDeviationEntry.hasValue() && isAllSelectedForFuelEntry()'
                   [indeterminate]='selectedFuelDeviationEntry.hasValue() && !isAllSelectedForFuelEntry()'
                   [aria-label]='checkboxLabelForFuelEntry()'
-                  matTooltip="{{ translationData.lblAllCheckboxViewTooltipMsg }}">
+                  matTooltip="{{ translationData.lblAllCheckboxFunctionTooltip }}">
                 </mat-checkbox>
                 <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll }}</span>
               </mat-header-cell>
@@ -405,7 +405,7 @@
                 <mat-checkbox (click)='$event.stopPropagation()'
                   (change)='$event ? selectedFuelDeviationEntry.toggle(row) : null; fuelEntryCheckboxClicked($event, row)'
                   [checked]='selectedFuelDeviationEntry.isSelected(row)' [aria-label]='checkboxLabelForFuelEntry(row)'
-                  matTooltip="{{ translationData.lblCheckboxViewTooltipMsg }}">
+                  matTooltip="{{ translationData.lblCheckboxFunctionTooltip }}">
                 </mat-checkbox>
               </mat-cell>
             </ng-container>

@@ -616,8 +616,8 @@ export class AlertsComponent implements OnInit {
         return (
         data.name.toString().toLowerCase().includes(filter) ||
         data.category.toString().toLowerCase().includes(filter) ||
-         data.type.toString().toLowerCase().includes(filter) ||
-        data.highThresholdValue.toString().includes(filter)
+         data.type.toString().toLowerCase().includes(filter) 
+       // data.highThresholdValue.toString().includes(filter)
       );
     };
       this.dataSource.sortData = (data : String[], sort: MatSort) => {

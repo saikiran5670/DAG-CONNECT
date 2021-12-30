@@ -150,7 +150,7 @@
             <mat-form-field appearance="outline">
               <mat-select [(ngModel)]="reportTypeSelection" (selectionChange)="onReportTypeChange($event)"
                 placeholder="{{ translationData.lblSelectReportType || 'Select Report Type' }}">
-                <mat-option value="0">--All--</mat-option>
+                <mat-option value="0">{{translationData.lblAll}}</mat-option>
                 <mat-option *ngFor="let rer of ReportTypeList" [value]="rer.id">
                   {{ rer.reportName }}
                 </mat-option>
@@ -161,7 +161,7 @@
             <mat-form-field appearance="outline">
               <mat-select [(ngModel)]="statusSelection" (selectionChange)="onStatusSelectionChange($event)"
                 placeholder="{{ translationData.lblSelectStatus || 'Select Status' }}">
-                <mat-option value="0">--All--</mat-option>
+                <mat-option value="0">{{translationData.lblAll}}</mat-option>
                 <mat-option *ngFor="let rer of StatusList" [value]="rer.id">
                   {{ rer.name }}
                 </mat-option>
