@@ -185,6 +185,9 @@
                     <mat-error *ngIf="accountInfoForm.get('loginEmail').hasError('email')">
                       {{ translationData.lblPleaseentervalidemailID  }}
                     </mat-error>
+                    <mat-error *ngIf="emailErrorMsg">
+                      {{emailErrorMsg}}
+                    </mat-error>
                   </div>
                   <div *ngIf='privilegeAccess' style="width: 30%;" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label class='font-16-px line-height-24px'>{{ translationData.lblUserType }}<span class='mandatoryColor'>*</span></mat-label>
