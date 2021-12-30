@@ -3,9 +3,9 @@ trigger:
 #  branches:
 #    include:
 #    - development
-#    - release
-#    - testing
-#    - master
+- release
+- testing
+- master
 #  paths:
 #    include:
 #    - ui
