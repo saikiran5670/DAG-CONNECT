@@ -209,7 +209,7 @@ titleStyle: any = { name: 'sans-serif', family: 4, size: 11, bold: true };
     this.doughnutChartLabelsAnticipationScore = [(this.translationData.lblAnticipationScore ), '', ''];
     this.doughnutChartDataAnticipationScore= [ [this.ecoScoreDriverDetails.overallPerformance.anticipationScore.score, this.ecoScoreDriverDetails.overallPerformance.anticipationScore.targetValue] ];
     // Doughnut - Braking Score
-    this.doughnutChartLabelsBrakingScore = [(this.translationData.lblBrakingScore ), '', ''];
+    this.doughnutChartLabelsBrakingScore = [(this.translationData.lblBrakingscore ), '', ''];
     this.doughnutChartDataBrakingScore = [ [this.ecoScoreDriverDetails.overallPerformance.brakingScore.score, this.ecoScoreDriverDetails.overallPerformance.brakingScore.targetValue] ];
 
     this.pluginsCommon = [{
@@ -439,8 +439,9 @@ titleStyle: any = { name: 'sans-serif', family: 4, size: 11, bold: true };
           let _key = (vehicle.kpiInfo)[key].key;
           // if(this.prefUnitFormat.indexOf("Imperial") !== -1 && (_key.indexOf("30") !== -1 || _key.indexOf("50") !== -1 || _key.indexOf("75") !== -1))
           //   _key += '_I';
-          let _name = this.translationData._key || this.translationDataLocal.filter(obj=>obj.key === _key);
-          let name = _name[0].value;
+          let name = this.translationData[_key];
+          // let _name = this.translationData.filter(obj=>obj.key === _key); || this.translationDataLocal.filter(obj=>obj.key === _key);
+          // let name = _name[0].value;
           if(_key.indexOf('rp_CruiseControlUsage') !== -1 || _key.indexOf('rp_cruisecontroldistance') !== -1){
             if(this.prefUnitFormat === 'dunit_Imperial'){
               if(_key.indexOf('30') !== -1)
@@ -462,10 +463,12 @@ titleStyle: any = { name: 'sans-serif', family: 4, size: 11, bold: true };
           if(unit && unit.indexOf("(%)") <= 0)
             unit = ' (' + unit + ')';
           if(!unit) unit = '';
-          let val = 'driver';
+          let val = this.translationData.lblDriver;
           if(key.indexOf("Company") !== -1)
-            val = 'company';
-          let seriesName =  name + ' ' + unit + ' - '+ val + ' - ' + vehicle.vehicleName;
+            val = this.translationData.lblCompany;
+          let vehicleName = vehicle.vehicleName;
+          if(vehicleName && vehicleName.indexOf("Overall") !== -1) vehicleName = this.translationData.lblOverall;
+          let seriesName =  name + ' ' + unit + ' - '+ val + ' - ' + vehicleName;
             dataSeries.push({
               name: seriesName,
               data: ((vehicle.kpiInfo)[key].uoM === 'hh:mm:ss') ? this.formatTime((vehicle.kpiInfo)[key].data, false) : this.formatData((vehicle.kpiInfo)[key].data, false)
@@ -601,11 +604,6 @@ titleStyle: any = { name: 'sans-serif', family: 4, size: 11, bold: true };
 
   getTodayDate(val){
     var date = Util.getUTCDate(this.prefObj.prefTimeZone);
-    // console.log(val+" today before "+date.getTime());
-    // (val == '00') ? date.setHours('00') : date.setHours('23');
-    // (val == '00') ? date.setMinutes('00') : date.setHours('59');
-    // (val == '00') ? date.setSeconds('00') : date.setHours('59');
-    // console.log(val+" today"+date.getTime());
     return date.getTime();
   }
 
@@ -728,38 +726,38 @@ titleStyle: any = { name: 'sans-serif', family: 4, size: 11, bold: true };
 
   //General Table
   translationUpdate(){
-    this.translationDataLocal = [
-      { key:'rp_general' , value:'General' },
-      { key:'rp_averagegrossweight' , value:'Average Gross Weight' },
-      { key:'rp_distance' , value:'Distance' },
-      { key:'rp_numberoftrips' , value:'Number of Trips' },
-      { key:'rp_numberofvehicles' , value:'Number of vehicles' },
-      { key:'rp_averagedistanceperday' , value:'Average distance per day' },
-      { key:'rp_driverperformance' , value:'Driver Performance' },
-      { key:'rp_ecoscore' , value:'Eco Score' },
-      { key:'rp_fuelconsumption' , value:'Fuel Consumption' },
-      { key:'rp_braking' , value:'Braking' },
-      { key:'rp_anticipationscore' , value:'Anticipation Score' },
-      { key:'rp_averagedrivingspeed' , value:'Average Driving Speed' },
-      { key:'rp_idleduration' , value:'Idle Duration' },
-      { key:'rp_idling' , value:'Idling' },
-      { key:'rp_heavythrottleduration' , value:'Heavy Throttle Duration' },
-      { key:'rp_heavythrottling' , value:'Heavy Throttling' },
-      { key:'rp_averagespeed' , value:'Average Speed' },
-      { key:'rp_ptoduration' , value:'PTO Duration' },
-      { key:'rp_ptousage' , value:'PTO Usage' },
-      { key:'rp_CruiseControlUsage30' , value:'Cruise Control Usage' },
-      { key:'rp_CruiseControlUsage75' , value:'Cruise Control Usage' },
-      { key:'rp_CruiseControlUsage50' , value:'Cruise Control Usage' },
-      { key:'rp_cruisecontrolusage' , value:'Cruise Control Usage' },
-      { key:'rp_cruisecontroldistance50' , value:'Cruise Control Usage' },
-      { key:'rp_cruisecontroldistance30' , value:'Cruise Control Usage' },
-      { key:'rp_cruisecontroldistance75' , value:'Cruise Control Usage' },
-      { key:'rp_harshbraking' , value:'Harsh Braking' },
-      { key:'rp_harshbrakeduration' , value:'Harsh Brake Duration' },
-      { key:'rp_brakeduration' , value:'Brake Duration' },
-      { key:'rp_brakingscore' , value:'Braking Score' }
-     ];
+    // this.translationDataLocal = [
+    //   { key:'rp_general' , value:'General' },
+    //   { key:'rp_averagegrossweight' , value:'Average Gross Weight' },
+    //   { key:'rp_distance' , value:'Distance' },
+    //   { key:'rp_numberoftrips' , value:'Number of Trips' },
+    //   { key:'rp_numberofvehicles' , value:'Number of vehicles' },
+    //   { key:'rp_averagedistanceperday' , value:'Average distance per day' },
+    //   { key:'rp_driverperformance' , value:'Driver Performance' },
+    //   { key:'rp_ecoscore' , value:'Eco Score' },
+    //   { key:'rp_fuelconsumption' , value:'Fuel Consumption' },
+    //   { key:'rp_braking' , value:'Braking' },
+    //   { key:'rp_anticipationscore' , value:'Anticipation Score' },
+    //   { key:'rp_averagedrivingspeed' , value:'Average Driving Speed' },
+    //   { key:'rp_idleduration' , value:'Idle Duration' },
+    //   { key:'rp_idling' , value:'Idling' },
+    //   { key:'rp_heavythrottleduration' , value:'Heavy Throttle Duration' },
+    //   { key:'rp_heavythrottling' , value:'Heavy Throttling' },
+    //   { key:'rp_averagespeed' , value:'Average Speed' },
+    //   { key:'rp_ptoduration' , value:'PTO Duration' },
+    //   { key:'rp_ptousage' , value:'PTO Usage' },
+    //   { key:'rp_CruiseControlUsage30' , value:'Cruise Control Usage' },
+    //   { key:'rp_CruiseControlUsage75' , value:'Cruise Control Usage' },
+    //   { key:'rp_CruiseControlUsage50' , value:'Cruise Control Usage' },
+    //   { key:'rp_cruisecontrolusage' , value:'Cruise Control Usage' },
+    //   { key:'rp_cruisecontroldistance50' , value:'Cruise Control Usage' },
+    //   { key:'rp_cruisecontroldistance30' , value:'Cruise Control Usage' },
+    //   { key:'rp_cruisecontroldistance75' , value:'Cruise Control Usage' },
+    //   { key:'rp_harshbraking' , value:'Harsh Braking' },
+    //   { key:'rp_harshbrakeduration' , value:'Harsh Brake Duration' },
+    //   { key:'rp_brakeduration' , value:'Brake Duration' },
+    //   { key:'rp_brakingscore' , value:'Braking Score' }
+    //  ];
   }
 
   tableColumns(){
@@ -799,7 +797,7 @@ titleStyle: any = { name: 'sans-serif', family: 4, size: 11, bold: true };
       });
       this.driverDetailsGen.forEach((element, index) => {
         let vin = this.driverDetailsGen[index].vin;
-        if(vin == '' && this.driverDetailsGen[index].headerType.indexOf("Overall") !== -1) vin= this.translationData.lblOverall || "Overall";
+        if(vin == '' && this.driverDetailsGen[index].headerType.indexOf("Overall") !== -1) vin= this.translationData.lblOverall;
         let driverG= '<span style="font-weight:700">'+vin+'</span>';
         this.columnGeneral.push({columnId: vin});
         this.columnDefinitionsGen.push({
@@ -810,13 +808,13 @@ titleStyle: any = { name: 'sans-serif', family: 4, size: 11, bold: true };
       this.driverDetails.forEach((element, index) => {
         let driver;
         if(element.headerType.indexOf("Driver") !== -1)
-            driver= '<span style="font-weight:700">Driver</span>';
+            driver= '<span style="font-weight:700">'+this.translationData.lblDriver+'</span>';
         else
-            driver= '<span style="font-weight:700">Company</span>';
+            driver= '<span style="font-weight:700">'+this.translationData.lblCompany+'</span>';
             
         if(element.headerType.indexOf("Overall") !== -1){
            this.columnDefinitions.push({
-            id: 'driver_'+index, name: driver, field: 'score', columnGroup: 'Overall',
+            id: 'driver_'+index, name: driver, field: 'score', columnGroup: this.translationData.lblOverall,
             type: FieldType.number, formatter: this.getScore, width: 275
           });
         } else {
@@ -904,7 +902,7 @@ titleStyle: any = { name: 'sans-serif', family: 4, size: 11, bold: true };
       return '';
     }
     let key=value;
-    var foundValue = this.translationData.value || this.translationDataLocal.filter(obj=>obj.key === value);
+    var foundValue = this.translationData.value;// || this.translationDataLocal.filter(obj=>obj.key === value);
     if(foundValue === undefined || foundValue === null || foundValue.length === 0)
       value = value;
     else
@@ -1176,7 +1174,7 @@ loadBarChart(){
   this.ecoScoreDriverDetails.averageGrossWeightChart.chartDataSet.forEach(element => {
     this.barChartData.push({
       data: element.data,
-      label: element.label
+      label: (element.label && element.label.toLowerCase().indexOf("overall driver") !== -1) ? this.translationData.lblOverallDriver : element.label
     });
   });
 }
@@ -1243,7 +1241,6 @@ this.barChartOptionsPerformance = {
         });
     }}
   };
-
 }
 
   loadBarChartPerfomance(){
@@ -1251,7 +1248,7 @@ this.barChartOptionsPerformance = {
     this.ecoScoreDriverDetails.averageDrivingSpeedChart.chartDataSet.forEach(element => {
       this.barChartDataPerformance.push({
         data: element.data,
-        label: element.label
+        label: (element.label && element.label.toLowerCase().indexOf("overall driver") !== -1) ? this.translationData.lblOverallDriver : element.label
       });
     });
   }

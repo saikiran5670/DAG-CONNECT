@@ -108,7 +108,7 @@ export class ReportSchedulerComponent implements OnInit {
       this.reportSchedulerService.getReportSchedulerParameter(this.accountId, this.accountOrganizationId).subscribe(parameterData => {
         this.reportSchedulerParameterData = parameterData;
         this.ReportTypeList = this.reportSchedulerParameterData["reportType"];
-        this.StatusList= [{id : "A", name : "Active"}, {id : "I", name : "Suspended"}]
+        this.StatusList= [{id : "A", name : this.translationData.lblActive}, {id : "I", name : this.translationData.lblSuspended}]
       })
 
     }
@@ -223,7 +223,7 @@ export class ReportSchedulerComponent implements OnInit {
        this.initData = this.schedulerData;
       //  this.updateDatasource(this.schedulerData);
         this.initData.forEach(element => {
-          if(element.reportName == "Fleet Fuel Report" || element.reportName == "Trip Report"||
+          if(element.reportName == "Fleet Fuel Report" || element.reportName == "TripReport"||
              element.reportName == "Fleet Utilisation Report"||element.reportName == "Fuel Deviation Report"){
                element.driverList = "";
              }
@@ -448,7 +448,7 @@ getUnique(arr, comp) {
   onChangeReportSchedulerStatus(rowData: any){
     const options = {
       title: this.translationData.lblReportScheduler || "Report Scheduler",
-      message: this.translationData.lblYouwanttoDetails || "You want to # '$' Details?",
+      message: this.translationData.lblChangeReportSchedulerStatus || "You want to change '$' status?",
       cancelText: this.translationData.lblCancel || "Cancel",
       confirmText: (rowData.status == 'A') ? this.translationData.lblDeactivate || " Deactivate" : this.translationData.lblActivate || " Activate",
       status: rowData.status == 'A' ? 'Deactivate' : 'Activate' ,
