@@ -1630,7 +1630,7 @@ export class ReportMapService {
   }
 
   // Fuel Benchmarking data conversions
-  getConvertedFuelBenchmarkingData(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
+  getConvertedFuelBenchmarkingData(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any, translationData: any){
     // gridData.forEach(element => {
       gridData = JSON.parse(gridData);
       gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption = this.getFuelConsumedUnits(gridData.fuelBenchmarkDetails.averageFuelConsumption, unitFormat, true);
@@ -1639,13 +1639,13 @@ export class ReportMapService {
 
     // });
     if(unitFormat == 'dunit_Imperial') {
-      gridData.fuelBenchmarkDetails.convertedTotalMileage = gridData.fuelBenchmarkDetails.convertedTotalMileage + " mi"
-      gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed = gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed + " gal"
-      gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption = gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption + " mpg"
+      gridData.fuelBenchmarkDetails.convertedTotalMileage = gridData.fuelBenchmarkDetails.convertedTotalMileage + " " + translationData.lblMi
+      gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed = gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed + " " + translationData.lblGal
+      gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption = gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption + " " + translationData.lblmpg
     }else if(unitFormat == 'dunit_Metric') {
-      gridData.fuelBenchmarkDetails.convertedTotalMileage = gridData.fuelBenchmarkDetails.convertedTotalMileage + " km"
-      gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed = gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed + " Ltr"
-      gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption = gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption + " Ltr/100km"
+      gridData.fuelBenchmarkDetails.convertedTotalMileage = gridData.fuelBenchmarkDetails.convertedTotalMileage + " " + translationData.lblKm
+      gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed = gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed + " " + translationData.lblLtr
+      gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption = gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption + " " + translationData.lblLtr100km
     }
     return JSON.stringify(gridData);
   }

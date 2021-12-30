@@ -1666,6 +1666,16 @@ let prepare = []
     this.vehicleGroupListData = finalVINDataList;
     if(this.vehicleGroupListData.length > 0){
       this.getVehicleGroups();
+      alertTypeList.forEach((element, index) => {
+        if(element.key == 'enumtype_otasoftwarestatus'){
+          alertTypeList.splice(index,1);
+        }
+      });
+      categoryList.forEach((element, index) => {
+        if(element.key == 'enumcategory_ota'){
+          categoryList.splice(index,1);
+        }
+      });
        this.alertTyp = alertTypeList;
        this.alertCtgry = categoryList;
        this.alertLvl =   levelListData;

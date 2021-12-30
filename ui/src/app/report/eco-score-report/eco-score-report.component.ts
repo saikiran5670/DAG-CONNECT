@@ -423,7 +423,6 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       this.reportPrefData = [];
       this.resetColumnData();
       this.preparePrefData(this.reportPrefData);
-      (this.reportPrefData);
       //this.setDisplayColumnBaseOnPref();
       this.getOnLoadData();
     });
@@ -783,8 +782,8 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       "endDateTime":Util.getMillisecondsToUTCDate(defaultEndValue, this.prefTimeZone)
     }
     this.showLoadingIndicator = true;
-    this.reportService.getDefaultDriverParameterEcoScore(loadParam).subscribe((initData: any) => {
-       this.hideloader();      
+    this.reportService.getDefaultDriverParameterEcoScore(loadParam).subscribe((initData: any) => {   
+      this.hideloader();
       this.onLoadData = initData;     
       this.filterDateData();
     }, (error)=>{
@@ -1044,15 +1043,15 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   }
 
   exportAsExcelFile(){
-    const title = 'Eco Score Report';
-    const summary = 'Summary Section';
-    const detail = 'Detail Section';
+    const title = this.translationData.lblEcoScoreReport;
+    const summary = this.translationData.lblSummarySection;
+    const detail = this.translationData.lblDetailSection;
     // const header = ['Ranking', 'Driver Name', 'Driver ID', 'Eco-Score'];
     const header =  this.getPDFExcelHeader();
     // const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Driver ID', 'Driver Name', 'Driver Option'];
     const summaryHeader = this.getExcelSummaryHeader();
     let summaryObj=[
-      ['Eco Score Report', this.reportMapService.getStartTime(Date.now(), this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true), this.fromDisplayDate, this.toDisplayDate, this.selectedVehicleGroup,
+      [this.translationData.lblEcoScoreReport, this.reportMapService.getStartTime(Date.now(), this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true), this.fromDisplayDate, this.toDisplayDate, this.selectedVehicleGroup,
       this.selectedVehicle, this.selectedDriverId, this.selectedDriverName, this.selectedDriverOption
       ]
     ];
@@ -1060,7 +1059,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
 
     //Create workbook and worksheet
     let workbook = new Workbook();
-    let worksheet = workbook.addWorksheet('Eco Score Report');
+    let worksheet = workbook.addWorksheet(this.translationData.lblEcoScoreReport);
     //Add Row and formatting
     let titleRow = worksheet.addRow([title]);
     worksheet.addRow([]);
@@ -1110,7 +1109,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     worksheet.addRow([]);
     workbook.xlsx.writeBuffer().then((data) => {
       let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-      fs.saveAs(blob, 'Eco-Score_Report.xlsx');
+      fs.saveAs(blob, this.translationData.lblExportName+'.xlsx');
    })
     //this.matTableExporter.exportTable('xlsx', {fileName:'Eco-Score_Report', sheet: 'sheet_name'});
   }
@@ -1125,7 +1124,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       didDrawPage: function(data) {
           // Header
           doc.setFontSize(14);
-          var fileTitle = "Eco Score Report";
+          var fileTitle =this.translationData.lblEcoScoreReport;
           var img = "/assets/logo.png";
           doc.addImage(img, 'JPEG',10,10,0,0);
 
@@ -1158,18 +1157,18 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       didDrawCell: data => {}
     })
     // below line for Download PDF document
-    doc.save('EcoScoreReport.pdf');
+    doc.save(this.translationData.lblExportName+'.pdf');
   }
 
   getPDFExcelHeader(){
     let col: any = [];
-    col = [`${this.translationData.lblRanking || 'Ranking'}`, `${this.translationData.lblDriverName || 'Driver Name'}`, `${this.translationData.lblDriverId || 'Driver Id'}`, `${this.translationData.lblEcoScore || 'Eco-Score' }`];
+    col = [`${this.translationData.lblRanking}`, `${this.translationData.lblDriverName }`, `${this.translationData.lblDriverId }`, `${this.translationData.lblEcoScore  }`];
     return col;
   }
 
   getExcelSummaryHeader(){
     let col: any = [];
-    col = [`${this.translationData.lblReportName || 'Report Name'}`, `${this.translationData.lblReportCreated || 'Report Created'}`, `${this.translationData.lblReportStartTime || 'Report Start Time'}`, `${this.translationData.lblReportEndTime || 'Report End Time' }`, `${this.translationData.lblVehicleGroup || 'Vehicle Group' }`, `${this.translationData.lblVehicleName || 'Vehicle Name' }`, `${this.translationData.lblDriverId|| 'Driver ID' }`, `${this.translationData.lblDriverName || 'Driver Name' }`, `${this.translationData.lblDriverOption || 'Driver Option' }`];
+    col = [`${this.translationData.lblReportName }`, `${this.translationData.lblReportCreated }`, `${this.translationData.lblReportStartTime }`, `${this.translationData.lblReportEndTime }`, `${this.translationData.lblVehicleGroup }`, `${this.translationData.lblVehicleName }`, `${this.translationData.lblDriverId}`, `${this.translationData.lblDriverName }`, `${this.translationData.lblDriverOption }`];
     return col;
   }
 

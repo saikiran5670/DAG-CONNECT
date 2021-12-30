@@ -27,23 +27,9 @@ export class FuelDeviationPreferencesComponent implements OnInit {
   selectionForCharts = new SelectionModel(true, []);
   selectionForDetails = new SelectionModel(true, []);
   chartIndex: any = {};
-  lineBarDD: any = [{
-    type: 'L',
-    name: 'Line Chart'
-  },
-  {
-    type: 'B',
-    name: 'Bar Chart'
-  }];
+  lineBarDD: any = [];
   
-  donutPieDD: any = [{
-    type: 'D',
-    name: 'Donut Chart'
-  },
-  {
-    type: 'P',
-    name: 'Pie Chart'
-  }];
+  donutPieDD: any = [];
 
   accountPreference: any;
   prefUnitFormat: any = 'dunit_Metric';
@@ -69,6 +55,27 @@ export class FuelDeviationPreferencesComponent implements OnInit {
     }
     // this.translationUpdate();
     this.getUnitFormat(this.accountPreference);
+    this.getTransName();
+  }
+
+  getTransName() {
+    this.lineBarDD = [{
+      type: 'L',
+      name: this.translationData.lblLineChart
+    },
+    {
+      type: 'B',
+      name: this.translationData.lblBarChart
+    }];
+    
+    this.donutPieDD = [{
+      type: 'D',
+      name: this.translationData.lblDonutChart
+    },
+    {
+      type: 'P',
+      name: this.translationData.lblPieChart
+    }];
   }
 
   getUnitFormat(accPref: any){

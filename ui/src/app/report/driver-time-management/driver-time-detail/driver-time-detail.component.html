@@ -52,31 +52,31 @@
           <div class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="center center">
             <span>
               <div>{{ translationData.lblTotalDriveTime }}: </div>
-              <div class='font-helvetica-md'>{{ totalDriveTime }} (hh:mm)</div>
+              <div class='font-helvetica-md'>{{ totalDriveTime }} ({{translationData.lblhhmm}})</div>
             </span>
           </div>
             <div class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="center center">
               <span>
                 <div>{{ translationData.lblTotalWorkTime  }}: </div>
-                <div class='font-helvetica-md'>{{ totalWorkTime }} (hh:mm)</div>
+                <div class='font-helvetica-md'>{{ totalWorkTime }} ({{translationData.lblhhmm}})</div>
               </span>
             </div>
             <div class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="center center">
               <span>
                 <div>{{ translationData.lblTotalAvailableTime }}: </div>
-                <div class='font-helvetica-md'>{{ totalAvailableTime }} (hh:mm)</div>
+                <div class='font-helvetica-md'>{{ totalAvailableTime }} ({{translationData.lblhhmm}})</div>
               </span>
             </div>
             <div  class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="center center">
               <span>
                 <div>{{ translationData.lblTotalRestTime  }}: </div>
-                <div class='font-helvetica-md'>{{ totalRestTime }} (hh:mm)</div>
+                <div class='font-helvetica-md'>{{ totalRestTime }} ({{translationData.lblhhmm}})</div>
               </span>
             </div>
             <div  class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="center center">
               <span>
                 <div>{{ translationData.lblTotalServiceTime || 'lblTotalServiceTime' }}: </div>
-                <div class='font-helvetica-md'>{{ totalServiceTime }} (hh:mm)</div>
+                <div class='font-helvetica-md'>{{ totalServiceTime }} ({{translationData.lblhhmm}})</div>
               </span>
             </div>
         </div>
@@ -181,27 +181,27 @@
             <mat-cell *matCellDef="let row">{{ row.startTime != '' ? row.startTime : '-' }}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="driveTime">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriveTime || 'Drive Time' }} <span class='font-14-px'>(hh:mm)</span>
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriveTime || 'Drive Time' }} <span class='font-14-px'>({{translationData.lblhhmm}})</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let row">{{ row.driveTime != '' ? row.driveTime : '-' }}</mat-cell>
           </ng-container>
           <ng-container  matColumnDef="workTime">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblWorkTime || 'Work Time' }} <span class='font-14-px'>(hh:mm)</span>
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblWorkTime || 'Work Time' }} <span class='font-14-px'>({{translationData.lblhhmm}})</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let row">{{ row.workTime != '' ? row.workTime : '-' }}</mat-cell>
           </ng-container>
           <ng-container  matColumnDef="serviceTime">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblServiceTime || 'Service Time' }} <span class='font-14-px'>(hh:mm)</span>
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblServiceTime || 'Service Time' }} <span class='font-14-px'>({{translationData.lblhhmm}})</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let row">{{ row.serviceTime != '' ? row.serviceTime : '-' }}</mat-cell>
           </ng-container>
           <ng-container  matColumnDef="restTime">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRestTime || 'Rest Time' }} <span class='font-14-px'>(hh:mm)</span>
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRestTime || 'Rest Time' }} <span class='font-14-px'>({{translationData.lblhhmm}})</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let row">{{ row.restTime != '' ? row.restTime : '-' }}</mat-cell>
           </ng-container>
           <ng-container  matColumnDef="availableTime">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAvailableTime || 'Available Time' }} <span class='font-14-px'>(hh:mm)</span>
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAvailableTime || 'Available Time' }} <span class='font-14-px'>({{translationData.lblhhmm}})</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let row">{{ row.availableTime != '' ? row.availableTime : '-' }}</mat-cell>
           </ng-container>

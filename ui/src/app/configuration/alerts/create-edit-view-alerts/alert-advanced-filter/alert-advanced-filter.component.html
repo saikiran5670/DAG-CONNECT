@@ -218,7 +218,7 @@
           <div class="col-sm-4  areawidth">
             <ngx-slider [(value)]="poiWidth" [options]="options" (mousemove)="sliderChanged()"></ngx-slider>
           </div>
-          <mat-label>(mtr)</mat-label>
+          <mat-label>{{translationData.lblmtr || 'mtr'}}</mat-label>
         </div>
       </div>
 
@@ -345,20 +345,20 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="name">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{translationData.lblName || 'Name'}}</mat-header-cell>
                   <!-- <mat-cell *matCellDef="let row">{{ row.geofenceName }}</mat-cell> -->
                   <mat-cell *matCellDef="let row">{{ row.name }}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="categoryName">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>Category</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{translationData.lblCategory || 'Category'}}</mat-header-cell>
                   <mat-cell *matCellDef="let row">{{ row.categoryName }}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="subCategoryName">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>Sub-Category</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{translationData.lblSubCategory || 'Sub Category'}}</mat-header-cell>
                   <mat-cell *matCellDef="let row">{{ row.subCategoryName }}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="address">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>Address</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{translationData.lblAddress || 'Address'}}</mat-header-cell>
                   <mat-cell *matCellDef="let row">{{ row.address }}, {{ row.city }}, {{ row.country }}</mat-cell>
                 </ng-container>
                 <mat-header-row *matHeaderRowDef="displayedColumnsGeofence"></mat-header-row>

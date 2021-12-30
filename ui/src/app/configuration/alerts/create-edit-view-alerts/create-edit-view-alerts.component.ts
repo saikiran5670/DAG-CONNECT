@@ -1452,7 +1452,7 @@ convertToFromTime(milliseconds: any){
     
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / 
     ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} / 
-    ${this.translationData.lblLandmarks ? this.translationData.lblAlerts : "Alerts"} / 
+    ${this.translationData.lblAlerts ? this.translationData.lblAlerts : "Alerts"} / 
     ${page}`;
   }
 
