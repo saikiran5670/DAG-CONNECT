@@ -145,7 +145,7 @@ export class VehiclePerformanceReportComponent implements OnInit {
   xaxisE = {
     ...this.commonAxis,
     title: {
-      text: 'RPM',
+      text: this.translationData.lblRpm,
     },
     labels: this.xaxisLabels
   }
@@ -162,7 +162,7 @@ export class VehiclePerformanceReportComponent implements OnInit {
   xaxisS = {
     ...this.commonAxis,
     title: {
-      text: 'KM/H',
+      text: this.translationData.lblKmh,
     },
     labels: this.xaxisLabels,
   }
@@ -170,7 +170,7 @@ export class VehiclePerformanceReportComponent implements OnInit {
   yaxisS = {
     ...this.commonAxis,
     title: {
-      text: 'RPM',
+      text: this.translationData.lblRpm,
       offsetX: 5,
     },
     labels: this.yaxisLabels
@@ -180,7 +180,7 @@ export class VehiclePerformanceReportComponent implements OnInit {
   xaxisB = {
     ...this.commonAxis,
     title: {
-      text: 'KM/H',
+      text: this.translationData.lblKmh,
     },
     labels: this.xaxisLabels,
   }
@@ -188,7 +188,7 @@ export class VehiclePerformanceReportComponent implements OnInit {
   yaxisB = {
     ...this.commonAxis,
     title: {
-      text: 'M/S2',
+      text: this.translationData.lblMs2,
       offsetX: 5,
     },
     labels: this.yaxisLabels
@@ -303,10 +303,10 @@ export class VehiclePerformanceReportComponent implements OnInit {
       this.piechartTitle = this.translationData.lblEngineOperationalPerformance || "Engine Operational Performance";
       this.bubbleHeatchartTitle = this.translationData.lblEngineLoadDistribution || "Engine Load Distribution";
     } else if(performanceType == 'S') {
-      this.piechartTitle = "Road Speed Performance (%)";
+      this.piechartTitle = this.translationData.lblRoadSpeedPerformance+" (%)";
       this.bubbleHeatchartTitle = this.translationData.lblRoadSpeedDistribution || "Road Speed Distribution";
     } else {
-      this.piechartTitle = "Brake Performance (%)";
+      this.piechartTitle = this.translationData.lblBrakePerformance+" (%)";
       this.bubbleHeatchartTitle = this.translationData.lblBrakeBehavior || "Brake Behavior Distribution";
     }
   }

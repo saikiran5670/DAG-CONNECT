@@ -24,16 +24,7 @@ export class FuelBenchmarkPreferencesComponent implements OnInit {
   fuelBenchmarkChartsPrefData: any = [];
   getReportPreferenceResponse: any;
   fuelBenchMarkReportPreference: any = [];
-  donutPieDD: any = [
-    {
-      type: 'D',
-      name: 'Donut Chart'
-    },
-    {
-      type: 'P',
-      name: 'Pie Chart'
-    }
-  ];
+  donutPieDD: any = [];
   fuelBenchmarkForm: FormGroup;
   requestSent:boolean = false;
   showLoadingIndicator: boolean = false;
@@ -58,7 +49,21 @@ export class FuelBenchmarkPreferencesComponent implements OnInit {
     } else {
       console.error("No report id found!");
     }
+    this.getTransChartName();
     // this.translationUpdate();
+  }
+
+  getTransChartName() {
+    this.donutPieDD = [
+      {
+        type: 'D',
+        name: this.translationData.lblDonutChart
+      },
+      {
+        type: 'P',
+        name: this.translationData.lblPieChart
+      }
+    ];
   }
 
   translationUpdate() {
