@@ -924,7 +924,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
       didDrawPage: function (data) {
         // Header
         doc.setFontSize(20);
-        var fileTitle = 'Trip Details';
+        var fileTitle = this.translationData.lblTripReportDetails;
         var img = "/assets/logo.png";
         doc.addImage(img, 'JPEG', 10, 10, 0, 0);
 

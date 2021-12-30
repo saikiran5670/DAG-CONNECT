@@ -301,14 +301,14 @@
                 <mat-checkbox (change)='$event ? masterToggleForTrip() : null'
                   [checked]='selectedTrip.hasValue() && isAllSelectedForTrip()'
                   [indeterminate]='selectedTrip.hasValue() && !isAllSelectedForTrip()'
-                  [aria-label]='checkboxLabelForTrip()' matTooltip="{{ translationData.lblAllCheckboxViewTooltipMsg || 'Select to view all on map' }}">
+                  [aria-label]='checkboxLabelForTrip()' matTooltip="{{ translationData.lblAllCheckboxViewMapTooltip }}">
                 </mat-checkbox>
                 <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll  }}</span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row" class="max-width-10-per">
                 <mat-checkbox (click)='$event.stopPropagation()'
                   (change)='$event ? selectedTrip.toggle(row) : null; tripCheckboxClicked($event, row)' [checked]='selectedTrip.isSelected(row)'
-                  [aria-label]='checkboxLabelForTrip(row)' matTooltip="{{ translationData.lblCheckboxViewTooltipMsg || 'Select to view on map' }}">
+                  [aria-label]='checkboxLabelForTrip(row)' matTooltip="{{ translationData.lblCheckboxViewMapTooltip }}">
                 </mat-checkbox>
               </mat-cell>
             </ng-container>
