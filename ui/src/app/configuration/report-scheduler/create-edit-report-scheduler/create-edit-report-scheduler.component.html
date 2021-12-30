@@ -322,7 +322,7 @@
                       <mat-form-field appearance="outline">
                         <mat-select placeholder="{{ translationData.lblSelectReportType || 'Select Report Type' }}" (selectionChange)="onChangeReportType($event.value)" [disabled]="actionType=='edit'" formControlName="reportType">
                             <mat-option *ngFor="let rer of ReportTypeList" [value]="rer.id">
-                                {{rer.reportName}}
+                                {{translationData[rer.key]}}
                             </mat-option>
                         </mat-select>
                       </mat-form-field>
