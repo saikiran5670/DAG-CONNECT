@@ -925,6 +925,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       vinList=finalVinList;
       //console.log(filteredDriverList)
       //console.log(finalDriverList)
+         //TODO: plz verify fleet-utilisation for below logic
       this.singleVehicle = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i=> i.groupType == 'S');
       if(vinList.length > 0){
         distinctVin = vinList.filter((value, index, self) => self.indexOf(value) === index);
