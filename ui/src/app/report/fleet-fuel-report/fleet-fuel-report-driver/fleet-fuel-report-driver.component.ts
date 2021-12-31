@@ -2345,7 +2345,7 @@ setVehicleGroupAndVehiclePreSelection() {
         break;
       }
       case 'idleDuration' :{
-        pdfColumnHeads.push('this.translationData.lblIdleDuration');
+        pdfColumnHeads.push(this.translationData.lblIdleDuration);
         break;
       }
       case 'ptoDuration' :{
