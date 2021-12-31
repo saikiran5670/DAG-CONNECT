@@ -2595,6 +2595,7 @@ setVehicleGroupAndVehiclePreSelection() {
     }
 
     let DATA = document.getElementById('charts');
+    let transHeaderName = this.translationData.lblFleetFuelDriverReport;
     html2canvas((DATA),
     {scale:2})
     .then(canvas => {
@@ -2606,7 +2607,7 @@ setVehicleGroupAndVehiclePreSelection() {
         didDrawPage: function(data) {
             // Header
             doc.setFontSize(14);
-            var fileTitle = "Fleet Fuel Report by Driver";
+            var fileTitle = transHeaderName;
             var img = "/assets/logo.png";
             doc.addImage(img, 'JPEG',10,10,0,0);
 
