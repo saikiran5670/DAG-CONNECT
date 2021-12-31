@@ -1253,6 +1253,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
       //     });
       //   }
       // }
+         //TODO: plz verify fleet-utilisation for below logic
       this.singleVehicle = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i=> i.groupType == 'S');
       if (vinArray.length > 0) {
         distinctVIN = vinArray.filter((value, index, self) => self.indexOf(value) === index);

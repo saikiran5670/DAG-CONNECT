@@ -868,6 +868,11 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
       // let _driverName = elem.driverName ? elem.driverName : elem.driver1Id;
       // let _vehicleName = elem.vid ? elem.vid : elem.vin;
       let iconBubble;
+      let transwarningname = this.translationData.lblWarningName;
+      let transactivatedtime = this.translationData.lblActivatedTime;
+      let transdeactivatedtime = this.translationData.lblDeactivatedTime;
+      let transvehiclename = this.translationData.lblVehicleName;
+      let transposition = this.translationData.lblPosition;
       vehicleIconMarker.addEventListener('pointerenter', function (evt) {
         // event target is the marker itself, group is a parent event target
         // for all objects that it contains
@@ -875,19 +880,19 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
           // read custom data
           content:`<table style='width: 300px; font-size:12px;'>
             <tr>
-              <td style='width: 100px;'>${this.translationData.lblWarningName}: </td> <td><b>${elem.warningName}</b></td>
+              <td style='width: 100px;'>${transwarningname}: </td> <td><b>${elem.warningName}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>${this.translationData.lblActivatedTime}: </td> <td><b>${activatedTime}</b></td>
+              <td style='width: 100px;'>${transactivatedtime}: </td> <td><b>${activatedTime}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>${this.translationData.lblDeactivatedTime}: </td> <td><b>${deactivatedTime}</b></td>
+              <td style='width: 100px;'>${transdeactivatedtime}: </td> <td><b>${deactivatedTime}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>${this.translationData.lblVehicleName}: </td> <td><b>${elem.vehicleName} km</b></td>
+              <td style='width: 100px;'>${transvehiclename}: </td> <td><b>${elem.vehicleName} km</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>${this.translationData.lblPosition}: </td> <td><b>${elem.warningAddress}</b></td>
+              <td style='width: 100px;'>${transposition}: </td> <td><b>${elem.warningAddress}</b></td>
             </tr>
           </table>`
         });

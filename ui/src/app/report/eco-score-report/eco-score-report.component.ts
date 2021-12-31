@@ -847,6 +847,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
         });
         vinList=finalVinList;
       }
+      //TODO: plz verify fleet-utilisation for below logic
       this.singleVehicle = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i=> i.groupType == 'S');
       if(vinList.length > 0){
         distinctVin = vinList.filter((value, index, self) => self.indexOf(value) === index);

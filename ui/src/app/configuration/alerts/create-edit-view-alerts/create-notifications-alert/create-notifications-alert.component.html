@@ -844,7 +844,7 @@
 <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm"
     fxLayoutGap="10px">
     <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-        <a *ngIf="actionType != 'view'" class="linkBtn" (click)="onClickAdvancedFilter()" style="margin-top: 10px;"> Advanced Filter <mat-icon
+        <a *ngIf="actionType != 'view'" class="linkBtn" (click)="onClickAdvancedFilter()" style="margin-top: 10px;">{{translationData.lblAdvancedFilter|| 'Advanced Filter' }}<mat-icon
                 class='font-size-20' style="position: absolute;"> {{ openAdvancedFilter ? 'keyboard_arrow_up' :
                 'keyboard_arrow_down' }}</mat-icon></a>
         <span *ngIf="actionType == 'view'" class='font-16-px line-height-24px font-helvetica-md'>{{ translationData.lblAdvancedFilter }}</span>

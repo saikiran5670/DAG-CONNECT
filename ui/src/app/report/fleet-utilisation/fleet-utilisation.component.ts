@@ -965,13 +965,15 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
           }
         }
       });
-      this.singleVehicle = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i=> i.groupType == 'S');
       if(vinArray.length > 0){
+        // this.singleVehicle = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i=> i.groupType == 'S');//commenting this line for bug #22168
         distinctVIN = vinArray.filter((value, index, self) => self.indexOf(value) === index);
         ////console.log("distinctVIN:: ", distinctVIN);
         if(distinctVIN.length > 0){
           distinctVIN.forEach(element => {
-            let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element && i.groupType != 'S');
+            // let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element && i.groupType != 'S');
+            let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element);
+            //The vins which are coming in vinTripList those needs to be displayed in vehicle dropdown(no matter if it's single or group type vehicle)
             if(_item.length > 0){
               this.vehicleListData.push(_item[0]); //-- unique VIN data added
               _item.forEach(element => {

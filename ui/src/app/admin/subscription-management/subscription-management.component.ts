@@ -61,20 +61,7 @@ export class SubscriptionManagementComponent implements OnInit {
   organizationList: any = [];
   organisationData : any = [];
   accountDetails : any =[];
-  TypeList: any = [
-    {
-      name: 'VIN',
-      value: 'N'
-    },
-    {
-      name: 'Organization',
-      value: 'O'
-    },
-    {
-      name: 'Org+VIN',
-      value: 'V'
-    }
-  ];
+  TypeList: any = [ ];
   StatusList: any;
 
   showLoadingIndicator: any = true;
@@ -186,6 +173,8 @@ export class SubscriptionManagementComponent implements OnInit {
         this.processTranslation(data);
         this.loadSubscriptionData();
     });
+    this.getTranslatedNames();
+
 
   //   this.StatusList= [
   //     {
@@ -197,6 +186,22 @@ export class SubscriptionManagementComponent implements OnInit {
   //       value: '2'
   //     }
   //   ]
+  }
+  getTranslatedNames(){
+    this.TypeList= [
+      {
+        name: this.translationData.lblVIN || 'VIN',
+        value: 'N'
+      },
+      {
+        name: this.translationData.lblOrganization || 'Organization',
+        value: 'O'
+      },
+      {
+        name: this.translationData.lblOrganizationVIN || 'Organization + VIN',
+        value: 'V'
+      }
+    ];
   }
 
   loadSubscriptionData(){
