@@ -2,7 +2,7 @@ trigger:
 #- none
   branches:
     include:
-#    - development
+    - development
     - release
     - testing
     - master
