@@ -289,6 +289,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
+    });
       this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
         if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
           this.proceedStep(prefData, this.accountPrefObj.accountPreference);
@@ -309,7 +310,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
           }
         }  
       });
-    });
+    
   }
 
   proceedStep(prefData: any, preference: any){
