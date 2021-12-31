@@ -64,7 +64,8 @@ export class CreateEditViewGroupComponent implements OnInit {
         CustomValidators.specialCharValidationForNameWithoutRequired('landmarkGroupDescription')
       ]
     });
-
+console.log('Ac',this.actionType);
+console.log('TT',this.titleText);
     if(this.actionType == 'edit' ){
       this.setDefaultValue();
     }
