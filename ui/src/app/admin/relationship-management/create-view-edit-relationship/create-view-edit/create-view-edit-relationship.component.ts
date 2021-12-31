@@ -165,9 +165,11 @@ applyFilterValue(data){
 };
 
 getBreadcum(){
-
-  var address = (this.createStatus) ? (this.translationData.lblCreateNewRelationship ? this.translationData.lblCreateNewRelationship : 'New Relationship Details')
-  : (this.viewFlag) ? (this.translationData.lblViewUserRole ? this.translationData.lblViewUserRole : 'View Relationship Details')
+  var view = this.translationData.lblViewRelationshipDetails || 'View Relationship Details' ;
+  var edit = this.translationData.lblEditRelationshipDetails || 'Edit Relationship Details';
+  var newrelation = this.translationData.lblNewRelationShip || 'New Relationship Details';
+  var address = (this.createStatus) ? (this.translationData.lblCreateNewRelationship ? this.translationData.lblCreateNewRelationship : newrelation)
+  : (this.viewFlag) ? (this.translationData.lblViewUserRole ? this.translationData.lblViewUserRole : view)
   : (this.translationData.lblEdit ? this.translationData.lblEdit + ' ' + this.translationData.lblRelationshipDetails : 'Edit Relationship Details');
 
   return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblRelationshipManagement ? this.translationData.lblRelationshipManagement : "Relationship Management"} / ${address}`;

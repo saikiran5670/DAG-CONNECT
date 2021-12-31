@@ -242,8 +242,8 @@ export class ManageGroupComponent implements OnInit {
     organizationid : this.organizationId,
     groupid : row.id
     };
-    this.landmarkGroupService.getLandmarkGroups(objData).subscribe((groupDetails) => {
     this.titleText = (actionType == 'view') ? (this.translationData.lblViewGroupDetails || "View Group Details") : (this.translationData.lblEditGroupDetails || "Edit Group Details") ;
+    this.landmarkGroupService.getLandmarkGroups(objData).subscribe((groupDetails) => {
     this.selectedRowData = groupDetails["groups"][0];
      });
   }
