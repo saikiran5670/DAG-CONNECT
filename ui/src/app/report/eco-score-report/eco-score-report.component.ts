@@ -1117,6 +1117,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
 
   exportAsPDFFile(){
     var doc = new jsPDF();
+    let fileTitle = this.translationData.lblEcoScoreReport;
     (doc as any).autoTable({
       styles: {
           cellPadding: 0.5,
@@ -1125,7 +1126,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       didDrawPage: function(data) {
           // Header
           doc.setFontSize(14);
-          var fileTitle =this.translationData.lblEcoScoreReport;
+          // var fileTitle =fileTitle;
           var img = "/assets/logo.png";
           doc.addImage(img, 'JPEG',10,10,0,0);
 
