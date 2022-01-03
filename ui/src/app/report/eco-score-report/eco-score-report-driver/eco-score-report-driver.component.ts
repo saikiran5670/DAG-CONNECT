@@ -463,6 +463,16 @@ titleStyle: any = { name: 'sans-serif', family: 4, size: 11, bold: true };
           if(unit && unit.indexOf("(%)") <= 0)
             unit = ' (' + unit + ')';
           if(!unit) unit = '';
+          if(unit){
+            if(unit.indexOf("km/h") !== -1)
+              unit = unit.replace(/km\/h/g, this.translationData.lblKmph);
+            else if(unit.indexOf("mph") !== -1)
+              unit = unit.replace(/mph/g, this.translationData.lblMph);
+            else if(unit.indexOf("Ltrs/100 km") !== -1)
+              unit = unit.replace(/Ltrs\/100 km/g, this.translationData.lblLtrsPer100Km);
+            else if(unit.indexOf("mpg") !== -1)
+              unit = unit.replace(/mpg/g, this.translationData.lblMpg);
+          }
           let val = this.translationData.lblDriver;
           if(key.indexOf("Company") !== -1)
             val = this.translationData.lblCompany;

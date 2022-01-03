@@ -56,7 +56,7 @@
                   <div *ngIf="actionType == 'view'">
                     Validity Type : <span style='font-weight: 500!important;'>{{ this.selectedRowData.notifications[0].validityType == 'A' ? (translationData.lblAlways) :  (translationData.lblCustom) }}</span>
                   </div>
-                  <p *ngIf="actionType != 'view'" style="color: darkgray;">Define a time range when the alert will be active. This can be 'Always' or a 'Custom' time range.</p>
+                  <p *ngIf="actionType != 'view'" style="color: darkgray;">{{translationData.lblDefineTimeRange}}</p>
               </div>
             </div>
 
