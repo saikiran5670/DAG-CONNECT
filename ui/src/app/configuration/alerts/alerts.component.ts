@@ -593,13 +593,14 @@ export class AlertsComponent implements OnInit {
     if(data && data.length > 0){
       this.initData = this.getNewTagData(data);
     }
+    this.initData = data;
     this.dataSource = new MatTableDataSource(this.initData);
-    this.dataSource.forEach((ele,index) => {
+    this.initData.forEach((ele,index) => {
       if(ele.state == 'A'){
-        this.dataSource[index]["status"] = 'active';
+        this.initData[index]["status"] = 'active';
       }
       if(ele.state == 'I'){
-        this.dataSource[index]["status"] = 'inactive';
+        this.initData[index]["status"] = 'inactive';
       }
     });
     setTimeout(()=>{
