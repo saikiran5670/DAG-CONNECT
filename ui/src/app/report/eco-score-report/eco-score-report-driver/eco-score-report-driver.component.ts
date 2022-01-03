@@ -464,14 +464,18 @@ titleStyle: any = { name: 'sans-serif', family: 4, size: 11, bold: true };
             unit = ' (' + unit + ')';
           if(!unit) unit = '';
           if(unit){
-            if(unit.indexOf("km/h") !== -1)
-              unit = unit.replace(/km\/h/g, this.translationData.lblKmph);
-            else if(unit.indexOf("mph") !== -1)
-              unit = unit.replace(/mph/g, this.translationData.lblMph);
-            else if(unit.indexOf("Ltrs/100 km") !== -1)
-              unit = unit.replace(/Ltrs\/100 km/g, this.translationData.lblLtrsPer100Km);
-            else if(unit.indexOf("mpg") !== -1)
-              unit = unit.replace(/mpg/g, this.translationData.lblMpg);
+            if(this.prefUnitFormat === 'dunit_Metric'){
+              if(unit.indexOf("km/h") !== -1)
+                unit = unit.replace(/km\/h/g, this.translationData.lblKmph);
+              else if(unit.indexOf("Ltrs /100 km") !== -1)
+                unit = unit.replace(/Ltrs \/100 km/g, this.translationData.lblLtrsPer100Km);
+            }
+            else if(this.prefUnitFormat === 'dunit_Imperial'){
+              if(unit.indexOf("mph") !== -1)
+                unit = unit.replace(/mph/g, this.translationData.lblMph);
+              else if(unit.indexOf("mpg") !== -1)
+                unit = unit.replace(/mpg/g, this.translationData.lblMpg);
+              }
           }
           let val = this.translationData.lblDriver;
           if(key.indexOf("Company") !== -1)
@@ -1580,7 +1584,7 @@ this.barChartOptionsPerformance = {
       // doc.addImage(chartKPIHref, 'PNG', 150, 40, fileWidth, fileHeight);
       doc.addPage('a2','p');
 
-      let perfVinList=['', '', this.translationData.lblOverall, this.translationData.lblOverall];
+      let perfVinList=['', '', 'Overall', 'Overall'];
       let pdfColumns=[];
       this.columnGeneral.forEach((col, index) => {
         pdfColumns.push(col.columnId);
@@ -1592,7 +1596,8 @@ this.barChartOptionsPerformance = {
       let newGenColList:any=[]; 
       perfVinList.forEach(element => { 
         if(element == '' || element == 'Overall'){
-        newGenColList.push(element)
+          element = (element && element == 'Overall') ? this.translationData.lblOverall : element;
+          newGenColList.push(element)
         }
       });    
       this.driverDetails.forEach(element => {
