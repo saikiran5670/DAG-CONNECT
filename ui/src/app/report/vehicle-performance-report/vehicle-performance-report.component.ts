@@ -138,7 +138,10 @@ export class VehiclePerformanceReportComponent implements OnInit {
     }
     this.getMenuTranslations(translationObj);
     this.getPreferences();
-    this.getAxisLabels();
+    
+  }
+
+  ngOnInit(): void {
   }
 
   getAxisLabels() {
@@ -224,9 +227,6 @@ export class VehiclePerformanceReportComponent implements OnInit {
     }
   }
 
-  ngOnInit(): void {
-  }
-
   getPreferences() {
     this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
       let vehicleDisplayId = this.accountInfo.accountPreference.vehicleDisplayId;
@@ -263,6 +263,7 @@ export class VehiclePerformanceReportComponent implements OnInit {
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.kpi();
       this.processTranslation(data);
+      this.getAxisLabels();
     });
   }
 
