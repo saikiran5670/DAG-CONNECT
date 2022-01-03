@@ -914,6 +914,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
   exportAsPDFFile() {
     var doc = new jsPDF('p', 'mm', 'a2');
     let DATA = document.getElementById('charts');
+    var transpdfheader = this.translationData.lblTripReportDetails;
     html2canvas( DATA)
     .then(canvas => {
     (doc as any).autoTable({
@@ -924,7 +925,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
       didDrawPage: function (data) {
         // Header
         doc.setFontSize(20);
-        var fileTitle = this.translationData.lblTripReportDetails;
+        var fileTitle = transpdfheader;
         var img = "/assets/logo.png";
         doc.addImage(img, 'JPEG', 10, 10, 0, 0);
 
