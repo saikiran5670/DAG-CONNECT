@@ -1771,7 +1771,7 @@ convertToFromTime(milliseconds: any){
 
   onPOIClick(row: any){
     const colsList = ['icon', 'landmarkname', 'categoryname', 'subcategoryname', 'address'];
-    const colsName = [this.translationData.lblIcon, this.translationData.lblName, this.translationData.lblCategory, this.translationData.lblSubCategory, this.translationData.lblAddress];
+    const colsName = [this.translationData.lblicon, this.translationData.lblName, this.translationData.lblCategory, this.translationData.lblSubCategory, this.translationData.lblAddress];
     const tableTitle = this.translationData.lblPOI;
     let objData = { 
       organizationid : this.accountOrganizationId,
