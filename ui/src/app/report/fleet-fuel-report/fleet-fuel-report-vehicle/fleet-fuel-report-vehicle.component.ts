@@ -2662,7 +2662,7 @@ setVehicleGroupAndVehiclePreSelection() {
 
 
     let DATA = document.getElementById('charts');
-    var fileTitle = this.translationData.lblFleetFuelReportByVehicle;
+    var pdfName = this.translationData.lblFleetFuelReportByVehicle;
     html2canvas( (DATA),
     {scale:2})
     .then(canvas => {
@@ -2674,8 +2674,8 @@ setVehicleGroupAndVehiclePreSelection() {
         didDrawPage: function(data) {
             // Header
             doc.setFontSize(14);
-            // var fileTitle = this.translationData.lblFleetFuelReportByVehicle;
-            // var fileTitle = "PDF";
+            var fileTitle = pdfName;
+            if(!fileTitle) fileTitle = 'Fleet Fuel Report by Vehicle';
             var img = "/assets/logo.png";
             doc.addImage(img, 'JPEG',10,10,0,0);
 
@@ -2716,7 +2716,7 @@ setVehicleGroupAndVehiclePreSelection() {
       }
     })
 
-      doc.save(this.translationData.lblFleetFuelExportName+'.pdf');
+      doc.save('fleetFuelByVehicle'+'.pdf');
 
     });
     displayHeader.style.display ="block";
