@@ -216,13 +216,13 @@ export class AlertsComponent implements OnInit {
       }
 
       this.associatedVehicleData.forEach(element => {
-        if(element.vehicleGroupDetails != ""){
+        if(element.vehicleGroupDetails && element.vehicleGroupDetails != ""){
           let vehicleGroupDetails= element.vehicleGroupDetails.split(",");
           vehicleGroupDetails.forEach(item => {
             let itemSplit = item.split("~");
             if(itemSplit[2] != 'S') {
             let vehicleGroupObj= {
-              "vehicleGroupId" : itemSplit[0],
+              "vehicleGroupId" : (itemSplit[0] && itemSplit[0] != '') ? parseInt(itemSplit[0]) : 0,
               "vehicleGroupName" : itemSplit[1],
               "vehicleId" : parseInt(element.vehicleId)
             }
@@ -234,8 +234,9 @@ export class AlertsComponent implements OnInit {
            }
           });
         }
-
-        // this.vehicleListBasedOnPrivilege.push({"vehicleId" : element.vehicleId});
+        if(element.vehicleId && element.vehicleId != ''){
+          this.vehicleListBasedOnPrivilege.push({"vehicleId" : parseInt(element.vehicleId)});
+        }
       });
 
       this.vehicleGroupListBasedOnPrivilege = this.removeDuplicates(this.vehicleGroupListBasedOnPrivilege, "vehicleGroupId");
