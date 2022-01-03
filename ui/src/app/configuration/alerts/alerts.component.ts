@@ -222,7 +222,7 @@ export class AlertsComponent implements OnInit {
             let itemSplit = item.split("~");
             if(itemSplit[2] != 'S') {
             let vehicleGroupObj= {
-              "vehicleGroupId" : itemSplit[0],
+              "vehicleGroupId" : (itemSplit[0] && itemSplit[0] != '') ? parseInt(itemSplit[0]) : 0,
               "vehicleGroupName" : itemSplit[1],
               "vehicleId" : parseInt(element.vehicleId)
             }
