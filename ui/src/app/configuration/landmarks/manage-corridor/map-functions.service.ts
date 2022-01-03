@@ -150,10 +150,10 @@ export class MapFunctionsService {
     let corridorName = '';
     let startAddress = '';
     let endAddress = '';
-    let transcorridorname = translationData.lblCorridorName;
-    let transstartpoint = translationData.lblStartPoint;
-    let transendpoint = translationData.lblEndPoint;
-    let transwidth = translationData.lblWidth;
+    let transcorridorname = translationData?.lblCorridorName;
+    let transstartpoint = translationData?.lblStartPoint;
+    let transendpoint = translationData?.lblEndPoint;
+    let transwidth = translationData?.lblWidth;
     this.organizationId = accountOrganizationId;
     this.hereMap.removeLayer(this.defaultLayers.vector.normal.traffic);
     this.hereMap.removeLayer(this.defaultLayers.vector.normal.truck);
