@@ -121,7 +121,7 @@
                         <mat-icon (click)="resetVehicleGroupFilter()" ngxMatSelectSearchClear>close</mat-icon>
                       </ngx-mat-select-search>
                     </mat-option>
-                    <mat-option value="ALL">--All--</mat-option>  
+                    <mat-option value="ALL">{{translationData.lblAll}}</mat-option>  
                     <mat-option *ngFor="let vehGrp of filteredVehicleGroups | async " [value]="vehGrp.vehicleGroupId">
                     <!--<mat-option  *ngIf = "vehGrp.vehicleGroupId!=0 || vehGrp.vehicleGroupName!=''"> -->
                           {{vehGrp.vehicleGroupName}}
@@ -512,7 +512,7 @@
   <div class="col-sm-4  areawidth">
 <ngx-slider [(value)]="poiWidth" [options]="options" (mousemove)="sliderChanged()"></ngx-slider>
 </div>  
-<mat-label>(mtr)</mat-label>
+<mat-label>({{translationData.lblmtr}})</mat-label>
 </div>
 </div>
         <!-- Map -->
