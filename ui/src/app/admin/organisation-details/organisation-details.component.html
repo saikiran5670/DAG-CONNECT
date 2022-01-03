@@ -288,7 +288,7 @@
                                 <div *ngIf="editPrefereneceFlag">
                                     <mat-form-field appearance="outline">
                                         <input matInput maxlength="2" type="text" formControlName="pageRefreshTime" (keypress)="keyPressNumbers($event)">
-                                        <span matSuffix>min</span>   
+                                        <span matSuffix>{{translationData.lblmin}}</span>   
                                     </mat-form-field>
                                     <!-- <span style="margin: 10px 0px 0px 10px;">({{ translationData.lblminimum1minormaximum60min || 'minimum 1 min or maximum 60 min' }})</span> -->
                                     <mat-error [ngClass]="{'errorClass': orgDetailsPreferenceForm.get('pageRefreshTime').hasError('required')}" *ngIf="orgDetailsPreferenceForm.get('pageRefreshTime').hasError('required')">

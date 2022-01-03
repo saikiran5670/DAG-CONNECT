@@ -2935,7 +2935,7 @@ setVehicleGroupAndVehiclePreSelection() {
           break;
         }
         case 'idleDuration' :{
-          pdfColumnHeads.push(this.translationData.lblIdleDuration);
+          pdfColumnHeads.push(this.translationData.lblIdleDuration+'(%)');
           break;
         }
         case 'ptoDuration' :{
@@ -3015,7 +3015,7 @@ setVehicleGroupAndVehiclePreSelection() {
           break;
         }
         case 'averageTrafficClassificationValue' :{
-          pdfColumnHeads.push('Average Traffic Classification Value');
+          pdfColumnHeads.push(this.translationData.lblaverageTrafficClassificationValue);
           break;
         }
         case 'idlingConsumptionValue' :{
@@ -3202,6 +3202,7 @@ setVehicleGroupAndVehiclePreSelection() {
       }
 
       let DATA = document.getElementById('charts');
+      let transpdfheader = this.translationData.lblFleetFuelDriverTripReport;
       html2canvas( DATA)
       .then(canvas => {
         (doc as any).autoTable({
@@ -3211,7 +3212,7 @@ setVehicleGroupAndVehiclePreSelection() {
           },
           didDrawPage: function(data) {
               doc.setFontSize(14);
-              var fileTitle = "Fleet Fuel Report by Driver Details";
+              var fileTitle = transpdfheader;
               var img = "/assets/logo.png";
               doc.addImage(img, 'JPEG',10,10,0,0);
 

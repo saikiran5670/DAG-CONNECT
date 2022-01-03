@@ -75,6 +75,7 @@ export class NewUserStepComponent implements OnInit {
   contextOrgName: any;
   adminAccessType: any = {};
   showLoadingIndicator: boolean = false;
+  selectedFileName:string;
 
   myFilter = (d: Date | null): boolean => {
     const date = (d || new Date());
@@ -705,6 +706,7 @@ export class NewUserStepComponent implements OnInit {
       return false;
     this.isAccountPictureSelected = true;
     this.imageChangedEvent = event;
+    this.selectedFileName = event.target.files[0].name;
   }
 
   onSelectPictureCancel(){

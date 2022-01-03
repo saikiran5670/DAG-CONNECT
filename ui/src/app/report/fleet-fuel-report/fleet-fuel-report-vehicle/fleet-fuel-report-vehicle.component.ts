@@ -2146,7 +2146,7 @@ setVehicleGroupAndVehiclePreSelection() {
           // numbeOfVehicles = this.initData.length;
 
           this.summaryNewObj = [
-           ['Fleet Fuel Vehicle Report', this.reportMapService.getStartTime(Date.now(), this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
+           [this.translationData.lblFleetFuelVehicleReport, this.reportMapService.getStartTime(Date.now(), this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
              this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, numberOfTrips, distanceDone,
              fuelconsumed, idleDuration, fuelConsumption,CO2Emission
           ]
@@ -2180,7 +2180,7 @@ setVehicleGroupAndVehiclePreSelection() {
       ,this.translationData.lbldpaAnticipationScore +' %',this.translationData.lbldpaBrakingScore+' %',
       this.translationData.lblIdlingwithPTO+' (hh:mm:ss)',this.translationData.lblIdlingwithPTO+' %',
       this.translationData.lblIdlingwithoutPTO+' (hh:mm:ss)',this.translationData.lblIdlingwithoutPTO+' %',this.translationData.lblFootBrake,
-      this.translationData.lblCO2Emission+' '+this.translationData.lblgmpkm,this.translationData.lblidlingConsumptionValue+'('+unitVal100km+')'];
+      this.translationData.lblCO2Emission+' ('+this.translationData.lblgmpkm+')',this.translationData.lblidlingConsumptionValue+'('+unitVal100km+')'];
     const summaryHeader = [this.translationData.lblReportName, this.translationData.lblReportCreated, this.translationData.lblReportStartTime, this.translationData.lblReportEndTime, this.translationData.lblVehicleGroup , this.translationData.lblVehicleName, this.translationData.lblNumberOfTrips, this.translationData.lblDistance+'('+unitValkm+')', this.translationData.lblFuelConsumed+'('+unitValuekm+')', this.translationData.lblIdleDuration+'('+unitValhhmm+')',this.translationData.lblFuelConsumption+'('+unitVal100km+')', this.translationData.lblCO2Emission+'('+ unitValkg1+')'];
     const summaryData= this.summaryNewObj;
     //Create workbook and worksheet
@@ -2490,7 +2490,7 @@ setVehicleGroupAndVehiclePreSelection() {
         break;
       }
       case 'cO2Emmision' :{
-        pdfColumnHeads.push(this.translationData.lblCO2Emission+' '+this.translationData.lblgmpkm);
+        pdfColumnHeads.push(this.translationData.lblCO2Emission+' ('+this.translationData.lblgmpkm+')');
         break;
       }
       case 'idlingConsumptionWithPTO' :{
