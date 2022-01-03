@@ -136,7 +136,7 @@ export class RelationshipManagementComponent implements OnInit {
 
       this.dataSource.filterPredicate = function(data, filter: any){
         return data.name.toLowerCase().includes(filter) ||
-               (data.featureIds.length).includes(filter) ||
+                (data.featureIds.length).toString().includes(filter) ||
                data.levelVal.toLowerCase().includes(filter) ||
                data.code.toLowerCase().includes(filter) ||
                data.description.toLowerCase().includes(filter)
