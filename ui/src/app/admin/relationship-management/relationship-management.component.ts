@@ -136,7 +136,7 @@ export class RelationshipManagementComponent implements OnInit {
 
       this.dataSource.filterPredicate = function(data, filter: any){
         return data.name.toLowerCase().includes(filter) ||
-               (data.featureIds.length).includes(filter) ||
+                (data.featureIds.length).toString().includes(filter) ||
                data.levelVal.toLowerCase().includes(filter) ||
                data.code.toLowerCase().includes(filter) ||
                data.description.toLowerCase().includes(filter)
@@ -154,14 +154,19 @@ export class RelationshipManagementComponent implements OnInit {
   }
 
   compare(a: any, b: any, isAsc: boolean, columnName: any) {
-    if(columnName === 'name'|| columnName === 'code'|| columnName == 'description'||columnName !== 'featureIds'){
-      if(a && !(a instanceof Number)) a = a.toString().toUpperCase();
-      if(a && !(b instanceof Number)) b = b.toString().toUpperCase();
+    if(columnName === 'name'|| columnName === 'code'|| columnName == 'description'){
+      if(a && !(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
+      if(a && !(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
     // tslint:disable-next-line: align
     }if(columnName === 'featureIds')
     {
         a = a.length;
         b = b.length;
+    }
+    if(columnName === 'level')
+    {
+      if(a && !(a instanceof Number)) a = a.toString().toUpperCase();
+      if(a && !(b instanceof Number)) b = b.toString().toUpperCase();
     }
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }

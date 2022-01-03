@@ -75,7 +75,8 @@ export class EditViewUserComponent implements OnInit {
   grpTitleVisible: boolean = false;
   adminAccessType: any = {};
   filterValue: string;
-
+  selectedFileName:string;
+  emailErrorMsg:string;
   constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private accountService: AccountService, private domSanitizer: DomSanitizer, private router: Router) { }
 
   ngOnInit() {
@@ -194,7 +195,7 @@ export class EditViewUserComponent implements OnInit {
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } /
     ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} /
     ${this.translationData.lblAccountManagement ? this.translationData.lblAccountManagement : "Account Management"} /
-    ${(this.fromEdit == 'edit') ? (this.translationData.lblAccountDetails ? 'Edit '+this.translationData.lblAccountDetails : 'Edit Account Details') : (this.fromEdit == 'view') ? (this.translationData.lblAccountDetails ? 'View '+this.translationData.lblAccountDetails : 'View Account Details') : ''}`;
+    ${(this.fromEdit == 'edit') ? (this.translationData.lblAccountDetails ? this.translationData.lblEditAccountDetails || 'Edit User Details': 'Edit Account Details') : (this.fromEdit == 'view') ? (this.translationData.lblAccountDetails ? this.translationData.lblViewAccountDetails||'View User Details' : 'View Account Details') : ''}`;
     // ${this.translationData.lblAccountDetails ? this.translationData.lblAccountDetails : 'Account Details'}`;
   }
 
@@ -217,8 +218,11 @@ export class EditViewUserComponent implements OnInit {
   }
 
   compare(a: any, b: any, isAsc: boolean, columnName:any) {
-    if(!(a instanceof Number)) a = a.toString().toUpperCase();
-    if(!(b instanceof Number)) b = b.toString().toUpperCase();
+    if(columnName === "roleName" || columnName === "accountGroupName"){
+    if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toUpperCase();
+    if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toUpperCase();
+    }
+
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 
@@ -237,6 +241,7 @@ export class EditViewUserComponent implements OnInit {
         });
        }
     });
+    Util.applySearchFilter(this.selectedRoleDataSource, this.displayedColumnsUserGrpConfirm ,this.filterValue );
   }
 
   filterRoleTableData(){
@@ -250,6 +255,7 @@ export class EditViewUserComponent implements OnInit {
   }
 
   setDefaultAccountInfo(){
+    this.emailErrorMsg='';
     if(this.accountInfoData){
       this.accountInfoForm.get('salutation').setValue(this.accountInfoData.salutation ? this.accountInfoData.salutation : '--');
       this.accountInfoForm.get('firstName').setValue(this.accountInfoData.firstName ? this.accountInfoData.firstName : '--');
@@ -417,6 +423,7 @@ export class EditViewUserComponent implements OnInit {
   }
 
   onAccountInfoUpdate(){
+    this.emailErrorMsg='';
     let objData: any = {
         id: this.accountInfoData.id,
         emailId: this.accountInfoForm.controls.loginEmail.value,
@@ -434,6 +441,9 @@ export class EditViewUserComponent implements OnInit {
       // this.isSelectPictureConfirm = true;
       this.editAccountInfoFlag = false;
       this.successMsgBlink(this.getSuccessMsg('accountInfo'));
+     }, (error) => {
+       this.emailErrorMsg=error.error;
+       console.log('error:',error);
     });
   }
 
@@ -535,6 +545,7 @@ export class EditViewUserComponent implements OnInit {
       return false;
     this.isAccountPictureSelected = true;
     this.imageChangedEvent = event;
+    this.selectedFileName = event.target.files[0].name;
   }
 
   onSelectPictureCancel(){
@@ -632,7 +643,7 @@ export class EditViewUserComponent implements OnInit {
     dialogConfig.autoFocus = true;
     dialogConfig.data = {
       tableData: tableData,
-      colsList: ['firstName','emailId','roles'],
+      colsList: ['firstName','emailId','roleList'],
       colsName: [this.translationData.lblUserName , this.translationData.lblEmailID , this.translationData.lblUserRole],
       tableTitle: `${rowData.accountGroupName} - ${this.translationData.lblUsers }`
     }

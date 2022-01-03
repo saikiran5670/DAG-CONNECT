@@ -7,6 +7,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.ReportScheduler
 {
     public static class ReportSchedulerConstants
     {
+        public const string INTERNAL_SERVER_MSG = "Error occured, Please check with DAF IT team for more info.";
         public const string REPORTSCHEDULER_ORG_ID_NOT_NULL_MSG = "Orgnization id cannot be null.";
         public const string REPORTSCHEDULER_ID_NOT_NULL_MSG = "Report Scheduler id cannot be null.";
         public const string REPORTSCHEDULER_CONTROLLER_NAME = "Report Scheduler Controller";

@@ -72,10 +72,10 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice
             }
             catch (Exception ex)
             {
-                _logger.Error("OTASoftwareUpdateManagementService:GetVehicleSoftwareStatus", ex);
+                _logger.Error($"{nameof(GetVehicleSoftwareStatus)}: With Error:-", ex);
                 return await Task.FromResult(new VehicleSoftwareStatusResponse
                 {
-                    Message = "Exception :-" + ex.Message,
+                    Message = OTASoftwareUpdateConstants.INTERNAL_SERVER_MSG,
                     Code = ResponseCode.InternalServerError
                 });
             }
@@ -133,10 +133,10 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice
             }
             catch (Exception ex)
             {
-                _logger.Error("OTASoftwareUpdateManagementService:GetVehicleStatusList", ex);
+                _logger.Error($"{nameof(GetVehicleStatusList)}: With Error:-", ex);
                 return await Task.FromResult(new VehicleStatusResponse
                 {
-                    Message = "Exception :-" + ex.Message,
+                    Message = OTASoftwareUpdateConstants.INTERNAL_SERVER_MSG,
                     Code = ResponseCode.InternalServerError
                 });
             }
@@ -194,10 +194,10 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice
             }
             catch (Exception ex)
             {
-                _logger.Error("OTASoftwareUpdateManagementService:GetVehicleUpdateDetails", ex);
+                _logger.Error($"{nameof(GetVehicleUpdateDetails)}: With Error:-", ex);
                 return await Task.FromResult(new VehicleUpdateDetailResponse
                 {
-                    Message = "Exception :-" + ex.Message,
+                    Message = OTASoftwareUpdateConstants.INTERNAL_SERVER_MSG,
                     HttpStatusCode = ResponseCode.InternalServerError
                 });
             }
@@ -222,10 +222,10 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice
             }
             catch (Exception ex)
             {
-                _logger.Error("OTASoftwareUpdateManagementService:GetSoftwareReleaseNote", ex);
+                _logger.Error($"{nameof(GetSoftwareReleaseNote)}: With Error:-", ex);
                 return await Task.FromResult(new CampiagnSoftwareReleaseNoteResponse
                 {
-                    Message = "Exception :-" + ex.Message,
+                    Message = OTASoftwareUpdateConstants.INTERNAL_SERVER_MSG,
                     HttpStatusCode = ResponseCode.InternalServerError
                 });
             }

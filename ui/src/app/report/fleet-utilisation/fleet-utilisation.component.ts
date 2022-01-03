@@ -466,8 +466,9 @@ calendarOptions: CalendarOptions = {
 
 public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
-  idleDurationConverted: any;
+  idleDurationSumConverted: any;
   filterValue: string;
+  _state: any;
 
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private router: Router, private organizationService: OrganizationService, private datePipe: DatePipe, private dataInterchangeService: DataInterchangeService) {
     // this.defaultTranslation();
@@ -481,11 +482,12 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       }
     });
     const navigation = this.router.getCurrentNavigation();
-    const state = navigation.extras.state as {
-      fromTripReport: boolean
+    this. _state = navigation.extras.state as {
+      fromTripReport: boolean,
+      vehicleDropDownId: any
     };
     //console.log(state)
-    if(state){
+    if(this._state){
       this.fromTripPageBack = true;
     }else{
       this.fromTripPageBack = false;
@@ -866,9 +868,9 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       minutes = parseInt(minutes);
       seconds = seconds % 60;
       //console.log( hours+":"+minutes+":"+seconds);
-      return `${hours < 10 ? '0'+hours : hours} h ${minutes < 10 ? '0'+minutes : minutes} m`;
+      return `${hours < 10 ? '0'+hours : hours} ${this.translationData.lblHour} ${minutes < 10 ? '0'+minutes : minutes} ${this.translationData.lblMinute}`;
     }else{
-      return '00 h 00 m';
+      return `'00 ${this.translationData.lblHour} 00 ${this.translationData.lblMinute}'`;
     }
   }
 
@@ -930,6 +932,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       this.hideloader();
       this.wholeTripData = tripData;
       this.filterDateData();
+      this.updateDataSource(this.dataSource);
     }, (error)=>{
       this.hideloader();
       this.wholeTripData.vinTripList = [];
@@ -962,13 +965,15 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
           }
         }
       });
-      this.singleVehicle = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i=> i.groupType == 'S');
       if(vinArray.length > 0){
+        // this.singleVehicle = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i=> i.groupType == 'S');//commenting this line for bug #22168
         distinctVIN = vinArray.filter((value, index, self) => self.indexOf(value) === index);
         ////console.log("distinctVIN:: ", distinctVIN);
         if(distinctVIN.length > 0){
           distinctVIN.forEach(element => {
-            let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element && i.groupType != 'S');
+            // let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element && i.groupType != 'S');
+            let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element);
+            //The vins which are coming in vinTripList those needs to be displayed in vehicle dropdown(no matter if it's single or group type vehicle)
             if(_item.length > 0){
               this.vehicleListData.push(_item[0]); //-- unique VIN data added
               _item.forEach(element => {
@@ -1087,7 +1092,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       let percentage2 = (this.greaterTimeCount/this.tripData.length)* 100;
       this.doughnutChartDataForTime = [percentage2, 100- percentage2];
       this.timePieChartData = [percentage2, 100- percentage2];
-
+      this.idleDurationCount();
       }, (error)=>{
          //console.log(error);
         this.hideloader();
@@ -1100,7 +1105,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
         //this.calendarSelectedValues(calendarData["calenderDetails"]);
       })
     }
-    this.idleDurationCount()
+    // this.idleDurationCount()
     this.calendarOptions.initialDate = this.startDateValue;
     this.calendarOptions.validRange = { start: `${new Date(this.startDateValue).getFullYear()}-${(new Date(this.startDateValue).getMonth() + 1).toString().padStart(2, '0')}-${new Date(this.startDateValue).getDate().toString().padStart(2, '0')}`, end :  `${new Date(this.endDateValue).getFullYear()}-${(new Date(this.endDateValue).getMonth() + 1).toString().padStart(2, '0')}-${new Date(this.endDateValue).getDate().toString().padStart(2, '0')}`};
   }
@@ -1338,7 +1343,15 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
 
   resetTripFormControlValue(){
     if(!this.internalSelection && this.fleetUtilizationSearchData.modifiedFrom !== ""){
-      this.tripForm.get('vehicle').setValue(this.fleetUtilizationSearchData.vehicleDropDownValue);
+      if (this._state && this._state.vehicleDropDownId != undefined && this.vehicleDD.length > 0) { // back from trip report
+        let _v = this.vehicleDD.filter(i => i.vehicleId == Number(this._state.vehicleDropDownId));
+        if (_v.length > 0) {
+          let id = _v[0].vehicleId;
+          this.tripForm.get('vehicle').setValue(id);
+        }
+      } else {
+        this.tripForm.get('vehicle').setValue(this.fleetUtilizationSearchData.vehicleDropDownValue);
+      }
       this.tripForm.get('vehicleGroup').setValue(this.fleetUtilizationSearchData.vehicleGroupDropDownValue);
     }else{
       this.tripForm.get('vehicle').setValue(0);
@@ -1371,29 +1384,46 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
-      this.dataSource.sortData = (data: String[], sort: MatSort) => {
-        const isAsc = sort.direction === 'asc';
-        return data.sort((a: any, b: any) => {
-            let columnName = sort.active;
-            return this.compareData(a[sort.active], b[sort.active], isAsc, columnName);
-        });
-      }
+      this.dataSource.filterPredicate = function(data, filter: any){
+        return data.vehicleName.toString().toLowerCase().includes(filter) ||
+            data.vin.toString().toLowerCase().includes(filter) ||
+            data.registrationNumber.toString().toLowerCase().includes(filter) ||
+            data.convertedDistance.toString().toLowerCase().includes(filter) ||
+            data.numberOfTrips.toString().toLowerCase().includes(filter)  ||
+            data.convertedTripTime.toString().toLowerCase().includes(filter) ||
+            data.convertedDrivingTime.toString().toLowerCase().includes(filter)  ||
+            data.convertedIdleDuration.toString().toLowerCase().includes(filter) ||
+            data.convertedStopTime.toLowerCase().toString().includes(filter) ||
+            data.convertedAverageDistance.toLowerCase().toString().includes(filter) ||
+            data.convertedAverageSpeed.toLowerCase().toString().includes(filter) ||
+            data.convertedAverageWeight.toLowerCase().toString().includes(filter) ||
+            data.convertedOdometer.toLowerCase().toString().includes(filter)
+   }
+      // this.dataSource.sortData = (data: String[], sort: MatSort) => {
+      //   const isAsc = sort.direction === 'asc';
+      //   return data.sort((a: any, b: any) => {
+      //       let columnName = sort.active;
+      //       return this.compareData(a[sort.active], b[sort.active], isAsc, columnName);
+      //   });
+      // }
       });
       Util.applySearchFilter(this.dataSource, this.displayedColumns ,this.filterValue );
     }
 
-    compareData(a: Number | String, b: Number | String, isAsc: boolean, columnName: any) {
+    // compareData(a: Number | String, b: Number | String, isAsc: boolean, columnName: any) {
 
-        if(!(a instanceof Number)) a = a.toString().toUpperCase();
-        if(!(b instanceof Number)) b = b.toString().toUpperCase();
+    //     if(!(a instanceof Number)) a = a.toString().toUpperCase();
+    //     if(!(b instanceof Number)) b = b.toString().toUpperCase();
 
-      return ( a < b ? -1 : 1) * (isAsc ? 1: -1);
-    }
+    //   return ( a < b ? -1 : 1) * (isAsc ? 1: -1);
+    // }
   idleDurationCount(){
+    let idleDuration=0;
     this.initData.forEach(item => {
-    this.idleDurationConverted = Util.getHhMmTime(parseFloat(item.idleDuration));
-  })
-}
+      idleDuration += parseFloat(item.idleDuration);
+    });
+    this.idleDurationSumConverted = Util.getHhMmTime(idleDuration);
+  }
 
   setVehicleGroupAndVehiclePreSelection() {
     if(!this.internalSelection && this.fleetUtilizationSearchData.modifiedFrom !== "") {
@@ -1431,8 +1461,16 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       // this.setGlobalSearchData(this.fleetUtilizationSearchData)
     }else {
       // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event));
+      if (this._state && this._state.vehicleDropDownId != undefined && this.vehicleDD.length > 0) {
+        let _v = this.vehicleDD.filter(i => i.vehicleId == Number(this._state.vehicleDropDownId));
+        if (_v.length > 0) {
+          let id = _v[0].vehicleId;
+          this.tripForm.get('vehicle').setValue(id);
+        }
+      }else{
+        this.tripForm.get('vehicle').setValue(parseInt(this.fleetUtilizationSearchData.vehicleDropDownValue));
+      }
       this.tripForm.get('vehicleGroup').setValue(parseInt(this.fleetUtilizationSearchData.vehicleGroupDropDownValue));
-      this.tripForm.get('vehicle').setValue(parseInt(this.fleetUtilizationSearchData.vehicleDropDownValue));
     }
   }
 
@@ -1760,21 +1798,21 @@ getAllSummaryData(){
        // idleDuration += parseFloat(item.idleDuration);
         averageDistPerDay += parseFloat(item.convertedAverageDistance);
 
-        let time: any = 0;
-        time += (item.idleDuration);
-        let data: any = "00:00";
-        let hours = Math.floor(time / 3600);
-        time %= 3600;
-        let minutes = Math.floor(time / 60);
-        let seconds = time % 60;
-        data = `${(hours >= 10) ? hours : ('0'+hours)}:${(minutes >= 10) ? minutes : ('0'+minutes)}`;
-        idleDuration = data;
+        // let time: any = 0;
+        // time += (item.idleDuration);
+        // let data: any = "00:00";
+        // let hours = Math.floor(time / 3600);
+        // time %= 3600;
+        // let minutes = Math.floor(time / 60);
+        // let seconds = time % 60;
+        // data = `${(hours >= 10) ? hours : ('0'+hours)}:${(minutes >= 10) ? minutes : ('0'+minutes)}`;
+        // idleDuration = data;
       });
       numbeOfVehicles = this.initData.length;
       this.summaryObj = [
         [this.translationData.lblFleetUtilizationReport || 'Fleet Utilization Report', this.reportMapService.getStartTime(Date.now(), this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
           this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, numbeOfVehicles, distanceDone.toFixed(2),
-          numberOfTrips, averageDistPerDay.toFixed(2), idleDuration
+          numberOfTrips, averageDistPerDay.toFixed(2), this.idleDurationSumConverted
         ]
       ];
     }
@@ -1869,6 +1907,7 @@ getAllSummaryData(){
     this.dontShow = true;
   var doc = new jsPDF('p', 'mm', 'a4');
   let pdfColumns = this.getPDFExcelHeader();
+  let transHeaderNamePdf = this.translationData.lblTripFleetUtilisationReport;
   let prepare = []
     // this.initData.forEach(e => {
     //   var tempObj = [];
@@ -1953,7 +1992,7 @@ getAllSummaryData(){
         didDrawPage: function(data) {
             // Header
             doc.setFontSize(16);
-            var fileTitle = "Trip Fleet Utilisation Details";
+            var fileTitle = transHeaderNamePdf;
             var img = "/assets/logo.png";
             doc.addImage(img, 'JPEG',10,10,0,0);
 
@@ -2009,7 +2048,8 @@ getAllSummaryData(){
     const navigationExtras: NavigationExtras = {
       state: {
         fromFleetUtilReport: true,
-        vehicleData: vehData
+        vehicleData: vehData,
+        vehicleDropDownId: this.tripForm.controls.vehicle.value
       }
     };
     this.router.navigate(['report/tripreport'], navigationExtras);

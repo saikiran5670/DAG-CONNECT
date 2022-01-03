@@ -12,14 +12,14 @@
             <mat-card class='mat-elevation-z margin-bottom-xlg'>
          <div class='margin-bottom-sm' fxLayout="row" fxLayoutAlign="start start">
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblImportDTCTranslation || 'Import DTC Translation' }}</span>
+                    <span class='font-18-px line-height-27px font-helvetica-md'>{{ translationData.lblImportDTCTranslation || 'Import DTC Translation' }}</span>
                 </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="start start" fxLayoutGap="15px">
                 <div style='width: 60%' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                     <span style='display: flex; align-items: center;'>
                         <img matTooltip='Download Excel' src='assets/images/icons/microsoftExcel/excel_icon.svg' style="width: 30px; height: 30px;" />&nbsp;
-                        <a (click)="downloadTranslatedData()" class='cursor-pointer' style='font: 1 16px/32px Roboto, "Helvetica Neue", sans-serif; text-decoration-line: underline;'>
+                        <a class='cursor-pointe font-16-px line-height-24px' (click)="downloadTranslatedData()" style='text-decoration-line: underline;'>
                             {{ translationData.lblDownloadTranslatedData || 'Download Translated Data' }}
                         </a>
                     </span>
@@ -35,7 +35,7 @@
                         <div class='full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                             <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start">
                                 <div class='areaWidth full-width myform-wrappe uploadArea' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                                    <mat-label>{{ translationData.lblUploadExcelFile || 'Upload Excel file' }} <span class='mandatoryColor'>*</span></mat-label>
+                                    <mat-label class='font-16-px line-height-24px'>{{ translationData.lblUploadExcelFile || 'Upload Excel file' }} <span class='mandatoryColor'>*</span></mat-label>
                                     <mat-form-field appearance="outline">
                                         <ngx-mat-file-input #removableInput (change)="addDtcDatafile($event)" [accept]="'.xlsx'" formControlName="uploadFile" placeholder="Upload Excel File" ></ngx-mat-file-input>
                                         <button (click)='onBrowse()' mat-flat-button color="primary" matSuffix>{{ translationData.lblBrowse || 'Browse' }}</button>
@@ -78,7 +78,7 @@
        </div>  
             <div class='margin-bottom-sm' fxLayout="row" fxLayoutAlign="start start">
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblUploadSvgIcon }}</span>
+                    <span class='font-18-px line-height-27px font-helvetica-md'>{{ translationData.lblUploadSvgIcon }}</span>
                 </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="start start" fxLayoutGap="15px">
@@ -90,7 +90,7 @@
                         <div class='full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                             <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start">
                                 <div class='areaWidth full-width myform-wrappe uploadArea' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                                    <mat-label>{{ translationData.lblUploadIconExcelFile }} <span class='mandatoryColor'>*</span></mat-label>
+                                    <mat-label class='font-16-px line-height-24px'>{{ translationData.lblUploadIconExcelFile }} <span class='mandatoryColor'>*</span></mat-label>
                                     <mat-form-field appearance="outline">
                                         <ngx-mat-file-input #removableIconInput (change)="getZipContent($event.target.files)" [accept]="'.zip,.svg'" formControlName="uploadFile" placeholder="Upload svg files" ></ngx-mat-file-input>
                                         <button (click)='onIconBrowse()' mat-flat-button color="primary" matSuffix>{{ translationData.lblBrowse || 'Browse' }}</button>

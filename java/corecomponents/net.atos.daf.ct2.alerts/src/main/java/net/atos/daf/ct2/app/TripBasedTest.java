@@ -133,14 +133,15 @@ public class TripBasedTest implements Serializable {
 
 //        indexStringStream.print();
 
-        /**
+       /* *//**
          * Entering and exiting zone
-         */
+         *//*
         KeyedStream<Index, String> geofenceEnteringZoneStream = indexStringStream.keyBy(index -> index.getVin() != null ? index.getVin() : index.getVid());
 
         IndexMessageAlertService.processIndexKeyStream(geofenceEnteringZoneStream,
-                env, propertiesParamTool, geofenceFunConfigMap);
+                env, propertiesParamTool, geofenceFunConfigMap);*/
 
+        alertProcessStarter.start(indexStringStream, Index.class);
         env.execute("TripBasedTest");
 
 

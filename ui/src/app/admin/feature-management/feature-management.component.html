@@ -1,5 +1,5 @@
 <div class='bgtrans'>
-  <div *ngIf='titleVisible' fxLayout="row" fxLayoutAlign="center center"
+  <div *ngIf='titleVisible' fxLayout="row" fxLayoutAlign="center center" class = 'breadcrumb'
     style='padding:10px; color:#fff; background: #5dc24e;'>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center" style='width:95%;'>
       {{ feautreCreatedMsg }}
@@ -11,7 +11,7 @@
   <mat-card class='mat-elevation-z' *ngIf='!createEditViewFeatureFlag'>
     <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
       <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+        <span class='font-18-px line-height-27px font-helvetica-md'>{{
           translationData.lblDataAttributeFeatures }}</span>
       </div>
     </div>

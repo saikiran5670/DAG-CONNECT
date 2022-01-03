@@ -332,17 +332,26 @@ namespace net.atos.daf.ct2.rfms.response
 
         public UptimeData MapUptimeData(dynamic record)
         {
+            var tellTaleStates = new List<TellTaleInfo>();
+            if (record.uptimetelltale_state != null && record.uptimetelltale_state.Length > 0)
+            {
+                for (var i = 1; i < record.uptimetelltale_state.Length; i++)
 
+                {
+                    tellTaleStates.Add(new TellTaleInfo() { TellTale = i.ToString(), State = record.uptimetelltale_state[i].ToString() });
+                }
+            }
             var uptimeData = new UptimeData()
             {
 
-                TellTaleInfo = new List<TellTaleInfo>(){ new TellTaleInfo()
-                {
-                    TellTale =  Convert.ToString(record.telltale),
-                    OemTellTale =record.oemtelltale,
-                    State = Convert.ToString(record.state)
-                }
-                },
+                TellTaleInfo = tellTaleStates,
+                //new List<TellTaleInfo>(){ new TellTaleInfo()
+                //{
+                //    TellTale =  Convert.ToString(record.telltale),
+                //    OemTellTale =record.oemtelltale,
+                //    State = Convert.ToString(record.state)
+                //}
+                //},
                 ServiceDistance = record.serviceDitance,//100000,
                 EngineCoolantTemperature = record.enginecoolanttemperature,
                 ServiceBrakeAirPressureCircuit1 = record.servicebrakeairpressurecircuit1,

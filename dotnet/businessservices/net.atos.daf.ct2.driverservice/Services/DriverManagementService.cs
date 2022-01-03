@@ -55,11 +55,11 @@ namespace net.atos.daf.ct2.driverservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Get)}: With Error:-", ex);
                 return await Task.FromResult(new DriverDataList
                 {
                     Code = Responcecode.Failed,
-                    Message = "Driver get failed due to - " + ex.Message
+                    Message = DriverConstants.INTERNAL_SERVER_MSG
                     //Driver = null
                 });
             }
@@ -82,11 +82,11 @@ namespace net.atos.daf.ct2.driverservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Update)}: With Error:-", ex);
                 return await Task.FromResult(new DriverUpdateResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Driver get failed due to - " + ex.Message
+                    Message = DriverConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -111,11 +111,11 @@ namespace net.atos.daf.ct2.driverservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Delete)}: With Error:-", ex);
                 return await Task.FromResult(new DriverDeleteResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Driver get failed due to - " + ex.Message
+                    Message = DriverConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -140,11 +140,11 @@ namespace net.atos.daf.ct2.driverservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(UpdateOptinOptout)}: With Error:-", ex);
                 return await Task.FromResult(new OptOutOptInResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Driver get failed due to - " + ex.Message
+                    Message = DriverConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -171,11 +171,11 @@ namespace net.atos.daf.ct2.driverservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(ImportDrivers)}: With Error:-", ex);
                 return await Task.FromResult(new DriverImportData
                 {
                     Code = Responcecode.Failed,
-                    Message = "Driver get failed due to - " + ex.Message + " " + ex.StackTrace
+                    Message = DriverConstants.INTERNAL_SERVER_MSG
                 });
             }
         }

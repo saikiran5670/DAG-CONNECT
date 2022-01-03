@@ -54,8 +54,8 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                response.Message = ex.Message;
+                _logger.Error($"{nameof(GetVinsFromTripStatisticsWithVehicleDetails)}: With Error:-", ex);
+                response.Message = ReportConstants.INTERNAL_SERVER_MSG;
                 response.Code = Responsecode.InternalServerError;
                 response.VehicleDetailsWithAccountVisibiltyList.Add(new List<VehicleDetailsWithAccountVisibilty>());
                 response.VinTripList.Add(new List<VehicleFromTripDetails>());
@@ -94,7 +94,7 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetVisibility)}: With Error:-", ex);
                 response.VehicleDetailsWithAccountVisibiltyList.Add(new List<VehicleDetailsWithAccountVisibilty>());
                 return await Task.FromResult(response);
             }
@@ -153,11 +153,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetFilteredTripDetails)}: With Error:-", ex);
                 return await Task.FromResult(new TripResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "GetFilteredTripDetails get failed due to - " + ex.Message
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 });
             }
         }

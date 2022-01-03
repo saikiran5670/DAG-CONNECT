@@ -212,7 +212,8 @@ export class TripReportComponent implements OnInit, OnDestroy {
 
     this._state = navigation.extras.state as {
       fromFleetUtilReport: boolean,
-      vehicleData: any
+      vehicleData: any,
+      vehicleDropDownId: any
     };
     if (this._state) {
       this.showBack = true;
@@ -730,7 +731,12 @@ export class TripReportComponent implements OnInit, OnDestroy {
       }
       this.tripForm.get('vehicleGroup').setValue(this.globalSearchFilterData.vehicleGroupDropDownValue);
     } else {
+      if(this.vehicleDD.length >0){
+        this.tripForm.get('vehicle').setValue(this.vehicleDD[0].vehicleId);
+      }
+      else{
       this.tripForm.get('vehicle').setValue('');
+      }
       this.tripForm.get('vehicleGroup').setValue(0);
     }
   }
@@ -752,7 +758,12 @@ export class TripReportComponent implements OnInit, OnDestroy {
           });
         }
       }
+      if(this.vehicleDD.length >0){
+        this.tripForm.get('vehicle').setValue(this.vehicleDD[0].vehicleId);
+      }
+      else{
       this.tripForm.get('vehicle').setValue('');
+      }
     }
     else {
       this.tripForm.get('vehicleGroup').setValue(parseInt(this.globalSearchFilterData.vehicleGroupDropDownValue));
@@ -903,6 +914,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
   exportAsPDFFile() {
     var doc = new jsPDF('p', 'mm', 'a2');
     let DATA = document.getElementById('charts');
+    var transpdfheader = this.translationData.lblTripReportDetails;
     html2canvas( DATA)
     .then(canvas => {
     (doc as any).autoTable({
@@ -913,7 +925,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
       didDrawPage: function (data) {
         // Header
         doc.setFontSize(20);
-        var fileTitle = 'Trip Details';
+        var fileTitle = transpdfheader;
         var img = "/assets/logo.png";
         doc.addImage(img, 'JPEG', 10, 10, 0, 0);
 
@@ -1242,6 +1254,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
       //     });
       //   }
       // }
+         //TODO: plz verify fleet-utilisation for below logic
       this.singleVehicle = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i=> i.groupType == 'S');
       if (vinArray.length > 0) {
         distinctVIN = vinArray.filter((value, index, self) => self.indexOf(value) === index);
@@ -1408,7 +1421,8 @@ export class TripReportComponent implements OnInit, OnDestroy {
   backToFleetUtilReport() {
     const navigationExtras: NavigationExtras = {
       state: {
-        fromTripReport: true
+        fromTripReport: true,
+        vehicleDropDownId: this._state.vehicleDropDownId
       }
     };
     this.router.navigate(['report/fleetutilisation'], navigationExtras);

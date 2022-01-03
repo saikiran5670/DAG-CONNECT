@@ -27,7 +27,7 @@ namespace net.atos.daf.ct2.package
         {
             return await _packageRepository.Delete(packageId);
         }
-        public async Task<List<Package>> Import(List<Package> packageList)
+        public async Task<PackageMaster> Import(List<Package> packageList)
         {
             return await _packageRepository.Import(packageList);
         }

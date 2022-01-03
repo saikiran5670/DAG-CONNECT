@@ -1,18 +1,18 @@
 <mat-expansion-panel style="width:100%;" class="full-width">
     <mat-expansion-panel-header class="full-width">
       <mat-panel-title>
-        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblFilter}}</span>
+        <span class='font-16-px line-height-24px font-helvetica-md'>{{ translationData.lblFilter }}</span>
       </mat-panel-title>
     </mat-expansion-panel-header>
     <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction" fxLayoutGap="10px">
         <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
-            <mat-label>{{ translationData.lblName  }}</mat-label>
+            <mat-label class='font-16-px line-height-24px'>{{ translationData.lblName  }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
                 <input placeholder="{{ translationData.lblSearchName  }}" [(ngModel)]="name" matInput>
             </mat-form-field>
         </div>
         <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
-            <mat-label style='display: flex; place-content: space-between;'>
+            <mat-label class='font-16-px line-height-24px' style='display: flex; place-content: space-between;'>
                 {{ translationData.lblGroup  }}
             </mat-label>
             <mat-form-field appearance="outline" class="full-width">
@@ -32,7 +32,7 @@
             </mat-form-field>
         </div>
         <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
-            <mat-label style='display: flex; place-content: space-between;'>
+            <mat-label class='font-16-px line-height-24px' style='display: flex; place-content: space-between;'>
                 {{ translationData.lblRole }}
             </mat-label>
             <mat-form-field appearance="outline" class="full-width">

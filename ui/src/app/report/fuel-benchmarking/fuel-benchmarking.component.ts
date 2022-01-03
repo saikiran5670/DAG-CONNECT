@@ -651,6 +651,7 @@ export class FuelBenchmarkingComponent implements OnInit {
           }
         }
       });
+         //TODO: plz verify fleet-utilisation for below logic
       this.singleVehicle = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i=> i.groupType == 'S');
       if (vinArray.length > 0) {
         distinctVIN = vinArray.filter((value, index, self) => self.indexOf(value) === index);
@@ -860,7 +861,7 @@ export class FuelBenchmarkingComponent implements OnInit {
       this.reportService.getBenchmarkDataByTimePeriod(requestObj).subscribe((data: any) => {
         // this.showLoadingIndicator = true;
         let withConvertedDataObj;
-        withConvertedDataObj = this.reportMapService.getConvertedFuelBenchmarkingData(data, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat, this.prefTimeZone);
+        withConvertedDataObj = this.reportMapService.getConvertedFuelBenchmarkingData(data, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat, this.prefTimeZone, this.translationData);
         //console.log("---api hit and get data for time period range---", data)
         //console.log("-----withConvertedDataObj---++++++",withConvertedDataObj);
         data = withConvertedDataObj;
@@ -903,7 +904,7 @@ export class FuelBenchmarkingComponent implements OnInit {
       this.reportService.getBenchmarkDataByVehicleGroup(requestObj).subscribe((data: any) => {
         this.showLoadingIndicator = true;
         let withConvertedDataObj;
-        withConvertedDataObj = this.reportMapService.getConvertedFuelBenchmarkingData(data, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat, this.prefTimeZone);
+        withConvertedDataObj = this.reportMapService.getConvertedFuelBenchmarkingData(data, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat, this.prefTimeZone, this.translationData);
         //console.log("---api hit and get data for vehicle group---", data)
         //console.log("-----withConvertedDataObj---++++++",withConvertedDataObj);
         data = withConvertedDataObj;

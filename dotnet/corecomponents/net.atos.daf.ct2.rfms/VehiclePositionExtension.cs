@@ -22,7 +22,7 @@ namespace net.atos.daf.ct2.rfms
             string lastReceivedDateTime = rfmsVehiclePosition.VehiclePositionResponse.VehiclePositions.Last().ReceivedDateTime;//.ToString("yyyy-MM-ddThh:mm:ss.fffZ");
             if (!rfmsVehiclePosition.MoreDataAvailable)
             {
-                rfmsVehiclePosition.MoreDataAvailableLink = "/vehiclepositions?LatestOnly=true&lastVin=" + lastVin;
+                rfmsVehiclePosition.MoreDataAvailableLink = "/vehiclepositions?LatestOnly=true&startTime=" + lastReceivedDateTime + "&lastVin=" + lastVin;
                 rfmsVehiclePosition.MoreDataAvailable = true;
             }
             else

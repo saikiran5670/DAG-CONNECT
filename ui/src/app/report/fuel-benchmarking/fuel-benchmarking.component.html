@@ -5,14 +5,14 @@
             <mat-expansion-panel-header class="full-width">
               <mat-panel-title>
                 <span>
-                  <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSearchReportParameters || 'Search Report Parameters' }}</span>
+                  <span>{{ translationData.lblSearchReportParameters || 'Search Report Parameters' }}</span>
                 </span>
               </mat-panel-title>
 
             </mat-expansion-panel-header>
 
               <div class='areaWidth margin-bottom-xlg' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center">
-                <span class='radioLabel'>{{ translationData.lblBenchmarkBetween || 'Benchmark Between' }}:</span>
+                <span class='font-16-px line-height-24px radioLabel'>{{ translationData.lblBenchmarkBetween || 'Benchmark Between' }}:</span>
                 <mat-radio-group (change)='onBenchmarkChange($event)'>
                   <mat-radio-button style='margin-right: 20px;' value="timePeriods"
                     [checked]="selectedBenchmarking ===  'timePeriods' ? true : false">{{ translationData.lblTimePeriods || 'Time Periods' }}
@@ -28,7 +28,7 @@
             <div>
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
                 <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
-                  <mat-label>{{ translationData.lblTimeRange || 'Time Range' }} <span class='mandatoryColor'>*</span></mat-label>
+                  <mat-label class='font-16-px line-height-24px'>{{ translationData.lblTimeRange || 'Time Range' }} <span class='mandatoryColor'>*</span></mat-label>
                   <div style='margin-top: 5px;'>
                     <button [disabled]="selectionTab == 'today' || makeDisableTimePeriod" (click)="selectionTimeRange('today')" [ngClass]="{'selectedBtn': selectionTab == 'today'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblToday || 'Today' }}</button>
                     <button [disabled]="selectionTab == 'yesterday' || makeDisableTimePeriod" (click)="selectionTimeRange('yesterday')" [ngClass]="{'selectedBtn': selectionTab == 'yesterday'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblYesterday || 'Yesterday' }}</button>
@@ -38,7 +38,7 @@
                   </div>
                 </div>
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                  <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} <span class='mandatoryColor'>*</span></mat-label>
+                  <mat-label class='font-16-px line-height-24px'>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} <span class='mandatoryColor'>*</span></mat-label>
                   <mat-form-field appearance="outline">
                     <mat-select [disabled]="vehicleGrpDD.length == 0 || makeDisableVehicleGroup" (selectionChange)="onVehicleGroupChange($event)" placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}"  formControlName="vehicleGroup">
     
@@ -63,7 +63,7 @@
                 <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
                   <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
                     <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
-                      <mat-label>{{ translationData.lblFrom || 'From' }} <span class='mandatoryColor'>*</span></mat-label>
+                      <mat-label class='font-16-px line-height-24px'>{{ translationData.lblFrom || 'From' }} <span class='mandatoryColor'>*</span></mat-label>
                       <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
                         <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
                           <mat-form-field appearance="outline">
@@ -85,7 +85,7 @@
                       </div>
                     </div>
                     <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
-                      <mat-label>{{ translationData.lblTo || 'To' }} <span class='mandatoryColor'>*</span></mat-label>
+                      <mat-label class='font-16-px line-height-24px'>{{ translationData.lblTo || 'To' }} <span class='mandatoryColor'>*</span></mat-label>
                       <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
                         <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
                           <mat-form-field appearance="outline">
@@ -109,7 +109,7 @@
                   </div>
                 </div>
                 <div style="visibility: hidden;" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                  <mat-label>{{ translationData.lblVehicle || 'Vehicle' }} <span class='mandatoryColor'>*</span></mat-label>
+                  <mat-label class='font-16-px line-height-24px'>{{ translationData.lblVehicle || 'Vehicle' }} <span class='mandatoryColor'>*</span></mat-label>
                   <mat-form-field appearance="outline">
                     <mat-select [disabled]="vehicleDD.length == 0" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" formControlName="vehicle">
                       <mat-option *ngFor="let rer of vehicleDD" [value]="rer.vehicleId">
@@ -157,7 +157,7 @@
               <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
               <span>
-                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{translationData.lblFuelBenchmarkingDetails || 'Fuel Benchmarking Details' }}</span>
+                <span>{{translationData.lblFuelBenchmarkingDetails || 'Fuel Benchmarking Details' }}</span>
               </span>
             </mat-panel-title>
             </mat-expansion-panel-header>

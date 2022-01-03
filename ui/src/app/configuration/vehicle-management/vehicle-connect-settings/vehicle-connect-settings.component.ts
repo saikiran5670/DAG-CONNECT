@@ -19,8 +19,8 @@ export class VehicleConnectSettingsComponent implements OnInit {
   actionType: any = '';
   selectedRowData: any = [];
   // displayedColumns: string[] = ['name', 'vin', 'licensePlateNumber', 'modelId', 'status', 'connected', 'terminated'];
-  columnCodes = ['name', 'vin', 'licensePlateNumber', 'modelId', 'viewstatus', 'action', 'action2'];
-  columnLabels = ['Vehicle','VIN', 'RegistrationNumber', 'Model', 'Status', 'Connected', 'Terminated'];
+  columnCodes = ['select','name', 'vin', 'licensePlateNumber', 'modelId', 'nextScheduleRunDate', 'action', 'action2'];
+  columnLabels = ['','Vehicle','VIN', 'RegistrationNumber', 'Model', 'Status', 'Connected', 'Terminated'];
   @ViewChild('gridComp') gridComp: DataTableComponent;
   dataSource: any = new MatTableDataSource([]);
   vehicleUpdatedMsg: any = '';
@@ -82,6 +82,7 @@ export class VehicleConnectSettingsComponent implements OnInit {
     // this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
     //   this.processTranslation(data);  
     this.initData = this.relationshipVehiclesData;
+    this.totalVehicles= this.initData.length;
     // this.updateDataSource(this.relationshipVehiclesData);
     //   this.loadVehicleData();  
     // }); 
@@ -176,18 +177,19 @@ export class VehicleConnectSettingsComponent implements OnInit {
   }
 
   getVehicleData(item: any){
-    let obj = {};    
+    let obj = {};  
+    this.loadVehData = this.initData;  
     this.loadVehData.forEach(element => {
       if(element.id == item)
       {
         let optInStatus='';
-        if(element.opt_In == 'U' ||element.opt_In == 'H'){
-          optInStatus = 'I';
-          this.connectedOn.push(element.id)
+        if((element.status == "C" && element.opt_In == "I" || element.status == 'C'  && element.opt_In == "H" || element.status == "N"  && element.opt_In == "H" || element.status == "N"  && element.opt_In == "I")){
+          optInStatus = 'U';
+          this.connectedOff.push(element.id)        
         }
         else{
-          optInStatus = 'U';
-          this.connectedOff.push(element.id)
+          optInStatus = 'I';
+          this.connectedOn.push(element.id)
         }
         obj = {
           opt_In: optInStatus,
@@ -205,17 +207,22 @@ export class VehicleConnectSettingsComponent implements OnInit {
     this.connectedOn=[];
     this.connectedOff=[];
     this.vehicleOptInOut.forEach(element => {
-      if(rowData.hasOwned) {
-        connectedData.push(this.getVehicleData(element));
-      }
+      connectedData.push(this.getVehicleData(element));
+      // if(rowData.hasOwned) {
+      //   connectedData.push(this.getVehicleData(element));
+      // }
     });
-    let connectedOffData = this.connectedOff.length != 0  ? this.connectedOff.length  + ' will be change the status from the connected On to Off!   ' : '';
-    let connectedOnData = this.connectedOn.length != 0  ? this.connectedOn.length  + ' will be change the status from the connected Off to On!     ' : '';
+   
+    let connectedOffToOn =  (this.translationData.lblConnectedStatusFrom  || "will be change the status from connected") + (this.translationData.lblConnectedOnToOff  || " On to Off");
+    let connectedOnToOff =  (this.translationData.lblConnectedStatusFrom  || "will be change the status from connected") + (this.translationData.lblConnectedOffToOn  || " Off to On");
+    let connectedOffData = this.connectedOff.length != 0  ? this.connectedOff.length  + connectedOffToOn+'!   ' : '';
+    let connectedOnData = this.connectedOn.length != 0  ? this.connectedOn.length  + connectedOnToOff+'!    ' : '';  
+       
     const options = {
-      title: this.translationData.lblConnected || "Confirmation",
-      message: this.translationData.lblYouwanttoDetails || "Are you sure want to change all vehicle status? \n Out of "+ this.totalVehicles +" vehicles    "+ connectedOnData  + connectedOffData,   
+      title: this.translationData.lblConfirmation || "Confirmation",
+      message: this.translationData.lblChangeAllVehicleStatus || "Are you sure want to change all vehicle status? Out of "+ this.totalVehicles +" vehicles    "+ connectedOnData  + connectedOffData,   
       cancelText: this.translationData.lblCancel || "Cancel",
-      confirmText: this.translationData.lblConnected || "Confirm",
+      confirmText: this.translationData.lblConfirm || "Confirm",
       status: rowData.opt_In == 'I' ? 'On to Off' : 'Off to On' ,
       name: rowData.name
     };      
@@ -225,35 +232,37 @@ export class VehicleConnectSettingsComponent implements OnInit {
     dialogConfig.data = options;
     this.dialogRef = this.dialog.open(ActiveInactiveDailogComponent, dialogConfig);
     this.dialogRef.afterClosed().subscribe((res: any) => {
-      if(res == true){     
+      if(res == true){  
+        this.showLoadingIndicator = true;   
         this.vehicleService.updatevehicleconnection(connectedData).subscribe((data) => {
             // this.loadVehicleData();   
+            this.hideloader();
             this.updateRelationshipVehiclesData.emit();        
           }, error => {
             // this.loadVehicleData();
           });      
       }else {       
-        //  this.loadVehicleData();        
+        this.updateRelationshipVehiclesData.emit();  
       }  
     });  
   }
   else{   
-      let selectCheckBoxMsg= this.translationData.lblselectCheckBoxMsg || 'Select list checkbox for changing the status' 
-      alert(selectCheckBoxMsg);     
+     // let selectCheckBoxMsg= this.translationData.lblselectCheckBoxMsg || 'Select list checkbox for changing the status' 
+      //alert(selectCheckBoxMsg);     
       return false;     
   }
 }
 
   
-  onChangeConnectedStatus(rowData: any){
-    const options = {
-      title: this.translationData.lblConnected || "Confirmation",
-      message: this.translationData.lblYouwanttoDetails || "Are you sure want to change status Connected  # '$' Vehicle?",   
-      cancelText: this.translationData.lblCancel || "Cancel",
-      confirmText: (rowData.status == "C" && rowData.opt_In == "I"|| rowData.status == "C" && rowData.opt_In == "H" || rowData.status == "N" && rowData.opt_In == "H") ? this.translationData.lblDeactivate || "Connected Off" : this.translationData.lblActivate || " Connected On",
-      status: (rowData.status == "C" && rowData.opt_In == "I" || rowData.status == 'C'  && rowData.opt_In == "H"|| rowData.status == "N"  && rowData.opt_In == "H")? 'On to Off' : 'Off to On' ,
-      name: rowData.name
-    };
+onChangeConnectedStatus(rowData: any){
+  const options = {
+    title: this.translationData.lblConfirmation || "Confirmation",
+    message: this.translationData.lblYouwanttoConnected || "Are you sure want to change status Connected  # '$' Vehicle?",   
+    cancelText: this.translationData.lblCancel || "Cancel",
+    confirmText: (rowData.status == "C" && rowData.opt_In == "I"|| rowData.status == "C" && rowData.opt_In == "H" || rowData.status == "N" && rowData.opt_In == "H") ? this.translationData.lblConfirm : "Confirm",
+    status: (rowData.status == "C" && rowData.opt_In == "I" || rowData.status == 'C'  && rowData.opt_In == "H" || rowData.status == "N"  && rowData.opt_In == "H" || rowData.status == "N"  && rowData.opt_In == "I")? 'On to Off' : 'Off to On' ,
+    name: rowData.name
+  };
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
@@ -280,6 +289,7 @@ export class VehicleConnectSettingsComponent implements OnInit {
             // this.loadVehicleData();
           });         
       }else {
+        this.updateRelationshipVehiclesData.emit(); 
         // this.loadVehicleData();
       }
     });
@@ -288,10 +298,10 @@ export class VehicleConnectSettingsComponent implements OnInit {
   onChangeTerminatedStatus(rowData: any){
     if(rowData.status != 'T'){    
     const options = {
-      title: this.translationData.lblConnected || "Confirmation",
-      message: this.translationData.lblYouwanttoDetails || "Are you sure want to Terminated '$' Vehicle?",   
+      title: this.translationData.lblConfirmation || "Confirmation",
+      message: this.translationData.lblVechicleTerminatedConfirmationAlert || "Termination of vehicle moves the Box in dead state. DCM/TCU is no longer able to send data. It is an irreversible process and once the DCM or TCU is terminated then it can only be replaced with a new one. Do you want to move this $ vehicle?",   
       cancelText: this.translationData.lblCancel || "Cancel",
-      confirmText: (rowData.status == 'T') ? this.translationData.lblDeactivate || "Terminated Off" : this.translationData.lblActivate || " Terminated On",
+      confirmText: (rowData.status == 'T') ? this.translationData.lblDeactivate || "Terminated Off" : this.translationData.lblConfirm || " Terminated On",
       name: rowData.name
     };
     const dialogConfig = new MatDialogConfig();
@@ -313,6 +323,7 @@ export class VehicleConnectSettingsComponent implements OnInit {
             // this.loadVehicleData();
           });         
       }else {
+        this.updateRelationshipVehiclesData.emit(); 
         // this.loadVehicleData();
       }
     });  

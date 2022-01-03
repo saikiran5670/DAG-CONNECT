@@ -144,8 +144,8 @@ applyFilterValue(data){
 }
   compare(a: any, b:any, isAsc: boolean, columnName){
     if(columnName === 'name' ){
-      if(!(a instanceof Number)) a = a.toString().toUpperCase();
-      if(!(b instanceof Number)) b = b.toString().toUpperCase();
+      if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
+      if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
     }
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
@@ -165,9 +165,11 @@ applyFilterValue(data){
 };
 
 getBreadcum(){
-
-  var address = (this.createStatus) ? (this.translationData.lblCreateNewRelationship ? this.translationData.lblCreateNewRelationship : 'New Relationship Details')
-  : (this.viewFlag) ? (this.translationData.lblViewUserRole ? this.translationData.lblViewUserRole : 'View Relationship Details')
+  var view = this.translationData.lblViewRelationshipDetails || 'View Relationship Details' ;
+  var edit = this.translationData.lblEditRelationshipDetails || 'Edit Relationship Details';
+  var newrelation = this.translationData.lblNewRelationShip || 'New Relationship Details';
+  var address = (this.createStatus) ? (this.translationData.lblCreateNewRelationship ? this.translationData.lblCreateNewRelationship : newrelation)
+  : (this.viewFlag) ? (this.translationData.lblViewUserRole ? this.translationData.lblViewUserRole : view)
   : (this.translationData.lblEdit ? this.translationData.lblEdit + ' ' + this.translationData.lblRelationshipDetails : 'Edit Relationship Details');
 
   return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblRelationshipManagement ? this.translationData.lblRelationshipManagement : "Relationship Management"} / ${address}`;

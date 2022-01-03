@@ -25,7 +25,7 @@ const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.
 })
 
 export class DriverManagementComponent implements OnInit {
-  columnCodes = ['driverIdExt', 'fullName', 'email', 'viewstatus', 'action'];
+  columnCodes = ['driverIdExt', 'fullName', 'email', 'status', 'action'];
   columnLabels = ['DriverId','DriverName', 'EmailID', 'Consent', 'Action'];
   @ViewChild('gridComp') gridComp: DataTableComponent;
   driverRestData: any = [];
@@ -54,17 +54,7 @@ export class DriverManagementComponent implements OnInit {
   localStLanguage: any;
   actionType: any = '';
   showLoadingIndicator: any = false;
-  consentSelectionList: any = [
-    {
-      name: 'All'
-    },
-    {
-      name: 'Opt-In'
-    },
-    {
-      name: 'Opt-Out'
-    }
-  ];
+  consentSelectionList: any = [];
   selectedConsentType: any = '';
   importedDriverlist: any = [];
   rejectedDriverList: any = [];
@@ -109,7 +99,23 @@ export class DriverManagementComponent implements OnInit {
       this.loadDriverData();
       this.getOrganizationDetail();
       this.setConsentDropdown();
+      this.getConsentList();
     });
+    
+  }
+
+  getConsentList() {
+    this.consentSelectionList= [
+      {
+        name: this.translationData.lblAll
+      },
+      {
+        name: this.translationData.lblOptIn
+      },
+      {
+        name: this.translationData.lblOptOut
+      }
+    ];
   }
 
   getOrganizationDetail(){
@@ -371,7 +377,7 @@ export class DriverManagementComponent implements OnInit {
             break;
           }
           case "firstName":{
-            let objData: any = this.nameValidation(value, 30, 'First Name',index);
+            let objData: any = this.nameValidation(value, 120, 'First Name',index);
             fname = objData.status;
             if(!fname){
               item.returnMassage = objData.reason;
@@ -716,10 +722,17 @@ export class DriverManagementComponent implements OnInit {
           // this.updateGridData(this.initData);
         // }
         if(res.consentMsg) {
+          var msg = '';
           if(dialogConfig.data.consentType == 'H' || dialogConfig.data.consentType == 'I') {
-            var msg = res.tableData.length + " drivers were successfully Opted-In.";
+            if(res.tableData.length === 1)
+              msg = res.consentMsg;
+            else
+              msg = res.tableData.length + " drivers were successfully Opted-In.";
           } else if(dialogConfig.data.consentType == 'U') {
-            var msg = res.tableData.length + " drivers were successfully Opted-Out.";
+            if(res.tableData.length === 1)
+              msg = res.consentMsg;
+            else
+              msg = res.tableData.length + " drivers were successfully Opted-Out.";
           }
         }
         this.successMsgBlink(msg);
@@ -738,7 +751,8 @@ export class DriverManagementComponent implements OnInit {
       tableData: driverList,
       colsList: ['countryCode', 'driverNumber', 'firstName', 'lastName', 'email', 'returnMassage'],
       colsName: [this.translationData.lblDriverIDCountryCode , this.translationData.lblDriverIDNumber , this.translationData.lblFirstName , this.translationData.lblLastName, this.translationData.lblEmail , this.translationData.lblFailReason],
-      tableTitle: this.translationData.lblRejectedDriverDetails
+      tableTitle: this.translationData.lblRejectedDriverDetails,
+      translationData: this.translationData
     }
     this.driverDialogRef = this.dialog.open(CommonTableComponent, dialogConfig);
   }

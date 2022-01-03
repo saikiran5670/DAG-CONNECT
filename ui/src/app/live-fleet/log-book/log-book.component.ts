@@ -1250,7 +1250,7 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
 
   getPDFExcelHeader(){
     let col: any = [];
-    col = [`${this.translationData.lblAlertLevel || 'Alert Level'}`, `${this.translationData.lblGeneratedDate || 'Generated Date'}`, `${this.translationData.lblRegistrationNumber || 'Registration Number'}`, `${this.translationData.lblAlertType || 'Alert Type' }`, `${this.translationData.lblAlertName || 'Alert Name' }`, `${this.translationData.lblAlertCategory || 'Alert Category' }`, `${this.translationData.lblStartTime || 'Start Time' }`, `${this.translationData.lblEndTime || 'End Time' }`, `${this.translationData.lblVehicle || 'Vehicle' }`, `${this.translationData.lblVIN || 'VIN' }`, `${this.translationData.lblOccurrence || 'Occurrence' }`, `${this.translationData.lblThresholdValue || 'Threshold Value' }`];
+    col = [`${this.translationData.lblAlertLevel || 'Alert Level'}`, `${this.translationData.lblDate || 'Date'}`, `${this.translationData.lblRegistrationNumber || 'Registration Number'}`, `${this.translationData.lblAlertType || 'Alert Type' }`, `${this.translationData.lblAlertName || 'Alert Name' }`, `${this.translationData.lblAlertCategory || 'Alert Category' }`, `${this.translationData.lblTripStart || 'Trip Start' }`, `${this.translationData.lblTripEnd || 'Trip End' }`, `${this.translationData.lblVehicleName || 'Vehicle Name' }`, `${this.translationData.lblVIN || 'VIN' }`, `${this.translationData.lblOccurrence || 'Occurrence' }`, `${this.translationData.lblThresholdValue || 'Threshold Value' }`];
     return col;
   }
 
@@ -1666,6 +1666,16 @@ let prepare = []
     this.vehicleGroupListData = finalVINDataList;
     if(this.vehicleGroupListData.length > 0){
       this.getVehicleGroups();
+      alertTypeList.forEach((element, index) => {
+        if(element.key == 'enumtype_otasoftwarestatus'){
+          alertTypeList.splice(index,1);
+        }
+      });
+      categoryList.forEach((element, index) => {
+        if(element.key == 'enumcategory_ota'){
+          categoryList.splice(index,1);
+        }
+      });
        this.alertTyp = alertTypeList;
        this.alertCtgry = categoryList;
        this.alertLvl =   levelListData;
@@ -2012,7 +2022,7 @@ let prepare = []
         // for all objects that it contains
         iconBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
           // read custom data
-          content:`<table style='width: 300px; font-size:12px;'>
+          content:`<table style='width: 300px; font-size:14px; line-height: 21px; font-weight: 400;' class='font-helvetica-lt'>
             <tr>
               <td style='width: 100px;'>${this.translationData.lblVehicleName}:</td> <td><b>${elem.vehicleName}</b></td>
             </tr>

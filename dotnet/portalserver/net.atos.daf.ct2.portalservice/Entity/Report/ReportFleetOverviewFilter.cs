@@ -45,5 +45,11 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
         public int OrganizationId { get; set; }
     }
 
+    public class ReportFleetOverviewPoiFilter
+    {
+        public List<POIResponse> UserPois { get; set; }
+        public List<POIResponse> GlobalPois { get; set; }
+
+    }
 
 }

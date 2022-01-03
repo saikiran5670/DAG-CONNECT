@@ -63,7 +63,7 @@ export class ScheduleConfirmComponent implements OnInit {
   }
  
   onCancel(){
-    this.onClose(true);
+    this.onClose(false);
   }
 
   public onSchedule() {

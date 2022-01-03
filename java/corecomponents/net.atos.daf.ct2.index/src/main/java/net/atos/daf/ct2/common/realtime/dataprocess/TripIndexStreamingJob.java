@@ -95,11 +95,13 @@ public class TripIndexStreamingJob {
 			else
 				indexTripData.setVin(idxMsg.getVid());
 			
-			if (idxMsg.getEvtDateTime() != null) {
+			/*if (idxMsg.getEvtDateTime() != null) {
 				indexTripData.setEvtDateTime(TimeFormatter.getInstance().convertUTCToEpochMilli(
 						idxMsg.getEvtDateTime(), DafConstants.DTM_TS_FORMAT));
 			}else
-				indexTripData.setEvtDateTime(DafConstants.ZERO_VAL);
+				indexTripData.setEvtDateTime(DafConstants.ZERO_VAL);*/
+			
+			indexTripData.setEvtDateTime(convertDateStringToTS(idxMsg.getEvtDateTime(),  idxMsg));
 
 			if (idxMsg.getDocument() != null) {
 				if(Objects.nonNull(idxMsg.getDocument().getTripID()))
@@ -148,4 +150,17 @@ public class TripIndexStreamingJob {
 		return indexTripData;
 	}
 	
+	private static long convertDateStringToTS(String dateStr, Index idxMsg){
+		try {
+			if(Objects.nonNull(dateStr)){
+				return TimeFormatter.getInstance().convertUTCToEpochMilli(
+						dateStr, DafConstants.DTM_TS_FORMAT);
+			}else{
+				return 0;
+			}
+		} catch (Exception e) {
+			logger.error("Issue while converting Date String to epoch milli ::{}, message ::{}, error::{} ",dateStr, idxMsg, e.getMessage() );
+			return 0;
+		}
+	}
 }

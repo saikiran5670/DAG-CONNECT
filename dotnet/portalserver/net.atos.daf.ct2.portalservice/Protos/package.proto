@@ -31,14 +31,18 @@ message PackageResponse {
 message ImportPackageRequest
 {
   repeated PackageCreateRequest  Packages=1;
+  repeated PackageCreateRequest  RejectedPackages=2;
 }
 
 message ImportPackageResponce
 {
   repeated GetPackageRequest PackageList=1;
   Responsecode Responsecode=2;
-   string Message = 3;
-   Responsecode Code=4;
+  string Message = 3;
+  Responsecode Code=4;
+  repeated GetPackageRequest DuplicatePackages=5;
+  repeated GetPackageRequest RejectedPackages=6;
+
 }
 message PackageCreateRequest {   
     int32 Id=1;
@@ -109,6 +113,7 @@ message GetPackageResponce {
     enum Responsecode {
       Success = 0;
       Failed = 1;
-      Conflict = 2;
       NotFound = 3;
+      Conflict = 409;
+    
     }

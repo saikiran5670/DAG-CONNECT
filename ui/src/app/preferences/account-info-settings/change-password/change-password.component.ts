@@ -20,6 +20,9 @@ export class ChangePasswordComponent implements OnInit {
   curPwdHide: boolean = true;
   newPwdHide: boolean = true;
   confirmPwdHide: boolean = true;
+  isCurrentPwdMismatch: boolean = false;
+  isPwdInValid: boolean = false;
+  showLoadingIndicator: boolean = false;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: {
     translationData: any,
@@ -51,23 +54,33 @@ export class ChangePasswordComponent implements OnInit {
   }
 
   public onChangePassword(formValue) {
+    this.isCurrentPwdMismatch = false;
+    this.isPwdInValid = false;
     if (this.changePasswordForm.valid) {
       let objData: any = {
         emailId: this.data.accountInfo.emailId,
-        password: formValue.newPassword
+        password: formValue.newPassword,
+        oldPassword: formValue.currentPassword
       }
+      this.showLoadingIndicator = true;
       this.accountService.changeAccountPassword(objData).subscribe((data)=>{
         if(data){
           this.close(false);  
           this.mdDialogRef.close({editText : 'Password'}); 
         }
+        this.showLoadingIndicator=false;
       },(error)=> {
+        this.showLoadingIndicator=false;
         this.errorCode = error.status;
         if(error.status == 400){
+          if(error.error.indexOf("Entered password incorrect") !== -1)
+            this.isCurrentPwdMismatch = true;
+          else
+            this.isPwdInValid = true;
           this.errorMsg= "Password must not be equal to any of last 6 passwords."
         }
         else if(error.status == 403){
-          this.errorMsg= "You can change password once in every 24 hours only."
+          this.errorMsg= "Your password needs to be at least one day old before it can be changed."
         }
         else if(error.status == 404){
           this.errorMsg= "Wrong email id."

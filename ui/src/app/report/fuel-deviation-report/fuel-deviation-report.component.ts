@@ -566,18 +566,18 @@ export class FuelDeviationReportComponent implements OnInit {
     // create custom one
     var ms = new H.ui.MapSettingsControl( {
         baseLayers : [ { 
-          label:"Normal", layer:this.defaultLayers.raster.normal.map
+          label:this.translationData.lblNormal, layer:this.defaultLayers.raster.normal.map
         },{
-          label:"Satellite", layer:this.defaultLayers.raster.satellite.map
+          label:this.translationData.lblSatellite, layer:this.defaultLayers.raster.satellite.map
         }, {
-          label:"Terrain", layer:this.defaultLayers.raster.terrain.map
+          label:this.translationData.lblTerrain, layer:this.defaultLayers.raster.terrain.map
         }
         ],
       layers : [{
-            label: "Layer.Traffic", layer: this.defaultLayers.vector.normal.traffic
+            label: this.translationData.lblLayerTraffic, layer: this.defaultLayers.vector.normal.traffic
         },
         {
-            label: "Layer.Incidents", layer: this.defaultLayers.vector.normal.trafficincidents
+            label: this.translationData.lblLayerIncidents, layer: this.defaultLayers.vector.normal.trafficincidents
         }
     ]
       });
@@ -696,6 +696,7 @@ export class FuelDeviationReportComponent implements OnInit {
           }
         }
       });
+         //TODO: plz verify fleet-utilisation for below logic
       this.singleVehicle = this.wholeFuelDeviationData.vehicleDetailsWithAccountVisibiltyList.filter(i=> i.groupType == 'S');
       if(vinArray.length > 0){
         distinctVIN = vinArray.filter((value, index, self) => self.indexOf(value) === index);
@@ -1597,6 +1598,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
   //var doc = new jsPDF('p', 'mm', 'a4');
   var doc = new jsPDF('p', 'mm', 'a4');
   let pdfColumns = this.getPDFExcelHeader(); // this.getPDFHeaders()
+  let tranHeaderNamePdf = this.translationData.lblFuelDeviationDetails;
   let prepare = []
     this.initData.forEach(e=>{
       var tempObj = [];
@@ -1695,7 +1697,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
         didDrawPage: function(data) {     
             // Header
             doc.setFontSize(14);
-            var fileTitle = "Fuel Deviation Details";
+            var fileTitle = tranHeaderNamePdf;
             var img = "/assets/logo.png";
             doc.addImage(img, 'JPEG', 10, 10, 0, 0);
   
@@ -1744,21 +1746,21 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
       this.eventIconMarker.addEventListener('pointerenter', (evt)=> {
         iconInfoBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
           // read custom data
-          content:`<table style='width: 300px; font-size:12px;'>
+          content:`<table style='width: 300px;' class='font-14-px line-height-21px font-helvetica-lt'>
             <tr>
-              <td style='width: 100px;'>${this.translationData.lblDate}:</td> <td><b>${element.eventDate}</b></td>
+              <td style='width: 100px;'>${this.translationData.lblDate}:</td> <td class='font-helvetica-md'>${element.eventDate}</td>
             </tr>
             <tr>
-              <td style='width: 100px;'>${(this.vehVinRegChecker.length > 0 && this.vehVinRegChecker[0].attr == 'vin') ? (this.translationData.lblVIN ) : (this.vehVinRegChecker[0].attr == 'registrationNo') ? (this.translationData.lblRegPlateNumber ) : (this.translationData.lblVehicleName )}:</td> <td><b>${element[this.vehVinRegChecker[0].attr]}</b></td>
+              <td style='width: 100px;'>${(this.vehVinRegChecker.length > 0 && this.vehVinRegChecker[0].attr == 'vin') ? (this.translationData.lblVIN ) : (this.vehVinRegChecker[0].attr == 'registrationNo') ? (this.translationData.lblRegPlateNumber ) : (this.translationData.lblVehicleName )}:</td> <td class='font-helvetica-md'>${element[this.vehVinRegChecker[0].attr]}</td>
             </tr>
             <tr>
-              <td style='width: 100px;'>${this.translationData.lblPosition}:</td> <td><b>${element.geoLocationAddress}</b></td>
+              <td style='width: 100px;'>${this.translationData.lblPosition}:</td> <td class='font-helvetica-md'>${element.geoLocationAddress}</td>
             </tr>
             <tr>
-              <td style='width: 100px;'>${this.translationData.lblEventDescription}:</td> <td><b>${eventDescText.eventText}</b></td>
+              <td style='width: 100px;'>${this.translationData.lblEventDescription}:</td> <td class='font-helvetica-md'>${eventDescText.eventText}</td>
             </tr>
             <tr>
-              <td style='width: 100px;'>${this.translationData.lblDifference }:</td> <td><b>${element.convertedDifference}%</b></td>
+              <td style='width: 100px;'>${this.translationData.lblDifference }:</td> <td class='font-helvetica-md'>${element.convertedDifference}%</td>
             </tr>
           </table>`
         });

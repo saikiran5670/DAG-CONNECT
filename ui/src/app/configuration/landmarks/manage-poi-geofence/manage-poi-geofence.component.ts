@@ -21,6 +21,7 @@ import { ConfigService } from '@ngx-config/core';
 import { CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteData } from 'ng2-completer';
 import { HereService } from '../../../services/here.service';
 import { Util } from 'src/app/shared/util';
+import { DomSanitizer } from '@angular/platform-browser';
 
 declare var H: any;
 const createGpx = require('gps-to-gpx').default;
@@ -111,7 +112,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
   dataService: any;
   searchMarker: any = {};
   filterValue: string;
-
+  defaultLayers: any;
 
   constructor(
     private dialogService: ConfirmDialogService,
@@ -121,7 +122,8 @@ export class ManagePoiGeofenceComponent implements OnInit {
     private _snackBar: MatSnackBar,
     private _configService: ConfigService,
     private completerService: CompleterService,
-    private hereService: HereService
+    private hereService: HereService,
+    private domSanitizer: DomSanitizer
     ) {
       this.map_key = _configService.getSettings("hereMap").api_key;
       this.platform = new H.service.Platform({
@@ -178,18 +180,28 @@ export class ManagePoiGeofenceComponent implements OnInit {
   }
 
   getBreadcumPOI() {
-    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} /
-    ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} /
-    ${this.translationData.lblLandmark ? this.translationData.lblLandmark : "Landmark"} /
-    ${this.translationData.lblImportPOI ? this.translationData.lblImportPOI : "Import POI"}`;
+    let transHome = this.translationData.lblHome;
+    let transConfiguration = this.translationData.lblConfiguration;
+    let transLandmark = this.translationData.lblLandmarks;
+    let transImportPOI = this.translationData.lblImportPOI;
+
+    return `${transHome} /
+    ${transConfiguration} /
+    ${transLandmark} /
+    ${transImportPOI}`;
   }
 
 
   getBreadcumGeofence() {
-    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} /
-    ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} /
-    ${this.translationData.lblLandmark ? this.translationData.lblLandmark : "Landmark"} /
-    ${this.translationData.lblImportGeofence ? this.translationData.lblImportGeofence : "Import Geofence"}`;
+    let transHome = this.translationData.lblHome;
+    let transConfiguration = this.translationData.lblConfiguration;
+    let transLandmark = this.translationData.lblLandmarks;
+    let transImportGeofence = this.translationData.lblImportGeofence;
+
+    return `${transHome} /
+    ${transConfiguration} /
+    ${transLandmark} /
+    ${transImportGeofence}`;
   }
 
   loadPoiData() {
@@ -213,18 +225,39 @@ export class ManagePoiGeofenceComponent implements OnInit {
   }
 
   initMap(){
-    let defaultLayers = this.platform.createDefaultLayers();
+    this.defaultLayers = this.platform.createDefaultLayers();
     this.map = new H.Map(this.mapElement.nativeElement,
-      defaultLayers.vector.normal.map, {
+      this.defaultLayers.raster.normal.map, {
       center: { lat: 51.43175839453286, lng: 5.519981221425336 },
       zoom: 4,
       pixelRatio: window.devicePixelRatio || 1
     });
     window.addEventListener('resize', () => this.map.getViewPort().resize());
     var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
-    this.ui = H.ui.UI.createDefault(this.map, defaultLayers);
-  }
+    this.ui = H.ui.UI.createDefault(this.map, this.defaultLayers);
+    var group = new H.map.Group();
 
+    this.ui.removeControl("mapsettings");
+    // create custom one
+    var ms = new H.ui.MapSettingsControl({
+        baseLayers : [ {
+          label: this.translationData.lblNormal, layer: this.defaultLayers.raster.normal.map
+        },{
+          label: this.translationData.lblSatellite, layer: this.defaultLayers.raster.satellite.map
+        }, {
+          label: this.translationData.lblTerrain, layer: this.defaultLayers.raster.terrain.map
+        }
+        ],
+      layers : [{
+            label: this.translationData.lblLayerTraffic, layer: this.defaultLayers.vector.normal.traffic
+        },
+        {
+            label: this.translationData.lblLayerIncidents, layer: this.defaultLayers.vector.normal.trafficincidents
+        }
+      ]
+    });
+    this.ui.addControl("customized", ms);
+  }
 
   checkboxClicked(event: any, row: any) {
     if(event.checked){ //-- add new marker
@@ -251,16 +284,21 @@ export class ManagePoiGeofenceComponent implements OnInit {
       let marker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: this.getSVGIcon() });
       this.map.addObject(marker);
       var bubble;
+      console.log('t1',this.translationData);
+      let translatedPoiName = this.translationData.lblPOIName;
+      let translatedCategory = this.translationData.lblCategory;
+      let translatedSubCategory = this.translationData.lblSubCategory;
+      let translatedAddress = this.translationData.lblAddress;
       marker.addEventListener('pointerenter', function (evt) {
         // event target is the marker itself, group is a parent event target
         // for all objects that it contains
         bubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
           // read custom data
           content:`<div>
-            POI Name: <b>${element.name}</b><br>
-            Category: <b>${element.categoryName}</b><br>
-            Sub-Category: <b>${element.subCategoryName}</b><br>
-            Address: <b>${element.address}</b>
+            ${translatedPoiName}: <b>${element.name}</b><br>
+            ${translatedCategory}: <b>${element.categoryName}</b><br>
+            ${translatedSubCategory}: <b>${element.subCategoryName}</b><br>
+            ${translatedAddress}: <b>${element.address}</b>
           </div>`
         });
         // show info bubble
@@ -306,7 +344,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
       if(element.type == "C"){ //-- add circular geofence on map
         this.marker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: this.getSVGIcon() });
         this.map.addObject(this.marker);
-        this.createResizableCircle(element.distance, element, this.ui);
+        this.createResizableCircle(element.distance, element,this, this.ui);
       }
       else{ //-- add polygon geofence on map
         let polyPoints: any = [];
@@ -320,7 +358,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
     });
   }
 
-  createResizableCircle(_radius: any, rowData: any, ui :any) {
+  createResizableCircle(_radius: any, rowData: any, thisRef: any,ui :any) {
     var circle = new H.map.Circle(
         { lat: rowData.latitude, lng: rowData.longitude },
         _radius,
@@ -348,12 +386,15 @@ export class ManagePoiGeofenceComponent implements OnInit {
     circle.addEventListener('pointerenter', function (evt) {
       // event target is the marker itself, group is a parent event target
       // for all objects that it contains
+      let transgeofencename = thisRef.translationData.lblGeofenceName;
+      let transcategory = thisRef.translationData.lblCategory;
+      let transsubcategory = thisRef.translationData.lblSubCategory;
       bubble =  new H.ui.InfoBubble({lat:rowData.latitude,lng:rowData.longitude}, {
         // read custom data
         content:`<div>
-          Geofence Name: <b>${rowData.name}</b><br>
-          Category: <b>${rowData.categoryName}</b><br>
-          Sub-Category: <b>${rowData.subCategoryName}</b><br>
+          ${transgeofencename}: <b>${rowData.name}</b><br>
+          ${transcategory}: <b>${rowData.categoryName}</b><br>
+          ${transsubcategory}: <b>${rowData.subCategoryName}</b><br>
         </div>`
       });
       // show info bubble
@@ -410,13 +451,15 @@ export class ManagePoiGeofenceComponent implements OnInit {
       }
       // show vertice markers
       verticeGroup.setVisibility(true);
-
+      let transgeofencename = thisRef.translationData.lblGeofenceName;
+      let transcategory = thisRef.translationData.lblCategory;
+      let transsubcategory = thisRef.translationData.lblSubCategory;
       bubble =  new H.ui.InfoBubble({ lat: rowData.latitude, lng: rowData.longitude } , {
         // read custom data
         content:`<div>
-          Geofence Name: <b>${rowData.name}</b><br>
-          Category: <b>${rowData.categoryName}</b><br>
-          Sub-Category: <b>${rowData.subCategoryName}</b><br>
+        ${transgeofencename}: <b>${rowData.name}</b><br>
+        ${transcategory}: <b>${rowData.categoryName}</b><br>
+        ${transsubcategory}: <b>${rowData.subCategoryName}</b><br>
         </div>`
       });
       // show info bubble
@@ -445,7 +488,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
     let group = new H.map.Group();
     let locationObjArray= [];
     geoMarkerArray.forEach(row => {
-    
+
     if(row.type == 'C'){
       locationObjArray.push(new H.map.Marker({lat:row.latitude, lng:row.longitude}));
     } else {
@@ -467,7 +510,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
   }
 
   updatedPOITableData(tableData: any) {
-    tableData = this.getNewTagData(tableData);
+    tableData = this.getNewTagData(tableData, 'poi');
     this.poidataSource = new MatTableDataSource(tableData);
     setTimeout(() => {
       this.poidataSource.paginator = this.paginator.toArray()[0];
@@ -499,7 +542,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
   }
 
   updatedGeofenceTableData(tableData: any) {
-    tableData = this.getNewTagData(tableData);
+    tableData = this.getNewTagData(tableData, 'geofence');
     this.geofencedataSource = new MatTableDataSource(tableData);
     setTimeout(() => {
       this.geofencedataSource.paginator = this.paginator.toArray()[1];
@@ -515,14 +558,13 @@ export class ManagePoiGeofenceComponent implements OnInit {
     Util.applySearchFilter(this.geofencedataSource, this.displayedColumnsGeo ,this.filterValue );
   }
   compare(a: Number | String, b: Number | String, isAsc: boolean, columnName: any) {
-    if(columnName == 'name' || columnName == 'categoryName' || columnName== 'subCategoryName')
-    if(!(a instanceof Number)) a = a.toString().toLowerCase();
-    if(!(b instanceof Number)) b = b.toString().toLowerCase();
+    if(!(a instanceof Number)) a = a.replace(/\s/g, '').replace(/[^\w\s]/gi, 'z').toUpperCase();
+    if(!(b instanceof Number)) b = b.replace(/\s/g, '').replace(/[^\w\s]/gi, 'z').toUpperCase();
 
   return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
 }
 
-  getNewTagData(data: any) {
+  getNewTagData(data: any, type?: any) {
     let currentDate = new Date().getTime();
     if (data.length > 0) {
       data.forEach(row => {
@@ -534,6 +576,19 @@ export class ManagePoiGeofenceComponent implements OnInit {
         else {
           row.newTag = false;
         }
+
+        //------ Image icon ----------//
+        if(type && type == 'poi'){ //-- only for POI
+          if(row.icon && row.icon != ''){
+            let base64String = row.icon;
+            row.imageUrl = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + base64String);
+          }else{
+            let defaultIcon: any = 'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAACzUlEQVRYR6XXSeiWVRQG8J/QAEktwjAJbBdlk02LWphB5NQiISQ3STTSYK6URIokilqVE6lF1CYJwRbZhNCwyEXzoEU7BbEoXCQFDVA88f3h9fPe977f37N8z3nOed57z3RnmEzmYCVuxuU4bwT/Bd9iH17H0aFuZww0nIWncBfOaGD+wivYgF9b/ocQuBG7cH7L2Zj+J9yBj/pwLQK3YjfOnDD4lPmfuB1v1fB9BK7EJzhrmsGnYH/gBnxd8lMjcBq+GCVaLf5x/DBSXoyze4gmQa/GP+M2NQL3YkfF4SGsxR78PbI5HcvxHC6s4O7DzqEEvsOlBUef4xYcqwQ5F+/jmoL+AC4bQiDH+X3Bwe+Yh8ONnJiLg5hZsLukc23/q0tXcDdeKoA34dGBCfkCVhds78HL3e8lAk/jsQJ4Cd4dSGAx3inYPoP1LQKb8XABPL9WSgXblPBXhe9b8EiLwLOjLB/H34QPB57AQnxQsE2VrGsRuB8vFsAb8cRAAk/i8YLtA9jeIpCj/rIA/hkX4bcGiXPwI2YX7K4av5pSEubbEWT0jsubWNFpQOP6NKQ3cFsBmxF9Af5tnUD0z/eUXKbbg6Na7/pKj9iGTM+SpDTXjCtqrTgdK/27JvmLTzs2WU6uq/SVKR+xSYc9QfqmYWp+0cCka5m9h/SGk6SPwILWMtGK2tHnWj6elEDs30Y64KlIOuLSmoPWRpR7y16Q/WA6kvmfPaCaTy0CCdpXES1SxczvgoYQyKaT7M2YnUQytlNN2ZyqMoRAwMmDvY0y6wZJmS6rTMQTyAwlEFDmQ+bEEEm/T99vyiQEsuF8hmxMfZJF9Vpkg2rKJATi7Ars71nVs4Jfj2+akUcGkxII7E68WgmwCq8NDR676RAIbutoIHVjZRA9NEnwUyGQsZv+ni0pku0nc2PqnTCYx3RPIAHyBshzPJLneu2t0EvmP631ciExHHR4AAAAAElFTkSuQmCC';
+            row.imageUrl = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + defaultIcon);
+          }
+        }
+        //----------------------------//
+
       });
       let newTrueData = data.filter(item => item.newTag == true);
       newTrueData.sort((userobj1, userobj2) => parseInt(userobj2.createdAt) - parseInt(userobj1.createdAt));
@@ -1099,7 +1154,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
   // }
   exportAsExcelFile(){
     //const title = 'POIData';
-    const   poiData = ['Name', 'Latitude', 'Longitude', 'CategoryName', 'SubCategoryName', 'Address','Zipcode', 'City', 'Country'];
+    const   poiData = [`${this.translationData.lblName}`, `${this.translationData.lblLatitude}`, `${this.translationData.lblLongitude}`, `${this.translationData.lblCategoryName}`, `${this.translationData.lblSubCategoryName}`, `${this.translationData.lblAddress}`,`${this.translationData.lblZipCode}`, `${this.translationData.lblCity}`, `${this.translationData.lblCountry}`];
     let workbook = new Workbook();
     let worksheet = workbook.addWorksheet('PoiData');
     //Add Row and formatting
@@ -1306,7 +1361,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
       this.importTranslationData.downloadTemplateInstruction = this.translationData.lbldownloadTemplateInstruction || 'Each line is required to have at least X column: POI Name, Latitude, Longitude and Category separated by either a column or semicolon. You can also optionally specify a description and a XXXX for each POI.';
       this.importTranslationData.selectUpdatedFile = this.translationData.lblselectUpdatedFile || 'Upload Updated Excel File';
       this.importTranslationData.browse = this.translationData.lblbrowse || 'Browse';
-      this.importTranslationData.uploadButtonText = this.translationData.lbluploadPackage || 'Upload';
+      this.importTranslationData.uploadButtonText = this.translationData.lblupload || 'Upload';
       this.importTranslationData.selectFile = this.translationData.lblPleaseSelectAFile || 'Please select a file';
       this.importTranslationData.totalSizeMustNotExceed = this.translationData.lblTotalSizeMustNotExceed || 'The total size must not exceed';
       this.importTranslationData.emptyFile = this.translationData.lblEmptyFile || 'Empty File';
@@ -1339,7 +1394,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
       this.importTranslationData.downloadTemplateInstruction = this.translationData.lbldownloadTemplateInstruction || 'Please fill required details and upload updated file again.';
       this.importTranslationData.selectUpdatedFile = this.translationData.lblselectUpdatedGeofenceFile || 'Upload Updated .GPX File';
       this.importTranslationData.browse = this.translationData.lblbrowse || 'Browse';
-      this.importTranslationData.uploadButtonText = this.translationData.lbluploadPackage || 'Upload';
+      this.importTranslationData.uploadButtonText = this.translationData.lblupload || 'Upload';
       this.importTranslationData.selectFile = this.translationData.lblPleaseSelectAFile || 'Please select a file';
       this.importTranslationData.totalSizeMustNotExceed = this.translationData.lblTotalSizeMustNotExceed || 'The total size must not exceed';
       this.importTranslationData.emptyFile = this.translationData.lblEmptyFile || 'Empty File';

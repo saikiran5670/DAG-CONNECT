@@ -76,12 +76,14 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   }
 
   getBreadcum(type: any){
+    var translatedpagename = (type == 'view') ? (this.translationData.lblViewFeatureRelationship ? this.translationData.lblViewFeatureRelationshipdetails : 'View Feature Relationship Details') :
+    (type == 'edit') ? (this.translationData.lblEditFeatureRelationship ? this.translationData.lblEditFeatureRelationshipdetails : 'Edit Feature Relationship Details') :
+    (type == 'create' ? this.translationData.lblNewFeatureRelationship : 'Add New Feature Relationship');
+
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } /
     ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} /
     ${this.translationData.lblFeatureManagement ? this.translationData.lblFeatureManagement : "Feature Management"} /
-    ${(type == 'view') ? (this.translationData.lblViewFeatureRelationship ? this.translationData.lblViewFeatureRelationship : 'View Feature Relationship') :
-    (type == 'edit') ? (this.translationData.lblEditFeatureRelationship ? this.translationData.lblEditFeatureRelationship : 'Edit Feature Relationship') :
-    (this.translationData.lblNewFeatureRelationship ? this.translationData.lblNewFeatureRelationship : 'New Feature Relationship')}`;
+    ${translatedpagename}`;
   }
 
   loadGridData(tableData: any){
@@ -286,13 +288,13 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   getUserCreatedMessage() {
     let attrName: any = `${this.featureFormGroup.controls.dataAttributeSetName.value}`;
     if (this.actionType == 'create') {
-      if (this.translationData.lblUserAccountCreatedSuccessfully)
-        return this.translationData.lblUserAccountCreatedSuccessfully.replace('$', attrName);
+      if (this.translationData.lblFeatureCreatedSuccessfully)
+        return this.translationData.lblFeatureCreatedSuccessfully.replace('$', attrName);
       else
         return ("New Feature '$' Created Successfully").replace('$', attrName);
     } else {
-      if (this.translationData.lblUserAccountUpdatedSuccessfully)
-        return this.translationData.lblUserAccountUpdatedSuccessfully.replace('$', attrName);
+      if (this.translationData.lblFeatureUpdatedSuccessfully)
+        return this.translationData.lblFeatureUpdatedSuccessfully.replace('$', attrName);
       else
         return ("Feature '$' Updated Successfully").replace('$', attrName);
     }
@@ -410,5 +412,8 @@ export class CreateEditViewFeaturesComponent implements OnInit {
     }
   }
 
+  removeDuplicateErronType(evt) {
+    this.duplicateEmailMsg = false;
+  }
 
 }

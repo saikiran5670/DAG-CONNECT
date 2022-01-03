@@ -451,6 +451,18 @@ export class ReportService {
       .pipe(catchError(this.handleError));
   }
 
+  getFilterPOIDetails(): Observable<any[]>{
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .get<any[]>(
+        `${this.reportServiceUrl}/fleetoverview/getfilterpoidetails`, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
   getBenchmarkDataByTimePeriod(data: any): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {
@@ -487,7 +499,7 @@ export class ReportService {
       .pipe(catchError(this.handleError));
   }
 
-  getvehiclehealthstatus(vin, languagecode, tripid?): Observable<any[]> {
+  getvehiclehealthstatus(vin, languagecode, warningtype:any): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
@@ -498,7 +510,7 @@ export class ReportService {
     //    .pipe(catchError(this.handleError));
    // } else {
       return this.httpClient
-        .get<any[]>(`${this.reportServiceUrl}/fleetoverview/getvehiclehealthstatus?VIN=${vin}&LngCode=${languagecode}`, headers)
+        .get<any[]>(`${this.reportServiceUrl}/fleetoverview/getvehiclehealthstatus?VIN=${vin}&LngCode=${languagecode}&WarningType=${warningtype}`, headers)
         .pipe(catchError(this.handleError));
     //}
   }

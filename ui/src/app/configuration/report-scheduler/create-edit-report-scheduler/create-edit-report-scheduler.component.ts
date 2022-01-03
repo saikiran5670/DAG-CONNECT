@@ -37,6 +37,8 @@ export class CreateEditReportSchedulerComponent implements OnInit {
   RecipientList: any= [];
   selectedIndex: number = 0;
   tabVisibilityStatus: boolean = true;
+  tripReportFlag: boolean = false;
+  showError: boolean = false;
   selectionTab: string = 'D';
   startTimeDisplay: any = '00:00:00';
   endTimeDisplay: any = '23:59:59';
@@ -267,7 +269,7 @@ export class CreateEditReportSchedulerComponent implements OnInit {
   getBreadcum() {
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / 
     ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} / 
-    ${this.translationData.lblPathReportScheduler ? this.translationData.lblPathReportScheduler : "ReportScheduler"} / 
+    ${this.translationData.lblReportScheduler || 'Report Scheduler' ? this.translationData.lblReportScheduler || 'Report Scheduler' : "ReportScheduler"} / 
     ${(this.actionType == 'edit') ? (this.translationData.lblEditScheduleDetails ? this.translationData.lblEditScheduleDetails : 'Edit Schedule Details') : (this.actionType == 'view') ? (this.translationData.lblViewScheduleDetails ? this.translationData.lblViewScheduleDetails : 'View Schedule Details') : (this.translationData.lblCreateScheduleDetails ? this.translationData.lblScheduleNewReport : 'Schedule New Report')}`;
   }
 
@@ -291,10 +293,13 @@ export class CreateEditReportSchedulerComponent implements OnInit {
       else
         return ("New Report Schedule for '$' Created Successfully").replace('$', reportName);
     }else if(this.actionType == 'edit') {
-      if (this.translationData.lblScheduleUpdatedSuccessfully)
-        return this.translationData.lblScheduleUpdatedSuccessfully.replace('$', reportName);
+      if (this.translationData.lblUpdatedSuccessfully)
+        { 
+          this.translationData.lblUpdatedSuccessfully = "'$' Updated Successfully";
+        return ("'$' Updated Successfully").replace('$', reportName);
+        }
       else
-        return ("Report Schedule for '$' Updated Successfully").replace('$', reportName);
+       return ("'$' Updated Successfully").replace('$', reportName);
     }
     else{
       return '';
@@ -488,6 +493,13 @@ export class CreateEditReportSchedulerComponent implements OnInit {
   }
 
   onChangeReportType(value){
+    let data = this.ReportTypeList.filter(item => item.id == value);
+    if(data[0].reportName == 'Trip Report' && data[0].isVehicle){
+    this.tripReportFlag = true; }
+    else{
+      this.tripReportFlag = false;
+      this.showError = false;
+    }
     this.showDriverList = this.ReportTypeList.filter(item => item.id == value)[0].isDriver == 'Y' ? true : false;
   }
 
@@ -629,9 +641,12 @@ export class CreateEditReportSchedulerComponent implements OnInit {
         }
         scheduledReportRecipient.push(scheduledReportRecipientObj);
       });
-     
-
-      let scheduledReportVehicleRef = [
+      let scheduledReportVehicleRef;
+      if(this.reportSchedulerForm.controls.vehicle.value == 0 && this.tripReportFlag){
+          this.showError = true;
+      }
+      else{
+       scheduledReportVehicleRef = [
         {
           "scheduleReportId": 0,
           "vehicleGroupId": this.reportSchedulerForm.controls.vehicleGroup.value,
@@ -643,6 +658,7 @@ export class CreateEditReportSchedulerComponent implements OnInit {
           "modifiedBy": 0
         }
       ]
+    }
 
       let scheduledReportDriverRef = [
         {

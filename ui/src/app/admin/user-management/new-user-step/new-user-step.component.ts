@@ -1,5 +1,5 @@
-import { Component, EventEmitter, Input, OnInit, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Component, EventEmitter, Input, OnInit,ViewEncapsulation, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
+  import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ChangeDetectorRef } from '@angular/core';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
@@ -18,7 +18,8 @@ import { ReplaySubject } from 'rxjs';
 @Component({
   selector: 'app-new-user-step',
   templateUrl: './new-user-step.component.html',
-  styleUrls: ['./new-user-step.component.less']
+  styleUrls: ['./new-user-step.component.less'],
+  encapsulation:ViewEncapsulation.None
 })
 
 export class NewUserStepComponent implements OnInit {
@@ -74,6 +75,7 @@ export class NewUserStepComponent implements OnInit {
   contextOrgName: any;
   adminAccessType: any = {};
   showLoadingIndicator: boolean = false;
+  selectedFileName:string;
 
   myFilter = (d: Date | null): boolean => {
     const date = (d || new Date());
@@ -133,9 +135,9 @@ export class NewUserStepComponent implements OnInit {
   }
 
   compare(a: any, b: any, isAsc: boolean, columnName:any) {
-    if(columnName === 'roleName'){
-    if(!(a instanceof Number)) a = a.toString().toUpperCase();
-    if(!(b instanceof Number)) b = b.toString().toUpperCase();
+    if(columnName === 'roleName' || 'accountCount'){
+      if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toUpperCase();
+      if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toUpperCase();
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
     }
   }
@@ -243,7 +245,7 @@ export class NewUserStepComponent implements OnInit {
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } /
     ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} /
     ${this.translationData.lblAccountManagement ? this.translationData.lblAccountManagement : "Account Management"} /
-    ${(this.fromCreate == 'Create') ? (this.translationData.lblCreate ? 'Create '+ this.translationData.lblNewUser : 'New Account') :'Create New Account'}`;
+    ${(this.fromCreate == 'Create') ? (this.translationData.lblCreate ? this.translationData.lblCreateNewUser||'Create New Account' : 'Create New Account') :'Create New Account'}`;
     // ${this.translationData.lblAccountDetails ? this.translationData.lblAccountDetails : 'Account Details'}`;
   }
 
@@ -704,6 +706,7 @@ export class NewUserStepComponent implements OnInit {
       return false;
     this.isAccountPictureSelected = true;
     this.imageChangedEvent = event;
+    this.selectedFileName = event.target.files[0].name;
   }
 
   onSelectPictureCancel(){

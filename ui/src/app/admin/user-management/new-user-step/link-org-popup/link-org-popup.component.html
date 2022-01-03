@@ -4,7 +4,7 @@
         <div fxLayout="row" fxLayoutAlign="start space-around"
           style='padding: 10px 20px !important; background: #d4d4d4;'>
           <div class='half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-            <span class='custom-font'>{{ data.title}}</span>
+            <span class='font-16-px line-height-24px font-helvetica-md'>{{ data.title}}</span>
           </div>
           <div class='half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center flex-end">
             <mat-icon (click)='cancel()' style='cursor: pointer;'>close</mat-icon>
@@ -12,12 +12,12 @@
         </div>
         <div fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="30px" style="padding: 20px 50px 0px;">
           <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-            <span class='custom-font' style='font-size: 14px;'>{{ emailMsg }}</span>
+            <span class='font-14-px line-height-21px font-helvetica-md'>{{ emailMsg }}</span>
           </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="30px" style="padding: 0px 50px 10px;">
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-              <span class='custom-font' style='font-size: 14px;'>{{ data.alertMessage }}</span>
+              <span class='font-14-px line-height-21px font-helvetica-md'>{{ data.alertMessage }}</span>
             </div>
           </div>
       </mat-card-content>

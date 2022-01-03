@@ -15,7 +15,7 @@
     <form [formGroup]="importPackageFormGroup">
         <div class='margin-bottom-sm' fxLayout="row" fxLayoutAlign="space-between">
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ importTranslationData.importTitle}}</span>
+                <span class='font-18-px line-height-27px font-helvetica-md'>{{ importTranslationData.importTitle }}</span>
             </div>
            
       
@@ -24,18 +24,18 @@
             <div style='width: 60%' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                 <span style='display: flex; align-items: center;'>
                     <img matTooltip='Download' [src]='fileIcon' style="width: 30px; height: 30px;" />&nbsp;
-                    <a  (click)='downloadTemplate()' class='cursor-pointer' style='cursor: pointer; font: 1 16px/32px Roboto, "Helvetica Neue", sans-serif; text-decoration-line: underline;'>
-                        {{ importTranslationData.downloadTemplate}}
+                    <a class='font-16-px line-height-24px cursor-pointer' (click)='downloadTemplate()' style='cursor: pointer; text-decoration-line: underline;'>
+                        {{ importTranslationData.downloadTemplate }}
                     </a>
                 </span>
-                <span>{{ importTranslationData.downloadTemplateInstruction}}</span>
+                <span>{{ importTranslationData.downloadTemplateInstruction }}</span>
             </div>
             <div style='width: 90%; background: #ecf7fe; border-radius: 5px;' fxLayout="column" fxLayoutAlign="end">
                 <div style='padding: 30px;' fxLayout="row" fxLayoutGap="25px" fxLayoutAlign="start">
                     <div class='full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                         <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start">
                             <div class='areaWidth full-width myform-wrappe uploadArea' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                                <mat-label>{{importTranslationData.selectUpdatedFile}} <span class='mandatoryColor'>*</span></mat-label>
+                                <mat-label class='font-16-px line-height-24px'>{{ importTranslationData.selectUpdatedFile }} <span class='mandatoryColor'>*</span></mat-label>
                                 <mat-form-field appearance="outline">
                                     <ngx-mat-file-input #removableInput (change)="addfile($event)" [accept]="fileExtension" formControlName="uploadFile" placeholder="Upload File" ></ngx-mat-file-input>
                                     <button mat-flat-button color="primary" matSuffix>{{ importTranslationData.browse }}</button>
@@ -44,8 +44,8 @@
                                     {{ importTranslationData.selectFile }}
                                 </mat-error>
                                 <mat-error *ngIf="importPackageFormGroup.get('uploadFile').hasError('maxContentSize')">
-                                    {{importTranslationData.totalSizeMustNotExceed  }} {{importPackageFormGroup.get('uploadFile')?.getError('maxContentSize').maxSize | byteFormat}} ({{importPackageFormGroup.get('uploadFile')?.getError('maxContentSize').actualSize
-                                    | byteFormat}}).
+                                    {{ importTranslationData.totalSizeMustNotExceed }} {{ importPackageFormGroup.get('uploadFile')?.getError('maxContentSize').maxSize | byteFormat }} ({{ importPackageFormGroup.get('uploadFile')?.getError('maxContentSize').actualSize
+                                    | byteFormat }}).
                                 </mat-error> 
                                <mat-error *ngIf="excelEmptyMsg">
                                     {{ importTranslationData.emptyFile  }}
@@ -73,7 +73,7 @@
   
     <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
         <div style='width:95%;' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ importTranslationData.importedFileDetails }} ( {{filelist.length}} )</span>
+            <span class='font-16-px line-height-24px font-helvetica-md'>{{ importTranslationData.importedFileDetails }} ({{ filelist.length }})</span>
         </div>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
             <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>

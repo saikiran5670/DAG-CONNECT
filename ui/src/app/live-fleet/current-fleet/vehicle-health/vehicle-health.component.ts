@@ -107,6 +107,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
   obs: Observable<any>;
   healthDdataSource: MatTableDataSource<any>;
   map_key: any = '';
+  getvehiclehealthstatusservicecall;
   @Output() backToPage = new EventEmitter<object>();
 
 
@@ -127,11 +128,12 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     // console.log(this.healthData);
+    let warningType:any;
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
-    this.getWarningData();
+    this.getWarningData(warningType='C');
     this.vehicleHealthForm = this._formBuilder.group({
       warningType: ['AllWarnings', [Validators.required]],
       startDate: ['', []],
@@ -695,18 +697,31 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
     this.markerArray = [];
     if (event == 0) {
       this.isCurrent = true;
+      this.getWarningData('C');
     } else {
       this.isCurrent = false;
+      this.getWarningData('H');
     }
     this.onSearch();
   }
   
-  getWarningData() {
+  getWarningData(warningdata) {
+    if(this.getvehiclehealthstatusservicecall) {
+      this.getvehiclehealthstatusservicecall.unsubscribe();
+    }
     this.showLoadingIndicator=true;
-    this.reportService.getvehiclehealthstatus(this.healthData.vin, this.localStLanguage.code).subscribe((res) => {
-      this.currentHealthData = this.processDataForActivatedAndDeactivatedTime(res);
-      this.historyHealthData = res;
+    this.getvehiclehealthstatusservicecall = this.reportService.getvehiclehealthstatus(this.healthData.vin, this.localStLanguage.code, warningdata).subscribe((res) => {
+      if(warningdata=='C') {
+        this.currentHealthData = res;
+        this.applyDatatoCardPaginator(this.currentHealthData);
+      } else {
+        this.historyHealthData = res;
+      }
+      // this.currentHealthData = this.processDataForActivatedAndDeactivatedTime(res);
+      
       this.onSearch();
+      this.showLoadingIndicator=false;
+    }, (error) => {
       this.showLoadingIndicator=false;
     });
   }
@@ -853,6 +868,11 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
       // let _driverName = elem.driverName ? elem.driverName : elem.driver1Id;
       // let _vehicleName = elem.vid ? elem.vid : elem.vin;
       let iconBubble;
+      let transwarningname = this.translationData.lblWarningName;
+      let transactivatedtime = this.translationData.lblActivatedTime;
+      let transdeactivatedtime = this.translationData.lblDeactivatedTime;
+      let transvehiclename = this.translationData.lblVehicleName;
+      let transposition = this.translationData.lblPosition;
       vehicleIconMarker.addEventListener('pointerenter', function (evt) {
         // event target is the marker itself, group is a parent event target
         // for all objects that it contains
@@ -860,19 +880,19 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
           // read custom data
           content:`<table style='width: 300px; font-size:12px;'>
             <tr>
-              <td style='width: 100px;'>Warning Name: </td> <td><b>${elem.warningName}</b></td>
+              <td style='width: 100px;'>${transwarningname}: </td> <td><b>${elem.warningName}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>Activated Time: </td> <td><b>${activatedTime}</b></td>
+              <td style='width: 100px;'>${transactivatedtime}: </td> <td><b>${activatedTime}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>Deactivated Time: </td> <td><b>${deactivatedTime}</b></td>
+              <td style='width: 100px;'>${transdeactivatedtime}: </td> <td><b>${deactivatedTime}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>Vehicle Name: </td> <td><b>${elem.vehicleName} km</b></td>
+              <td style='width: 100px;'>${transvehiclename}: </td> <td><b>${elem.vehicleName} km</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>Position: </td> <td><b>${elem.warningAddress}</b></td>
+              <td style='width: 100px;'>${transposition}: </td> <td><b>${elem.warningAddress}</b></td>
             </tr>
           </table>`
         });

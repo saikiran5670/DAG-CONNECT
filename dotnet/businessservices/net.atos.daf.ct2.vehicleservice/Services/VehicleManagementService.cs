@@ -83,7 +83,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetVehicleBySubscriptionId)}: With Error:-", ex);
                 throw;
             }
         }
@@ -113,10 +113,10 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Create)}: With Error:-", ex);
                 return await Task.FromResult(new VehicleCreateResponce
                 {
-                    Message = "Exception :-" + ex.Message,
+                    Message = VehicleConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed,
                     Vehicle = null
                 });
@@ -175,10 +175,10 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Update)}: With Error:-", ex);
                 return await Task.FromResult(new VehicleResponce
                 {
-                    Message = "Vehicle Updation Failed due to - " + ex.Message,
+                    Message = VehicleConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed,
                     Vehicle = null
                 });
@@ -220,11 +220,11 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Get)}: With Error:-", ex);
                 return await Task.FromResult(new VehicleListResponce
                 {
                     Code = Responcecode.Failed,
-                    Message = "Get failed due to with reason : " + ex.Message
+                    Message = VehicleConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -242,11 +242,11 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetVehicleAssociatedGroups)}: With Error:-", ex);
                 return await Task.FromResult(new GetVehicleAssociatedGroupResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Get failed due to with reason : " + ex.Message
+                    Message = VehicleConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -280,10 +280,10 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(UpdateStatus)}: With Error:-", ex);
                 return await Task.FromResult(new VehicleOptInOptOutResponce
                 {
-                    Message = "Exception " + ex.Message,
+                    Message = VehicleConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }
@@ -342,10 +342,10 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(CreateGroup)}: With Error:-", ex);
                 return await Task.FromResult(new VehicleGroupResponce
                 {
-                    Message = "Exception :-" + ex.Message,
+                    Message = VehicleConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }
@@ -406,10 +406,10 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(UpdateGroup)}: With Error:-", ex);
                 return await Task.FromResult(new VehicleGroupResponce
                 {
-                    Message = "vehicle Group Update Failed :-" + ex.Message,
+                    Message = VehicleConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }
@@ -443,10 +443,10 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(CanDeleteGroup)}: With Error:-", ex);
                 return await Task.FromResult(new VehicleGroupDeleteResponce
                 {
-                    Message = "Exception :-" + ex.Message,
+                    Message = VehicleConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed,
                     Result = false
                 });
@@ -482,10 +482,10 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(DeleteGroup)}: With Error:-", ex);
                 return await Task.FromResult(new VehicleGroupDeleteModifiedResponce
                 {
-                    Message = "Exception :-" + ex.Message,
+                    Message = VehicleConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }
@@ -588,10 +588,10 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetGroupDetails)}: With Error:-", ex);
                 return await Task.FromResult(new VehicleGroupRefResponce
                 {
-                    Message = "Exception " + ex.Message,
+                    Message = VehicleConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }
@@ -680,11 +680,11 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetVehiclesByVehicleGroup)}: With Error:-", ex);
 
                 return await Task.FromResult(new VehicleGroupRefResponce
                 {
-                    Message = "Exception " + ex.Message,
+                    Message = VehicleConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }
@@ -713,11 +713,11 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetOrganizationVehicleGroupdetails)}: With Error:-", ex);
 
                 return await Task.FromResult(new OrgVehicleGroupListResponse
                 {
-                    Message = "Exception " + ex.Message,
+                    Message = VehicleConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }
@@ -740,11 +740,11 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetVehicleGroupsForOrgRelationshipMapping)}: With Error:-", ex);
 
                 return await Task.FromResult(new OrgVehicleGroupListResponse
                 {
-                    Message = "Exception " + ex.Message,
+                    Message = VehicleConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }
@@ -774,11 +774,11 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetVehicleGroup)}: With Error:-", ex);
 
                 return await Task.FromResult(new VehicleGroupDetailsResponse
                 {
-                    Message = "Exception " + ex.Message,
+                    Message = VehicleConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }
@@ -925,11 +925,11 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetVehiclesByAccountGroup)}: With Error:-", ex);
 
                 return await Task.FromResult(new VehicleGroupRefResponce
                 {
-                    Message = "Exception " + ex.ToString(),
+                    Message = VehicleConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }
@@ -962,10 +962,10 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(SetOTAStatus)}: With Error:-", ex);
                 return await Task.FromResult(new VehicleGroupDeleteResponce
                 {
-                    Message = "Exception :-" + ex.Message,
+                    Message = VehicleConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }
@@ -997,10 +997,10 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Terminate)}: With Error:-", ex);
                 return await Task.FromResult(new VehicleGroupDeleteResponce
                 {
-                    Message = "Exception :-" + ex.Message,
+                    Message = VehicleConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }
@@ -1033,10 +1033,10 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(SetOptInStatus)}: With Error:-", ex);
                 return await Task.FromResult(new VehicleGroupDeleteResponce
                 {
-                    Message = "Exception :-" + ex.Message,
+                    Message = VehicleConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }
@@ -1058,11 +1058,11 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetVehicle)}: With Error:-", ex);
                 return await Task.FromResult(new VehicleDetailsResponce
                 {
                     Code = Responcecode.Failed,
-                    Message = "Get failed due to with reason : " + ex.Message
+                    Message = VehicleConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -1129,11 +1129,11 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetVehicleGroupWithVehCount)}: With Error:-", ex);
                 return await Task.FromResult(new VehicleGroupLandingResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Get failed due to with reason : " + ex.Message
+                    Message = VehicleConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -1157,11 +1157,11 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetDynamicAllVehicle)}: With Error:-", ex);
                 return await Task.FromResult(new VehicleListResponce
                 {
                     Code = Responcecode.Failed,
-                    Message = "Get failed due to with reason : " + ex.Message
+                    Message = VehicleConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -1185,11 +1185,11 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetDynamicVisibleVehicle)}: With Error:-", ex);
                 return await Task.FromResult(new VehicleListResponce
                 {
                     Code = Responcecode.Failed,
-                    Message = "Get failed due to with reason : " + ex.Message
+                    Message = VehicleConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -1214,11 +1214,11 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetDynamicOwnedVehicle)}: With Error:-", ex);
                 return await Task.FromResult(new VehicleListResponce
                 {
                     Code = Responcecode.Failed,
-                    Message = "Get failed due to with reason : " + ex.Message
+                    Message = VehicleConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -1248,7 +1248,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 return await Task.FromResult(new VehiclesResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = $"{nameof(GetRelationshipVehicles)}: {VehcileConstants.INTERNAL_SERVER_MSG}."
+                    Message = $"{nameof(GetRelationshipVehicles)}: {VehicleConstants.INTERNAL_SERVER_MSG}."
                 });
             }
 
@@ -1271,11 +1271,11 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetVehicleGroupbyAccountId)}: With Error:-", ex);
                 return await Task.FromResult(new VehicleGroupResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "GetVehicleGroupbyAccountId fail due to with reason : " + ex.Message
+                    Message = VehicleConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -1311,10 +1311,10 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(UpdateVehicleConnection)}: With Error:-", ex);
                 return await Task.FromResult(new VehicleConnectResponse
                 {
-                    Message = "Exception :-" + ex.Message,
+                    Message = VehicleConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }
@@ -1335,10 +1335,10 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetVehicleAssociatedGroupCount)}: With Error:-", ex);
                 return await Task.FromResult(new VehicleCountFilterResponse
                 {
-                    Message = "Exception :-" + ex.Message,
+                    Message = VehicleConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }

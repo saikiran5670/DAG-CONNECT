@@ -154,7 +154,7 @@
             <mat-form-field appearance="outline" style='width: 80%'>
                 <input [readonly]='!editFlag' matInput type="text"
                     placeholder="{{ translationData.lblSetTarget }}" (keypress)="keyPressNumbers($event)" formControlName="mileageTarget">
-                <span matSuffix>{{ prefUnitFormat == 'dunit_Metric' ? 'km' : 'mi' }}</span>
+                <span matSuffix>{{ prefUnitFormat == 'dunit_Metric' ? 'lblkm' : 'lblmi' }}</span>
             </mat-form-field>
             <mat-error *ngIf="fleetUtilForm.get('mileageTarget').hasError('cannotExceedMaxValue')">
                 {{ translationData.lblMileageTargetvaluecannotbegreaterthan60 }} {{ (prefUnitFormat == 'dunit_Metric') ? '1000 km' : '621.371 mile' }}
@@ -266,7 +266,7 @@
                 [checked]='selectionForDetailsColumns.hasValue() && isAllSelectedForDetailsColumns()'
                 [indeterminate]='selectionForDetailsColumns.hasValue() && !isAllSelectedForDetailsColumns()'
                 [aria-label]='checkboxLabelForDetailsColumns()' [disabled]='!editFlag'><span class='headerFont'>{{
-                    translationData.lblDetails }} <span>({{ translationData.lblTablecolumnviewsettings }})</span></span>
+                    translationData.lblDetails }} <span class='font-14-px line-height-21px'>({{ translationData.lblTablecolumnviewsettings }})</span></span>
             </mat-checkbox>
         </div>
     </div>

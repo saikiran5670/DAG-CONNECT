@@ -82,10 +82,10 @@ namespace net.atos.daf.ct2.notificationservice.services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetAlertMessageStream)}: With Error:-", ex);
                 await Task.FromResult(new AlertMessageData
                 {
-                    Message = "Exception :-" + ex.Message,
+                    Message = NotificationConstants.INTERNAL_SERVER_MSG,
                     Code = ResponseCode.InternalServerError
                 });
             }
@@ -110,11 +110,11 @@ namespace net.atos.daf.ct2.notificationservice.services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetEligibleAccountForAlert)}: With Error:-", ex);
                 return await Task.FromResult(new AlertVehicleDetails
                 {
                     Code = ResponseCode.Failed,
-                    Message = "Get alert vehicle fail : " + ex.Message
+                    Message = NotificationConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -125,8 +125,9 @@ namespace net.atos.daf.ct2.notificationservice.services
             {
                 var response = new AssociatedVehicleResponse();
                 var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Get("logged_in_orgid").Value);
+                List<string> featureEnum = new List<string>();
                 List<visibility.entity.VehicleDetailsAccountVisibilityForAlert> vehicleDetailsAccountVisibilty = new List<visibility.entity.VehicleDetailsAccountVisibilityForAlert>();
-                if (request.FeatureIds != null)
+                if (request.FeatureIds != null && request.FeatureIds.Count() > 0)
                 {
                     //foreach (int featureId in request.FeatureIds)
                     //{
@@ -137,10 +138,9 @@ namespace net.atos.daf.ct2.notificationservice.services
                     //remove duplicate vins by key as vin
                     vehicleDetailsAccountVisibilty = vehicleDetailsAccountVisibilty.GroupBy(c => c.Vin, (key, c) => c.FirstOrDefault()).ToList();
                     //}
+
+                    featureEnum = await _notificationIdentifierManager.GetFeatureEnumForAlert(request.FeatureIds.ToList());
                 }
-
-                List<string> featureEnum = await _notificationIdentifierManager.GetFeatureEnumForAlert(request.FeatureIds.ToList());
-
                 if (featureEnum.Any())
                 {
                     var res = JsonConvert.SerializeObject(featureEnum);
@@ -161,12 +161,51 @@ namespace net.atos.daf.ct2.notificationservice.services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetVehicleByAccountVisibility)}: With Error:-", ex);
                 return await Task.FromResult(new AssociatedVehicleResponse
                 {
                     Code = ResponseCode.Failed
                 });
             }
+        }
+
+        public override async Task<AccountSignalRClientMapperResponse> GetVehicleAccountVisibilityByVIN(AccountSignalRClientMapperReq request, ServerCallContext context)
+        {
+            try
+            {
+                var response = new AccountSignalRClientMapperResponse { Code = ResponseCode.Success };
+                foreach (var item in request.AccountSignalRClientMapper)
+                {
+                    try
+                    {
+                        if (await _visibilityManager.IsVehicleSubcribedForFeature(request.Vin, item.OrganizationId, item.ContextOrgId, item.OTAFeatureId))
+                        {
+                            response.AccountSignalRClientMapper.Add(new AccountSignalRClientList
+                            {
+                                OrganizationId = item.OrganizationId,
+                                ContextOrgId = item.ContextOrgId,
+                                OTAFeatureId = item.OTAFeatureId
+                            });
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Error("IsVehicleVisible", ex);
+                    }
+                }
+
+                return await Task.FromResult(response);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"{nameof(GetVehicleAccountVisibilityByVIN)}: With Error:-", ex);
+                return await Task.FromResult(new AccountSignalRClientMapperResponse
+                {
+                    Code = ResponseCode.Failed
+                });
+            }
+
         }
     }
 }

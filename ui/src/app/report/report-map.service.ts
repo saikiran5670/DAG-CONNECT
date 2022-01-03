@@ -166,18 +166,18 @@ export class ReportMapService {
         let bubble: any;
         categoryPOIMarker.addEventListener('pointerenter', function (evt) {
           bubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
-            content:`<table style='width: 350px;'>
+            content:`<table style='width: 350px;' class='font-helvetica-lt font-14-px line-height-21px'>
             <tr>
-              <td style='width: 100px;'>${translationData.lblPOIName || 'POI Name'}:</td> <td><b>${element.poiName}</b></td>
+              <td style='width: 100px;'>${translationData.lblPOIName || 'POI Name'}:</td> <td class='font-helvetica-md'>${element.poiName}</td>
             </tr>
             <tr>
-              <td style='width: 100px;'>${translationData.lblCategory || 'Category'}:</td> <td><b>${element.categoryName}</b></td>
+              <td style='width: 100px;'>${translationData.lblCategory || 'Category'}:</td> <td class='font-helvetica-md'>${element.categoryName}</td>
             </tr>
             <tr>
-              <td style='width: 100px;'>${translationData.lblSubCategory || 'Sub-Category'}:</td> <td><b>${element.subCategoryName != '' ? element.subCategoryName : '-'}</b></td>
+              <td style='width: 100px;'>${translationData.lblSubCategory || 'Sub-Category'}:</td> <td class='font-helvetica-md'>${element.subCategoryName != '' ? element.subCategoryName : '-'}</td>
             </tr>
             <tr>
-              <td style='width: 100px;'>${translationData.lblAddress || 'Address'}:</td> <td><b>${element.poiAddress != '' ? element.poiAddress : '-'}</b></td>
+              <td style='width: 100px;'>${translationData.lblAddress || 'Address'}:</td> <td class='font-helvetica-md'>${element.poiAddress != '' ? element.poiAddress : '-'}</td>
             </tr>
           </table>`
           });
@@ -327,15 +327,15 @@ export class ReportMapService {
             // for all objects that it contains
             startBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
               // read custom data
-              content:`<table style='width: 350px;'>
+              content:`<table style='width: 350px;' class='font-helvetica-lt font-14-px line-height-21px'>
                 <tr>
-                  <td style='width: 100px;'>${translationData.lblStartLocation || 'Start Location'}:</td> <td><b>${elem.startPosition}</b></td>
+                  <td style='width: 100px;'>${translationData.lblStartLocation || 'Start Location'}:</td> <td class='font-helvetica-md'>${elem.startPosition}</td>
                 </tr>
                 <tr>
-                  <td style='width: 100px;'>${translationData.lblStartDate || 'Start Date'}:</td> <td><b>${elem.convertedStartTime}</b></td>
+                  <td style='width: 100px;'>${translationData.lblStartDate || 'Start Date'}:</td> <td class='font-helvetica-md'>${elem.convertedStartTime}</td>
                 </tr>
                 <tr>
-                  <td style='width: 100px;'>${translationData.lblTotalAlerts || 'Total Alerts'}:</td> <td><b>${elem.totalAlerts}</b></td>
+                  <td style='width: 100px;'>${translationData.lblTotalAlerts || 'Total Alerts'}:</td> <td class='font-helvetica-md'>${elem.totalAlerts}</td>
                 </tr>
               </table>`
             });
@@ -352,15 +352,15 @@ export class ReportMapService {
             // for all objects that it contains
             endBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
               // read custom data
-              content:`<table style='width: 350px;'>
+              content:`<table style='width: 350px;' class='font-helvetica-lt font-14-px line-height-21px'>
                 <tr>
-                  <td style='width: 100px;'>${translationData.lblEndLocation || 'End Location'}:</td> <td><b>${elem.endPosition}</b></td>
+                  <td style='width: 100px;'>${translationData.lblEndLocation || 'End Location'}:</td> <td class='font-helvetica-md'>${elem.endPosition}</td>
                 </tr>
                 <tr>
-                  <td style='width: 100px;'>${translationData.lblEndDate || 'End Date'}:</td> <td><b>${elem.convertedEndTime}</b></td>
+                  <td style='width: 100px;'>${translationData.lblEndDate || 'End Date'}:</td> <td class='font-helvetica-md'>${elem.convertedEndTime}</td>
                 </tr>
                 <tr>
-                  <td style='width: 100px;'>${translationData.lblTotalAlerts || 'Total Alerts'}:</td> <td><b>${elem.totalAlerts}</b></td>
+                  <td style='width: 100px;'>${translationData.lblTotalAlerts || 'Total Alerts'}:</td> <td class='font-helvetica-md'>${elem.totalAlerts}</td>
                 </tr>
               </table>`
             });
@@ -447,18 +447,18 @@ export class ReportMapService {
           // for all objects that it contains
           startBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
             // read custom data
-            content:`<table style='width: 300px; font-size:12px;'>
+            content:`<table style='width: 300px;' class='font-helvetica-lt font-14-px line-height-21px'>
               <tr>
-                <td style='width: 100px;'>${translationData.lblAlertName || 'Alert Name'}:</td> <td><b>${element.alertName ? element.alertName : '-' }</b></td>
+                <td style='width: 100px;'>${translationData.lblAlertName || 'Alert Name'}:</td> <td class='font-helvetica-md'>${element.alertName ? element.alertName : '-' }</td>
               </tr>
               <tr>
-                <td style='width: 100px;'>${translationData.lblAlertType || 'Alert Type'}:</td> <td><b>${_obj.type}</b></td>
+                <td style='width: 100px;'>${translationData.lblAlertType || 'Alert Type'}:</td> <td class='font-helvetica-md'>${_obj.type}</td>
               </tr>
               <tr>
-                <td style='width: 100px;'>${translationData.lblAlertLevel || 'Alert Level'}:</td> <td><b>${_obj.level}</b></td>
+                <td style='width: 100px;'>${translationData.lblAlertLevel || 'Alert Level'}:</td> <td class='font-helvetica-md'>${_obj.level}</td>
               </tr>
               <tr>
-                <td style='width: 100px;'>${translationData.lblAlertTime || 'Alert Time'}:</td> <td><b>${element.convertedAlertTime}</b></td>
+                <td style='width: 100px;'>${translationData.lblAlertTime || 'Alert Time'}:</td> <td class='font-helvetica-md'>${element.convertedAlertTime}</td>
               </tr>
             </table>`
           });
@@ -927,7 +927,7 @@ export class ReportMapService {
               screenPosition = this.hereMap.geoToScreen(point),
               t = event.target,
               _data = t.getData(),
-              tooltipContent = "<table class='cust-table' border='1'><thead><th></th><th>Trip</th><th>Start Date</th><th>End Date</th></thead><tbody>"; 
+              tooltipContent = "<table class='cust-table font-helvetica-lt' border='1'><thead><th></th><th>Trip</th><th>Start Date</th><th>End Date</th></thead><tbody>"; 
               var chkBxId = 0;
               _data.forEachEntry(
               (p) => 
@@ -1395,7 +1395,9 @@ export class ReportMapService {
     if(_data == 0){
       return (_data);
     }
-    let data: any = 282.481/(_data*100);
+    let data: any = 282.481 / (_data*100) // #20102 - fixes as per test team suggestion
+    //let data: any = _data*2.8248093627967;  //UK Imperial
+    // let data: any = _data*2.35214583;  //US Imperial
     return (data).toFixed(2); // as inverted division results in very low value upto 6 places shown // 16044
   }
 
@@ -1477,7 +1479,7 @@ export class ReportMapService {
  }
 
  convertKmphToMph(_data:any){
-  let data = _data *  0.62137119223733;
+  let data = _data *  0.62137119;
   return data.toFixed(2);
 }
 
@@ -1508,8 +1510,8 @@ export class ReportMapService {
   }
 
   meterToMile(_data: any){
-    let kmData= _data / 1000;
-    let data= kmData * 0.62137119223733; 
+    let kmData= (_data / 1000).toFixed(2);
+    let data= Number(kmData) * 0.62137119; 
     return data.toFixed(2);
   }
 
@@ -1629,7 +1631,7 @@ export class ReportMapService {
   }
 
   // Fuel Benchmarking data conversions
-  getConvertedFuelBenchmarkingData(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
+  getConvertedFuelBenchmarkingData(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any, translationData: any){
     // gridData.forEach(element => {
       gridData = JSON.parse(gridData);
       gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption = this.getFuelConsumedUnits(gridData.fuelBenchmarkDetails.averageFuelConsumption, unitFormat, true);
@@ -1638,13 +1640,13 @@ export class ReportMapService {
 
     // });
     if(unitFormat == 'dunit_Imperial') {
-      gridData.fuelBenchmarkDetails.convertedTotalMileage = gridData.fuelBenchmarkDetails.convertedTotalMileage + " mi"
-      gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed = gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed + " gal"
-      gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption = gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption + " mpg"
+      gridData.fuelBenchmarkDetails.convertedTotalMileage = gridData.fuelBenchmarkDetails.convertedTotalMileage + " " + translationData.lblMi
+      gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed = gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed + " " + translationData.lblGal
+      gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption = gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption + " " + translationData.lblmpg
     }else if(unitFormat == 'dunit_Metric') {
-      gridData.fuelBenchmarkDetails.convertedTotalMileage = gridData.fuelBenchmarkDetails.convertedTotalMileage + " km"
-      gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed = gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed + " Ltr"
-      gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption = gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption + " Ltr/100km"
+      gridData.fuelBenchmarkDetails.convertedTotalMileage = gridData.fuelBenchmarkDetails.convertedTotalMileage + " " + translationData.lblKm
+      gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed = gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed + " " + translationData.lblLtr
+      gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption = gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption + " " + translationData.lblLtr100km
     }
     return JSON.stringify(gridData);
   }
@@ -1652,7 +1654,7 @@ export class ReportMapService {
 
 
   getConvertedFleetFuelDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
-    gridData.forEach(element => {
+    gridData.forEach(element => {      
       element.convertedStartTime = this.getStartTime(element.startDate, dateFormat, timeFormat, timeZone,true);
       element.convertedEndTime = this.getEndTime(element.endDate, dateFormat, timeFormat, timeZone,true);
       element.convertedAverageSpeed = this.convertSpeedUnits(element.averageSpeed, unitFormat);
@@ -1840,7 +1842,7 @@ export class ReportMapService {
       }
       
       case 'dunit_Imperial':{
-        _fuelConsumption = (dt/FuelConsumpt);
+        _fuelConsumption = (FuelConsumpt/dt);
         break;
       }
       default:{
@@ -2012,7 +2014,37 @@ export class ReportMapService {
     }
     return _date; //returns dateTime if addTime is true or date if addTime is false
   }
-   
+  
+  getChartData(graphData: any, prefTimeZone:any){
+  let newGraphData:any =[]; 
+  graphData.forEach(element => {
+   // let newdate: any = Util.getMillisecondsToUTCDate(new Date(element.date), prefTimeZone); 
+   // newdate = Util.convertUtcToDateFormat2(newdate,'MM/DD/YYYY');
+    let newdate = Util.convertUtcToDateAndTimeFormat( element.date, prefTimeZone, 'MM/DD/YYYY');
+    element.date = newdate[0];
+    element.numberofTrips = 1;    
+    let graphDataIndex = newGraphData.map(item => item.date).indexOf(element.date);
+    if(graphDataIndex != -1){    
+      newGraphData[graphDataIndex].co2Emission += Number(element.co2Emission);
+      newGraphData[graphDataIndex].distance += Number(element.distance);
+      newGraphData[graphDataIndex].fuelConsumed += Number(element.fuelConsumed);
+      newGraphData[graphDataIndex].fuelConsumtion += Number(element.fuelConsumtion);
+      newGraphData[graphDataIndex].idleDuration += Number(element.idleDuration);    
+      newGraphData[graphDataIndex].numberofTrips += Number(element.numberofTrips); 
+    }else{
+      newGraphData.push(element);
+     }        
+  });
+  newGraphData.forEach(ele => {
+    let graphIndex = newGraphData.map(item => item.date).indexOf(ele.date);
+    if(graphIndex != -1){  
+      newGraphData[graphIndex].fuelConsumtion = Number(newGraphData[graphIndex].fuelConsumed)/Number(newGraphData[graphIndex].distance);
+    }    
+     //console.log(ele);
+  });
+  return newGraphData; 
+}
+
   getTimeInSeconds(timeValue, unit){
     let seconds: any;
     switch(unit){

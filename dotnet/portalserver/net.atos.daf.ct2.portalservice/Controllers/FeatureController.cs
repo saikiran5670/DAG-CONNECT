@@ -103,13 +103,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                    "Feature service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                    "CreateFeatureSet method in Feature manager", 0, 0, JsonConvert.SerializeObject(featureSetRequest),
                     _userDetails);
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(CreateFeatureSet)}: With Error:-", ex);
 
                 if (ex.Message.Contains(_fk_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
-                return StatusCode(500, "Internal Server Error.");
+                return StatusCode(500, FeatureConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -290,8 +290,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
 
                 //throw;
-                _logger.Error(ex.Message + " " + ex.StackTrace);
-                return StatusCode(500, "Internal Server Error. Exception - " + ex.ToString());
+                _logger.Error($"{nameof(GetDataAttributes)}: With Error:-", ex);
+                return StatusCode(500, FeatureConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -338,8 +338,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message + " " + ex.StackTrace);
-                return StatusCode(500, "Internal Server Error. Exception - " + ex.Message);
+                _logger.Error($"{nameof(GetFeatures)}: With Error:-", ex);
+                return StatusCode(500, FeatureConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -386,8 +386,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message + " " + ex.StackTrace);
-                return StatusCode(500, "Internal Server Error. Exception - " + ex.Message);
+                _logger.Error($"{nameof(GetDataAttributeFeatures)}: With Error:-", ex); ;
+                return StatusCode(500, FeatureConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -417,8 +417,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                           "Feature service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                           "DeleteFeatures method in Feature controller", FeatureObj.Id, FeatureObj.Id, JsonConvert.SerializeObject(FeatureObj),
                                            _userDetails);
-                _logger.Error(ex.Message + " " + ex.StackTrace);
-                return StatusCode(500, "Internal Server Error.");
+                _logger.Error($"{nameof(DeleteFeatures)}: With Error:-", ex);
+                return StatusCode(500, FeatureConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -447,8 +447,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                 "Feature service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                 "ChangeFeatureState  method in Feature controller", FeatureId, FeatureId, JsonConvert.SerializeObject(FeatureObj),
                                  _userDetails);
-                _logger.Error(ex.Message + " " + ex.StackTrace);
-                return StatusCode(500, "Internal Server Error.");
+                _logger.Error($"{nameof(ChangeFeatureState)}: With Error:-", ex);
+                return StatusCode(500, FeatureConstants.INTERNAL_SERVER_MSG);
             }
         }
     }

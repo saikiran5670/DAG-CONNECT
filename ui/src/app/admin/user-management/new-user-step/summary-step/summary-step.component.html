@@ -2,7 +2,7 @@
     <mat-card-content>
         <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAccountInformation}}</span>
+              <span class='font-18-px line-height-27px font-helvetica-md'>{{ translationData.lblAccountInformation}}</span>
             </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
@@ -12,30 +12,30 @@
             <div class="areaWidth min-width-75-per" fxLayout="column" fxLayoutAlign="left">
                 <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
                     <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                      <mat-label>{{ translationData.lblSalutation}}</mat-label>
-                      <mat-label class='custom-font'>{{ confirmAccountInfoData.salutationData }}</mat-label>
+                      <mat-label class='font-16-px line-height-24px'>{{ translationData.lblSalutation }}</mat-label>
+                      <mat-label class='font-helvetica-md'>{{ confirmAccountInfoData.salutationData }}</mat-label>
                     </div>
                     <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                        <mat-label>{{ translationData.lblFirstName}}</mat-label>
-                        <mat-label class='custom-font'>{{ confirmAccountInfoData.firstNameData }}</mat-label>
+                        <mat-label class='font-16-px line-height-24px'>{{ translationData.lblFirstName}}</mat-label>
+                        <mat-label class='font-helvetica-md'>{{ confirmAccountInfoData.firstNameData }}</mat-label>
                       </div>
                       <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                        <mat-label>{{ translationData.lblLastName }}</mat-label>
-                        <mat-label class='custom-font'>{{ confirmAccountInfoData.lastNameData }}</mat-label>
+                        <mat-label class='font-16-px line-height-24px'>{{ translationData.lblLastName }}</mat-label>
+                        <mat-label class='font-helvetica-md'>{{ confirmAccountInfoData.lastNameData }}</mat-label>
                       </div>
                 </div>  
                 <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
                     <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                      <mat-label>{{ translationData.lblLoginEmail}}</mat-label>
-                      <mat-label class='custom-font'>{{ confirmAccountInfoData.loginEmailData }}</mat-label>
+                      <mat-label class='font-16-px line-height-24px'>{{ translationData.lblLoginEmail}}</mat-label>
+                      <mat-label class='font-helvetica-md'>{{ confirmAccountInfoData.loginEmailData }}</mat-label>
                     </div>
                     <div *ngIf='privilegeAccess' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                        <mat-label>{{ translationData.lblUserType }}</mat-label>
-                        <mat-label class='custom-font'>{{ confirmAccountInfoData.userTypeData }}</mat-label>
+                        <mat-label class='font-16-px line-height-24px'>{{ translationData.lblUserType }}</mat-label>
+                        <mat-label class='font-helvetica-md'>{{ confirmAccountInfoData.userTypeData }}</mat-label>
                     </div>
                     <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                        <mat-label>{{ translationData.lblOrganisation }}</mat-label>
-                        <mat-label class='custom-font'>{{ confirmAccountInfoData.organizationData }}</mat-label>
+                        <mat-label class='font-16-px line-height-24px'>{{ translationData.lblOrganisation }}</mat-label>
+                        <mat-label class='font-helvetica-md'>{{ confirmAccountInfoData.organizationData }}</mat-label>
                     </div>
                     <div *ngIf='!privilegeAccess' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
                 </div>
@@ -46,53 +46,53 @@
         </div>
         <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
             <div>
-                <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblUserGeneralSetting  }}</span> <span style='font: 200 16px/32px Roboto, "Helvetica Neue", sans-serif;'> ({{ translationData.lblOrganisationbasedsettings }})</span></span>
+                <span><span class='font-18-px line-height-27px font-helvetica-md'>{{ translationData.lblUserGeneralSetting }}</span> <span class='font-16-px font-helvetica-md'> ({{ translationData.lblOrganisationbasedsettings }})</span></span>
             </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ translationData.lblLanguage }}</mat-label>
-              <mat-label class='custom-font'>{{ confirmAccountInfoData.languageData.length > 0 ? confirmAccountInfoData.languageData[0].value : '--' }}</mat-label>
+              <mat-label class='font-16-px line-height-24px'>{{ translationData.lblLanguage }}</mat-label>
+              <mat-label class='font-helvetica-md'>{{ confirmAccountInfoData.languageData.length > 0 ? confirmAccountInfoData.languageData[0].value : '--' }}</mat-label>
             </div>
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                <mat-label>{{ translationData.lblTimeZone }}</mat-label>
-                <mat-label class='custom-font'>{{ confirmAccountInfoData.timezoneData.length > 0 ? confirmAccountInfoData.timezoneData[0].value : '--' }}</mat-label>
+                <mat-label class='font-16-px line-height-24px'>{{ translationData.lblTimeZone }}</mat-label>
+                <mat-label class='font-helvetica-md'>{{ confirmAccountInfoData.timezoneData.length > 0 ? confirmAccountInfoData.timezoneData[0].value : '--' }}</mat-label>
             </div>
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                <mat-label>{{ translationData.lblUnit }}</mat-label>
-                <mat-label class='custom-font'>{{ confirmAccountInfoData.unitData.length > 0 ? confirmAccountInfoData.unitData[0].value : '--' }}</mat-label>
+                <mat-label class='font-16-px line-height-24px'>{{ translationData.lblUnit }}</mat-label>
+                <mat-label class='font-helvetica-md'>{{ confirmAccountInfoData.unitData.length > 0 ? confirmAccountInfoData.unitData[0].value : '--' }}</mat-label>
             </div>
         </div> 
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
             <!-- <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                 <mat-label>{{ translationData.lblCurrency || 'Currency' }}</mat-label>
-                <mat-label class='custom-font'>{{ confirmAccountInfoData.currencyData.length > 0 ? confirmAccountInfoData.currencyData[0].value : '--' }}</mat-label>
+                <mat-label class='font-helvetica-md'>{{ confirmAccountInfoData.currencyData.length > 0 ? confirmAccountInfoData.currencyData[0].value : '--' }}</mat-label>
             </div> -->
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                <mat-label>{{ translationData.lblDateFormat }}</mat-label>
-                <mat-label class='custom-font'>{{ confirmAccountInfoData.dateFormatData.length > 0 ? confirmAccountInfoData.dateFormatData[0].value : '--' }}</mat-label>
+                <mat-label class='font-16-px line-height-24px'>{{ translationData.lblDateFormat }}</mat-label>
+                <mat-label class='font-helvetica-md'>{{ confirmAccountInfoData.dateFormatData.length > 0 ? confirmAccountInfoData.dateFormatData[0].value : '--' }}</mat-label>
             </div>
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                <mat-label>{{ translationData.lblTimeFormat}}</mat-label>
-                <mat-label class='custom-font'>{{ confirmAccountInfoData.timeFormatData.length > 0 ? confirmAccountInfoData.timeFormatData[0].value : '--' }}</mat-label>
+                <mat-label class='font-16-px line-height-24px'>{{ translationData.lblTimeFormat}}</mat-label>
+                <mat-label class='font-helvetica-md'>{{ confirmAccountInfoData.timeFormatData.length > 0 ? confirmAccountInfoData.timeFormatData[0].value : '--' }}</mat-label>
             </div>
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                <mat-label>{{ translationData.lblVehicleDisplayDefault  }}</mat-label>
-                <mat-label class='custom-font'>{{ confirmAccountInfoData.vehicleDisplayData.length > 0 ? confirmAccountInfoData.vehicleDisplayData[0].value : '--' }}</mat-label>
+                <mat-label class='font-16-px line-height-24px'>{{ translationData.lblVehicleDisplayDefault  }}</mat-label>
+                <mat-label class='font-helvetica-md'>{{ confirmAccountInfoData.vehicleDisplayData.length > 0 ? confirmAccountInfoData.vehicleDisplayData[0].value : '--' }}</mat-label>
             </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
             <!-- <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                 <mat-label>{{ translationData.lblVehicleDisplayDefault || 'Vehicle Display (Default)' }}</mat-label>
-                <mat-label class='custom-font'>{{ confirmAccountInfoData.vehicleDisplayData.length > 0 ? confirmAccountInfoData.vehicleDisplayData[0].value : '--' }}</mat-label>
+                <mat-label class='font-helvetica-md'>{{ confirmAccountInfoData.vehicleDisplayData.length > 0 ? confirmAccountInfoData.vehicleDisplayData[0].value : '--' }}</mat-label>
             </div> -->
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                <mat-label>{{ translationData.lblLandingPageDisplayDefault }}</mat-label>
-                <mat-label class='custom-font'>{{ confirmAccountInfoData.landingPageDisplayData.length > 0 ? confirmAccountInfoData.landingPageDisplayData[0].value : '--' }}</mat-label>
+                <mat-label class='font-16-px line-height-24px'>{{ translationData.lblLandingPageDisplayDefault }}</mat-label>
+                <mat-label class='font-helvetica-md'>{{ confirmAccountInfoData.landingPageDisplayData.length > 0 ? confirmAccountInfoData.landingPageDisplayData[0].value : '--' }}</mat-label>
             </div>
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                <mat-label>{{ translationData.lblPageRefreshTime }}</mat-label>
-                <mat-label class='custom-font'>{{ confirmAccountInfoData.pageRefreshTime ? confirmAccountInfoData.pageRefreshTime : '--'}}</mat-label>
+                <mat-label class='font-16-px line-height-24px'>{{ translationData.lblPageRefreshTime }}</mat-label>
+                <mat-label class='font-helvetica-md'>{{ confirmAccountInfoData.pageRefreshTime ? confirmAccountInfoData.pageRefreshTime : '--'}}</mat-label>
             </div>
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
         </div>
@@ -102,7 +102,7 @@
     <mat-card-content>
         <div fxLayout="row">
             <div class='full-width' [ngClass]="{'margin-bottom-sm': selectedRoleDataSource.filteredData.length > 0 }">
-                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectedUserRoles }} -
+                <span class='font-18-px line-height-27px font-helvetica-md'>{{ translationData.lblSelectedUserRoles }} -
                     ({{ selectedRoleDataSource.filteredData.length }})</span>    
             </div>
         </div>
@@ -137,7 +137,7 @@
     <mat-card-content>
         <div fxLayout="row">
             <div class='full-width' [ngClass]="{'margin-bottom-sm': selecteUserGrpDataSource.filteredData.length > 0 }">
-                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectedUserGroups}} -
+                <span class='font-18-px line-height-27px font-helvetica-md'>{{ translationData.lblSelectedUserGroups}} -
                     ({{ selecteUserGrpDataSource.filteredData.length }})</span>    
             </div>
         </div>

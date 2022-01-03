@@ -15,17 +15,17 @@
         <div class="areaWidth" fxLayout="row" fxLayoutAlign="left">
             <div class="areaWidth areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
                 <mat-checkbox [checked]="criticalLevel" [disabled]="criticalLevel == false"
-                    (change)="onChangeCriticalLevel($event)">Critical
+                    (change)="onChangeCriticalLevel($event)">{{translationData.lblCritical || 'Critical'}}
                 </mat-checkbox>
             </div>
             <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
                 <mat-checkbox [checked]="warningLevel" [disabled]="warningLevel == false"
-                    (change)="onChangeWarningLevel($event)">Warning
+                    (change)="onChangeWarningLevel($event)">{{translationData.lblWarning || 'Warning'}}
                 </mat-checkbox>
             </div>
             <div class="areaWidth areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
                 <mat-checkbox [checked]="advisoryLevel" [disabled]="advisoryLevel == false"
-                    (change)="onChangeAdvisoryLevel($event)">Advisory
+                    (change)="onChangeAdvisoryLevel($event)">{{translationData.lblAdvisory || 'Advisory'}}
                 </mat-checkbox>
             </div>
         </div>
@@ -109,7 +109,7 @@
             <mat-icon style="color: red;" (click)="deleteEmailNotificationRow(i)">deleteicon</mat-icon> -->
                         <div fxLayout="row" fxLayoutAlign="space-between" style="width: 100%;">
                             <div fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="right" class="areawidth">
-                                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+                                <span class='font-16-px line-height-24px font-helvetica-md'>{{
 
                                     translationData.lblRecipientLabel02 }} </span>
                                     <div fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="end" class="areawidth">
@@ -213,8 +213,8 @@
                         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left"
                             style="background: #dedddd;padding: 0.5em" class="areaWidth">
                             <!-- <div class="full-width orgGrayDefault" fxLayout="column" fxLayoutAlign="left" style="background: grey"> -->
-                            <span
-                                style='font: 500 Roboto, "Helvetica Neue", sans-serif;font-weight: bold;padding-left: 10px;padding-top: 10px;'>{{
+                            <span class='font-16-px line-height-24px font-helvetica-md'
+                                style='padding-left: 10px;padding-top: 10px;'>{{
                                 translationData.lblSetLimitations }}</span>
                             <span
                                 style="padding-bottom: 15px;padding-left: 8px;">{{translationData.lblMaxAlertNotificationsPerVehicle }}</span>
@@ -275,7 +275,7 @@
                     <mat-panel-title>
                         <div fxLayout="row" fxLayoutAlign="space-between" style="width: 100%;">
                             <div fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="right" class="areawidth">
-                                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+                                <span class='font-16-px line-height-24px font-helvetica-md'>{{
                                     translationData.lblRecipientLabel02 }}
 
                                     <!-- <span style="margin-left: 5px;">{{item['controls']['webRecipientLabel'].value}}</span> -->
@@ -403,8 +403,8 @@
                         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left"
                             style="background: #dedddd;padding: 0.5em" class="areaWidth">
                             <!-- <div class="full-width orgGrayDefault" fxLayout="column" fxLayoutAlign="left" style="background: grey"> -->
-                            <span
-                                style='font: 500 Roboto, "Helvetica Neue", sans-serif;font-weight: bold;padding-left: 10px;padding-top: 10px;'>{{
+                            <span class='font-16-px line-height-24px font-helvetica-md'
+                                style='padding-left: 10px;padding-top: 10px;'>{{
                                 translationData.lblSetLimitations }}</span>
                             <span
                                 style="padding-bottom: 15px;padding-left:10px;">{{translationData.lblMaxAlertNotificationsPerVehicle }}</span>
@@ -464,7 +464,7 @@
                     <mat-panel-title>
                         <div fxLayout="row" fxLayoutAlign="space-between" class="margin-bottom-sm" style="width: 100%;">
                             <div fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="right" class="areawidth">
-                                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+                                <span class='font-16-px line-height-24px font-helvetica-md'>{{
 
                                     translationData.lblRecipientLabel02 }} </span>
                                     <div fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="end" class="areawidth">
@@ -539,8 +539,8 @@
                         <div fxLayout="column" class="min-width-50-per" fxLayoutGap="3px" fxLayoutAlign="left"
                             style="background: #dedddd;padding: 0.5em" class="areaWidth">
                             <!-- <div class="full-width orgGrayDefault" fxLayout="column" fxLayoutAlign="left" style="background: grey"> -->
-                            <span
-                                style='font: 500 Roboto, "Helvetica Neue", sans-serif;font-weight: bold;padding-left: 10px;padding-top: 10px;'>{{
+                            <span class='font-16-px line-height-24px font-helvetica-md'
+                                style='padding-left: 10px;padding-top: 10px;'>{{
                                 translationData.lblSetLimitations }}</span>
                             <span
                                 style="padding-bottom: 15px;padding-left: 8px;">{{translationData.lblMaxAlertNotificationsPerVehicle }}</span>
@@ -691,7 +691,7 @@
                     </div>
                     <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
                         <mat-label>{{ translationData.lblNotificationModeType }}</mat-label>
-                        <span style='font-weight: 500!important;'>Email</span>
+                        <span style='font-weight: 500!important;'>{{translationData.lblEmail || 'Email'}}</span>
                     </div>
                 </div>
                 <div fxLayout="row" fxLayoutAlign="space-between"
@@ -769,7 +769,7 @@
                     </div>
                     <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
                         <mat-label>{{ translationData.lblNotificationModeType }}</mat-label>
-                        <span style='font-weight: 500!important;'>SMS</span>
+                        <span style='font-weight: 500!important;'>{{translationData.lblSMS || 'SMS'}}</span>
                     </div>
                 </div>
                 <div fxLayout="row" fxLayoutAlign="space-between"
@@ -844,10 +844,10 @@
 <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm"
     fxLayoutGap="10px">
     <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-        <a *ngIf="actionType != 'view'" class="linkBtn" (click)="onClickAdvancedFilter()" style="margin-top: 10px;"> Advanced Filter <mat-icon
+        <a *ngIf="actionType != 'view'" class="linkBtn" (click)="onClickAdvancedFilter()" style="margin-top: 10px;">{{translationData.lblAdvancedFilter|| 'Advanced Filter' }}<mat-icon
                 class='font-size-20' style="position: absolute;"> {{ openAdvancedFilter ? 'keyboard_arrow_up' :
                 'keyboard_arrow_down' }}</mat-icon></a>
-        <span *ngIf="actionType == 'view'" style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAdvancedFilter }}</span>
+        <span *ngIf="actionType == 'view'" class='font-16-px line-height-24px font-helvetica-md'>{{ translationData.lblAdvancedFilter }}</span>
     </div>
     <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
     <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>

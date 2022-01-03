@@ -3,7 +3,7 @@
       <span>{{ breadcumMsg }}</span>
     </div>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
-      <span class='custom-font' (click)="onCancel()">
+      <span (click)="onCancel()">
         <span><&nbsp;</span>
         <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span></span>
     </div>
@@ -14,12 +14,12 @@
         <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
           <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
               <!-- <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ actionType == 'create' ? (translationData.lblAddNewUserGroup || 'Add New Account Group') : actionType == 'edit' ? (translationData.lblEditUserGroup || 'Edit Account Group') : (translationData.lblViewUserGroup || 'View Account Group') }}</span> -->
-              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ titleText }}</span>
+              <span class='font-18-px line-height-27px font-helvetica-md'>{{ titleText }}</span>
           </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
           <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
-            <mat-label>{{ translationData.lblGroupName || 'Group Name' }} <span class='mandatoryColor'>*</span>
+            <mat-label class='font-16-px line-height-24px'>{{ translationData.lblGroupName || 'Group Name' }} <span class='mandatoryColor'>*</span>
             </mat-label>
               <div *ngIf="actionType != 'view'">
                 <mat-form-field appearance="outline" class="full-width">
@@ -38,14 +38,14 @@
                 </mat-error>
               </div>
               <div *ngIf="actionType == 'view'">
-                <span style='font-weight: 500!important;'>{{ selectedRowData.name ? selectedRowData.name : '--' }}</span>
+                <span class='font-helvetica-md'>{{ selectedRowData.name ? selectedRowData.name : '--' }}</span>
               </div>
           </div>
           <div class="areaWidth min-width-50-per" fxLayout="column" fxLayoutAlign="left">
-            <mat-label style='display: flex; place-content: space-between;'>
+            <mat-label class='font-16-px line-height-24px' style='display: flex; place-content: space-between;'>
               <span>{{translationData.lblDescriptionOptional
                 || 'Description (Optional)' }}</span>
-              <span *ngIf="actionType != 'view'">{{ translationData.lbl100CharMax || '100 characters max' }}</span>
+              <span class='font-14-px' *ngIf="actionType != 'view'">{{ translationData.lbl100CharMax || '100 characters max' }}</span>
             </mat-label>
             <div *ngIf="actionType != 'view'">
               <mat-form-field appearance="outline" class="full-width">
@@ -61,7 +61,7 @@
             </mat-error>
             </div>
             <div *ngIf="actionType == 'view'">
-              <span style='font-weight: 500!important;'>{{ selectedRowData.description ? selectedRowData.description : '--' }}</span>
+              <span class='font-helvetica-md'>{{ selectedRowData.description ? selectedRowData.description : '--' }}</span>
             </div>
           </div>
         </div>
@@ -92,7 +92,7 @@
         </div>
         <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
           <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-              <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (actionType == 'view') ? (translationData.lblSelectedPOI || 'Selected POI') : (translationData.lblSelectPOI || 'Select POI ') }}</span>  <span class='mandatoryColor'>*</span></span>
+              <span><span class='font-18-px line-height-27px font-helvetica-md'>{{ (actionType == 'view') ? (translationData.lblSelectedPOI || 'Selected POI') : (translationData.lblSelectPOI || 'Select POI ') }}</span>  <span class='mandatoryColor'>*</span></span>
           </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>
@@ -141,7 +141,7 @@
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="icon">
-                <mat-header-cell *matHeaderCellDef class='max-width-8-per'>Icon</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef class='max-width-8-per'>{{translationData.lblIcon}}</mat-header-cell>
                 <mat-cell *matCellDef="let row" class='max-width-8-per'>
                   <mat-icon *ngIf="row.icon && row.icon == ''">place</mat-icon>
                   <img *ngIf="row.icon && row.icon != ''" [src]='row.icon' alt='' width='20px' height='20px'>
@@ -177,7 +177,7 @@
         </div>
         <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
           <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-              <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (actionType == 'view') ? (translationData.lblSelectedGeofence || 'Selected Geofence') : (translationData.lblSelectGeofence || 'Select Geofence') }}</span>  <span class='mandatoryColor'>*</span></span>
+              <span><span class='font-18-px line-height-27px font-helvetica-md'>{{ (actionType == 'view') ? (translationData.lblSelectedGeofence || 'Selected Geofence') : (translationData.lblSelectGeofence || 'Select Geofence') }}</span>  <span class='mandatoryColor'>*</span></span>
           </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>

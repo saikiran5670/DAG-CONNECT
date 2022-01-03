@@ -1,4 +1,15 @@
-<div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+<app-common-breadcrumbs [breadcrumb]="breadcumMsg" [topRightElements]="topRightElements">
+    <ng-template #topRightElements>
+        <div *ngIf="actionType == 'view'" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+            <span class='custom-font' (click)="toBack()">
+                <span>
+                    <&nbsp;</span>
+                        <span class='backBtnCss'>{{ translationData.lblBack }}</span>
+            </span>
+        </div>
+</ng-template>
+</app-common-breadcrumbs>
+<!-- <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
         <span>{{ breadcumMsg }}</span>
     </div>
@@ -9,19 +20,19 @@
                     <span class='backBtnCss'>{{ translationData.lblBack }}</span>
         </span>
     </div>
-</div>
+</div> -->
 <form *ngIf="!showLoadingIndicator" [formGroup]="packageFormGroup">
     <mat-card class='mat-elevation-z'>
         <mat-card-content>
             <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ actionType == 'create' ? (translationData.lblAddPackage) : actionType == 'edit' ? (translationData.lblEditPackage) : (translationData.lblViewPacakge) }}
+                    <span class='font-18-px line-height-27px font-helvetica-md'>{{ actionType == 'create' ? (translationData.lblAddPackage) : actionType == 'edit' ? (translationData.lblEditPackage) : (translationData.lblViewPacakge) }}
                     <mat-icon *ngIf="actionType == 'view' && selectedElementData.status == 'Active'" (click)="editPackage()" style="cursor: pointer;" [disabled]="selectedElementData.status == 'Inactive'">edit</mat-icon></span>
                 </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
                 <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label><span>{{ translationData.lblPackageCode }}</span><span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span></mat-label>
+                    <mat-label class='font-16-px line-height-24px'><span>{{ translationData.lblPackageCode }}</span><span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span></mat-label>
                     <div *ngIf="actionType != 'view'">
                         <mat-form-field appearance="outline" class="full-width">
                             <input maxlength="20" placeholder="{{ translationData.lblEnterPackagecode  }}" matInput
@@ -41,11 +52,11 @@
                         </mat-error>
                     </div>
                     <div *ngIf="actionType == 'view'">
-                        <span style='font-weight: 500!important;'>{{ selectedElementData.code }}</span>
+                        <span class='font-helvetica-md'>{{ selectedElementData.code }}</span>
                     </div>
                 </div>
                 <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label style='display: flex;'>
+                    <mat-label class='font-16-px line-height-24px' style='display: flex;'>
                         <span>{{ translationData.lblPackageName }}</span><span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
                     </mat-label>
                     <div *ngIf="actionType != 'view'">
@@ -64,13 +75,13 @@
                         </mat-error>
                     </div>
                     <div *ngIf="actionType == 'view'">
-                        <span style='font-weight: 500!important;'>{{ selectedElementData.name }}</span>
+                        <span class='font-helvetica-md'>{{ selectedElementData.name }}</span>
                     </div>
                     </div>
                 <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label style='display: flex; place-content: space-between;'>
-                        <span>{{ translationData.lblDescription }}</span>
-                        <span *ngIf="actionType != 'view'">{{ translationData.lbl120CharMax }}</span>
+                        <span class='font-16-px line-height-24px'>{{ translationData.lblDescription }}</span>
+                        <span class='font-14-px' *ngIf="actionType != 'view'">{{ translationData.lbl120CharMax }}</span>
                     </mat-label>
                     <div *ngIf="actionType != 'view'">
                         <mat-form-field appearance="outline" class="full-width">
@@ -85,13 +96,13 @@
                         </mat-error>
                     </div>
                     <div *ngIf="actionType == 'view'">
-                        <span style='font-weight: 500!important;'>{{ selectedElementData.description }}</span>
+                        <span class='font-helvetica-md'>{{ selectedElementData.description }}</span>
                     </div>
                 </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
                 <div class='areaWidth min-width-20-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="right">
-                    <mat-label>
+                    <mat-label class='font-16-px line-height-24px'>
                         <span>{{ translationData.lblType }}</span><span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
                     </mat-label>                    
                     <div *ngIf="actionType != 'view'">            
@@ -107,11 +118,11 @@
                         </mat-error>
                     </div>
                     <div *ngIf="actionType == 'view'">
-                        <span style='font-weight: 500!important;'>{{ selectedElementData.type }}</span>
+                        <span class='font-helvetica-md'>{{ selectedElementData.type }}</span>
                     </div>
                 </div> 
                 <div class='areaWidth min-width-60-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="right">
-                    <mat-label>
+                    <mat-label class='font-16-px line-height-24px'>
                         {{ translationData.lblStatus }}
                     </mat-label>
                     <div *ngIf="actionType != 'view'" class='margin-top-5'>
@@ -123,7 +134,7 @@
                         </mat-radio-group>
                     </div>
                     <div *ngIf="actionType == 'view'">
-                        <span style='font-weight: 500!important;'>{{ selectedElementData.state === "Active" ? "Active" : "Inactive" }}</span>
+                        <span class='font-helvetica-md'>{{ selectedElementData.state === "Active" ? "Active" : "Inactive" }}</span>
                     </div>
                 </div>
                 <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left"></div>
@@ -152,7 +163,7 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
                 <div fxLayout="column" fxLayoutAlign="start">
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ actionType == 'view' ? (translationData.lblSelectedFeatures ):(translationData.lblSelectFeatures )}}</span>
+                    <span class='font-18-px line-height-27px font-helvetica-md'>{{ actionType == 'view' ? (translationData.lblSelectedFeatures ):(translationData.lblSelectFeatures )}}</span>
                 </div>
             </div>
 

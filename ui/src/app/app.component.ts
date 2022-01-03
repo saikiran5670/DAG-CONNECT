@@ -542,11 +542,11 @@ export class AppComponent {
       }
       if (elem.subMenus.length > 0) { //-- If subMenus
         elem.subMenus.forEach(subMenuItem => {
-          landingPageMenus.push({ id: subMenuItem.menuId, value: `${elem.translatedName}.${subMenuItem.translatedName}`, url:`${elem.url}/${subMenuItem.url}` });
+          landingPageMenus.push({ menuLabelKey:elem.key, subMenuLabelKey:subMenuItem.key, id: subMenuItem.menuId, value: `${elem.translatedName}.${subMenuItem.translatedName}`, url:`${elem.url}/${subMenuItem.url}` });
         });
       } else {
         if (!elem.externalLink) { //-- external link not added
-          landingPageMenus.push({ id: elem.menuId, value: `${elem.translatedName}`, url:`${elem.url}` });
+          landingPageMenus.push({ menuLabelKey:elem.key, id: elem.menuId, value: `${elem.translatedName}`, url:`${elem.url}` });
         }
       }
     })
@@ -961,6 +961,7 @@ export class AppComponent {
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
+    this.translationService.applicationTranslationData = this.translationData;
   }
 
   ngOnInit() {
@@ -1076,6 +1077,9 @@ export class AppComponent {
       if(menu.url == "information") {
         let selectedLanguage = JSON.parse(localStorage.getItem("language"));
         if(selectedLanguage.code == "nl-NL") {
+          menu.link = menu.link.replace('/en/','/nl-nl/');
+        }
+        if(selectedLanguage.code == "de-DE") {
           menu.link = menu.link.replace('/en/','/de-de/');
         }
       }
@@ -1280,7 +1284,10 @@ export class AppComponent {
 
   transform(value: number): string {
     const minutes: number = Math.floor(value / 60);
-    return minutes + ':' + (value - minutes * 60);
+    let min: any = (minutes < 10) ? `0${minutes}` : `${minutes}`;
+    let sec: any = ((value - minutes * 60) < 10) ? `0${(value - minutes * 60)}` : `${(value - minutes * 60)}`;
+    return `${min}:${sec}`;
+    //return minutes + ':' + (value - minutes * 60);
   }
 
   clearMessages(): void {

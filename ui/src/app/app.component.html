@@ -9,10 +9,10 @@
             </div>
             <div class='toolbarRightContainer full-width'>
                 <form [formGroup]="appForm" class='toolbarRightContainer full-width'>
-                    <div fxLayoutAlign="start center" class='half-width titleText'>{{ currentTitle }}
+                    <div fxLayoutAlign="start center" class='half-width titleText titleFont'>{{ currentTitle }}
                     </div>
-                    <div fxLayoutAlign="end center" class='full-width'>
-                        <span *ngIf="showTimer" style='background: #007bff; border-radius: 5px; padding: 3px 10px;'>
+                    <div fxLayoutAlign="end center" class='full-width txt-secondary-color'>
+                        <span *ngIf="showTimer" style='background: #007bff; border-radius: 5px; padding: 6px 10px;'>
                             <button class="btn btn-primary" type="button" disabled style='padding: 0;'>
                                 <div class="lds-roller-sm" style="height: 19px; width: 54px; top: -7px;">
                                     <div></div><div></div><div></div><div></div><div></div><div></div>
@@ -24,7 +24,7 @@
                             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                             {{ subscribeTimer }}
                         </button>&nbsp;</span> -->
-                        <span *ngIf="orgContextType" style='font-size: 14px; display: flex; align-items: center; margin-left: 10px;'>{{ translationData.lblContextSetting || 'Context Setting' }}</span>
+                        <span *ngIf="orgContextType" class='contextSettingTxt'>{{ translationData.lblContextSetting || 'Context Setting' }}</span>
                         
                         <mat-select *ngIf="orgContextType" formControlName="contextOrgSelection" class="matSelect" placeholder="{{ orgName }}"
                             (selectionChange)="applyFilterOnOrganization($event.value)">
@@ -95,7 +95,7 @@
                         [src]="fileUploadedPath ? fileUploadedPath : 'assets/images/john.png'">
                 </div>
                 <div *ngIf="!menuCollapsed" style='width: 75%;' fxLayoutAlign="center" fxLayout="column"
-                    class='font-size-0-9'>
+                    class='font-14-px line-height-21px'>
                     <span matTooltip='{{ userFullName }}' class='userName text-truncate'>{{ userFullName }}</span>
                     <span class='display-flex align-items-center'>
                         <span matTooltip='{{ userRole }}' class='userRole text-truncate' *ngIf="roleDropdown != null && roleDropdown.length > 0">{{ userRole
@@ -128,7 +128,7 @@
                                 *ngIf="organizationDropdown.length > 0">
                                 <div class='areaWidth full-width' fxLayout="column" fxLayoutGap="3px"
                                     fxLayoutAlign="left">
-                                    <mat-label>{{ translationData.lblSelectOrganisation || 'Select Organisation' }}</mat-label>
+                                    <mat-label class='font-16-px line-height-24px'>{{ translationData.lblSelectOrganisation || 'Select Organisation' }}</mat-label>
                                     <mat-form-field appearance="outline" class="full-width">
                                         <mat-select (selectionChange)="onOrgChange($event.value)"
                                             formControlName="organization">
@@ -143,7 +143,7 @@
                                 style='padding: 10px !important; background:#c3f1f7;'>
                                 <div class='areaWidth full-width' fxLayout="column" fxLayoutGap="3px"
                                     fxLayoutAlign="left">
-                                    <mat-label>{{ translationData.lblSelectRole || 'Select Role' }}</mat-label>
+                                    <mat-label class='font-16-px line-height-24px'>{{ translationData.lblSelectRole || 'Select Role' }}</mat-label>
                                     <mat-form-field appearance="outline" class="full-width">
                                         <mat-select [disabled]='selectedRoles.length == 0'
                                             (selectionChange)="onRoleChange($event.value)" formControlName="role">
@@ -167,20 +167,20 @@
                     <a class='selectedManu' *ngIf="!menu.externalLink" [routerLink]="[ '/'+ menu.url]"
                         (click)='navigateToPage(menu)'>
                         <mat-icon matTooltip="{{ menuCollapsed ? (translationData[menu.key] || menu.name | titlecase) : '' }}" class="box-svg-css ">{{menu.icon}}</mat-icon>
-                        <span class="menuLabel" *ngIf ="!menuCollapsed">
+                        <span class="menuLabel" *ngIf ="!menuCollapsed" matTooltip="{{ translationData[menu.key] || menu.name | titlecase }}">
                             {{ translationData[menu.key] || menu.name | titlecase }}</span>
                     </a>
                     <a class='selectedManu' *ngIf="menu.externalLink"
                         (click)='navigateToPage(menu)'>
                         <mat-icon matTooltip="{{ menuCollapsed ? (translationData[menu.key] || menu.name | titlecase) : '' }}" class="box-svg-css ">{{menu.icon}}</mat-icon>
-                        <span class="menuLabel" *ngIf ="!menuCollapsed" >
+                        <span class="menuLabel" *ngIf ="!menuCollapsed" matTooltip="{{ translationData[menu.key] || menu.name | titlecase }}">
                             {{ translationData[menu.key] || menu.name | titlecase }}</span>
                     </a>
                 </span>
                 <ng-template #elseBlock>
                     <a class='selectedManu' (click)="menuSelected(menu.url)">
                         <mat-icon matTooltip="{{ menuCollapsed ? (translationData[menu.key] || menu.name | titlecase) : '' }}" class="box-svg-css ">{{menu.icon}}</mat-icon>
-                        <span class="menuLabel" *ngIf ="!menuCollapsed" >{{ translationData[menu.key] || menu.name | titlecase }}</span>
+                        <span class="menuLabel" *ngIf ="!menuCollapsed" matTooltip="{{ translationData[menu.key] || menu.name | titlecase }}">{{ translationData[menu.key] || menu.name | titlecase }}</span>
                         <!-- <span *ngIf="!menuCollapsed && menu.mainMenu === 'Live Fleet'"
                             [ngClass]="{'fleetCount': menu.mainMenu === 'Live Fleet' }">0</span> -->
                         <mat-icon class="navigationArrow">
@@ -194,7 +194,7 @@
                             <a [routerLink]="[ '/'+menu.url+'/'+subMenuItems.url ]"
                                 (click)="navigateToPage(subMenuItems.url)">
                                 <mat-icon class='box-svg-css' style='margin-right: 0px;'>circle</mat-icon>
-                                <span class='font-size-0-9'>{{ translationData[subMenuItems.key] || subMenuItems.name
+                                <span class='font-13-px text-truncate' matTooltip="{{ translationData[subMenuItems.key] || subMenuItems.name }}">{{ translationData[subMenuItems.key] || subMenuItems.name
                                     }}</span>
                             </a>
                         </li>

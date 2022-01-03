@@ -103,13 +103,13 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetLogbookSearchParameter)}: With Error:-", ex);
 
                 return await Task.FromResult(new LogbookFilterResponse
                 {
                     Code = Responsecode.InternalServerError,
                     LogbookSearchParameter = new LogbookSearchParameter(),
-                    Message = ex.Message
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -221,11 +221,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetLogbookDetails)}: With Error:-", ex);
                 return await Task.FromResult(new LogbookDetailsResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "GetLogbookDetails get failed due to - " + ex.Message
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 });
 
             }

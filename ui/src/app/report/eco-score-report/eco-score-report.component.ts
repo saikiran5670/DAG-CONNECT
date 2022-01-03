@@ -132,6 +132,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   noSingleDriverData: boolean=false;
   isSearched: boolean=false;
   singleVehicle: any = [];
+  rowData: any = [];
   prefMapData: any = [
     {
       key: 'da_report_alldriver_general_driverscount',
@@ -304,27 +305,27 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
-       this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
-        if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
-          this.proceedStep(prefData, this.accountPrefObj.accountPreference);
-        }else{ // org pref
-          this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
-            this.proceedStep(prefData, orgPref);
-          }, (error) => { // failed org API
-            let pref: any = {};
-            this.proceedStep(prefData, pref);
-          });
-        }
-
-        let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
-        if(vehicleDisplayId) {
-          let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
-          if(vehicledisplay.length != 0) {
-            this.vehicleDisplayPreference = vehicledisplay[0].name;
-          }
-        }
-
+    });
+    this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
+     if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
+       this.proceedStep(prefData, this.accountPrefObj.accountPreference);
+     }else{ // org pref
+       this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
+         this.proceedStep(prefData, orgPref);
+       }, (error) => { // failed org API
+         let pref: any = {};
+         this.proceedStep(prefData, pref);
        });
+     }
+
+     let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
+     if(vehicleDisplayId) {
+       let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+       if(vehicledisplay.length != 0) {
+         this.vehicleDisplayPreference = vehicledisplay[0].name;
+       }
+     }
+
     });
     this.isSearched=true;
   }
@@ -422,7 +423,6 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       this.reportPrefData = [];
       this.resetColumnData();
       this.preparePrefData(this.reportPrefData);
-      (this.reportPrefData);
       //this.setDisplayColumnBaseOnPref();
       this.getOnLoadData();
     });
@@ -632,6 +632,8 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   onDriverChange(event: any){ }
 
   onSearch(){
+    this.selectedDriversEcoScore = [];
+    this.selectedEcoScore = new SelectionModel(true, []);
     this.driverSelected = false;
     this.ecoScoreDriver = false;
     this.isSearched=false;
@@ -696,7 +698,8 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
         this.reportService.getEcoScoreDetails(searchDataParam).subscribe((_ecoScoreDriverData: any) => {
         this.hideloader();
           this.setGeneralDriverValue();
-          this.updateDataSource(_ecoScoreDriverData.driverRanking);
+          this.rowData = _ecoScoreDriverData.driverRanking;
+          this.updateDataSource(this.rowData);
 
         }, (error)=>{
           this.isSearched=true;
@@ -779,8 +782,8 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       "endDateTime":Util.getMillisecondsToUTCDate(defaultEndValue, this.prefTimeZone)
     }
     this.showLoadingIndicator = true;
-    this.reportService.getDefaultDriverParameterEcoScore(loadParam).subscribe((initData: any) => {
-       this.hideloader();      
+    this.reportService.getDefaultDriverParameterEcoScore(loadParam).subscribe((initData: any) => {   
+      this.hideloader();
       this.onLoadData = initData;     
       this.filterDateData();
     }, (error)=>{
@@ -844,6 +847,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
         });
         vinList=finalVinList;
       }
+      //TODO: plz verify fleet-utilisation for below logic
       this.singleVehicle = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i=> i.groupType == 'S');
       if(vinList.length > 0){
         distinctVin = vinList.filter((value, index, self) => self.indexOf(value) === index);
@@ -1040,15 +1044,15 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   }
 
   exportAsExcelFile(){
-    const title = 'Eco Score Report';
-    const summary = 'Summary Section';
-    const detail = 'Detail Section';
+    const title = this.translationData.lblEcoScoreReport;
+    const summary = this.translationData.lblSummarySection;
+    const detail = this.translationData.lblDetailSection;
     // const header = ['Ranking', 'Driver Name', 'Driver ID', 'Eco-Score'];
     const header =  this.getPDFExcelHeader();
     // const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Driver ID', 'Driver Name', 'Driver Option'];
     const summaryHeader = this.getExcelSummaryHeader();
     let summaryObj=[
-      ['Eco Score Report', this.reportMapService.getStartTime(Date.now(), this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true), this.fromDisplayDate, this.toDisplayDate, this.selectedVehicleGroup,
+      [this.translationData.lblEcoScoreReport, this.reportMapService.getStartTime(Date.now(), this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true), this.fromDisplayDate, this.toDisplayDate, this.selectedVehicleGroup,
       this.selectedVehicle, this.selectedDriverId, this.selectedDriverName, this.selectedDriverOption
       ]
     ];
@@ -1056,7 +1060,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
 
     //Create workbook and worksheet
     let workbook = new Workbook();
-    let worksheet = workbook.addWorksheet('Eco Score Report');
+    let worksheet = workbook.addWorksheet(this.translationData.lblEcoScoreReport);
     //Add Row and formatting
     let titleRow = worksheet.addRow([title]);
     worksheet.addRow([]);
@@ -1106,13 +1110,14 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     worksheet.addRow([]);
     workbook.xlsx.writeBuffer().then((data) => {
       let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-      fs.saveAs(blob, 'Eco-Score_Report.xlsx');
+      fs.saveAs(blob, this.translationData.lblExportName+'.xlsx');
    })
     //this.matTableExporter.exportTable('xlsx', {fileName:'Eco-Score_Report', sheet: 'sheet_name'});
   }
 
   exportAsPDFFile(){
     var doc = new jsPDF();
+    let fileTitle = this.translationData.lblEcoScoreReport;
     (doc as any).autoTable({
       styles: {
           cellPadding: 0.5,
@@ -1121,7 +1126,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       didDrawPage: function(data) {
           // Header
           doc.setFontSize(14);
-          var fileTitle = "Eco Score Report";
+          // var fileTitle =fileTitle;
           var img = "/assets/logo.png";
           doc.addImage(img, 'JPEG',10,10,0,0);
 
@@ -1154,18 +1159,18 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       didDrawCell: data => {}
     })
     // below line for Download PDF document
-    doc.save('EcoScoreReport.pdf');
+    doc.save(this.translationData.lblExportName+'.pdf');
   }
 
   getPDFExcelHeader(){
     let col: any = [];
-    col = [`${this.translationData.lblRanking || 'Ranking'}`, `${this.translationData.lblDriverName || 'Driver Name'}`, `${this.translationData.lblDriverId || 'Driver Id'}`, `${this.translationData.lblEcoScore || 'Eco-Score' }`];
+    col = [`${this.translationData.lblRanking}`, `${this.translationData.lblDriverName }`, `${this.translationData.lblDriverId }`, `${this.translationData.lblEcoScore  }`];
     return col;
   }
 
   getExcelSummaryHeader(){
     let col: any = [];
-    col = [`${this.translationData.lblReportName || 'Report Name'}`, `${this.translationData.lblReportCreated || 'Report Created'}`, `${this.translationData.lblReportStartTime || 'Report Start Time'}`, `${this.translationData.lblReportEndTime || 'Report End Time' }`, `${this.translationData.lblVehicleGroup || 'Vehicle Group' }`, `${this.translationData.lblVehicleName || 'Vehicle Name' }`, `${this.translationData.lblDriverId|| 'Driver ID' }`, `${this.translationData.lblDriverName || 'Driver Name' }`, `${this.translationData.lblDriverOption || 'Driver Option' }`];
+    col = [`${this.translationData.lblReportName }`, `${this.translationData.lblReportCreated }`, `${this.translationData.lblReportStartTime }`, `${this.translationData.lblReportEndTime }`, `${this.translationData.lblVehicleGroup }`, `${this.translationData.lblVehicleName }`, `${this.translationData.lblDriverId}`, `${this.translationData.lblDriverName }`, `${this.translationData.lblDriverOption }`];
     return col;
   }
 
@@ -1620,17 +1625,36 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
 
   rowSelected(event: any, row: any){
     if(event.checked){
-      this.selectedEcoScore.select(row);
       const numSelected = this.selectedEcoScore.selected.length;
-      if(numSelected <= 4)
+      if(numSelected < 4){
+        this.rowData.forEach( element => {
+          element['disabled'] = false;
+        });
+        this.selectedEcoScore.select(row);
         this.selectedDriversEcoScore.push(row);
+      } 
+      if( this.selectedEcoScore.selected.length == 4){
+        this.toggleCheckbox();
+     }
     } else {
+      this.rowData.forEach( element => {
+        element['disabled'] = false;
+      });
       this.selectedEcoScore.deselect(row);
       const index: number = this.selectedDriversEcoScore.indexOf(row);
       if(index !== -1)
         this.selectedDriversEcoScore.splice(index, 1);
     }
     this.toggleCompareButton();
+  }
+
+  toggleCheckbox(){
+    this.rowData.forEach( element => {
+      if(!this.selectedEcoScore.isSelected(element))
+        element['disabled'] = true;
+      else
+        element['disabled'] = false;
+    });
   }
 
   deselectDriver(driver: any){
@@ -1671,7 +1695,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
 
   checkForConversion(val){
     if(this.prefUnitFormat === 'dunit_Imperial')
-      return (val * 0.62137119223733).toFixed(2);
+      return (val * 0.62137119).toFixed(2);
     return val;
   }
 

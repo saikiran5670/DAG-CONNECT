@@ -879,6 +879,18 @@ namespace net.atos.daf.ct2.vehicle
             return await _vehicleRepository.GetVehiclePropertiesByIds(vehicleIds);
         }
         #endregion
+
+        public async Task<Vehicle> GetVehicleByVIN(string vin)
+        {
+            try
+            {
+                return await _vehicleRepository.GetVehicleByVIN(vin);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 
     public class ObjectComparer : IEqualityComparer<VisibilityVehicle>
@@ -906,5 +918,5 @@ namespace net.atos.daf.ct2.vehicle
             int vinHashCode = obj.VIN == null ? 0 : obj.VIN.GetHashCode();
             return idHashCode ^ vinHashCode;
         }
-    }
+    }    
 }

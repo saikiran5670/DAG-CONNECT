@@ -12,6 +12,10 @@ using net.atos.daf.ct2.poigeofence;
 using net.atos.daf.ct2.poigeofence.repository;
 using net.atos.daf.ct2.poigeofenceservice.Services;
 using net.atos.daf.ct2.poigeofenservice;
+using net.atos.daf.ct2.vehicle;
+using net.atos.daf.ct2.vehicle.repository;
+using net.atos.daf.ct2.visibility;
+using net.atos.daf.ct2.visibility.repository;
 
 namespace net.atos.daf.ct2.poigeofenceservice
 {
@@ -63,6 +67,10 @@ namespace net.atos.daf.ct2.poigeofenceservice
             services.AddTransient<IAlertMgmAlertCdcRepository, AlertMgmAlertCdcRepository>();
             services.AddTransient<ILandmarkAlertCdcManager, LandmarkAlertCdcManager>();
             services.AddTransient<ILandmarkAlertCdcRepository, LandmarkAlertCdcRepository>();
+            services.AddTransient<IVisibilityManager, VisibilityManager>();
+            services.AddTransient<IVisibilityRepository, VisibilityRepository>();
+            services.AddTransient<IVehicleManager, VehicleManager>();
+            services.AddTransient<IVehicleRepository, VehicleRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

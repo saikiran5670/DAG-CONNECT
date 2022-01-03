@@ -12,7 +12,7 @@ namespace net.atos.daf.ct2.package.repository
         Task<bool> Delete(int packageId);
 
 
-        Task<List<Package>> Import(List<Package> packageList);
+        Task<PackageMaster> Import(List<Package> packageList);
         Task<Package> UpdatePackageState(Package package);
     }
 }

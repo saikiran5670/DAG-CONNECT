@@ -10,6 +10,7 @@ service PushNotificationService {
   rpc GetAlertMessageStream (google.protobuf.Empty) returns (stream AlertMessageData);
   rpc GetEligibleAccountForAlert (AlertMesssageProp) returns (AlertVehicleDetails);
   rpc GetVehicleByAccountVisibility (VisibilityVehicleRequest) returns (AssociatedVehicleResponse);
+  rpc GetVehicleAccountVisibilityByVIN (AccountSignalRClientMapperReq) returns (AccountSignalRClientMapperResponse);
 }
 
 message AlertMessageData {
@@ -86,4 +87,19 @@ message VisibilityVehicleRequest {
 	int32 AccountId = 1;
 	int32 OrganizationId = 2;
 	repeated int32 FeatureIds = 3;
+}
+
+message AccountSignalRClientList{
+int32 OrganizationId = 1;
+int32 OTAFeatureId = 2;
+int32 ContextOrgId = 3;
+}
+
+message AccountSignalRClientMapperReq{
+repeated AccountSignalRClientList AccountSignalRClientMapper = 1;
+string Vin =  2;
+}
+message AccountSignalRClientMapperResponse{
+repeated AccountSignalRClientList AccountSignalRClientMapper = 1;
+ResponseCode Code = 2;
 }

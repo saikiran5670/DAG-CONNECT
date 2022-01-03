@@ -5,7 +5,7 @@
         <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start space-around"
           style='padding: 10px 20px !important; color: #fff; background: #29539c;'>
           <div class='full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-            <span class='custom-font'>{{ data.title }}</span>
+            <span class='font-16-px line-height-24px'>{{ data.title }}</span>
           </div>
           <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center flex-end">
             <mat-icon (click)='cancel()' style='cursor: pointer; color: #000;'>close</mat-icon>
@@ -14,7 +14,7 @@
         <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="10px" class='margin-20'
           style='padding: 10px 20px !important; background: #ecf7fe;' *ngIf="data.organization != null && data.organization.length > 0">
           <div class='areaWidth full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-            <mat-label>Select Organisation</mat-label>
+            <mat-label class='font-16-px line-height-24px'>Select Organisation</mat-label>
             <mat-form-field appearance="outline" class="full-width">
               <mat-select (selectionChange)="orgBasedRoleSelection($event)" formControlName="organization">
                 <mat-option *ngFor="let org of data.organization" [value]="org.id">
@@ -30,7 +30,7 @@
         <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="0px" class='margin-20' *ngIf="data.role != null && data.role.length > 0"
           style='padding: 10px 20px !important; background: #d1edfe;'>
           <div class='areaWidth full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-            <mat-label>Select Role</mat-label>
+            <mat-label class='font-16-px line-height-24px'>Select Role</mat-label>
             <mat-form-field appearance="outline" class="full-width">
               <mat-select [disabled]='selectedRoles.length == 0' formControlName="role">
                 <mat-option *ngFor="let role of selectedRoles" [value]="role.id">

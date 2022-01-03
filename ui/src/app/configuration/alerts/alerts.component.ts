@@ -120,7 +120,7 @@ export class AlertsComponent implements OnInit {
         // this.loadFiltersData();
         this.loadDataBasedOnPrivileges();
       });
-      this.translationService.getPreferences(this.localStLanguage).subscribe((res) => { 
+      this.translationService.getPreferences(this.localStLanguage).subscribe((res) => {
         this.generalPreferences = res; this.getUnits();
         this.prefData = res;
       });
@@ -202,7 +202,7 @@ export class AlertsComponent implements OnInit {
       }
 
       this.alertTypeList = this.alertTypeListBasedOnPrivilege;
-     
+
       if(this.alertTypeList.length != 0){
         this.alertCategoryTypeMasterData.forEach(element => {
           this.alertTypeList.forEach(item => {
@@ -374,71 +374,7 @@ export class AlertsComponent implements OnInit {
 
       this.originalAlertData= JSON.parse(JSON.stringify(data)); //Clone array of objects
       this.initData.forEach(item => {
-
-        let unitTypeEnum;
-        switch(item.category +item.type){
-            case 'LH': unitTypeEnum= "H";
-            item.UnitTypeVal =  this.translationData.lblHours;
-            break;
-
-            case 'LD':
-            if(this.prefUnitFormat == 'dunit_Metric'){
-              unitTypeEnum= "K";
-              item.UnitTypeVal = this.translationData.lblkm;
-             }
-              else{
-              unitTypeEnum= "L";
-              item.UnitTypeVal = this.translationData.lblmile;
-              }
-              break;
-
-            case 'LU': unitTypeEnum= "H";
-            item.UnitTypeVal =  this.translationData.lblHours;
-             break;
-
-            case 'LG':
-            if(this.prefUnitFormat == 'dunit_Metric'){
-              unitTypeEnum= "K";
-              item.UnitTypeVal = this.translationData.lblkm;}
-              else{
-              unitTypeEnum= "L";
-              item.UnitTypeVal = this.translationData.lblmile;
-              }
-             break;
-
-            case 'FP': unitTypeEnum= "P";
-            item.UnitTypeVal =  "%"
-            break;
-
-            case 'FL': unitTypeEnum= "P";
-            item.UnitTypeVal =  "%"
-            break;
-
-            case 'FT': unitTypeEnum= "P";
-            item.UnitTypeVal =  "%"
-            break;
-
-            case 'FI': unitTypeEnum= "S";
-            item.UnitTypeVal = this.translationData.lblSeconds;
-            break;
-
-            case 'FA':
-            if(this.prefUnitFormat == 'dunit_Metric'){
-              unitTypeEnum= "A";
-              item.UnitTypeVal = this.translationData.lblkilometerperhour;
-            }
-              else{
-                unitTypeEnum= "B";
-                item.UnitTypeVal = this.translationData.lblMilesPerHour
-              }
-              break;
-
-            case 'FF': unitTypeEnum= "P";
-            item.UnitTypeVal =  "%"
-            break;
-
-            return item.UnitTypeVal;
-          }
+        this.setUnitOfThreshold(item);
 
       let catVal = this.alertCategoryList.filter(cat => cat.enum == item.category);
       catVal.forEach(obj => {
@@ -523,7 +459,7 @@ export class AlertsComponent implements OnInit {
           if(vehicledisplay.length != 0) {
             this.vehicleDisplayPreference = vehicledisplay[0].name;
           }
-        }  
+        }
         if(this.vehicleDisplayPreference == 'dvehicledisplay_VehicleName'){
           item.vehicleGroupName = item.vehicleName;
         }
@@ -534,7 +470,7 @@ export class AlertsComponent implements OnInit {
           item.vehicleGroupName = item.regNo;
         }
         // item.vehicleGroupName = item.vehicleName;
-        
+
       }
      });
       this.updateDatasource(this.initData);
@@ -561,6 +497,93 @@ export class AlertsComponent implements OnInit {
    return threshold;
  }
 
+ setUnitOfThreshold(item){
+  let unitTypeEnum, unitType;
+  switch(item.category +item.type){
+    case 'LH': unitTypeEnum= "H";
+    item.UnitTypeVal =  this.translationData.lblHours;
+    break;
+
+    case 'LD':
+    if(this.prefUnitFormat == 'dunit_Metric'){
+      unitTypeEnum= "K";
+      item.UnitTypeVal = this.translationData.lblkm;
+     }
+      else{
+      unitTypeEnum= "L";
+      item.UnitTypeVal = this.translationData.lblmile;
+      }
+      break;
+
+    case 'LU': unitTypeEnum= "H";
+    // item.UnitTypeVal =  this.translationData.lblHours;
+     unitType = item.alertUrgencyLevelRefs? item.alertUrgencyLevelRefs[0].unitType : 'S';
+    if(unitType == 'H'){
+      item.UnitTypeVal = this.translationData.lblHours;
+    }
+    else if(unitType == 'T'){
+      item.UnitTypeVal = this.translationData.lblMinutes;
+    }
+    else{
+      item.UnitTypeVal = this.translationData.lblSeconds;
+    }
+     break;
+
+    case 'LG':
+    if(this.prefUnitFormat == 'dunit_Metric'){
+      unitTypeEnum= "K";
+      item.UnitTypeVal = this.translationData.lblkm;}
+      else{
+      unitTypeEnum= "L";
+      item.UnitTypeVal = this.translationData.lblmile;
+      }
+     break;
+
+    case 'FP': unitTypeEnum= "P";
+    item.UnitTypeVal =  "%"
+    break;
+
+    case 'FL': unitTypeEnum= "P";
+    item.UnitTypeVal =  "%"
+    break;
+
+    case 'FT': unitTypeEnum= "P";
+    item.UnitTypeVal =  "%"
+    break;
+
+    case 'FI': unitTypeEnum= "S";
+    // item.UnitTypeVal = this.translationData.lblSeconds;
+    unitType = item.alertUrgencyLevelRefs? item.alertUrgencyLevelRefs[0].unitType : 'S';
+    if(unitType == 'H'){
+      item.UnitTypeVal = this.translationData.lblHours;
+    }
+    else if(unitType == 'T'){
+      item.UnitTypeVal = this.translationData.lblMinutes;
+    }
+    else{
+      item.UnitTypeVal = this.translationData.lblSeconds;
+    }
+    break;
+
+    case 'FA':
+    if(this.prefUnitFormat == 'dunit_Metric'){
+      unitTypeEnum= "A";
+      item.UnitTypeVal = this.translationData.lblkilometerperhour;
+    }
+      else{
+        unitTypeEnum= "B";
+        item.UnitTypeVal = this.translationData.lblMilesPerHour
+      }
+      break;
+
+    case 'FF': unitTypeEnum= "P";
+    item.UnitTypeVal =  "%"
+    break;
+
+    return item.UnitTypeVal;
+  }
+ }
+
  getFilteredValues(dataSource){
   this.dataSource = dataSource;
   this.dataSource.paginator = this.paginator;
@@ -570,7 +593,16 @@ export class AlertsComponent implements OnInit {
     if(data && data.length > 0){
       this.initData = this.getNewTagData(data);
     }
+    this.initData = data;
     this.dataSource = new MatTableDataSource(this.initData);
+    this.initData.forEach((ele,index) => {
+      if(ele.state == 'A'){
+        this.initData[index]["status"] = 'active';
+      }
+      if(ele.state == 'I'){
+        this.initData[index]["status"] = 'inactive';
+      }
+    });
     setTimeout(()=>{
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
@@ -594,7 +626,9 @@ export class AlertsComponent implements OnInit {
         data.name.toString().toLowerCase().includes(filter) ||
         data.category.toString().toLowerCase().includes(filter) ||
          data.type.toString().toLowerCase().includes(filter) ||
-        data.highThresholdValue.toString().includes(filter)
+         data.vehicleGroupName.toString().toLowerCase().includes(filter) ||
+        data.status.toString().toLowerCase().includes(filter)
+       // data.highThresholdValue.toString().includes(filter)
       );
     };
       this.dataSource.sortData = (data : String[], sort: MatSort) => {

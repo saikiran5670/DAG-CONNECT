@@ -75,8 +75,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  ReportSchedulerConstants.REPORTSCHEDULER_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                 string.Format(ReportSchedulerConstants.REPORTSCHEDULER_EXCEPTION_LOG_MSG, "GetReportSchedulerParameter", ex.Message), 1, 2, Convert.ToString(accountId),
                   _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetReportSchedulerParameter)}: With Error:-", ex);
+                return StatusCode(500, ReportSchedulerConstants.INTERNAL_SERVER_MSG);
             }
         }
         #endregion
@@ -185,8 +185,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                   ReportSchedulerConstants.REPORTSCHEDULER_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  string.Format(ReportSchedulerConstants.REPORTSCHEDULER_EXCEPTION_LOG_MSG, "CreateReportScheduler", ex.Message), 1, 2, "1",
                    _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(CreateReportScheduler)}: With Error:-", ex);
+                return StatusCode(500, ReportSchedulerConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -292,8 +292,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                   ReportSchedulerConstants.REPORTSCHEDULER_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  string.Format(ReportSchedulerConstants.REPORTSCHEDULER_EXCEPTION_LOG_MSG, "UpdateReportScheduler", ex.Message), 1, 2, "1",
                    _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(UpdateReportScheduler)}: With Error:-", ex);
+                return StatusCode(500, ReportSchedulerConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -354,8 +354,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  ReportSchedulerConstants.REPORTSCHEDULER_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                 string.Format(ReportSchedulerConstants.REPORTSCHEDULER_EXCEPTION_LOG_MSG, "GetReportScheduler", ex.Message), 1, 2, Convert.ToString(accountId),
                   _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetReportScheduler)}: With Error:-", ex);
+                return StatusCode(500, ReportSchedulerConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -383,8 +383,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  ReportSchedulerConstants.REPORTSCHEDULER_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                 string.Format(ReportSchedulerConstants.REPORTSCHEDULER_EXCEPTION_LOG_MSG, "GetScheduledReport", ex.Message), 1, 2, Convert.ToString(_userDetails.AccountId),
                   _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetScheduledReport)}: With Error:-", ex);
+                return StatusCode(500, ReportSchedulerConstants.INTERNAL_SERVER_MSG);
             }
         }
         #endregion
@@ -430,8 +430,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                          ReportSchedulerConstants.REPORTSCHEDULER_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                          string.Format("DeleteReportSchedule method in {0}", ReportSchedulerConstants.REPORTSCHEDULER_CONTROLLER_NAME), 0, 0, JsonConvert.SerializeObject(request),
                                           _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, $"{ex.Message } {ex.StackTrace}");
+                _logger.Error($"{nameof(DeleteReportSchedule)}: With Error:-", ex);
+                return StatusCode(500, ReportSchedulerConstants.INTERNAL_SERVER_MSG);
             }
         }
         #endregion
@@ -477,8 +477,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                          ReportSchedulerConstants.REPORTSCHEDULER_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                          string.Format("EnableDisableReportSchedule method in {0}", ReportSchedulerConstants.REPORTSCHEDULER_CONTROLLER_NAME), 0, 0, JsonConvert.SerializeObject(request),
                                           _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, $"{ex.Message}  {ex.StackTrace}");
+                _logger.Error($"{nameof(EnableDisableReportSchedule)}: With Error:-", ex);
+                return StatusCode(500, ReportSchedulerConstants.INTERNAL_SERVER_MSG);
             }
         }
         #endregion
@@ -522,8 +522,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  ReportSchedulerConstants.REPORTSCHEDULER_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                 string.Format(ReportSchedulerConstants.REPORTSCHEDULER_EXCEPTION_LOG_MSG, "GetPDFBinaryFormatByToken", ex.Message), 1, 2, JsonConvert.SerializeObject(request),
                   _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, string.Format("{0} {1}", ex.Message, ex.StackTrace));
+                _logger.Error($"{nameof(GetPDFBinaryFormatByToken)}: With Error:-", ex);
+                return StatusCode(500, ReportSchedulerConstants.INTERNAL_SERVER_MSG);
             }
         }
         #endregion
@@ -555,8 +555,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  ReportSchedulerConstants.REPORTSCHEDULER_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                 string.Format(ReportSchedulerConstants.REPORTSCHEDULER_EXCEPTION_LOG_MSG, "UnSubscribe", ex.Message), 1, 2, JsonConvert.SerializeObject(request),
                   _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, string.Format("{0} {1}", ex.Message, ex.StackTrace));
+                _logger.Error($"{nameof(UnSubscribe)}: With Error:-", ex);
+                return StatusCode(500, ReportSchedulerConstants.INTERNAL_SERVER_MSG);
             }
         }
         #endregion
@@ -587,8 +587,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  ReportSchedulerConstants.REPORTSCHEDULER_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                 string.Format(ReportSchedulerConstants.REPORTSCHEDULER_EXCEPTION_LOG_MSG, "UnSubscribe", ex.Message), 1, 2, JsonConvert.SerializeObject(request),
                   _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, string.Format("{0} {1}", ex.Message, ex.StackTrace));
+                _logger.Error($"{nameof(UnSubscribeAll)}: With Error:-", ex);
+                return StatusCode(500, ReportSchedulerConstants.INTERNAL_SERVER_MSG);
             }
         }
         #endregion
@@ -617,8 +617,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  ReportSchedulerConstants.REPORTSCHEDULER_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                 string.Format(ReportSchedulerConstants.REPORTSCHEDULER_EXCEPTION_LOG_MSG, "GetPDFBinaryFormatById", ex.Message), 1, 2, JsonConvert.SerializeObject(request),
                   _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, string.Format("{0} {1}", ex.Message, ex.StackTrace));
+                _logger.Error($"{nameof(GetPDFBinaryFormatById)}: With Error:-", ex);
+                return StatusCode(500, ReportSchedulerConstants.INTERNAL_SERVER_MSG);
             }
         }
         #endregion

@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using VisibleEntity = net.atos.daf.ct2.visibility.entity;
 using ReportComponent = net.atos.daf.ct2.reports;
 using ProtobufCollection = Google.Protobuf.Collections;
+using net.atos.daf.ct2.reportservice.entity;
 
 namespace net.atos.daf.ct2.reportservice.Services
 {
@@ -50,11 +51,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetDriverActivity)}: With Error:-", ex);
                 return await Task.FromResult(new DriverActivityResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "GetDriversActivity get failed due to - " + ex.Message
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -94,11 +95,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetDriverActivity)}: With Error:-", ex);
                 return await Task.FromResult(new DriverActivityResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "GetDriverActivity get failed due to - " + ex.Message
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -154,11 +155,73 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetDriverActivityParameters)}: With Error:-", ex);
                 return await Task.FromResult(new DriverListAndVehicleDetailsResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "GetDriverActivityParameters failed due to - " + ex.Message
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
+                });
+            }
+            return await Task.FromResult(response);
+        }
+
+        public override async Task<DriverListAndVehicleDetailsResponse> GetDriverEcoScoreParameters(IdRequestForDriverActivity request, ServerCallContext context)
+        {
+            ///1. Call GetVehicleByAccountVisibility from vesibility to pull the list of VIN
+            ///2. Pull the drivers details based on VIN
+            ///3. Fill the DriverActivityParameters object and return it.
+            DriverListAndVehicleDetailsResponse response = new DriverListAndVehicleDetailsResponse();
+            try
+            {
+                var loggedInOrgId = Convert.ToInt32(context.RequestHeaders.Get("logged_in_orgid").Value);
+                var featureId = Convert.ToInt32(context.RequestHeaders.Get("report_feature_id").Value);
+
+                var vehicleDeatilsWithAccountVisibility =
+                                   await _visibilityManager.GetVehicleByAccountVisibility(request.AccountId, loggedInOrgId, request.OrganizationId, featureId);
+
+                if (vehicleDeatilsWithAccountVisibility.Count() > 0)
+                {
+                    List<string> vinList = vehicleDeatilsWithAccountVisibility.Select(s => s.Vin).Distinct().ToList();
+                    //string VINs = "'" + string.Join("','", vinList) + "'";
+                    var lstDriver = await _reportManager.GetDriversByVINForEcoScore(request.StartDateTime, request.EndDateTime, vinList, request.OrganizationId);
+                    if (lstDriver.Count() > 0)
+                    {
+                        string lstVehicle = JsonConvert.SerializeObject(vehicleDeatilsWithAccountVisibility);
+                        response.VehicleDetailsWithAccountVisibiltyList.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehicleDetailsWithAccountVisibilty>>(lstVehicle));
+                        string resDrivers = JsonConvert.SerializeObject(lstDriver);
+                        response.DriverList.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehicleFromDriverTimeDetails>>(resDrivers));
+                        response.Code = Responsecode.Success;
+                        response.Message = Responsecode.Success.ToString();
+                    }
+                    else
+                    {
+                        VehicleFromDriverTimeDetails vehicleFromDriverTimeDetails = new VehicleFromDriverTimeDetails();
+                        response.DriverList.Add(vehicleFromDriverTimeDetails);
+                        string lstVehicle = JsonConvert.SerializeObject(vehicleDeatilsWithAccountVisibility);
+                        response.VehicleDetailsWithAccountVisibiltyList.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehicleDetailsWithAccountVisibilty>>(lstVehicle));
+                        //VehicleDetailsWithAccountVisibilty vehicleDetailsWithAccountVisibilty = new VehicleDetailsWithAccountVisibilty();
+                        //response.VehicleDetailsWithAccountVisibiltyList.Add(vehicleDetailsWithAccountVisibilty);
+                        response.Code = Responsecode.NotFound;
+                        response.Message = Responsecode.NotFound.ToString();
+                    }
+                }
+                else
+                {
+                    VehicleFromDriverTimeDetails vehicleFromDriverTimeDetails = new VehicleFromDriverTimeDetails();
+                    response.DriverList.Add(vehicleFromDriverTimeDetails);
+                    VehicleDetailsWithAccountVisibilty vehicleDetailsWithAccountVisibilty = new VehicleDetailsWithAccountVisibilty();
+                    response.VehicleDetailsWithAccountVisibiltyList.Add(vehicleDetailsWithAccountVisibilty);
+                    response.Code = Responsecode.NotFound;
+                    response.Message = Responsecode.NotFound.ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"{nameof(GetDriverEcoScoreParameters)}: With Error:-", ex);
+                return await Task.FromResult(new DriverListAndVehicleDetailsResponse
+                {
+                    Code = Responsecode.Failed,
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 });
             }
             return await Task.FromResult(response);
@@ -210,11 +273,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetDriverActivityChartDetails)}: With Error:-", ex);
                 return await Task.FromResult(new DriverActivityChartResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "GetDriverActivityChartDetails got failed due to - " + ex.Message
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 });
             }
         }

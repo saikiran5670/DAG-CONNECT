@@ -115,7 +115,7 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<Index> imp
 			logger.error("ParseException {} {}",e.getMessage(),e);
 		}
 		currentPosition.setCreated_at_m2m(row.getReceivedTimestamp());
-		//currentPosition.setCreated_at_kafka(Long.parseLong(row.getKafkaProcessingTS()));
+		currentPosition.setCreated_at_kafka(Long.parseLong(row.getKafkaProcessingTS()));
 		currentPosition.setCreated_at_dm(TimeFormatter.getInstance().getCurrentUTCTimeInSec());
 
 		if (varGPSLongi == 255.0) {
@@ -230,6 +230,8 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<Index> imp
 		//currentPosition.setService_brake_air_pressure_circuit2(row.getDocument().getVServiceBrakeAirPressure2());)
 		currentPosition.setService_brake_air_pressure_circuit2(row.getDocument().getVServiceBrakeAirPressure2());
 		currentPosition.setTachgraphSpeed(row.getDocument().getVTachographSpeed());
+		
+		
 		
 
 		logger.debug("inside Inside Trip Calculation in end :{}");

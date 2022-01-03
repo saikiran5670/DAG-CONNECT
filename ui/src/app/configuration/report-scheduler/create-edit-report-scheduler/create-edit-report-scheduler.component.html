@@ -3,7 +3,7 @@
       <span>{{ breadcumMsg }}</span>
     </div>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
-      <span class='custom-font' (click)="onCancel()">
+      <span (click)="onCancel()">
         <span><&nbsp;</span>
         <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span></span>
     </div>
@@ -13,12 +13,12 @@
     <mat-card-content>
       <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ actionType == 'create' ? (translationData.lblCreateScheduleDetails || 'Create Schedule Details') : actionType == 'edit' ? (translationData.lblEditScheduleDetails || 'Edit Schedule Details') : (translationData.lblViewScheduleDetails || 'View Schedule Details') }}</span>
+            <span class='font-18-px line-height-27px font-helvetica-md'>{{ actionType == 'create' ? (translationData.lblCreateScheduleDetails || 'Create Schedule Details') : actionType == 'edit' ? (translationData.lblEditScheduleDetails || 'Edit Schedule Details') : (translationData.lblViewScheduleDetails || 'View Schedule Details') }}</span>
         </div>
       </div>
       <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px"  *ngIf="actionType != 'view'">
         <div class="areaWidth min-width-50-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData.lblTimeRange || 'Time Range' }} <span class='mandatoryColor'>*</span></mat-label>
+          <mat-label class='font-16-px line-height-24px'>{{ translationData.lblTimeRange || 'Time Range' }} <span class='mandatoryColor'>*</span></mat-label>
           <div style='margin-top: 5px;'>
               <button [disabled]="selectionTab == 'D'" (click)="selectionTimeRange('D')" [ngClass]="{'selectedBtn': selectionTab == 'D'}" class='margin-right-5 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblDaily || 'Daily' }}</button>
               <button [disabled]="selectionTab == 'W'" (click)="selectionTimeRange('W')" [ngClass]="{'selectedBtn': selectionTab == 'W'}" class='margin-right-5 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblWeekly || 'Weekly' }}</button>
@@ -30,7 +30,7 @@
           <div *ngIf="selectionTab == 'D'">
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm timepicker" fxLayoutGap="10px">
                 <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>
+                    <mat-label class='font-16-px line-height-24px'>
                         {{ translationData.lblEverydayStartTime || 'Everyday Start Time' }}
                     </mat-label>
                     <!-- <mat-form-field appearance="outline"> -->
@@ -45,7 +45,7 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm timepicker" fxLayoutGap="10px">
                 <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>
+                    <mat-label class='font-16-px line-height-24px'>
                         {{ translationData.lblEverydayEndTime || 'Everyday End Time' }}
                     </mat-label>
                     <!-- <mat-form-field appearance="outline"> -->
@@ -63,7 +63,7 @@
           <div *ngIf="selectionTab == 'W'">
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
                 <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>
+                    <mat-label class='font-16-px line-height-24px'>
                         {{ translationData.lblStartDay || 'Start Day' }}
                     </mat-label>
                     <mat-form-field appearance="outline">
@@ -77,7 +77,7 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
                 <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>
+                    <mat-label class='font-16-px line-height-24px'>
                         {{ translationData.lblEndDay || 'End Day' }}
                     </mat-label>
                     <mat-form-field appearance="outline">
@@ -94,7 +94,7 @@
           <div *ngIf="selectionTab == 'B'">
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
                 <div class="areaWidth max-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>
+                    <mat-label class='font-16-px line-height-24px'>
                         {{ translationData.lblFrom || 'From' }}
                     </mat-label>
                     <mat-form-field appearance="outline">
@@ -104,7 +104,7 @@
                     </mat-form-field>
                 </div>
                 <div class='areaWidth max-width-30-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                  <mat-label>
+                  <mat-label class='font-16-px line-height-24px'>
                     {{ translationData.lblDay || 'Day' }}
                   </mat-label>
                   <mat-form-field appearance="outline">
@@ -112,7 +112,7 @@
                   </mat-form-field>
                 </div>
                 <div class="areaWidth max-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                  <mat-label>
+                  <mat-label class='font-16-px line-height-24px'>
                     {{ translationData.lblTime || 'Time' }}
                   </mat-label>
                   <!-- <mat-form-field appearance="outline"> -->
@@ -127,7 +127,7 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
               <div class="areaWidth max-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                  <mat-label>
+                  <mat-label class='font-16-px line-height-24px'>
                       {{ translationData.lblTo || 'To' }}
                   </mat-label>
                   <mat-form-field appearance="outline">
@@ -137,7 +137,7 @@
                   </mat-form-field>
               </div>
               <div class='areaWidth max-width-30-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                <mat-label>
+                <mat-label class='font-16-px line-height-24px'>
                   {{ translationData.lblDay || 'Day' }}
                 </mat-label>
                 <mat-form-field appearance="outline">
@@ -145,7 +145,7 @@
                 </mat-form-field>
               </div>
               <div class="areaWidth max-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                <mat-label>
+                <mat-label class='font-16-px line-height-24px'>
                   {{ translationData.lblTime || 'Time' }}
                 </mat-label>
                 <!-- <mat-form-field appearance="outline"> -->
@@ -163,7 +163,7 @@
           <div *ngIf="selectionTab == 'M'">
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
               <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
-                  <mat-label>
+                  <mat-label class='font-16-px line-height-24px'>
                       {{ translationData.lblMonths || 'Months' }}
                   </mat-label>
                   <mat-form-field appearance="outline">
@@ -177,7 +177,7 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
                 <div class="areaWidth max-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>
+                    <mat-label class='font-16-px line-height-24px'>
                         {{ translationData.lblFrom || 'From' }}
                     </mat-label>
                     <mat-form-field appearance="outline">
@@ -187,7 +187,7 @@
                     </mat-form-field>
                 </div>
                 <div class="areaWidth max-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                  <mat-label>
+                  <mat-label class='font-16-px line-height-24px'>
                     {{ translationData.lblTime || 'Time' }}
                   </mat-label>
                   <!-- <mat-form-field appearance="outline"> -->
@@ -203,7 +203,7 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
               <div class="areaWidth max-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                  <mat-label>
+                  <mat-label class='font-16-px line-height-24px'>
                       {{ translationData.lblTo || 'To' }}
                   </mat-label>
                   <mat-form-field appearance="outline">
@@ -213,7 +213,7 @@
                   </mat-form-field>
               </div>
               <div class="areaWidth max-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                <mat-label>
+                <mat-label class='font-16-px line-height-24px'>
                   {{ translationData.lblTime || 'Time' }}
                 </mat-label>
                 <!-- <mat-form-field appearance="outline"> -->
@@ -232,7 +232,7 @@
           <div *ngIf="selectionTab == 'Q'">
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
               <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
-                  <mat-label>
+                  <mat-label class='font-16-px line-height-24px'>
                       {{ translationData.lblQuarters || 'Quarters' }}
                   </mat-label>
                   <mat-form-field appearance="outline">
@@ -246,7 +246,7 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
                 <div class="areaWidth max-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>
+                    <mat-label class='font-16-px line-height-24px'>
                         {{ translationData.lblFrom || 'From' }}
                     </mat-label>
                     <mat-form-field appearance="outline">
@@ -256,7 +256,7 @@
                     </mat-form-field>
                 </div>
                 <div class="areaWidth max-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                  <mat-label>
+                  <mat-label class='font-16-px line-height-24px'>
                     {{ translationData.lblTime || 'Time' }}
                   </mat-label>
                   <!-- <mat-form-field appearance="outline"> -->
@@ -272,7 +272,7 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
               <div class="areaWidth max-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                  <mat-label>
+                  <mat-label class='font-16-px line-height-24px'>
                       {{ translationData.lblTo || 'To' }}
                   </mat-label>
                   <mat-form-field appearance="outline">
@@ -282,7 +282,7 @@
                   </mat-form-field>
               </div>
               <div class="areaWidth max-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                <mat-label>
+                <mat-label class='font-16-px line-height-24px'>
                   {{ translationData.lblTime || 'Time' }}
                 </mat-label>
                 <!-- <mat-form-field appearance="outline"> -->
@@ -300,13 +300,13 @@
                             
           <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm timepicker" fxLayoutGap="10px">
               <div class="areaWidth max-width-30-per timepicker" fxLayout="column" fxLayoutAlign="left">
-                  <mat-label>
+                  <mat-label class='font-16-px line-height-24px'>
                       {{ translationData.lblReportDispatchTime || 'Report Dispatch Time' }}
                   </mat-label>
                   <mat-form-field appearance="outline">
                     <mat-select formControlName="reportDispatchTime" >
                       <mat-option *ngFor="let rer of dispatchHours" [value]="rer">
-                          {{rer}}
+                          {{ rer }}
                       </mat-option>
                     </mat-select>
                   </mat-form-field>
@@ -314,16 +314,15 @@
           </div>
         </div>
 
-
         <div class="areaWidth min-width-50-per" fxLayout="column" fxLayoutAlign="left">
           <div class='full-width' fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="left">
               <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start" class="margin-bottom-sm">
                   <div class='areaWidth half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                      <mat-label>{{ translationData.lblReportType || 'Report Type' }}<span class='mandatoryColor'>*</span></mat-label>
+                      <mat-label class='font-16-px line-height-24px'>{{ translationData.lblReportType || 'Report Type' }}<span class='mandatoryColor'>*</span></mat-label>
                       <mat-form-field appearance="outline">
                         <mat-select placeholder="{{ translationData.lblSelectReportType || 'Select Report Type' }}" (selectionChange)="onChangeReportType($event.value)" [disabled]="actionType=='edit'" formControlName="reportType">
                             <mat-option *ngFor="let rer of ReportTypeList" [value]="rer.id">
-                                {{rer.reportName}}
+                                {{translationData[rer.key]}}
                             </mat-option>
                         </mat-select>
                       </mat-form-field>
@@ -332,10 +331,10 @@
                       </mat-error>
                   </div>
                   <div class='areaWidth half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }}<span class='mandatoryColor'>*</span></mat-label>
+                    <mat-label class='font-16-px line-height-24px'>{{ translationData.lblVehicleGroup || 'Vehicle Group' }}<span class='mandatoryColor'>*</span></mat-label>
                     <mat-form-field appearance="outline">
                         <mat-select placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}" (selectionChange)="onChangeVehicleGroup($event)" formControlName="vehicleGroup">
-                            <mat-option [value]="0">All</mat-option>
+                            <mat-option [value]="0">{{translationData.lblAll || 'All'}}</mat-option>
                             <mat-option *ngFor="let rer of VehicleGroupList" [value]="rer.vehicleGroupId">
                                 {{rer.vehicleGroupName}}
                             </mat-option>
@@ -346,7 +345,7 @@
 
             <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start">
                 <div class='areaWidth half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <mat-label>{{ translationData.lblLanguageForRecipient || 'Language (For Recipient)' }}<span class='mandatoryColor'>*</span></mat-label>
+                    <mat-label class='font-16-px line-height-24px'>{{ translationData.lblLanguageForRecipient || 'Language (For Recipient)' }}<span class='mandatoryColor'>*</span></mat-label>
                     <mat-form-field appearance="outline">
                         <mat-select placeholder="{{ translationData.lblSelectLanguage || 'Select Language' }}" formControlName="language">
                             <mat-option *ngFor="let rer of LanguageCodeList" [value]="rer.code">
@@ -359,10 +358,10 @@
                     </mat-error>
                 </div>
                 <div class='areaWidth half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                  <mat-label>{{ translationData.lblVehicle || 'Vehicle' }}<span class='mandatoryColor'>*</span></mat-label>
+                  <mat-label class='font-16-px line-height-24px'>{{ translationData.lblVehicle || 'Vehicle' }}<span class='mandatoryColor'>*</span></mat-label>
                   <mat-form-field appearance="outline">
                     <mat-select placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" formControlName="vehicle">
-                      <mat-option [value]="0">All</mat-option>
+                      <mat-option [value]="0">{{translationData.lblAll || 'All'}}</mat-option>
                       <mat-option *ngFor="let rer of VehicleList" [value]="rer.vehicleId">
                         <!-- {{rer.vin}} -->
                         <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleName' && rer.vehicleId !==0"> {{rer.vehicleName}}
@@ -374,19 +373,22 @@
                       </mat-option>
                     </mat-select>
                   </mat-form-field>
+                  <mat-error *ngIf="showError">
+                    {{ translationData.lblPleaseSelectSingleVehicle || 'Please select single vehicle'}}
+                </mat-error>
                 </div>
               </div>
 
               <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start">
                 <div class='areaWidth half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <mat-label style='display: flex; place-content: space-between;'>
-                        {{ translationData.lblRecipientsEmail || 'Recipients Email' }}<span class='mandatoryColor'>*</span>
-                        <span *ngIf="actionType != 'view'">{{ translationData.lbl10EmailMax || '10 email max' }}</span>
+                    <mat-label class='font-16-px line-height-24px' style='display: flex; place-content: space-between;'>
+                      <span><span>{{ translationData.lblRecipientsEmail || 'Recipients Email' }}</span><span class='mandatoryColor'>*</span></span> 
+                        <span class='font-14-px' *ngIf="actionType != 'view'">{{ translationData.lbl10EmailMax || '10 email max' }}</span>
                     </mat-label>
                     <mat-form-field appearance="outline">
                         <input placeholder="{{ translationData.lblEnterRecipientEmail || 'Enter Recipient Email' }}"  matInput (focusout)="validateRecipientEmails($event.target.value)" formControlName="recipientEmail">
                     </mat-form-field>
-                    <span style="color: grey;">Please enter (,) seperated email Ids</span>
+                    <span style="color: grey;">{{translationData.lblPleaseEntercommaseparatedemailID || 'Please enter (,) seperated email Ids'}}</span>
                     <!-- <div class="ng-autocomplete">
                       <ng-autocomplete [data]="RecipientList" [searchKeyword]="keyword"
                           [itemTemplate]="itemTemplateRecipientEmail" formControlName="recipientEmail">
@@ -407,10 +409,10 @@
                     </mat-error>
                 </div>
                 <div *ngIf="showDriverList" class='areaWidth half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                  <mat-label>{{ translationData.lblDriver || 'Driver' }}<span class='mandatoryColor'>*</span></mat-label>
+                  <mat-label class='font-16-px line-height-24px'>{{ translationData.lblDriver || 'Driver' }}<span class='mandatoryColor'>*</span></mat-label>
                   <mat-form-field appearance="outline">
                     <mat-select placeholder="{{ translationData.lblSelectDriver || 'Select Driver' }}" formControlName="driver">
-                        <mat-option [value]="0">All</mat-option>
+                        <mat-option [value]="0">{{translationData.lblAll}}</mat-option>
                         <mat-option *ngFor="let rer of DriverList" [value]="rer.id">
                             {{rer.driverName}}
                         </mat-option>
@@ -421,9 +423,9 @@
 
               <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start">
                 <div class='areaWidth half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <mat-label style='display: flex; place-content: space-between;'>
-                        {{ translationData.lblMailSubject || 'Mail Subject' }}<span class='mandatoryColor'>*</span>
-                        <span *ngIf="actionType != 'view'">{{ translationData.lbl120CharMax || '120 characters max' }}</span>
+                    <mat-label class='font-16-px line-height-24px' style='display: flex; place-content: space-between;'>
+                        <span><span>{{ translationData.lblMailSubject || 'Mail Subject' }}</span><span class='mandatoryColor'>*</span></span>
+                        <span class='font-14-px' *ngIf="actionType != 'view'">{{ translationData.lbl120CharMax || '120 characters max' }}</span>
                     </mat-label>
                     <mat-form-field appearance="outline">
                         <input placeholder="{{ translationData.lblEnterMailSubject || 'Enter Mail Subject' }}"  matInput formControlName="mailSubject" maxlength="120">
@@ -436,7 +438,7 @@
                     </mat-error>
                 </div>
                 <div *ngIf="actionType == 'edit'" class='areaWidth half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                  <mat-label style='display: flex; place-content: space-between;'>
+                  <mat-label class='font-16-px line-height-24px' style='display: flex; place-content: space-between;'>
                     {{ translationData.lblReportStatus || 'Report Status' }}
                   </mat-label>
 
@@ -451,9 +453,9 @@
 
               <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start" *ngIf="actionType != 'view'">
                 <div class='areaWidth full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <mat-label style='display: flex; place-content: space-between;'>
-                        {{ translationData.lblMailDescription || 'Mail Description' }}<span class='mandatoryColor'>*</span>
-                        <span *ngIf="actionType != 'view'">{{ translationData.lbl250CharMax || '250 characters max' }}</span>
+                    <mat-label class='font-16-px line-height-24px' style='display: flex; place-content: space-between;'>
+                        <span><span>{{ translationData.lblMailDescription || 'Mail Description' }}</span><span class='mandatoryColor'>*</span></span>
+                        <span class='font-14-px' *ngIf="actionType != 'view'">{{ translationData.lbl250CharMax || '250 characters max' }}</span>
                     </mat-label>
                     <mat-form-field appearance="outline">
                         <textarea matInput maxlength="250" placeholder="{{ translationData.lblEnterMailDescription || 'Enter mail description' }}"

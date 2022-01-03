@@ -948,7 +948,8 @@ export class AlertAdvancedFilterComponent implements OnInit {
             tableData: tableData,
             colsList: colsList,
             colsName: colsName,
-            tableTitle: tableTitle
+            tableTitle: tableTitle,
+            translationData: this.translationData
           }
           this.dialogRef = this.dialog.open(CommonTableComponent, dialogConfig);
         }
@@ -1125,7 +1126,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
 
 let urgencylevelStartDate = 0;
 let urgencylevelEndDate = 0;
-if(this.selectedApplyOn == 'C'){
+// if(this.selectedApplyOn == 'C'){
   if(this.periodSelectionComponent !=undefined){
   this.alertTimingDetail = this.periodSelectionComponent.getAlertTimingPayload();
   urgencylevelStartDate = Util.convertDateToUtc(this.setStartEndDateTime(this.alertAdvancedFilterForm.controls.fromDate.value, this.alertAdvancedFilterForm.controls.fromTimeRange.value, "start"));
@@ -1133,8 +1134,8 @@ if(this.selectedApplyOn == 'C'){
   
   this.alertTimingDetail.forEach(element => {
     element["type"] = "F";
-    element["startDate"] =urgencylevelStartDate;
-    element["endDate"] =urgencylevelEndDate;
+    // element["startDate"] =urgencylevelStartDate;
+    // element["endDate"] =urgencylevelEndDate;
   });
   }
   else{
@@ -1146,12 +1147,12 @@ if(this.selectedApplyOn == 'C'){
   urgencylevelEndDate = Util.convertDateToUtc(this.setStartEndDateTime(this.periodSelectedDateTime[0].endDate, this.periodSelectedDateTime[0].toTime, "end"));;
 
 
-}
-else{
-    this.alertTimingDetail = [];
-    urgencylevelStartDate = 0;
-    urgencylevelEndDate = 0;
-  }
+// }
+// else{
+//     this.alertTimingDetail = [];
+//     urgencylevelStartDate = 0;
+//     urgencylevelEndDate = 0;
+//   }
  
 //Fuel Increase & Fuel Loss
   if ((this.alert_category_selected == 'F') && (this.alert_type_selected == 'P' || this.alert_type_selected == 'L' || this.alert_type_selected == 'T')) {

@@ -23,7 +23,7 @@
     <mat-expansion-panel [(expanded)]="showMap" class="full-width" fxLayoutGap="10px">
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title>
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblMapView }}</span>
+          <span class='font-18-px line-height-27px font-helvetica-md'>{{ translationData.lblMapView }}</span>
         </mat-panel-title>
       </mat-expansion-panel-header>
 
@@ -33,7 +33,7 @@
     <mat-card class='mat-elevation-z' *ngIf='!createEditStatus'>
         <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblCorridorList || 'Corridor List'
+              <span class='font-18-px line-height-27px font-helvetica-md'>{{ translationData.lblCorridorList || 'Corridor List'
               }}  </span>
             </div>
             <div *ngIf="adminAccessType.adminFullAccess" class="groupDetails margin-bottom-sm" fxLayout="row" fxLayoutAlign="space-between">
@@ -52,7 +52,7 @@
         <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
             <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                 <mat-form-field appearance="outline">
-                  <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Search ">
+                  <input matInput (keyup)="applyFilter($event.target.value)" placeholder=" {{translationData.lblSearch}} ">
                   <span matPrefix>
                     <mat-icon>search</mat-icon>
                   </span>
@@ -68,7 +68,7 @@
                   <mat-checkbox (change)='$event ? masterToggleForCorridor() : null'
                     [checked]='selectedCorridors.hasValue() && isAllSelectedForCorridor()'
                     [indeterminate]='selectedCorridors.hasValue() && !isAllSelectedForCorridor()'
-                    [aria-label]='checkboxLabelForCorridor()' matTooltip="{{ translationData.lblcheckboxViewTooltipmsg}}">
+                    [aria-label]='checkboxLabelForCorridor()' matTooltip="{{ translationData.lblCheckboxFunctionTooltipMsg}}">
                   </mat-checkbox>
                   <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll}}</span>
                 </mat-header-cell>
@@ -81,7 +81,7 @@
                   <span [ngClass]="{ 'marginLeft-14': row.newTag }"></span>
                   <mat-checkbox (click)='$event.stopPropagation()'
                     (change)='$event ? selectedCorridors.toggle(row) : null; checkboxClicked($event, row)'
-                    [checked]='selectedCorridors.isSelected(row)' [aria-label]='checkboxLabelForCorridor(row)' matTooltip="{{ translationData.lblcheckboxViewTooltipmsg}}">
+                    [checked]='selectedCorridors.isSelected(row)' [aria-label]='checkboxLabelForCorridor(row)' matTooltip="{{ translationData.lblCheckboxFunctionTooltipMsg}}">
                   </mat-checkbox>
                 </mat-cell>
               </ng-container>
@@ -98,11 +98,11 @@
                     <mat-cell *matCellDef="let row">{{ row.endPoint }}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="distance">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDistance}}(km)</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDistance}}({{translationData.lblKm}})</mat-header-cell>
                     <mat-cell *matCellDef="let row">{{ row.distance/1000 }}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="width">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblWidth}}(mtr)</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblWidth}}({{translationData.lblMeter}})</mat-header-cell>
                     <mat-cell *matCellDef="let row">{{ row.width }}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="action">

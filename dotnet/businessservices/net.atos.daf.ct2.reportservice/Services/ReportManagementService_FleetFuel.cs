@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 
 using ReportComponent = net.atos.daf.ct2.reports;
 using ProtobufCollection = Google.Protobuf.Collections;
+using net.atos.daf.ct2.reportservice.entity;
 
 namespace net.atos.daf.ct2.reportservice.Services
 {
@@ -48,11 +49,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetFleetFuelDetailsByVehicle)}: With Error:-", ex);
                 return await Task.FromResult(new FleetFuelDetailsResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "GetFleetFuelDetailsByVehicle get failed due to - " + ex.Message
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -92,11 +93,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetFleetFuelDetailsByDriver)}: With Error:-", ex);
                 return await Task.FromResult(new FleetFuelDetailsByDriverResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "GetFleetFuelDetailsByDriver get failed due to - " + ex.Message
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -130,7 +131,7 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetFleetFuelDetailsForVehicleGraphs)}: With Error:-", ex);
                 throw;
             }
         }
@@ -164,7 +165,7 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetFleetFuelDetailsForDriverGraphs)}: With Error:-", ex);
                 throw;
             }
         }
@@ -197,11 +198,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetFleetFuelTripDetailsByVehicle)}: With Error:-", ex);
                 return await Task.FromResult(new FleetFuelDetailsResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "GetFleetFuelDetailsByVehicle get failed due to - " + ex.Message
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -235,11 +236,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetFleetFuelTripDetailsByDriver)}: With Error:-", ex);
                 return await Task.FromResult(new FleetFuelDetailsResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "GetFleetFuelDetailsByVehicle get failed due to - " + ex.Message
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 });
             }
         }

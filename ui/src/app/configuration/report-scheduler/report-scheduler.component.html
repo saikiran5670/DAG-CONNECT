@@ -8,11 +8,11 @@
       <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
       </div>
   </div>
-  <div *ngIf='!createEditStatus && !viewStatus'>
+  <div *ngIf='!createEditStatus && !status'>
       <mat-card class='mat-elevation-z'>
         <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
           <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblScheduledReportList || 'Scheduled Report List' }}
+              <span class='font-18-px line-height-27px font-helvetica-md'>{{ translationData.lblScheduledReportList || 'Scheduled Report List' }}
                   <!-- ({{ dataSource.filteredData.length }}) -->
               </span>
           </div>
@@ -143,16 +143,16 @@
         
         <app-data-table *ngIf="!showLoadingIndicator" [tableData]="initData" [translationData]="translationData"
         [columnCodes]="columnCodes" [columnLabels]="columnLabels" [actionColumnElements]="actionColumnElements" [action2ColumnElements]="action2ColumnElements" [topRightElements]="topRightElements" [topLeftElements]="topLeftElements"
-        [viewStatusColumnElements]="viewStatusColumnElements" [showExport]="false" #gridComp>
+        [viewStatusColumnElements]="viewStatusColumnElements" [nextScheduleRunDateColumnElements]="nextScheduleRunDateColumnElements" [showExport]="false" #gridComp>
 
         <ng-template #topLeftElements let-gridData='rowData'>
           <div class='areaWidth' fxLayoutAlign="center center">
             <mat-form-field appearance="outline">
               <mat-select [(ngModel)]="reportTypeSelection" (selectionChange)="onReportTypeChange($event)"
                 placeholder="{{ translationData.lblSelectReportType || 'Select Report Type' }}">
-                <mat-option value="0">--All--</mat-option>
+                <mat-option value="0">{{translationData.lblAll}}</mat-option>
                 <mat-option *ngFor="let rer of ReportTypeList" [value]="rer.id">
-                  {{ rer.reportName }}
+                  {{ translationData[rer.key] }}
                 </mat-option>
               </mat-select>
             </mat-form-field>
@@ -161,7 +161,7 @@
             <mat-form-field appearance="outline">
               <mat-select [(ngModel)]="statusSelection" (selectionChange)="onStatusSelectionChange($event)"
                 placeholder="{{ translationData.lblSelectStatus || 'Select Status' }}">
-                <mat-option value="0">--All--</mat-option>
+                <mat-option value="0">{{translationData.lblAll}}</mat-option>
                 <mat-option *ngFor="let rer of StatusList" [value]="rer.id">
                   {{ rer.name }}
                 </mat-option>
@@ -185,7 +185,7 @@
           <span>{{ gridData.status == "A" ? (translationData.lblActive || 'Active') : translationData.lblSuspended || 'Suspended' }}</span>
           </button>
         </ng-template>
-    
+     
         <ng-template #actionColumnElements let-gridData='rowData'>
           <button class='actionBtn' mat-flat-button (click)="onViewReportScheduler(gridData, 'view')" matTooltip="{{ translationData.lblView || 'view' }}">
             <mat-icon>visibility</mat-icon>
@@ -199,7 +199,7 @@
         </ng-template>
 
         <ng-template #action2ColumnElements let-gridData='rowData'>
-          <span class="text-truncate"
+           <span class="text-truncate"
             *ngIf="gridData.scheduledReportVehicleRef.length ==1 && gridData.scheduledReportVehicleRef[0].vehicleGroupType == 'G'">
             <span [ngClass]="gridData.scheduledReportVehicleRef[0].vehicleGroupName != '' ? 'row-hover' : ''"
               (click)="gridData.scheduledReportVehicleRef[0].vehicleGroupName != '' ? onVehicleGroupClick(gridData) : ''"
@@ -211,8 +211,13 @@
               gridData.vehicleGroupAndVehicleList }}</span>
           <span class="text-truncate" *ngIf="gridData.scheduledReportVehicleRef.length != 1" class="text-truncate">{{
             gridData.scheduledReportVehicleRef.length > 0 ? gridData.vehicleGroupAndVehicleList : '&nbsp; &nbsp; -' }}</span>
+        </ng-template>   
+          <ng-template #nextScheduleRunDateColumnElements let-gridData='rowData'>
+            <span>
+              {{gridData.nextScheduleRunDate | date:nextScheduleDateFormat}}
+            </span>
         </ng-template>
-    
+      
       </app-data-table>
 
       </mat-card>
@@ -223,8 +228,8 @@
       <app-create-edit-report-scheduler [reportSchedulerParameterData]="reportSchedulerParameterData" [translationData]='translationData' [actionType]='actionType' [selectedRowData]="rowsData"
         (backToPage)='onBackToPage($event)'></app-create-edit-report-scheduler>
   </div>
-  <div *ngIf='viewStatus'>
+  <div *ngIf='status'>
     <app-view-report-scheduler [translationData]='translationData' [selectedRowData]="rowsData" [completePrefData]='completePrefData' [prefTimeFormat]='prefTimeFormat' [prefTimeZone]='prefTimeZone' [prefDateFormat]='prefDateFormat'
-      (backToPage)='onBackToPage($event)'></app-view-report-scheduler>
+      (backToPage)='onBackToPage($event)' (editReportSchedule)='editReport()' [adminAccessType]="adminAccessType"></app-view-report-scheduler>
 </div>
 </div>

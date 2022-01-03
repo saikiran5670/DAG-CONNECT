@@ -7,8 +7,8 @@
         <mat-expansion-panel-header class="full-width">
           <mat-panel-title>
             <span>
-              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
-                translationData.lblExistingTrips}}</span>
+              <span class='font-18-px line-height-27px font-helvetica-md'>{{
+                translationData.lblExistingTrips }}</span>
               <!-- <span> ({{ translationData.lblMaxrange3months || 'Max range 3 months' }})</span> -->
             </span>
           </mat-panel-title>
@@ -16,7 +16,7 @@
         <div>
           <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
             <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ translationData.lblTimeRange}} <span class='mandatoryColor'>*</span>
+              <mat-label class='font-16-px line-height-24px'>{{ translationData.lblTimeRange }} <span class='mandatoryColor'>*</span>
               </mat-label>
               <div style='margin-top: 5px;'>
                 <button [disabled]="selectionTab == 'today'" (click)="selectionTimeRange('today')"
@@ -41,7 +41,7 @@
               </div>
             </div>
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ translationData.lblVehicleGroup}} <span class='mandatoryColor'>*</span>
+              <mat-label class='font-16-px line-height-24px'>{{ translationData.lblVehicleGroup}} <span class='mandatoryColor'>*</span>
               </mat-label>
               <mat-form-field class="full-width" appearance="outline">
                 <mat-select [disabled]="vehicleGroupIdsSet.length == 0" (selectionChange)="vehicleGroupSelection($event)"
@@ -62,7 +62,7 @@
             <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
                 <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
-                  <mat-label>{{ translationData.lblFrom }} <span class='mandatoryColor'>*</span></mat-label>
+                  <mat-label class='font-16-px line-height-24px'>{{ translationData.lblFrom }} <span class='mandatoryColor'>*</span></mat-label>
                   <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
                     <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
                       <mat-form-field appearance="outline">
@@ -88,7 +88,7 @@
                   </div>
                 </div>
                 <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
-                  <mat-label>{{ translationData.lblTo}} <span class='mandatoryColor'>*</span></mat-label>
+                  <mat-label class='font-16-px line-height-24px'>{{ translationData.lblTo }} <span class='mandatoryColor'>*</span></mat-label>
                   <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
                     <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
                       <mat-form-field appearance="outline">
@@ -116,7 +116,7 @@
               </div>
             </div>
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ translationData.lblVehicle}} <span class='mandatoryColor'>*</span></mat-label>
+              <mat-label class='font-16-px line-height-24px'>{{ translationData.lblVehicle }} <span class='mandatoryColor'>*</span></mat-label>
 
               <mat-form-field appearance="outline">
                 <mat-select [disabled]="vinList.length == 0" (selectionChange)="vinSelection($event)"
@@ -175,7 +175,7 @@
         <mat-expansion-panel-header class="full-width">
           <mat-panel-title>
             <span>
-              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblMapView}}</span>
+              <span class='font-18-px line-height-27px font-helvetica-md'>{{ translationData.lblMapView }}</span>
               <!-- <span> ({{ translationData.lblMaxrange3months || 'Max range 3 months' }})</span> -->
             </span>
           </mat-panel-title>
@@ -193,7 +193,7 @@
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm">
           <div class="col-sm-4 areaWidth" fxLayout="column" fxLayoutAlign="left">
             <mat-label>
-              <span>{{ translationData.lblCorridorLabel}}</span>
+              <span class='font-16-px line-height-24px'>{{ translationData.lblCorridorLabel }}</span>
               <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
             </mat-label>
             <div *ngIf="actionType != 'view'">
@@ -215,12 +215,12 @@
               </mat-error>
             </div>
             <div *ngIf="actionType === 'view'">
-              <span style='font-weight: 500!important;'>{{corridorName}}</span>
+              <span class='font-helvetica-md'>{{ corridorName }}</span>
             </div>
           </div>
           <div class="col-sm-4 areaWidth" fxLayout="column" fxLayoutAlign="left">
-            <mat-label>
-              <span>{{ translationData.lblStartAddress}}</span>
+            <mat-label class='font-16-px line-height-24px'>
+              <span>{{ translationData.lblStartAddress }}</span>
               <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
 
             </mat-label>
@@ -239,11 +239,11 @@
               </mat-error>
             </div>
             <div *ngIf="actionType == 'view'">
-              <span style='font-weight: 500!important;'>{{searchStr}}</span>
+              <span class='font-helvetica-md'>{{ searchStr }}</span>
             </div>
           </div>
           <div class="col-sm-4 areaWidth" fxLayout="column" fxLayoutAlign="left">
-            <mat-label>
+            <mat-label class='font-16-px line-height-24px'>
               <span>{{ translationData.lblEndAddress }}</span>
               <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
 
@@ -264,17 +264,17 @@
               </mat-error>
             </div>
             <div *ngIf="actionType == 'view'">
-              <span style='font-weight: 500!important;'>{{searchEndStr}}</span>
+              <span class='font-helvetica-md'>{{ searchEndStr }}</span>
             </div>
           </div>
         </div>
         <div class="col-sm-4 areaWidth">
-          <span>{{ translationData.lblWidth}} ({{ translationData.lblKm|| 'km' }}):
+          <span>{{ translationData.lblWidth }} ({{ translationData.lblKm || 'km' }}):
             <input type="number" min="0" max="10" *ngIf="actionType != 'view'" class="sliderInput"
               formControlName="widthInput" (focusout)="changeSliderInput()">
           </span>
           <div *ngIf="actionType == 'view'">
-            <span style='font-weight: 500!important;'>{{corridorWidthKm}}</span>
+            <span class='font-helvetica-md'>{{ corridorWidthKm }}</span>
           </div>
           <div *ngIf="actionType != 'view'">
             <ngx-slider [(value)]="corridorWidth" [options]="options" (mouseup)="sliderChanged()"
@@ -296,12 +296,12 @@
     <!-- </div> -->
     <mat-card>
       <div>
-        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblExistingTripDetails}}</span>
+        <span class='font-18-px line-height-27px font-helvetica-md'>{{ translationData.lblExistingTripDetails }}</span>
         <!-- <span> ({{ translationData.lblMaxrange3months || 'Max range 3 months' }})</span> -->
       </div>
       <div *ngIf='initData.length == 0'>
-        <div>No Record Found</div>
-        <div>Search detail from top to view details</div>
+        <div>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
+        <div>{{ translationData.lblSearchdetailfromtoptoviewdetails || 'Search detail from top to view details'  }}</div>
       </div>
       <div *ngIf='initData.length > 0'>
         <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
@@ -322,7 +322,7 @@
                 [checked]='selectedCorridors.hasValue() && isAllSelectedForCorridor()'
                 [indeterminate]='selectedCorridors.hasValue() && !isAllSelectedForCorridor()'
                 [aria-label]='checkboxLabelForCorridor()'
-                matTooltip="{{ translationData.lblcheckboxViewTooltipmsg }}">
+                matTooltip="{{ translationData.lblCheckboxFunctionTooltipMsg }}">
               </mat-checkbox>
               <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll}}</span>
             </mat-header-cell>
@@ -336,7 +336,7 @@
               <mat-checkbox (click)='$event.stopPropagation()'
                 (change)='$event ? selectedCorridors.toggle(row) : null; checkboxClicked($event, row)'
                 [checked]='selectedCorridors.isSelected(row)' [aria-label]='checkboxLabelForCorridor(row)'
-                matTooltip="{{ translationData.lblcheckboxViewTooltipmsg }}">
+                matTooltip="{{ translationData.lblCheckboxFunctionTooltipMsg }}">
               </mat-checkbox>
             </mat-cell>
           </ng-container>
@@ -355,7 +355,7 @@
             <!-- <mat-cell *matCellDef="let row" class="max-width-8-per">dfd</mat-cell> -->
           </ng-container>
           <!-- <div *ngIf="covertedDateValue.length > 0" > -->
-          <ng-container matColumnDef="date">
+          <ng-container matColumnDef="startTimeStamp">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDate}}</mat-header-cell>
             <mat-cell *matCellDef="let row">
               <!-- <div *ngFor="let dateValue of covertedDateValue;let i = index">{{dateValue[i]}}</div> -->
@@ -364,14 +364,14 @@
             <!-- <mat-cell *matCellDef="let row">sdsf</mat-cell> -->
           </ng-container>
           <!-- </div> -->
-          <ng-container matColumnDef="startPoint">
+          <ng-container matColumnDef="startAddress">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStartPoint}}
             </mat-header-cell>
             <!-- <mat-cell *matCellDef="let row" class="max-width-8-per">{{ row.startPositionlattitude }},{{ row.startPositionLongitude }}</mat-cell> -->
             <mat-cell *matCellDef="let row" style="margin-right: 10px;" matTooltip="{{row.startAddress }}"
               class="max-width-8-per text-truncate">{{row.startAddress}}</mat-cell>
           </ng-container>
-          <ng-container matColumnDef="endPoint">
+          <ng-container matColumnDef="endAddress">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEndPoint}}
             </mat-header-cell>
             <!-- <mat-cell *matCellDef="let row" class="max-width-8-per">{{ row.endPositionLattitude }},{{ row.endPositionLongitude }}</mat-cell> -->
@@ -387,20 +387,20 @@
 
         <div class="example-button-row pt-2" fxLayoutGap="20px" style="float:right;margin-top: 20px;">
           <span *ngIf="actionType !== 'view'">
-            <button mat-flat-button color="primary" (click)="backToCorridorList()">
-              <span>{{ translationData.lblCancel}}</span>
+            <button class='resetCancelBtnColor' mat-flat-button color="primary" (click)="backToCorridorList()">
+              <span>{{ translationData.lblCancel }}</span>
             </button>
           </span>
 
           <span *ngIf="actionType == 'edit'">
-            <button mat-button color="primary" (click)="resetToEditData()" [disabled]="existingTripForm.pristine">
-              <span>{{ translationData.lblReset}}</span>
+            <button class='resetCancelBtnColor' mat-button color="primary" (click)="resetToEditData()" [disabled]="existingTripForm.pristine">
+              <span>{{ translationData.lblReset }}</span>
             </button>
           </span>
           <span *ngIf="actionType !== 'view'">
             <!-- <button mat-button  color="primary" (click)="createCorridorClicked()" [disabled]="(!existingTripForm.valid || !strPresentStart || !strPresentEnd)"> -->
             <button [disabled]="!existingTripForm.valid" mat-button color="primary" (click)="createCorridorClicked()">
-              <span>{{ translationData.lblCreate}}</span>
+              <span>{{ translationData.lblCreate }}</span>
             </button>
           </span>
         </div>

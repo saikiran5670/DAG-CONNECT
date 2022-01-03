@@ -6,7 +6,7 @@
     <!-- <mat-expansion-panel class="full-width" fxLayoutGap="10px">
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title>
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+          <span class='font-16-px line-height-24px font-helvetica-md'>{{
             translationData.lblPeriod }}<span class='mandatoryColor'>*</span></span>
         </mat-panel-title>
       </mat-expansion-panel-header> -->
@@ -73,7 +73,11 @@
       [actionType]='actionType'></app-period-selection-filter>
     </div> -->
     <!-- </mat-expansion-panel> -->
-    <div *ngIf="selectedApplyOn =='C'" > 
+    <!-- <div *ngIf="selectedApplyOn =='C'" >  -->
+      <div *ngIf="((alert_category_selected + alert_type_selected == 'LN') ||
+      (alert_category_selected + alert_type_selected == 'LX') ||
+      (alert_category_selected + alert_type_selected == 'FA') ||
+      (alert_category_selected + alert_type_selected == 'FI'))" > 
       <app-period-selection-filter  #periodComponent
       [translationData] = 'translationData'
       [selectedRowData] = 'selectedRowData'
@@ -89,7 +93,7 @@
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title>
           <mat-checkbox (change)="onChangeDistance($event)" [checked]="isDistanceSelected">
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+            <span class='font-16-px line-height-24px font-helvetica-md'>{{
               translationData.lblDistance }}<span class='mandatoryColor'>*</span></span>
           </mat-checkbox>
         </mat-panel-title>
@@ -120,7 +124,7 @@
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title>
           <mat-checkbox (change)="onChangeOccurence($event)" [checked]="isOccurenceSelected">
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+            <span class='font-16-px line-height-24px font-helvetica-md'>{{
               translationData.lblNumberofoccurences }}<span
                 class='mandatoryColor'>*</span></span>
           </mat-checkbox>
@@ -151,7 +155,7 @@
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title>
           <mat-checkbox (change)="onChangeDuration($event)" [checked]="isDurationSelected">
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+            <span class='font-16-px line-height-24px font-helvetica-md'>{{
               translationData.lblDuration }}<span class='mandatoryColor'>*</span></span>
           </mat-checkbox>
         </mat-panel-title>
@@ -184,12 +188,12 @@
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title *ngIf="actionType != 'view'">
           <mat-checkbox (change)="onChangePOI($event)" [checked]="isPoiSelected">
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+            <span class='font-16-px line-height-24px font-helvetica-md'>{{
               translationData.lblPOICondition }}<span class='mandatoryColor'>*</span></span>
           </mat-checkbox>
         </mat-panel-title>
         <mat-panel-title *ngIf="actionType == 'view'">
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+            <span class='font-16-px line-height-24px font-helvetica-md'>{{
               translationData.lblLandmarkDetails }}<span class='mandatoryColor'>*</span></span>
         </mat-panel-title>
       </mat-expansion-panel-header>
@@ -214,7 +218,7 @@
           <div class="col-sm-4  areawidth">
             <ngx-slider [(value)]="poiWidth" [options]="options" (mousemove)="sliderChanged()"></ngx-slider>
           </div>
-          <mat-label>(mtr)</mat-label>
+          <mat-label>{{translationData.lblmtr || 'mtr'}}</mat-label>
         </div>
       </div>
 
@@ -232,7 +236,7 @@
             <mat-expansion-panel-header class="full-width">
               <mat-panel-title>
                 <span><span
-                    style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{(translationData.lblSelectPOI) }}</span> <span class='mandatoryColor'>*</span></span>
+                    class='font-16-px line-height-24px font-helvetica-md'>{{(translationData.lblSelectPOI) }}</span> <span class='mandatoryColor'>*</span></span>
               </mat-panel-title>
             </mat-expansion-panel-header>
             <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>
@@ -305,7 +309,7 @@
           <mat-expansion-panel class="full-width" fxLayoutGap="10px" [expanded]="true">
             <mat-expansion-panel-header class="full-width">
               <mat-panel-title>
-                <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (actionType == 'view')
+                <span><span class='font-16-px line-height-24px font-helvetica-md'>{{ (actionType == 'view')
                     ?
                     (translationData.lblSelectedGeofence) : (translationData.lblSelectGeofence) }}</span> <span class='mandatoryColor'>*</span></span>
               </mat-panel-title>
@@ -341,20 +345,20 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="name">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{translationData.lblName || 'Name'}}</mat-header-cell>
                   <!-- <mat-cell *matCellDef="let row">{{ row.geofenceName }}</mat-cell> -->
                   <mat-cell *matCellDef="let row">{{ row.name }}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="categoryName">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>Category</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{translationData.lblCategory || 'Category'}}</mat-header-cell>
                   <mat-cell *matCellDef="let row">{{ row.categoryName }}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="subCategoryName">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>Sub-Category</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{translationData.lblSubCategory || 'Sub Category'}}</mat-header-cell>
                   <mat-cell *matCellDef="let row">{{ row.subCategoryName }}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="address">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>Address</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{translationData.lblAddress || 'Address'}}</mat-header-cell>
                   <mat-cell *matCellDef="let row">{{ row.address }}, {{ row.city }}, {{ row.country }}</mat-cell>
                 </ng-container>
                 <mat-header-row *matHeaderRowDef="displayedColumnsGeofence"></mat-header-row>
@@ -374,7 +378,7 @@
           <mat-expansion-panel class="full-width" fxLayoutGap="10px" [expanded]="true">
             <mat-expansion-panel-header class="full-width">
               <mat-panel-title>
-                <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (actionType == 'view')
+                <span><span class='font-16-px line-height-24px font-helvetica-md'>{{ (actionType == 'view')
                     ? (translationData.lblSelectedGroup) : (translationData.lblSelectGroup) }}</span> <span class='mandatoryColor'>*</span></span>
               </mat-panel-title>
             </mat-expansion-panel-header>
@@ -447,7 +451,7 @@
   <mat-expansion-panel-header class="full-width"> -->
     <mat-card *ngIf="actionType == 'view'" class='mat-elevation-z'>
     <!-- <mat-panel-title> -->
-      <!-- <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+      <!-- <span class='font-16-px line-height-24px font-helvetica-md'>{{
         translationData.lblAdvanceFilterDetails || 'Advance Filter Details' }}</span> -->
     <!-- </mat-panel-title>
   </mat-expansion-panel-header> -->

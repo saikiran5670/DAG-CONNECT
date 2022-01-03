@@ -128,8 +128,8 @@ export class VehicleGroupManagementComponent implements OnInit {
 
   compare(a: Number | String, b:Number | String, isAsc: boolean, columnName: any) {
     if(columnName == "groupName"){
-      if(!(a instanceof Number)) a = a.toString().toUpperCase();
-      if(!(b instanceof Number)) b = b.toString().toUpperCase();
+      if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
+      if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
     }
     return ( a < b ? -1 : 1) * (isAsc ? 1: -1);
   }
@@ -236,7 +236,7 @@ export class VehicleGroupManagementComponent implements OnInit {
   deleteVehicleGroup(rowData: any){
     const options = {
       title: this.translationData.lblDelete || "Delete",
-      message: this.translationData.lblvehiclegrpdeletemsg || "Are you sure you want to delete '$' Vehicle Group?",
+      message: this.translationData.lblvehiclegrpconfirmdeletemsg || "Are you sure you want to delete '$' Vehicle Group?",
       cancelText: this.translationData.lblCancel || "Cancel",
       confirmText: this.translationData.lblDelete || "Delete"
     };

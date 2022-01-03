@@ -149,6 +149,7 @@ message ChangePasswordRequest {
     string EmailId=1;
     string Password=2;
     int32 OrgId=3;
+    string OldPassword=4;
 }
 
 //Account Reset Password

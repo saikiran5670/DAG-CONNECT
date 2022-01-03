@@ -7,6 +7,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.OTASoftwareUpdate
 {
     public class OTASoftwareUpdateConstants
     {
+        public const string INTERNAL_SERVER_MSG = "Error occured, Please check with DAF IT team for more info.";
         public const string INTERNAL_SERVER_ERROR_MSG = "Internal Server Error.{0}";
         public const string VEHICLE_SOFTWARE_STATUS_FAILURE_MSG = "Get Vehicle Software Status failed with error {0}";
         public const string VEHICLE_SOFTWARE_STATUS_LIST_FAILURE_MSG = "Get Vehicle Software Status list failed with error {0}";

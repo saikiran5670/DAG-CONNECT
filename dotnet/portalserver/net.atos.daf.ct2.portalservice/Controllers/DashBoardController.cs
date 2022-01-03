@@ -67,8 +67,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetFleetKpi)}: With Error:-", ex);
+                return StatusCode(500, DashboardConstant.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -102,8 +102,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetAlert24Hours)}: With Error:-", ex);
+                return StatusCode(500, DashboardConstant.INTERNAL_SERVER_MSG);
             }
 
         }
@@ -136,8 +136,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetFleetutilization)}: With Error:-", ex);
+                return StatusCode(500, DashboardConstant.INTERNAL_SERVER_MSG);
             }
         }
         #endregion
@@ -169,8 +169,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, string.Format("{0} {1}", ex.Message, ex.StackTrace));
+                _logger.Error($"{nameof(GetTodayLiveVinData)}: With Error:-", ex);
+                return StatusCode(500, DashboardConstant.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -211,12 +211,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 // $"GetVinsFromTripStatisticsAndVehicleDetails method Failed. Error:{ex.Message}", 1, 2, Convert.ToString(accountId),
                 //  Request);
                 // check for fk violation
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetVisibleVins)}: With Error:-", ex);
                 if (ex.Message.Contains(_socketException))
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, DashboardConstant.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -284,9 +284,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Dashboard Controller", "Dashboard service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  $"{ nameof(GetDashboardUserPreference) } method Failed. Error:{ex.Message}", 1, 2, Convert.ToString(_userDetails.AccountId), _userDetails);
 
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetDashboardUserPreference)}: With Error:-", ex);
 
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, DashboardConstant.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -317,8 +317,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                  "Report service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                  $"{ nameof(CreateDashboardUserPreference) } method Failed. Error : {ex.Message}", 0, 0, JsonConvert.SerializeObject(objDashUserPreferenceCreateRequest),
                                   _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, $"{ex.Message} {ex.StackTrace}");
+                _logger.Error($"{nameof(CreateDashboardUserPreference)}: With Error:-", ex);
+                return StatusCode(500, DashboardConstant.INTERNAL_SERVER_MSG);
             }
         }
     }

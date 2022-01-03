@@ -53,23 +53,27 @@ namespace net.atos.daf.ct2.portalservice.Common
 
             return tripData;
         }
-        public TripDetails UpdateTripReportAddress(TripDetails tripDetails)
+        public void UpdateTripReportAddress(TripDetails trip)
         {
-
-
-            if (string.IsNullOrEmpty(tripDetails.StartPosition) && string.IsNullOrEmpty(tripDetails.EndPosition))
+            if (string.IsNullOrEmpty(trip.EndPosition) && trip.EndPositionLattitude != 255 && trip.EndPositionLongitude != 255)
             {
 
-                tripDetails.StartPosition = GetAddress(tripDetails.StartPositionLattitude, tripDetails.StartPositionLongitude);
-                tripDetails.EndPosition = GetAddress(tripDetails.EndPositionLattitude, tripDetails.EndPositionLongitude);
-                if (!string.IsNullOrEmpty(tripDetails.StartPosition) && !string.IsNullOrEmpty(tripDetails.EndPosition))
                 {
-                    var updtetrip = new AddTripAddressRequest() { Id = tripDetails.Id, StartAddress = tripDetails.StartPosition, EndAddress = tripDetails.EndPosition };
+                    GetMapRequest getMapRequestWarning = GetAddressObject(trip.EndPositionLattitude, trip.EndPositionLongitude);
+                    trip.EndPosition = getMapRequestWarning.Address;
+                    var updtetrip = new AddTripAddressRequest() { Id = trip.Id, EndAddress = trip.EndPosition ?? string.Empty };
                     var result = _poiServiceClient.UpdateTripAddress(updtetrip);
                 }
+
+            }
+            else if (string.IsNullOrEmpty(trip.StartPosition) && trip.StartPositionLattitude != 255 && trip.StartPositionLongitude != 255)
+            {
+                GetMapRequest getMapRequestWarning = GetAddressObject(trip.StartPositionLattitude, trip.StartPositionLongitude);
+                trip.StartPosition = getMapRequestWarning.Address;
+                var updtetrip = new AddTripAddressRequest() { Id = trip.Id, StartAddress = trip.StartPosition ?? string.Empty };
+                var result = _poiServiceClient.UpdateTripAddress(updtetrip); // to update address in trip_statistics table
             }
 
-            return tripDetails;
         }
         private bool ValidateLatLng(double lat, double lng)
         {
