@@ -250,7 +250,7 @@ export class ManageCorridorComponent implements OnInit {
 
   getcreatedMsg(name: any) {
     if (this.translationData.lblCreatedSuccessfully)
-      return this.translationData.lblCreatedSuccessfully.replace('$', name);
+      return this.translationData.lblCorridorCreatedSuccessfully.replace('$', name);
     else
       return ("Corridor '$' was created successfully").replace('$', name);
   }
@@ -264,7 +264,7 @@ export class ManageCorridorComponent implements OnInit {
 
   getNoDeletMsg(name: any) {
     if (this.translationData.lblCorridorwassuccessfullydeleted)
-      return this.translationData.lblCorridorwassuccessfullydeleted.replace('$', name);
+      return this.translationData.lblCorridorwasnotdeleted.replace('$', name);
     else
       return ("Corridor '$' cannot be deleted, it is associated with alert").replace('$', name);
   }
@@ -370,15 +370,15 @@ export class ManageCorridorComponent implements OnInit {
 
     this.tabVisibility.emit(true);
     if(_eventObj.successMsg=="create"){
-      var _msg =  "Corridor '"+_eventObj.CreateCorridorName+"' created successfully!"
+      var _msg = this.translationData.lblCorridorUpdatedSuccessfully.replace('$', _eventObj.CreateCorridorName);//;  "Corridor '"+_eventObj.CreateCorridorName+"' created successfully!"
       this.successMsgBlink(_msg);
     }
     else if(_eventObj.successMsg=="update"){
-      var _msg = "Corridor updated successfully!"
+      var _msg = this.translationData.lblCorridorUpdatedSuccessfully;
       this.successMsgBlink(_msg);
   }
     else if(_eventObj.successMsg=="reject"){
-        var _msg = "Corridor label exists!"
+        var _msg = this.translationData.lblCorridorexists;//"Corridor label exists!"
         this.failureMsgBlink(_msg);
     }
     this.loadCorridorData();
