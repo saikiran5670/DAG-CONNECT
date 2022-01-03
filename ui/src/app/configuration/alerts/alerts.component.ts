@@ -120,7 +120,7 @@ export class AlertsComponent implements OnInit {
         // this.loadFiltersData();
         this.loadDataBasedOnPrivileges();
       });
-      this.translationService.getPreferences(this.localStLanguage).subscribe((res) => { 
+      this.translationService.getPreferences(this.localStLanguage).subscribe((res) => {
         this.generalPreferences = res; this.getUnits();
         this.prefData = res;
       });
@@ -202,7 +202,7 @@ export class AlertsComponent implements OnInit {
       }
 
       this.alertTypeList = this.alertTypeListBasedOnPrivilege;
-     
+
       if(this.alertTypeList.length != 0){
         this.alertCategoryTypeMasterData.forEach(element => {
           this.alertTypeList.forEach(item => {
@@ -375,7 +375,7 @@ export class AlertsComponent implements OnInit {
       this.originalAlertData= JSON.parse(JSON.stringify(data)); //Clone array of objects
       this.initData.forEach(item => {
         this.setUnitOfThreshold(item);
- 
+
       let catVal = this.alertCategoryList.filter(cat => cat.enum == item.category);
       catVal.forEach(obj => {
         item["category"]=obj.value;
@@ -459,7 +459,7 @@ export class AlertsComponent implements OnInit {
           if(vehicledisplay.length != 0) {
             this.vehicleDisplayPreference = vehicledisplay[0].name;
           }
-        }  
+        }
         if(this.vehicleDisplayPreference == 'dvehicledisplay_VehicleName'){
           item.vehicleGroupName = item.vehicleName;
         }
@@ -470,7 +470,7 @@ export class AlertsComponent implements OnInit {
           item.vehicleGroupName = item.regNo;
         }
         // item.vehicleGroupName = item.vehicleName;
-        
+
       }
      });
       this.updateDatasource(this.initData);
@@ -593,7 +593,16 @@ export class AlertsComponent implements OnInit {
     if(data && data.length > 0){
       this.initData = this.getNewTagData(data);
     }
+    this.initData = data;
     this.dataSource = new MatTableDataSource(this.initData);
+    this.initData.forEach((ele,index) => {
+      if(ele.state == 'A'){
+        this.initData[index]["status"] = 'active';
+      }
+      if(ele.state == 'I'){
+        this.initData[index]["status"] = 'inactive';
+      }
+    });
     setTimeout(()=>{
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
@@ -618,7 +627,7 @@ export class AlertsComponent implements OnInit {
         data.category.toString().toLowerCase().includes(filter) ||
          data.type.toString().toLowerCase().includes(filter) ||
          data.vehicleGroupName.toString().toLowerCase().includes(filter) ||
-        data.state.toString().toLowerCase().includes(filter)
+        data.status.toString().toLowerCase().includes(filter)
        // data.highThresholdValue.toString().includes(filter)
       );
     };

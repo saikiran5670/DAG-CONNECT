@@ -1037,39 +1037,39 @@ titleStyle: any = { name: 'sans-serif', family: 4, size: 11, bold: true };
       value += ' (%)';
     } else if(this.prefUnitFormat === 'dunit_Imperial'){
       if(key.indexOf('rp_fuelconsumption') !== -1)
-        value += ' (mpg)';
+        value += ' ('+this.translationData.lblMpg+')';
       else if(key.indexOf('rp_averagedrivingspeed') !== -1 || key.indexOf('rp_averagespeed') !== -1)
-        value += ' (mph)';
+        value += ' ('+this.translationData.lblMph+')';
       else if(key.indexOf('rp_CruiseControlUsage') !== -1 || key.indexOf('rp_cruisecontroldistance') !== -1){
         if(key.indexOf('30') !== -1)
-          value += ' 15-30 mph ';
+          value += ' 15-30 '+this.translationData.lblMph+' ';
         else if(key.indexOf('50') !== -1)
-          value += ' 30-45 mph ';
+          value += ' 30-45 '+this.translationData.lblMph+' ';
         else if(key.indexOf('75') !== -1)
-          value += ' >45 mph ';
+          value += ' >45 '+this.translationData.lblMph+' ';
         value += '(%)';
       } else if(key.indexOf('rp_averagegrossweight') !== -1){
-        value += ' (ton) ';
+        value += ' ('+this.translationData.lblTon+') ';
       } else if(key.indexOf('rp_distance') !== -1 || key.indexOf('rp_averagedistanceperday') !== -1){
-        value += ' (mile) ';
+        value += ' ('+this.translationData.lblMile+') ';
       }
     }  else if(this.prefUnitFormat === 'dunit_Metric'){
       if(key.indexOf('rp_fuelconsumption') !== -1)
-        value += ' (ltrs/100km)';
+        value += ' ('+this.translationData.lblLtrsPer100Km+')';
       else if(key.indexOf('rp_averagedrivingspeed') !== -1 || key.indexOf('rp_averagespeed') !== -1)
-        value += ' (km/h)';
+        value += ' ('+this.translationData.lblKmph+')';
       else if(key.indexOf('rp_CruiseControlUsage') !== -1 || key.indexOf('rp_cruisecontroldistance') !== -1){
           if(key.indexOf('30') !== -1)
-           value += ' 30-50 km/h ';
+           value += ' 30-50 '+this.translationData.lblKmph+' ';
           else if(key.indexOf('50') !== -1)
-           value += ' 50-75 km/h ';
+           value += ' 50-75 '+this.translationData.lblKmph+' ';
           else if(key.indexOf('75') !== -1)
-           value += ' >75 km/h ';
+           value += ' >75 '+this.translationData.lblKmph+' ';
           value += '(%)';
         } else if(key.indexOf('rp_averagegrossweight') !== -1){
-          value += ' (tonne) ';
+          value += ' ('+this.translationData.lblTonne+') ';
         } else if(key.indexOf('rp_distance') !== -1 || key.indexOf('rp_averagedistanceperday') !== -1){
-          value += ' (km) ';
+          value += ' ('+this.translationData.lblKm+') ';
         }
     }
     return value;
@@ -1390,7 +1390,7 @@ this.barChartOptionsPerformance = {
     let newGenColList:any=[]; 
     perfVinList.forEach(element => { 
       if(element == '' || element == 'Overall'){
-        element = element && element == 'Overall' ? this.translationData.lblOverall : element;
+        element = (element && element == 'Overall') ? this.translationData.lblOverall : element;
         newGenColList.push(element)
       }
     });    
@@ -1534,6 +1534,7 @@ this.barChartOptionsPerformance = {
     let trendLineChart = document.getElementById('trendLineChart');
     // let chartKPIs = document.getElementsByClassName('apexcharts-legend')[0];
     // trendLineChart.getElementsByTagName('foreignObject')[0].removeChild(chartKPIs);
+    var fileTitle = this.translationData.lblPdfTitle;
     html2canvas( (trendLineChart),
     {scale:2})
     .then(canvas => { 
@@ -1545,7 +1546,7 @@ this.barChartOptionsPerformance = {
         didDrawPage: function(data) {     
             // Header
             doc.setFontSize(14);
-            var fileTitle = this.translationData.lblPdfTitle;
+            // var fileTitle = this.translationData.lblPdfTitle;
             // var fileTitle = 'pdf';
             var img = "/assets/logo.png";
             doc.addImage(img, 'JPEG',10,10,0,0);

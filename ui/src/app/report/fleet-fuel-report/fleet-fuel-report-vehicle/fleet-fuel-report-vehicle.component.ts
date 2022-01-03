@@ -2662,6 +2662,7 @@ setVehicleGroupAndVehiclePreSelection() {
 
 
     let DATA = document.getElementById('charts');
+    var fileTitle = this.translationData.lblFleetFuelReportByVehicle;
     html2canvas( (DATA),
     {scale:2})
     .then(canvas => {
@@ -2673,7 +2674,7 @@ setVehicleGroupAndVehiclePreSelection() {
         didDrawPage: function(data) {
             // Header
             doc.setFontSize(14);
-            var fileTitle = this.translationData.lblFleetFuelReportByVehicle;
+            // var fileTitle = this.translationData.lblFleetFuelReportByVehicle;
             // var fileTitle = "PDF";
             var img = "/assets/logo.png";
             doc.addImage(img, 'JPEG',10,10,0,0);
