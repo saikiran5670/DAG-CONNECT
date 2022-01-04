@@ -280,23 +280,21 @@ export class DriverTimeDetailComponent implements OnInit {
             if (this.point) {
                 switch ( this.point.type) {
                     case 'Work':
-                        symbol = '<i class="fa fa-wrench"></i>';
+                        symbol = '<img matTooltip="activity" class="mr-1" src="/assets/activityIcons/work.svg" style="width: 16px; height: 16px;" />';
                         break;
                     case 'Rest':
-                        symbol = '<i class="fa fa-bed"></i> ';
+                        symbol = '<img matTooltip="activity" class="mr-1" src="/assets/activityIcons/rest.svg" style="width: 16px; height: 16px;" />';
                         break;
                     case 'Drive':
-                        symbol = '<i class="fa fa-car"></i>';
+                        symbol = '<img matTooltip="activity" class="mr-1" src="/assets/activityIcons/drive.svg" style="width: 16px; height: 16px;" />';
                         break;
                     case 'Available':                      
-                        symbol='<span class="fa-stack fa-lg" style="width: 1em;height: 1.2em;line-height: 1.2em;"><i class="fa fa-square-o fa-stack-1x"></i>'+
-                            '<i class="fa fa-long-arrow-right fa-stack-1x" style="transform: rotate(320deg);font-size:15px;"></i>'+
-                            '</span>'
+                        symbol='<img matTooltip="activity" class="mr-1" src="/assets/activityIcons/available.svg" style="width: 16px; height: 16px;" />'
                         break;                            
                     }
                 }
                 return (
-               '<div class="driveChartTT" style="border: 0px;"><div style="font-weight: bold;"><span style="font-size: 15px;padding-right: 6px;">' +
+               '<div class="driveChartTT" style="border: 0px;"><div style="font-weight: bold;"><span style="font-size: 15px;">' +
                 symbol + '</span>'+ this.point.type +'</div>'+
                '<div>'+transFrom+':'+ this.point.actualDate +'&nbsp;&nbsp;'+ this.point.low +'</div>'+
                '<div>'+transTo+':'+ this.point.actualDate+'&nbsp;&nbsp;'+this.point.high +'</div>'+
