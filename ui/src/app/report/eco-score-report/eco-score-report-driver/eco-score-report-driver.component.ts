@@ -443,6 +443,7 @@ titleStyle: any = { name: 'sans-serif', family: 4, size: 11, bold: true };
           // let _name = this.translationData.filter(obj=>obj.key === _key); || this.translationDataLocal.filter(obj=>obj.key === _key);
           // let name = _name[0].value;
           if(_key.indexOf('rp_CruiseControlUsage') !== -1 || _key.indexOf('rp_cruisecontroldistance') !== -1){
+            name = this.translationData['rp_cruisecontrolusage'];
             if(this.prefUnitFormat === 'dunit_Imperial'){
               if(_key.indexOf('30') !== -1)
                 name += ' 15-30 ';
@@ -916,11 +917,11 @@ titleStyle: any = { name: 'sans-serif', family: 4, size: 11, bold: true };
       return '';
     }
     let key=value;
-    var foundValue = this.translationData.value;// || this.translationDataLocal.filter(obj=>obj.key === value);
+    var foundValue = this.translationData[value];// || this.translationDataLocal.filter(obj=>obj.key === value);
     if(foundValue === undefined || foundValue === null || foundValue.length === 0)
       value = value;
     else
-      value = foundValue[0].value;
+      value = foundValue;
     
     const gridOptions = grid.getOptions() as GridOption;
     const treeLevelPropName = gridOptions.treeDataOptions && gridOptions.treeDataOptions.levelPropName || '__treeLevel';
@@ -1055,6 +1056,7 @@ titleStyle: any = { name: 'sans-serif', family: 4, size: 11, bold: true };
       else if(key.indexOf('rp_averagedrivingspeed') !== -1 || key.indexOf('rp_averagespeed') !== -1)
         value += ' ('+this.translationData.lblMph+')';
       else if(key.indexOf('rp_CruiseControlUsage') !== -1 || key.indexOf('rp_cruisecontroldistance') !== -1){
+        value = this.translationData['rp_cruisecontrolusage'];
         if(key.indexOf('30') !== -1)
           value += ' 15-30 '+this.translationData.lblMph+' ';
         else if(key.indexOf('50') !== -1)
@@ -1073,6 +1075,7 @@ titleStyle: any = { name: 'sans-serif', family: 4, size: 11, bold: true };
       else if(key.indexOf('rp_averagedrivingspeed') !== -1 || key.indexOf('rp_averagespeed') !== -1)
         value += ' ('+this.translationData.lblKmph+')';
       else if(key.indexOf('rp_CruiseControlUsage') !== -1 || key.indexOf('rp_cruisecontroldistance') !== -1){
+          value = this.translationData['rp_cruisecontrolusage'];
           if(key.indexOf('30') !== -1)
            value += ' 30-50 '+this.translationData.lblKmph+' ';
           else if(key.indexOf('50') !== -1)
