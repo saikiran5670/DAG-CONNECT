@@ -84,7 +84,7 @@
                 </div>
                 <div fxLayout="row" *ngIf="!isSelectPictureConfirm">
                   <span style="color: grey; display: flex; align-items: center; padding-top: 5px;">
-                    <mat-icon style='margin-right: 5px;'>information</mat-icon> {{ translationData.lblProfilePictureHint ||  'Max file size : 200 kb Accepted format: png, jpg, gif' }}
+                    <mat-icon style='margin-right: 5px;'>information</mat-icon> {{ translationData.lblProfilePictureHintMsg ||  'Max file size : 200 kb Accepted format: png, jpg, gif' }}
                   </span>
                 </div>
                 <div fxLayout="row" *ngIf="imageError!=''">
@@ -350,7 +350,7 @@
             <div fxLayout="column" fxLayoutAlign="left">
               <div fxLayout="row" fxLayoutAlign='center center'>
                   <mat-icon class='margin-right-10'>info</mat-icon>
-                  <span>{{ translationData.lblMessage }}<span class='mandatoryColor'>*</span></span>
+                  <span>{{ translationData.lblSelectAtleastOneRole }}<span class='mandatoryColor'>*</span></span>
               </div>
             </div>
           </div>
