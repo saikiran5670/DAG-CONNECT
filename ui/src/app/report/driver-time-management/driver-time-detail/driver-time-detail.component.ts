@@ -271,22 +271,37 @@ export class DriverTimeDetailComponent implements OnInit {
         credits: {
           enabled: false
         },
-        // exporting: {
-        //   enabled: false
-        // },
+        style: {
+          fontFamily: 'fontAwesome'
+        },
         tooltip:{
           formatter(e){
-            // console.log(this);
-            // let yAxisValues = e.chart.yAxis[0].ticks
-            return (
-              `<div class='chartTT'> 
-                <div style='font-weight: bold;'><img matTooltip='activity' class='mr-1' src=${this.point.type} style="width: 16px; height: 16px;" />${this.point.type} </div>
-                <br/><div>${transFrom}:${this.point.actualDate}&nbsp;${this.point.low}</div>
-                <br/><div>${transTo}:${this.point.actualDate}&nbsp;${this.point.high} </div>
-                <br/><div>${transDuration}: ${Util.getTimeHHMMSS(this.point.duration)}</div>
-              </div>`
+            var symbol = '';
+            if (this.point) {
+                switch ( this.point.type) {
+                    case 'Work':
+                        symbol = '<img matTooltip="activity" class="mr-1" src="/assets/activityIcons/work.svg" style="width: 16px; height: 16px;" />';
+                        break;
+                    case 'Rest':
+                        symbol = '<img matTooltip="activity" class="mr-1" src="/assets/activityIcons/rest.svg" style="width: 16px; height: 16px;" />';
+                        break;
+                    case 'Drive':
+                        symbol = '<img matTooltip="activity" class="mr-1" src="/assets/activityIcons/drive.svg" style="width: 16px; height: 16px;" />';
+                        break;
+                    case 'Available':                      
+                        symbol='<img matTooltip="activity" class="mr-1" src="/assets/activityIcons/available.svg" style="width: 16px; height: 16px;" />'
+                        break;                            
+                    }
+                }
+                return (
+               '<div class="driveChartTT" style="border: 0px;"><div style="font-weight: bold;"><span style="font-size: 15px;">' +
+                symbol + '</span>'+ this.point.type +'</div>'+
+               '<div>'+transFrom+':'+ this.point.actualDate +'&nbsp;&nbsp;'+ this.point.low +'</div>'+
+               '<div>'+transTo+':'+ this.point.actualDate+'&nbsp;&nbsp;'+this.point.high +'</div>'+
+               '<div>'+transDuration+':' + Util.getTimeHHMMSS(this.point.duration)+'</div>'+
+               '</div>'
             )
-        }},
+        },  useHTML: true},
         series: [{
           data: newObj
         }],
