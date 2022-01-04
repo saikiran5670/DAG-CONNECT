@@ -271,22 +271,39 @@ export class DriverTimeDetailComponent implements OnInit {
         credits: {
           enabled: false
         },
-        // exporting: {
-        //   enabled: false
-        // },
+        style: {
+          fontFamily: 'fontAwesome'
+        },
         tooltip:{
           formatter(e){
-            // console.log(this);
-            // let yAxisValues = e.chart.yAxis[0].ticks
-            return (
-              `<div class='chartTT'> 
-                <div style='font-weight: bold;'><img matTooltip='activity' class='mr-1' src=${this.point.type} style="width: 16px; height: 16px;" />${this.point.type} </div>
-                <br/><div>${transFrom}:${this.point.actualDate}&nbsp;${this.point.low}</div>
-                <br/><div>${transTo}:${this.point.actualDate}&nbsp;${this.point.high} </div>
-                <br/><div>${transDuration}: ${Util.getTimeHHMMSS(this.point.duration)}</div>
-              </div>`
+            var symbol = '';
+            if (this.point) {
+                switch ( this.point.type) {
+                    case 'Work':
+                        symbol = '<i class="fa fa-wrench"></i>';
+                        break;
+                    case 'Rest':
+                        symbol = '<i class="fa fa-bed"></i> ';
+                        break;
+                    case 'Drive':
+                        symbol = '<i class="fa fa-car"></i>';
+                        break;
+                    case 'Available':                      
+                        symbol='<span class="fa-stack fa-lg" style="width: 1em;height: 1.2em;line-height: 1.2em;"><i class="fa fa-square-o fa-stack-1x"></i>'+
+                            '<i class="fa fa-long-arrow-right fa-stack-1x" style="transform: rotate(320deg);font-size:15px;"></i>'+
+                            '</span>'
+                        break;                            
+                    }
+                }
+                return (
+               '<div class="driveChartTT" style="border: 0px;"><div style="font-weight: bold;"><span style="font-size: 15px;padding-right: 6px;">' +
+                symbol + '</span>'+ this.point.type +'</div>'+
+               '<div>'+transFrom+':'+ this.point.actualDate +'&nbsp;&nbsp;'+ this.point.low +'</div>'+
+               '<div>'+transTo+':'+ this.point.actualDate+'&nbsp;&nbsp;'+this.point.high +'</div>'+
+               '<div>'+transDuration+':' + Util.getTimeHHMMSS(this.point.duration)+'</div>'+
+               '</div>'
             )
-        }},
+        },  useHTML: true},
         series: [{
           data: newObj
         }],
