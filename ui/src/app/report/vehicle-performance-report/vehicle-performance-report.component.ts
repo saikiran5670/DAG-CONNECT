@@ -112,87 +112,17 @@ export class VehiclePerformanceReportComponent implements OnInit {
     }
   }
 
-  xaxisLabels = {
-    offsetX: -8,
-    offsetY: 0,
-    formatter: (value, index) => {
-      let newIndex = (index/10)-1;
-      if(this.xaxisVaues[newIndex]) {
-        return this.xaxisVaues[newIndex];
-      }
-      if(value == 0) {
-        return '';
-      }
-      return value;
-    },
-    style: {
-      cssClass: 'apexcharts-xaxis-label',
-    }
-  };
+  xaxisLabels: any = {}
+  yaxisLabels: any = {}
+  xaxisE:any = {}
+  yaxisE:any = {}
+  xaxisS:any = {}
+  yaxisS:any = {}
+  xaxisB:any = {}
+  yaxisB:any = {}
+  
 
-  yaxisLabels = {
-    offsetX: 5,
-    offsetY: 15,
-    formatter: (value, index) => {
-      if(index !== 0) {
-        let newIndex = index - 1;
-        return this.yaxisVaues[newIndex];
-      }
-      return '';
-    }
-  };
-
-  xaxisE = {
-    ...this.commonAxis,
-    title: {
-      text: this.translationData.lblRpm,
-    },
-    labels: this.xaxisLabels
-  }
-
-  yaxisE = {
-    ...this.commonAxis,
-    title: {
-      text: '%',
-      offsetX: 5,
-    },
-    labels: this.yaxisLabels
-  }
-
-  xaxisS = {
-    ...this.commonAxis,
-    title: {
-      text: this.translationData.lblKmh,
-    },
-    labels: this.xaxisLabels,
-  }
-
-  yaxisS = {
-    ...this.commonAxis,
-    title: {
-      text: this.translationData.lblRpm,
-      offsetX: 5,
-    },
-    labels: this.yaxisLabels
-  }
-
-
-  xaxisB = {
-    ...this.commonAxis,
-    title: {
-      text: this.translationData.lblKmh,
-    },
-    labels: this.xaxisLabels,
-  }
-
-  yaxisB = {
-    ...this.commonAxis,
-    title: {
-      text: this.translationData.lblMs2,
-      offsetX: 5,
-    },
-    labels: this.yaxisLabels
-  }
+  
 
   constructor(private translationService: TranslationService, private reportService: ReportService) {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -208,9 +138,93 @@ export class VehiclePerformanceReportComponent implements OnInit {
     }
     this.getMenuTranslations(translationObj);
     this.getPreferences();
+    
   }
 
   ngOnInit(): void {
+  }
+
+  getAxisLabels() {
+    this.xaxisLabels = {
+      offsetX: -8,
+      offsetY: 0,
+      formatter: (value, index) => {
+        let newIndex = (index/10)-1;
+        if(this.xaxisVaues[newIndex]) {
+          return this.xaxisVaues[newIndex];
+        }
+        if(value == 0) {
+          return '';
+        }
+        return value;
+      },
+      style: {
+        cssClass: 'apexcharts-xaxis-label',
+      }
+    };
+  
+    this.yaxisLabels = {
+      offsetX: 5,
+      offsetY: 15,
+      formatter: (value, index) => {
+        if(index !== 0) {
+          let newIndex = index - 1;
+          return this.yaxisVaues[newIndex];
+        }
+        return '';
+      }
+    };
+    this.xaxisE = {
+      ...this.commonAxis,
+      title: {
+        text: this.translationData.lblRpm,
+      },
+      labels: this.xaxisLabels
+    }
+  
+    this.yaxisE = {
+      ...this.commonAxis,
+      title: {
+        text: '%',
+        offsetX: 5,
+      },
+      labels: this.yaxisLabels
+    }
+  
+    this.xaxisS = {
+      ...this.commonAxis,
+      title: {
+        text: this.translationData.lblKmh,
+      },
+      labels: this.xaxisLabels,
+    }
+  
+    this.yaxisS = {
+      ...this.commonAxis,
+      title: {
+        text: this.translationData.lblRpm,
+        offsetX: 5,
+      },
+      labels: this.yaxisLabels
+    }
+  
+  
+    this.xaxisB = {
+      ...this.commonAxis,
+      title: {
+        text: this.translationData.lblKmh,
+      },
+      labels: this.xaxisLabels,
+    }
+  
+    this.yaxisB = {
+      ...this.commonAxis,
+      title: {
+        text: this.translationData.lblMs2,
+        offsetX: 5,
+      },
+      labels: this.yaxisLabels
+    }
   }
 
   getPreferences() {
@@ -249,6 +263,7 @@ export class VehiclePerformanceReportComponent implements OnInit {
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.kpi();
       this.processTranslation(data);
+      this.getAxisLabels();
     });
   }
 

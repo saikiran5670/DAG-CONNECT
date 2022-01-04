@@ -2577,7 +2577,7 @@ convertToFromTime(milliseconds: any){
         {
          // this.alertForm.get('warningLevelThreshold').setValue('');  
           invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'warningLevelThreshold' + '"]');
-          this.filterDetailsErrorMsg ='Warning value should be less than critical value';
+          this.filterDetailsErrorMsg =this.translationData.lblWarningValueShouldbeLess;
         }
         else if((this.isAdvisoryLevelSelected && (this.alertForm.get('advisoryLevelThreshold').value == '')) ||
         ((this.isAdvisoryLevelSelected && this.isWarningLevelSelected ) && Number(this.alertForm.get('advisoryLevelThreshold').value) >= Number(this.alertForm.get('warningLevelThreshold').value )) ||
@@ -2585,7 +2585,7 @@ convertToFromTime(milliseconds: any){
         {
          // this.alertForm.get('advisoryLevelThreshold').setValue(''); 
         invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'advisoryLevelThreshold' + '"]');
-        this.filterDetailsErrorMsg ='Advisory value should be less than critical & warning value';
+        this.filterDetailsErrorMsg =this.translationData.lblAdvisoryValueShouldBeLess;
       }           
     }
     else{

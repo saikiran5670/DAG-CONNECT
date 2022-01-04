@@ -1,4 +1,4 @@
-import { EventEmitter, Input, Output } from '@angular/core';
+import { EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { DataInterchangeService } from '../../../../services/data-interchange.service';
 
@@ -81,12 +81,13 @@ ngAfterViewInit(){
     this.dataInterchangeService.getVehicleData(_dataObj); //change as per selected vehicle
   }
 
-  checkCreationForVehicleDetails(item: any){
+  checkCreationForVehicleDetails(item: any,isBackClick = false){
     this.tabvisibility.emit(false);
     this.isVehicleDetails = item.stepFlag;
     let obj = {
       vehicleDetailsFlag : this.isVehicleDetails,
-      todayFlagClicked : this.todayFlagClicked
+      todayFlagClicked : this.todayFlagClicked,
+      isBackClick
     }
     let _dataObj = {
       vehicleDetailsFlag : this.isVehicleDetails,
