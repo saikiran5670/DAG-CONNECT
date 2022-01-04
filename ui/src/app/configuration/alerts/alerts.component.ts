@@ -161,11 +161,11 @@ export class AlertsComponent implements OnInit {
       this.alertStatusList=[{
        id: 1,
        value:"A",
-       key:'Active'
+       key:this.translationData.lblActive
       },{
         id: 2,
         value:"I",
-        key:'Suspended'
+        key:this.translationData.lblSuspended
        }
     ]
     this.loadDataBasedOnPrivileges();
@@ -247,11 +247,11 @@ export class AlertsComponent implements OnInit {
       this.alertStatusList = [{
         id: 1,
         value: "A",
-        key: 'Active'
+        key:this.translationData.lblActive
       }, {
         id: 2,
         value: "I",
-        key: 'Suspended'
+        key:this.translationData.lblSuspended
       }
       ]
 
@@ -598,10 +598,10 @@ export class AlertsComponent implements OnInit {
     this.dataSource = new MatTableDataSource(this.initData);
     this.initData.forEach((ele,index) => {
       if(ele.state == 'A'){
-        this.initData[index]["status"] = 'active';
+        this.initData[index]["status"] = this.translationData.lblActive;
       }
       if(ele.state == 'I'){
-        this.initData[index]["status"] = 'inactive';
+        this.initData[index]["status"] =this.translationData.lblSuspended;
       }
     });
     setTimeout(()=>{
