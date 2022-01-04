@@ -2663,7 +2663,7 @@ setVehicleGroupAndVehiclePreSelection() {
     let ccdTwo = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance5075metric) : (this.translationData.lblCruiseControlDistance3045imperial);
     let ccdThree = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance75metric) : (this.translationData.lblCruiseControlDistance45imperial);
     let unitVal100km = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km ) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmpg ) : (this.translationData.lblmpg );
-    let unitValuekm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblLtrs ) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblgallonmile ) : (this.translationData.lblgallonmile );
+    let unitValuekm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblLtrs ) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblgal ) : (this.translationData.lblgal );
     let unitValkg = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg ) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblton ) : (this.translationData.lblton);
     let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh ) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmileh ) : (this.translationData.lblmileh );
     let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm ) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile ) : (this.translationData.lblmile );
@@ -2672,9 +2672,9 @@ setVehicleGroupAndVehiclePreSelection() {
 
     const header =  [this.translationData.lblVehicleName, this.translationData.lblVIN, this.translationData.lblPlateNo, this.translationData.lblReportStartTime, this.translationData.lblReportEndTime, this.translationData.lblAverageSpeed+'('+unitValkmh+')',this.translationData.lblMaxSpeed+'('+unitValkmh+')', this.translationData.lblDistance+'('+unitValkm+')',this.translationData.lblStartPosition, this.translationData.lblEndPosition,
     this.translationData.lblFuelConsumed+'('+unitValuekm+')', this.translationData.lblFuelConsumption+'('+unitVal100km+')',this.translationData.lblCO2Emission+'('+unitValkg1+')',  this.translationData.lblIdleDuration+'(%)',this.translationData.lblPTODuration+'(%)',this.translationData.lblCruiseControlDistance+ccdOne+'('+unitValkmh+')%',
-    this.translationData.lblCruiseControlDistance+' '+ccdTwo+'('+unitValkmh+')%',this.translationData.lblCruiseControlDistance+' '+ccdThree+'('+unitValkmh+')%',this.translationData.lblHeavyThrottleDuration+'(%)',this.translationData.lblHarshBrakeDuration+'(%)', this.translationData.lblAverageGrossWeightComb+' '+unitValkg1, this.translationData.lblAverageTrafficClassification,
+    this.translationData.lblCruiseControlDistance+' '+ccdTwo+'('+unitValkmh+')%',this.translationData.lblCruiseControlDistance+' '+ccdThree+'('+unitValkmh+')%',this.translationData.lblHeavyThrottleDuration+'(%)',this.translationData.lblHarshBrakeDuration+'(%)', this.translationData.lblGrossWeightComb+' '+unitValkg1, this.translationData.lblAverageTrafficClassification,
     this.translationData.lblCCFuelConsumption+'('+unitVal100km+')',this.translationData.lblFuelconsumptionCCnonactive+'('+unitVal100km+')',this.translationData.lblIdlingConsumption,this.translationData.lblDPAScore,this.translationData.lblIdlingwithPTO+'(hh:mm:ss)',this.translationData.lblIdlingwithPTO+'(%)',this.translationData.lblIdlingwithoutPTO+' (hh:mm:ss)',this.translationData.lblIdlingwithoutPTO+'(%)',this.translationData.lblFootBrake,this.translationData.lblCO2Emission+' '+this.translationData.lblgmpkm,this.translationData.lblidlingConsumptionValue+' ('+unitVal100km+')'];
-    const summaryHeader = [this.translationData.lblReportName, this.translationData.lblReportCreated, this.translationData.lblReportStartTime, this.translationData.lblReportEndTime, this.translationData.lblVehicleGroup, this.translationData.lblVehicleName, this.translationData.lblNumberOfTrips, this.translationData.lblDistance+'('+unitValkm+')', this.translationData.lblFuelConsumed+'('+unitValuekm+')', this.translationData.lblIdleDuration+'('+this.translationData.unitValhhmm+')', this.translationData.lblFuelConsumption+'('+unitVal100km+')',this.translationData.lblCO2Emission+'('+ unitValkg1+')'];
+    const summaryHeader = [this.translationData.lblReportName, this.translationData.lblReportCreated, this.translationData.lblReportStartTime, this.translationData.lblReportEndTime, this.translationData.lblVehicleGroup, this.translationData.lblVehicleName, this.translationData.lblNumberOfTrips, this.translationData.lblDistance+'('+unitValkm+')', this.translationData.lblFuelConsumed+'('+unitValuekm+')', this.translationData.lblIdleDuration+'(hh:mm)', this.translationData.lblFuelConsumption+'('+unitVal100km+')',this.translationData.lblCO2Emission+'('+ unitValkg1+')'];
     const summaryData= this.summaryNewObj;
     //Create workbook and worksheet
     let workbook = new Workbook();
@@ -2809,7 +2809,7 @@ setVehicleGroupAndVehiclePreSelection() {
         break;
       }
       case 'averageGrossWeightComb' :{
-        pdfColumnHeads.push(this.translationData.lblAverageGrossWeightComb+'('+ton+')');
+        pdfColumnHeads.push(this.translationData.lblGrossWeightComb+'('+ton+')');
         break;
       }
       case 'fuelConsumed' :{

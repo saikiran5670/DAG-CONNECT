@@ -101,6 +101,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
     } else {
       this.TypeList = this.TypeList1;
     }
+    this.translatedvalues();
     this.packageFormGroup = this._formBuilder.group({
       code: ['', [ Validators.required, CustomValidators.noWhitespaceValidatorforDesc ]],
       description: ['', [CustomValidators.noWhitespaceValidatorforDesc]],
@@ -181,6 +182,40 @@ export class CreateEditPackageDetailsComponent implements OnInit {
   //  this.updatedTableData(this.dataSource);
 }
 
+translatedvalues(){
+  this.TypeList1= [
+    {
+      name: 'Organisation',
+      value: 'Organisation'
+    },
+    {
+      name: 'VIN',
+      value: 'VIN'
+    },
+    {
+      name: 'Org+VIN',
+      value: 'Org+VIN'
+    }
+  ];
+  this.TypeList2 = [
+    {
+      name: 'Organisation',
+      value: 'Organisation'
+    },
+    {
+      name: 'VIN',
+      value: 'VIN'
+    },
+    {
+      name: 'Org+VIN',
+      value: 'Org+VIN'
+    },
+    {
+      name: 'Platform',
+      value: 'Platform'
+    }
+  ];
+}
 // compare(a: Number | String, b: Number | String, isAsc: boolean) {
 //   if(!(a instanceof Number)) a = a.toUpperCase();
 //   if(!(b instanceof Number)) b = b.toUpperCase();
