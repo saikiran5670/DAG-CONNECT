@@ -101,13 +101,13 @@
         <div *ngIf='alertLength>0' >
         <div class="full-width vehicleList-div" *ngFor="let item of gridData.fleetOverviewAlert">
         <div class="alertList-icon">
-        <span  *ngIf="item.level == 'Critical'">
+        <span  *ngIf="item.level == 'Critical' || item.level == 'C'">
             <i class="material-icons" [style]="{ 'color':'#FF0000' } ">warning</i> 
             </span> 
-            <span  *ngIf="item.level == 'Warning'">
+            <span  *ngIf="item.level == 'warning' || item.level == 'W'">
             <i class="material-icons" [style]="{ 'color':'#FFBF00' } ">warning</i> 
             </span>
-            <span *ngIf="item.level == 'Advisory'">
+            <span *ngIf="item.level == 'Advisory' || item.level == 'A'">
             <i class="material-icons" [style]="{ 'color':'#FFFF00' } ">warning</i> 
             </span>  
         </div>
