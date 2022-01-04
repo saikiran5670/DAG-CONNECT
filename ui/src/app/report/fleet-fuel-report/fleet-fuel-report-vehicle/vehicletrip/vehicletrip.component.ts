@@ -2646,7 +2646,7 @@ setVehicleGroupAndVehiclePreSelection() {
       // numbeOfVehicles = this.initData.length;   
         
       this.summaryNewObj = [
-        ['Fleet Fuel Vehicle Trip Report', this.reportMapService.getStartTime(Date.now(), this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
+        [this.translationData.lblFleetFuelVehicleReport, this.reportMapService.getStartTime(Date.now(), this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
           this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, numberOfTrips, distanceDone,
           fuelconsumed, idleDuration, fuelConsumption,CO2Emission
         ]

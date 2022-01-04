@@ -333,12 +333,12 @@ export class EcoScoreDriverCompareComponent implements OnInit {
       return '';
     }
     let key=value;
-    var foundValue = this.translationData.value; // || this.translationDataLocal.filter(obj=>obj.key === value);
+    var foundValue = this.translationData[value]; // || this.translationDataLocal.filter(obj=>obj.key === value);
 
     if(foundValue === undefined || foundValue === null || foundValue.length === 0)
       value = value;
     else
-      value = foundValue[0].value;
+      value = foundValue;
 
     if(key.indexOf('rp_heavythrottleduration') !== -1 || key.indexOf('rp_ptoduration') !== -1 
         || key.indexOf('rp_harshbrakeduration') !== -1 || key.indexOf('rp_brakeduration') !== -1 
@@ -353,6 +353,7 @@ export class EcoScoreDriverCompareComponent implements OnInit {
       else if(key.indexOf('rp_averagedrivingspeed') !== -1 || key.indexOf('rp_averagespeed') !== -1)
         value += ' ('+this.translationData.lblMph+')';
       else if(key.indexOf('rp_CruiseControlUsage') !== -1 || key.indexOf('rp_cruisecontroldistance') !== -1){
+        value = this.translationData['rp_cruisecontrolusage'];
         if(key.indexOf('30') !== -1)
           value += ' 15-30 '+this.translationData.lblMph+' ';
         else if(key.indexOf('50') !== -1)
@@ -371,6 +372,7 @@ export class EcoScoreDriverCompareComponent implements OnInit {
       else if(key.indexOf('rp_averagedrivingspeed') !== -1 || key.indexOf('rp_averagespeed') !== -1)
         value += ' ('+this.translationData.lblKmph+')';
       else if(key.indexOf('rp_CruiseControlUsage') !== -1 || key.indexOf('rp_cruisecontroldistance') !== -1){
+          value = this.translationData['rp_cruisecontrolusage'];
           if(key.indexOf('30') !== -1)
            value += ' 30-50 '+this.translationData.lblKmph+' ';
           else if(key.indexOf('50') !== -1)
