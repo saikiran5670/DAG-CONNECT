@@ -370,7 +370,7 @@ export class ManageCorridorComponent implements OnInit {
 
     this.tabVisibility.emit(true);
     if(_eventObj.successMsg=="create"){
-      var _msg = this.translationData.lblCorridorUpdatedSuccessfully.replace('$', _eventObj.CreateCorridorName);//;  "Corridor '"+_eventObj.CreateCorridorName+"' created successfully!"
+      var _msg = this.translationData.lblCorridorCreatedSuccessfully.replace('$', _eventObj.CreateCorridorName);//;  "Corridor '"+_eventObj.CreateCorridorName+"' created successfully!"
       this.successMsgBlink(_msg);
     }
     else if(_eventObj.successMsg=="update"){
