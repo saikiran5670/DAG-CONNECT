@@ -46,14 +46,7 @@ export class OrganisationRelationshipComponent implements OnInit {
   startDateList: any = [];
   adminAccessType: any = {};
   viewRelationshipName: any;
-  allTypes: any = [
-    {
-      name: 'Active'
-    },
-    {
-      name: 'Terminated'
-    }
-  ];
+  allTypes: any = [];
   relationFilter= new FormControl();
   vehicleGrpFilter= new FormControl();
   orgFilter= new FormControl();
@@ -88,6 +81,7 @@ export class OrganisationRelationshipComponent implements OnInit {
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
       this.processTranslation(data);
       this.loadInitData();
+      this.getTransAllType();
     });
     this.loadInitData();//temporary
     this.relationFilter.valueChanges.subscribe(filterValue => {
@@ -128,6 +122,17 @@ export class OrganisationRelationshipComponent implements OnInit {
       this.filteredValues['search'] = filterValue;
       this.dataSource.filter = JSON.stringify(this.filteredValues);
     });
+  }
+
+  getTransAllType() {
+    this.allTypes = [
+      {
+        name: this.translationData.lblActive
+      },
+      {
+        name: this.translationData.lblTerminated
+      }
+    ];
   }
 
   loadInitData() {
@@ -204,8 +209,8 @@ export class OrganisationRelationshipComponent implements OnInit {
   }
   getEditSuccessMsg(editText: any, name: any){
     if(editText == 'Update'){
-      if(this.translationData.lblRelationshipdetailssuccessfullyupdated)
-        return this.translationData.lblRelationshipdetailssuccessfullyupdated.replace('$', this.viewRelationshipName);
+      if(this.translationData.lblRelationshipDetailsUpdatedSuccessfully)
+        return this.translationData.lblRelationshipDetailsUpdatedSuccessfully.replace('$', this.viewRelationshipName);
       else
         return ("Relationship '$' details successfully updated").replace('$', this.viewRelationshipName);
     }
@@ -388,7 +393,7 @@ export class OrganisationRelationshipComponent implements OnInit {
     {
     const options = {
       title: this.translationData.lblChangeChainingStatus,
-      message: this.translationData.lblYouwanttoDeactivate,
+      message: (rowData.allowChain == true) ? this.translationData.lblYouwanttoDeactivate : this.translationData.lblYouwanttoActivate,
       // cancelText: this.translationData.lblNo,
       // confirmText: this.translationData.lblYes,
       cancelText: this.translationData.lblCancel,
