@@ -206,7 +206,7 @@ export class AppComponent {
         accountrolemanagement: 'lblAccountRoleManagement',
         vehiclegroupmanagement: 'lblVehicleGroupManagement',
         featuremanagement: 'lblFeatureManagement',
-        organisationrelationshipmanagement: 'lblOrgnisationRelationshipManagement',
+        organisationrelationshipmanagement: 'lblOrganisationRelationshipManagement',
         relationshipmanagement: 'lblRelationshipManagement',
         translationmanagement: 'lblTranslationManagement',
         configurationmanagemnt: 'lblConfigurationManagemnt',
