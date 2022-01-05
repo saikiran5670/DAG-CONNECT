@@ -2908,7 +2908,7 @@ setVehicleGroupAndVehiclePreSelection() {
         pdfColumnHeads.push(this.translationData.lblAverageTrafficClassification);
         break;
       }
-      case 'idlingConsumptionValue' :{
+      case 'idlingConsumptionWithPTO' :{
         pdfColumnHeads.push(this.translationData.lblidlingConsumptionValue+'('+fuelCons+')');
         break;
       }
@@ -3072,8 +3072,8 @@ setVehicleGroupAndVehiclePreSelection() {
               tempObj.push(e.averageTrafficClassificationValue);
               break;
             }
-            case 'idlingConsumptionValue' :{
-              tempObj.push(e.idlingConsumptionValue);
+            case 'idlingConsumptionWithPTO' :{
+              tempObj.push(e.convertedidlingconsumptionwithpto);
               break;
             }
           }
