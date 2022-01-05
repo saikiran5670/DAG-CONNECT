@@ -149,7 +149,7 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
 
 
   getBreadcum(){
-    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblOrganizationRelationshipManagement || 'Organization Relationship Management' ? this.translationData.lblOrganizationRelationshipManagement || 'Organization Relationship Management' : " Organisation Relationship Management"} / ${this.translationData.lblNewRelationshipDetails || 'Add New Relationship' ? this.translationData.lblNewRelationshipDetails || 'Add New Relationship' : 'Add New Relationship'}`;
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblOrganizationRelationshipManagement || 'Organization Relationship Management' ? this.translationData.lblOrganizationRelationshipManagement || 'Organization Relationship Management' : " Organisation Relationship Management"} / ${this.translationData.lblAddNewRelationsip ? this.translationData.lblAddNewRelationsip : 'Add New Relationship'}`;
   }
 
   onReset(){
@@ -328,15 +328,15 @@ if(vehicleList != '' && orgList != ''){
   getUserCreatedMessage(name1: any) {
     let attrName: any = `${this.OrganisationRelationshipFormGroup.controls.relationship.value}`;
     if (this.actionType == 'create') {
-      if (this.translationData.lblUserAccountCreatedSuccessfully)
-        return this.translationData.lblUserAccountCreatedSuccessfully.replace('$', attrName);
+      if (this.translationData.lblNewOrganisationRelationshipCreatedSuccessfully)
+        return this.translationData.lblNewOrganisationRelationshipCreatedSuccessfully.replace('$', attrName);
       else
-        return ("New Feature '$' Created Successfully").replace('$', attrName);
+        return ("New Organisation Relationship '$' Created Successfully").replace('$', attrName);
     } else {
-      if (this.translationData.lblUserAccountUpdatedSuccessfully)
-        return this.translationData.lblUserAccountUpdatedSuccessfully.replace('$', attrName);
+      if (this.translationData.lblOrganisationRelationshipUpdatedSuccessfully)
+        return this.translationData.lblOrganisationRelationshipUpdatedSuccessfully.replace('$', attrName);
       else
-        return ("New Relationship '$' created Successfully").replace('$', name1);
+        return ("Organisation Relationship '$' Updated Successfully").replace('$', name1);
     }
   }
 

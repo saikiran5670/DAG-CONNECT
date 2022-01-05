@@ -1,6 +1,7 @@
 import {
   Component,
   OnInit,
+  Input,
   ViewChild,
   Inject,
   HostListener,
@@ -31,7 +32,8 @@ export class UserDetailTableComponent implements OnInit {
       tableData: any,
       colsList: any,
       colsName: any,
-      tableTitle: any
+      tableTitle: any,
+      translationData: any
     },
     private mdDialogRef: MatDialogRef<UserDetailTableComponent>
   ) {
@@ -116,7 +118,7 @@ export class UserDetailTableComponent implements OnInit {
     this.onClose(false);
   }
 
-  ngOnInit(){ }
+  ngOnInit(){ console.log('trans',this.data.translationData);}
 
   applyFilter(filterValue: string) {
     filterValue = filterValue.trim(); // Remove whitespace

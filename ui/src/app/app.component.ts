@@ -120,7 +120,7 @@ export class AppComponent {
     vehiclegroupmanagement: 'lblVehicleGroupManagement',
     termsandcondition: 'lblTermsAndConditions',
     featuremanagement: 'lblFeatureManagement',
-    organisationrelationshipmanagement: 'lblOrgnisationRelationshipManagement',
+    organisationrelationshipmanagement: 'lblOrganisationRelationshipManagement',
     relationshipmanagement: 'lblRelationshipManagement',
     translationmanagement: 'lblTranslationManagement',
     configurationmanagemnt: 'lblConfigurationManagemnt',
