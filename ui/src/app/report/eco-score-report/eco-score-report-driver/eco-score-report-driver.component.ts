@@ -1189,7 +1189,7 @@ this.barChartOptions = {
 loadBarChart(){
   this.barChartLabels = this.ecoScoreDriverDetails.averageGrossWeightChart.xAxisLabel;
   this.barChartLabels.forEach((element, index) => {
-    this.barChartLabels[index] = element.replace(/t/g, this.translationData.lblTon);
+    this.barChartLabels[index] = element.replace(/t/g, this.translationData.lblTonUnit);
   });
   this.ecoScoreDriverDetails.averageGrossWeightChart.chartDataSet.forEach(element => {
     this.barChartData.push({
