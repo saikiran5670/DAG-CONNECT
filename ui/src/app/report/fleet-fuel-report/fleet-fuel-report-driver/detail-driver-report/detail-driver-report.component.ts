@@ -1756,8 +1756,17 @@ createEndMarker(){
     return this.reportMapService.formStartDate(date, this.prefTimeFormat, this.prefDateFormat);
   }
 
+  resetValue(){
+    this.barData = [];
+    this.fuelConsumedChart = [];
+    this.co2Chart = [];
+    this.distanceChart = [];
+    this.fuelConsumptionChart = [];
+    this.idleDuration = [];
+  }
 
   setChartData(graphData: any){
+    this.resetValue();
     graphData.forEach(e => {
       // var date = new Date(e.date);
       // let resultDate= Util.getMillisecondsToUTCDate(date, this.prefTimeZone); //Util.convertDateToUtc(date);
