@@ -2165,7 +2165,7 @@ setVehicleGroupAndVehiclePreSelection() {
      fuelconsumed= this.sumOfColumns('fuelconsumed');
      CO2Emission= this.sumOfColumns('co2emission');
      this.summaryNewObj = [
-      ['Fleet Fuel Driver Report', this.reportMapService.getStartTime(Date.now(), this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
+      [this.translationData.lblFleetFuelDriverReport, this.reportMapService.getStartTime(Date.now(), this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
         this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, numberOfTrips, distanceDone,
         fuelconsumed, idleDuration, fuelConsumption,CO2Emission
       ]
