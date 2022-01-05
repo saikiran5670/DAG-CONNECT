@@ -938,18 +938,18 @@ proceedStep(prefData: any, preference: any){
         // create custom one
         var ms = new H.ui.MapSettingsControl({
             baseLayers : [ { 
-              label: this.translationData.lblNormal || "Normal", layer: defaultLayers.raster.normal.map
+              label: this.translationData.lblNormal , layer: defaultLayers.raster.normal.map
             },{
-              label: this.translationData.lblSatellite || "Satellite", layer: defaultLayers.raster.satellite.map
+              label: this.translationData.lblSatellite , layer: defaultLayers.raster.satellite.map
             }, {
-              label: this.translationData.lblTerrain || "Terrain", layer: defaultLayers.raster.terrain.map
+              label: this.translationData.lblTerrain , layer: defaultLayers.raster.terrain.map
             }
             ],
           layers : [{
-                label: this.translationData.lblLayerTraffic || "Layer.Traffic", layer: defaultLayers.vector.normal.traffic
+                label: this.translationData.lblLayerTraffic , layer: defaultLayers.vector.normal.traffic
             },
             {
-                label: this.translationData.lblLayerIncidents || "Layer.Incidents", layer: defaultLayers.vector.normal.trafficincidents
+                label: this.translationData.lblLayerIncidents , layer: defaultLayers.vector.normal.trafficincidents
             }
           ]
         });

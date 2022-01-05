@@ -2038,8 +2038,12 @@ export class ReportMapService {
   });
   newGraphData.forEach(ele => {
     let graphIndex = newGraphData.map(item => item.date).indexOf(ele.date);
-    if(graphIndex != -1){  
-      newGraphData[graphIndex].fuelConsumtion = Number(newGraphData[graphIndex].fuelConsumed)/Number(newGraphData[graphIndex].distance);
+    if(graphIndex != -1){
+      if(Number(newGraphData[graphIndex].distance) != 0){ // distance not 0
+        newGraphData[graphIndex].fuelConsumtion = Number(newGraphData[graphIndex].fuelConsumed)/Number(newGraphData[graphIndex].distance);
+      }else{
+        newGraphData[graphIndex].fuelConsumtion = 0;
+      }
     }    
      //console.log(ele);
   });
