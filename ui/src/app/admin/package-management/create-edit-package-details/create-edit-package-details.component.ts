@@ -39,38 +39,8 @@ export class CreateEditPackageDetailsComponent implements OnInit {
   duplicateMsg: boolean = false;
   menuFeatures: any;
   showType: boolean = false;
-  TypeList1: any = [
-    {
-      name: 'Organisation',
-      value: 'Organisation'
-    },
-    {
-      name: 'VIN',
-      value: 'VIN'
-    },
-    {
-      name: 'Org+VIN',
-      value: 'Org+VIN'
-    }
-  ];
-  TypeList2: any = [
-    {
-      name: 'Organisation',
-      value: 'Organisation'
-    },
-    {
-      name: 'VIN',
-      value: 'VIN'
-    },
-    {
-      name: 'Org+VIN',
-      value: 'Org+VIN'
-    },
-    {
-      name: 'Platform',
-      value: 'Platform'
-    }
-  ];
+  TypeList1: any = [];
+  TypeList2: any = [];
   TypeList: any =[];
   columnCodes = ['name', 'select'];
   columnLabels = ['FeatureName','Include'];
@@ -96,12 +66,13 @@ export class CreateEditPackageDetailsComponent implements OnInit {
         this.showType = true;
       }
     });
+    this.translatedvalues();
+    console.log(this.translationData);
     if(this.showType){
       this.TypeList = this.TypeList2;
     } else {
       this.TypeList = this.TypeList1;
     }
-    this.translatedvalues();
     this.packageFormGroup = this._formBuilder.group({
       code: ['', [ Validators.required, CustomValidators.noWhitespaceValidatorforDesc ]],
       description: ['', [CustomValidators.noWhitespaceValidatorforDesc]],
@@ -185,33 +156,33 @@ export class CreateEditPackageDetailsComponent implements OnInit {
 translatedvalues(){
   this.TypeList1= [
     {
-      name: 'Organisation',
+      name: this.translationData.lblOrganisation,
       value: 'Organisation'
     },
     {
-      name: 'VIN',
+      name: this.translationData.lblVIN,
       value: 'VIN'
     },
     {
-      name: 'Org+VIN',
+      name: this.translationData.lblOrgVIN,
       value: 'Org+VIN'
     }
   ];
   this.TypeList2 = [
     {
-      name: 'Organisation',
+      name: this.translationData.lblOrganisation,
       value: 'Organisation'
     },
     {
-      name: 'VIN',
+      name: this.translationData.lblVIN,
       value: 'VIN'
     },
     {
-      name: 'Org+VIN',
+      name: this.translationData.lblOrgVIN,
       value: 'Org+VIN'
     },
     {
-      name: 'Platform',
+      name: this.translationData.lblPlatform,
       value: 'Platform'
     }
   ];
@@ -378,15 +349,15 @@ translatedvalues(){
   getUserCreatedMessage() {
     this.userName = `${this.packageFormGroup.controls.name.value}`;
     if (this.actionType == 'create') {
-      if (this.translationData.lblUserAccountCreatedSuccessfully)
-        return this.translationData.lblUserAccountCreatedSuccessfully.replace('$', this.userName);
+      if (this.translationData.lblNewPackageCreatedSuccessfully)
+        return this.translationData.lblNewPackageCreatedSuccessfully.replace('$', this.userName);
       else
         return ("New Package '$' Created Successfully").replace('$', this.userName);
     } else {
-      if (this.translationData.lblUserAccountUpdatedSuccessfully)
-        return this.translationData.lblUserAccountUpdatedSuccessfully.replace('$', this.userName);
+      if (this.translationData.lblPackageUpdatedSuccessfully)
+        return this.translationData.lblPackageUpdatedSuccessfully.replace('$', this.userName);
       else
-        return ("New Details '$' Updated Successfully").replace('$', this.userName);
+        return ("Package '$' Updated Successfully").replace('$', this.userName);
     }
   }
 
