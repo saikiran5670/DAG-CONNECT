@@ -1188,6 +1188,9 @@ this.barChartOptions = {
 
 loadBarChart(){
   this.barChartLabels = this.ecoScoreDriverDetails.averageGrossWeightChart.xAxisLabel;
+  this.barChartLabels.forEach((element, index) => {
+    this.barChartLabels[index] = element.replace(/t/g, this.translationData.lblTon);
+  });
   this.ecoScoreDriverDetails.averageGrossWeightChart.chartDataSet.forEach(element => {
     this.barChartData.push({
       data: element.data,
@@ -1262,6 +1265,12 @@ this.barChartOptionsPerformance = {
 
   loadBarChartPerfomance(){
     this.barChartLabelsPerformance = this.ecoScoreDriverDetails.averageDrivingSpeedChart.xAxisLabel;
+    this.barChartLabelsPerformance.forEach((element, index) => {
+      if(this.prefUnitFormat == 'dunit_Metric')
+        this.barChartLabelsPerformance[index] = element.replace(/kmph/g, this.translationData.lblKmph);
+      if(this.prefUnitFormat == 'dunit_Imperial')
+        this.barChartLabelsPerformance[index] = element.replace(/mph/g, this.translationData.lblMph);
+    });
     this.ecoScoreDriverDetails.averageDrivingSpeedChart.chartDataSet.forEach(element => {
       this.barChartDataPerformance.push({
         data: element.data,
