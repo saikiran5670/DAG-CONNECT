@@ -757,7 +757,7 @@ export class AlertsComponent implements OnInit {
   onChangeAlertStatus(rowData: any){
     const options = {
       title: this.translationData.lblAlert,
-      message: this.translationData.lblYouwanttoDetails,
+      message:  (rowData.state == 'A') ?  this.translationData.lblYouwanttoDeActivate  : this.translationData.lblYouwanttoActivate,
       cancelText: this.translationData.lblCancel,
       confirmText: (rowData.state == 'A') ? this.translationData.lblDeactivate : this.translationData.lblActivate,
       status: rowData.state == 'A' ? 'Suspend' : 'Activate' ,
