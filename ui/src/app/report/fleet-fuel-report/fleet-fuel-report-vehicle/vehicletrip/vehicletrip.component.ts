@@ -1649,7 +1649,17 @@ createEndMarker(){
     return this.reportMapService.formStartDate(date, this.prefTimeFormat, this.prefDateFormat);
   }
 
+  resetValue(){
+    this.barData = [];
+    this.fuelConsumedChart = [];
+    this.co2Chart = [];
+    this.distanceChart = [];
+    this.fuelConsumptionChart = [];
+    this.idleDuration = [];
+  }
+
   setChartData(graphData: any){
+    this.resetValue();
     if(graphData.length > 0){
      graphData.forEach(e => {
       var date = new Date(e.date);
@@ -2908,7 +2918,7 @@ setVehicleGroupAndVehiclePreSelection() {
         pdfColumnHeads.push(this.translationData.lblAverageTrafficClassification);
         break;
       }
-      case 'idlingConsumptionValue' :{
+      case 'idlingConsumptionWithPTO' :{
         pdfColumnHeads.push(this.translationData.lblidlingConsumptionValue+'('+fuelCons+')');
         break;
       }
@@ -3072,8 +3082,8 @@ setVehicleGroupAndVehiclePreSelection() {
               tempObj.push(e.averageTrafficClassificationValue);
               break;
             }
-            case 'idlingConsumptionValue' :{
-              tempObj.push(e.idlingConsumptionValue);
+            case 'idlingConsumptionWithPTO' :{
+              tempObj.push(e.convertedidlingconsumptionwithpto);
               break;
             }
           }
