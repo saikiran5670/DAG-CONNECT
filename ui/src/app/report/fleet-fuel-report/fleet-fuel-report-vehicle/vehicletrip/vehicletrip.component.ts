@@ -1231,7 +1231,7 @@ createEndMarker(){
     // this.setTableInfo();
     this.updateDataSource(this.FuelData);
     this.setTableInfo();
-    this.fuelConsumptionSummary = (this.prefUnitFormat == 'dunit_Metric')?((this.sumOfColumns('fuelconsumed') /this.sumOfColumns('distance')) * 100).toFixed(2):(this.sumOfColumns('distance')/this.sumOfColumns('fuelconsumed')).toFixed(2);
+    this.fuelConsumptionSummary = (this.prefUnitFormat == 'dunit_Metric')?((this.sumOfColumns('fuelconsumed')/this.sumOfColumns('distance')) * 100).toFixed(2) : (this.sumOfColumns('distance')/this.sumOfColumns('fuelconsumed')).toFixed(2);
     this.hideloader();
     }, (complete)=>{
       this.hideloader();
