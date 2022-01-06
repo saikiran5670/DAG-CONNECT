@@ -91,7 +91,7 @@
     <div fxLayout="row" class="areaWidth filter-direction margin-bottom-sm" fxLayoutGap="10px">
       <mat-label>{{translationData.lblDay}}:<span style='font-weight: 500!important;'>{{days.day}}</span></mat-label>
       <mat-label>{{translationData.lblPeriod}}:
-        <span style='font-weight: 500!important;' *ngIf="days.Type == 'C'">Custom Period</span>
+        <span style='font-weight: 500!important;' *ngIf="days.Type == 'C'">{{translationData.lblPeriod}}</span>
         <span style='font-weight: 500!important;' *ngIf="days.Type == 'A'">{{translationData.lblFullDay}}</span>
       </mat-label>
     </div>
