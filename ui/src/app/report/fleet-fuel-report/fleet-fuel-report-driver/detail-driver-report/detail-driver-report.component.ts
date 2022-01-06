@@ -1301,21 +1301,21 @@ createEndMarker(){
     this.hideloader();
     }, (complete) => {
       this.hideloader();
-  });
-    let searchDataParam=
-    {
+    });
+    let searchDataParam: any = {
       "startDateTime": this.dateDetails.startTime,
       "endDateTime":this.dateDetails.endTime,
       "viNs": [driverDetails.vin],
-      "LanguageCode": "EN-GB"
+      "LanguageCode": "EN-GB",
+      "driverId": driverID // #20102 - driverId added to get driver specific info
     }
-   this.reportService.getdriverGraphDetails(searchDataParam).subscribe((graphData: any) => {
+    this.reportService.getdriverGraphDetails(searchDataParam).subscribe((graphData: any) => {
       this.chartDataSet = [];
-     this.chartDataSet = this.reportMapService.getChartData(graphData["fleetfuelGraph"], this.prefTimeZone);
-     this.setChartData(this.chartDataSet);
-     this.graphData = graphData;
-     this.showGraph = true;
-     this.hideloader();
+      this.chartDataSet = this.reportMapService.getChartData(graphData["fleetfuelGraph"], this.prefTimeZone);
+      this.setChartData(this.chartDataSet);
+      this.graphData = graphData;
+      this.showGraph = true;
+      this.hideloader();
     });
   }
 
