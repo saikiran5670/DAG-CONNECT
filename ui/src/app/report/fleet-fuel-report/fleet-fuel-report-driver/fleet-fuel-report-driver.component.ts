@@ -975,7 +975,8 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
       "startDateTime": _startTime,
       "endDateTime": _endTime,
       "viNs": _vinData,
-      "LanguageCode": "EN-GB"
+      "LanguageCode": "EN-GB",
+      "driverId": ""
     }
     this.showLoadingIndicator=true;
    this.reportService.getdriverGraphDetails(searchDataParam).subscribe((graphData: any) => {
@@ -2165,7 +2166,7 @@ setVehicleGroupAndVehiclePreSelection() {
      fuelconsumed= this.sumOfColumns('fuelconsumed');
      CO2Emission= this.sumOfColumns('co2emission');
      this.summaryNewObj = [
-      ['Fleet Fuel Driver Report', this.reportMapService.getStartTime(Date.now(), this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
+      [this.translationData.lblFleetFuelDriverReport, this.reportMapService.getStartTime(Date.now(), this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
         this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, numberOfTrips, distanceDone,
         fuelconsumed, idleDuration, fuelConsumption,CO2Emission
       ]
@@ -2733,7 +2734,7 @@ setVehicleGroupAndVehiclePreSelection() {
       // sum= sum.toFixed(2)*1;
       let fuelConsumed = this.sumOfColumns('fuelconsumed');
       let distance = this.sumOfColumns('distance');
-      let convertedConsumption:any = this.reportMapService.getFuelConsumptionSummary(fuelConsumed,distance,this.prefUnitFormat);
+      let convertedConsumption:any = this.reportMapService.getFuelConsumptionSummary(fuelConsumed, distance, this.prefUnitFormat);
       sum= convertedConsumption.toFixed(2)*1;
       break;
     }

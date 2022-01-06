@@ -98,7 +98,7 @@
               <div class="margin-bottom-sm">
                   <mat-radio-group (change)='onApplyOnChange($event)' formControlName="applyOn">
                       <mat-radio-button style='margin-right: 20px;' value="G">
-                          {{ translationData.lblVehicleGroup  || 'Vehicle Group'}}
+                          {{ translationData.lblVehicleGroup }}
                       </mat-radio-button>
                       <mat-radio-button style='margin-right: 20px;' value="S">
                           {{ translationData.lblVehicle }}
@@ -108,7 +108,7 @@
               <p style="color: darkgray;">{{translationData.lblselectsinglevehorgroup ||'Select alert to apply alert on a single vehicle or a group of vehicles'}}</p>
             </div>
             <div *ngIf="actionType == 'view'">
-              <span class='font-helvetica-md'>{{ selectedRowData.applyOn == 'G' ? 'Group' : 'Vehicle' }}</span>
+              <span class='font-helvetica-md'>{{ selectedRowData.applyOn == 'G' ? translationData.lblGroup : translationData.lblVehicle }}</span>
             </div>
         </div>
         <div *ngIf= "selectedApplyOn =='G'" class="areaWidth min-width-30-per max-width-30-per vehicleGroup" fxLayout="column" fxLayoutAlign="left">

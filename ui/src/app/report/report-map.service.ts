@@ -1842,7 +1842,7 @@ export class ReportMapService {
       }
       
       case 'dunit_Imperial':{
-        _fuelConsumption = (FuelConsumpt/dt);
+        _fuelConsumption = (dt/FuelConsumpt);
         break;
       }
       default:{
@@ -2021,6 +2021,7 @@ export class ReportMapService {
    // let newdate: any = Util.getMillisecondsToUTCDate(new Date(element.date), prefTimeZone); 
    // newdate = Util.convertUtcToDateFormat2(newdate,'MM/DD/YYYY');
     let newdate = Util.convertUtcToDateAndTimeFormat( element.date, prefTimeZone, 'MM/DD/YYYY');
+    element.milisec = element.date;
     element.date = newdate[0];
     element.numberofTrips = 1;    
     let graphDataIndex = newGraphData.map(item => item.date).indexOf(element.date);
@@ -2037,10 +2038,17 @@ export class ReportMapService {
   });
   newGraphData.forEach(ele => {
     let graphIndex = newGraphData.map(item => item.date).indexOf(ele.date);
-    if(graphIndex != -1){  
-      newGraphData[graphIndex].fuelConsumtion = Number(newGraphData[graphIndex].fuelConsumed)/Number(newGraphData[graphIndex].distance);
+    if(graphIndex != -1){
+      if(Number(newGraphData[graphIndex].distance) != 0){ // distance not 0
+        newGraphData[graphIndex].fuelConsumtion = Number(newGraphData[graphIndex].fuelConsumed)/Number(newGraphData[graphIndex].distance);
+      }else{
+        newGraphData[graphIndex].fuelConsumtion = 0;
+      }
     }    
      //console.log(ele);
+  });
+  newGraphData.sort((a, b) => { // date sort asc #20102
+    return a.milisec - b.milisec;
   });
   return newGraphData; 
 }

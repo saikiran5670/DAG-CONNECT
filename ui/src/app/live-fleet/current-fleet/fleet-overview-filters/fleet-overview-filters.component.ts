@@ -501,7 +501,7 @@ ngAfterViewInit(){
           // }
         });
       }
-      // this.setDefaultDropValue();
+      this.setDefaultDropValue();
       this.vehicleListData = this.detailsData;
     }
 

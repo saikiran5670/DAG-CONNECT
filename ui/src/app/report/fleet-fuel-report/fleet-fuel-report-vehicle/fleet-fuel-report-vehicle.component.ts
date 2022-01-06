@@ -2163,7 +2163,7 @@ setVehicleGroupAndVehiclePreSelection() {
     let ccdTwo = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance5075metric) : (this.translationData.lblCruiseControlDistance3045imperial);
     let ccdThree = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance75metric) : (this.translationData.lblCruiseControlDistance45imperial);
     let unitVal100km = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmpg ) : (this.translationData.lblmpg );
-    let unitValuekm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblLtrs ) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblgallonmile ) : (this.translationData.lblgallonmile );
+    let unitValuekm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblLtrs ) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblgal ) : (this.translationData.lblgal );
     let unitValkg = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg ) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblton ) : (this.translationData.lblton);
     let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh ) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmileh ) : (this.translationData.lblmileh );
     let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm ) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile ) : (this.translationData.lblmile );
@@ -2794,14 +2794,14 @@ setVehicleGroupAndVehiclePreSelection() {
         break;
     }
     case 'fuelConsumption': {
-      let s = this.displayData.forEach(element => {
-      sum += parseFloat(element.convertedFuelConsumption);
-      });
-      sum= sum.toFixed(2)*1;
-      // let fuelConsumed = this.sumOfColumns('fuelconsumed');
-      // let distance = this.sumOfColumns('distance');
-      // let convertedConsumption:any = this.reportMapService.getFuelConsumptionSummary(fuelConsumed,distance,this.prefUnitFormat);
-      // sum= convertedConsumption.toFixed(2)*1;
+      // let s = this.displayData.forEach(element => {
+      // sum += parseFloat(element.convertedFuelConsumption);
+      // });
+      // sum = sum.toFixed(2)*1;
+      let fuelConsumed = this.sumOfColumns('fuelconsumed');
+      let distance = this.sumOfColumns('distance');
+      let convertedConsumption: any = this.reportMapService.getFuelConsumptionSummary(fuelConsumed, distance, this.prefUnitFormat);
+      sum = convertedConsumption.toFixed(2)*1;
       break;
     }
     case 'co2emission': {

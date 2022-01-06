@@ -280,8 +280,8 @@ export class RelationshipManagementComponent implements OnInit {
       else
         return ("Relationship '$' was successfully deleted").replace('$', relationshipName);
     } else {
-      if(this.translationData.lblAlertDeleteError)
-        return this.translationData.lblAlertDeleteError.replace('$', relationshipName);
+      if(this.translationData.lblRelationshipDeleteError)
+        return this.translationData.lblRelationshipDeleteError.replace('$', relationshipName);
       else
         return ("Relationship '$' cannot be deleted as it is mapped with organisation").replace('$', relationshipName);
     }

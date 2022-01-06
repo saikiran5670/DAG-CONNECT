@@ -172,8 +172,8 @@ export class SubscriptionManagementComponent implements OnInit {
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
         this.processTranslation(data);
         this.loadSubscriptionData();
+        this.getTranslatedNames();
     });
-    this.getTranslatedNames();
 
 
   //   this.StatusList= [
@@ -190,15 +190,15 @@ export class SubscriptionManagementComponent implements OnInit {
   getTranslatedNames(){
     this.TypeList= [
       {
-        name: this.translationData.lblVIN || 'VIN',
+        name: this.translationData.lblVIN,
         value: 'N'
       },
       {
-        name: this.translationData.lblOrganization || 'Organization',
+        name: this.translationData.lblOrganisation,
         value: 'O'
       },
       {
-        name: this.translationData.lblOrganizationVIN || 'Organization + VIN',
+        name: this.translationData.lblOrgVIN,
         value: 'V'
       }
     ];
@@ -356,7 +356,8 @@ export class SubscriptionManagementComponent implements OnInit {
       tableData: tableData,
       colsList: this.vehicleDiaplayColumns,
       colsName:colsName,
-      tableTitle: tableTitle
+      tableTitle: tableTitle,
+      translationData:this.translationData
     }
     this.dialogRef = this.dialog.open(UserDetailTableComponent, dialogConfig);
     this.dialogRef

@@ -26,6 +26,7 @@ import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import * as moment from 'moment-timezone';
 import { ReportMapService } from '../../../../report/report-map.service';
 import { ConfigService } from '@ngx-config/core';
+import { MapFunctionsService } from '../../../landmarks/manage-corridor/map-functions.service';
 
 declare var H: any;
 
@@ -133,7 +134,8 @@ export class AlertAdvancedFilterComponent implements OnInit {
               private dialogService: ConfirmDialogService,
               private geofenceService: GeofenceService,
               private el: ElementRef,
-              private reportMapService: ReportMapService,  private _configService: ConfigService) {
+              private reportMapService: ReportMapService,  private _configService: ConfigService,
+              private mapFunctions: MapFunctionsService) {
    this.map_key = _configService.getSettings("hereMap").api_key;
     this.platform = new H.service.Platform({
       "apikey":this.map_key
@@ -328,24 +330,50 @@ export class AlertAdvancedFilterComponent implements OnInit {
   onApplyOnChange(event: any){
     this.selectedApplyOn = event.value;
   }
-
-  loadMapData(){
-    let defaultLayers = this.platform.createDefaultLayers();
-    setTimeout(() => {
-      this.map = new H.Map(
-        this.mapElement.nativeElement,
-        defaultLayers.vector.normal.map,
-        {
+  loadMapData() {
+    if(this.alert_type_selected == 'C'){
+      setTimeout(() => {
+        this.mapFunctions.initMap(this.mapElement, this.translationData);
+        }, 0);
+    }
+    else{
+      let defaultLayers = this.platform.createDefaultLayers();
+      setTimeout(() => {
+        this.map = new H.Map(this.mapElement.nativeElement,
+          defaultLayers.raster.normal.map, {
           center: { lat: 51.43175839453286, lng: 5.519981221425336 },
           zoom: 4,
           pixelRatio: window.devicePixelRatio || 1
-        }
-      );
-      window.addEventListener('resize', () => this.map.getViewPort().resize());
-      var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
-      this.ui = H.ui.UI.createDefault(this.map, defaultLayers);  
-    }, 1000);
-  }
+        });
+        window.addEventListener('resize', () => this.map.getViewPort().resize());
+        var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
+        this.ui = H.ui.UI.createDefault(this.map, defaultLayers);
+        
+        this.ui.removeControl("mapsettings");
+        // create custom one
+        var ms = new H.ui.MapSettingsControl({
+            baseLayers : [ { 
+              label: this.translationData.lblNormal , layer: defaultLayers.raster.normal.map
+            },{
+              label: this.translationData.lblSatellite , layer: defaultLayers.raster.satellite.map
+            }, {
+              label: this.translationData.lblTerrain , layer: defaultLayers.raster.terrain.map
+            }
+            ],
+          layers : [{
+                label: this.translationData.lblLayerTraffic , layer: defaultLayers.vector.normal.traffic
+            },
+            {
+                label: this.translationData.lblLayerIncidents , layer: defaultLayers.vector.normal.trafficincidents
+            }
+          ]
+        });
+        this.ui.addControl("customized", ms);
+      }, 1000);
+    }
+}
+
+ 
 
   onChangePOI(event: any){
     if(event.checked){
