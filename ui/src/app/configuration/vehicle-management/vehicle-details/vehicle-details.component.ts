@@ -16,6 +16,8 @@ import { map } from 'rxjs/operators';
 // import { TableVirtualScrollDataSource } from 'ng-table-virtual-scroll';
 import { HttpClient } from "@angular/common/http";
 import { _isNumberValue } from '@angular/cdk/coercion';
+import { Util } from 'src/app/shared/util';
+
 
 @Component({
   selector: 'app-vehicle-details',
@@ -58,6 +60,7 @@ export class VehicleDetailsComponent implements OnInit {
   public getScreenWidth: any;
   public getScreenHeight: any;
   tableHeight: number;
+  filterValue: string;
 
 
   constructor(private cd: ChangeDetectorRef, private scrollDispatcher: ScrollDispatcher,private httpClient: HttpClient, private vehicleService: VehicleService, private dialogService: ConfirmDialogService, private translationService: TranslationService, ) {
@@ -98,7 +101,7 @@ export class VehicleDetailsComponent implements OnInit {
     //   // this.loadVehicleData();
     // });
     // this.initData = this.updateStatusName(this.relationshipVehiclesData);
-    // this.updateDataSource(this.relationshipVehiclesData);
+    this.updateDataSource(this.relationshipVehiclesData);
     this.getScreenWidth = window.innerWidth;
     this.getScreenHeight = window.innerHeight;
     this.tableHeight = this.getScreenHeight - 291;
@@ -116,7 +119,6 @@ export class VehicleDetailsComponent implements OnInit {
   // }
   ngAfterViewInit() {
     this.initData = this.updateStatusName(this.relationshipVehiclesData);
-    this.updateDataSource(this.relationshipVehiclesData);
   }
 
   getRelationshipVehiclesData() {
@@ -171,6 +173,7 @@ export class VehicleDetailsComponent implements OnInit {
 
   updateDataSource(tableData: any) {
     this.initData = tableData;
+    this.dataSource = new MatTableDataSource(this.initData);
     setTimeout(() => {
       this.dataSource = new MatTableDataSource(this.initData);
       // this.dataSource1 = new MatTableDataSource(this.initData);
@@ -184,12 +187,22 @@ export class VehicleDetailsComponent implements OnInit {
           return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
         });
       }
+      this.dataSource.filterPredicate = function(data: any, filter: string): boolean {
+        return (
+        data.name.toLowerCase().includes(filter) ||
+        data.vin.toLowerCase().includes(filter) ||
+         data.licensePlateNumber.toLowerCase().includes(filter) ||
+         data.modelId.toLowerCase().includes(filter) ||
+        data.relationShip.toLowerCase().includes(filter)
+      );
+    };
 
     });
   }
 
+
   compare(a: any, b: any, isAsc: boolean, columnName: any){
-    if(columnName == "name"){
+    if(columnName == 'name' ||  columnName =='vin' ||  columnName =='licensePlateNumber' ||  columnName =='modelId' ||  columnName =='relationShip'){
       if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toUpperCase();
       if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toUpperCase();
 
