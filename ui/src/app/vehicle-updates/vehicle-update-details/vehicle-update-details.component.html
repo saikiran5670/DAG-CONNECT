@@ -150,11 +150,11 @@ style='padding:10px; color:#fff; background: #FF0000;'>
           <ng-container matColumnDef="action">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAction || 'Action' }} </mat-header-cell>
             <mat-cell *matCellDef="let row">
-              <button class='actionBtn' mat-flat-button (click)="releaseNote(row)" matTooltip="{{ translationData.lbllblViewReleaseNote || 'View Release Note' }}">
+              <button class='actionBtn' mat-flat-button (click)="releaseNote(row)" matTooltip="{{ translationData.lblViewReleaseNote || 'View Release Note' }}">
                 <mat-icon>message</mat-icon>
               </button>
               <mde-popover-target #appElement="mdePopoverTarget">
-              <div matTooltip="{{ row.campaignOverFlag ? 'Not allowed, campaign date has passed' : translationData.lblClicktoschedule }}">
+              <div matTooltip="{{ row.campaignOverFlag ? translationData.lblNotAllowedDateHasPassed : translationData.lblClicktoschedule }}">
                 <button *ngIf="row.scheduleDateTime == '-'" [disabled]="row.campaignOverFlag == true" class='actionBtn target' mat-flat-button
                   [mdePopoverTriggerFor]="schedulerPopover" mdePopoverTriggerOn="click" [mdePopoverTargetAt]="appElement"
                   #popoverTrigger="mdePopoverTrigger" (click)="openScheduler(row)" >
