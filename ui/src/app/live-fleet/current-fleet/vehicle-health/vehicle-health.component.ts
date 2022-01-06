@@ -711,11 +711,36 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
     }
     this.showLoadingIndicator=true;
     this.getvehiclehealthstatusservicecall = this.reportService.getvehiclehealthstatus(this.healthData.vin, this.localStLanguage.code, warningdata).subscribe((res) => {
+      let healthStatusData = res;
+      let deactiveActiveData=[];
+      let healthStatusActiveData=healthStatusData.filter(item => item.warningType== "A");
+      healthStatusData.forEach((element,index) => {
+        element.warningActivatedForDeactive = '';
+        if(element.warningType== "D"){        
+           let healthFilterData = healthStatusActiveData.filter(item => item.warningClass == element.warningClass && item.warningNumber == element.warningNumber);
+           let activeDataObj;
+           healthFilterData.forEach(e => {
+            if(e.warningTimetamp < element.warningTimetamp){
+              element.warningActivatedForDeactive = e.warningTimetamp;
+              activeDataObj= e;
+             }    
+          });
+          if(activeDataObj != undefined )  {
+          deactiveActiveData.push(activeDataObj);
+          }          
+        }          
+      });     
+      let deactiveActiveToDeleteSet = new Set(deactiveActiveData);
+      let newHealthStatusData = healthStatusData.filter((item) => {
+        return !deactiveActiveToDeleteSet.has(item);
+      });
+      // console.log(deactiveActiveData);
+      // console.log(newHealthStatusData);            
       if(warningdata=='C') {
-        this.currentHealthData = res;
+        this.currentHealthData = newHealthStatusData;//res;
         this.applyDatatoCardPaginator(this.currentHealthData);
       } else {
-        this.historyHealthData = res;
+        this.historyHealthData = newHealthStatusData;
       }
       // this.currentHealthData = this.processDataForActivatedAndDeactivatedTime(res);
       

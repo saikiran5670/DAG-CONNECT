@@ -251,19 +251,34 @@
                     <span class="font-helvetica-md">{{ warning.warningName }}&nbsp;</span>
                   </div>
                   <div fxLayout="row" class="class_padding">
-                    <div class="warning_time" fxLayout="column" fxLayoutAlign="left">
-                      <span  *ngIf='warning.warningType=="A"' [ngClass]="[isCurrent ? 'name_small warning_danger' : 'name_small']">{{ translationData.lblActivatedTime || 'Activated Time' }}</span>
-                      <span  *ngIf='warning.warningType=="D"' [ngClass]="[isCurrent ? 'name_small warning_danger' : 'name_small']">{{ translationData.lblDeactivatedTime || 'Deactivated Time' }}</span>
-                      <span style="font-size: 14px;">{{ warning.warningTimetamp | date: 'yyyy/MM/dd h:mm:ss a' }}</span>
-                    </div>
-                    <ng-container *ngIf="warning.warningDeactivatedTimestamp">
-                      <div *ngIf='!isCurrent' class="warning_time" fxLayout="column" fxLayoutAlign="left">
-                        <span class="name_small warning_danger">{{ translationData.lblDeactivatedTime || 'Deactivated Time' }}</span>
-                        <span style="font-size: 14px;">{{ warning.warningDeactivatedTimestamp | date: 'yyyy/MM/dd h:mm:ss a' }}</span>
-                      </div>
-                    </ng-container>
+                  <div class="warning_time" fxLayout="column" fxLayoutAlign="left">
+                  <span *ngIf='warning.warningType=="A"'>
+                  <span [ngClass]="[isCurrent ? 'name_small warning_danger' : 'name_small']">{{ translationData.lblActivatedTime || 'Activated Time' }}</span>
+                    <div class="full-width" style="font-size: 13px;padding-top: 2px;">{{ warning.warningTimetamp | date: 'yyyy/MM/dd h:mm:ss a' }}</div>
+                  </span>
+                  <span *ngIf='warning.warningType=="D"'>                     
+                     <span class="name_small">{{ translationData.lblActivatedTime || 'Activated Time' }}</span>                   
+                     <div class="full-width" style="font-size: 13px;padding-top: 2px;">{{ warning.warningActivatedForDeactive ? (warning.warningActivatedForDeactive | date: 'yyyy/MM/dd h:mm:ss a') : '-' }}</div>
+                   </span>
                   </div>
-                  <div fxLayout="row" class="name_small class_padding">
+                  <div class="warning_time" fxLayout="column" fxLayoutAlign="left">
+                    <span *ngIf='warning.warningType=="D"'>
+                    <span [ngClass]="[isCurrent ? 'name_small warning_danger' : 'name_small warning_danger']">{{ translationData.lblDeactivatedTime || 'Deactivated Time' }}</span>
+                    <div class="full-width" style="font-size: 13px;padding-top: 2px;">{{ warning.warningTimetamp | date: 'yyyy/MM/dd h:mm:ss a' }}</div>
+                  </span>
+                  </div>
+                  <ng-container *ngIf="warning.warningDeactivatedTimestamp">
+                    <div *ngIf='!isCurrent' class="warning_time" fxLayout="column" fxLayoutAlign="left">
+                      <span class="name_small">{{ translationData.lblActivatedTime || 'Activated Time' }}</span>                   
+                      <div class="full-width" style="font-size: 13px;padding-top: 2px;">{{ warning.warningActivatedForDeactive ? (warning.warningActivatedForDeactive | date: 'yyyy/MM/dd h:mm:ss a') : '-' }}</div>
+                    </div>
+                    <div *ngIf='!isCurrent' class="warning_time" fxLayout="column" fxLayoutAlign="left">
+                      <span class="name_small warning_danger">{{ translationData.lblDeactivatedTime || 'Deactivated Time' }}</span>
+                      <span style="font-size: 13px;padding-top: 2px;">{{ warning.warningDeactivatedTimestamp | date: 'yyyy/MM/dd h:mm:ss a' }}</span>
+                    </div>
+                  </ng-container>
+                  </div>
+                  <div fxLayout="row" class="name_small class_padding" style="padding: 5px 10px;">
                     <span>{{ translationData.lblDriverName || 'Driver Name' }}: </span>
                     <span class="font-helvetica-md">{{ warning.driverName }}</span>
                   </div>
