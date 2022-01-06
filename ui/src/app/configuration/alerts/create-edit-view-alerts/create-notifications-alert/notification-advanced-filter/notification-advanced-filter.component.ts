@@ -72,38 +72,38 @@ export class NotificationAdvancedFilterComponent implements OnInit {
       let PeriodType;
       this.timings = [
         {
-          "day": "Sunday",
-          "Type": PeriodType,
+          "day" : this.translationData.lblSunday,
+          "Type": this.translationData.lblPeriodType,
           "data": []
         },
         {
-          "day": "Monday",
-          "Type": PeriodType,
+          "day": this.translationData.lblMonday,
+          "Type": this.translationData.lblPeriodType,
           "data": []
         },
         {
-          "day": "Tuesday",
-          "Type": PeriodType,
+          "day": this.translationData.lblTuesday,
+          "Type": this.translationData.lblPeriodType,
           "data": []
         },
         {
-          "day": "Wednesday",
-          "Type": PeriodType,
+          "day": this.translationData.lblWednesday,
+          "Type": this.translationData.lblPeriodType,
           "data": []
         },
         {
-          "day": "Thursday",
-          "Type": PeriodType,
+          "day": this.translationData.lblThursday,
+          "Type": this.translationData.lblPeriodType,
           "data": []
         },
         {
-          "day": "Friday",
-          "Type": PeriodType,
+          "day": this.translationData.lblFriday,
+          "Type": this.translationData.lblPeriodType,
           "data": []
         },
         {
-          "day": "Saturday",
-          "Type": PeriodType,
+          "day": this.translationData.lblSaturday,
+          "Type": this.translationData.lblPeriodType,
           "data": []
         }
       ];

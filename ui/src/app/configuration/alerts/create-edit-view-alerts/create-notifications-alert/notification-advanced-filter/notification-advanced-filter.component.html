@@ -24,7 +24,7 @@
                     </mat-radio-group>
                 </div>
                 <div *ngIf="actionType == 'view'">
-                  Frequency : <span style='font-weight: 500!important;'>{{ this.selectedRowData.notifications[0].frequencyType == 'O' ? (translationData.lblOnce) : (this.selectedRowData.notifications[0].frequencyType == 'T' ? (translationData.lblEachTime) : (translationData.lblEachNumberOfOccurences)) }}</span>
+                  {{translationData.lblFrequency}} : <span style='font-weight: 500!important;'>{{ this.selectedRowData.notifications[0].frequencyType == 'O' ? (translationData.lblOnce) : (this.selectedRowData.notifications[0].frequencyType == 'T' ? (translationData.lblEachTime) : (translationData.lblEachNumberOfOccurences)) }}</span>
                 </div>
                 <!-- <p *ngIf="alert_category_selected != 'R' && actionType != 'view'" style="color: darkgray;">Choose appropriate frequency for this alert</p> -->
             </div>
@@ -54,7 +54,7 @@
                       </mat-radio-group>
                   </div>
                   <div *ngIf="actionType == 'view'">
-                    Validity Type : <span style='font-weight: 500!important;'>{{ this.selectedRowData.notifications[0].validityType == 'A' ? (translationData.lblAlways) :  (translationData.lblCustom) }}</span>
+                   {{translationData.lblValidity}} : <span style='font-weight: 500!important;'>{{ this.selectedRowData.notifications[0].validityType == 'A' ? (translationData.lblAlways) :  (translationData.lblCustom) }}</span>
                   </div>
                   <p *ngIf="actionType != 'view'" style="color: darkgray;">{{translationData.lblDefineTimeRange}}</p>
               </div>
@@ -151,10 +151,10 @@
                   
                     <div *ngFor="let days of timings">
                       <div fxLayout="row" class="areaWidth filter-direction margin-bottom-sm" fxLayoutGap="10px">
-                        <mat-label>Day:<span style='font-weight: 500!important;'>{{days.day}}</span></mat-label>
-                        <mat-label>Period Type:
-                          <span style='font-weight: 500!important;' *ngIf="days.Type == 'C'">Custom Period</span>
-                          <span style='font-weight: 500!important;' *ngIf="days.Type == 'A'">Full Day</span>
+                        <mat-label>{{translationData.lblDay}}:<span style='font-weight: 500!important;'>{{days.day}}</span></mat-label>
+                        <mat-label>{{translationData.lblPeriodType}}
+                          <span style='font-weight: 500!important;' *ngIf="days.Type == 'C'">{{translationData.lblCustomPeriod}}</span>
+                          <span style='font-weight: 500!important;' *ngIf="days.Type == 'A'">{{translationData.lblFullDay}}</span>
                         </mat-label>
                       </div>
                   
