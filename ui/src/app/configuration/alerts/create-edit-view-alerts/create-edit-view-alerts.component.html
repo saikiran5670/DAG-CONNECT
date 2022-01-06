@@ -315,10 +315,10 @@
   </div>
   <div fxLayout="row" *ngIf="this.selectedRowData.alertUrgencyLevelRefs[0].periodType == 'C'" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
   <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
-    From : <span class='font-helvetica-md'>{{ from[0]}} {{ from[1] }}</span>
+    {{translationData.lblFrom}} : <span class='font-helvetica-md'>{{ from[0]}} {{ from[1] }}</span>
     </div>
     <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
-      To : <span class='font-helvetica-md'>{{ to[0]}} {{ to[1] }}</span>
+      {{translationData.lblTo}} : <span class='font-helvetica-md'>{{ to[0]}} {{ to[1] }}</span>
       </div>
   </div>
 </div>
