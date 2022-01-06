@@ -1375,6 +1375,7 @@ export class AppComponent {
         this.alertDateFormat='MM/DD/YYYY';
         this.dateFormats.parse.dateInput = "MM/DD/YYYY";
       }
+      localStorage.setItem("dateFormat", this.dateFormats.display.dateInput);
     }
   }
 

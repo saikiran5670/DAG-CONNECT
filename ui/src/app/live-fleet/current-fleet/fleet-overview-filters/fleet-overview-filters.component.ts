@@ -169,10 +169,10 @@ ngAfterViewInit(){
       this.updateVehicleFilter();
       this.loadVehicleData();
       }
-      if(this.selectedIndex == 1){
+    if(this.selectedIndex == 1){
       this.updateDriverFilter();
       this.loadDriverData();
-      }
+    }
     // this.filterVehicle.nativeElement.updateTodayCheckboxOnTab();
   }
 
@@ -195,7 +195,7 @@ ngAfterViewInit(){
           this.finalDriverList.sort(this.compareName);
           this.resetDriverSearchFilter();
 
-          this.loadDriverData();
+          // this.loadDriverData();
       }
       else{
         // this.loadDriverData();
@@ -1186,6 +1186,7 @@ removeDuplicates(originalArray, prop) {
         }
         this.dataInterchangeService.getVehicleData(_dataObj);
       }
+      this.showLoadingIndicator=false;
     });
     //this.noRecordFlag = false;
  }

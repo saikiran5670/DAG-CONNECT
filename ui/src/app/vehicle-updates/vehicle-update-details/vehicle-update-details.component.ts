@@ -323,7 +323,7 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
   }
   getBreadcum() {
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} /  
-    ${this.translationData.lblVehicleUpdate ? this.translationData.lblVehicleUpdate : 'Vehical Updates'} / 
+    ${this.translationData.lblVehicleUpdates ? this.translationData.lblVehicleUpdates : 'Vehical Updates'} / 
     ${this.translationData.lblVehicleUpdateDetails ? this.translationData.lblVehicleUpdateDetails : 'Vehical Update Details'}`;
   }
 
