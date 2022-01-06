@@ -622,16 +622,20 @@ export class AlertAdvancedFilterComponent implements OnInit {
          //For tooltip on info bubble
 
         var bubble;
+        var transPOIName = this.translationData.lblPOIName;
+        var transCategory = this.translationData.lblCategory;
+        var SubCategory = this.translationData.lblSubCategory;
+        var Address = this.translationData.lblAddress;
         marker.addEventListener('pointerenter', function (evt) {
           // event target is the marker itself, group is a parent event target
           // for all objects that it contains
           bubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
             // read custom data
             content:`<div>
-            <b>POI Name: ${element.name}</b><br>
-            <b>Category: ${element.categoryName}</b><br>
-            <b>Sub-Category: ${element.subCategoryName}</b><br>
-            <b>Address: ${element.address}</b>
+            <b>${transPOIName}: ${element.name}</b><br>
+            <b>${transCategory}: ${element.categoryName}</b><br>
+            <b>${SubCategory}: ${element.subCategoryName}</b><br>
+            <b>${Address}: ${element.address}</b>
             </div>`
           });
           // show info bubble
@@ -749,15 +753,18 @@ export class AlertAdvancedFilterComponent implements OnInit {
       this.map.addObject(circleGroup);
 
       var bubble;
+      var transCategory = this.translationData.lblCategory;
+      var SubCategory = this.translationData.lblSubCategory;
+      var GeofenceName = this.translationData.lblGeofence;
     circle.addEventListener('pointerenter', function (evt) {
       // event target is the marker itself, group is a parent event target
       // for all objects that it contains
       bubble =  new H.ui.InfoBubble({lat:rowData.latitude,lng:rowData.longitude}, {
         // read custom data
         content:`<div>
-        <b>Geofence Name: ${rowData.name}</b><br>
-        <b>Category: ${rowData.categoryName}</b><br>
-        <b>Sub-Category: ${rowData.subCategoryName}</b><br>
+        <b>${GeofenceName}: ${rowData.name}</b><br>
+        <b>${transCategory}: ${rowData.categoryName}</b><br>
+        <b>${SubCategory}: ${rowData.subCategoryName}</b><br>
         </div>`
       });
       // show info bubble
@@ -807,6 +814,9 @@ export class AlertAdvancedFilterComponent implements OnInit {
           map.addObject(mainGroup);
 
           var bubble;
+          var transCategory = this.translationData.lblCategory;
+          var SubCategory = this.translationData.lblSubCategory;
+          var GeofenceName = this.translationData.lblGeofence;
           mainGroup.addEventListener('pointerenter', function(evt) {
             if (polygonTimeout) {
               clearTimeout(polygonTimeout);
@@ -818,9 +828,9 @@ export class AlertAdvancedFilterComponent implements OnInit {
             bubble =  new H.ui.InfoBubble({ lat: rowData.latitude, lng: rowData.longitude } , {
               // read custom data
               content:`<div>
-              <b>Geofence Name: ${rowData.name}</b><br>
-                <b>Category: ${rowData.categoryName}</b><br>
-                <b>Sub-Category: ${rowData.subCategoryName}</b><br>
+              <b>${GeofenceName}: ${rowData.name}</b><br>
+                <b>${transCategory}: ${rowData.categoryName}</b><br>
+                <b>${SubCategory}: ${rowData.subCategoryName}</b><br>
               </div>`
             });
             // show info bubble
