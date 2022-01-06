@@ -11,13 +11,15 @@ import * as FileSaver from 'file-saver';
 import { LanguageSelectionComponent } from './language-selection/language-selection.component';
 import { stringify } from '@angular/compiler/src/util';
 import { Util } from 'src/app/shared/util';
+import { DatePipe } from '@angular/common';
 
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
 
 @Component({
   selector: 'app-translation-data-upload',
   templateUrl: './translation-data-upload.component.html',
-  styleUrls: ['./translation-data-upload.component.less']
+  styleUrls: ['./translation-data-upload.component.less'],
+  providers: [DatePipe]
 })
 export class TranslationDataUploadComponent implements OnInit {
   grpTitleVisible : boolean = false;
@@ -50,7 +52,7 @@ export class TranslationDataUploadComponent implements OnInit {
   filterValue: string;
   excelFileLengthFlag: boolean = false;
 
-  constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private translationService: TranslationService) {
+  constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private translationService: TranslationService, private datePipe: DatePipe) {
       this.defaultTranslation();
   }
 
@@ -94,12 +96,14 @@ export class TranslationDataUploadComponent implements OnInit {
     this.translationService.getTranslationUploadDetails().subscribe((data: any) => {
       this.hideloader();
       if(data){
+        var dateFormat = ((localStorage.getItem("dateFormat")).toLowerCase()).replace(/mm/g, 'MM');
         data.forEach(element => {
-          var date = new Date(element.createdAt);
-          var year = date.getFullYear();
-          var month = ("0" + (date.getMonth() + 1)).slice(-2);
-          var day = ("0" + date.getDate()).slice(-2);
-          element.createdAt= `${day}/${month}/${year}`;
+          element.createdAt = this.datePipe.transform(element.createdAt, dateFormat); 
+          // var date = new Date(element.createdAt);
+          // var year = date.getFullYear();
+          // var month = ("0" + (date.getMonth() + 1)).slice(-2);
+          // var day = ("0" + date.getDate()).slice(-2);
+          // element.createdAt= `${day}/${month}/${year}`+result;
         });
         this.initData = data;
         this.updateGridData(this.initData);

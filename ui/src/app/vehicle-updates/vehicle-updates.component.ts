@@ -112,11 +112,29 @@ export class VehicleUpdatesComponent implements OnInit {
      let vehicleSoftStatusArr = data['vehicleSoftwareStatus'];
       if (this.translationData != undefined) {
         vehicleSoftStatusArr.forEach(element => {
-          if (element.enum == "U") {
-            element["value"] = this.translationData[element["key"]]; // 'Up-to-Date';
-          }
-          else {
-            element["value"] = this.translationData[element["key"]];
+          // if (element.enum == "U") {
+          //   element["value"] = this.translationData[element["key"]]; // 'Up-to-Date';
+          // }
+          // else {
+          //   element["value"] = this.translationData[element["key"]];
+          // }
+          switch(element.enum){
+            case 'F':{
+              element["value"] = 'Update Failed';
+              break;
+            }
+            case 'A':{
+              element["value"] = 'Update Available';
+              break;
+            }
+            case 'R':{
+              element["value"] = 'Update Running';
+              break;
+            }
+            case 'U':{
+              element["value"] = 'Up-to-Date';
+              break;
+            }
           }
           this.vehicleSoftwareStatus.push(element);
         });    
