@@ -32,7 +32,7 @@
                   {{ translationData.lblVehicleGroup || 'Vehicle Group' }}
               </mat-label>
               <mat-form-field appearance="outline" class="full-width">
-              <mat-select placeholder="Select"
+              <mat-select placeholder="{{translationData.lblSelect || 'Select'  }}"
               (selectionChange)="onVehicleGroupChange('vehicleGroupNames',$event.value)" formControlName="vehicleGroup">
               <mat-option>
                   <ngx-mat-select-search (keyup)="filterVehicleGroup(vehicleGroup.value)" placeholderLabel="{{ translationData.lblSearchSearchVehGroup || 'Search vehicle group' }}" #vehicleGroup>
@@ -51,7 +51,7 @@
                 {{ translationData.lblVehicleName || 'Vehicle Name' }}
             </mat-label>
             <mat-form-field appearance="outline" class="full-width">
-            <mat-select placeholder="Select"
+            <mat-select placeholder="{{translationData.lblSelect || 'Select'  }}"
             (selectionChange)="onVehicleChange('vehicleName',$event.value)" formControlName="vehicle">
             <mat-option>
                 <ngx-mat-select-search (keyup)="filterVehicleName(vehicle.value)" placeholderLabel="{{ translationData.lblSearchVehName || 'Search vehicle name' }}" #vehicle>
@@ -70,7 +70,7 @@
                     {{ translationData.lblVehicleSoftwareStatus || 'Vehicle Software Status' }}
                 </mat-label>
                 <mat-form-field appearance="outline" class="full-width" >
-                <mat-select (selectionChange)="optionClick('softwareStatus', $event.value)" placeholder="Select or search details"  #select  multiple formControlName="softStatus">
+                <mat-select (selectionChange)="optionClick('softwareStatus', $event.value)" placeholder="{{translationData.lblSelectOrSearch || 'Select or search details'}}" #select  multiple formControlName="softStatus">
                 <mat-option value=''>
                     <ngx-mat-select-search (keyup)="filterVehicleSoft(softStatus.value)" placeholderLabel="{{ translationData.lblSearchsoftwarestatus || 'Search software status' }}" #softStatus>
                         <mat-icon (click)="resetSoftStatusFilter()" ngxMatSelectSearchClear>close</mat-icon>

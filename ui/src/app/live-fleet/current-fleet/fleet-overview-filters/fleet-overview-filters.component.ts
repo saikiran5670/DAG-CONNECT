@@ -169,10 +169,10 @@ ngAfterViewInit(){
       this.updateVehicleFilter();
       this.loadVehicleData();
       }
-      if(this.selectedIndex == 1){
+    if(this.selectedIndex == 1){
       this.updateDriverFilter();
       this.loadDriverData();
-      }
+    }
     // this.filterVehicle.nativeElement.updateTodayCheckboxOnTab();
   }
 
@@ -195,7 +195,7 @@ ngAfterViewInit(){
           this.finalDriverList.sort(this.compareName);
           this.resetDriverSearchFilter();
 
-          this.loadDriverData();
+          // this.loadDriverData();
       }
       else{
         // this.loadDriverData();
@@ -1186,6 +1186,7 @@ removeDuplicates(originalArray, prop) {
         }
         this.dataInterchangeService.getVehicleData(_dataObj);
       }
+      this.showLoadingIndicator=false;
     });
     //this.noRecordFlag = false;
  }
@@ -1287,14 +1288,14 @@ removeDuplicates(originalArray, prop) {
 
  checkCreationForVehicle(item: any){
   if (!(item.hasOwnProperty('isBackClick') && item.isBackClick === true)) {
-    this.vehicleListData =[];
+    this.vehicleListData = [];
   }
   this.fleetMapService.clearRoutesFromMap();
 
   this.todayFlagClicked = item.todayFlagClicked;
   // this.getFilterData();
   //this.setDropdownValues(this.fleetData);
-  this.isVehicleDetails  = item.vehicleDetailsFlag;
+  this.isVehicleDetails = item.vehicleDetailsFlag;
   if(this.selectedIndex == 1){
     if (item.hasOwnProperty('vehicleDetailsFlag') && !item.vehicleDetailsFlag ) {
 
@@ -1308,6 +1309,12 @@ removeDuplicates(originalArray, prop) {
     //this.getFilterData();
     if (!(item.hasOwnProperty('isBackClick') && item.isBackClick === true)) {
       this.loadVehicleData();
+    }else if(item.hasOwnProperty('isBackClick') && item.isBackClick === true){ // back from detail page
+      let _dataObj = {
+        vehicleDetailsFlag: this.isVehicleDetails,
+        data: this.vehicleListData
+      }
+      this.dataInterchangeService.getVehicleData(_dataObj); // when back clicked 
     }
   }
   // this.driverFlagClicked = true;
