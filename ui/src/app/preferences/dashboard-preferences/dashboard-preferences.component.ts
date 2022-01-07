@@ -367,8 +367,8 @@ export class DashboardPreferencesComponent implements OnInit {
     var h = Math.floor(d / 3600);
     var m = Math.floor(d % 3600 / 60);
     var s = Math.floor(d % 3600 % 60);
-    var hDisplay = h > 0 ? h + "," : "";
-    var mDisplay = m > 0 ? m + "," : "";
+    var hDisplay = h > 0 ? h + "," : ",";
+    var mDisplay = m > 0 ? m + "," : ",";
     var sDisplay = s > 0 ? s + "," : "";
     return hDisplay + mDisplay + sDisplay;
   }
