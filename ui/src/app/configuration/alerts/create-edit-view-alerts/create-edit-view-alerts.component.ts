@@ -47,7 +47,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
   accountInfo:any = {};
   initData: any = [];
   vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
-  columnCodes = ['vin','vehicleName', 'vehicleGroupName', 'viewstatus'];
+  columnCodes = ['vin','vehicleName', 'vehicleGroupName', 'subscriptionType'];
   columnLabels = ['VIN','VehicleName', 'VehicleGroupName', 'Status'];
   @ViewChild('gridComp') gridComp: DataTableComponent;
  
@@ -456,6 +456,9 @@ proceedStep(prefData: any, preference: any){
     return _date;
   }
   updateVehiclesDataSource(tableData: any){
+    tableData.forEach(element =>{
+      element.subscriptionType = "Subscribed";
+    });
     this.gridComp.updatedTableData(tableData);
     // this.vehiclesDataSource= new MatTableDataSource(tableData);
     // this.vehiclesDataSource.filterPredicate = function(data: any, filter: string): boolean {
