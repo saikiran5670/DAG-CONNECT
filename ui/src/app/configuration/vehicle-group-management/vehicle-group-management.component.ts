@@ -224,7 +224,7 @@ export class VehicleGroupManagementComponent implements OnInit {
       colsList: colsList,
       colsName:colsName,
       tableTitle: tableTitle,
-      traslationData: this.translationData
+      translationData: this.translationData
     }
     this.dialogRef = this.dialog.open(UserDetailTableComponent, dialogConfig);
   }
