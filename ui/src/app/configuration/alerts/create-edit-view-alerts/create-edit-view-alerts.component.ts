@@ -840,7 +840,7 @@ proceedStep(prefData: any, preference: any){
     this.vehicleListForTable= [];
     this.vehicleByVehGroupList= [];
     if(this.actionType == 'edit' || this.actionType == 'duplicate'){
-      this.onChangeAlertType(this.selectedRowData.type);
+      // this.onChangeAlertType(this.selectedRowData.type); //commenting this line as map was overriding on table for edit
       this.vehicleByVehGroupList = [];
       this.vehicleListForTable = [];
     }
