@@ -249,7 +249,7 @@ ngOnDestroy(){
     this.globalSearchFilterData["endTimeStamp"] = this.endTimeDisplay;
   }
   this.setGlobalSearchData(this.globalSearchFilterData);
-  
+
 }
 
   ngOnInit() {
@@ -335,7 +335,11 @@ ngOnDestroy(){
         this.initMap();
         },0);
     }
+    if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAlerts)){
 
+      this.onSearch();
+
+    }
 
   }
 
@@ -825,11 +829,7 @@ ngOnDestroy(){
           "end_time": _endTime
         }
 
-if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
-        setTimeout(() => {
-          this.initMap();
-        }, 0);
-      }
+
       this.showLoadingIndicator = true;
       this.getLogbookDetailsAPICall = this.reportService.getLogbookDetails(objData).subscribe((logbookData: any) => {
         this.hideloader();
@@ -877,9 +877,15 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
           });
           this.showMap = true;
         }
-        this.initData = logbookData;
-        this.setTableInfo();
-        this.updateDataSource(this.initData);
+        if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
+          setTimeout(() => {
+            this.onSearch();
+            this.initData = logbookData;
+            this.setTableInfo();
+            this.updateDataSource(this.initData);
+          }, 0);
+        }
+
       }, (error)=>{
           this.hideloader();
           this.initData = [];
@@ -1565,9 +1571,9 @@ let prepare = []
       if(event.value._d.getTime() <= this.endDateValue.getTime()){ // CurTime < endDateValue
         dateTime = event.value._d;
       }else{
-        dateTime = this.endDateValue; 
+        dateTime = this.endDateValue;
       }
-    }else{ 
+    }else{
       dateTime = this.last3MonthDate;
     }
     this.startDateValue = this.setStartEndDateTime(dateTime, this.selectedStartTime, 'start');
@@ -1582,9 +1588,9 @@ let prepare = []
       if(event.value._d.getTime() >= this.startDateValue.getTime()){ // EndTime < startDateValue
         dateTime = event.value._d;
       }else{
-        dateTime = this.startDateValue; 
+        dateTime = this.startDateValue;
       }
-    }else{ 
+    }else{
       dateTime = this.todayDate;
     }
     this.endDateValue = this.setStartEndDateTime(dateTime, this.selectedEndTime, 'end');
