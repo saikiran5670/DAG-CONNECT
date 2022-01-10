@@ -276,6 +276,7 @@ export class CurrentFleetComponent implements OnInit {
       this.hideLoader();
       let processedData = this.fleetMapService.processedLiveFLeetData(data);
       this.detailsData = processedData;
+      this.getFilterData();
       let _dataObj = {
         vehicleDetailsFlag: false,
         data: this.detailsData
@@ -287,6 +288,7 @@ export class CurrentFleetComponent implements OnInit {
       }
     }, (err) => {
       this.hideLoader();
+      this.getFilterData();
     });
   }
 
@@ -304,14 +306,14 @@ export class CurrentFleetComponent implements OnInit {
   }
 
   getFilterData(){
-    this.showLoadingIndicator = true;
+    //this.showLoadingIndicator = true;
     this.reportService.getFilterDetails().subscribe((data: any) => {
-      this.hideLoader();
+      //this.hideLoader();
       this.filterData = data;
-      this.getFleetOverviewDetails();
+      //this.getFleetOverviewDetails();
     }, (error) => {
-      this.hideLoader();
-      this.getFleetOverviewDetails();
+      //this.hideLoader();
+      //this.getFleetOverviewDetails();
     });
   }
 
