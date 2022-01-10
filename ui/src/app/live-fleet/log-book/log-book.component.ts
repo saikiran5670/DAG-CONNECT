@@ -229,7 +229,9 @@ defaultTranslation(){
 }
 
 ngOnDestroy(){
-  this.getLogbookDetailsAPICall.unsubscribe();
+  if(this.getLogbookDetailsAPICall){
+    this.getLogbookDetailsAPICall.unsubscribe();
+  }
   this.globalSearchFilterData["vehicleGroupDropDownValue"] = this.logBookForm.controls.vehicleGroup.value;
   this.globalSearchFilterData["vehicleDropDownValue"] = this.logBookForm.controls.vehicle.value;
   this.globalSearchFilterData["timeRangeSelection"] = this.selectionTab;
