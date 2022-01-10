@@ -15,7 +15,7 @@
             <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
               <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                 <mat-form-field appearance="outline">
-                    <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{data.translationData.lblSearch}}">
+                    <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{data.translationData.lblSearch || 'Search'}}">
                     <span matPrefix><mat-icon>search</mat-icon></span>
                 </mat-form-field>
               </div>
