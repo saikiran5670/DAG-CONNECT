@@ -335,10 +335,10 @@ ngOnDestroy(){
         this.initMap();
         },0);
     }
-    if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAlerts)){
-      setTimeout(() => {
-        this.onSearch();
-      },0);
+    if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAlerts || this._state.fromDashboard == true)){
+
+      this.onSearch();
+
     }
 
   }
