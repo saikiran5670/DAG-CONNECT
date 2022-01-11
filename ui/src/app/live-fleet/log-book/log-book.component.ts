@@ -335,7 +335,7 @@ ngOnDestroy(){
         this.initMap();
         },0);
     }
-    if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAlerts)){
+    if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAlerts || this._state.fromDashboard == true)){
 
       this.onSearch();
 
@@ -1704,9 +1704,9 @@ let prepare = []
       this.resetLogFormControlValue();
      }
      this.setVehicleGroupAndVehiclePreSelection();
-     if(this.showBack){
-       this.onSearch();
-     }
+    //  if(this.showBack){
+    //    this.onSearch();
+    //  }
   }
 
   getVehicleGroups(){
