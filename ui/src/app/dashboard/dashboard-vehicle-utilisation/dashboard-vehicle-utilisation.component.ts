@@ -571,6 +571,11 @@ getAlert24HoursAPI: any;
        this.toatlSum = this.alertsData.critical + this.alertsData.warning +this.alertsData.advisory;
        this.setAlertChartData();
     }
+    else{
+      this.logisticCount = 0;
+      this.fuelAndDriverCount = 0;
+      this.repairAndMaintenanceCount = 0;
+    }
   });
  }
 
