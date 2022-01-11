@@ -65,22 +65,19 @@ export class FleetMapService {
     });
     this.herePOISearch = this.platform.getPlacesService();
     this.entryPoint = H.service.PlacesService.EntryPoint;
-
-
-
     let _langCode = this.localStLanguage ? this.localStLanguage.code : "EN-GB";
-    let translationObj = {
-      id: 0,
-      code: _langCode,
-      type: "Menu",
-      name: "",
-      value: "",
-      filter: "",
-      menuId: 17 //-- for alerts
-    }
-    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-      this.processTranslation(data);
-    });
+    // let translationObj = {
+    //   id: 0,
+    //   code: _langCode,
+    //   type: "Menu",
+    //   name: "",
+    //   value: "",
+    //   filter: "",
+    //   menuId: 17 //-- for alerts
+    // }
+    // this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+    //   this.processTranslation(data);
+    // });
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
     this.translationService.getPreferences(_langCode).subscribe((prefData: any) => {
       if (this.accountPrefObj && this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != '') { // account pref
