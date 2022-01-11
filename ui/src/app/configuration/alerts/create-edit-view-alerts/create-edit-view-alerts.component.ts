@@ -357,8 +357,7 @@ proceedStep(prefData: any, preference: any){
 
   loadFilterDataBasedOnPrivileges(){
     
-    this.alertService.getAlertFilterDataBasedOnPrivileges(this.accountId, this.accountRoleId).subscribe((data) => {
-     
+    this.alertService.getAlertFilterDataBasedOnPrivileges(this.accountId, this.accountRoleId).subscribe((data: any) => {
       this.alertCategoryTypeMasterData = data["enumTranslation"];
       this.alertCategoryTypeFilterData = data["alertCategoryFilterRequest"];
       this.associatedVehicleData = data["associatedVehicleRequest"];
@@ -455,10 +454,11 @@ proceedStep(prefData: any, preference: any){
     }
     return _date;
   }
+
   updateVehiclesDataSource(tableData: any){
-    tableData.forEach(element =>{
-      element.subscriptionType = "Subscribed";
-    });
+    // tableData.forEach(element =>{
+    //   element.subscriptionType = "Subscribed";
+    // });
     this.gridComp.updatedTableData(tableData);
     // this.vehiclesDataSource= new MatTableDataSource(tableData);
     // this.vehiclesDataSource.filterPredicate = function(data: any, filter: string): boolean {
@@ -777,50 +777,77 @@ proceedStep(prefData: any, preference: any){
   resetVehiclesFilter(){
     this.filteredVehicles.next(this.vehicleByVehGroupList.slice());
   }
+
   getVehiclesForAlertType(alertTypeObj: any){
     this.vehicleByVehGroupList = [];
     this.vehicleListForTable = [];
-    let featuresData= this.alertCategoryTypeFilterData.filter(item => item.featureKey == alertTypeObj.key);
-    if(featuresData.length == 1 && featuresData[0].subscriptionType == 'O'){
-      this.associatedVehicleData.forEach(element => {        
-          this.vehicleByVehGroupList.push(element);
+    let featuresData = this.alertCategoryTypeFilterData.filter(item => item.featureKey == alertTypeObj.key);
+    if(featuresData.length == 1 && featuresData[0].subscriptionType == 'O'){ // org based - all subscribe
+      this.associatedVehicleData.forEach(element => {    
+        element.subscriptionType = "Subscribed";    
+        this.vehicleByVehGroupList.push(element);
       });
     }
     else{ //if subscriptionType == 'v'
-      featuresData.forEach(element => {
-        let vehicle= this.associatedVehicleData.filter(item => item.vehicleId == element.vehicleId);
-        if(vehicle.length > 0){
-          this.vehicleByVehGroupList.push(vehicle[0]);
-          console.log("vehicleByVehGroupList 5", this.vehicleByVehGroupList);
+      //if(featuresData.length > 0){
+        // featuresData.forEach(element => {
+        //   let vehicle = this.associatedVehicleData.filter(item => item.vehicleId == element.vehicleId);
+        //   if(vehicle.length > 0){
+        //     this.vehicleByVehGroupList.push(vehicle[0]);
+        //     //console.log("vehicleByVehGroupList 5", this.vehicleByVehGroupList);
+        //     this.vehicleByVehGroupList.sort(this.compareVehicleList);
+        //     this.resetVehiclesFilter();
+        //   }
+        // });
+
+        if(featuresData.length > 0){
+          this.vehicleByVehGroupList = this.associatedVehicleData.slice();
+          let _orgSub: any = featuresData.filter(i => i.subscriptionType == 'O'); // find org based subscription
+          if(_orgSub && _orgSub.length > 0){ // all vehicle subscribe
+            this.vehicleByVehGroupList.forEach(elem => {
+              elem.subscriptionType = "Subscribed";
+            });
+          }else{ // all vehicle subscribe
+            this.vehicleByVehGroupList.forEach(_el => {
+              let _find: any = featuresData.filter(j => j.vehicleId == _el.vehicleId && j.subscriptionType == 'V');
+              if(_find && _find.length > 0){ // find 'V'
+                _el.subscriptionType = "Subscribed";
+              }else{ // non-subscribe
+                _el.subscriptionType = "Non-Subscribed";
+              }
+            });
+          }
           this.vehicleByVehGroupList.sort(this.compareVehicleList);
           this.resetVehiclesFilter();
         }
-      });
+      //}
     }
+
+    this.vehicleListForTable = this.vehicleByVehGroupList.slice();
  
     //subscribed vehicles
-    this.vehicleByVehGroupList.forEach(element => {
-      console.log("vehicleByVehGroupList 6", this.vehicleByVehGroupList);
-      element["subcriptionStatus"] = true;
-      this.vehicleListForTable.push(element);
-    });
+    // this.vehicleByVehGroupList.forEach(element => {
+    //   //console.log("vehicleByVehGroupList 6", this.vehicleByVehGroupList);
+    //   element["subcriptionStatus"] = true;
+    //   this.vehicleListForTable.push(element);
+    // });
 
-    //non-subscribed vehicles
-    if(featuresData[0].subscriptionType != 'O'){
-      this.associatedVehicleData.forEach(element => {
-        let isDuplicateVehicle= false;
-        for(let i = 0; i< this.vehicleByVehGroupList.length; i++){
-          if(element.vehicleId == this.vehicleByVehGroupList[i].vehicleId){
-              isDuplicateVehicle= true;
-              break;
-          }
-        }
-        if(!isDuplicateVehicle){
-          element["subcriptionStatus"] = false;
-          this.vehicleListForTable.push(element);
-        }
-      });
-    }
+    // //non-subscribed vehicles
+    // if(featuresData[0].subscriptionType != 'O'){
+    //   this.associatedVehicleData.forEach(element => {
+    //     let isDuplicateVehicle = false;
+    //     for(let i = 0; i< this.vehicleByVehGroupList.length; i++){
+    //       if(element.vehicleId == this.vehicleByVehGroupList[i].vehicleId){
+    //           isDuplicateVehicle= true;
+    //           break;
+    //       }
+    //     }
+    //     if(!isDuplicateVehicle){
+    //       element["subcriptionStatus"] = false;
+    //       this.vehicleListForTable.push(element);
+    //     }
+    //   });
+    // }
     this.updateVehiclesDataSource(this.vehicleListForTable);
   }
 
@@ -853,10 +880,12 @@ proceedStep(prefData: any, preference: any){
     else{
       //converted vehicle group selection into int val.
       this.vehicle_group_selected= parseInt(value);
-
       let featuresData= this.alertCategoryTypeFilterData.filter(item => item.featureKey == alertTypeObj.key);
-      if(featuresData.length == 1 && featuresData[0].subscriptionType == 'O'){
-        this.vehicleByVehGroupList= this.associatedVehicleData.filter(item => item.vehicleGroupDetails.includes(this.vehicle_group_selected+"~"));
+      if(featuresData.length == 1 && featuresData[0].subscriptionType == 'O'){ // org based -> all veh subscribe
+        this.vehicleByVehGroupList = this.associatedVehicleData.filter(item => item.vehicleGroupDetails.includes(this.vehicle_group_selected+"~"));
+        this.vehicleByVehGroupList.forEach(elem => {
+          elem.subscriptionType = "Subscribed";
+        });
       }
       else{ //if subscriptionType == 'v'
         // featuresData.forEach(element => {
@@ -866,9 +895,31 @@ proceedStep(prefData: any, preference: any){
         //   }
         //});
         if(featuresData.length > 0){
-          let vehicle= this.associatedVehicleData.filter(item =>  item.vehicleGroupDetails.includes(this.vehicle_group_selected+"~"));
+          let vehicle = this.associatedVehicleData.filter(item => item.vehicleGroupDetails.includes(this.vehicle_group_selected+"~"));
           if(vehicle.length > 0){
-             this.vehicleByVehGroupList = vehicle.slice();
+            this.vehicleByVehGroupList = vehicle.slice();
+          }
+
+          let _orgSub: any = featuresData.filter(i => i.subscriptionType == 'O'); // find org based subscription
+          if(_orgSub && _orgSub.length > 0){ // all vehicle subscribe
+            this.vehicleByVehGroupList.forEach(elem => {
+              elem.subscriptionType = "Subscribed";
+            });
+          }else{ // all vehicle subscribe
+            this.vehicleByVehGroupList.forEach(_el => {
+              let _find: any = featuresData.filter(j => j.vehicleId == _el.vehicleId && j.subscriptionType == 'V');
+              if(_find && _find.length > 0){ // find 'V'
+                _el.subscriptionType = "Subscribed";
+              }else{ // non-subscribe
+                _el.subscriptionType = "Non-Subscribed";
+              }
+            });
+            // featuresData.forEach(element => {
+            //   let vehicle: any = this.associatedVehicleData.filter(item => item.vehicleId == element.vehicleId && item.vehicleGroupDetails.includes(this.vehicle_group_selected+"~"));
+            //   if(vehicle.length > 0){
+            //     this.vehicleByVehGroupList.push(vehicle[0]);
+            //   }
+            // });
           }
         }
       }
