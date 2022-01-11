@@ -336,9 +336,9 @@ ngOnDestroy(){
         },0);
     }
     if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAlerts)){
-
-      this.onSearch();
-
+      setTimeout(() => {
+        this.onSearch();
+      },0);
     }
 
   }
@@ -868,7 +868,8 @@ ngOnDestroy(){
                  }
         });
 
-        if(this._state && this._state.fromAlertsNotifications){
+        if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAlerts))
+        {
           logbookData = newLogbookData;
           logbookData.forEach(element => {
           // this.selectedTrip.select(element);
@@ -876,14 +877,6 @@ ngOnDestroy(){
           this.tripCheckboxClicked(true,element);
           });
           this.showMap = true;
-        }
-        if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
-          setTimeout(() => {
-            this.onSearch();
-            this.initData = logbookData;
-            this.setTableInfo();
-            this.updateDataSource(this.initData);
-          }, 0);
         }
 
       }, (error)=>{
