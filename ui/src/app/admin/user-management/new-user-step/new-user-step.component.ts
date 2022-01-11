@@ -370,9 +370,11 @@ export class NewUserStepComponent implements OnInit {
 
         if(createPrefFlag || (parseInt(this.firstFormGroup.controls.pageRefreshTime.value) != this.orgPreference.pageRefreshTime)){ //--- pref created
           this.accountService.createPreference(preferenceObj).subscribe((prefData: any) => {
+            this.showLoadingIndicator=false;
             this.saveAccountRoles(createStatus);
           });
         }else{ //--- pref not created
+          this.showLoadingIndicator=false;
           this.saveAccountRoles(createStatus);
         }
 
