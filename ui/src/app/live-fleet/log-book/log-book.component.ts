@@ -229,9 +229,9 @@ defaultTranslation(){
 }
 
 ngOnDestroy(){
-  if(this.getLogbookDetailsAPICall){
-    this.getLogbookDetailsAPICall.unsubscribe();
-  }
+  // if(this.getLogbookDetailsAPICall){
+  //   this.getLogbookDetailsAPICall.unsubscribe();
+  // }
   this.globalSearchFilterData["vehicleGroupDropDownValue"] = this.logBookForm.controls.vehicleGroup.value;
   this.globalSearchFilterData["vehicleDropDownValue"] = this.logBookForm.controls.vehicle.value;
   this.globalSearchFilterData["timeRangeSelection"] = this.selectionTab;
@@ -335,10 +335,10 @@ ngOnDestroy(){
         this.initMap();
         },0);
     }
-    if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAlerts)){
-
-      this.onSearch();
-
+    if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAlerts || this._state.fromDashboard == true)){
+      setTimeout(() => {
+        this.onSearch();
+      }, 0);
     }
 
   }
@@ -868,7 +868,8 @@ ngOnDestroy(){
                  }
         });
 
-        if(this._state && this._state.fromAlertsNotifications){
+        if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAlerts))
+        {
           logbookData = newLogbookData;
           logbookData.forEach(element => {
           // this.selectedTrip.select(element);
@@ -877,14 +878,9 @@ ngOnDestroy(){
           });
           this.showMap = true;
         }
-        if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
-          setTimeout(() => {
-            this.onSearch();
-            this.initData = logbookData;
-            this.setTableInfo();
-            this.updateDataSource(this.initData);
-          }, 0);
-        }
+        this.initData = logbookData;
+        this.setTableInfo();
+        this.updateDataSource(this.initData);
 
       }, (error)=>{
           this.hideloader();
@@ -1704,9 +1700,12 @@ let prepare = []
       this.resetLogFormControlValue();
      }
      this.setVehicleGroupAndVehiclePreSelection();
-     if(this.showBack){
-       this.onSearch();
+     if(this._state && (this.fromAlertsNotifications || this.fromMoreAlertsFlag)){
+      this.onSearch();
      }
+    //  if(this.showBack){
+    //    this.onSearch();
+    //  }
   }
 
   getVehicleGroups(){

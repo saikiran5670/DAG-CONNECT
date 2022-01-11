@@ -118,7 +118,9 @@ export class UserDetailTableComponent implements OnInit {
     this.onClose(false);
   }
 
-  ngOnInit(){ console.log('trans',this.data.translationData);}
+  ngOnInit(){ 
+    
+  }
 
   applyFilter(filterValue: string) {
     filterValue = filterValue.trim(); // Remove whitespace

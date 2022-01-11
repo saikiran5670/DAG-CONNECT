@@ -81,8 +81,8 @@ export class FleetOverviewSummaryComponent implements OnInit {
     this.reportService.getFleetOverviewDetails(objData).subscribe((data: any) => {
       let filterData = this.fleetMapService.processedLiveFLeetData(data);
       this.summaryData = filterData;
-      this.refreshData();
       this.unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm ) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile) : (this.translationData.lblmile);
+      this.refreshData();
       this.barChartLabels = [this.translationData.lblMovedVehicle, this.translationData.lblTotalVehicle];
       this.doughnutChartLabelsMileage = [(this.translationData.lblFleetMileageRate ), ''];
       this.doughnutChartLabelsUtil = [(this.translationData.lblFleetUtilizationRate), '', ''];
@@ -281,16 +281,16 @@ export class FleetOverviewSummaryComponent implements OnInit {
   let _distance: any = 0;
   switch(unitFormat){
     case 'dunit_Metric': {
-      _distance = (distance/1000); //-- km
+      _distance = (distance/1000).toFixed(2); //-- km
       break;
     }
     case 'dunit_Imperial':
     case 'dunit_USImperial': {
-      _distance = (distance/1609.344); //-- mile
+      _distance = (distance/1609.344).toFixed(2); //-- mile
       break;
     }
     default: {
-      _distance = distance;
+      _distance = distance.toFixed(2);
     }
   }
   return _distance;

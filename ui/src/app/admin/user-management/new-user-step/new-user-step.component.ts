@@ -370,9 +370,11 @@ export class NewUserStepComponent implements OnInit {
 
         if(createPrefFlag || (parseInt(this.firstFormGroup.controls.pageRefreshTime.value) != this.orgPreference.pageRefreshTime)){ //--- pref created
           this.accountService.createPreference(preferenceObj).subscribe((prefData: any) => {
+            this.showLoadingIndicator=false;
             this.saveAccountRoles(createStatus);
           });
         }else{ //--- pref not created
+          this.showLoadingIndicator=false;
           this.saveAccountRoles(createStatus);
         }
 
@@ -796,7 +798,8 @@ export class NewUserStepComponent implements OnInit {
       tableData: tableData,
       colsList: ['firstName','emailId','roles', 'accountGroupList'],
       colsName: [this.translationData.lblUserName , this.translationData.lblEmailID , this.translationData.lblUserRole ,  this.translationData.lblUserGroup ],
-      tableTitle: `${rowData.accountGroupName} - ${this.translationData.lblUsers }`
+      tableTitle: `${rowData.accountGroupName} - ${this.translationData.lblUsers }`,
+      translationData: this.translationData,
     }
     this.dialogRef = this.dialog.open(UserDetailTableComponent, dialogConfig);
   }
