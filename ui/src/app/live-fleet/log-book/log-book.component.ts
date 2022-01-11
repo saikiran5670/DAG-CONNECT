@@ -335,7 +335,7 @@ ngOnDestroy(){
         this.initMap();
         },0);
     }
-    if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAlerts || this._state.fromDashboard == true)){
+    if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAlerts)){
       setTimeout(() => {
         this.onSearch();
       }, 0);
@@ -1700,7 +1700,7 @@ let prepare = []
       this.resetLogFormControlValue();
      }
      this.setVehicleGroupAndVehiclePreSelection();
-     if(this._state && (this.fromAlertsNotifications || this.fromMoreAlertsFlag)){
+     if(this._state && (this.fromAlertsNotifications || this.fromMoreAlertsFlag || this._state.fromDashboard == true)){
       this.onSearch();
      }
     //  if(this.showBack){
