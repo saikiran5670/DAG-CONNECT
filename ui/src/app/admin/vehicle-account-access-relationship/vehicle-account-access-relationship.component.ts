@@ -477,7 +477,8 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
       tableData: tableData,
       colsList: colsList,
       colsName:colsName,
-      tableTitle: tableTitle
+      tableTitle: tableTitle,
+      translationData: this.translationData
     }
     this.dialogRef = this.dialog.open(UserDetailTableComponent, dialogConfig);
   }
