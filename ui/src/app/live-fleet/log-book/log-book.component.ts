@@ -229,9 +229,9 @@ defaultTranslation(){
 }
 
 ngOnDestroy(){
-  if(this.getLogbookDetailsAPICall){
-    this.getLogbookDetailsAPICall.unsubscribe();
-  }
+  // if(this.getLogbookDetailsAPICall){
+  //   this.getLogbookDetailsAPICall.unsubscribe();
+  // }
   this.globalSearchFilterData["vehicleGroupDropDownValue"] = this.logBookForm.controls.vehicleGroup.value;
   this.globalSearchFilterData["vehicleDropDownValue"] = this.logBookForm.controls.vehicle.value;
   this.globalSearchFilterData["timeRangeSelection"] = this.selectionTab;
@@ -336,9 +336,9 @@ ngOnDestroy(){
         },0);
     }
     if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAlerts || this._state.fromDashboard == true)){
-
-      this.onSearch();
-
+      setTimeout(() => {
+        this.onSearch();
+      }, 0);
     }
 
   }
@@ -878,6 +878,9 @@ ngOnDestroy(){
           });
           this.showMap = true;
         }
+        this.initData = logbookData;
+        this.setTableInfo();
+        this.updateDataSource(this.initData);
 
       }, (error)=>{
           this.hideloader();
@@ -1697,6 +1700,9 @@ let prepare = []
       this.resetLogFormControlValue();
      }
      this.setVehicleGroupAndVehiclePreSelection();
+     if(this._state && (this.fromAlertsNotifications || this.fromMoreAlertsFlag)){
+      this.onSearch();
+     }
     //  if(this.showBack){
     //    this.onSearch();
     //  }
