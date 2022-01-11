@@ -796,7 +796,8 @@ export class NewUserStepComponent implements OnInit {
       tableData: tableData,
       colsList: ['firstName','emailId','roles', 'accountGroupList'],
       colsName: [this.translationData.lblUserName , this.translationData.lblEmailID , this.translationData.lblUserRole ,  this.translationData.lblUserGroup ],
-      tableTitle: `${rowData.accountGroupName} - ${this.translationData.lblUsers }`
+      tableTitle: `${rowData.accountGroupName} - ${this.translationData.lblUsers }`,
+      translationData: this.translationData,
     }
     this.dialogRef = this.dialog.open(UserDetailTableComponent, dialogConfig);
   }
