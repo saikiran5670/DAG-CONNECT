@@ -229,54 +229,27 @@
           <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px" style='margin-top: 10px;'>
           <div *ngIf='distanceChart && distanceChart.state' class="areaWidth areaWidth half-width" fxLayout="column" fxLayoutAlign="left"  style="padding: 10px;border: 1px solid #ddd;">
             <span style='text-align: center; margin-bottom: 10px;' class='font-16-px line-height-24px font-helvetica-md'>{{ translationData.lblDistancePerDay || 'Distance per day' }}</span>
-            <div  *ngIf = "!distanceChartType" class="chart-wrapper">
-              <canvas baseChart
-              [datasets]="barChartData"
-              [labels]="barChartLabels"
-              [options]="barChartOptions"
-              [plugins]="barChartPlugins"
-              [legend]="barChartLegend"
-              [chartType]="barChartType">
-            </canvas>
+            <div class="chart-wrapper">            
+            <highcharts-chart
+            [Highcharts] = "highcharts" 
+            [options] = "chartOptions1"             
+            style = "width:100%;height:300px;display: block;">
+           </highcharts-chart>
+           <div class="hidelbleblank"></div>
           </div>
-          <div  *ngIf = "distanceChartType" class="chart-wrapper">
-            <canvas baseChart
-                [datasets]="distanceLineChartData"
-                [labels]="barChartLabels"
-                [options]="distanceLineChartOptions"
-                [colors]="distanceLineChartColors"
-                [legend]="lineChartLegend"
-                [chartType]="lineChartType"
-                [plugins]="lineChartPlugins">
-            </canvas>
-        </div>
         </div>
         <div *ngIf='activeVehicleChart && activeVehicleChart.state' class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right"  style="padding:10px 20px;border: 1px solid #ddd;">
           <span style='text-align: center; margin-bottom: 10px;' class='font-16-px line-height-24px font-helvetica-md'>{{ translationData.lblActiveVehiclesPerDay || 'Active vehicles per day' }}</span>
-          <div  *ngIf = "activeVehicleChartType" class="chart-wrapper">
-            <canvas baseChart
-                [datasets]="lineChartData"
-                [labels]="lineChartLabels"
-                [options]="lineChartOptions"
-                [colors]="lineChartColors"
-                [legend]="lineChartLegend"
-                [chartType]="lineChartType"
-                [plugins]="lineChartPlugins">
-            </canvas>
-        </div>
-        <div  *ngIf = "!activeVehicleChartType" class="chart-wrapper">
-          <canvas baseChart
-              [datasets]="VehicleBarChartData"
-              [labels]="lineChartLabels"
-              [options]="VehicleBarChartOptions"
-              [legend]="lineChartLegend"
-              [chartType]="barChartType"
-              [plugins]="barChartPlugins">
-          </canvas>
+          <div class="chart-wrapper">
+          <highcharts-chart
+          [Highcharts] = "highcharts" 
+          [options] = "chartOptions"             
+          style = "width:100%;height:300px;display: block;">
+        </highcharts-chart>
+        <div class="hidelbleblank"></div>
       </div>
       </div>
-
-      </div>
+     </div>
       <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px" style='margin-top: 10px;'>
         <div *ngIf='mileageBasedChart && mileageBasedChart.state' class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left"  style="padding: 10px;border: 1px solid #ddd;">
           <span style='text-align: center; margin-bottom: 10px;' class='font-16-px line-height-24px font-helvetica-md'>{{ translationData.lblMileageBasedUtilisation || 'Mileage based utilisation' }}</span>
