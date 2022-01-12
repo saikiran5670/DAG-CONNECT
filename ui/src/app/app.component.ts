@@ -1076,13 +1076,56 @@ export class AppComponent {
     if(menu.externalLink) {
       if(menu.url == "information") {
         let selectedLanguage = JSON.parse(localStorage.getItem("language"));
-        if(selectedLanguage.code == "nl-NL") {
-          menu.link = menu.link.replace('/en/','/nl-nl/');
-        }
-        if(selectedLanguage.code == "de-DE") {
-          menu.link = menu.link.replace('/en/','/de-de/');
+        // if(selectedLanguage.code == "nl-NL") { //dutch(netherland)
+        //   menu.link = menu.link.replace('/en/','/nl-nl/');
+        // }
+        // if(selectedLanguage.code == "de-DE") {
+        //   menu.link = menu.link.replace('/en/','/de-de/');
+        // }
+        switch(selectedLanguage.code){
+          case 'nl-NL': { //dutch(netherland)
+            menu.link = menu.link.replace('/en/','/nl-nl/');
+            break;
+          }
+          case 'de-DE': { 
+            menu.link = menu.link.replace('/en/','/de-de/');
+            break;
+          }
+          case 'cs-CZ': { //Czech
+            menu.link = menu.link.replace('/en/','/cs-cz/');
+            break;
+          }
+          case 'fr-FR': { //French 
+            menu.link = menu.link.replace('/en/','/fr-fr/');
+            break;
+          }
+          case 'es-ES': { //Spanish
+            menu.link = menu.link.replace('/en/','/es-es/');
+            break;
+          }
+          case 'hu-HU': { //Hungarian 
+            menu.link = menu.link.replace('/en/','/hu-hu/');
+            break;
+          }
+          case 'it-IT': { //Italian 
+            menu.link = menu.link.replace('/en/','/it-it/');
+            break;
+          }
+          case 'pt-PT': { //Portugese  
+            menu.link = menu.link.replace('/en/','/pt-pt/');
+            break;
+          }
+          case 'pl-PL': { //Polish
+            menu.link = menu.link.replace('/en/','/pl-pl/');
+            break;
+          }
+          case 'Tr-tr': { //Turkish  
+            menu.link = menu.link.replace('/en/','/tr-tr/');
+            break;
+          }
         }
       }
+     
       window.open(menu.link, '_blank');
     }
     if (this.menuCollapsed) {
