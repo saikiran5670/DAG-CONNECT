@@ -1,7 +1,7 @@
     <div *ngIf = '!isOpen' fxLayout="row" class="full-width margin-bottom-sm">
     <div id="summary" class="full-width">
         <mat-card style='background: transparent !important;' class='mat-elevation-z no-padding margin-bottom-xlg'>
-        <app-fleet-overview-summary [translationData]='translationData'></app-fleet-overview-summary>
+        <app-fleet-overview-summary *ngIf='filterPOIData' [detailsData]='detailsData' [translationData]='translationData'></app-fleet-overview-summary>
         <app-live-fleet-map *ngIf='filterPOIData' [translationData]='translationData' [detailsData]='detailsData' [filterPOIData]='filterPOIData'></app-live-fleet-map>
         </mat-card>
     </div>
