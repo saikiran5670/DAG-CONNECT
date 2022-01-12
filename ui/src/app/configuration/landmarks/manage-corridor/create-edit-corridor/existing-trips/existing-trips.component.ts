@@ -47,6 +47,8 @@ export class ExistingTripsComponent implements OnInit {
   @Input() value: string = '11:00 PM';
   @Input() format: number = 12;
   @Input() vehicleGroupList: any;
+  newVehicleGrpList: any =[];
+  singleVehicle = [];
   selectedStartTime: any = '12:00 AM'
   selectedEndTime: any = '11:59 PM'
   selectedStartDateStamp: any;
@@ -177,7 +179,7 @@ export class ExistingTripsComponent implements OnInit {
   prefDateFormat: any = ''; //-- coming from pref setting
 
   public filteredVehicleList: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
-
+  public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private here: HereService,
     private _formBuilder: FormBuilder, private translationService: TranslationService,
@@ -260,11 +262,69 @@ export class ExistingTripsComponent implements OnInit {
     this.setDefaultTodayDate();
     this.existingTripForm.get('vehicleGroup');
     this.existingTripForm.get('vehicle');
+    this.getVehicleGroupsForExistingTrip();
     //For Edit Screen
     // if(this.actionType === 'edit'){
     //   this.existingTripForm.controls.label.disable();
     // }
   }
+
+  
+  getUnique(arr, comp) {
+
+    // store the comparison  values in array
+    const unique =  arr.map(e => e[comp])
+      // store the indexes of the unique objects
+      .map((e, i, final) => final.indexOf(e) === i && i)
+
+      // eliminate the false indexes & return unique objects
+    .filter((e) => arr[e]).map(e => arr[e]);
+    return unique;
+  }
+
+  compareHere(a,b){
+    if (a.vehicleGroupName < b.vehicleGroupName) {
+      return -1;
+    }
+    if (a.vehicleGroupName > b.vehicleGroupName) {
+      return 1;
+    }
+    return 0;
+  }
+
+  getVehicleGroupsForExistingTrip(){
+    this.vehicleGroupList.forEach(element => {
+      let vehicleGroupDetails= element.vehicleGroupDetails.split(",");
+      vehicleGroupDetails.forEach(item => {
+        let itemSplit = item.split("~");
+        if(itemSplit[2] != 'S') {
+         let vehicleGroupObj= {
+           "vehicleGroupId" : parseInt(itemSplit[0]),
+           "vehicleGroupName" : itemSplit[1],
+           "vehicleId" : parseInt(element.vehicleId)
+         }
+         this.newVehicleGrpList.push(vehicleGroupObj);
+         console.log("vehicleGroupList 1", this.newVehicleGrpList);
+       } else {
+         this.singleVehicle.push(element);
+       }
+      });
+    });
+    this.newVehicleGrpList = this.getUnique(this.newVehicleGrpList, "vehicleGroupId");
+    console.log("vehicleGroupList 2", this.newVehicleGrpList); 
+    this.newVehicleGrpList.sort(this.compareHere);
+    this.resetVehicleGroupFilter();
+
+    this.newVehicleGrpList.forEach(element => {
+      element.vehicleGroupId = parseInt(element.vehicleGroupId);
+    });
+
+    this.newVehicleGrpList.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll  });
+ }
+
+ resetVehicleGroupFilter(){
+  this.filteredVehicleGroups.next(this.vehicleGroupList.slice());
+}
 
   public ngAfterViewInit() {
     //For Edit Screen
@@ -697,17 +757,23 @@ export class ExistingTripsComponent implements OnInit {
   vehicleGroupSelection(vehicleGroupValue: any) {
     this.vinList = [];
     // console.log("----vehicleGroupList---",this.vehicleGroupList)
-    if(vehicleGroupValue.value == "All"){
+    if(vehicleGroupValue.value == 0){
       this.vehicleGroupList.forEach(item => {
           this.vinList.push(item.vin)
       });
     }
+    else{
+   this.newVehicleGrpList.forEach(element => {
     this.vehicleGroupList.forEach(item => {
       // this.vehicleGroupIdsSet.push(item.vehicleGroupId)
-      if (item.vehicleGroupId == vehicleGroupValue.value) {
-        this.vinList.push(item.vin)
+      if(element.vehicleGroupId == vehicleGroupValue.value ){
+      if (item.vehicleId == element.vehicleId) {
+        this.vinList.push(item.vin);
+      }
       }
     });
+   });
+  }
   }
 
   // ------------- Map Functions ------------------------//
