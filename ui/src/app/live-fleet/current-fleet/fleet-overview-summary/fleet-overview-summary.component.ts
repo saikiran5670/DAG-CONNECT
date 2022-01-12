@@ -1,4 +1,4 @@
-import { Component, OnInit,Input } from '@angular/core';
+import { Component, OnInit,Input, SimpleChanges } from '@angular/core';
 import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
 import { Color, Label, MultiDataSet } from 'ng2-charts';
 import { Subscription } from 'rxjs';
@@ -6,6 +6,8 @@ import { MessageService } from 'src/app/services/message.service';
 import { ReportService } from 'src/app/services/report.service';
 import { Util } from 'src/app/shared/util';
 import { FleetMapService } from '../fleet-map.service';
+import { OrganizationService } from '../../../services/organization.service';
+import { TranslationService } from '../../../services/translation.service';
 
 @Component({
   selector: 'app-fleet-overview-summary',
@@ -14,6 +16,7 @@ import { FleetMapService } from '../fleet-map.service';
 })
 export class FleetOverviewSummaryComponent implements OnInit {
   @Input() translationData: any = {};
+  @Input() detailsData: any = [];
   criticalAlert: number = 0;
   mileageDone: string = '';
   drivers: number = 0;
@@ -41,8 +44,8 @@ export class FleetOverviewSummaryComponent implements OnInit {
   filterInvoked: boolean = false;
   showLoadingIndicator: any = false;
 
-  constructor(private messageService: MessageService, private reportService: ReportService, private fleetMapService: FleetMapService) {
-    this.loadData();
+  constructor(private messageService: MessageService, private reportService: ReportService, private fleetMapService: FleetMapService, private organizationService: OrganizationService, private translationService: TranslationService) {
+    //this.loadData();
     this.subscription = this.messageService.getMessage().subscribe(message => {
       if (message.key.indexOf("refreshData") < 0 && message.key.indexOf("refreshTimer") < 0) {
         this.filterInvoked = true;
@@ -53,7 +56,8 @@ export class FleetOverviewSummaryComponent implements OnInit {
           this.resetSummary();
         } else {
           this.summaryData = message.key[0].data;
-          this.refreshData();
+          //this.refreshData();
+          this.stepForword(this.summaryData);
         }
       } else if (!this.filterInvoked && message.key.indexOf("refreshData") !== -1){
         this.loadData();
@@ -61,8 +65,41 @@ export class FleetOverviewSummaryComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
+  ngOnChanges(changes: SimpleChanges) {
+    if(changes && changes.detailsData && changes.detailsData.currentValue){
+      this.detailsData = changes.detailsData.currentValue;
+      this.stepForword(this.detailsData);
+    }
+  }  
 
+  ngOnInit() {
+    let localStLanguage = JSON.parse(localStorage.getItem("language"));
+    let accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    //let accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
+    let accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
+    this.translationService.getPreferences(localStLanguage.code).subscribe((prefData: any) => {
+        if(accountPrefObj.accountPreference && accountPrefObj.accountPreference != ''){ // account pref
+          this.proceedStep(prefData, accountPrefObj.accountPreference);
+        }else{ // org pref
+          this.organizationService.getOrganizationPreference(accountOrganizationId).subscribe((orgPref: any) => {
+            this.proceedStep(prefData, orgPref);
+          }, (error) => { // failed org API
+            let pref: any = {};
+            this.proceedStep(prefData, pref);
+          });
+        }
+      });
+  }
+
+  proceedStep(prefData: any, preference: any){
+    let _search = prefData.unit.filter(i => i.id == preference.unitId);
+    if(_search.length > 0){
+     this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
+    }else{
+      this.prefUnitFormat = prefData.unit[0].name;
+    }
+    this.unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile);
+    this.stepForword(this.detailsData);
   }
 
   loadData(){
@@ -80,12 +117,13 @@ export class FleetOverviewSummaryComponent implements OnInit {
     }
     this.reportService.getFleetOverviewDetails(objData).subscribe((data: any) => {
       let filterData = this.fleetMapService.processedLiveFLeetData(data);
-      this.summaryData = filterData;
-      this.unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm ) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile) : (this.translationData.lblmile);
-      this.refreshData();
-      this.barChartLabels = [this.translationData.lblMovedVehicle, this.translationData.lblTotalVehicle];
-      this.doughnutChartLabelsMileage = [(this.translationData.lblFleetMileageRate ), ''];
-      this.doughnutChartLabelsUtil = [(this.translationData.lblFleetUtilizationRate), '', ''];
+      this.stepForword(filterData);
+      //this.summaryData = filterData;
+      // this.unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm ) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile) : (this.translationData.lblmile);
+      // this.refreshData();
+      // this.barChartLabels = [this.translationData.lblMovedVehicle, this.translationData.lblTotalVehicle];
+      // this.doughnutChartLabelsMileage = [(this.translationData.lblFleetMileageRate ), ''];
+      // this.doughnutChartLabelsUtil = [(this.translationData.lblFleetUtilizationRate), '', ''];
       this.hideloader();
     }, (error) => {
       this.resetSummary();
@@ -93,6 +131,18 @@ export class FleetOverviewSummaryComponent implements OnInit {
     });
   }
 
+  stepForword(filterData: any){
+    if(filterData && filterData.length > 0){
+      this.summaryData = filterData;
+      // this.unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile || 'mile');
+      this.refreshData();
+      this.barChartLabels = [this.translationData.lblMovedVehicle, this.translationData.lblTotalVehicle];
+      this.doughnutChartLabelsMileage = [(this.translationData.lblFleetMileageRate), ''];
+      this.doughnutChartLabelsUtil = [(this.translationData.lblFleetUtilizationRate), '', ''];
+    }else{
+      this.resetSummary();
+    }
+  }
 
   hideloader() {
     // Setting display of spinner
@@ -272,10 +322,11 @@ export class FleetOverviewSummaryComponent implements OnInit {
   this.barChartData = [ { data : [0, 0] } ];
   this.doughnutChartDataMileage = [ [0 , 0] ];
   this.doughnutChartDataUtil = [ [0, 0] ];
-  this.mileageDone = '00' + this.unitValkm;
-  this.driveTime = '00' + (this.translationData.lblhh ) + ' 00' + (this.translationData.lblmm);
-  this.drivers=0;
+  this.mileageDone = '00 ' + this.unitValkm;
+  this.driveTime = '00' + (this.translationData.lblhh) + ' 00' + (this.translationData.lblmm);
+  this.drivers = 0;
  }
+
  getDistance(distance: any, unitFormat: any){
   // distance in meter
   let _distance: any = 0;
