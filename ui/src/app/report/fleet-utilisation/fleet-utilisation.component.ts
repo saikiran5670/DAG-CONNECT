@@ -1323,18 +1323,13 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       gridLineWidth: 1
     },
     xAxis : {
-      allowDecimals : false,
-      //endOnTick : false,
       max :  Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone),
       min :  Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone),
-      ordinal : false,
-      //startOnTick : false,
       type : 'datetime',       
       tickInterval:!this.distanceChartType && (this.endDateValue.toDateString() == this.startDateValue.toDateString())? 2 * 24 * 3600000 : 1 * 24 * 3600000 ,  
-      // gridLineWidth: 1,  
-      showLastLabel: true,        
       labels: {       
-        step:this.selectionTab == 'last3month' ?  Math.ceil(this.averageDistanceBarData.length/2) : Math.ceil(this.averageDistanceBarData.length/5),
+        //step:this.selectionTab == 'last3month' ?  Math.ceil(this.averageDistanceBarData.length/12) : Math.ceil(this.averageDistanceBarData.length/5),
+        step:(this.selectionTab == 'last3month') ? ( this.averageDistanceBarData.length > 50 && this.averageDistanceBarData.length < 60  ? Math.ceil(this.averageDistanceBarData.length/10) : (this.averageDistanceBarData.length > 60 && this.averageDistanceBarData.length < 99  ? Math.ceil(this.averageDistanceBarData.length/12):(this.averageDistanceBarData.length > 99 ? Math.ceil(this.averageDistanceBarData.length/24): (this.averageDistanceBarData.length > 20 && this.averageDistanceBarData.length < 50 ? Math.ceil(this.averageDistanceBarData.length/6): Math.ceil(this.averageDistanceBarData.length/2))))) : Math.ceil(this.averageDistanceBarData.length/5),
         rotation: (this.selectionTab == 'last3month' || this.selectionTab == 'lastmonth') ? -45 :  0 ,
         },
         dateTimeLabelFormats: {
@@ -1374,13 +1369,13 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
         },
         plotOptions: {
          column: {      
-            pointWidth: (this.selectionTab == 'last3month' ?  2: (this.selectionTab == 'lastweek' ? 16:  ((this.selectionTab == 'yesterday' || this.selectionTab == 'today') ? 50: 4 ))),
+            pointWidth: (this.selectionTab == 'last3month' ?  2: (this.selectionTab == 'lastweek' ? 22:  ((this.selectionTab == 'yesterday' || this.selectionTab == 'today') ? 50: 4 ))),
            // borderWidth: 0.5,
           }             
         },
         yAxis: [{
         min: 0,
-        max:  Math.max(...this.averageDistanceBarData.map(o => o.y)),
+        //max:  Math.max(...this.averageDistanceBarData.map(o => o.y)),
         title: {
           text: this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm || 'km'})` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles ||'miles'})`
         },      
@@ -1394,18 +1389,16 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
         lineWidth:1,
       }],
       xAxis : {
-        allowDecimals : false,
-        //endOnTick : false,
+        // allowDecimals : false,
+        // endOnTick : false,
+        // ordinal : false,
+        // startOnTick : false,  
         max :  Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone),
-        min :  Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone),
-        ordinal : false,
-        //startOnTick : false,      
+        min :  Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone),          
         type : 'datetime',       
         tickInterval:!this.distanceChartType && (this.endDateValue.toDateString() == this.startDateValue.toDateString())? 2 * 24 * 3600000 : 1 * 24 * 3600000 ,   
-        //gridLineWidth: 1,
-        showLastLabel: true,        
         labels: {       
-          step:this.selectionTab == 'last3month' ?  Math.ceil(this.averageDistanceBarData.length/2) : Math.ceil(this.averageDistanceBarData.length/5),
+          step:(this.selectionTab == 'last3month') ? ( this.averageDistanceBarData.length > 50 && this.averageDistanceBarData.length < 60  ? Math.ceil(this.averageDistanceBarData.length/10) : (this.averageDistanceBarData.length > 60 && this.averageDistanceBarData.length < 99  ? Math.ceil(this.averageDistanceBarData.length/12):(this.averageDistanceBarData.length > 99 ? Math.ceil(this.averageDistanceBarData.length/24): (this.averageDistanceBarData.length > 20 && this.averageDistanceBarData.length < 50 ? Math.ceil(this.averageDistanceBarData.length/6): Math.ceil(this.averageDistanceBarData.length/2))))) : Math.ceil(this.averageDistanceBarData.length/5),
           rotation: (this.selectionTab == 'last3month' || this.selectionTab == 'lastmonth') ? -45 :  0 ,
           },
           dateTimeLabelFormats: {
@@ -1429,7 +1422,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
         color: '#4679CC',       
          }],   
        };
-       console.log('1:',this.chartOptions1,'2:',this.chartOptions1)        
+      // console.log('1:',this.chartOptions1,'2:',this.chartOptions1)        
       }
 
   calendarSelectedValues(element: any){
