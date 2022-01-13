@@ -821,7 +821,8 @@ export class AlertsComponent implements OnInit {
       tableData: tableData,
       colsList: colsList,
       colsName:colsName,
-      tableTitle: tableTitle
+      tableTitle: tableTitle,
+      translationData:this.translationData
     }
     this.dialogVeh = this.dialog.open(UserDetailTableComponent, dialogConfig);
   }
