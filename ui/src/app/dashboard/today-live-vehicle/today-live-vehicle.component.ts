@@ -302,8 +302,8 @@ doughnutDistanceColors: Color[] = [
     this.drivingTime = this.getTimeDisplay(this.liveVehicleData.drivingTime);
   }
 
-  getTimeDisplay(_timeValue){
-    let convertedTime = Util.getHhMmTimeFromMS(_timeValue);
+  getTimeDisplay(_timeValue: any){
+    let convertedTime =  Util.getHhMmTime(_timeValue); // Util.getHhMmTimeFromMS(_timeValue);
     let convertedTimeDisplay = '';
     if(convertedTime){
       if(convertedTime.indexOf(":") != -1){
