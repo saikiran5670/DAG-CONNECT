@@ -1842,7 +1842,7 @@ export class ReportMapService {
       }
       
       case 'dunit_Imperial':{
-        _fuelConsumption = (dt/FuelConsumpt);
+        _fuelConsumption = (FuelConsumpt/dt);
         break;
       }
       default:{

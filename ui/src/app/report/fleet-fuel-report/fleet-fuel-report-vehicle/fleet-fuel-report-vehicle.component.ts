@@ -2797,11 +2797,21 @@ setVehicleGroupAndVehiclePreSelection() {
       // let s = this.displayData.forEach(element => {
       // sum += parseFloat(element.convertedFuelConsumption);
       // });
-      // sum = sum.toFixed(2)*1;
-      let fuelConsumed = this.sumOfColumns('fuelconsumed');
-      let distance = this.sumOfColumns('distance');
-      let convertedConsumption: any = this.reportMapService.getFuelConsumptionSummary(fuelConsumed, distance, this.prefUnitFormat);
-      sum = convertedConsumption.toFixed(2)*1;
+      // sum = sum.toFixed(2)*1;      
+      // let fuelConsumed = this.sumOfColumns('fuelconsumed');
+      // let distance = this.sumOfColumns('distance');
+      let fuelConsumed_data=0;
+      let distance_data=0; 
+      this.displayData.forEach(element => {      
+        if(element.fuelConsumed !='Infinity'){
+          fuelConsumed_data += parseFloat(element.fuelConsumed);
+          distance_data += parseFloat(element.distance);
+        }
+      });
+      let convertedConsumption: any = this.reportMapService.getFuelConsumptionSummary(fuelConsumed_data, distance_data, this.prefUnitFormat);
+     // sum = convertedConsumption.toFixed(2)*1;  element.convertedFuelConsumption = this.getFuelConsumedUnits(element.fuelConsumption, unitFormat,true);
+      let convertedFuelConsumption: any =  this.reportMapService.getFuelConsumedUnits(convertedConsumption.toFixed(4)*1,this.prefUnitFormat,true);
+      sum = convertedFuelConsumption;
       break;
     }
     case 'co2emission': {
