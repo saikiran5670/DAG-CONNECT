@@ -557,7 +557,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
     }, 1000);
     Util.applySearchFilter(this.geofencedataSource, this.displayedColumnsGeo ,this.filterValue );
   }
-  compare(a: Number | String, b: Number | String, isAsc: boolean, columnName: any) {
+  compare(a: any, b: any, isAsc: boolean, columnName: any) {
     if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toUpperCase();
     if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toUpperCase();
 
