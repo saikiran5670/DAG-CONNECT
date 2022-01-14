@@ -262,7 +262,7 @@ export class CreateEditReportSchedulerComponent implements OnInit {
     this.reportSchedulerForm.get('driver').setValue(this.selectedRowData[0].scheduledReportDriverRef.length!= 0 ? (this.selectedRowData[0].scheduledReportDriverRef.length > 1 ? 0 : this.selectedRowData[0].scheduledReportDriverRef[0].driverId) : 0);
     this.reportSchedulerForm.get('mailSubject').setValue(this.selectedRowData[0].mailSubject);
     this.reportSchedulerForm.get('mailDescription').setValue(this.selectedRowData[0].mailDescription);
-    this.status= this.selectedRowData[0].status == 'A' ? true : false;
+    this.status= this.selectedRowData[0].status == 'Active' ? true : false;
 
   }
   

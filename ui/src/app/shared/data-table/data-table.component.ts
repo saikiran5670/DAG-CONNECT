@@ -42,7 +42,9 @@ export class DataTableComponent implements OnInit {
   ngOnInit(): void {
     this.updatedTableData(this.tableData);
   }
-
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+  }
   applyFilter(filterValue: string) {
     filterValue = filterValue.trim(); // Remove whitespace
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
