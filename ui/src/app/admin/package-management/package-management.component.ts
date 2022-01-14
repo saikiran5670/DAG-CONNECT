@@ -107,6 +107,9 @@ export class PackageManagementComponent implements OnInit {
   loadPackageData(){
     this.showLoadingIndicator = true;
     this.packageService.getPackages().subscribe((data : any) => {
+      data["pacakageList"].forEach(element => {
+        (element.state == 'A') ? element.state = this.translationData.lblActive : element.state = this.translationData.lblInactive;
+      });
       this.initData = data["pacakageList"];
     this.dataSource = new MatTableDataSource(this.tableData);
     Util.applySearchFilter(this.dataSource, this.tableColumnList , this.filterValue );
