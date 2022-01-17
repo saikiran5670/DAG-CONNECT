@@ -645,7 +645,8 @@ export class EditViewUserComponent implements OnInit {
       tableData: tableData,
       colsList: ['firstName','emailId','roleList'],
       colsName: [this.translationData.lblUserName , this.translationData.lblEmailID , this.translationData.lblUserRole],
-      tableTitle: `${rowData.accountGroupName} - ${this.translationData.lblUsers }`
+      tableTitle: `${rowData.accountGroupName} - ${this.translationData.lblUsers }`,
+      translationData:this.translationData
     }
     this.dialogRefForView = this.dialog.open(UserDetailTableComponent, dialogConfig);
   }

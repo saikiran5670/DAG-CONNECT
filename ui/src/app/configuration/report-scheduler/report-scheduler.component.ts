@@ -108,7 +108,7 @@ export class ReportSchedulerComponent implements OnInit {
       this.reportSchedulerService.getReportSchedulerParameter(this.accountId, this.accountOrganizationId).subscribe(parameterData => {
         this.reportSchedulerParameterData = parameterData;
         this.ReportTypeList = this.reportSchedulerParameterData["reportType"];
-        this.StatusList= [{id : "A", name : this.translationData.lblActive}, {id : "I", name : this.translationData.lblSuspended}]
+        this.StatusList= [{id : "Active", name : this.translationData.lblActive}, {id : "Suspended", name : this.translationData.lblSuspended}]
       })
 
     }
@@ -221,14 +221,20 @@ export class ReportSchedulerComponent implements OnInit {
        this.statusSelection= 0;
        this.schedulerData =this.makeLists(data["reportSchedulerRequest"]);
        this.initData = this.schedulerData;
-      //  this.updateDatasource(this.schedulerData);
-        this.initData.forEach(element => {
+       this.initData.forEach(element => {
           if(element.reportName == "Fleet Fuel Report" || element.reportName == "TripReport"||
              element.reportName == "Fleet Utilisation Report"||element.reportName == "Fuel Deviation Report"){
                element.driverList = "";
              }
+             if(element.status=='I'){
+               element.status='Suspended'
+             }
+             else if(element.status=='A'){
+              element.status='Active'
+             }
         });
        this.hideloader();
+         this.gridComp.updatedTableData(this.initData);      
     }, (error) => {
        this.hideloader();
     })
@@ -450,8 +456,8 @@ getUnique(arr, comp) {
       title: this.translationData.lblReportScheduler || "Report Scheduler",
       message: this.translationData.lblChangeReportSchedulerStatus || "You want to change '$' status?",
       cancelText: this.translationData.lblCancel || "Cancel",
-      confirmText: (rowData.status == 'A') ? this.translationData.lblDeactivate || " Deactivate" : this.translationData.lblActivate || " Activate",
-      status: rowData.status == 'A' ? 'Deactivate' : 'Activate' ,
+      confirmText: (rowData.status == 'Active') ? this.translationData.lblDeactivate || " Deactivate" : this.translationData.lblActivate || " Activate",
+      status: rowData.status == 'Active' ? 'Deactivate' : 'Activate' ,
       name: rowData.reportName
     };
     const dialogConfig = new MatDialogConfig();
@@ -460,10 +466,17 @@ getUnique(arr, comp) {
     dialogConfig.data = options;
     this.dialogRef = this.dialog.open(ActiveInactiveDailogComponent, dialogConfig);
     this.dialogRef.afterClosed().subscribe((res: any) => {
+     let updatedStatus;
+      if(rowData.status=='Suspended'){
+        updatedStatus='I'
+      }
+      else{
+        updatedStatus='A'
+      }
       if(res == true){
         let obj = {
           "reportId": rowData.id,
-          "status": rowData.status
+          "status": updatedStatus
         }
         this.reportSchedulerService.enableDisableScheduledReport(obj).subscribe((data) => {
           let successMsg = "Status updated successfully."

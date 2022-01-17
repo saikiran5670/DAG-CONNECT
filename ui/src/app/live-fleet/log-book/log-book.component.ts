@@ -198,9 +198,9 @@ constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationSe
     fromVehicleDetails: boolean,
     data: any
   };
-  setTimeout(() => {
-  this.loadWholeTripData();
-  },5);
+  // setTimeout(() => {
+  // this.loadWholeTripData();
+  // },5);
   //Add for Search Fucntionality with Zoom
   this.query = "starbucks";
   this.platform = new H.service.Platform({
@@ -397,10 +397,13 @@ ngOnDestroy(){
     }
     this.setDefaultStartEndTime();
     this.setPrefFormatDate();
-    if(!this._state && !this._state.fromAlertsNotifications){
+    if(!this._state){
     this.setDefaultTodayDate();
     }
     this.getReportPreferences();
+    setTimeout(() => {
+      this.loadWholeTripData();
+      },5);
   }
 
   getReportPreferences(){
@@ -685,6 +688,7 @@ if(!this._state){
     this.endDateValue = this.setStartEndDateTime(new Date(this._state.data[0].alertGeneratedTime), this.selectedEndTime, 'end');
     this.last3MonthDate = this.getLast3MonthDate();
     this.todayDate = this.getTodayDate();
+    this.filterDateData();
     this.logBookForm.get('alertLevel').setValue(this._state.data[0].urgencyLevel);
     this.logBookForm.get('alertType').setValue(this._state.data[0].alertType);
     this.logBookForm.get('alertCategory').setValue(this._state.data[0].alertCategory);
@@ -706,6 +710,12 @@ if(!this._state){
     this.endDateValue = this.setStartEndDateTime(new Date(this._state.data.endDate), this.selectedEndTime, 'end');
     this.last3MonthDate = this.getLast3MonthDate();
     this.todayDate = this.getTodayDate();
+    this.filterDateData();
+    this.logBookForm.get('vehicle').setValue("all");
+    this.logBookForm.get('vehicleGroup').setValue("all");
+    this.logBookForm.get('alertLevel').setValue("all");
+    this.logBookForm.get('alertType').setValue("all");
+    this.logBookForm.get('alertCategory').setValue("all");
   }
 // }
 if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAlerts || this._state.fromDashboard == true)){
@@ -816,7 +826,7 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
     let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
     let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
     //let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
-    let _vinData = this.vehicleDD.filter(item => item.vehicleId == parseInt(this.logBookForm.controls.vehicle.value));
+    let _vinData = this.vehicleDD.filter(item => item.vin == parseInt(this.logBookForm.controls.vehicle.value));
     console.log("vehicleDD", this.vehicleDD);
     if(_vinData.length > 0){
       this.showLoadingIndicator = true;
@@ -851,6 +861,7 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
       this.showLoadingIndicator = true;
       this.getLogbookDetailsAPICall = this.reportService.getLogbookDetails(objData).subscribe((logbookData: any) => {
         this.hideloader();
+        let logBookResult : any = this.removeDuplicates(logbookData, "alertId");
         let newLogbookData = [];
         logbookData.forEach(element => {
           if(this._state && this._state.fromAlertsNotifications && (element.alertId == this._state.data[0].alertId)){
@@ -896,7 +907,7 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
           });
           this.showMap = true;
         }
-        this.initData = logbookData;
+        this.initData = logBookResult;
         this.setTableInfo();
         this.updateDataSource(this.initData);
 
@@ -1054,6 +1065,19 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
     this.selectedHerePOI.clear();
     this.searchMarker = {};
     this.selectionTimeRange('today');
+  }
+
+
+  removeDuplicates(originalArray, prop) {
+    var newArray = [];
+    var lookupObject  = {};
+    for(var i in originalArray) {
+       lookupObject[originalArray[i][prop]] = originalArray[i];
+    }
+    for(i in lookupObject) {
+        newArray.push(lookupObject[i]);
+    }
+     return newArray;
   }
 
   resetLogFormControlValue(){
@@ -1475,9 +1499,9 @@ let prepare = []
     }
     this.startDateValue = this.setStartEndDateTime(this.startDateValue, this.selectedStartTime, 'start');
     this.resetLogFormControlValue(); // extra addded as per discuss with Atul
-    if(!this._state){
+    
     this.filterDateData(); // extra addded as per discuss with Atul
-    }
+ 
   }
 
   endTimeChanged(selectedTime: any) {
@@ -1491,9 +1515,9 @@ let prepare = []
     }
     this.endDateValue = this.setStartEndDateTime(this.endDateValue, this.selectedEndTime, 'end');
     this.resetLogFormControlValue(); // extra addded as per discuss with Atul
-    if(!this._state){
+    
     this.filterDateData(); // extra addded as per discuss with Atul
-    }
+
   }
 
   getTodayDate(){
@@ -1571,9 +1595,9 @@ let prepare = []
       }
     }
     this.resetLogFormControlValue(); // extra addded as per discuss with Atul
-    if(!this._state){
+ 
     this.filterDateData(); // extra addded as per discuss with Atul
-    }
+  
   }
 
   changeStartDateEvent(event: MatDatepickerInputEvent<any>){

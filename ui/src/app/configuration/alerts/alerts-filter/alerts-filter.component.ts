@@ -40,7 +40,7 @@ export class AlertsFilterComponent implements OnInit {
  
   alertCategory = ''; 
   alertType = ''; 
-  alertVehicleGroup = '';
+  alertVehicleGroup: any = '';
   alertVehicle = ''; 
   alertCriticality = ''; 
   alertStatus = '';
@@ -140,7 +140,8 @@ export class AlertsFilterComponent implements OnInit {
       });
     }
   // Called on Filter change
-  filterChange(filter, event) {     
+  filterChange(filter, event, status? : boolean) {   
+    console.log("alertVehicle", this.alertVehicleGroup) 
     let event_val;      
       if(filter == "highUrgencyLevel"){          
         if(event.value == ''){          
@@ -150,20 +151,26 @@ export class AlertsFilterComponent implements OnInit {
           event_val = event.value.enum; 
         }
         }else if(filter == "vehicleGroupName"){
-
-          if(event.value == ''){ //for all option
-            this.alertVehicleGroup='';
-            event_val = event.value.trim();  
+          if(status){ //for all option vehicle
+            // this.alertVehicleGroup='';
+            //event_val = event.value.trim();         
+            event_val = this.alertVehicleGroup == ''? this.alertVehicleGroup :this.alertVehicleGroup.value; 
           }
-          else{
+          else if(event.value == ''){ // for all option vehicle group
+            this.alertVehicle = '';
+             this.alertVehicleGroup='';
+            event_val = event.value.trim(); 
+          }
+          else{   
+            this.alertVehicle = '';         
             if(event.value!= undefined){
               this.vehicle_group_selected= event.value.value;
               this.vehicleByVehGroupList= this.associatedVehicleData.filter(item => item.vehicleGroupDetails.includes(this.vehicle_group_selected+"~"));
               this.resetVehiclesFilter();
-              event_val = event.value.vehicleName.trim();
+              event_val = event.value.value.trim();
             }
             else{
-              event_val = event.value.value.trim();  
+              event_val = this.alertVehicleGroup == ''? this.alertVehicleGroup :this.alertVehicleGroup.value; 
             }
           }
        }       
