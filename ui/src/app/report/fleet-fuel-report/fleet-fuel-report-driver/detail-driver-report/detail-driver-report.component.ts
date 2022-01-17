@@ -3326,7 +3326,7 @@ setVehicleGroupAndVehiclePreSelection() {
         }
       });
       let convertedConsumption: any = this.reportMapService.getFuelConsumptionSummary(fuelConsumed_data, distance_data, this.prefUnitFormat);
-      let convertedFuelConsumption: any =  this.reportMapService.getFuelConsumedUnits(convertedConsumption.toFixed(4)*1,this.prefUnitFormat,true);
+      let convertedFuelConsumption: any = this.prefUnitFormat=='dunit_Imperial' ?  this.reportMapService.getFuelConsumedUnits(convertedConsumption.toFixed(5)*1,this.prefUnitFormat,true) : convertedConsumption.toFixed(2)*1;
       sum = convertedFuelConsumption;
       break;
     }
