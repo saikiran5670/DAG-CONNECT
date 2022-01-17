@@ -519,12 +519,20 @@ export class ManagePoiGeofenceComponent implements OnInit {
         const isAsc = sort.direction === 'asc';
         return data.sort((a: any, b: any) => {
             let columnName = sort.active;
-          return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
+          return this.comparePOI(a[sort.active], b[sort.active], isAsc, columnName);
         });
       }
     });
     Util.applySearchFilter(this.poidataSource, this.displayedColumnsPoi ,this.filterValue );
   }
+  comparePOI(a: any, b: any, isAsc: boolean, columnName: any) {
+    if(columnName == "name"){
+    if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toUpperCase();
+    if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toUpperCase();
+    }
+  return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+}
+
 
   loadGeofenceData() {
     this.showLoadingIndicator = true;
@@ -557,10 +565,12 @@ export class ManagePoiGeofenceComponent implements OnInit {
     }, 1000);
     Util.applySearchFilter(this.geofencedataSource, this.displayedColumnsGeo ,this.filterValue );
   }
+
   compare(a: any, b: any, isAsc: boolean, columnName: any) {
+    if(columnName != "Icon" || columnName != "All" || columnName != "Actions"){
     if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toUpperCase();
     if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toUpperCase();
-
+    }
   return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
 }
 
