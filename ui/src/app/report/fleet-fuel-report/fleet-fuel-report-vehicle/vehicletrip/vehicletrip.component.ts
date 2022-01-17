@@ -882,7 +882,8 @@ tripTraceArray: any = [];
       value: "",
       filter: "",
       menuId: 9 //-- for fleet fuel report
-    }  
+    }
+    
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
       this.mapFilterForm.get('trackType').setValue('snail');
@@ -899,8 +900,8 @@ tripTraceArray: any = [];
       //       this.proceedStep(prefData, pref);
       //     });
       //   }
-        this.callToNext();
         this.loadfleetFuelDetails(this.vehicleDetails);
+        this.callToNext();
         if(this.vehicleDetails){
           this.onSearch();
          }
@@ -1540,7 +1541,7 @@ createEndMarker(){
         "endDateTime":_endTime,
         "viNs":  _vinData,
       }
-      this.loadfleetFuelDetails(this.vehicleDetails);
+      // this.loadfleetFuelDetails(this.vehicleDetails);
        this.setTableInfo();
       //  this.updateDataSource(this.FuelData);
       // this.hideloader();
