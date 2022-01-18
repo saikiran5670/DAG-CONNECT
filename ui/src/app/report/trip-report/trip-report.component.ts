@@ -277,6 +277,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
       });
 
     });
+    this.updateDataSource(this.tripData);
   }
 
   ngOnDestroy() {
@@ -789,7 +790,6 @@ export class TripReportComponent implements OnInit, OnDestroy {
     filterValue = filterValue.trim(); // Remove whitespace
     filterValue = filterValue.toLowerCase(); // dataSource defaults to lowercase matches
     this.dataSource.filter = filterValue;
-    this.updateDataSource(this.tripData);
   }
 
   updateDataSource(tableData: any) {
@@ -814,6 +814,25 @@ export class TripReportComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+      this.dataSource.filterPredicate = function(data: any, filter: string): boolean {
+        return (
+          data.vin.toString().toLowerCase().includes(filter) ||
+          data.vehicleName.toString().toLowerCase().includes(filter) ||
+          data.registrationNo.toString().toLowerCase().includes(filter) ||
+          data.convertedStartTime.toString().toLowerCase().includes(filter) ||
+          data.convertedEndTime.toString().toLowerCase().includes(filter) ||
+          data.convertedDistance.toString().toLowerCase().includes(filter) ||
+          data.convertedIdleDuration.toString().toLowerCase().includes(filter ) ||
+          data.convertedAverageSpeed.toString().toLowerCase().includes(filter) ||
+          data.convertedAverageWeight.toString().toLowerCase().includes(filter) ||
+          data.convertedOdometer.toString().toLowerCase().includes(filter) ||
+          data.startPosition.toString().toLowerCase().includes(filter) ||
+          data.endPosition.toString().toLowerCase().includes(filter)||
+          data.convertedDrivingTime.toString().toLowerCase().includes(filter)||
+          data.convertedFuelConsumed.toString().toLowerCase().includes(filter)||
+          data.totalAlerts.toString().toLowerCase().includes(filter)
+        );
+      };
     });
     Util.applySearchFilter(this.dataSource, this.displayedColumns , this.filterValue );
   }
@@ -1156,9 +1175,9 @@ export class TripReportComponent implements OnInit, OnDestroy {
       if(event.value._d.getTime() <= this.endDateValue.getTime()){ // CurTime < endDateValue
         dateTime = event.value._d;
       }else{
-        dateTime = this.endDateValue; 
+        dateTime = this.endDateValue;
       }
-    }else{ 
+    }else{
       dateTime = this.last3MonthDate;
     }
     this.startDateValue = this.setStartEndDateTime(dateTime, this.selectedStartTime, 'start');
@@ -1173,9 +1192,9 @@ export class TripReportComponent implements OnInit, OnDestroy {
       if(event.value._d.getTime() >= this.startDateValue.getTime()){ // EndTime < startDateValue
         dateTime = event.value._d;
       }else{
-        dateTime = this.startDateValue; 
+        dateTime = this.startDateValue;
       }
-    }else{ 
+    }else{
       dateTime = this.todayDate;
     }
     this.endDateValue = this.setStartEndDateTime(dateTime, this.selectedEndTime, 'end');
