@@ -1,4 +1,5 @@
-<div class='areaWidth' fxLayout="column" id="exportArea" fxLayoutGap="3px" fxLayoutAlign="end">
+<div class='areaWidth' fxLayout="row" id="exportArea" fxLayoutGap="3px" fxLayoutAlign="end">
+  <div class='areaWidth' fxLayout="column" fxLayoutAlign="end">
   <button mat-button [matMenuTriggerFor]="menu" style="margin-left: 745px;">
     <mat-icon>file_upload</mat-icon>{{ translationData.lblExport }}<mat-icon>more_vert
     </mat-icon>
@@ -7,6 +8,13 @@
     <button mat-menu-item (click)="exportAsExcelFile()">{{ translationData.lblExcel }}</button>
     <button mat-menu-item (click)="exportAsPDFFile()">{{ translationData.lblPDF  }}</button>
   </mat-menu>
+  </div>
+  <div class='areaWidth' fxLayout="column" fxLayoutAlign="end">
+    <span (click)="backToMainPageCall()" style="margin-bottom: 0.5em;">
+        <span> &nbsp;</span>
+        <span class='backBtnCss'><{{ translationData.lblBack  }}</span>
+    </span>
+</div>
 </div>
 <div id="summaryCard">
 <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'id="eco-score-report-driver" >
