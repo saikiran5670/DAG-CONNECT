@@ -26,6 +26,7 @@ export class CreateEditCorridorComponent implements OnInit {
   //selectedCorridorTypeId : any = 46;
   exclusionList : any;
   vehicleGroupList : any;
+  vinTripList : any;
 
   constructor(private corridorService: CorridorService) {
    }
@@ -50,12 +51,14 @@ export class CreateEditCorridorComponent implements OnInit {
     this.corridorService.getCorridorParameters().subscribe((data) => {
       let filterData = data["enumTranslation"];
       let vehicleGroup = data["associatedVehicleRequest"];
+      let vinTrip = data["vinTripList"];
       filterData.forEach(element => {
         element["value"]= this.translationData[element["key"]];
       });
       this.corridorTypeList= filterData.filter(item => item.type == 'R');
       this.exclusionList= filterData.filter(item => item.type == 'E');
       this.vehicleGroupList= vehicleGroup;
+      this.vinTripList = vinTrip;
       this.showLoadingIndicator = false;
 
       // console.log(this.vehicleGroupList)
