@@ -1232,7 +1232,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     "startDateTime": _startTime,
     "endDateTime": _endTime,
     "viNs": _vehicelIds,
-    "driverId": _driverIds,
+    "driverId": this.selectedDriverId,
     "minTripDistance": _minTripVal,
     "minDriverTotalDistance": _minDriverDist,
     "targetProfileId": 2,
@@ -1257,7 +1257,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
         this.hideloader();
      });
     }, (error)=>{
-      this.isSearched=false;
+      this.isSearched=true;
       this.ecoScoreDriver = true;
       this.noSingleDriverData = true;
       this.hideloader();
