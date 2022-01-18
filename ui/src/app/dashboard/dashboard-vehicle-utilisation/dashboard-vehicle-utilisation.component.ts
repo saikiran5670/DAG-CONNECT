@@ -994,47 +994,47 @@ if(this.prefTimeFormat == 12){
     ];
   }
 
-  switch (_prefLimitTime) {
-    case 'U':{
-      if(this.timebasedThreshold > this.totalDistance){ //red
+  // switch (_prefLimitTime) { //time based utilisation
+    // case 'U':{
+      if(this.totalDrivingTime < this.totalThreshold){ //red color
         this.doughnutChartColors= [
           {
-            backgroundColor: ['#65C3F7 ','#F4AF85 '],
-            hoverBackgroundColor: ['#65C3F7 ','#F4AF85 '],
+            backgroundColor: ['#ff0000 ','#cecece '],
+            hoverBackgroundColor: ['#ff0000 ','#cecece '],
           },
         ];
         }
-      else{
-          this.doughnutChartColors= [
-            {
-              backgroundColor: ['#F4AF85 ','#65C3F7 '],
-              hoverBackgroundColor: ['#F4AF85 ','#65C3F7 '],
+      // else{
+      //     this.doughnutChartColors= [
+      //       {
+      //         backgroundColor: ['#F4AF85 ','#65C3F7 '],
+      //         hoverBackgroundColor: ['#F4AF85 ','#65C3F7 '],
 
-            }];
-          }
-        }
-              break;
-     case 'L':{
-        if(this.timebasedThreshold < this.totalDistance){
+      //       }];
+      //     }
+        // }
+    //           break;
+      // case 'L':{
+      if(this.totalDrivingTime >= this.totalThreshold){ //green
           this.doughnutChartColors= [
             {
-              backgroundColor: ['#F4AF85 ','#65C3F7 '],
-              hoverBackgroundColor: ['#F4AF85 ','#65C3F7 '],
+              backgroundColor: ['#89c64d ','#cecece '],
+              hoverBackgroundColor: ['#89c64d ','#cecece '],
 
             }];
                 }
-                else{
-                  this.doughnutChartColors= [
-                    {
-                      backgroundColor: ['#65C3F7 ','#F4AF85 '],
-                      hoverBackgroundColor: ['#65C3F7 ','#F4AF85 '],
-                    },
-                  ];
-                }
-              }
-            default:
-              break;
-          }
+                // else{
+                //   this.doughnutChartColors= [
+                //     {
+                //       backgroundColor: ['#65C3F7 ','#F4AF85 '],
+                //       hoverBackgroundColor: ['#65C3F7 ','#F4AF85 '],
+                //     },
+                //   ];
+                // }
+              //  }
+            //  default:
+            //    break;
+          // }
   //for time based utilisation
   if(this.timeDChartType =='doughnut'){
     this.doughnut_barOptions = {
@@ -1091,47 +1091,47 @@ if(this.prefTimeFormat == 12){
   }
 
   //for distance based utilisation
-  switch (_prefLimitDistance) {
-    case 'U':{
-      if(this.timebasedThreshold > this.totalDistance){ //red
+  // switch (_prefLimitDistance) { //upper/lower option is not there so commented
+    // case 'U':{
+      if(this.totalDistance < this.totalThresholdDistance){ //red color
         this.doughnutChartColors= [
           {
-            backgroundColor: ['#65C3F7 ','#F4AF85 '],
-            hoverBackgroundColor: ['#65C3F7 ','#F4AF85 '],
+            backgroundColor: ['#ff0000 ','#89c64d '],
+            hoverBackgroundColor: ['#ff0000 ','#89c64d '],
           },
         ];
         }
-      else{
-          this.doughnutChartColors= [
-            {
-              backgroundColor: ['#F4AF85 ','#65C3F7 '],
-              hoverBackgroundColor: ['#F4AF85 ','#65C3F7 '],
+      // else{
+      //     this.doughnutChartColors= [
+      //       {
+      //         backgroundColor: ['#F4AF85 ','#65C3F7 '],
+      //         hoverBackgroundColor: ['#F4AF85 ','#65C3F7 '],
 
-            }];
-          }
-        }
-              break;
-     case 'L':{
-        if(this.timebasedThreshold < this.totalDistance){
+      //       }];
+      //     }
+    //     }
+    //           break;
+    //  case 'L':{
+        if(this.totalDistance >= this.totalThresholdDistance){ //green
           this.doughnutChartColors= [
             {
-              backgroundColor: ['#F4AF85 ','#65C3F7 '],
-              hoverBackgroundColor: ['#F4AF85 ','#65C3F7 '],
+              backgroundColor: ['#89c64d ','#ff0000 '],
+              hoverBackgroundColor: ['#89c64d ','#ff0000 '],
 
             }];
                 }
-                else{
-                  this.doughnutChartColors= [
-                    {
-                      backgroundColor: ['#65C3F7 ','#F4AF85 '],
-                      hoverBackgroundColor: ['#65C3F7 ','#F4AF85 '],
-                    },
-                  ];
-                }
-              }
-            default:
-              break;
-          }
+                // else{
+                //   this.doughnutChartColors= [
+                //     {
+                //       backgroundColor: ['#65C3F7 ','#F4AF85 '],
+                //       hoverBackgroundColor: ['#65C3F7 ','#F4AF85 '],
+                //     },
+                //   ];
+                // }
+            //   }
+            // default:
+            //   break;
+          // }
 
   let label3;
   if(this.prefUnitFormat == 'dunit_Metric'){

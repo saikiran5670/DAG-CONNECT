@@ -45,6 +45,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
   @Input() selectionTab: string;
   @Input() trendLineSearchDataParam: any;
   @Output() vehicleLimitExceeds = new EventEmitter<object>();
+  @Output() backToMainPage = new EventEmitter<any>();
   @ViewChild("trendLineChart") trendLineChart: ChartComponent;
   @ViewChild("brushChart") brushChart: ChartComponent;
   public chartOptionsApex: Partial<ChartOptionsApex>;
@@ -1685,5 +1686,13 @@ this.barChartOptionsPerformance = {
       doc.addImage(performanceBarHref, 'PNG', 10, 40, oWidth, performanceBarHeight) ;
       doc.save(this.translationData.lblExportName+'.pdf');
     });
+  }
+
+  backToMainPageCall(){
+    let emitObj = {
+      booleanFlag: false,
+      successMsg: ""
+    }  
+    this.backToMainPage.emit(emitObj);
   }
 }

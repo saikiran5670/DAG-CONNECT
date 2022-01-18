@@ -48,5 +48,5 @@
     <div class='fixDiv'></div>
     <app-route-calculating  *ngIf='selectedCorridorTypeId ==46 && exclusionList' [translationData]="translationData" (backToPage) = "backToCorridorList()" (backToCreate) = "backFromCreate($event)" (backToUpdate)="backFromUpdate()" (backToReject) = "backFromReject()" [exclusionList]="exclusionList" [actionType]='actionType'
                             [selectedElementData]="selectedElementData" [corridorNameList]='corridorNameList'></app-route-calculating>
-    <app-existing-trips *ngIf='selectedCorridorTypeId ==45 && vehicleGroupList' [vehicleGroupList]="vehicleGroupList" [translationData]="translationData" (backToPage) = "backToCorridorList()" (backToCreate) = "backFromCreate($event)" (backToUpdate)="backFromUpdate()" (backToReject) = "backFromReject()" [exclusionList]="exclusionList" [actionType]='actionType'
+    <app-existing-trips *ngIf='selectedCorridorTypeId ==45 && vehicleGroupList' [vehicleGroupList]="vehicleGroupList" [vinTripList] = "vinTripList" [translationData]="translationData" (backToPage) = "backToCorridorList()" (backToCreate) = "backFromCreate($event)" (backToUpdate)="backFromUpdate()" (backToReject) = "backFromReject()" [exclusionList]="exclusionList" [actionType]='actionType'
     [selectedElementData]="selectedElementData"></app-existing-trips>
