@@ -48,6 +48,7 @@ export class CreateEditViewGroupComponent implements OnInit {
   subCategoryPOISelection: any = 0;
   categoryGeoSelection: any = 0;
   subCategoryGeoSelection: any = 0;
+  showLoadingIndicator: any = false;
 
   constructor(private _formBuilder: FormBuilder, private poiService: POIService, private geofenceService: GeofenceService, private landmarkGroupService: LandmarkGroupService,  private domSanitizer: DomSanitizer, private landmarkCategoryService: LandmarkCategoryService) { }
 
@@ -70,9 +71,11 @@ console.log('TT',this.titleText);
       this.setDefaultValue();
     }
     this.breadcumMsg = this.getBreadcum();
+    // this.showLoadingIndicator = true;
     this.loadPOIData();
     this.loadGeofenceData();
     this.loadLandmarkCategoryData();
+    // this.hideloader();
   }
 
   loadLandmarkCategoryData(){
@@ -87,7 +90,9 @@ console.log('TT',this.titleText);
     //   this.categoryList = [];
     //   this.getSubCategoryData();
     // });
+    this.showLoadingIndicator = true;
     this.landmarkCategoryService.getLandmarkCategoryDetails().subscribe((categoryData: any) => {
+      this.hideloader();
       this.fillDropdown(categoryData.categories); // fill dropdown
     }, (error) => {
     });
@@ -147,7 +152,9 @@ console.log('TT',this.titleText);
   }
 
   loadPOIData() {
+    this.showLoadingIndicator = true;
     this.poiService.getPois(this.OrgId).subscribe((poilist: any) => {
+      this.hideloader();
       if(poilist.length > 0){
         poilist.forEach(element => {
           if(element.icon && element.icon != '' && element.icon.length > 0){
@@ -165,7 +172,8 @@ console.log('TT',this.titleText);
           this.loadPOISelectedData(this.poiGridData);
         }
       }
-
+    }, (error)=>{
+      this.hideloader();
     });
   }
 
@@ -198,12 +206,16 @@ console.log('TT',this.titleText);
 
 
   loadGeofenceData() {
+    this.showLoadingIndicator = true;
     this.geofenceService.getAllGeofences(this.OrgId).subscribe((geofencelist: any) => {
+      this.hideloader();
       this.geofenceGridData = geofencelist.geofenceList;
      this.geofenceGridData = this.geofenceGridData.filter(item => item.type == "C" || item.type == "O");
       this.updateGeofenceDataSource(this.geofenceGridData);
       if(this.actionType == 'view' || this.actionType == 'edit')
         this.loadGeofenceSelectedData(this.geofenceGridData);
+    }, (error)=>{
+      this.hideloader();
     });
   }
 
@@ -578,6 +590,11 @@ console.log('TT',this.titleText);
       }
       this.updateGeofenceDataSource(categoryData);
     }
+  }
+
+  hideloader() {
+    // Setting display of spinner
+    this.showLoadingIndicator=false;
   }
 
 }
