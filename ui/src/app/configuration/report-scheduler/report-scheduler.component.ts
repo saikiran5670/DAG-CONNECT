@@ -406,10 +406,10 @@ getUnique(arr, comp) {
   }
 
   getDeletMsg(reportSchedulerName: any){
-      if(this.translationData.lblReportSchedulerDelete)
-        return this.translationData.lblReportSchedulerDelete.replace('$', reportSchedulerName);
+      if(this.translationData.lblScheduleDeletedSuccessfully )
+        return this.translationData.lblScheduleDeletedSuccessfully.replace('$', reportSchedulerName);
       else
-        return ("Scheduled '$' deleted successfully ").replace('$', reportSchedulerName);
+        return ("'$' has been deleted successfully").replace('$', reportSchedulerName);
   }
 
   rowData: any;
