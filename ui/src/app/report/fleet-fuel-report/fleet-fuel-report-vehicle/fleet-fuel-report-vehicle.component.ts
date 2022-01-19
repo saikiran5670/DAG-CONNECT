@@ -1018,7 +1018,7 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
           data.vin.toString().toLowerCase().includes(filter) ||
           data.vehicleName.toString().toLowerCase().includes(filter) ||
           data.vehicleRegistrationNo.toString().toLowerCase().includes(filter) ||
-          data.fuelConsumption.toString().toLowerCase().includes(filter)
+          data.convertedFuelConsumption.toString().toLowerCase().includes(filter)
         );
         }
     });
