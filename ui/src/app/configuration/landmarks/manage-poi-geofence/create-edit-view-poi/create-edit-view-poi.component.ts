@@ -586,6 +586,11 @@ this.map.setZoom(14);
           this.backToPage.emit(emitObj);
 
         });
+      }, (error) => {
+        if(error.status == 409){
+          this.duplicatePOIName = true;
+          this.getDuplicateCategoryMsg(this.poiFormGroup.controls.name.value.trim());
+        }
       });
 
     }
