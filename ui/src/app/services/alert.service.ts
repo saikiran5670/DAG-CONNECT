@@ -163,4 +163,17 @@ export class AlertService {
       )
       .pipe(catchError(this.handleError));
   }
+
+  getSubscribeNonSubsucribeVehicles(vehGrpIds: any): Observable<any> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj })
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.alertServiceUrl}/getsubscribenonsubsucribevehicles`, vehGrpIds, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
 }
