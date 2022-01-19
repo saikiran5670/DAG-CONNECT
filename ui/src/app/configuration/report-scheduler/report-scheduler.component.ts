@@ -20,7 +20,7 @@ import { Util } from 'src/app/shared/util';
 })
 
 export class ReportSchedulerComponent implements OnInit {
-  columnCodes = ['reportName','vehicleGroupAndVehicleList','frequencyTypeName','recipientList','driverList','lastScheduleRunDate','nextScheduleRunDate', 'status', 'action'];
+  columnCodes = ['reportName','action2','frequencyTypeName','recipientList','driverList','lastScheduleRunDate','nextScheduleRunDate', 'status', 'action'];
   columnLabels = ['ReportType','VehicleGroupVehicle', 'Frequency', 'Recipient', 'Driver', 'LastRun', 'NextRun', 'Status', 'Action'];
   // displayedColumns: string[] = ['reportName','vehicleGroupAndVehicleList','frequencyType','recipientList','driverList','lastScheduleRunDate','nextScheduleRunDate','status','action'];
   grpTitleVisible : boolean = false;
@@ -58,6 +58,8 @@ export class ReportSchedulerComponent implements OnInit {
   prefDateFormat: any = 'DD/MM/YYYY'; //-- coming from pref setting
   nextScheduleDateFormat:any ='dd/MM/yyyy';
   accountPrefObj: any;
+  associatedVehicleGroup:any;
+  associatedVehicle:any;
   @ViewChild('gridComp') gridComp: DataTableComponent
   filterValue: string;
 
@@ -221,6 +223,16 @@ export class ReportSchedulerComponent implements OnInit {
        this.statusSelection= 0;
        this.schedulerData =this.makeLists(data["reportSchedulerRequest"]);
        this.initData = this.schedulerData;
+       this.associatedVehicleGroup = this.getUnique(this.reportSchedulerParameterData["associatedVehicle"], "vehicleGroupId");
+       this.associatedVehicle = this.getUnique(this.reportSchedulerParameterData["associatedVehicle"], "vehicleId");
+       this.associatedVehicle.forEach(element => {
+         element.name='';
+         element.licensePlateNumber = element.registrationNo;
+         let vehicleGroupList= this.associatedVehicleGroup.filter(item=> item.vin == element.vin);
+         vehicleGroupList.forEach(ele => {         
+           element.name += ele.vehicleGroupName +', '
+         });
+        });
        this.initData.forEach(element => {
           if(element.reportName == "Fleet Fuel Report" || element.reportName == "TripReport"||
              element.reportName == "Fleet Utilisation Report"||element.reportName == "Fuel Deviation Report"){
@@ -240,6 +252,14 @@ export class ReportSchedulerComponent implements OnInit {
     })
 
  }
+
+ showVehiclePopup(row: any){
+  const colsList = ['name','vin','licensePlateNumber'];
+  const colsName =[this.translationData.lblVehicleGroup , this.translationData.lblVIN , this.translationData.lblRegistrationNumber ];
+  const tableTitle =`${row[0].vehicleName} - ${this.translationData.lblVehicles }`; 
+  let data: any = row;
+  this.callToCommonTable(data, colsList, colsName, tableTitle);
+}
 
  makeLists(initdata: any){
   let accountId =  localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
