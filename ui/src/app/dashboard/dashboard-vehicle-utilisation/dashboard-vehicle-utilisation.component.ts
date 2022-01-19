@@ -767,11 +767,13 @@ if(this.prefTimeFormat == 12){
       this.totalThresholdDistance = this.distancebasedThreshold * this.totalActiveVehicles * 90;
     }
 
+    this.totalThreshold = this.totalThreshold / 1000; //threshold is coming in ms to converting it into sec.
+
     percentage1 = (this.totalDrivingTime/this.totalThreshold)* 100; 
     percentage1 = parseFloat(percentage1).toFixed(2);
     percentage2 = (this.totalDistance/this.totalThresholdDistance)* 100;
     percentage2 = parseFloat(percentage2).toFixed(2);
-
+  
     if(this.distanceChartType == 'bar'){
         let label1 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkms || 'Kms') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'Miles') : (this.translationData.lblmile || 'Miles');
         // let startDate = Util.convertDateToUtc(this.startDateValue-1);
@@ -1053,7 +1055,7 @@ if(this.prefTimeFormat == 12){
       },
         }
     }
-    this.doughnutChartLabels1 = [`${this.translationData.lblFullUtilisation || 'Full Utilisation'} >${this.getTimeDisplay(this.totalThreshold)}`,`${this.translationData.lblUnderUtilisation || 'Under Utilisation'} < ${this.getTimeDisplay(this.totalThreshold)}`];
+    this.doughnutChartLabels1 = [`${this.translationData.lblFullUtilisation || 'Full Utilisation'} >${this.getTimeDisplay(this.totalThreshold *1000)}`,`${this.translationData.lblUnderUtilisation || 'Under Utilisation'} < ${this.getTimeDisplay(this.totalThreshold *1000)}`];
     // this.doughnutChartData1 = [[55, 25, 20]];
     if(percentage1 > 100){
       this.doughnutChartData1 = [percentage1, 0];
@@ -1080,7 +1082,7 @@ if(this.prefTimeFormat == 12){
       },
         }
       }
-    this.timePieChartLabels = [`${this.translationData.lblFullUtilisation || 'Full Utilisation'} >${this.getTimeDisplay(this.totalThreshold)}`,`${this.translationData.lblUnderUtilisation || 'Under Utilisation' } < ${this.getTimeDisplay(this.totalThreshold)}`];
+    this.timePieChartLabels = [`${this.translationData.lblFullUtilisation || 'Full Utilisation'} >${this.getTimeDisplay(this.totalThreshold*1000)}`,`${this.translationData.lblUnderUtilisation || 'Under Utilisation' } < ${this.getTimeDisplay(this.totalThreshold *1000)}`];
     if(percentage1 > 100){
       this.timePieChartData = [percentage1, 0];
     }
