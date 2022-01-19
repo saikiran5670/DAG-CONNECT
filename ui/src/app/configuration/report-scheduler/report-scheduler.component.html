@@ -143,7 +143,7 @@
         
         <app-data-table *ngIf="!showLoadingIndicator" [tableData]="initData" [translationData]="translationData"
         [columnCodes]="columnCodes" [columnLabels]="columnLabels" [actionColumnElements]="actionColumnElements" [action2ColumnElements]="action2ColumnElements" [topRightElements]="topRightElements" [topLeftElements]="topLeftElements"
-        [viewStatusColumnElements]="viewStatusColumnElements" [nextScheduleRunDateColumnElements]="nextScheduleRunDateColumnElements" [showExport]="false" #gridComp>
+        [action2ColumnElements]="action2ColumnElements" [viewStatusColumnElements]="viewStatusColumnElements" [nextScheduleRunDateColumnElements]="nextScheduleRunDateColumnElements" [showExport]="false" #gridComp>
 
         <ng-template #topLeftElements let-gridData='rowData'>
           <div class='areaWidth' fxLayoutAlign="center center">
@@ -185,7 +185,19 @@
           <span>{{ gridData.status == "Active" ? (translationData.lblActive || 'Active') : translationData.lblSuspended || 'Suspended' }}</span>
           </button>
         </ng-template>
-     
+        
+        <ng-template #action2ColumnElements let-gridData='rowData' style="width:200px;">
+         <span class="text-truncate" *ngIf="gridData.vehicleGroupAndVehicleList != ''">{{  gridData.vehicleGroupAndVehicleList }} </span>  
+          <span class="text-truncate" style="max-width: 60px;" *ngIf="gridData.vehicleGroupAndVehicleList == '' &&  associatedVehicle.length > 0">{{associatedVehicle[0].vehicleName}} </span>  
+
+          <div *ngIf="gridData.vehicleGroupAndVehicleList == '' &&  associatedVehicle.length > 0">
+                <div [ngClass]="{'cursor-pointer': (associatedVehicle.length > 0)}" (click)="( associatedVehicle.length > 0) ? showVehiclePopup(associatedVehicle) : ''" >
+                <img src='assets/images/icons/vehicleStatus/Group.svg' style="width: 40px; height: 40px;" />
+                <span class='iconTxt'>{{ associatedVehicle.length }}</span>
+              </div>    
+          </div>
+        </ng-template>
+        
         <ng-template #actionColumnElements let-gridData='rowData'>
           <button class='actionBtn' mat-flat-button (click)="onViewReportScheduler(gridData, 'view')" matTooltip="{{ translationData.lblView || 'view' }}">
             <mat-icon>visibility</mat-icon>
