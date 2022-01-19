@@ -4,6 +4,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { ReportMapService } from 'src/app/report/report-map.service';
+
 @Component({
   selector: 'app-alerts-filter',
   templateUrl: './alerts-filter.component.html',
@@ -153,8 +154,26 @@ export class AlertsFilterComponent implements OnInit {
         }else if(filter == "vehicleGroupName"){
           if(status){ //for all option vehicle
             // this.alertVehicleGroup='';
-            //event_val = event.value.trim();         
-            event_val = this.alertVehicleGroup == ''? this.alertVehicleGroup :this.alertVehicleGroup.value; 
+            //event_val = event.value.trim();   
+            if(this.alertVehicle == ''){
+              event_val= this.alertVehicleGroup == ''? this.alertVehicleGroup :this.alertVehicleGroup.value;
+            }
+            else{
+              let vehicleList = this.vehicleByVehGroupList.filter(i=>i.vehicleId==parseInt(this.alertVehicle));
+              if(vehicleList.length > 0){
+                switch(this.vehicleDisplayPreference){
+                  case 'dvehicledisplay_VehicleName' : event_val = vehicleList[0].vehicleName;
+                  break;
+                  case 'dvehicledisplay_VehicleIdentificationNumber' :  event_val = vehicleList[0].vin;
+                  break;
+                  case 'dvehicledisplay_VehicleRegistrationNumber' : event_val = vehicleList[0].registrationNo;
+                  break;
+                }          
+              }
+              else{
+                event_val = this.alertVehicleGroup == ''? this.alertVehicleGroup :this.alertVehicleGroup.value;
+              }
+            }
           }
           else if(event.value == ''){ // for all option vehicle group
             this.alertVehicle = '';
