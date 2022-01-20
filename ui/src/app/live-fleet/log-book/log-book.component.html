@@ -373,7 +373,7 @@
             <ng-container matColumnDef="alertLevel">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAlertLevel }}
               </mat-header-cell>
-              <mat-cell *matCellDef="let row" style="max-width: 7%; word-break: 'break-word'">
+              <mat-cell *matCellDef="let row" style="word-break: 'break-word'">
                 <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>               
                 <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew }}</span>
                
