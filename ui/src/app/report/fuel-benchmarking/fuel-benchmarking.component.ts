@@ -749,8 +749,14 @@ export class FuelBenchmarkingComponent implements OnInit {
       this.vehicleGroupSelected = this.vehicleGrpDD[0].vehicleGroupName;
     }
     let _vinData: any = [];
-    this.startDateRange = moment(_startTime).format("DD/MM/YYYY");
-    this.endDateRange = moment(_endTime).format("DD/MM/YYYY");
+    let startDate = this.reportMapService.formStartDate(this.startDateValue, this.prefTimeFormat, this.prefDateFormat)
+    let endDate = this.reportMapService.formStartDate(this.endDateValue, this.prefTimeFormat, this.prefDateFormat);
+    let startDateArr = startDate.split(/(\s+)/);
+    let endDateArr= endDate.split(/(\s+)/);
+    this.startDateRange = startDateArr[0];
+    this.endDateRange = endDateArr[0];
+    //this.startDateRange = moment(this.startDateValue).format("DD/MM/YYYY");
+    //this.endDateRange = moment(this.endDateValue).format("DD/MM/YYYY");
 
     //console.log("-----time from parent search----", this.startDateRange, this.endDateRange)
     this.selectionValueBenchmarkBY = selectedValue;
