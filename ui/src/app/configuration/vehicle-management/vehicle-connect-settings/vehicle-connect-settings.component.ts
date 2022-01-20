@@ -213,18 +213,17 @@ export class VehicleConnectSettingsComponent implements OnInit {
       // }
     });
    
-    let connectedOffToOn =  (this.translationData.lblConnectedStatusFrom  || "will be change the status from connected") + (this.translationData.lblConnectedOnToOff  || " On to Off");
-    let connectedOnToOff =  (this.translationData.lblConnectedStatusFrom  || "will be change the status from connected") + (this.translationData.lblConnectedOffToOn  || " Off to On");
-    let connectedOffData = this.connectedOff.length != 0  ? this.connectedOff.length  + connectedOffToOn+'!   ' : '';
-    let connectedOnData = this.connectedOn.length != 0  ? this.connectedOn.length  + connectedOnToOff+'!    ' : '';  
-       
+    let connectedOffToOn =  (this.translationData.lblConnectedStatusFrom  || "will be change the status from connected") +' '+ (this.translationData.lblConnectedOnToOff  || "On to Off");
+    let connectedOnToOff =  (this.translationData.lblConnectedStatusFrom  || "will be change the status from connected") +' '+ (this.translationData.lblConnectedOffToOn  || "Off to On");
+    let connectedOffData = this.connectedOff.length != 0  ? this.connectedOff.length  +' '+ connectedOffToOn+'!   ' : '';
+    let connectedOnData = this.connectedOn.length != 0  ? this.connectedOn.length  +' '+ connectedOnToOff+'!    ' : '';  
     const options = {
       title: this.translationData.lblConfirmation || "Confirmation",
-      message: this.translationData.lblChangeAllVehicleStatus || "Are you sure want to change all vehicle status? Out of "+ this.totalVehicles +" vehicles    "+ connectedOnData  + connectedOffData,   
+      message: (this.translationData.lblChangeAllVehicleStatus || "Are you sure want to change all vehicle status? Out of "+ this.totalVehicles +" vehicles ")+ ' '+ connectedOnData  +' '+ connectedOffData,   
       cancelText: this.translationData.lblCancel || "Cancel",
       confirmText: this.translationData.lblConfirm || "Confirm",
       status: rowData.opt_In == 'I' ? 'On to Off' : 'Off to On' ,
-      name: rowData.name
+      name: this.totalVehicles
     };      
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
@@ -254,7 +253,7 @@ export class VehicleConnectSettingsComponent implements OnInit {
 }
 
   
-onChangeConnectedStatus(rowData: any){
+onChangeConnectedStatus(rowData: any){debugger
   const options = {
     title: this.translationData.lblConfirmation || "Confirmation",
     message: this.translationData.lblYouwanttoConnected || "Are you sure want to change status Connected  # '$' Vehicle?",   
