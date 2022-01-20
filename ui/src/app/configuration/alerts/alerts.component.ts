@@ -419,7 +419,8 @@ export class AlertsComponent implements OnInit {
       });
       let typeVal = this.alertTypeList.filter(type => type.enum == item.type);
       typeVal.forEach(obj => {
-        item["type"]=obj.value;
+        item["keyType"] = obj.key; // add feature key
+        item["type"] = obj.value;
       });
 
       let alertUrgency=({
@@ -833,8 +834,8 @@ export class AlertsComponent implements OnInit {
   }
 
   onVehicleGroupClick(data: any) {
-    const colsList = ['name','vin','licensePlateNumber'];
-    const colsName =[this.translationData.lblVehicleName, this.translationData.lblVIN, this.translationData.lblRegistrationNumber];
+    const colsList = ['name','vin','licensePlateNumber', 'status'];
+    const colsName =[this.translationData.lblVehicleName, this.translationData.lblVIN, this.translationData.lblRegistrationNumber, this.translationData.lblStatus];
     const tableTitle =`${data.vehicleGroupName} - ${this.translationData.lblVehicles}`;
    let objData = {
       groupId: data.vehicleGroupId,
@@ -844,9 +845,44 @@ export class AlertsComponent implements OnInit {
       // groupType: data.groupType,
       // functionEnum: data.functionEnum
     }
+    this.showLoadingIndicator = true;
     this.vehicleService.getVehiclesDetails(objData).subscribe((vehList: any) => {
-      this.callToCommonTable(vehList, colsList, colsName, tableTitle);
+      this.hideloader();
+      let _vehList: any = this.addSubscribrNonSubscribeStatus(vehList, data); // #22342
+      this.callToCommonTable(_vehList, colsList, colsName, tableTitle);
+    }, (error) => {
+      this.hideloader();
     });
+  }
+
+  addSubscribrNonSubscribeStatus(_vehList: any, rowData: any){
+    if(rowData && rowData.keyType && rowData.keyType != ''){
+      let featuresData: any = this.alertCategoryTypeFilterData.filter(i => i.featureKey == rowData.keyType);
+      if(featuresData.length == 1 && featuresData[0].subscriptionType == 'O'){ // org based - all subscribe
+        _vehList.forEach(element => {
+          element.status = "Subscribed";
+        });
+      }else{
+        if(featuresData.length > 0){
+          let _orgSub: any = featuresData.filter(i => i.subscriptionType == 'O'); // find org based subscription
+          if(_orgSub && _orgSub.length > 0){ // all vehicle subscribe
+            _vehList.forEach(element => {
+              element.status = "Subscribed";
+            });
+          }else{ // all vehicle subscribe
+            _vehList.forEach(_el => {
+              let _find: any = featuresData.filter(j => j.vehicleId == _el.id && j.subscriptionType == 'V');
+              if(_find && _find.length > 0){ // find 'V'
+                _el.status = "Subscribed";
+              }else{ // non-subscribe
+                _el.status = "Non-Subscribed";
+              }
+            });
+          }
+        }
+      }
+    }
+    return _vehList;
   }
 
   callToCommonTable(tableData: any, colsList: any, colsName: any, tableTitle: any){
@@ -856,9 +892,9 @@ export class AlertsComponent implements OnInit {
     dialogConfig.data = {
       tableData: tableData,
       colsList: colsList,
-      colsName:colsName,
+      colsName: colsName,
       tableTitle: tableTitle,
-      translationData:this.translationData
+      translationData: this.translationData
     }
     this.dialogVeh = this.dialog.open(UserDetailTableComponent, dialogConfig);
   }

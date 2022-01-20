@@ -52,6 +52,8 @@ export class OrganisationRelationshipComponent implements OnInit {
   orgFilter= new FormControl();
   typeFilter= new FormControl();
   searchFilter= new FormControl();
+  onSuccesstogglechaining = false;
+  relationshipNametogglechain: any;
   filteredValues = {
     relation: '',
     vehicleGrp: '',
@@ -146,11 +148,16 @@ export class OrganisationRelationshipComponent implements OnInit {
           this.hideloader();
           if(data)
             {
-              if(this.viewRelationshipName!=undefined)
-               {
+              if(this.viewRelationshipName!=undefined){
                   this.successMsgBlink(this.getEditSuccessMsg('Update', this.viewRelationshipName));
                   this.router.navigate(['/admin/organisationrelationshipmanagement']);
-                }
+              }
+              
+              if (this.onSuccesstogglechaining) {
+                this.successMsgBlink(this.getEditSuccessMsg('Update', this.relationshipNametogglechain));
+                this.onSuccesstogglechaining = false;
+              }
+
                 this.relationshipList = newdata["relationShipData"];
                 this.organizationList = newdata["organizationData"];
                 this.vehicleList =  newdata["vehicleGroup"];
@@ -210,9 +217,9 @@ export class OrganisationRelationshipComponent implements OnInit {
   getEditSuccessMsg(editText: any, name: any){
     if(editText == 'Update'){
       if(this.translationData.lblRelationshipDetailsUpdatedSuccessfully)
-        return this.translationData.lblRelationshipDetailsUpdatedSuccessfully.replace('$', this.viewRelationshipName);
+        return this.translationData.lblRelationshipDetailsUpdatedSuccessfully.replace('$', name);
       else
-        return ("Relationship '$' details successfully updated").replace('$', this.viewRelationshipName);
+        return ("Relationship '$' details successfully updated").replace('$', name);
     }
   }
   setDate(date : any){​​​​​​​​
@@ -414,6 +421,8 @@ export class OrganisationRelationshipComponent implements OnInit {
           "allowChaining": !rowData.allowChain
         }
         this.organizationService.updateAllowChain(objData).subscribe((data) => {
+          this.relationshipNametogglechain = rowData.relationshipName;
+          this.onSuccesstogglechaining = true;
           this.loadInitData();
         })
       }

@@ -5,10 +5,13 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ConfigService } from '@ngx-config/core';
+import { FleetMapService } from 'src/app/live-fleet/current-fleet/fleet-map.service';
 import { CorridorService } from 'src/app/services/corridor.service';
+import { HereService } from 'src/app/services/here.service';
 import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dialog.service';
 import { Util } from 'src/app/shared/util';
 import { MapFunctionsService } from './map-functions.service';
+import { CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteData } from 'ng2-completer';
 declare var H: any;
 
 @Component({
@@ -24,7 +27,9 @@ export class ManageCorridorComponent implements OnInit {
   displayedColumns = ['All', 'corridoreName', 'startPoint', 'endPoint', 'distance', 'width', 'action'];
   createEditStatus = false;
   accountOrganizationId: any = 0;
+  searchMarker: any = {};
   corridorCreatedMsg: any = '';
+  suggestionData : any;
   actionType : string;
   titleVisible : boolean = false;
   titleFailVisible: boolean = false;
@@ -34,6 +39,7 @@ export class ManageCorridorComponent implements OnInit {
   dataSource: any;
   markerArray: any = [];
   corridorNameList = [];
+  dataService: any;
   routeType = 'R';
   corridorTypeId = 46;
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -48,19 +54,53 @@ export class ManageCorridorComponent implements OnInit {
   map_key: any = '';
   selectedCorridors = new SelectionModel(true, []);
   filterValue: string;
+  searchStr: any;
 
 
   constructor(
     private dialogService: ConfirmDialogService,
+    private hereService: HereService,
+    private fleetMapService:FleetMapService,
     private corridorService : CorridorService,
     private _snackBar: MatSnackBar,
     private mapFunctions: MapFunctionsService,
-    private _configService: ConfigService) {
+    private completerService: CompleterService,
+    private _configService: ConfigService)  {
       this.map_key = _configService.getSettings("hereMap").api_key;
-    this.platform = new H.service.Platform({
-      "apikey": this.map_key
-    });
-   }
+      this.platform = new H.service.Platform({
+        "apikey": this.map_key
+      });
+      this.configureAutoSuggest();
+  }
+  private configureAutoSuggest(){
+    let searchParam = this.searchStr != null ? this.searchStr : '';
+    let URL = 'https://autocomplete.search.hereapi.com/v1/autocomplete?'+'apiKey='+this.map_key +'&limit=5'+'&q='+searchParam ;
+  // let URL = 'https://autocomplete.geocoder.ls.hereapi.com/6.2/suggest.json'+'?'+ '&apiKey='+this.map_key+'&limit=5'+'&query='+searchParam ;
+    this.suggestionData = this.completerService.remote(
+    URL,'title','title');
+    this.suggestionData.dataField("items");
+    this.dataService = this.suggestionData;
+  }
+  onSearchFocus(){
+    this.searchStr = null;
+  }
+  onSearchSelected(selectedAddress: CompleterItem) {
+    if (selectedAddress) {
+      let id = selectedAddress["originalObject"]["id"];
+      let qParam = 'apiKey=' + this.map_key + '&id=' + id;
+      this.hereService.lookUpSuggestion(qParam).subscribe((data: any) => {
+        this.searchMarker = {};
+        if (data && data.position && data.position.lat && data.position.lng) {
+          this.searchMarker = {
+            lat: data.position.lat,
+            lng: data.position.lng,
+            from: 'search'
+          };
+          this.showSearchMarker(this.searchMarker);
+        }
+      });
+    }
+  }
 
   ngOnInit(){
     this.showLoadingIndicator = true;
@@ -141,7 +181,7 @@ export class ManageCorridorComponent implements OnInit {
 
   public ngAfterViewInit() {
     setTimeout(() => {
-    this.mapFunctions.initMap(this.mapElement, this.translationData);
+      this.initMap();
     }, 0);
   }
 
@@ -156,6 +196,7 @@ export class ManageCorridorComponent implements OnInit {
     window.addEventListener('resize', () => this.map.getViewPort().resize());
     var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
     var ui = H.ui.UI.createDefault(this.map, defaultLayers);
+    var group = new H.map.Group();
   }
 
   onClose() {
@@ -319,7 +360,7 @@ export class ManageCorridorComponent implements OnInit {
       this.mapFunctions.viewSelectedRoutesCorridor(this.markerArray,this.accountOrganizationId,this.translationData);
     // this.mapFunctions.viewSelectedRoutes(this.markerArray,this.accountOrganizationId);
 
-     // this.addPolylineToMap();
+     this.addPolylineToMap();
   }
 
   addPolylineToMap(){
@@ -386,6 +427,23 @@ export class ManageCorridorComponent implements OnInit {
       this.mapFunctions.initMap(this.mapElement, this.translationData);
       }, 0);
   }
+
+
+
+  moveMapToSelectedPOI(map, lat, lon){
+    map.setCenter({lat:lat, lng:lon});
+    map.setZoom(15);
+  }
+  showSearchMarker(markerData: any){
+    if(markerData && markerData.lat && markerData.lng){
+      //let selectedMarker = new H.map.Marker({ lat: markerData.lat, lng: markerData.lng });
+      if(markerData.from && markerData.from == 'search'){
+        this.map.setCenter({lat: markerData.lat, lng: markerData.lng}, 'default');
+      }
+      //this.map.addObject(selectedMarker);
+    }
+  }
+
 
   pageSizeUpdated(_event){
     setTimeout(() => {
