@@ -5,6 +5,7 @@ trigger:
     - development
     - release
     - testing
+    - performance-pen-testing
     - master
   paths:
     include:
@@ -106,7 +107,7 @@ stages:
           manifestFile: $(manifestFile)
           jsonPath: $(jsonFile)
           #log4netConfigPath: $(log4netConfigFile)
-    condition: eq(variables['Build.SourceBranchName'],  'release')
+    condition: eq(variables['Build.SourceBranchName'],  'performance-pen-testing')
 
   - stage: stage_acc3
     jobs:
@@ -134,7 +135,7 @@ stages:
         manifestFile: $(manifestFile)
         jsonPath: $(jsonFile)
         #log4netConfigPath: $(log4netConfigFile)
-    condition: eq(variables['Build.SourceBranchName'],  'release')
+    condition: eq(variables['Build.SourceBranchName'],  'performance-pen-testing')
     
   - stage: stage_prd1
     jobs:
