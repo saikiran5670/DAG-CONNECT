@@ -24,7 +24,7 @@
           <div *ngIf="actionType != 'view'">
             <mat-form-field appearance="outline" class="full-width">
               <input maxlength="50" placeholder="{{ translationData.lblEnterVehicleName }}" matInput
-                formControlName="vehicleName" required>
+                formControlName="vehicleName">
               <!-- <input maxlength="50" placeholder="{{ translationData.lblEnterVehicleName || 'Enter Vehicle Name' }}" matInput
                 formControlName="vehicleName"> -->
             </mat-form-field>
@@ -59,7 +59,7 @@
               <!-- <input maxlength="50" placeholder="{{ translationData.lblEnterRegistrationNumber || 'Enter Registration Number' }}" matInput
                 formControlName="registrationNumber"> -->
                 <input maxlength="50" placeholder="{{ translationData.lblEnterRegistrationNumber }}" matInput
-                formControlName="registrationNumber" required>
+                formControlName="registrationNumber">
             </mat-form-field>
             <mat-error *ngIf="vehicleForm.get('registrationNumber').hasError('required')">
               {{ translationData.lblPleaseEnterRegistrationNumber }}
