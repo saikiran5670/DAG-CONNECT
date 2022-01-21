@@ -45,6 +45,9 @@ export class SubscriptionManagementComponent implements OnInit {
   contextOrgId: any =0;
   organizationId: any = 0;
   localStLanguage: any;
+  orgTypeSelection: any= 0;
+  typeSelection: any= 0;
+  statusSelection: any= 0;
   dataSource: any;
   orgID: any;
   roleID: any;
@@ -67,6 +70,7 @@ export class SubscriptionManagementComponent implements OnInit {
   showLoadingIndicator: any = true;
   filterData: any = [];
   filterValue: string;
+  updateDatasource: any;
 
   constructor(
     private httpClient: HttpClient,
@@ -217,6 +221,8 @@ export class SubscriptionManagementComponent implements OnInit {
       }
     ];
     this.subscriptionService.getSubscriptions(this.organizationId).subscribe((data : any) => {
+      this.orgTypeSelection= 0;
+      this.typeSelection= 0;
       this.initData = data["subscriptionList"];
       this.filterData = this.initData;
       this.hideloader();
@@ -275,8 +281,6 @@ export class SubscriptionManagementComponent implements OnInit {
            return data.packageCode.toString().toLowerCase().includes(filter) ||
                data.subscriptionId.toLowerCase().includes(filter) ||
                data.name.toLowerCase().toLowerCase().includes(filter) ||
-              //  data.type.toLowerCase().includes(filter) ||
-              //  data.state.toLowerCase().includes(filter)  ||
                data.orgType.toLowerCase().includes(filter) ||
                data.status.toLowerCase().includes(filter)  ||
                data.count.toString().includes(filter) ||
@@ -399,33 +403,180 @@ export class SubscriptionManagementComponent implements OnInit {
         } row`;
   }
 
-  filterStatus(selectedValue) {
-    selectedValue = selectedValue.trim();
-    selectedValue = selectedValue.toLowerCase();
-    this.dataSource.filter= selectedValue != 'all' ? selectedValue : ''
-  }
+  onOrgTypeSelection(_event: any){
+      this.orgTypeSelection = parseInt(_event.value);
+      if (this.orgTypeSelection == 0 && this.typeSelection == 0 && this.statusSelection == 0) {
+        // this.updateDatasource(this.initData); //-- load all data
+        this.updatedTableData(this.filterData);
+            }
+  else if (this.orgTypeSelection == 0 && this.typeSelection != 0 && this.statusSelection != 0) {
+        let filterDataType = this.initData.filter(item => item.type == this.typeSelection);
+        if (filterDataType) {
+          filterDataType = filterDataType.filter(item => item.type === this.statusSelection);
+          // this.updateDatasource(filterData);
+          this.updatedTableData(filterDataType);
+            }
+        else {
+          // this.updateDatasource([]);
+          this.updatedTableData([]);
+        }
+      } else {
 
-  applyFilterOnOrganization(filterValue: string){
-      this.subscriptionService.getSubscriptions(filterValue).subscribe((data : any) => {
-      this.initData = data["subscriptionList"];
-      this.filterData = this.initData;
-      this.updatedTableData(this.initData);
-      this.changedOrgId = filterValue;
-    });
-   }
+        if(this.statusSelection == 'Active'){
+          this.statusSelection = 'active';
+            }
+            if(this.statusSelection == 'Inactive'){
+               this.statusSelection = 'inactive';
+              }
+              if(this.typeSelection == 'Organisation'){
+                this.typeSelection = 'Organization';
+              }
+              if(this.typeSelection == 'V'){
+                this.typeSelection = this.translationData.lblOrgVIN;
+              }
+              if(this.typeSelection == 'N'){
+                this.typeSelection = this.translationData.lblVIN;
+              }
+              let selectedReportType = this.orgTypeSelection;
+              let selectedActivityType = this.statusSelection;
+              let selectedStatus = this.typeSelection;
+        let reportSchedulerData = this.initData.filter(item => item.orgName === selectedReportType);
+        if (selectedStatus != 0) {
+          reportSchedulerData = reportSchedulerData.filter(item => item.type === selectedStatus);
+        }
+        if (selectedActivityType != 0) {
+          reportSchedulerData = reportSchedulerData.filter(item => item.status === selectedActivityType);
+        }
+        this.updatedTableData(reportSchedulerData);
+      }
+    }
 
-   applyFilterOnStatus(status: any){
-      let newData = this.filterData.filter(element=>element.state == ((status==1) ? "A" : "I"));
-      this.updatedTableData(newData);
-  }
+    ontypeSelectionChange(_event: any){
+      this.typeSelection = _event == '0' ? parseInt(_event) : _event;
+      if (this.orgTypeSelection == 0 && this.typeSelection == 0 && this.statusSelection == 0) {
+        // this.updateDatasource(this.schedulerData); //-- load all data
+        this.updatedTableData(this.filterData);
+      } else if (this.typeSelection == 0 && this.orgTypeSelection != 0 && this.statusSelection != 0) {
+        let filterDatalatest = this.filterData.filter(item => item.orgName === this.orgTypeSelection);
+        if (filterDatalatest != 0) {
+          filterDatalatest = filterDatalatest.filter(item => item.type === this.statusSelection);
+        if (filterDatalatest) {
+          // this.updateDatasource(filterData);
+          this.updatedTableData(filterDatalatest);
+        }
+      }
+        else {
+          // this.updateDatasource([]);
+          this.updatedTableData([]);
+        }
+      }
+      else if (this.typeSelection != 0 && this.orgTypeSelection == 0 && this.statusSelection == 0) {
+        if(this.typeSelection == 'Organisation'){
+          this.typeSelection = 'Organization';
+        }
+        if(this.typeSelection == 'V'){
+          this.typeSelection = this.translationData.lblOrgVIN;
+        }
+        if(this.typeSelection == 'N'){
+          this.typeSelection = this.translationData.lblVIN;
+        }
+        let filterDatalatest = this.filterData.filter(item => item.type == this.typeSelection);
+        console.log(filterDatalatest);
+        if (filterDatalatest) {
+          // this.updateDatasource(filterData);
+          this.updatedTableData(filterDatalatest);
+        }
+        else {
+          // this.updateDatasource([]);
+          this.updatedTableData([]);
+        }
+      } else {
 
-  applyFilterOnType(data: any, type: any){
-    this.subscriptionService.getSubscriptionByType(this.changedOrgId ? this.changedOrgId : this.accountOrganizationId, type).subscribe((data : any) => {
-      this.initData = data["subscriptionList"];
-      this.filterData = this.initData;
-      this.updatedTableData(this.initData);
-    });
-  }
+        if(this.statusSelection == 'Active'){
+          this.statusSelection = 'active';
+            }
+            if(this.statusSelection == 'Inactive'){
+               this.statusSelection = 'inactive';
+              }
+              if(this.typeSelection == 'Organisation'){
+                this.typeSelection = 'Organization';
+              }
+              if(this.typeSelection == 'V'){
+                this.typeSelection = this.translationData.lblOrgVIN;
+              }
+              if(this.typeSelection == 'N'){
+                this.typeSelection = this.translationData.lblVIN;
+              }
+              let selectedReportType = this.orgTypeSelection;
+              let selectedActivityType = this.statusSelection;
+              let selectedStatus = this.typeSelection;
+
+        let reportSchedulerData = this.initData.filter(item => item.type === selectedStatus);
+        if (selectedReportType != 0) {
+          reportSchedulerData = reportSchedulerData.filter(item => item.orgName === selectedReportType);
+        }
+        if (selectedActivityType != 0) {
+          reportSchedulerData = reportSchedulerData.filter(item => item.status === selectedActivityType);
+        }
+        // this.updateDatasource(reportSchedulerData);
+        this.updatedTableData(reportSchedulerData);
+      }
+    }
+
+    onStatusTypeSelection(_event: any){
+      this.statusSelection = _event;
+      if (this.orgTypeSelection == 0 && this.typeSelection == 0 && this.statusSelection == 0) {
+        // this.updateDatasource(this.initData); //-- load all data
+        this.updatedTableData(this.filterData);
+            }
+  else if (this.orgTypeSelection == 0 && this.typeSelection == 0 && this.statusSelection != 0) {
+    if(this.statusSelection == 'Active'){
+      this.statusSelection = 'active';
+        }
+        if(this.statusSelection == 'Inactive'){
+           this.statusSelection = 'inactive';
+          }
+
+        let filterDataType = this.filterData.filter(item => item.status == this.statusSelection);
+        if (filterDataType) {
+          // this.updateDatasource(filterData);
+          this.updatedTableData(filterDataType);
+            }
+        else {
+          // this.updateDatasource([]);
+          this.updatedTableData([]);
+        }
+      } else {
+
+        if(this.statusSelection == 'Active'){
+          this.statusSelection = 'active';
+            }
+            if(this.statusSelection == 'Inactive'){
+               this.statusSelection = 'inactive';
+              }
+              if(this.typeSelection == 'Organisation'){
+                this.typeSelection = 'Organization';
+              }
+              if(this.typeSelection == 'V'){
+                this.typeSelection = this.translationData.lblOrgVIN;
+              }
+              if(this.typeSelection == 'N'){
+                this.typeSelection = this.translationData.lblVIN;
+              }
+              let selectedReportType = this.orgTypeSelection;
+              let selectedActivityType = this.statusSelection;
+              let selectedStatus = this.typeSelection;
+        let reportSchedulerData = this.initData.filter(item => item.status === selectedActivityType);
+        if (selectedStatus != 0) {
+          reportSchedulerData = reportSchedulerData.filter(item => item.type === selectedStatus);
+        }
+        if (selectedReportType != 0) {
+          reportSchedulerData = reportSchedulerData.filter(item => item.orgName === selectedReportType);
+        }
+        this.updatedTableData(reportSchedulerData);
+      }
+    }
+
 
   hideloader() {
     // Setting display of spinner
