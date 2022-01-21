@@ -27,6 +27,8 @@ export class DashboardVehicleUtilisationComponent implements OnInit {
   timeDChartType: any;
   mileageDChartType: any;
   selectionTab: any;
+  startTime: any;
+  endTime: any;
   logisticFlag: boolean = true;
   fromDashboard:boolean = true;
   clickButton:boolean = true;
@@ -557,8 +559,15 @@ getAlert24HoursAPI: any;
      });
     }
 
- let alertPayload ={
-  "viNs": this.finalVinList
+let endDateValue = Util.getUTCDate(this.prefTimeZone); //todaydate
+let startDateValue = this.getLast24Date(endDateValue); //last24 date
+this.startTime = Util.convertDateToUtc(startDateValue);
+this.endTime = Util.convertDateToUtc(endDateValue);
+
+let alertPayload ={
+  // "viNs": this.finalVinList
+  "startDateTime": this.startTime,
+  "endDateTime" : this.endTime
  }
  if(!this.getAlert24HoursAPI){
   this.getAlert24HoursAPI = this.dashboardService.getAlert24Hours(alertPayload).subscribe((alertData)=>{
@@ -619,6 +628,11 @@ setAlertChartData(){
     }
   }
     
+}
+
+getLast24Date(todayDate){
+let yesterdayDate = new Date(todayDate.getTime() - (24 * 60 * 60 * 1000));
+return yesterdayDate;
 }
 
 checkForPreference(fieldKey) {
