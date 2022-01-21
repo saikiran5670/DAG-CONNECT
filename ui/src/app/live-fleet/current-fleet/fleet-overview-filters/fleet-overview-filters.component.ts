@@ -588,23 +588,32 @@ removeDuplicates(originalArray, prop) {
     this.vehicleListData = filteredData;
   }
 
-  onChangeGroup(id: any){
-    this.filterVehicleForm.get("group").setValue(id);
-    // this.loadVehicleData();
-
+  onChangeGroup(id: any){   
+    this.filterVehicleForm.get("group").setValue(id);   
     if(id == 'all'){
       this.vehicleListData= this.fleetData;
     }
     else{
-      this.filterData.vehicleGroups.forEach(element => {
-        this.fleetData.forEach(i => {
-          if(element.vin == i.vin){
-            i.VehGroupId = element.vehicleGroupId;
-          }
-        });
-      });
-    this.vehicleListData= this.fleetData.filter(i=> i.VehGroupId == id);
-    }
+     let selectedVehicleGroup = this.filterData.vehicleGroups.filter(item=> item.vehicleGroupId == id);
+     let VehicleGroupList = this.removeDuplicates(selectedVehicleGroup, "vin");
+     let newFilterData=[];
+     VehicleGroupList.forEach(element => {
+      let filterDataList = this.fleetData.filter(item=> item.vin == element.vin );
+      newFilterData.push(...filterDataList);
+     });
+     this.vehicleListData= newFilterData;
+    //   this.filterData.vehicleGroups.forEach(element => {
+    //     this.fleetData.forEach(i => {
+    //       if(element.vin == i.vin){
+    //         i.VehGroupId = element.vehicleGroupId;
+    //       }
+    //     });
+    //   });
+    // this.vehicleListData= this.fleetData.filter(i=> i.VehGroupId == id);    
+  
+     }
+     this.filterVINonMap();
+    
   }
 
   toggleAllSelectionAlertLevel() {

@@ -155,9 +155,7 @@ export class CustomValidators {
       }
       var regex = /^[ A-Za-zàèìòùÀÈÌÒÙ0-9@#&!$*%._-\s]*$/;
 
-      if (!NAME.value) {
-        NAME.setErrors({ required: true });
-      } else if ((!regex.test(NAME.value))) {
+      if ((!regex.test(NAME.value))) {
         NAME.setErrors({ specialCharsNotAllowed: true });
       }
     };
