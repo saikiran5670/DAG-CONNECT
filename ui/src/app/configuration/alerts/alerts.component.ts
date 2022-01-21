@@ -120,8 +120,10 @@ export class AlertsComponent implements OnInit {
         filter: "",
         menuId: 17 //-- for alerts
       }
+      this.showLoadingIndicator = true;
       this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
         this.processTranslation(data);
+        this.hideloader();
         // this.loadFiltersData();
         this.loadDataBasedOnPrivileges();
       });
@@ -399,7 +401,9 @@ export class AlertsComponent implements OnInit {
       roleId: 0,
       name: ""
     }
+    this.showLoadingIndicator = true;
     this.alertService.getAlertData(this.accountId, this.accountOrganizationId).subscribe((data) => {
+      this.hideloader();
       let initDataBasedOnPrivilege = data;
       // this.initData =data;
       initDataBasedOnPrivilege.forEach(item => {
@@ -513,8 +517,8 @@ export class AlertsComponent implements OnInit {
      });
       this.updateDatasource(this.initData);
     }, (error) => {
-    })
-   this.hideloader();
+      this.hideloader();
+    });
  }
 
  getConvertedThresholdValues(originalThreshold,unitType){
@@ -894,7 +898,8 @@ export class AlertsComponent implements OnInit {
       colsList: colsList,
       colsName: colsName,
       tableTitle: tableTitle,
-      translationData: this.translationData
+      translationData: this.translationData,
+      popupWidth: true
     }
     this.dialogVeh = this.dialog.open(UserDetailTableComponent, dialogConfig);
   }
