@@ -2351,7 +2351,7 @@ setDefaultTodayDate(){
 getLast3MonthDate(){
     // let date = new Date();
     var date = Util.getUTCDate(this.prefTimeZone);
-    date.setMonth(date.getMonth()-3);
+    date.setDate(date.getDate()-90);
     return date;
   }
 
@@ -2619,7 +2619,7 @@ setVehicleGroupAndVehiclePreSelection() {
   getLastMonthDate(){
     // let date = new Date();
     var date = Util.getUTCDate(this.prefTimeZone);
-    date.setMonth(date.getMonth()-1);
+    date.setDate(date.getDate()-30);
     return date;
   }
 
