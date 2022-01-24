@@ -35,6 +35,8 @@ export class SignalRService {
   notificationData: any= [];
   hubConnection:signalR.HubConnection;
   signalRServiceURL: string= "";
+  isUserLogin: boolean = false;
+  
   accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
   accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
   constructor(private httpClient: HttpClient, private config: ConfigService, private translationService: TranslationService, private organizationService: OrganizationService, @Inject(MAT_DATE_FORMATS) private dateFormats) {
@@ -42,30 +44,32 @@ export class SignalRService {
     this.signalRServiceURL = config.getSettings("foundationServices").signalRServiceURL;  
     
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
-    this.translationService.getPreferences(_langCode).subscribe((prefData: any) => {
-      if(this.accountPrefObj && this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
-        this.proceedStep(prefData, this.accountPrefObj.accountPreference);
-      }else{ // org pref
-        this.organizationService.getOrganizationPreference(this.orgId).subscribe((orgPref: any)=>{
-          this.proceedStep(prefData, orgPref);
-        }, (error) => { // failed org API
-          let pref: any = {};
-          this.proceedStep(prefData, pref);
-        });
-      }
-      if(this.prefData) {
-        this.setInitialPref(this.prefData,this.preference);
-      }
-      let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
-      if(vehicleDisplayId) {
-        let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
-        if(vehicledisplay.length != 0) {
-          this.vehicleDisplayPreference = vehicledisplay[0].name;
+    this.isUserLogin = JSON.parse(localStorage.getItem('isUserLogin'));
+    if(this.isUserLogin){
+      this.translationService.getPreferences(_langCode).subscribe((prefData: any) => {
+        if(this.accountPrefObj && this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
+          this.proceedStep(prefData, this.accountPrefObj.accountPreference);
+        }else{ // org pref
+          this.organizationService.getOrganizationPreference(this.orgId).subscribe((orgPref: any)=>{
+            this.proceedStep(prefData, orgPref);
+          }, (error) => { // failed org API
+            let pref: any = {};
+            this.proceedStep(prefData, pref);
+          });
         }
-      }  
-      
-    });
-
+        if(this.prefData) {
+          this.setInitialPref(this.prefData,this.preference);
+        }
+        let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
+        if(vehicleDisplayId) {
+          let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+          if(vehicledisplay.length != 0) {
+            this.vehicleDisplayPreference = vehicledisplay[0].name;
+          }
+        }  
+        
+      });
+    }
   }
 
   setInitialPref(prefData,preference){

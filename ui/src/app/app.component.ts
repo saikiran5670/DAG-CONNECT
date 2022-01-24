@@ -91,6 +91,7 @@ export class AppComponent {
   vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   startTimeDisplay: any = '00:00:00';
   selectedStartTime: any = '00:00';
+  isUserLogin: boolean = false;
   // notificationDetails: any= [];
   private pageTitles = {
     dashboard: 'lblDashboard',
@@ -972,7 +973,9 @@ export class AppComponent {
     this.languageId = JSON.parse(localStorage.getItem("language"));
     let _langCode = this.localStLanguage ? this.localStLanguage.code  :  "EN-GB";
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
+    this.isUserLogin = JSON.parse(localStorage.getItem('isUserLogin'));
 
+    if(this.isUserLogin){
       this.translationService.getPreferences(_langCode).subscribe((prefData: any) => {
         if(this.accountPrefObj && this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
           this.proceedStep(prefData, this.accountPrefObj.accountPreference);
@@ -997,7 +1000,7 @@ export class AppComponent {
         }  
 
       });
-
+    }
     //this.getOrgListData();
     if (this.router.url) {
       //this.isLogedIn = true;
