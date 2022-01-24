@@ -309,8 +309,9 @@ ngOnDestroy(){
 
         }
         if(this.showBack){
-          if(this._state.fromDashboard == true){
-          this.selectionTimeRange('today');}
+        //   if(this._state.fromDashboard == true){
+        //   this.selectionTimeRange('today');
+        // }
 
           if(this._state && this._state.fromAlertsNotifications == true){
             this.fromAlertsNotifications = true;
@@ -601,6 +602,9 @@ ngOnDestroy(){
 
   setDefaultTodayDate() {
 
+    if(this._state && this._state.fromDashboard == true){
+      this.selectionTimeRange('today');
+    }
     if (this._state && this._state.fromVehicleDetails) {
       this.loadWholeTripData();
       if (this._state.data.todayFlag || (this._state.data.startDate == 0 && this._state.data.endDate == 0)) {
@@ -644,10 +648,12 @@ ngOnDestroy(){
       this.todayDate = this.getTodayDate();
     } else {
       this.selectionTab = 'today';
+      if(this._state && !this._state.fromDashboard){
       this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
       this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
       this.last3MonthDate = this.getLast3MonthDate();
       this.todayDate = this.getTodayDate();
+      }
     }
 
 if(!this._state){
@@ -731,7 +737,7 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
       this.logbookDataFlag = true;
       this.wholeLogBookData = logBookDataData;
       //console.log("this.wholeLogBookData:---------------------------: ", this.wholeLogBookData);
-      if(!this._state && !this._state.fromAlertsNotifications){
+      if(!this._state){
       this.filterDateData();
       }
       else{
@@ -823,8 +829,8 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
     this.advanceFilterOpen = false;
     this.searchMarker = {};
     //this.internalSelection = true;
-    let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
-    let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
+    let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone);
+    let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);
     //let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
     let _vinData = this.vehicleDD.filter(item => item.vin == parseInt(this.logBookForm.controls.vehicle.value));
     console.log("vehicleDD", this.vehicleDD);
@@ -861,7 +867,8 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
       this.showLoadingIndicator = true;
       this.getLogbookDetailsAPICall = this.reportService.getLogbookDetails(objData).subscribe((logbookData: any) => {
         this.hideloader();
-        let logBookResult : any = this.removeDuplicates(logbookData, "alertId");
+        let logBookResult = logbookData;
+        // let logBookResult : any = this.removeDuplicates(logbookData, "alertId");
         let newLogbookData = [];
         logbookData.forEach(element => {
           if(this._state && this._state.fromAlertsNotifications && (element.alertId == this._state.data[0].alertId)){
@@ -920,6 +927,11 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
       });
 
   }
+
+  getLast24Date(todayDate){
+    let yesterdayDate = new Date(todayDate.getTime() - (24 * 60 * 60 * 1000));
+    return yesterdayDate;
+    }
 
   checkBoxSelectionForAlertNotification() {
     this.dataSource.data.forEach(element => {
@@ -1561,8 +1573,23 @@ let prepare = []
       case 'today': {
         this.selectionTab = 'today';
         this.setDefaultStartEndTime();
+        if(this._state && this._state.fromDashboard){ //start date & end date should select from last 24 hours for dashboard
+          this.endDateValue = Util.getUTCDate(this.prefTimeZone); //todaydate
+          this.startDateValue = this.getLast24Date(this.endDateValue); //last24 date 
+          // this.selectedStartTime  = Util.convertUtcToDateAndTimeFormat(this.startDateValue , this.prefTimeZone);
+          let startTime  = Util.convertUtcToDateAndTimeFormat(this.startDateValue , this.prefTimeZone);
+          this.selectedStartTime = startTime[1];
+          let endTime = Util.convertUtcToDateAndTimeFormat(this.endDateValue , this.prefTimeZone);
+          this.selectedEndTime = endTime[1];
+          this.startTimeDisplay = (this.prefTimeFormat == 24) ? `${this.selectedEndTime}:00` : this.selectedEndTime;
+          this.endTimeDisplay = (this.prefTimeFormat == 24) ? `${this.selectedEndTime}:00` : this.selectedEndTime;
+
+        }
+        else{
         this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
         this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
+        }
+        
         break;
       }
       case 'yesterday': {

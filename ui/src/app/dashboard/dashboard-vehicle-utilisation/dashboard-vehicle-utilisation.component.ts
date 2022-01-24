@@ -561,8 +561,10 @@ getAlert24HoursAPI: any;
 
 let endDateValue = Util.getUTCDate(this.prefTimeZone); //todaydate
 let startDateValue = this.getLast24Date(endDateValue); //last24 date
-this.startTime = Util.convertDateToUtc(startDateValue);
-this.endTime = Util.convertDateToUtc(endDateValue);
+// this.startTime = Util.convertDateToUtc(startDateValue);
+// this.endTime = Util.convertDateToUtc(endDateValue);
+this.startTime = Util.getMillisecondsToUTCDate(startDateValue, this.prefTimeZone);
+this.endTime= Util.getMillisecondsToUTCDate(endDateValue, this.prefTimeZone);
 
 let alertPayload ={
   // "viNs": this.finalVinList

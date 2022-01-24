@@ -242,7 +242,7 @@ export class ManageCorridorComponent implements OnInit {
     this.dialogService.confirmedDel().subscribe((res) => {
     if (res) {
       this.corridorService.deleteCorridor(corridorId).subscribe((data) => {
-        this.openSnackBar('Item delete', 'dismiss');
+        // this.openSnackBar('Item delete', 'dismiss');
         this.loadCorridorData();
         if(data.code === 200){
           this.successMsgBlink(this.getDeletMsg(rowData.corridoreName));
@@ -252,7 +252,7 @@ export class ManageCorridorComponent implements OnInit {
         if(error.status === 500 || error.status === 409){
           const options = {
             title: this.translationData.lblDelete || "Delete",
-            message: this.translationData.lblAreyousureyouwanttodelete || "Alert exists for corridor. You cannot deleted this corridor if there is an alert set for it. To remove this Corridor, first remove connected alerts.",
+            message: this.translationData.lblAlertsAlreadyAssociatesWithCorridorMsg || "Alert exists for corridor. You cannot deleted this corridor if there is an alert set for it. To remove this Corridor, first remove connected alerts.",
             cancelText: this.translationData.lblCancel || "Cancel",
             confirmText: 'hide-btn'
           };
