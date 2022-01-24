@@ -790,7 +790,8 @@ export class FleetMapService {
         const icon = new H.map.Icon(_alertMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
         this.alertMarker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: icon });
         this.group.addObject(this.alertMarker);
-        let _time = Util.convertUtcToDateFormat(element.time, 'DD/MM/YYYY hh:mm:ss');
+        // let _time = Util.convertUtcToDateFormat(element.time, 'DD/MM/YYYY hh:mm:ss');
+        let _time = this.reportMapService.getStartTime(element.time, this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true);
 
         //alert tooltip
         var startBubble;
