@@ -82,7 +82,6 @@ export class EcoScoreProfileManagementComponent implements OnInit {
   constructor(private _formBuilder: FormBuilder,private translationService: TranslationService, private reportMapService: ReportMapService,  private organizationService: OrganizationService,private reportService: ReportService, private dialogService: ConfirmDialogService, private _snackBar: MatSnackBar,) { }
 
   ngOnInit(): void {
-    this.breadcumMsg = this.getBreadcum(this.actionType);
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.userType = localStorage.getItem("userType");;
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
@@ -99,6 +98,7 @@ export class EcoScoreProfileManagementComponent implements OnInit {
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
+      this.breadcumMsg = this.getBreadcum(this.actionType);
       this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
         if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
           this.proceedStep(prefData, this.accountPrefObj.accountPreference);
@@ -197,7 +197,7 @@ export class EcoScoreProfileManagementComponent implements OnInit {
     this.reportService.getEcoScoreProfileKPIs(id).subscribe((data: any) => {
       details = data["profile"];
       this.SliderData(details);  
-    })
+    });
   }
 
   SliderData(data: any){
@@ -254,6 +254,7 @@ export class EcoScoreProfileManagementComponent implements OnInit {
 
   createNewProfile(){
     this.actionType = "create";
+    this.breadcumMsg = this.getBreadcum(this.actionType);
     this.saveButton = true;
     this.ecoScoreProfileForm.controls.profileName.enable();
     this.onReset();
@@ -272,8 +273,10 @@ export class EcoScoreProfileManagementComponent implements OnInit {
        this.reportService.createEcoScoreProfile(profileParams).subscribe(()=>{
         this.loadProfileData();
         let name = this.ecoScoreProfileForm.controls.profileName.value;
-        this.successMsgBlink(this.getUserCreatedMessage('create',name));
+        this.successMsgBlink(this.getUserCreatedMessage('create', name));
         this.profileFlag = false;
+        this.actionType = 'manage';
+        this.breadcumMsg = this.getBreadcum(this.actionType);
        });
     } else {
 
@@ -288,6 +291,8 @@ export class EcoScoreProfileManagementComponent implements OnInit {
         this.loadProfileData();
         let name = this.ecoScoreProfileForm.controls.profileName.value;
         this.successMsgBlink(this.getUserCreatedMessage('manage', name));
+        this.actionType = 'manage';
+        this.breadcumMsg = this.getBreadcum(this.actionType);
       });
     }
   }
@@ -372,6 +377,7 @@ export class EcoScoreProfileManagementComponent implements OnInit {
   toBack(){
     this.isKPI = false;
     this.actionType = 'manage';
+    this.breadcumMsg = this.getBreadcum(this.actionType);
     this.loadProfileData();
   }
 

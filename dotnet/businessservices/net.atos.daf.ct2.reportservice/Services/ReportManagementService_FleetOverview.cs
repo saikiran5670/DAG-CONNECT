@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Google.Protobuf;
 using Grpc.Core;
 using net.atos.daf.ct2.reports.entity;
 using net.atos.daf.ct2.reportservice.entity;
@@ -46,13 +47,16 @@ namespace net.atos.daf.ct2.reportservice.Services
                     var vinIds = vehicleDetailsAccountVisibilty.Select(x => x.Vin).Distinct().ToList();
                     var tripAlertDataOld = await _reportManager.GetLogbookSearchParameter(vinIds, alertFeatureIds.ToList());
                     List<LogbookTripAlertDetails> tripAlertdData = tripAlertDataOld.ToList();
-                    foreach (var element in tripAlertdData)
-                    {
-                        if (!vehicleDetailsAccountVisibiltyForAlert.Select(x => x.Vin).Contains(element.Vin))
-                        {
-                            tripAlertdData.Remove(element);
-                        }
-                    }
+
+                    tripAlertdData = tripAlertdData.Where(e => vehicleDetailsAccountVisibiltyForAlert.Any(x => x.Vin != e.Vin)).ToList();
+                    //foreach (var element in tripAlertdData)
+                    //{
+
+                    //    if (!vehicleDetailsAccountVisibiltyForAlert.Select(x => x.Vin).Contains(element.Vin))
+                    //    {
+                    //        tripAlertdData.Remove(element);
+                    //    }
+                    //}
                     var tripAlertResult = JsonConvert.SerializeObject(tripAlertdData);
                     response.LogbookTripAlertDetailsRequest.AddRange(
                         JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<LogbookTripAlertDetailsRequest>>(tripAlertResult,
@@ -75,7 +79,14 @@ namespace net.atos.daf.ct2.reportservice.Services
                         JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<FleetOverviewVGFilterRequest>>(res)
                         );
                     List<string> vehicleIdList = new List<string>();
-                    var matchingVins = vehicleDetailsAccountVisibilty.Where(l1 => vehicleByVisibilityAndFeature.Any(l2 => (l2.VehicleId == l1.VehicleId))).ToList();
+                    // var matchingVins12 = vehicleDetailsAccountVisibilty.Where(l1 => vehicleByVisibilityAndFeature.Any(l2 => (l2.VehicleId == l1.VehicleId))).ToList();
+
+
+
+                    var matchingVins = (from objA in vehicleDetailsAccountVisibilty
+                                        join objB in vehicleByVisibilityAndFeature on objA.VehicleId equals objB.VehicleId
+                                        select objA).Distinct().ToList();
+
                     foreach (var item in matchingVins)
                     {
                         vehicleIdList.Add(item.Vin);
@@ -125,11 +136,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetFleetOverviewFilter)}: With Error:-", ex);
                 return await Task.FromResult(new FleetOverviewFilterResponse
                 {
                     Code = Responsecode.InternalServerError,
-                    Message = ex.Message
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -180,6 +191,10 @@ namespace net.atos.daf.ct2.reportservice.Services
                     Org_Id = request.OrganizationId
                 };
                 var result = await _reportManager.GetFleetOverviewDetails(fleetOverviewFilter);
+
+                //Get the enum list for the feature                
+                var resultEnum = await _reportManager.GetEnumList(alertFeatureIds);
+
                 //remove the alerts dont have visibility for user
                 foreach (var element in result)
                 {
@@ -247,6 +262,20 @@ namespace net.atos.daf.ct2.reportservice.Services
                             if ((element?.FleetOverviewAlert?.Count == 0) || (element?.FleetOverviewAlert?.Count > 0 && !element.FleetOverviewAlert.Any(y => fleetOverviewFilter.AlertCategory.Contains(y.CategoryType))))
                             {
                                 result.Remove(element);
+                            }
+                        }
+                    }
+                    //Fleet overview details for alert access 
+                    foreach (var element in result.ToList())
+                    {
+                        if ((element?.FleetOverviewAlert?.Count == 0) || (element?.FleetOverviewAlert?.Count > 0))
+                        {
+                            foreach (var alertItem in element.FleetOverviewAlert.ToList())
+                            {
+                                if (!resultEnum.Contains(alertItem.AlertType))
+                                {
+                                    element.FleetOverviewAlert.Remove(alertItem);
+                                }
                             }
                         }
                     }
@@ -378,6 +407,20 @@ namespace net.atos.daf.ct2.reportservice.Services
                                 }
                             }
                         }
+                        //Fleet overview details for alert access
+                        foreach (var element in result.ToList())
+                        {
+                            if ((element?.FleetOverviewAlert?.Count == 0) || (element?.FleetOverviewAlert?.Count > 0))
+                            {
+                                foreach (var alertItem in element.FleetOverviewAlert.ToList())
+                                {
+                                    if (!resultEnum.Contains(alertItem.AlertType))
+                                    {
+                                        element.FleetOverviewAlert.Remove(alertItem);
+                                    }
+                                }
+                            }
+                        }
                         //fleetOverviewFilter.AlertLevel
                         if (fleetOverviewFilter.AlertLevel?.Count > 0)
                         {
@@ -439,11 +482,11 @@ namespace net.atos.daf.ct2.reportservice.Services
 
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetFleetOverviewDetails)}: With Error:-", ex);
                 return await Task.FromResult(new FleetOverviewDetailsResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "GetFleetOverviewDetails get failed due to - " + ex.Message
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -510,7 +553,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                             {
                                 healthStatus.WarningName = warningDetail.WarningName ?? string.Empty;
                                 healthStatus.WarningAdvice = warningDetail.WarningAdvice ?? string.Empty;
-                                healthStatus.Icon = warningDetail.Icon ?? new Byte[] { };
+                                healthStatus.Icon = warningDetail.Icon ?? new byte[0];
                                 healthStatus.IconName = warningDetail.IconName ?? string.Empty;
                                 healthStatus.ColorName = warningDetail.ColorName ?? string.Empty;
                                 healthStatus.IconId = warningDetail?.IconId ?? 0;
@@ -527,10 +570,14 @@ namespace net.atos.daf.ct2.reportservice.Services
                         {
                             healthStatus.DriverName = "Unknown";
                         }
+                        if (!string.IsNullOrEmpty(healthStatus.WarningName) && !string.IsNullOrEmpty(healthStatus.WarningAdvice))
+                        {
+                            response.HealthStatus.Add(ToHealthStatusData(healthStatus));
+                        }
                     }
-                    string res = JsonConvert.SerializeObject(result);
-                    response.HealthStatus.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehicleHealthStatusResponse>>(res,
-                        new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
+                    /* string res = JsonConvert.SerializeObject(result);
+                     response.HealthStatus.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehicleHealthStatusResponse>>(res,
+                         new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));*/
                     response.Code = Responsecode.Success;
                     response.Message = Responsecode.Success.ToString();
                 }
@@ -543,16 +590,49 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetVehicleHealthReport)}: With Error:-", ex);
                 return await Task.FromResult(new VehicleHealthStatusListResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = $"GetVehicleHealthReport get failed due to - {ex.Message}"
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
 
-
+        private VehicleHealthStatusResponse ToHealthStatusData(VehicleHealthResult healthStatus)
+        {
+            var response = new VehicleHealthStatusResponse()
+            {
+                ColorName = healthStatus.ColorName ?? string.Empty,
+                DriverName = healthStatus.DriverName ?? string.Empty,
+                Icon = healthStatus.Icon != null ? ByteString.CopyFrom(healthStatus.Icon) : ByteString.Empty,
+                IconId = healthStatus.IconId,
+                IconName = healthStatus.IconName ?? string.Empty,
+                VehicleName = healthStatus.VehicleName ?? string.Empty,
+                VehicleRegNo = healthStatus.VehicleRegNo ?? string.Empty,
+                WarningAddress = healthStatus.WarningAddress ?? string.Empty,
+                WarningAddressId = healthStatus.WarningAddressId,
+                WarningAdvice = healthStatus.WarningAdvice ?? string.Empty,
+                WarningClass = healthStatus.WarningClass,
+                WarningDistanceUntilNectService = healthStatus.WarningDistanceUntilNectService,
+                WarningDrivingId = healthStatus.WarningDrivingId ?? string.Empty,
+                WarningHeading = healthStatus.WarningHeading,
+                WarningId = healthStatus.WarningId,
+                WarningLat = healthStatus.WarningLat,
+                WarningLatestProcessedMessageTimestamp = healthStatus.WarningLatestProcessedMessageTimestamp ?? 0,
+                WarningLng = healthStatus.WarningLng,
+                WarningName = healthStatus.WarningName ?? string.Empty,
+                WarningNumber = healthStatus.WarningNumber,
+                WarningOdometerVal = healthStatus.WarningOdometerVal,
+                WarningTimetamp = healthStatus.WarningTimetamp ?? 0,
+                WarningTripId = healthStatus.WarningTripId ?? string.Empty,
+                WarningType = healthStatus.WarningType ?? string.Empty,
+                WarningVehicleDrivingStatusType = healthStatus.WarningVehicleDrivingStatusType ?? string.Empty,
+                WarningVehicleHealthStatusType = healthStatus.WarningVehicleHealthStatusType ?? string.Empty,
+                WarningVin = healthStatus.WarningVin ?? string.Empty
+            };
+            return response;
+        }
 
         private void GetDriverStatus(VehicleHealthResult result, List<DriverDetails> driverDetails)
         {

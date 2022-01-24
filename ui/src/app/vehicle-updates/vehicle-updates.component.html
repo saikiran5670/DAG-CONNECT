@@ -14,13 +14,13 @@
         <form [formGroup]="vehicleUpdatesForm">               
           <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>
+                <span class='font-helvetica-md font-20-px line-height-30-px'>
                     {{ translationData.lblVehicleStatusList || 'Vehicle Status List' }}                 
                 </span>
             </div>
           </div>
           <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm vehicleStatusList_filter'>
-              <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" style="margin-top: 24px;">
+              <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" style="margin-top: 26px;">
                 <mat-form-field appearance="outline">
                     <input matInput [formControl]="searchFilter" placeholder="{{ translationData.lblSearch || 'Search' }}">
                     <span matPrefix><mat-icon>search</mat-icon></span>
@@ -28,11 +28,11 @@
               </div> 
            
             <div class="areaWidth" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-              <mat-label style='display: flex; place-content: space-between;'>
+              <mat-label class='font-helvetica-lt font-16-px line-height-24-px' style='display: flex; place-content: space-between;'>
                   {{ translationData.lblVehicleGroup || 'Vehicle Group' }}
               </mat-label>
               <mat-form-field appearance="outline" class="full-width">
-              <mat-select placeholder="Select"
+              <mat-select placeholder="{{translationData.lblSelect || 'Select'  }}"
               (selectionChange)="onVehicleGroupChange('vehicleGroupNames',$event.value)" formControlName="vehicleGroup">
               <mat-option>
                   <ngx-mat-select-search (keyup)="filterVehicleGroup(vehicleGroup.value)" placeholderLabel="{{ translationData.lblSearchSearchVehGroup || 'Search vehicle group' }}" #vehicleGroup>
@@ -47,11 +47,11 @@
         </mat-form-field>             
           </div> 
           <div class="areaWidth" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-            <mat-label style='display: flex; place-content: space-between;'>
+            <mat-label class='font-helvetica-lt font-16-px line-height-24-px' style='display: flex; place-content: space-between;'>
                 {{ translationData.lblVehicleName || 'Vehicle Name' }}
             </mat-label>
             <mat-form-field appearance="outline" class="full-width">
-            <mat-select placeholder="Select"
+            <mat-select placeholder="{{translationData.lblSelect || 'Select'  }}"
             (selectionChange)="onVehicleChange('vehicleName',$event.value)" formControlName="vehicle">
             <mat-option>
                 <ngx-mat-select-search (keyup)="filterVehicleName(vehicle.value)" placeholderLabel="{{ translationData.lblSearchVehName || 'Search vehicle name' }}" #vehicle>
@@ -66,27 +66,32 @@
       </mat-form-field>             
         </div>         
             <div class="areaWidth" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                <mat-label style='display: flex; place-content: space-between;'>
+                <mat-label class='font-helvetica-lt font-16-px line-height-24-px' style='display: flex; place-content: space-between;'>
                     {{ translationData.lblVehicleSoftwareStatus || 'Vehicle Software Status' }}
                 </mat-label>
                 <mat-form-field appearance="outline" class="full-width" >
-                <mat-select (selectionChange)="optionClick('softwareStatus', $event.value)" placeholder="Select or search details"  #select  multiple formControlName="softStatus">
+                <mat-select (selectionChange)="optionClick('softwareStatus', $event.value)" placeholder="{{translationData.lblSelectOrSearch || 'Select or search details'}}" #select  multiple formControlName="softStatus">
                 <mat-option value=''>
-                    <ngx-mat-select-search (keyup)="filterVehicleSoft(softStatus.value)" placeholderLabel="{{ translationData.lblSearchLanguage || 'Search software status' }}" #softStatus>
+                    <ngx-mat-select-search (keyup)="filterVehicleSoft(softStatus.value)" placeholderLabel="{{ translationData.lblSearchsoftwarestatus || 'Search software status' }}" #softStatus>
                         <mat-icon (click)="resetSoftStatusFilter()" ngxMatSelectSearchClear>close</mat-icon>
                     </ngx-mat-select-search>
                 </mat-option>   
                 <mat-checkbox value='all' [(ngModel)]="allSelected" style="padding-left: 16px;"
                                   [ngModelOptions]="{standalone: true}"
-                                  (change)="toggleAllSelection()">Select All</mat-checkbox>         
+                                  (change)="toggleAllSelection()">{{ translationData.lblSelectAll || 'Select All' }}</mat-checkbox>         
                 <mat-option
                 *ngFor="let soft of filteredSoftwareStatus | async" [value]="soft.value.toLowerCase()">
                     &nbsp;{{ soft.value }}
                 </mat-option>
             </mat-select>  
           </mat-form-field>             
-            </div>                     
-          </div>        
+            </div>      
+            <div class="areaWidth" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+              <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)="onReload()" style="top:26px;">
+              <span class="reload"><i class="fa fa-refresh" aria-hidden="true"></i>{{ translationData.lblReload || 'Reload' }}</span></button>
+            </div>     
+          </div>  
+          
         </form>       
          <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found'}}</div>
           <div *ngIf='initData.length > 0' id="vehicleListData">
@@ -156,7 +161,7 @@
         </mat-card>   
     </div>
     <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
-    <app-vehicle-update-details *ngIf="showVehicalDetails" [translationData]='translationData'
+    <app-vehicle-update-details *ngIf="showVehicalDetails" [translationData]='translationData' [prefTimeZone]='prefTimeZone'
     [actionType]='actionType'  [selectedVehicleUpdateDetails]='selectedVehicleUpdateDetails' [selectedVehicleUpdateDetailsData]='selectedVehicleUpdateDetailsData' 
     (backToPage)='onBackToPage($event)' [prefDefaultTimeFormat]='prefTimeFormat' [prefDefaultDateFormat]='prefDateFormat' ></app-vehicle-update-details>
   </div> 

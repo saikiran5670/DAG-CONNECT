@@ -72,12 +72,12 @@ export class MapService {
                 // for all objects that it contains
                 startBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
                   // read custom data
-                  content:`<table style='width: 350px;'>
+                  content:`<table style='width: 350px;' class='font-helvetica-lt font-14-px line-height-21px'>
                     <tr>
-                      <td style='width: 100px;'>Start Location:</td> <td><b>${elem.startPosition}</b></td>
+                      <td style='width: 100px;'>Start Location:</td> <td class='font-helvetica-md'>${elem.startPosition}</td>
                     </tr>
                     <tr>
-                      <td style='width: 100px;'>Start Date:</td> <td><b>${elem.convertedStartTime}</b></td>
+                      <td style='width: 100px;'>Start Date:</td> <td class='font-helvetica-md'>${elem.convertedStartTime}</td>
                     </tr>
                   </table>`
                 });
@@ -94,12 +94,12 @@ export class MapService {
                 // for all objects that it contains
                 endBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
                   // read custom data
-                  content:`<table style='width: 350px;'>
+                  content:`<table style='width: 350px;' class='font-helvetica-lt font-14-px line-height-21px'>
                     <tr>
-                      <td style='width: 100px;'>End Location:</td> <td><b>${elem.endPosition}</b></td>
+                      <td style='width: 100px;'>End Location:</td> <td class='font-helvetica-md'>${elem.endPosition}</td>
                     </tr>
                     <tr>
-                      <td style='width: 100px;'>End Date:</td> <td><b>${elem.convertedEndTime}</b></td>
+                      <td style='width: 100px;'>End Date:</td> <td class='font-helvetica-md'>${elem.convertedEndTime}</td>
                     </tr>
                   </table>`
                 });
@@ -317,7 +317,7 @@ export class MapService {
             let endMarker = this.createEndMarker();
             const iconEnd = new H.map.Icon(endMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
             this.endMarker = new H.map.Marker({ lat: this.endAddressPositionLat, lng: this.endAddressPositionLong }, { icon: iconEnd });
-            let endMarkerHtml = `<div style="font-size:11px;font-family:Times New Roman">
+            let endMarkerHtml = `<div class='font-helvetica-lt font-14-px line-height-21px'>
             <table>
             <tr><td><b>Corridor Name:</b></td> <td>${corridorName} </td></tr>
             <tr><td><b>Start Point:</b></td><td>${startAddress}</td></tr>
@@ -335,9 +335,9 @@ export class MapService {
               // for all objects that it contains
               bubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
                 // read custom data
-                content:`<div style="font-size:12px;font-family:Times New Roman">
+                content:`<div class='font-helvetica-lt font-14-px line-height-21px'>
                 <table>
-                <tr><td><b>Corridor Name:</b></td> <td>${corridorName} </td></tr>
+                <tr><td><b>Corridor Name:</b></td> <td>${corridorName}</td></tr>
                 <tr><td><b>Start Point:</b></td><td>${startAddress}</td></tr>
                 <tr><td><b>End Point:</b></td><td>${endAddress}</td></tr>
                 </table>
@@ -367,7 +367,7 @@ export class MapService {
         }
       }
 
-      initMap(mapElement) {
+      initMap(mapElement, translationData: any) {
         //Step 2: initialize a map - this map is centered over Europe
         this.defaultLayers  = this.platform.createDefaultLayers();
         this.hereMap = new H.Map(mapElement.nativeElement,
@@ -394,18 +394,18 @@ export class MapService {
         // create custom one
         var ms = new H.ui.MapSettingsControl( {
             baseLayers : [ { 
-              label: "Normal", layer: this.defaultLayers.raster.normal.map
+              label: translationData.lblNormal, layer: this.defaultLayers.raster.normal.map
             },{
-              label: "Satellite", layer: this.defaultLayers.raster.satellite.map
+              label: translationData.lblSatellite, layer: this.defaultLayers.raster.satellite.map
             }, {
-              label: "Terrain", layer: this.defaultLayers.raster.terrain.map
+              label: translationData.lblTerrain, layer: this.defaultLayers.raster.terrain.map
             }
             ],
           layers : [{
-                label: "Layer.Traffic", layer: this.defaultLayers.vector.normal.traffic
+                label: translationData.lblLayerTraffic, layer: this.defaultLayers.vector.normal.traffic
             },
             {
-                label: "Layer.Incidents", layer: this.defaultLayers.vector.normal.trafficincidents
+                label: translationData.lblLayerIncidents, layer: this.defaultLayers.vector.normal.trafficincidents
             }
           ]
         });

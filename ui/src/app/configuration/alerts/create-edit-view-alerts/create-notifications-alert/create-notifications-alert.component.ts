@@ -61,20 +61,7 @@ export class CreateNotificationsAlertComponent implements OnInit, OnChanges {
   openAdvancedFilter: boolean = false;
   phoneNumber= '';
   isValidityAlwaysCustom:  boolean = true;
-  contactModes: any = [
-    {
-      id: 'W',
-      value: 'Web Service'
-    },
-    {
-      id: "E",
-      value: 'Email'
-    },
-    {
-      id: "S",
-      value: 'SMS'
-    }
-  ];
+  contactModes: any = [];
   recipientLabel: any;
   contactMode: any;
   webURL: any;
@@ -160,6 +147,7 @@ export class CreateNotificationsAlertComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     console.log("action type=" + this.actionType);
     console.log("critical" +this.criticalLevel);
+    this.getTransContactMode();
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     //this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
     if(localStorage.getItem('contextOrgId')){
@@ -209,6 +197,23 @@ export class CreateNotificationsAlertComponent implements OnInit, OnChanges {
     if (this.actionType == 'view') {
       this.openAdvancedFilter = true;
     }
+  }
+
+  getTransContactMode() {
+    this.contactModes = [
+      {
+        id: 'W',
+        value: this.translationData.lblWebservice
+      },
+      {
+        id: "E",
+        value: this.translationData.lblEmail 
+      },
+      {
+        id: "S",
+        value: this.translationData.lblSMS 
+      }
+    ];
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -1282,6 +1287,14 @@ getLevelValues(){
       } 
       this.isNotifyEmailValid.emit(emitEmailObj);
     }
+    
+    let notificationData = [...this.notifications];
+    notificationData.forEach((element,index) => {
+      if(element.notificationRecipients.length ==0){
+        this.notifications.splice(element);
+      }
+    });
+
     return this.notifications;
   }
 

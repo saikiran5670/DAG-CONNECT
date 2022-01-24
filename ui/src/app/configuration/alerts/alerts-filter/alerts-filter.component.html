@@ -3,12 +3,12 @@
   <mat-expansion-panel style="width:100%;" class="full-width"> 
     <mat-expansion-panel-header class="full-width">
       <mat-panel-title>
-        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblFilter }}</span>
+        <span class='font-16-px line-height-24px font-helvetica-md'>{{ translationData.lblFilter }}</span>
       </mat-panel-title>
     </mat-expansion-panel-header>
     <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction" fxLayoutGap="10px">
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-            <mat-label>{{ translationData.lblCategory }}</mat-label>
+            <mat-label class='font-16-px line-height-24px'>{{ translationData.lblCategory }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
                 <mat-select (selectionChange)="handleCategoryChange('category', $event.value.enum ,$event)" placeholder="{{translationData.lblSelectUserGroup}}" [(ngModel)]="alertCategory" >
                     <mat-option value=''>{{ translationData.lblAll  }}</mat-option>
@@ -19,7 +19,7 @@
             </mat-form-field>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-            <mat-label style='display: flex; place-content: space-between;'>
+            <mat-label class='font-16-px line-height-24px' style='display: flex; place-content: space-between;'>
                 {{ translationData.lblType }}
             </mat-label>
             <mat-form-field appearance="outline" class="full-width">
@@ -30,7 +30,7 @@
             </mat-form-field> 
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-            <mat-label style='display: flex; place-content: space-between;'>
+            <mat-label class='font-16-px line-height-24px' style='display: flex; place-content: space-between;'>
                 {{ translationData.lblVehicleGroup }}
             </mat-label>
             <mat-form-field appearance="outline" class="full-width">
@@ -45,11 +45,12 @@
     <br>
     <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction" fxLayoutGap="10px">
                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-            <mat-label>{{ translationData.lblVehicle }}</mat-label>
+            <mat-label class='font-16-px line-height-24px'>{{ translationData.lblVehicle }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
                 <mat-select placeholder="{{translationData.lblSelectVehicle }}" (selectionChange)="filterChange('vehicleGroupName',$event)"  [(ngModel)]="alertVehicle">
-                    <mat-option value=''>{{ translationData.lblAll || 'All'}}</mat-option>
-                    <mat-option *ngFor="let vehList of filteredVehicles | async"  [value]="vehList.vehicleId">
+
+                <mat-option value=''>{{ translationData.lblAll || 'All'}}</mat-option>
+                <mat-option *ngFor="let vehList of filteredVehicles | async"  [value]="vehList.vehicleId">
                     <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleName'"> {{vehList.vehicleName}} </span>
                     <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber'"> {{vehList.vin}} </span>
                     <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber'"> {{vehList.registrationNo ? vehList.registrationNo : vehList.vehicleName}} </span>
@@ -58,7 +59,7 @@
             </mat-form-field>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-            <mat-label>{{ translationData.lblCriticality }}</mat-label>
+            <mat-label class='font-16-px line-height-24px'>{{ translationData.lblCriticality }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
                 <mat-select placeholder="{{translationData.lblSelectCriticality}}" (selectionChange)="filterChange('highUrgencyLevel',$event)"  [(ngModel)]="alertCriticality">
                     <mat-option value=''>{{ translationData.lblAll  }}</mat-option>
@@ -68,7 +69,7 @@
             </mat-form-field>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-            <mat-label>{{ translationData.lblStatus }}</mat-label>
+            <mat-label class='font-16-px line-height-24px'>{{ translationData.lblStatus }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
                 <mat-select placeholder="{{translationData.lblSelectStatus }}" (selectionChange)="filterChange('state',$event)" [(ngModel)]="alertStatus" >
                     <mat-option value=''>{{ translationData.lblAll  }}</mat-option>

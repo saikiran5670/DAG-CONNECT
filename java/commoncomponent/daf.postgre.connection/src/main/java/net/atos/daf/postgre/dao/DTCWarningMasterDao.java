@@ -73,5 +73,51 @@ public class DTCWarningMasterDao implements Serializable {
 	}
 	
 	
+
+
+public boolean readMonitor(Integer warningClass, Integer WarningNumber,PreparedStatement stmtReadDTCWarning) throws TechnicalException, SQLException {
+
+	//PreparedStatement stmtReadDTCWarning = null;
+	ResultSet rsPosition = null;
+	
+	
+	boolean warning=false;
+
+	try {
+
+		//stmtReadDTCWarning = connection.prepareStatement(READ_DTC_WARNING);
+		 stmtReadDTCWarning.setInt(1,warningClass);
+		 stmtReadDTCWarning.setInt(2,WarningNumber);
+		 
+		 
+		rsPosition = stmtReadDTCWarning.executeQuery();
+
+		while (rsPosition.next()) {
+			warning=true;
+			break;
+		}
+
+	} catch (SQLException e) {
+		logger.error("Issue while reading DTCWarningMasterDao value for trip Tracing job :: " + e.getMessage());
+		logger.error("Issue while reading DTCWarningMasterDao value for trip statistics job :: ",stmtReadDTCWarning);
+		// throw e;
+	} catch (Exception e) {
+		logger.error("Issue while reading DTCWarningMasterDao value for trip Tracing job :: " + e.getMessage());
+		logger.error("Issue while reading DTCWarningMasterDao value for trip Tracing job :: ",stmtReadDTCWarning);
+		// throw e;
+	} finally {
+		if (null != rsPosition) {
+			try {
+				rsPosition.close();
+			} catch (Exception e) {
+				logger.error("Issue while closing DTCWarningMasterDao resultset :: " + e.getMessage());
+				// throw e;
+			}
+		}
+	}
+	return warning;
+}
+
+
 }
 	

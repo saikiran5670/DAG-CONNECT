@@ -55,7 +55,7 @@ namespace net.atos.daf.ct2.reports.repository
 	                        ,end_time_stamp AS EndTimeStamp
 	                        ,etl_gps_distance AS Distance
 	                        ,idle_duration AS IdleDuration
-	                        ,ROUND(average_speed,5) AS AverageSpeed
+	                        ,ROUND(average_speed,9) AS AverageSpeed
 	                        ,ROUND(average_gross_weight_comb,4) AS AverageWeight
 	                        ,last_odometer AS Odometer
                             , coalesce(startgeoaddr.address,'') AS StartPosition
@@ -127,15 +127,19 @@ namespace net.atos.daf.ct2.reports.repository
 
                 if (data?.Count > 0)
                 {
-                    List<string> vins = new List<string>();
-                    vins.Add(tripFilters.AlertVIN);
-                    List<TripAlert> lstTripAlert = await GetTripAlertDetails(tripFilters.StartDateTime, tripFilters.EndDateTime, vins, tripFilters.FeatureIds, tripFilters.OrganizationId);
-                    if (lstTripAlert.Count() > 0)
+                    if (tripFilters.FeatureIds != null && tripFilters.FeatureIds.Count > 0)
                     {
-                        foreach (TripDetails trip in data)
+                        List<string> vins = new List<string>();
+                        vins.Add(tripFilters.AlertVIN);
+                        List<TripAlert> lstTripAlert = await GetTripAlertDetails(tripFilters.StartDateTime, tripFilters.EndDateTime, vins, tripFilters.FeatureIds, tripFilters.OrganizationId);
+                        if (lstTripAlert.Count() > 0)
                         {
-                            trip.TripAlert = new List<TripAlert>();
-                            trip.TripAlert = lstTripAlert.Where(fleet => fleet.TripId == trip.TripId).ToList();
+                            foreach (TripDetails trip in data)
+                            {
+                                trip.TripAlert = new List<TripAlert>();
+                                trip.TripAlert = lstTripAlert.Where(fleet => fleet.TripId == trip.TripId).ToList();
+                                trip.Alert = lstTripAlert.Where(fleet => fleet.TripId == trip.TripId).ToList()?.Count() ?? 0;
+                            }
                         }
                     }
                 }

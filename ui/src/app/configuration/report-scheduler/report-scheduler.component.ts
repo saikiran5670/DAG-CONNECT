@@ -20,14 +20,14 @@ import { Util } from 'src/app/shared/util';
 })
 
 export class ReportSchedulerComponent implements OnInit {
-  columnCodes = ['reportName','action2','frequencyTypeName','recipientList','driverList','lastScheduleRunDate','nextScheduleRunDate', 'viewstatus', 'action'];
+  columnCodes = ['reportName','vehicleGroupAndVehicleList','frequencyTypeName','recipientList','driverList','lastScheduleRunDate','nextScheduleRunDate', 'status', 'action'];
   columnLabels = ['ReportType','VehicleGroupVehicle', 'Frequency', 'Recipient', 'Driver', 'LastRun', 'NextRun', 'Status', 'Action'];
   // displayedColumns: string[] = ['reportName','vehicleGroupAndVehicleList','frequencyType','recipientList','driverList','lastScheduleRunDate','nextScheduleRunDate','status','action'];
   grpTitleVisible : boolean = false;
   errorMsgVisible: boolean = false;
   displayMessage: any;
   createEditStatus: boolean = false;
-  viewStatus: boolean= false;
+  status: boolean= false;
   showLoadingIndicator: any = false;
   actionType: any = '';
   selectedRowData: any= [];
@@ -40,6 +40,7 @@ export class ReportSchedulerComponent implements OnInit {
   originalAlertData: any= [];
   rowsData: any;
   accountOrganizationId: any;
+  completePrefData: any;
   accountId: any;
   titleVisible : boolean = false;
   dialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
@@ -55,6 +56,7 @@ export class ReportSchedulerComponent implements OnInit {
   prefTimeFormat: any= 24; //-- coming from pref setting
   prefTimeZone: any; //-- coming from pref setting
   prefDateFormat: any = 'DD/MM/YYYY'; //-- coming from pref setting
+  nextScheduleDateFormat:any ='dd/MM/yyyy';
   accountPrefObj: any;
   @ViewChild('gridComp') gridComp: DataTableComponent
   filterValue: string;
@@ -86,6 +88,7 @@ export class ReportSchedulerComponent implements OnInit {
       this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
         this.processTranslation(data);
         this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
+          this.completePrefData = prefData;
           if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
             this.proceedStep(prefData, this.accountPrefObj.accountPreference);
           }else{ // org pref
@@ -105,7 +108,7 @@ export class ReportSchedulerComponent implements OnInit {
       this.reportSchedulerService.getReportSchedulerParameter(this.accountId, this.accountOrganizationId).subscribe(parameterData => {
         this.reportSchedulerParameterData = parameterData;
         this.ReportTypeList = this.reportSchedulerParameterData["reportType"];
-        this.StatusList= [{id : "A", name : "Active"}, {id : "I", name : "Suspended"}]
+        this.StatusList= [{id : "A", name : this.translationData.lblActive}, {id : "I", name : this.translationData.lblSuspended}]
       })
 
     }
@@ -139,22 +142,27 @@ export class ReportSchedulerComponent implements OnInit {
     switch(this.prefDateFormat){
       case 'ddateformat_dd/mm/yyyy': {
         this.prefDateFormat = "DD/MM/YYYY";
+        this.nextScheduleDateFormat = "dd/MM/yyyy";
         break;
       }
       case 'ddateformat_mm/dd/yyyy': {
         this.prefDateFormat = "MM/DD/YYYY";
+        this.nextScheduleDateFormat = "MM/dd/yyyy";
         break;
       }
       case 'ddateformat_dd-mm-yyyy': {
         this.prefDateFormat = "DD-MM-YYYY";
+        this.nextScheduleDateFormat = "dd-MM-yyyy";
         break;
       }
       case 'ddateformat_mm-dd-yyyy': {
         this.prefDateFormat = "MM-DD-YYYY";
+        this.nextScheduleDateFormat = "MM-dd-yyyy";
         break;
       }
       default:{
         this.prefDateFormat = "MM/DD/YYYY";
+        this.nextScheduleDateFormat = "MM/dd/yyyy";
       }
     }
   }
@@ -183,7 +191,7 @@ export class ReportSchedulerComponent implements OnInit {
 
   onBackToPage(objData){
     this.createEditStatus = objData.actionFlag;
-    this.viewStatus = objData.actionFlag;
+    this.status = objData.actionFlag;
     if(objData.successMsg && objData.successMsg != ''){
       this.successMsgBlink(objData.successMsg);
     }
@@ -214,7 +222,12 @@ export class ReportSchedulerComponent implements OnInit {
        this.schedulerData =this.makeLists(data["reportSchedulerRequest"]);
        this.initData = this.schedulerData;
       //  this.updateDatasource(this.schedulerData);
-
+        this.initData.forEach(element => {
+          if(element.reportName == "Fleet Fuel Report" || element.reportName == "TripReport"||
+             element.reportName == "Fleet Utilisation Report"||element.reportName == "Fuel Deviation Report"){
+               element.driverList = "";
+             }
+        });
        this.hideloader();
     }, (error) => {
        this.hideloader();
@@ -335,8 +348,8 @@ getUnique(arr, comp) {
 
   compare(a: Number  |String, b: Number |String, isAsc: boolean, columnName: any){
     if(columnName == "recipientList"){
-      if(!(a instanceof Number)) a = a.toString().toUpperCase();
-      if(!(b instanceof Number)) b= b.toString().toUpperCase();
+      if(!(a instanceof Number)) a = a.replace(/\s/g, '').replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
+      if(!(b instanceof Number)) b= b.replace(/\s/g, '').replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
     }
     return (a < b ? -1 : 1) * (isAsc ? 1 :-1);
   }
@@ -393,11 +406,13 @@ getUnique(arr, comp) {
         return ("Scheduled '$' deleted successfully ").replace('$', reportSchedulerName);
   }
 
+  rowData: any;
   onViewReportScheduler(row: any, action: any) {
     this.rowsData= [];
-    this.viewStatus= true;
+    this.status= true;
     this.actionType = action;
     this.rowsData.push(row);
+    this.rowData = row;
   }
 
   onEditReportScheduler(row: any, action : string) {
@@ -406,6 +421,12 @@ getUnique(arr, comp) {
     this.actionType = 'edit';
     this.titleText = this.translationData.lblEditReportScheduler || "Edit Report Scheduler";
     this.rowsData.push(row);
+  }
+
+  editReport(){
+    this.createEditStatus = false;
+    this.status = false;
+    this.onEditReportScheduler(this.rowData, '');
   }
 
    successMsgBlink(msg: any){
@@ -427,7 +448,7 @@ getUnique(arr, comp) {
   onChangeReportSchedulerStatus(rowData: any){
     const options = {
       title: this.translationData.lblReportScheduler || "Report Scheduler",
-      message: this.translationData.lblYouwanttoDetails || "You want to # '$' Details?",
+      message: this.translationData.lblChangeReportSchedulerStatus || "You want to change '$' status?",
       cancelText: this.translationData.lblCancel || "Cancel",
       confirmText: (rowData.status == 'A') ? this.translationData.lblDeactivate || " Deactivate" : this.translationData.lblActivate || " Activate",
       status: rowData.status == 'A' ? 'Deactivate' : 'Activate' ,
@@ -482,7 +503,8 @@ getUnique(arr, comp) {
       tableData: tableData,
       colsList: colsList,
       colsName:colsName,
-      tableTitle: tableTitle
+      tableTitle: tableTitle,
+      translationData: this.translationData
     }
     this.dialogVeh = this.dialog.open(CommonTableComponent, dialogConfig);
   }

@@ -204,8 +204,23 @@ export class EditUserRoleDetailsComponent implements OnInit {
     this.dataSource = new MatTableDataSource(tabelData);
     this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+      this.dataSource.sortData = (data: String[], sort: MatSort) => {
+        const isAsc = sort.direction === 'asc';
+        return data.sort((a: any, b: any) => {
+            let columnName = sort.active;
+          return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
+        });
 
+    }
   }
+
+      compare(a: Number | String, b: Number | String, isAsc: boolean, columnName:any) {
+        if(columnName === 'name')
+        if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toUpperCase();
+        if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toUpperCase();
+            return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+        }
+
 
   changeRoleLevel(_eventVal: any) {
     if(!this.duplicateFlag){ // code value cannot change while duplicate
@@ -216,10 +231,10 @@ export class EditUserRoleDetailsComponent implements OnInit {
   }
 
   getBreadcum() {
-    
-    var address = (this.createStatus) ? (this.translationData.lblCreateNewUserRole ? this.translationData.lblCreateNewUserRole : 'Create New Account Role') 
-    : (this.viewFlag) ?  (this.translationData.lblViewUserRole ? this.translationData.lblViewUserRole : 'View Account Role')
-    :  (this.translationData.lblEdit ? this.translationData.lblEdit +' '+ this.translationData.lblAccountRoleDetails : 'Edit Account Role Details') ;
+
+    var address = (this.createStatus) ? (this.translationData.lblCreateNewUserRole ? this.translationData.lblCreateNewUserRole : 'Create New Account Role')
+    : (this.viewFlag) ?  (this.translationData.lblViewUserRole ? this.translationData.lblViewUserRole : 'View Account Role Details')
+    :  (this.translationData.lblEditUserRole ? this.translationData.lblEditUserRole : 'Edit Account Role Details') ;
    // ${this.translationData.lblAccountRoleDetails ? this.translationData.lblAccountRoleDetails : 'Account Role Details'}`;
 
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} /

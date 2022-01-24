@@ -100,12 +100,13 @@ namespace net.atos.daf.ct2.package.repository
             return package;
         }
 
-        public async Task<List<Package>> Import(List<Package> packageList)
+        public async Task<PackageMaster> Import(List<Package> packageList)
         {
-            var packages = new List<Package>();
+            var packages = new PackageMaster() { PackageList = new List<Package>(), DuplicatePackages = new List<Package>() };
             try
             {
                 var packageExits = PackageExists(packageList);
+                packages.DuplicatePackages = packageExits;
                 var newPackages = from package in packageList
                                   where !packageExits.Any(x => x.Code == package.Code)
                                   select package;
@@ -134,7 +135,7 @@ namespace net.atos.daf.ct2.package.repository
                             package.Id = pkgId;
                             if (pkgId > 0)
                             {
-                                packages.Add(package);
+                                packages.PackageList.Add(package);
                             }
                         }
                     }

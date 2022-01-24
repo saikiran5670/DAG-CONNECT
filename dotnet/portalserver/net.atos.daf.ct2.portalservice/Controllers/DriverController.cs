@@ -66,8 +66,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(Get)}: With Error:-", ex);
+                return StatusCode(500, DriverConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -111,12 +111,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                              "Update method in Driver controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
                                               _userDetails);
 
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Update)}: With Error:-", ex);
                 if (ex.Message.Contains(_fk_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, DriverConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -155,12 +155,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                              "Delete method in Driver controller", idRequest.DriverID, idRequest.DriverID, JsonConvert.SerializeObject(driverId),
                                               _userDetails);
 
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Delete)}: With Error:-", ex);
                 if (ex.Message.Contains(_fk_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, DriverConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -200,12 +200,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                              "UpdateOptinOptout method in Driver controller", 0, 0, JsonConvert.SerializeObject(Optrequest),
                                               _userDetails);
 
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(UpdateOptinOptout)}: With Error:-", ex);
                 if (ex.Message.Contains(_fk_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, DriverConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -257,12 +257,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                              "ImportDrivers method in Driver controller", 0, 0, JsonConvert.SerializeObject(drivers),
                                               _userDetails);
 
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(ImportDrivers)}: With Error:-", ex);
                 if (ex.Message.Contains(_fk_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, DriverConstants.INTERNAL_SERVER_MSG);
             }
         }
     }

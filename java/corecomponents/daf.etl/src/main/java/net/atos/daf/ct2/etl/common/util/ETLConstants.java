@@ -209,6 +209,7 @@ public class ETLConstants {
 	public static final Integer ZERO = 0;
 	public static final Long ZERO_VAL = 0L;
 	public static final Integer ONE = 1;
+	public static final Double DOUBLE_ZERO_VAL = 0.0;
 	
 	public static final String TRUE ="true";
 	public static final String LOOKPUP_HBASE_TABLE ="lookup.hbase.table";

@@ -123,11 +123,11 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Auth)}: With Error:-", ex);
                 return await Task.FromResult(new AccountIdentityResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = " Authentication is failed due to - " + ex.ToString(),
+                    Message = AccountConstants.INTERNAL_SERVER_MSG,
                     TokenIdentifier = string.Empty,
                 });
             }
@@ -151,7 +151,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Logout)}: With Error:-", ex);
                 response.Success = false;
             }
             return await Task.FromResult(response);
@@ -199,11 +199,11 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Create)}: With Error:-", ex);
                 return await Task.FromResult(new AccountData
                 {
                     Code = Responcecode.Failed,
-                    Message = "Account Creation Failed due to - " + ex.Message,
+                    Message = AccountConstants.INTERNAL_SERVER_MSG,
                     Account = null
                 });
             }
@@ -225,11 +225,11 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Update)}: With Error:-", ex);
                 return await Task.FromResult(new AccountData
                 {
                     Code = Responcecode.Failed,
-                    Message = "Account Updation Failed due to - " + ex.Message,
+                    Message = AccountConstants.INTERNAL_SERVER_MSG,
                     Account = null
                 });
             }
@@ -256,11 +256,11 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Delete)}: With Error:-", ex);
                 return await Task.FromResult(new AccountResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Account Deletion Failed due to - " + ex.Message
+                    Message = AccountConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -273,9 +273,20 @@ namespace net.atos.daf.ct2.accountservice
                 account.Password = request.Password;
                 account.Organization_Id = request.OrgId;
                 account.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;
-                var identityResult = await _accountmanager.ChangePassword(account);
+                Identity user = new Identity();
+                user.UserName = request.EmailId;
+                user.Password = request.OldPassword;
+                bool isvalidOldPassword = await _accountIdentityManager.IsValidateCurrentPassword(user);
                 // response 
                 AccountResponse response = new AccountResponse();
+                if (!isvalidOldPassword)
+                {
+                    response.Code = Responcecode.BadRequest;
+                    response.Message = "Entered password incorrect. Please check and try again.";
+                    return await Task.FromResult(response);
+                }
+                var identityResult = await _accountmanager.ChangePassword(account);
+
                 if (identityResult.StatusCode == System.Net.HttpStatusCode.NoContent)
                 {
                     response.Code = Responcecode.Success;
@@ -323,11 +334,11 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(ChangePassword)}: With Error:-", ex);
                 return await Task.FromResult(new AccountResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Account Change Password failed due to with reason : " + ex.Message
+                    Message = AccountConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -403,11 +414,11 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Get)}: With Error:-", ex);
                 return await Task.FromResult(new AccountDataList
                 {
                     Code = Responcecode.Failed,
-                    Message = "Get failed due to with reason : " + ex.Message
+                    Message = AccountConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -444,11 +455,11 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(AddAccountToOrg)}: With Error:-", ex);
                 return await Task.FromResult(new AccountOrganizationResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Account Deletion Failed due to - " + ex.Message
+                    Message = AccountConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -626,11 +637,11 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetAccountDetail)}: With Error:-", ex);
                 return await Task.FromResult(new AccountDetailsResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Get failed due to with reason : " + ex.Message
+                    Message = AccountConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -661,11 +672,11 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(ResetPassword)}: With Error:-", ex);
                 return await Task.FromResult(new ResetPasswordResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Account Password Reset failed due to the reason : " + ex.Message
+                    Message = AccountConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -691,11 +702,11 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetResetPasswordTokenStatus)}: With Error:-", ex);
                 return await Task.FromResult(new ResetPasswordResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Account Get Reset Password status failed due to the reason : " + ex.Message
+                    Message = AccountConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -754,11 +765,11 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(ResetPassword)}: With Error:-", ex);
                 return await Task.FromResult(new ResetPasswordResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Account Password Reset failed due to the reason : " + ex.Message
+                    Message = AccountConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -787,11 +798,11 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(ResetPasswordInvalidate)}: With Error:-", ex);
                 return await Task.FromResult(new ResetPasswordResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Account Reset Password Invalidate failed due to the reason : " + ex.Message
+                    Message = AccountConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -826,11 +837,11 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetMenuFeatures)}: With Error:-", ex);
                 return await Task.FromResult(new MenuFeatureResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Get Menu Features failed due to the reason : " + ex.Message
+                    Message = AccountConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -855,11 +866,11 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(SaveProfilePicture)}: With Error:-", ex);
                 return await Task.FromResult(new AccountBlobResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Account Blob Creation Failed due to - " + ex.Message
+                    Message = AccountConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -886,11 +897,11 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetProfilePicture)}: With Error:-", ex);
                 return await Task.FromResult(new AccountBlobResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Account Blob Creation Failed due to - " + ex.Message
+                    Message = AccountConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -950,10 +961,10 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(CreateVehicleAccessRelationship)}: With Error:-", ex);
                 return await Task.FromResult(new ServiceResponse
                 {
-                    Message = "Exception :-" + ex.Message,
+                    Message = AccountConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }
@@ -1016,10 +1027,10 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(UpdateVehicleAccessRelationship)}: With Error:-", ex);
                 return await Task.FromResult(new ServiceResponse
                 {
-                    Message = "Exception :-" + ex.Message,
+                    Message = AccountConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }
@@ -1062,10 +1073,10 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(DeleteVehicleAccessRelationship)}: With Error:-", ex);
                 return await Task.FromResult(new ServiceResponse
                 {
-                    Message = "Exception :-" + ex.Message,
+                    Message = AccountConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }
@@ -1124,10 +1135,10 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(CreateAccountAccessRelationship)}: With Error:-", ex);
                 return await Task.FromResult(new ServiceResponse
                 {
-                    Message = "Exception :-" + ex.Message + ex.StackTrace,
+                    Message = AccountConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }
@@ -1191,10 +1202,10 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(UpdateAccountAccessRelationship)}: With Error:-", ex);
                 return await Task.FromResult(new ServiceResponse
                 {
-                    Message = "Exception :-" + ex.Message + ex.StackTrace,
+                    Message = AccountConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }
@@ -1231,10 +1242,10 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(DeleteAccessRelationRequest)}: With Error:-", ex);
                 return await Task.FromResult(new ServiceResponse
                 {
-                    Message = "Exception :-" + ex.Message + ex.StackTrace,
+                    Message = AccountConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }
@@ -1260,10 +1271,10 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetAccessRelationship)}: With Error:-", ex);
                 return await Task.FromResult(new AccessRelationshipResponse
                 {
-                    Message = "Exception :-" + ex.Message + ex.StackTrace,
+                    Message = AccountConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }
@@ -1296,10 +1307,10 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetAccountsVehicles)}: With Error:-", ex);
                 return await Task.FromResult(new AccountVehiclesResponse
                 {
-                    Message = "Exception :-" + ex.Message + ex.StackTrace,
+                    Message = AccountConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }
@@ -1329,11 +1340,11 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(CreatePreference)}: With Error:-", ex);
                 return await Task.FromResult(new AccountPreferenceResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Preference Creation Failed due to - " + ex.Message,
+                    Message = AccountConstants.INTERNAL_SERVER_MSG,
                     AccountPreference = null
                 });
             }
@@ -1357,11 +1368,11 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(UpdatePreference)}: With Error:-", ex);
                 return await Task.FromResult(new AccountPreferenceResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Preference Creation Failed due to - " + ex.Message,
+                    Message = AccountConstants.INTERNAL_SERVER_MSG,
                     AccountPreference = null
                 });
             }
@@ -1388,11 +1399,11 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(DeletePreference)}: With Error:-", ex);
                 return await Task.FromResult(new AccountPreferenceResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Preference Creation Failed due to - " + ex.Message,
+                    Message = AccountConstants.INTERNAL_SERVER_MSG,
                     AccountPreference = null
                 });
             }
@@ -1419,11 +1430,11 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetPreference)}: With Error:-", ex);
                 return await Task.FromResult(new AccountPreferenceResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Preference Get Failed due to - " + ex.Message
+                    Message = AccountConstants.INTERNAL_SERVER_MSG
 
                 });
             }
@@ -1472,10 +1483,10 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(CreateGroup)}: With Error:-", ex);
                 return await Task.FromResult(new AccountGroupResponce
                 {
-                    Message = "Exception :-" + ex.Message,
+                    Message = AccountConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }
@@ -1523,10 +1534,10 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(UpdateGroup)}: With Error:-", ex);
                 return await Task.FromResult(new AccountGroupResponce
                 {
-                    Message = "Account Group Update Failed :-" + ex.Message,
+                    Message = AccountConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }
@@ -1546,10 +1557,10 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(RemoveGroup)}: With Error:-", ex);
                 return await Task.FromResult(new AccountGroupRemoveResponce
                 {
-                    Message = "Exception :-" + ex.Message,
+                    Message = AccountConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }
@@ -1568,10 +1579,10 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(CanRemoveGroup)}: With Error:-", ex);
                 return await Task.FromResult(new AccountGroupCanRemoveResponce
                 {
-                    Message = "Exception :-" + ex.Message,
+                    Message = AccountConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed,
                     Result = false
                 });
@@ -1613,10 +1624,10 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(AddAccountToGroups)}: With Error:-", ex);
                 return await Task.FromResult(new AccountGroupRefResponce
                 {
-                    Message = "Exception :-" + ex.Message,
+                    Message = AccountConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }
@@ -1644,10 +1655,10 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(DeleteAccountFromGroups)}: With Error:-", ex);
                 return await Task.FromResult(new AccountGroupResponce
                 {
-                    Message = "Exception :-" + ex.Message,
+                    Message = AccountConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }
@@ -1683,10 +1694,10 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetAccountGroup)}: With Error:-", ex);
                 return await Task.FromResult(new AccountGroupDataList
                 {
-                    Message = "Exception " + ex.Message,
+                    Message = AccountConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }
@@ -1741,11 +1752,11 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetAccountGroupDetail)}: With Error:-", ex);
 
                 return await Task.FromResult(new AccountGroupDetailsDataList
                 {
-                    Message = "Exception " + ex.Message,
+                    Message = AccountConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }
@@ -1780,11 +1791,11 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(AddRoles)}: With Error:-", ex);
 
                 return await Task.FromResult(new AccountRoleResponse
                 {
-                    Message = "Exception " + ex.Message,
+                    Message = AccountConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }
@@ -1808,11 +1819,11 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(RemoveRoles)}: With Error:-", ex);
 
                 return await Task.FromResult(new AccountRoleResponse
                 {
-                    Message = "Exception " + ex.Message,
+                    Message = AccountConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }
@@ -1853,11 +1864,11 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetRoles)}: With Error:-", ex);
 
                 return await Task.FromResult(new AccountRoles
                 {
-                    Message = "Exception " + ex.Message,
+                    Message = AccountConstants.INTERNAL_SERVER_MSG,
                     Code = Responcecode.Failed
                 });
             }
@@ -1981,11 +1992,11 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GenerateSSO)}: With Error:-", ex);
                 return await Task.FromResult(new SSOToken
                 {
                     Code = Responcecode.Failed,
-                    Message = ex.StackTrace
+                    Message = AccountConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -2024,11 +2035,11 @@ namespace net.atos.daf.ct2.accountservice
 
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetCountryDetail)}: With Error:-", ex);
                 return await Task.FromResult(new ResponseCountry
                 {
                     Code = Responcecode.Failed,
-                    Message = "Country details Failed due to - " + ex.Message
+                    Message = AccountConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -2047,10 +2058,10 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(CreateMigratedUsersInKeyCloak)}: With Error:-", ex);
                 return await Task.FromResult(new AccountMigrationResponse
                 {
-                    Message = "Account migration failed due to - " + ex.Message
+                    Message = AccountConstants.INTERNAL_SERVER_MSG
                 });
             }
         }

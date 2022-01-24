@@ -1,6 +1,6 @@
 <div class='bgtrans'>
   <div *ngIf='grpTitleVisible' fxLayout="row" fxLayoutAlign="center center"
-    style='padding:10px; color:#fff; background: #5dc24e;'>
+    style='padding:10px; color:#fff;' [ngStyle]="{'background': deleteRecord ? '#D50017' : '#00AE10'}">
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center" style='width:95%;'>
       {{ userCreatedMsg }}
     </div>
@@ -11,10 +11,10 @@
   <mat-card class='mat-elevation-z' *ngIf='!stepFlag && !editFlag && !viewFlag'>
     <div *ngIf="initData">
       <app-common-filter *ngIf="filterFlag" (filterValues)="getFilteredValues($event)" [initData]='initData' [translationData]='translationData'></app-common-filter>
-    </div>  
+    </div>
     <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
       <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllUserDetails }}</span>
+        <span class='font-18-px line-height-27px font-helvetica-md'>{{ translationData.lblAllUserDetails }}</span>
       </div>
     </div>
     <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
@@ -44,23 +44,23 @@
     <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound }}</div>
     <div *ngIf='initData.length > 0' id="accountMgmtData">
       <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort #exporter="matTableExporter" [hiddenColumns]="[4]" >
-        <ng-container matColumnDef="firstName">
+        <ng-container matColumnDef="userFullName">
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblName }}</mat-header-cell>
           <mat-cell *matCellDef="let row">
             <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
             <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew}}</span>
-            <span [ngClass]="{ 'marginLeft-14': row.newTag }">{{ row.firstName }} {{ row.lastName }}</span>
+            <span [ngClass]="{ 'marginLeft-14': row.newTag }">{{ row.userFullName }}</span>
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="emailId">
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEmailID }}</mat-header-cell>
           <mat-cell *matCellDef="let row">{{ row.emailId }}</mat-cell>
         </ng-container>
-        <ng-container matColumnDef="roles">
+        <ng-container matColumnDef="roleList">
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUserRole }}</mat-header-cell>
           <mat-cell *matCellDef="let row" matTooltip="{{ row.roleList }}"><span class="text-truncate">{{ row.roles.length > 0 ? row.roleList : '&nbsp; &nbsp; -' }}</span></mat-cell>
         </ng-container>
-        <ng-container matColumnDef="accountGroups">
+        <ng-container matColumnDef="accountGroupList">
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUserGroup }}</mat-header-cell>
           <mat-cell class="link" *matCellDef="let row" matTooltip="{{ row.accountGroupList }}"><span class="text-truncate">{{ row.accountGroups.length > 0 ? row.accountGroupList : '&nbsp; &nbsp; -' }}</span></mat-cell>
         </ng-container>
@@ -84,7 +84,7 @@
       </mat-table>
       <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageSizeUpdated($event)"></mat-paginator>
     </div>
-    <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>  
+    <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
   </mat-card>
   <app-edit-view-user *ngIf='editFlag || viewFlag' [privilegeAccess]='privilegeAccess' [defaultSetting]="defaultSetting" [fromEdit]="editFlag ? 'edit' : 'view'" [translationData]='translationData' [selectedPreference]='selectedPreference' [accountInfoData]='userDataForEdit' [allRoleData]='editViewRoleList' [allUserGrpData]='userGrpData' [selectedRoleData]='selectedRoleData' [selectedUserGrpData]='selectedUserGrpData' (userCreate)="checkCreation($event)"></app-edit-view-user>
   <app-new-user-step *ngIf='stepFlag' [privilegeAccess]='privilegeAccess' [defaultSetting]="defaultSetting" [fromCreate]="stepFlag ? 'Create' : 'Create'" [translationData]='translationData' [userDataForEdit]='userDataForEdit' [roleData]='filterRoleList' [userGrpData]='userGrpData' [orgPreference]='orgPreference' (userCreate)="checkCreation($event)"></app-new-user-step>

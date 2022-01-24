@@ -75,12 +75,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  AlertConstants.ALERT_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  string.Format(AlertConstants.ALERT_EXCEPTION_LOG_MSG, "ActivateAlert", ex.Message), 1, 2, Convert.ToString(alertId),
                   _userDetails);
+                _logger.Error($"{nameof(ActivateAlert)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(AlertConstants.SOCKET_EXCEPTION_MSG))
                 {
                     return StatusCode(500, String.Format(AlertConstants.INTERNAL_SERVER_ERROR_MSG, 2));
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, AlertConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -116,13 +117,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  AlertConstants.ALERT_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  string.Format(AlertConstants.ALERT_EXCEPTION_LOG_MSG, "SuspendAlert", ex.Message), 1, 2, Convert.ToString(alertId),
                   _userDetails);
+                _logger.Error($"{nameof(SuspendAlert)}: With Error:-", ex);
                 //_logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(AlertConstants.SOCKET_EXCEPTION_MSG))
                 {
                     return StatusCode(500, string.Format(AlertConstants.ACTIVATED_ALERT_SUCCESS_MSG, 2));
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, AlertConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -160,13 +162,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  "Alert service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                   string.Format(AlertConstants.ALERT_EXCEPTION_LOG_MSG, "DeleteAlert", ex.Message), 1, 2, Convert.ToString(alertId),
                   _userDetails);
+                _logger.Error($"{nameof(DeleteAlert)}: With Error:-", ex);
                 //_logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(AlertConstants.SOCKET_EXCEPTION_MSG))
                 {
                     return StatusCode(500, string.Format(AlertConstants.INTERNAL_SERVER_ERROR_MSG, 2));
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, AlertConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -219,8 +222,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  AlertConstants.ALERT_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  string.Format(AlertConstants.ALERT_EXCEPTION_LOG_MSG, "GetAlertCategory", ex.Message), 1, 2, Convert.ToString(accountId),
                   _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetAlertCategory)}: With Error:-", ex);
+                return StatusCode(500, AlertConstants.INTERNAL_SERVER_MSG);
             }
         }
         #endregion
@@ -328,12 +331,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  AlertConstants.ALERT_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  string.Format(AlertConstants.ALERT_EXCEPTION_LOG_MSG, "CreateAlert", ex.Message), 0, 0, JsonConvert.SerializeObject(request),
                   _userDetails);
+                _logger.Error($"{nameof(CreateAlert)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(AlertConstants.SOCKET_EXCEPTION_MSG))
                 {
                     return StatusCode(500, string.Format(AlertConstants.INTERNAL_SERVER_ERROR_MSG, "2"));
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, AlertConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -413,12 +417,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  AlertConstants.ALERT_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  string.Format(AlertConstants.ALERT_EXCEPTION_LOG_MSG, "UpdateAlert", ex.Message), 0, 0, JsonConvert.SerializeObject(request),
                   _userDetails);
+                _logger.Error($"{nameof(UpdateAlert)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(AlertConstants.SOCKET_EXCEPTION_MSG))
                 {
                     return StatusCode(500, string.Format(AlertConstants.INTERNAL_SERVER_ERROR_MSG, "2"));
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, AlertConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -460,8 +465,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  AlertConstants.ALERT_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                 string.Format(AlertConstants.ALERT_EXCEPTION_LOG_MSG, "GetAlert", ex.Message), 1, 2, Convert.ToString(accountId),
                   _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetAlerts)}: With Error:-", ex);
+                return StatusCode(500, AlertConstants.INTERNAL_SERVER_MSG);
             }
         }
         #endregion
@@ -495,8 +500,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  AlertConstants.ALERT_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  string.Format(AlertConstants.ALERT_EXCEPTION_LOG_MSG, "GetAlert", ex.Message), 1, 2, Convert.ToString(orgnizationId),
                   _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetRecipientLabel)}: With Error:-", ex);
+                return StatusCode(500, AlertConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -534,8 +539,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  AlertConstants.ALERT_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  string.Format(AlertConstants.ALERT_EXCEPTION_LOG_MSG, "GetAlertCategory", ex.Message), 1, 2, Convert.ToString(accountId),
                   _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetAlertCategoryFilter)}: With Error:-", ex);
+                return StatusCode(500, AlertConstants.INTERNAL_SERVER_MSG);
             }
         }
         #endregion
@@ -576,12 +581,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  AlertConstants.ALERT_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  string.Format(AlertConstants.ALERT_EXCEPTION_LOG_MSG, "InsertViewedNotifications", ex.Message), 0, 0, JsonConvert.SerializeObject(request),
                   _userDetails);
+                _logger.Error($"{nameof(InsertViewedNotifications)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(AlertConstants.SOCKET_EXCEPTION_MSG))
                 {
                     return StatusCode(500, string.Format(AlertConstants.INTERNAL_SERVER_ERROR_MSG, "2"));
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, AlertConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -622,8 +628,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  AlertConstants.ALERT_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                 string.Format(AlertConstants.ALERT_EXCEPTION_LOG_MSG, "getofflinenotification", ex.Message), 1, 2, Convert.ToString(_userDetails.AccountId),
                   _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetOfflinePushNotification)}: With Error:-", ex);
+                return StatusCode(500, AlertConstants.INTERNAL_SERVER_MSG);
             }
         }
         #endregion

@@ -59,23 +59,11 @@ export class SubscriptionManagementComponent implements OnInit {
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   userType: any = localStorage.getItem("userType");
   organizationList: any = [];
-  organisationData : any;
+  organisationData : any = [];
   accountDetails : any =[];
-  TypeList: any = [
-    {
-      name: 'VIN',
-      value: 'N'
-    },
-    {
-      name: 'Organization',
-      value: 'O'
-    },
-    {
-      name: 'Org+VIN',
-      value: 'V'
-    }
-  ];
-  StatusList: any = [];
+  TypeList: any = [ ];
+  StatusList: any;
+
   showLoadingIndicator: any = true;
   filterData: any = [];
   filterValue: string;
@@ -112,7 +100,7 @@ export class SubscriptionManagementComponent implements OnInit {
           }),
           observe: "response" as 'body',
       };
-      return this.httpClient.post(`${this.domainUrl}`, null, httpOptions);
+      return this.httpClient.post(`${this.domainUrl}`, { "featureName": "Shop"}, httpOptions);
     }
 
   // defaultTranslation(){
@@ -172,7 +160,6 @@ export class SubscriptionManagementComponent implements OnInit {
     this.contextOrgId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
     this.organizationId = this.contextOrgId? this.contextOrgId : this.accountOrganizationId;
     this.organisationData = JSON.parse(localStorage.getItem('allOrgList'));
-
     let translationObj = {
       id: 0,
       code: this.localStLanguage.code,
@@ -185,8 +172,40 @@ export class SubscriptionManagementComponent implements OnInit {
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
         this.processTranslation(data);
         this.loadSubscriptionData();
+        this.getTranslatedNames();
     });
 
+
+  //   this.StatusList= [
+  //     {
+  //       name: this.translationData.lblActive,
+  //       value: '1'
+  //     },
+  //     {
+  //       name: this.translationData.lblInactive,
+  //       value: '2'
+  //     }
+  //   ]
+  }
+  getTranslatedNames(){
+    this.TypeList= [
+      {
+        name: this.translationData.lblVIN,
+        value: 'N'
+      },
+      {
+        name: this.translationData.lblOrganisation,
+        value: 'O'
+      },
+      {
+        name: this.translationData.lblOrgVIN,
+        value: 'V'
+      }
+    ];
+  }
+
+  loadSubscriptionData(){
+    this.showLoadingIndicator = true;
     this.StatusList= [
       {
         name: this.translationData.lblActive,
@@ -196,11 +215,7 @@ export class SubscriptionManagementComponent implements OnInit {
         name: this.translationData.lblInactive,
         value: '2'
       }
-    ]
-  }
-
-  loadSubscriptionData(){
-    this.showLoadingIndicator = true;
+    ];
     this.subscriptionService.getSubscriptions(this.organizationId).subscribe((data : any) => {
       this.initData = data["subscriptionList"];
       this.filterData = this.initData;
@@ -235,7 +250,23 @@ export class SubscriptionManagementComponent implements OnInit {
 
   updatedTableData(tableData : any) {
     this.initData = tableData;
-
+    this.initData.forEach((ele,index) => {
+      if(ele.state == 'A'){
+        this.initData[index]["status"] = 'active';
+      }
+      if(ele.state == 'I'){
+        this.initData[index]["status"] = 'inactive';
+      }
+      if(ele.type == 'O'){
+        this.initData[index]["orgType"] = 'organisation';
+      }
+      else if(ele.type == 'V'){
+        this.initData[index]["orgType"] = 'org+vin';
+      }
+      else if(ele.type != 'O' && ele.type != 'V') {
+        this.initData[index]["orgType"] = 'vin';
+      }
+    });
     setTimeout(()=>{
       this.dataSource = new MatTableDataSource(tableData);
       this.dataSource.paginator = this.paginator;
@@ -244,8 +275,10 @@ export class SubscriptionManagementComponent implements OnInit {
            return data.packageCode.toString().toLowerCase().includes(filter) ||
                data.subscriptionId.toLowerCase().includes(filter) ||
                data.name.toLowerCase().toLowerCase().includes(filter) ||
-               data.type.toLowerCase().includes(filter) ||
-               data.state.toLowerCase().includes(filter)  ||
+              //  data.type.toLowerCase().includes(filter) ||
+              //  data.state.toLowerCase().includes(filter)  ||
+               data.orgType.toLowerCase().includes(filter) ||
+               data.status.toLowerCase().includes(filter)  ||
                data.count.toString().includes(filter) ||
                (getDt(data.subscriptionStartDate)).toString().toLowerCase().includes(filter) ||
               (getDt(data.subscriptionEndDate)).toString().toLowerCase().includes(filter)
@@ -323,7 +356,8 @@ export class SubscriptionManagementComponent implements OnInit {
       tableData: tableData,
       colsList: this.vehicleDiaplayColumns,
       colsName:colsName,
-      tableTitle: tableTitle
+      tableTitle: tableTitle,
+      translationData:this.translationData
     }
     this.dialogRef = this.dialog.open(UserDetailTableComponent, dialogConfig);
     this.dialogRef

@@ -1,7 +1,7 @@
 <mat-expansion-panel class="full-width margin-bottom-20m mb-10" fxLayoutGap="10px" [expanded]="true">
     <mat-expansion-panel-header class="full-width">
       <mat-panel-title>
-        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblFleetKPI }}</span>
+        <span>{{ translationData.lblFleetKPI }}</span>
       </mat-panel-title>
     </mat-expansion-panel-header>
     <!-- time selection -->
@@ -17,12 +17,13 @@
 
        <!-- Charts  -->
     <div  *ngIf="!dataError" style='margin-bottom: 10px;'>
-      <div fxLayout="row" class="full-width mb-10" fxLayoutGap="10px">
-        <div [hidden]="!checkForPreference('co2emission')" class="chartTile col-md-2" [ngClass]="{'warningClass':(co2Threshold==0)}">
+      <div fxLayout="row" class="full-width margin-bottom-20m" fxLayoutGap="10px">
+        <!-- <div [hidden]="!checkForPreference('co2emission')" class="chartTile col-md-2" [ngClass]="{'warningClass':(co2Threshold==0)}"> -->
+          <div [hidden]="!checkForPreference('co2emission')" class="chartTile col-md-2 flex-css">
           <div class="textDiv">
-            <div>{{ translationData.lblCO2Emission }}</div>
-            <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif; line-height: 1.5;'>{{currentC02Value}} T <br>
-            out of {{cutOffC02Value}} T </div>
+            <div class='section-txt-font'>{{ translationData.lblCO2Emission }}</div>
+            <div class='font-helvetica-md'>{{currentC02Value}} {{translationData.lblton}} <br>
+            {{translationData.lblOutOf}} {{cutOffC02Value}} {{translationData.lblton}} </div>
             <!-- <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'></div>
             <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>out of {{cutOffC02Value}} T</div>
              -->
@@ -44,11 +45,12 @@
         </div>
 
         <!-- Idling Time -->
-        <div [hidden]="!checkForPreference('idlingtime')" class="chartTile col-md-2" [ngClass]="{'warningClass':(idlingThreshold==0)}">
+        <!-- <div [hidden]="!checkForPreference('idlingtime')" class="chartTile col-md-2" [ngClass]="{'warningClass':(idlingThreshold==0)}"> -->
+          <div [hidden]="!checkForPreference('idlingtime')" class="chartTile col-md-2 flex-css">
           <div class="textDiv">
-            <div>{{ translationData.lblIdlingTime }}</div>
-            <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;line-height: 1.5'>{{currentIdlingTime}} <br>
-            out of {{cutOffIdlingTime}}</div>
+            <div class='section-txt-font'>{{ translationData.lblIdlingTime }}</div>
+            <div  class='font-helvetica-md'>{{currentIdlingTime}} <br>
+              {{translationData.lblOutOf}} {{cutOffIdlingTime}}</div>
             
           </div>
           
@@ -68,11 +70,12 @@
         </div>
 
          <!-- Driving Time -->
-         <div [hidden]="!checkForPreference('drivingtime')" class="chartTile col-md-2"  [ngClass]="{'warningClass':(drivingThreshold==0)}">
+         <!-- <div [hidden]="!checkForPreference('drivingtime')" class="chartTile col-md-2"  [ngClass]="{'warningClass':(drivingThreshold==0)}"> -->
+          <div [hidden]="!checkForPreference('drivingtime')" class="chartTile col-md-2 flex-css">
           <div class="textDiv">
-            <div>{{ translationData.lblDrivingTime }}</div>
-            <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;line-height: 1.5'>{{currentDrivingTime}}<br>
-            out of {{cutOffDrivingTime}}</div>
+            <div class='section-txt-font'>{{ translationData.lblDrivingTime }}</div>
+            <div class='font-helvetica-md'>{{currentDrivingTime}}<br>
+              {{translationData.lblOutOf}} {{cutOffDrivingTime}}</div>
             
           </div>
           
@@ -92,96 +95,96 @@
             </div>
         </div>
 
-       
         </div>
-        <!-- row2 -->
         
-        <div fxLayout="row" class="full-width mb-10" fxLayoutGap="10px">
- <!-- Distance Chart -->
-
- <div  [hidden]="!checkForPreference('totaldistance')" class="chartTile col-md-2"  [ngClass]="{'warningClass':(distanceThreshold==0)}">
-  <div class="textDiv">
-    <div>{{ translationData.lblDistance || 'Distance' }}</div>
-    <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;line-height: 1.5;'>{{currentDistanceValue}} {{prefUnitFormat == 'dunit_Metric' ?  (this.translationData.lblkms || 'Km') : (this.translationData.lblmile || 'Miles')}} <br>
-      out of {{cutOffDistanceValue}}  {{prefUnitFormat == 'dunit_Metric' ?  (this.translationData.lblkms || 'Km') : (this.translationData.lblmile || 'Miles')}} </div>
-    
-  </div>
-  
-  <div class="col-md-8 chart-wrapper chartDimension" *ngIf='!(distanceThreshold==0)'>
-      <canvas #chart4 baseChart
-        [data]="doughnutChartDistanceData"
-        [labels]="distanceChartLabels"
-        [chartType]="doughnutChartType"
-        [options]="doughnutChartDistanceOptions"
-        [colors]="doughnutDistanceColors"
-        [plugins]="doughnutChartDistancePlugins">
-      </canvas>
-    </div>
-    <div class="col-md-8 chart-wrapper chartDimension warningTextDiv" *ngIf='(distanceThreshold==0)'>
-      <i class="fa fa-exclamation-circle mr-1 warningIcon"></i> {{translationData.lblThresholdError || 'Chart not applicable for zero threshold value'}}
-    </div>
-</div>
-
-<!-- Fuel Consumed -->
-<div  [hidden]="!checkForPreference('fuelconsumed')" class="chartTile col-md-2"  [ngClass]="{'warningClass':(fuelConsumedThreshold==0)}">
-  <div class="textDiv">
-    <div>{{ translationData.lblFuelConsumed || 'Fuel Consumed' }}</div>
-    <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;line-height: 1.5;'>{{currentFuelConsumed}} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgallons || 'g') : (translationData.lblLtrs || 'L') }}) <br>
-      out of {{cutOffFuelConsumed}} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgallons || 'g') : (translationData.lblLtrs || 'L') }})</div>
-    
-  </div>
-  
-  <div class="col-md-8 chart-wrapper chartDimension" *ngIf='!(fuelConsumedThreshold==0)'>
-      <canvas #chart5 baseChart
-        [data]="doughnutChartFuelConsumedData"
-        [labels]="doughnutChartLabels"
-        [chartType]="doughnutChartType"
-        [options]="doughnutChartFuelConsumedOptions"
-        [colors]="doughnutFuelConsumedColors"
-        [plugins]="doughnutChartFuelConsumedPlugins">
-      </canvas>
-    </div>
-    <div class="col-md-8 chart-wrapper chartDimension warningTextDiv" *ngIf='(fuelConsumedThreshold==0)'>
-      <i class="fa fa-exclamation-circle mr-1 warningIcon"></i> {{translationData.lblThresholdError || 'Chart not applicable for zero threshold value'}}
-    </div>
-</div>
-
-<!-- Fuel Used Idling-->
-<div  [hidden]="!checkForPreference('fuelusedidling')"  class="chartTile col-md-2"  [ngClass]="{'warningClass':(fuelUsedThreshold==0)}">
-  <div class="textDiv">
-    <div>{{ translationData.lblFuelUsedByIdling || 'Fuel Used By Idling' }}</div>
-    <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;line-height: 1.5;'>{{currentIdlingFuelConsumed}} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgallons || 'g') : (translationData.lblLtrs || 'L') }})<br>
-      out of {{cutOffIdlingFuelConsumed}} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblGallons || 'g') : (translationData.lblLtr || 'L') }})</div>
-    
-  </div>
-  
-  <div class="col-md-8 chart-wrapper chartDimension" *ngIf='!(fuelUsedThreshold==0)'>
-      <canvas #chart6 baseChart
-        [data]="doughnutChartFuelUsedData"
-        [labels]="doughnutChartFuelUsedLabels"
-        [chartType]="doughnutChartType"
-        [options]="doughnutChartFuelUsedOptions"
-        [colors]="doughnutFuelUsedColors"
-        [plugins]="doughnutChartFuelUsedPlugins">
-      </canvas>
-    </div>
-    <div class="col-md-8 chart-wrapper chartDimension warningTextDiv" *ngIf='(fuelUsedThreshold==0)'>
-      <i class="fa fa-exclamation-circle mr-1 warningIcon"></i> {{translationData.lblThresholdError || 'Chart not applicable for zero threshold value'}}
-    </div>
-</div>
-
-</div>
-<!-- row3 -->
-
-<div fxLayout="row" class="full-width" fxLayoutGap="10px">
-         
-           <!-- Fuel Consumption -->
-           <div [hidden]="!checkForPreference('fuelconsumption')"  class="chartTile col-md-2"  [ngClass]="{'warningClass':(fuelConsumptionThreshold==0)}">
+        <!-- row2 -->
+        <div fxLayout="row" class="full-width margin-bottom-20m" fxLayoutGap="10px">
+          <!-- Distance Chart -->
+          <!-- <div  [hidden]="!checkForPreference('totaldistance')" class="chartTile col-md-2"  [ngClass]="{'warningClass':(distanceThreshold==0)}"> -->
+            <div  [hidden]="!checkForPreference('totaldistance')" class="chartTile col-md-2 flex-css">
             <div class="textDiv">
-              <div>{{ translationData.lblFuelConsumption || 'Fuel Consumption' }}</div>
-              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;line-height: 1.5;'>{{currentFuelConsumption}} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmpg || 'mpg') : (translationData.lblLtr100Km || 'Ltr/100Km') }})<br>
-                out of {{cutOffFuelConsumption}} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmpg || 'mpg') : (translationData.lblLtr100Km || 'Ltr/100Km') }})</div>
+              <div class='section-txt-font'>{{ translationData.lblDistance || 'Distance' }}</div>
+              <div class='font-helvetica-md'>{{currentDistanceValue}} {{prefUnitFormat == 'dunit_Metric' ?  (this.translationData.lblkms || 'Km') : (this.translationData.lblmile || 'Miles')}} <br>
+                {{translationData.lblOutOf}} {{cutOffDistanceValue}}  {{prefUnitFormat == 'dunit_Metric' ?  (this.translationData.lblkms || 'Km') : (this.translationData.lblmile || 'Miles')}} </div>
               
+            </div>
+            
+            <div class="col-md-8 chart-wrapper chartDimension" *ngIf='!(distanceThreshold==0)'>
+                <canvas #chart4 baseChart
+                  [data]="doughnutChartDistanceData"
+                  [labels]="distanceChartLabels"
+                  [chartType]="doughnutChartType"
+                  [options]="doughnutChartDistanceOptions"
+                  [colors]="doughnutDistanceColors"
+                  [plugins]="doughnutChartDistancePlugins">
+                </canvas>
+              </div>
+              <div class="col-md-8 chart-wrapper chartDimension warningTextDiv" *ngIf='(distanceThreshold==0)'>
+                <i class="fa fa-exclamation-circle mr-1 warningIcon"></i> {{translationData.lblThresholdError || 'Chart not applicable for zero threshold value'}}
+              </div>
+          </div>
+
+          <!-- Fuel Consumed -->
+          <!-- <div  [hidden]="!checkForPreference('fuelconsumed')" class="chartTile col-md-2"  [ngClass]="{'warningClass':(fuelConsumedThreshold==0)}"> -->
+            <div  [hidden]="!checkForPreference('fuelconsumed')" class="chartTile col-md-2 flex-css">
+            <div class="textDiv">
+              <div class='section-txt-font'>{{ translationData.lblFuelConsumed || 'Fuel Consumed' }}</div>
+              <div class='font-helvetica-md'>{{currentFuelConsumed}} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgallons || 'g') : (translationData.lblLtrs || 'L') }}) <br>
+                {{translationData.lblOutOf}} {{cutOffFuelConsumed}} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgallons || 'g') : (translationData.lblLtrs || 'L') }})</div>
+              
+            </div>
+            
+            <div class="col-md-8 chart-wrapper chartDimension" *ngIf='!(fuelConsumedThreshold==0)'>
+                <canvas #chart5 baseChart
+                  [data]="doughnutChartFuelConsumedData"
+                  [labels]="doughnutChartLabels"
+                  [chartType]="doughnutChartType"
+                  [options]="doughnutChartFuelConsumedOptions"
+                  [colors]="doughnutFuelConsumedColors"
+                  [plugins]="doughnutChartFuelConsumedPlugins">
+                </canvas>
+              </div>
+              <div class="col-md-8 chart-wrapper chartDimension warningTextDiv" *ngIf='(fuelConsumedThreshold==0)'>
+                <i class="fa fa-exclamation-circle mr-1 warningIcon"></i> {{translationData.lblThresholdError || 'Chart not applicable for zero threshold value'}}
+              </div>
+          </div>
+
+          <!-- Fuel Used Idling-->
+          <!-- <div  [hidden]="!checkForPreference('fuelusedidling')"  class="chartTile col-md-2"  [ngClass]="{'warningClass':(fuelUsedThreshold==0)}"> -->
+            <div  [hidden]="!checkForPreference('fuelusedidling')"  class="chartTile col-md-2 flex-css">
+            <div class="textDiv">
+              <div class='section-txt-font'>{{ translationData.lblFuelUsedByIdling || 'Fuel Used By Idling' }}</div>
+              <div class='font-helvetica-md'>{{currentIdlingFuelConsumed}} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgallons || 'g') : (translationData.lblLtrs || 'L') }})<br>
+                {{translationData.lblOutOf}} {{cutOffIdlingFuelConsumed}} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgallons || 'g') : (translationData.lblLtrs || 'L') }})</div>
+              
+            </div>
+            
+            <div class="col-md-8 chart-wrapper chartDimension" *ngIf='!(fuelUsedThreshold==0)'>
+                <canvas #chart6 baseChart
+                  [data]="doughnutChartFuelUsedData"
+                  [labels]="doughnutChartFuelUsedLabels"
+                  [chartType]="doughnutChartType"
+                  [options]="doughnutChartFuelUsedOptions"
+                  [colors]="doughnutFuelUsedColors"
+                  [plugins]="doughnutChartFuelUsedPlugins">
+                </canvas>
+              </div>
+              <div class="col-md-8 chart-wrapper chartDimension warningTextDiv" *ngIf='(fuelUsedThreshold==0)'>
+                <i class="fa fa-exclamation-circle mr-1 warningIcon"></i> {{translationData.lblThresholdError || 'Chart not applicable for zero threshold value'}}
+              </div>
+          </div>
+
+        </div>
+    <!-- row3 -->
+
+        <div fxLayout="row" class="full-width" fxLayoutGap="10px">
+           <!-- Fuel Consumption -->
+           <!-- <div [hidden]="!checkForPreference('fuelconsumption')"  class="chartTile col-md-2"  [ngClass]="{'warningClass':(fuelConsumptionThreshold==0)}"> -->
+            <div [hidden]="!checkForPreference('fuelconsumption')"  class="chartTile col-md-2 flex-css">
+            <div class="textDiv">
+              <div class='section-txt-font'>{{ translationData.lblFuelConsumption || 'Fuel Consumption' }}</div>
+              <div class='font-helvetica-md'>{{currentFuelConsumption}} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmpg || 'mpg') : (translationData.lblLtr100Km || 'Ltr/100Km') }})<br>
+                {{translationData.lblOutOf}} {{cutOffFuelConsumption}} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmpg || 'mpg') : (translationData.lblLtr100Km || 'Ltr/100Km') }})</div>  
             </div>
             
             <div class="col-md-8 chart-wrapper chartDimension" *ngIf='!(fuelConsumptionThreshold==0)'>
@@ -199,9 +202,8 @@
                 <i class="fa fa-exclamation-circle mr-1 warningIcon"></i> {{translationData.lblThresholdError || 'Chart not applicable for zero threshold value'}}
               </div>
             </div>
-          
-         
-          </div>
+           
+        </div>
     </div>
     <mat-error *ngIf="dataError">
       {{ translationData.lblNoDataFoundForFleetKPI }}

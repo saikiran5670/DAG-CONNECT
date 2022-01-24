@@ -95,7 +95,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  "Update  method in Vehicle controller", request.ID, request.ID, JsonConvert.SerializeObject(request),
                   _userDetails);
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Update)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(_fk_Constraint))
                 {
@@ -106,7 +106,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -148,8 +148,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(Get)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -210,8 +210,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
                       "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                       "CreateGroup  method in Vehicle controller", 0, 0, JsonConvert.SerializeObject(group), _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(CreateGroup)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -327,8 +327,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
                 "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                 "CanDelete method in Vehicle controller", Convert.ToInt32(groupId), Convert.ToInt32(groupId), JsonConvert.SerializeObject(request), _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, "Internal Server Error.");
+                _logger.Error($"{nameof(CanDelete)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -374,8 +374,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
                 "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                 "DeleteGroup method in Vehicle controller", Convert.ToInt32(groupId), Convert.ToInt32(groupId), JsonConvert.SerializeObject(request), _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, "Internal Server Error.");
+                _logger.Error($"{nameof(DeleteGroup)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -411,8 +411,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetGroupDetails)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -433,7 +433,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 VehicleBusinessService.VehicleGroupIdRequest vehicleGroupIdRequest = new VehicleBusinessService.VehicleGroupIdRequest();
                 vehicleGroupIdRequest.GroupId = groupId;
-
+                vehicleGroupIdRequest.OrganizationId = GetContextOrgId();
                 VehicleBusinessService.VehicleGroupRefResponce response = await _vehicleClient.GetVehiclesByVehicleGroupAsync(vehicleGroupIdRequest);
 
 
@@ -456,8 +456,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, "Internal Server Error.");
+                _logger.Error($"{nameof(GetVehiclesByGroup)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -501,8 +501,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetOrganizationVehicleGroupdetails)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -552,8 +552,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetVehicleGroup)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -583,7 +583,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     if (response.GroupRefDetails != null && response.GroupRefDetails.Count > 0)
                     {
-                        return Ok(response.GroupRefDetails);
+                        return Ok(response.GroupRefDetails.Distinct());
                     }
                     else
                     {
@@ -598,8 +598,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetVehiclesByAccountGroup)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -648,7 +648,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
               "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
               "SetOptInStatus  method in Vehicle controller", request.VehicleId, request.VehicleId, JsonConvert.SerializeObject(request), _userDetails);
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(SetOptInStatus)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(_fk_Constraint))
                 {
@@ -659,7 +659,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -707,7 +707,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
           "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
           "SetOTAStatus  method in Vehicle controller", request.VehicleId, request.VehicleId, JsonConvert.SerializeObject(request), _userDetails);
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(SetOTAStatus)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(_fk_Constraint))
                 {
@@ -718,7 +718,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -767,7 +767,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
    "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
    "Terminate  method in Vehicle controller", request.VehicleId, request.VehicleId, JsonConvert.SerializeObject(request), _userDetails);
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Terminate)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(_fk_Constraint))
                 {
@@ -778,7 +778,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -814,8 +814,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetVehicle)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -854,8 +854,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetGroupDetailsWithVehicleCount)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -885,6 +885,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                             VehicleBusinessService.VehicleGroupIdRequest vehicleGroupIdRequest = new VehicleBusinessService.VehicleGroupIdRequest();
                             vehicleGroupIdRequest.GroupId = dynamicVehicleGroupRequest.GroupId;
+                            vehicleGroupIdRequest.OrganizationId = dynamicVehicleGroupRequest.OrganizationId;
                             VehicleBusinessService.VehicleGroupRefResponce response = await _vehicleClient.GetVehiclesByVehicleGroupAsync(vehicleGroupIdRequest);
 
                             if (response != null && response.Code == VehicleBusinessService.Responcecode.Success)
@@ -983,8 +984,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetVehiclesByGroup)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -1033,8 +1034,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetRelationshipVehicles)}: With Error:-", ex);
+                return StatusCode(500, VehcileConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -1060,8 +1061,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetVehicleAssociatedGroups)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -1099,8 +1100,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetVehicleBySubscriptionId)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
         [HttpPut]
@@ -1150,7 +1151,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
               "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
               "Connect_All  method in Vehicle controller", 0, 0, JsonConvert.SerializeObject(request), _userDetails);
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(UpdateVehicleConnection)}: With Error:-", ex);
                 // check for fk violation
                 if (ex.Message.Contains(_fk_Constraint))
                 {
@@ -1161,7 +1162,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
     }

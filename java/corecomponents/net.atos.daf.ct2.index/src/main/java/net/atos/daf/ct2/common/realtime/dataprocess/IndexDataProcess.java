@@ -56,7 +56,7 @@ public class IndexDataProcess {
 
 			final StreamExecutionEnvironment env = envParams.get("flink.streaming.evn").equalsIgnoreCase("default") ?
 					StreamExecutionEnvironment.getExecutionEnvironment() :
-					FlinkUtil.createStreamExecutionEnvironment(envParams,envParams.get(DafConstants.INDEX_TRIPJOB));
+					FlinkUtil.createStreamExecutionEnvironment(envParams,envParams.get(DafConstants.INDEX_JOB));
 
 			log.debug("env :: " + env);
 
@@ -94,12 +94,15 @@ public class IndexDataProcess {
 
 			log.debug("after addsink");
 
-			try {auditing = new AuditETLJobClient(envParams.get(DafConstants.GRPC_SERVER),
+			try {
+				
+				  auditing = new AuditETLJobClient(envParams.get(DafConstants.GRPC_SERVER),
 				  Integer.valueOf(envParams.get(DafConstants.GRPC_PORT))); auditMap =
 				  createAuditMap(DafConstants.AUDIT_EVENT_STATUS_START,
 				  "Realtime Data Monitoring processing Job Started"); //
-
+				  
 				  auditing.auditTrialGrpcCall(auditMap); auditing.closeChannel();
+				 
 				 
 			} catch (Exception e) {
 
@@ -113,11 +116,12 @@ public class IndexDataProcess {
 			log.error("Error in Index Data Process {} {}" , e.getMessage(),e);
 
 			try {
+				
 				  auditMap = createAuditMap(DafConstants.AUDIT_EVENT_STATUS_FAIL,
 				  "Realtime index data processing Job Failed, reason :: " + e.getMessage());
 				  auditing = new AuditETLJobClient(envParams.get(DafConstants.GRPC_SERVER),
 				  Integer.valueOf(envParams.get(DafConstants.GRPC_PORT)));
-				  auditing.auditTrialGrpcCall(auditMap); auditing.closeChannel(); 
+				  auditing.auditTrialGrpcCall(auditMap); auditing.closeChannel();
 				 
 			} catch (Exception ex) {
 				log.error("Issue while auditing :: " + ex.getMessage());

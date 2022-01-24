@@ -1,4 +1,13 @@
-<div *ngIf="actionType == 'view' || actionType == 'edit'" fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+<app-common-breadcrumbs [breadcrumb]="breadcumMsg" [topRightElements]="topRightElements">
+  <ng-template #topRightElements>
+    <div *ngIf="actionType == 'view'" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+      <span class='custom-font' (click)="onCancel()">
+        <span><&nbsp;</span>
+        <span class='backBtnCss'>{{ translationData.lblBack }}</span></span>
+    </div>
+</ng-template>
+</app-common-breadcrumbs>
+<!-- <div  fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
       <span>{{ breadcumMsg }}</span>
     </div>
@@ -7,18 +16,18 @@
         <span><&nbsp;</span>
         <span class='backBtnCss'>{{ translationData.lblBack }}</span></span>
     </div>
-</div>
+</div> -->
 <form [formGroup]="accessRelationshipFormGroup">
     <mat-card class='mat-elevation-z'>
         <mat-card-content>
             <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
               <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ actionType == 'create' ? (translationData.lblAddNewAssociation  ) : actionType == 'edit' ? (translationData.lblEditAssociation ) : (translationData.lblViewAssociation) }}</span>
+                <span class='font-18-px line-height-27px font-helvetica-md'>{{ actionType == 'create' ? (translationData.lblAddNewAssociation  ) : actionType == 'edit' ? (translationData.lblEditAssociation ) : (translationData.lblViewAssociation) }}</span>
               </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
               <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                <mat-label>{{ (actionType == 'view') ? (translationData.lblAssociationBy ) : (translationData.lblCreateAssociationBy ) }}<span class='mandatoryColor'>*</span></mat-label>
+                <mat-label class='font-16-px line-height-24px'>{{ (actionType == 'view') ? (translationData.lblAssociationBy ) : (translationData.lblCreateAssociationBy ) }}<span class='mandatoryColor'>*</span></mat-label>
                 <div *ngIf="actionType != 'view'">
                   <mat-form-field appearance="outline" class="full-width">
                     <mat-select [disabled]="actionType != 'create'" (selectionChange)="onAssociationChange($event)" placeholder="{{ translationData.lblSelectAssociationType }}" formControlName="associationType" required>
@@ -32,11 +41,11 @@
                   </mat-error>
                 </div>
                 <div *ngIf="actionType == 'view'">
-                  <span style='font-weight: 500!important;'>{{ associationTypeLocal == 1 ? (translationData.lblVehicle ) : (translationData.lblAccount ) }}</span>
+                  <span class='font-helvetica-md'>{{ associationTypeLocal == 1 ? (translationData.lblVehicle ) : (translationData.lblAccount ) }}</span>
                 </div>
               </div>
               <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                  <mat-label>{{ (associationTypeLocal == 1) ? (translationData.lblVehicleGroupVehicle) : (translationData.lblAccountGroupAccount ) }}<span class='mandatoryColor'>*</span></mat-label>
+                  <mat-label class='font-16-px line-height-24px'>{{ (associationTypeLocal == 1) ? (translationData.lblVehicleGroupVehicle) : (translationData.lblAccountGroupAccount ) }}<span class='mandatoryColor'>*</span></mat-label>
                   <div *ngIf="actionType != 'view'">
                     <mat-form-field appearance="outline" class="full-width">
                       <mat-select [disabled]="actionType != 'create'" placeholder="{{ (associationTypeLocal == 1) ? (translationData.lblSelectVehicleGroupVehicle ) : (translationData.lblSelectAccountGroupAccount ) }}" formControlName="vehAccountType" required>
@@ -55,11 +64,11 @@
                     </mat-error>
                   </div>
                   <div *ngIf="actionType == 'view'">
-                    <span style='font-weight: 500!important;'>{{ selectedElementData.name }}</span>
+                    <span class='font-helvetica-md'>{{ selectedElementData.name }}</span>
                   </div>
               </div>
               <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                <mat-label>{{ translationData.lblAccessType }}<span class='mandatoryColor'>*</span></mat-label>
+                <mat-label class='font-16-px line-height-24px'>{{ translationData.lblAccessType }}<span class='mandatoryColor'>*</span></mat-label>
                 <div *ngIf="actionType != 'view'">
                   <mat-form-field appearance="outline" class="full-width">
                     <mat-select placeholder="{{ translationData.lblSelectAccessType }}" formControlName="accessType" required>
@@ -73,7 +82,7 @@
                   </mat-error>
                 </div>
                 <div *ngIf="actionType == 'view'">
-                  <span style='font-weight: 500!important;'>{{ selectedElementData.accessType == 'F' ? (translationData.lblFullAccess) : (translationData.lblViewOnly ) }}</span>
+                  <span class='font-helvetica-md'>{{ selectedElementData.accessType == 'F' ? (translationData.lblFullAccess) : (translationData.lblViewOnly ) }}</span>
                 </div>
               </div>
             </div>
@@ -100,7 +109,7 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
               <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-                  <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (actionType == 'view') ? (associationTypeLocal == 1 ? (translationData.lblSelectedAccountGroupAccount ) : (translationData.lblSelectedVehicleGroupVehicle)) : (associationTypeLocal == 1 ? (translationData.lblSelectAccountGroupAccount ) : (translationData.lblSelectVehicleGroupVehicle )) }}</span>
+                  <span class='font-18-px line-height-27px font-helvetica-md'>{{ (actionType == 'view') ? (associationTypeLocal == 1 ? (translationData.lblSelectedAccountGroupAccount ) : (translationData.lblSelectedVehicleGroupVehicle)) : (associationTypeLocal == 1 ? (translationData.lblSelectAccountGroupAccount ) : (translationData.lblSelectVehicleGroupVehicle )) }}</span>
               </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>
@@ -111,7 +120,7 @@
                 </mat-form-field>
               </div>
               <div class='areaWidth margin-right-10' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center">
-                <span>{{ translationData.lblViewlistby }}:</span>
+                <span class='font-16-px line-height-24px'>{{ translationData.lblViewlistby }}:</span>
               </div>
               <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center">
                 <mat-radio-group (change)='onListChange($event)'>

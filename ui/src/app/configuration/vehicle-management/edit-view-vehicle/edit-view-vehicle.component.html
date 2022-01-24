@@ -28,9 +28,14 @@
               <!-- <input maxlength="50" placeholder="{{ translationData.lblEnterVehicleName || 'Enter Vehicle Name' }}" matInput
                 formControlName="vehicleName"> -->
             </mat-form-field>
+
             <mat-error *ngIf="vehicleForm.get('vehicleName').hasError('required')">
               {{ translationData.lblPleaseEnterVehicleName }}
             </mat-error>
+            <mat-error *ngIf="vehicleForm.get('vehicleName').hasError('specialCharsNotAllowed')">
+              {{ translationData.lblSpecialcharactersnotallowed || 'Special Characters Not Allowed' }}
+            </mat-error>
+            
             <mat-error *ngIf="vehicleForm.get('vehicleName').hasError('whitespace')">
               {{ translationData.lblVehicleNamecannotcontainonlywhitespace  }}
             </mat-error>
@@ -53,7 +58,7 @@
             <mat-form-field appearance="outline" class="full-width">
               <!-- <input maxlength="50" placeholder="{{ translationData.lblEnterRegistrationNumber || 'Enter Registration Number' }}" matInput
                 formControlName="registrationNumber"> -->
-                <input maxlength="60" placeholder="{{ translationData.lblEnterRegistrationNumber }}" matInput
+                <input maxlength="50" placeholder="{{ translationData.lblEnterRegistrationNumber }}" matInput
                 formControlName="registrationNumber" required>
             </mat-form-field>
             <mat-error *ngIf="vehicleForm.get('registrationNumber').hasError('required')">

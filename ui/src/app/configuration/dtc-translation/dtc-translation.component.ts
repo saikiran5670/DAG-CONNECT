@@ -47,16 +47,7 @@ export class DtcTranslationComponent implements OnInit {
   requiredIcon: any = false;
   requiredFile: any = false;
 
-  constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private translationService: TranslationService) { 
-      this.defaultTranslation();    
-  }
-
-  defaultTranslation(){
-    this.translationData = {
-      lblImportDTCTranslation: "Import DTC Translation",
-      lblDownloadaTemplateMessage: 'You can enter multiple dtc translation records.'
-    } 
-  }
+  constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private translationService: TranslationService) { }
 
   ngOnInit() {
     this.loginAccountId = parseInt(localStorage.getItem("accountId"));
@@ -307,7 +298,7 @@ export class DtcTranslationComponent implements OnInit {
         }
       });
     }else{
-      alert("svg file not found...");
+      alert(`${this.translationData.lblsvgfilenotfound || 'svg file not found.'}`);
       console.log("svg file not found...");
       //this.svgEmptyMsg = true;
       clearInput.clear();

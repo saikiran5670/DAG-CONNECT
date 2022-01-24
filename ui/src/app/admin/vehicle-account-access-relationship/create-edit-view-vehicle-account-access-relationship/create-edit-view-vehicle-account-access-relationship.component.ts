@@ -72,9 +72,9 @@ export class CreateEditViewVehicleAccountAccessRelationshipComponent implements 
       }
     ];
     this.setAssociationType();
+    this.breadcumMsg = this.getBreadcum(this.actionType);
     if(this.actionType == 'view' || this.actionType == 'edit' ){
-      this.setDropdownValue();
-      this.breadcumMsg = this.getBreadcum(this.actionType);
+      this.setDropdownValue();   
     }
     this.loadGridData(this.associationTypeLocal == 1 ? this.accountGrpList : this.vehicleGrpList);
     this.selectedViewType = this.selectedViewType == '' ? 'both' : this.selectedViewType;
@@ -96,11 +96,16 @@ export class CreateEditViewVehicleAccountAccessRelationshipComponent implements 
   }
 
   getBreadcum(type: any){
+    console.log("getBreadcum is called");
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } /
     ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} /
     ${this.translationData.lblAccessRelationshipManagement ? this.translationData.lblAccessRelationshipManagement : 'Access Relationship Management'} /
-    ${(type == 'view') ? (this.translationData.lblViewAccountAssociationDetails ? this.translationData.lblViewAccountAssociationDetails : 'View Account Association Details') : (this.translationData.lblEditAccountAssociationDetails ? this.translationData.lblEditAccountAssociationDetails : 'Edit Account Association Details')}`;
+    ${(type == 'view') ? (this.translationData.lblViewAccountAssociationDetails ? this.translationData.lblViewAccountAssociationDetails : 'View Account Association Details') : 
+    (type == 'edit') ? (this.translationData.lblEditAccountAssociationDetails ? this.translationData.lblEditAccountAssociationDetails : 'Edit Account Association Details') :
+    (this.translationData.lblNewUserAssociationDetails ? this.translationData.lblNewUserAssociationDetails || 'New User Association Details': 'New User Association Details')}`;
   }
+
+  
 
   loadGridData(tableData: any){
     this.selectionForAssociation.clear();

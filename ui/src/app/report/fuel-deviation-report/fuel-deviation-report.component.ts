@@ -1,4 +1,4 @@
-import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, Inject, OnInit, ViewChild } from '@angular/core';
 import { MultiDataSet, Label, Color, SingleDataSet} from 'ng2-charts';
 import { ChartOptions, ChartType, ChartDataSets } from 'chart.js';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -26,6 +26,7 @@ import { Workbook } from 'exceljs';
 import * as fs from 'file-saver';
 import { DatePipe } from '@angular/common';
 import { ReplaySubject } from 'rxjs';
+import { DataInterchangeService } from '../../services/data-interchange.service';
 
 declare var H: any;
 
@@ -439,10 +440,19 @@ export class FuelDeviationReportComponent implements OnInit {
   public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   
-  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private organizationService: OrganizationService, private _formBuilder: FormBuilder, private translationService: TranslationService, private reportService: ReportService, private reportMapService: ReportMapService, private completerService: CompleterService, private configService: ConfigService, private hereService: HereService, private matIconRegistry: MatIconRegistry,private domSanitizer: DomSanitizer,private datePipe: DatePipe) { 
+  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private organizationService: OrganizationService, private _formBuilder: FormBuilder, private translationService: TranslationService, private reportService: ReportService, private reportMapService: ReportMapService, private completerService: CompleterService, private configService: ConfigService, private hereService: HereService, private matIconRegistry: MatIconRegistry,private domSanitizer: DomSanitizer,private datePipe: DatePipe, private dataInterchangeService: DataInterchangeService) { 
     this.map_key = this.configService.getSettings("hereMap").api_key;
     this.platform = new H.service.Platform({
       "apikey": this.map_key
+    });
+    this.dataInterchangeService.prefSource$.subscribe((prefResp: any) => {
+      if(prefResp && (prefResp.type == 'fuel deviation report') && prefResp.prefdata){
+        this.displayedColumns = ['All', 'fuelEventType', 'convertedDifference', 'vehicleName', 'vin', 'registrationNo', 'eventTime', 'odometer', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed', 'drivingTime', 'alerts'];
+        this.reportPrefData = prefResp.prefdata;
+        this.resetFuelDeviationPrefData();
+        this.getTranslatedColumnName(this.reportPrefData);
+        this.onSearch();
+      }
     });
     this.configureAutoSuggest();
     this.setIcons();
@@ -455,8 +465,16 @@ export class FuelDeviationReportComponent implements OnInit {
     this.matIconRegistry.addSvgIcon("fuel-incr-stop", this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/icons/fuelDeviationIcons/fuel-increase-stop.svg"));
   }
 
-  
   ngOnDestroy() {
+    this.setFilterValues();
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  reloadWindow($event: any) {
+    this.setFilterValues();
+  }
+  
+  setFilterValues(){
     this.globalSearchFilterData["vehicleGroupDropDownValue"] = this.fuelDeviationForm.controls.vehicleGroup.value;
     this.globalSearchFilterData["vehicleDropDownValue"] = this.fuelDeviationForm.controls.vehicle.value;
     this.globalSearchFilterData["timeRangeSelection"] = this.selectionTab;
@@ -475,7 +493,7 @@ export class FuelDeviationReportComponent implements OnInit {
     }
     this.setGlobalSearchData(this.globalSearchFilterData);
   }
-
+  
   setGlobalSearchData(globalSearchFilterData: any) {
     this.globalSearchFilterData["modifiedFrom"] = "TripReport";
     localStorage.setItem("globalSearchFilterData", JSON.stringify(globalSearchFilterData));
@@ -548,18 +566,18 @@ export class FuelDeviationReportComponent implements OnInit {
     // create custom one
     var ms = new H.ui.MapSettingsControl( {
         baseLayers : [ { 
-          label:"Normal", layer:this.defaultLayers.raster.normal.map
+          label:this.translationData.lblNormal, layer:this.defaultLayers.raster.normal.map
         },{
-          label:"Satellite", layer:this.defaultLayers.raster.satellite.map
+          label:this.translationData.lblSatellite, layer:this.defaultLayers.raster.satellite.map
         }, {
-          label:"Terrain", layer:this.defaultLayers.raster.terrain.map
+          label:this.translationData.lblTerrain, layer:this.defaultLayers.raster.terrain.map
         }
         ],
       layers : [{
-            label: "Layer.Traffic", layer: this.defaultLayers.vector.normal.traffic
+            label: this.translationData.lblLayerTraffic, layer: this.defaultLayers.vector.normal.traffic
         },
         {
-            label: "Layer.Incidents", layer: this.defaultLayers.vector.normal.trafficincidents
+            label: this.translationData.lblLayerIncidents, layer: this.defaultLayers.vector.normal.trafficincidents
         }
     ]
       });
@@ -678,6 +696,7 @@ export class FuelDeviationReportComponent implements OnInit {
           }
         }
       });
+         //TODO: plz verify fleet-utilisation for below logic
       this.singleVehicle = this.wholeFuelDeviationData.vehicleDetailsWithAccountVisibiltyList.filter(i=> i.groupType == 'S');
       if(vinArray.length > 0){
         distinctVIN = vinArray.filter((value, index, self) => self.indexOf(value) === index);
@@ -718,7 +737,7 @@ export class FuelDeviationReportComponent implements OnInit {
     }
     let vehicleData = this.vehicleListData.slice();
         this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
-        console.log("vehicleDD 1", this.vehicleDD);
+        //console.log("vehicleDD 1", this.vehicleDD);
         this.vehicleDD.sort(this.compareVin);
         this.resetVehicleFilter();
 
@@ -743,7 +762,7 @@ export class FuelDeviationReportComponent implements OnInit {
 
   setVehicleGroupAndVehiclePreSelection() {
     if(!this.internalSelection && this.globalSearchFilterData.modifiedFrom !== "") {
-      this.onVehicleGroupChange(this.globalSearchFilterData.vehicleGroupDropDownValue || { value : 0 });
+      this.onVehicleGroupChange(this.globalSearchFilterData.vehicleGroupDropDownValue, false);
     }
   }
 
@@ -866,6 +885,8 @@ export class FuelDeviationReportComponent implements OnInit {
       let endDateFromSearch = new Date(this.globalSearchFilterData.endDateStamp);
       this.startDateValue = this.setStartEndDateTime(startDateFromSearch, this.selectedStartTime, 'start');
       this.endDateValue = this.setStartEndDateTime(endDateFromSearch, this.selectedEndTime, 'end');
+      this.last3MonthDate = this.getLast3MonthDate();
+      this.todayDate = this.getTodayDate();
     }else {
     this.selectionTab = 'today';
     this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
@@ -878,11 +899,17 @@ export class FuelDeviationReportComponent implements OnInit {
 getLast3MonthDate(){
   var date = Util.getUTCDate(this.prefTimeZone);
   date.setMonth(date.getMonth()-3);
+  date.setHours(0);
+  date.setMinutes(0);
+  date.setSeconds(0);
   return date;
 }
 
 getTodayDate(){
   let _todayDate: any = Util.getUTCDate(this.prefTimeZone);
+  _todayDate.setHours(0);
+  _todayDate.setMinutes(0);
+  _todayDate.setSeconds(0);
   return _todayDate;
 }
 
@@ -892,7 +919,17 @@ setStartEndDateTime(date: any, timeObj: any, type: any){
 
 changeEndDateEvent(event: MatDatepickerInputEvent<any>){
   this.internalSelection = true;
-  this.endDateValue = this.setStartEndDateTime(event.value._d, this.selectedEndTime, 'end');
+  let dateTime: any = '';
+  if(event.value._d.getTime() <= this.todayDate.getTime()){ // EndTime > todayDate
+    if(event.value._d.getTime() >= this.startDateValue.getTime()){ // EndTime < startDateValue
+      dateTime = event.value._d;
+    }else{
+      dateTime = this.startDateValue; 
+    }
+  }else{ 
+    dateTime = this.todayDate;
+  }
+  this.endDateValue = this.setStartEndDateTime(dateTime, this.selectedEndTime, 'end');
   this.resetFuelDeviationFormControlValue();
   this.filterDateData();
 }
@@ -902,26 +939,31 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
       case 'ddateformat_dd/mm/yyyy': {
         this.dateFormats.display.dateInput = "DD/MM/YYYY";
         this.chartLabelDateFormat='DD/MM/YYYY';
+        this.dateFormats.parse.dateInput = "DD/MM/YYYY";
         break;
       }
       case 'ddateformat_mm/dd/yyyy': {
         this.dateFormats.display.dateInput = "MM/DD/YYYY";
         this.chartLabelDateFormat='MM/DD/YYYY';
+        this.dateFormats.parse.dateInput = "MM/DD/YYYY";
         break;
       }
       case 'ddateformat_dd-mm-yyyy': {
         this.dateFormats.display.dateInput = "DD-MM-YYYY";
         this.chartLabelDateFormat='DD-MM-YYYY';
+        this.dateFormats.parse.dateInput = "DD-MM-YYYY";
         break;
       }
       case 'ddateformat_mm-dd-yyyy': {
         this.dateFormats.display.dateInput = "MM-DD-YYYY";
         this.chartLabelDateFormat='MM-DD-YYYY';
+        this.dateFormats.parse.dateInput = "MM-DD-YYYY";
         break;
       }
       default:{
         this.dateFormats.display.dateInput = "MM/DD/YYYY";
         this.chartLabelDateFormat='MM/DD/YYYY';
+        this.dateFormats.parse.dateInput = "MM/DD/YYYY";
       }
     }
   }
@@ -1065,9 +1107,9 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     return date;
   }
 
-  onVehicleGroupChange(event: any){
+  onVehicleGroupChange(event: any, flag?: any){
     let _val: any;
-    if(event.value || event.value == 0){ // from internal veh-grp DD event
+    if(flag && (event.value || event.value == 0)){ // from internal veh-grp DD event
       this.internalSelection = true; 
       _val = parseInt(event.value); 
       this.fuelDeviationForm.get('vehicle').setValue(_val == 0 ? 0 : '');
@@ -1081,8 +1123,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
       this.vehicleDD = [];
       let vehicleData = this.vehicleListData.slice();
       this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
-      console.log("vehicleDD 2", this.vehicleDD);
-        
+      //console.log("vehicleDD 2", this.vehicleDD);
       this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll , registrationNo: this.translationData.lblAll , vin: this.translationData.lblAll  });
       this.resetVehicleFilter();
     }else{
@@ -1091,8 +1132,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
         this.vehicleDD = [];
         search.forEach(element => {
           this.vehicleDD.push(element); 
-          console.log("vehicleDD 3", this.vehicleDD);
-         
+          //console.log("vehicleDD 3", this.vehicleDD);
         });
       }
     }
@@ -1154,7 +1194,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
         }, (error) => {
           this.hideloader();
           this.resetChartData();
-          console.log("No charts data available...");
+          //console.log("No charts data available...");
         });
       }, (error)=>{
         //console.log(error);
@@ -1378,7 +1418,17 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
 
   changeStartDateEvent(event: MatDatepickerInputEvent<any>){
     this.internalSelection = true;
-    this.startDateValue = this.setStartEndDateTime(event.value._d, this.selectedStartTime, 'start');
+    let dateTime: any = '';
+    if(event.value._d.getTime() >= this.last3MonthDate.getTime()){ // CurTime > Last3MonthTime
+      if(event.value._d.getTime() <= this.endDateValue.getTime()){ // CurTime < endDateValue
+        dateTime = event.value._d;
+      }else{
+        dateTime = this.endDateValue; 
+      }
+    }else{ 
+      dateTime = this.last3MonthDate;
+    }
+    this.startDateValue = this.setStartEndDateTime(dateTime, this.selectedStartTime, 'start');
     this.resetFuelDeviationFormControlValue(); // extra addded as per discuss with Atul
     this.filterDateData(); // extra addded as per discuss with Atul
   }
@@ -1546,8 +1596,9 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
 
   exportAsPDFFile(){
   //var doc = new jsPDF('p', 'mm', 'a4');
-  var doc = new jsPDF('l', 'mm', 'a4');
+  var doc = new jsPDF('p', 'mm', 'a4');
   let pdfColumns = this.getPDFExcelHeader(); // this.getPDFHeaders()
+  let tranHeaderNamePdf = this.translationData.lblFuelDeviationDetails;
   let prepare = []
     this.initData.forEach(e=>{
       var tempObj = [];
@@ -1646,13 +1697,13 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
         didDrawPage: function(data) {     
             // Header
             doc.setFontSize(14);
-            var fileTitle = "Fuel Deviation Details";
+            var fileTitle = tranHeaderNamePdf;
             var img = "/assets/logo.png";
             doc.addImage(img, 'JPEG', 10, 10, 0, 0);
   
             var img = "/assets/logo_daf.png";
-            doc.text(fileTitle, 115, 35); // 14, 35
-            doc.addImage(img, 'JPEG', 250, 10, 0, 10); // 150, 10, 0, 10            
+            doc.text(fileTitle, 14, 35);
+            doc.addImage(img, 'JPEG',150, 10, 0, 10);   
         },
         margin: {
             bottom: 20, 
@@ -1664,9 +1715,9 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
         
         const FILEURI = canvas.toDataURL('image/png')
         // let PDF = new jsPDF('p', 'mm', 'a4');
-        let position = 0;
-        doc.addImage(FILEURI, 'PNG', 60, 40, fileWidth, fileHeight); // 10, 40,
-        doc.addPage();
+         let position = 0;
+        doc.addImage(FILEURI, 'PNG', 10, 40, fileWidth, fileHeight) ;
+        doc.addPage('a1','p');
 
       (doc as any).autoTable({
       head: [pdfColumns],
@@ -1695,21 +1746,21 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
       this.eventIconMarker.addEventListener('pointerenter', (evt)=> {
         iconInfoBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
           // read custom data
-          content:`<table style='width: 300px; font-size:12px;'>
+          content:`<table style='width: 300px;' class='font-14-px line-height-21px font-helvetica-lt'>
             <tr>
-              <td style='width: 100px;'>${this.translationData.lblDate}:</td> <td><b>${element.eventDate}</b></td>
+              <td style='width: 100px;'>${this.translationData.lblDate}:</td> <td class='font-helvetica-md'>${element.eventDate}</td>
             </tr>
             <tr>
-              <td style='width: 100px;'>${(this.vehVinRegChecker.length > 0 && this.vehVinRegChecker[0].attr == 'vin') ? (this.translationData.lblVIN ) : (this.vehVinRegChecker[0].attr == 'registrationNo') ? (this.translationData.lblRegPlateNumber ) : (this.translationData.lblVehicleName )}:</td> <td><b>${element[this.vehVinRegChecker[0].attr]}</b></td>
+              <td style='width: 100px;'>${(this.vehVinRegChecker.length > 0 && this.vehVinRegChecker[0].attr == 'vin') ? (this.translationData.lblVIN ) : (this.vehVinRegChecker[0].attr == 'registrationNo') ? (this.translationData.lblRegPlateNumber ) : (this.translationData.lblVehicleName )}:</td> <td class='font-helvetica-md'>${element[this.vehVinRegChecker[0].attr]}</td>
             </tr>
             <tr>
-              <td style='width: 100px;'>${this.translationData.lblPosition}:</td> <td><b>${element.geoLocationAddress}</b></td>
+              <td style='width: 100px;'>${this.translationData.lblPosition}:</td> <td class='font-helvetica-md'>${element.geoLocationAddress}</td>
             </tr>
             <tr>
-              <td style='width: 100px;'>${this.translationData.lblEventDescription}:</td> <td><b>${eventDescText.eventText}</b></td>
+              <td style='width: 100px;'>${this.translationData.lblEventDescription}:</td> <td class='font-helvetica-md'>${eventDescText.eventText}</td>
             </tr>
             <tr>
-              <td style='width: 100px;'>${this.translationData.lblDifference }:</td> <td><b>${element.convertedDifference}%</b></td>
+              <td style='width: 100px;'>${this.translationData.lblDifference }:</td> <td class='font-helvetica-md'>${element.convertedDifference}%</td>
             </tr>
           </table>`
         });
@@ -1844,7 +1895,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     this.filteredVehicleGroups.next(this.vehicleGrpDD.slice());
   }
   filterVehicleGroups(vehicleSearch){
-    console.log("filterVehicleGroups called");
+    //console.log("filterVehicleGroups called");
     if(!this.vehicleGrpDD){
       return;
     }
@@ -1857,12 +1908,12 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     this.filteredVehicleGroups.next(
       this.vehicleGrpDD.filter(item => item.vehicleGroupName.toLowerCase().indexOf(vehicleSearch) > -1)
     );
-    console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
+    //console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
 
   }
 
   filterVehicle(VehicleSearch){
-    console.log("vehicle dropdown called");
+    //console.log("vehicle dropdown called");
     if(!this.vehicleDD){
       return;
     }
@@ -1875,7 +1926,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     this.filteredVehicle.next(
       this.vehicleDD.filter(item => item.vin.toLowerCase().indexOf(VehicleSearch) > -1)
     );
-    console.log("filtered vehicles", this.filteredVehicle);
+    //console.log("filtered vehicles", this.filteredVehicle);
   }
   
   resetVehicleFilter(){

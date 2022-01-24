@@ -49,7 +49,7 @@ export class VehicleUpdatesComponent implements OnInit {
   actionType: any;
   accountPrefObj: any;
   selectedVehicleUpdateDetails: any = [];
-  selectedVehicleUpdateDetailsData: any;
+  selectedVehicleUpdateDetailsData: any = {};
   viewVehicleUpdateDetailsFlag: boolean = false;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;  
@@ -106,25 +106,42 @@ export class VehicleUpdatesComponent implements OnInit {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
   }
   getVehicleSoftStatus() {
-    this.showLoadingIndicator=true;
+ 
     this.vehicleSoftwareStatus = [];
     this.otaSoftwareUpdateService.getVehicleSoftwareStatus().subscribe((data) => {
-      this.showLoadingIndicator=false;
-      let vehicleSoftStatusArr = data['vehicleSoftwareStatus'];
+     let vehicleSoftStatusArr = data['vehicleSoftwareStatus'];
       if (this.translationData != undefined) {
         vehicleSoftStatusArr.forEach(element => {
-          if (element.enum == "U") {
-            element["value"] = 'Up-to-Date';
-          }
-          else {
-            element["value"] = this.translationData[element["key"]];
+          // if (element.enum == "U") {
+          //   element["value"] = this.translationData[element["key"]]; // 'Up-to-Date';
+          // }
+          // else {
+          //   element["value"] = this.translationData[element["key"]];
+          // }
+          switch(element.enum){
+            case 'F':{
+              element["value"] = 'Update Failed';
+              break;
+            }
+            case 'A':{
+              element["value"] = 'Update Available';
+              break;
+            }
+            case 'R':{
+              element["value"] = 'Update Running';
+              break;
+            }
+            case 'U':{
+              element["value"] = 'Up-to-Date';
+              break;
+            }
           }
           this.vehicleSoftwareStatus.push(element);
-        });
+        });    
       }     
     }, (error) => {
-      this.showLoadingIndicator=false;
-    })   
+      this.hideloader();
+    })  
   }
 
   searchAllDataFilter() {
@@ -167,9 +184,8 @@ export class VehicleUpdatesComponent implements OnInit {
     let vehicleStatusObj = {
       languageCode: 'en',
       retention: 'active'
-    }  
+    }       
       this.otaSoftwareUpdateService.getVehicleStatusList(vehicleStatusObj).subscribe((data) => {
-      this.showLoadingIndicator = false;
       this.vehicleStatusList = data["vehicleStatusList"];
       this.vehicleStatusList.filter((element) => {
       this.vehicleGroupArr.push(element.vehicleGroupNames);
@@ -191,10 +207,11 @@ export class VehicleUpdatesComponent implements OnInit {
       this.searchAllDataFilter();
       this.resetSoftStatusFilter();
       this.resetVehicleGroupFilter();
-      this.resetVehicleNameFilter();      
+      this.resetVehicleNameFilter(); 
+      this.hideloader();     
     }, (error) => {
       this.showLoadingIndicator = false; 
-    })
+    })   
   }
 
   removeDuplicates(originalArray, prop) {
@@ -239,22 +256,25 @@ export class VehicleUpdatesComponent implements OnInit {
 
 
   onViewVehicleList(rowData: any, type: any) {
-    this.actionType = type;
+    //this.actionType = type;
     this.selectedVehicleUpdateDetails = rowData;
-    this.getVehicleUpdateDetails(this.selectedVehicleUpdateDetails);
+    this.getVehicleUpdateDetails(this.selectedVehicleUpdateDetails, type);
   }
 
-  getVehicleUpdateDetails(selectedVehicleUpdateDetails: any) {
+  getVehicleUpdateDetails(selectedVehicleUpdateDetails: any, type?: any) {
     this.showLoadingIndicator = true;
     this.showVehicalDetails = true;   
        // Uncomment for Actual API
+    this.selectedVehicleUpdateDetailsData = {};
     this.otaSoftwareUpdateService.getvehicleupdatedetails(selectedVehicleUpdateDetails.vin).subscribe((data: any) => {
       // this.otaSoftwareUpdateService.getvehicleupdatedetails('XLR000000BE000080').subscribe((data: any) => {
-        if (data  && data.vehicleUpdateDetails && data.vehicleUpdateDetails !== null) {
+        if (data && data.vehicleUpdateDetails && data.vehicleUpdateDetails !== null) {
         this.selectedVehicleUpdateDetailsData = data.vehicleUpdateDetails;
       }
+      this.actionType = type;
       this.hideloader();
     }, (error) => {
+      this.actionType = type;
       this.hideloader();
       console.log("error:: ", error)
     });
@@ -412,6 +432,11 @@ export class VehicleUpdatesComponent implements OnInit {
     this.dataSource.filter = JSON.stringify(this.filterListValues);
 
   }
+  onReload(){
+    this.initData=[];
+    this.loadVehicleStatusData();
+  }
+
   createFilter() {
     let filterFunction = function (data: any, filter: string): boolean {
       let searchTerms = JSON.parse(filter);

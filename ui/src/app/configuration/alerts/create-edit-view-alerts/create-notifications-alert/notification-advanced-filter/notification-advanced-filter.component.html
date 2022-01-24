@@ -4,7 +4,7 @@
       <mat-expansion-panel class="full-width" fxLayoutGap="10px" [expanded]="true">
         <mat-expansion-panel-header class="full-width">
           <mat-panel-title>
-              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+              <span class='font-16-px line-height-24px font-helvetica-md'>{{
                 translationData.lblFrequency}}<span class='mandatoryColor'>*</span></span>
           </mat-panel-title>
         </mat-expansion-panel-header>
@@ -24,7 +24,7 @@
                     </mat-radio-group>
                 </div>
                 <div *ngIf="actionType == 'view'">
-                  Frequency : <span style='font-weight: 500!important;'>{{ this.selectedRowData.notifications[0].frequencyType == 'O' ? (translationData.lblOnce) : (this.selectedRowData.notifications[0].frequencyType == 'T' ? (translationData.lblEachTime) : (translationData.lblEachNumberOfOccurences)) }}</span>
+                  {{translationData.lblFrequency}} : <span style='font-weight: 500!important;'>{{ this.selectedRowData.notifications[0].frequencyType == 'O' ? (translationData.lblOnce) : (this.selectedRowData.notifications[0].frequencyType == 'T' ? (translationData.lblEachTime) : (translationData.lblEachNumberOfOccurences)) }}</span>
                 </div>
                 <!-- <p *ngIf="alert_category_selected != 'R' && actionType != 'view'" style="color: darkgray;">Choose appropriate frequency for this alert</p> -->
             </div>
@@ -37,7 +37,7 @@
         <mat-expansion-panel class="full-width" fxLayoutGap="10px" [expanded]="true">
           <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
-                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+                <span class='font-16-px line-height-24px font-helvetica-md'>{{
                   translationData.lblValidity}}<span class='mandatoryColor'>*</span></span>
             </mat-panel-title>
           </mat-expansion-panel-header>
@@ -54,9 +54,9 @@
                       </mat-radio-group>
                   </div>
                   <div *ngIf="actionType == 'view'">
-                    Validity Type : <span style='font-weight: 500!important;'>{{ this.selectedRowData.notifications[0].validityType == 'A' ? (translationData.lblAlways) :  (translationData.lblCustom) }}</span>
+                   {{translationData.lblValidity}} : <span style='font-weight: 500!important;'>{{ this.selectedRowData.notifications[0].validityType == 'A' ? (translationData.lblAlways) :  (translationData.lblCustom) }}</span>
                   </div>
-                  <p *ngIf="actionType != 'view'" style="color: darkgray;">Define a time range when the alert will be active. This can be 'Always' or a 'Custom' time range.</p>
+                  <p *ngIf="actionType != 'view'" style="color: darkgray;">{{translationData.lblDefineTimeRange}}</p>
               </div>
             </div>
 
@@ -151,10 +151,10 @@
                   
                     <div *ngFor="let days of timings">
                       <div fxLayout="row" class="areaWidth filter-direction margin-bottom-sm" fxLayoutGap="10px">
-                        <mat-label>Day:<span style='font-weight: 500!important;'>{{days.day}}</span></mat-label>
-                        <mat-label>Period Type:
-                          <span style='font-weight: 500!important;' *ngIf="days.Type == 'C'">Custom Period</span>
-                          <span style='font-weight: 500!important;' *ngIf="days.Type == 'A'">Full Day</span>
+                        <mat-label>{{translationData.lblDay}}:<span style='font-weight: 500!important;'>{{days.day}}</span></mat-label>
+                        <mat-label>{{translationData.lblPeriodType}}
+                          <span style='font-weight: 500!important;' *ngIf="days.Type == 'C'">{{translationData.lblCustomPeriod}}</span>
+                          <span style='font-weight: 500!important;' *ngIf="days.Type == 'A'">{{translationData.lblFullDay}}</span>
                         </mat-label>
                       </div>
                   

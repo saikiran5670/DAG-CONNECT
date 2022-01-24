@@ -21,4 +21,10 @@ public class DafConstants {
 		public static final String DRIVER_ACTIVITY_UPDATE = "UPDATE livefleet.livefleet_trip_driver_activity  SET end_time = ?, duration = ?, modified_at = extract(epoch from now()) * 1000 WHERE driver_id IN ( SELECT driver_id FROM livefleet.livefleet_trip_driver_activity WHERE driver_id = ? ORDER BY id DESC LIMIT 1 ) AND id IN ( SELECT id FROM livefleet.livefleet_trip_driver_activity WHERE driver_id = ? ORDER BY id DESC LIMIT 1 )";
 		public static final String TRIP_LEVEL_AGGREGATION = "T";
 		public static final Long ZERO =0L;
+		
+		public static final String JDBC_EXEC_OPTION_BATCH_SIZE = "jdbc.execution.options.batch.size";
+		public static final String JDBC_EXEC_OPTION_BATCH_INTERVAL_MILLISEC ="jdbc.execution.options.batch.interval.millisec";
+		public static final String JDBC_EXEC_OPTION_BATCH_MAX_RETRIES = "jdbc.execution.options.batch.max.retries";
+		public static final String CONNECTION_RETRY_TIME_MILLI = "connection.retry.time.milli";
+		public static final String JDBC_SINK_ENABLED = "jdbc.sink.enabled";
 }

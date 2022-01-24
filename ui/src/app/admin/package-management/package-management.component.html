@@ -11,7 +11,7 @@
 <mat-card class='mat-elevation-z' *ngIf='!createEditViewPackageFlag'>
   <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-      <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblPackageDetails  }}</span>
+      <span class='font-18-px line-height-27px font-helvetica-md'>{{ translationData.lblPackageDetails }}</span>
     </div>
   </div>
   
@@ -20,7 +20,7 @@
   
     <ng-template #topRightElements>
       <div *ngIf="adminAccessType.adminFullAccess">
-        <button mat-flat-button (click)="importPackageCSV()">
+        <button mat-button (click)="importPackageCSV()">
           <mat-icon>file_download</mat-icon>{{ translationData.lblImport }}
         </button>
       </div>

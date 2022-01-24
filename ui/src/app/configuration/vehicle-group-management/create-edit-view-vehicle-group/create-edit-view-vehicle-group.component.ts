@@ -160,8 +160,23 @@ export class CreateEditViewVehicleGroupComponent implements OnInit {
     setTimeout(()=>{
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+      this.dataSource.sortData = (data: String[], sort: MatSort) => {
+        const isAsc = sort.direction === 'asc';
+        return data.sort((a: any, b: any) => {
+            let columnName = sort.active;
+          return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
+        });
+       }
       Util.applySearchFilter(this.dataSource, this.displayedColumns ,this.filterValue );
     });
+  }
+
+  compare(a: any, b: any, isAsc: boolean, columnName: any) {
+    if(columnName =="name"){
+      if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toUpperCase();
+      if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toUpperCase();
+    }
+      return ( a < b ? -1 : 1) * (isAsc ? 1: -1);
   }
 
   onReset(){ //-- Reset

@@ -3,7 +3,7 @@
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title>
           <span>
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif; margin-right: 20px;'>{{ translationData.lblMapView }}</span>
+            <span style='margin-right: 20px;'>{{ translationData.lblMapView }}</span>
            </span>
         </mat-panel-title>
       </mat-expansion-panel-header>
@@ -18,9 +18,9 @@
           </span>
         </a>  
         <div [ngClass]="{'filterHide': !advanceFilterOpen}" class='advFilterBox'>
-          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-5" fxLayoutGap="10px">
             <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
-              <div fxLayout="row" fxLayoutAlign="space-between" class="full-width font-14" fxLayoutGap="10px">{{ 
+              <div fxLayout="row" fxLayoutAlign="space-between" class="full-width font-14 margin-bottom-5" fxLayoutGap="10px">{{ 
                 translationData.lblDisplayViews}}</div>
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
                 <mat-checkbox (change)='changeAlertSelection($event)'>{{  translationData.lblAlerts  }}</mat-checkbox>
@@ -37,7 +37,7 @@
               </div>
             </div>
             <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
-              <div fxLayout="row" fxLayoutAlign="start" class="full-width font-14" fxLayoutGap="10px">{{
+              <div fxLayout="row" fxLayoutAlign="start" class="full-width font-14 margin-bottom-5" fxLayoutGap="10px">{{
                 translationData.lblUserPois }}</div>
               <div class='scrollArea' *ngIf='userPOIList.length > 0'>
                 <div *ngFor="let userPOI of userPOIList; let i = index" class="full-width" fxLayoutGap="10px">
@@ -58,7 +58,7 @@
               <div *ngIf='userPOIList.length == 0'>{{  translationData.lblNoPOIFound }}</div>
             </div>
             <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
-              <div fxLayout="row" fxLayoutAlign="space-between" class="full-width font-14" fxLayoutGap="10px">{{
+              <div fxLayout="row" fxLayoutAlign="space-between" class="full-width font-14 margin-bottom-5" fxLayoutGap="10px">{{
                 translationData.lblHerePois }}</div>
                 <div *ngFor="let herePOI of herePOIList; let i = index" fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
                   <mat-checkbox (click)='$event.stopPropagation()'
@@ -66,7 +66,7 @@
                 </div>
             </div>
             <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
-              <div fxLayout="row" fxLayoutAlign="space-between" class="full-width font-14" fxLayoutGap="10px">{{
+              <div fxLayout="row" fxLayoutAlign="space-between" class="full-width font-14 margin-bottom-5" fxLayoutGap="10px">{{
                 translationData.lblTripRepresentation}}</div>
                 <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
                   <mat-radio-group (change)='onMapRepresentationChange($event)' class='radioAlign' formControlName='trackType'>
@@ -79,7 +79,7 @@
           <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
             <!-- global -->
             <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
-                <div fxLayout="row" fxLayoutAlign="start" class="full-width font-14" fxLayoutGap="10px">{{
+                <div fxLayout="row" fxLayoutAlign="start" class="full-width font-14 margin-bottom-5" fxLayoutGap="10px">{{
                   translationData.lblGlobalPois }}</div>
                 <div class='scrollArea' *ngIf='globalPOIList.length > 0'>
                   <div *ngFor="let globalPOI of globalPOIList; let i = index" class="full-width" fxLayoutGap="10px">

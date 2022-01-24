@@ -95,8 +95,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                          "AddCategory method in Landmark Category controller", 0, 0, JsonConvert.SerializeObject(request),
                                           _userDetails);
 
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(AddCategory)}: With Error:-", ex);
+                return StatusCode(500, LandmarkConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -152,8 +152,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                          "Category service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                          "EditCategory method in Landmark Category controller", 0, 0, JsonConvert.SerializeObject(request),
                                           _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(EditCategory)}: With Error:-", ex);
+                return StatusCode(500, LandmarkConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -197,8 +197,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                          "Category service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                          "DeleteCategory method in Landmark Category controller", 0, 0, JsonConvert.SerializeObject(request),
                                           _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(DeleteCategory)}: With Error:-", ex);
+                return StatusCode(500, LandmarkConstants.INTERNAL_SERVER_MSG);
             }
         }
         [HttpGet]
@@ -247,8 +247,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                          "Category service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                          "GetCategoryType method in Landmark Category controller", 0, 0, JsonConvert.SerializeObject(request),
                                           _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetCategoryType)}: With Error:-", ex);
+                return StatusCode(500, LandmarkConstants.INTERNAL_SERVER_MSG);
             }
         }
         [HttpGet]
@@ -291,8 +291,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                          "Category service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                          "GetCategoryDetails method in Landmark Category controller", 0, 0, JsonConvert.SerializeObject(request),
                                           _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(GetCategoryDetails)}: With Error:-", ex);
+                return StatusCode(500, LandmarkConstants.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -332,8 +332,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                          "Category service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                          "DeleteCategory method in Landmark Category controller", 0, 0, JsonConvert.SerializeObject(request),
                                           _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(BulkDeleteCategory)}: With Error:-", ex);
+                return StatusCode(500, LandmarkConstants.INTERNAL_SERVER_MSG);
             }
 
         }
@@ -377,8 +377,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, $"{ex.Message} {ex.StackTrace}");
+                _logger.Error($"{nameof(GetCategoryWisePOI)}: With Error:-", ex);
+                return StatusCode(500, LandmarkConstants.INTERNAL_SERVER_MSG);
             }
         }
     }

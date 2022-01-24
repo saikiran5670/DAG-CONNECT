@@ -13,7 +13,7 @@
         <form [formGroup]="uploadTermsConditionsFormGroup">
             <div class='margin-bottom-sm' fxLayout="row" fxLayoutAlign="start start">
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblUploadNewTermsAndConditions || 'Upload New Terms and Conditions' }}</span>
+                    <span class='font-18-px line-height-27px font-helvetica-md'>{{ translationData.lblUploadNewTermsAndConditions || 'Upload New Terms and Conditions' }}</span>
                 </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="15px">
@@ -26,7 +26,7 @@
                         <div class='full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                             <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start">
                                 <div class='areaWidth full-width myform-wrappe uploadArea' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                                    <mat-label>{{ translationData.lblUploadTermsCoditionsFile || 'Upload Terms and Conditions file(s)' }} <span class='mandatoryColor'>*</span></mat-label>
+                                    <mat-label class='font-16-px line-height-24px'>{{ translationData.lblUploadTermsCoditionsFile || 'Upload Terms and Conditions file(s)' }} <span class='mandatoryColor'>*</span></mat-label>
                                     <mat-form-field appearance="outline">
                                         <ngx-mat-file-input (change)="addfile($event)" [accept]="'.pdf'" formControlName="uploadFile" placeholder="{{ translationData.lblUploadYourUpdatedPDFFile || 'Upload your updated pdf File'}}" ></ngx-mat-file-input>
                                         <button mat-flat-button color="primary" matSuffix>{{ translationData.lblBrowse || 'Browse' }}</button>
@@ -68,7 +68,7 @@
     <mat-card class='mat-elevation-z'>
             <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-xlg'>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblLastAcceprteTnCVersions || 'Last accepted T&C versions' }}</span>
+                    <span class='font-18-px line-height-27px font-helvetica-md'>{{ translationData.lblLastAcceprteTnCVersions || 'Last accepted T&C versions' }}</span>
                 </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>

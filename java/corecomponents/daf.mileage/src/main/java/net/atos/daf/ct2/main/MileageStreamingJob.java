@@ -19,11 +19,13 @@ import net.atos.daf.ct2.exception.MileageAuditServiceException;
 import net.atos.daf.ct2.kafka.FlinkKafkaMileageMsgConsumer;
 import net.atos.daf.ct2.pojo.KafkaRecord;
 import net.atos.daf.ct2.pojo.standard.Status;
+import net.atos.daf.ct2.postgre.MileageJdbcSink;
 import net.atos.daf.ct2.postgre.MileageSink;
 import net.atos.daf.ct2.processing.MileageProcessing;
 import net.atos.daf.ct2.util.FlinkUtil;
 import net.atos.daf.ct2.util.MileageAuditService;
 import net.atos.daf.ct2.util.MileageConstants;
+import net.atos.daf.postgre.util.DafConstants;
 
 public class MileageStreamingJob {
 	private static final Logger logger = LoggerFactory.getLogger(MileageStreamingJob.class);
@@ -86,7 +88,14 @@ public class MileageStreamingJob {
 					statusDataStream,
 					Long.parseLong(envParams.get(MileageConstants.MILEAGE_TIME_WINDOW_SECONDS)));
 		
-			tripMileageData.addSink(new MileageSink());
+			
+			MileageJdbcSink mileageSinkObj = new MileageJdbcSink();
+			
+			if("true".equals(envParams.get(DafConstants.JDBC_SINK_ENABLED)))
+				mileageSinkObj.saveMileageData(tripMileageData, envParams);
+			else
+				tripMileageData.addSink(new MileageSink());
+			
 			env.execute(envParams.get(MileageConstants.MILEAGE_STREAMING_JOB_NAME));
 
 		} catch (Exception e) {

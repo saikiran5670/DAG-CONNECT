@@ -6,6 +6,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Translation
     public class FileUploadRequest
     {
         [Required(ErrorMessage = "File name is required.")]
+        [StringLength(50, MinimumLength = 1, ErrorMessage = "File name should be between 1 and 50 characters")]
         public string File_name { get; set; }
         public string Description { get; set; }
         [Required]

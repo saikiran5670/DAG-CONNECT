@@ -279,6 +279,9 @@ export class PackageManagementComponent implements OnInit {
 
   processTranslationForImport(){
     if(this.translationData){
+      this.importTranslationData.lblBack = this.translationData.lblBack;
+      this.importTranslationData.lblDuplicatePackage = this.translationData.lblDuplicatePackageCode || 'Duplicate Package Code';
+      this.importTranslationData.lblIncorrectFeatureIds = this.translationData.lblIncorrectFeatureIds || 'Incorrect Package Feature(s)';
       this.importTranslationData.importTitle = this.translationData.lblImportNewPackage;
       this.importTranslationData.downloadTemplate = this.translationData.lbldownloadTemplate;
       this.importTranslationData.downloadTemplateInstruction = this.translationData.lbldownloadTemplateInstruction;

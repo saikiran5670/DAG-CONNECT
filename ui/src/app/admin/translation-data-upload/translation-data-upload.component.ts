@@ -11,13 +11,15 @@ import * as FileSaver from 'file-saver';
 import { LanguageSelectionComponent } from './language-selection/language-selection.component';
 import { stringify } from '@angular/compiler/src/util';
 import { Util } from 'src/app/shared/util';
+import { DatePipe } from '@angular/common';
 
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
 
 @Component({
   selector: 'app-translation-data-upload',
   templateUrl: './translation-data-upload.component.html',
-  styleUrls: ['./translation-data-upload.component.less']
+  styleUrls: ['./translation-data-upload.component.less'],
+  providers: [DatePipe]
 })
 export class TranslationDataUploadComponent implements OnInit {
   grpTitleVisible : boolean = false;
@@ -45,11 +47,12 @@ export class TranslationDataUploadComponent implements OnInit {
   excelEmptyMsg: boolean = false;
   adminAccessType: any = {};
   userType: any = '';
-  addedCount: number= 0;
-  updatedCount: number= 0;
+  addedCount: number = 0;
+  updatedCount: number = 0;
   filterValue: string;
+  excelFileLengthFlag: boolean = false;
 
-  constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private translationService: TranslationService) {
+  constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private translationService: TranslationService, private datePipe: DatePipe) {
       this.defaultTranslation();
   }
 
@@ -82,7 +85,7 @@ export class TranslationDataUploadComponent implements OnInit {
       menuId: 31 //-- for Translation mgnt
     }
 
-    this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
+    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
       this.loadInitData();
     })
@@ -93,12 +96,14 @@ export class TranslationDataUploadComponent implements OnInit {
     this.translationService.getTranslationUploadDetails().subscribe((data: any) => {
       this.hideloader();
       if(data){
+        var dateFormat = ((localStorage.getItem("dateFormat")).toLowerCase()).replace(/mm/g, 'MM');
         data.forEach(element => {
-          var date = new Date(element.createdAt);
-          var year = date.getFullYear();
-          var month = ("0" + (date.getMonth() + 1)).slice(-2);
-          var day = ("0" + date.getDate()).slice(-2);
-          element.createdAt= `${day}/${month}/${year}`;
+          element.createdAt = this.datePipe.transform(element.createdAt, dateFormat); 
+          // var date = new Date(element.createdAt);
+          // var year = date.getFullYear();
+          // var month = ("0" + (date.getMonth() + 1)).slice(-2);
+          // var day = ("0" + date.getDate()).slice(-2);
+          // element.createdAt= `${day}/${month}/${year}`+result;
         });
         this.initData = data;
         this.updateGridData(this.initData);
@@ -130,11 +135,15 @@ export class TranslationDataUploadComponent implements OnInit {
     });
     Util.applySearchFilter(this.dataSource, this.displayedColumns ,this.filterValue );
   }
-  compare(a: Number| String, b:Number | String, isAsc: boolean, columnName: any){
+  compare(a: any, b:any, isAsc: boolean, columnName: any){
     if(columnName == "fileName" || columnName == "description"){
-      if(!(a instanceof Number)) a = a.toString().toUpperCase();
-      if(!(b instanceof Number)) b = b.toString().toUpperCase();
+      // if(!(a instanceof Number)) a = a.toString().toUpperCase();
+      // if(!(b instanceof Number)) b = b.toString().toUpperCase();
+      
+    if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toUpperCase();
+    if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toUpperCase();
     }
+
     return (a < b ? -1 : 1) * (isAsc ? 1: -1);
 
   }
@@ -193,10 +202,10 @@ export class TranslationDataUploadComponent implements OnInit {
     }, 5000);
   }
 
-  addfile(event)
-  {
+  addfile(event: any){
     if(event.target.files[0]){
       this.excelEmptyMsg = false;
+      this.excelFileLengthFlag = false;
       this.file = event.target.files[0];
       let fileReader = new FileReader();
       fileReader.readAsArrayBuffer(this.file);
@@ -214,6 +223,13 @@ export class TranslationDataUploadComponent implements OnInit {
         this.filelist = arraylist;
         if(this.filelist.length > 0){
           this.excelEmptyMsg = false;
+          let _fileName = this.uploadTranslationDataFormGroup.controls.uploadFile.value._fileNames;
+          if(_fileName && _fileName != '' && _fileName.includes('.xlsx')){
+            let charLength = _fileName.split('.xlsx')[0].length;
+            if(charLength > 45){ // file length error
+              this.excelFileLengthFlag = true;
+            }
+          }
         }
         else{
           this.excelEmptyMsg = true;

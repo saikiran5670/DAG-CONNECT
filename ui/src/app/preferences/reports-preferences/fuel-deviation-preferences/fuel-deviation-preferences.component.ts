@@ -3,6 +3,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ReportService } from '../../../services/report.service';
 import { Router } from '@angular/router';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
+import { DataInterchangeService } from '../../../services/data-interchange.service';
 
 @Component({
   selector: 'app-fuel-deviation-preferences',
@@ -26,30 +27,16 @@ export class FuelDeviationPreferencesComponent implements OnInit {
   selectionForCharts = new SelectionModel(true, []);
   selectionForDetails = new SelectionModel(true, []);
   chartIndex: any = {};
-  lineBarDD: any = [{
-    type: 'L',
-    name: 'Line Chart'
-  },
-  {
-    type: 'B',
-    name: 'Bar Chart'
-  }];
+  lineBarDD: any = [];
   
-  donutPieDD: any = [{
-    type: 'D',
-    name: 'Donut Chart'
-  },
-  {
-    type: 'P',
-    name: 'Pie Chart'
-  }];
+  donutPieDD: any = [];
 
   accountPreference: any;
   prefUnitFormat: any = 'dunit_Metric';
   requestSent:boolean = false;
   showLoadingIndicator: boolean = false;
 
-  constructor(private reportService: ReportService, private router: Router, private _formBuilder: FormBuilder) { }
+  constructor(private reportService: ReportService, private router: Router, private _formBuilder: FormBuilder, private dataInterchangeService: DataInterchangeService) { }
 
   ngOnInit() {
     this.accountPreference = JSON.parse(localStorage.getItem('accountInfo'));
@@ -68,6 +55,27 @@ export class FuelDeviationPreferencesComponent implements OnInit {
     }
     // this.translationUpdate();
     this.getUnitFormat(this.accountPreference);
+    this.getTransName();
+  }
+
+  getTransName() {
+    this.lineBarDD = [{
+      type: 'L',
+      name: this.translationData.lblLineChart
+    },
+    {
+      type: 'B',
+      name: this.translationData.lblBarChart
+    }];
+    
+    this.donutPieDD = [{
+      type: 'D',
+      name: this.translationData.lblDonutChart
+    },
+    {
+      type: 'P',
+      name: this.translationData.lblPieChart
+    }];
   }
 
   getUnitFormat(accPref: any){
@@ -110,15 +118,23 @@ export class FuelDeviationPreferencesComponent implements OnInit {
     }
   }
 
-  loadFuelDeviationReportPreferences(){
-    this.showLoadingIndicator=true;
+  loadFuelDeviationReportPreferences(reloadFlag?: any){
+    this.showLoadingIndicator = true;
     this.reportService.getReportUserPreference(this.reportId).subscribe((prefData : any) => {
       this.showLoadingIndicator=false;
       this.initData = prefData['userPreferences'];
+      if(reloadFlag){ // refresh pref setting & goto trip report
+        let _dataObj: any = {
+          prefdata: this.initData,
+          type: 'fuel deviation report' 
+        }
+        this.dataInterchangeService.getPrefData(_dataObj);
+        this.dataInterchangeService.closedPrefTab(false); // closed pref tab
+      }
       this.resetColumnData();
       this.preparePrefData(this.initData);
     }, (error)=>{
-      this.showLoadingIndicator=false;
+      this.showLoadingIndicator = false;
       this.resetColumnData();
       this.initData = [];
     });
@@ -324,13 +340,15 @@ export class FuelDeviationPreferencesComponent implements OnInit {
       }
       this.showLoadingIndicator=true;
       this.reportService.updateReportUserPreference(objData).subscribe((prefData: any) => {
-        this.showLoadingIndicator=false;
-        this.loadFuelDeviationReportPreferences();
+        this.showLoadingIndicator = false;
+        let _reloadFlag = false;
+        if ((this.router.url).includes("fueldeviationreport")) {
+          _reloadFlag = true
+          //this.reloadCurrentComponent();
+        }
+        this.loadFuelDeviationReportPreferences(_reloadFlag);
         this.requestSent = false;
         this.setFuelDeviationReportFlag.emit({ flag: false, msg: this.getSuccessMsg() });
-        if ((this.router.url).includes("fueldeviationreport")) {
-          this.reloadCurrentComponent();
-        }
       }, (error) => {
         this.showLoadingIndicator=false;
       });

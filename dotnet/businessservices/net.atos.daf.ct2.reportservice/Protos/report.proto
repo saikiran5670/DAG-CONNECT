@@ -16,6 +16,7 @@ rpc GetDriverActivity (SingleDriverActivityFilterRequest) returns (DriverActivit
 rpc GetDriverActivityChartDetails (DriverActivityChartFilterRequest) returns (DriverActivityChartResponse);
 rpc GetReportDetails (TempPara) returns (ReportDetailsResponse);
 rpc GetDriverActivityParameters (IdRequestForDriverActivity) returns (DriverListAndVehicleDetailsResponse);
+rpc GetDriverEcoScoreParameters (IdRequestForDriverActivity) returns (DriverListAndVehicleDetailsResponse);
 rpc CreateEcoScoreProfile (CreateEcoScoreProfileRequest) returns (CreateEcoScoreProfileResponse);
 rpc GetEcoScoreProfiles (GetEcoScoreProfileRequest) returns (GetEcoScoreProfileResponse);
 rpc GetEcoScoreProfileKPIDetails (GetEcoScoreProfileKPIRequest) returns (GetEcoScoreProfileKPIResponse);
@@ -851,7 +852,7 @@ message FleetFuelGraphsResponse {
 message FleetFuelGraphs {
         int64 VehicleID = 1;
         string VIN = 2;
-        int64 NumberofTrips = 3;
+        string NumberofTrips = 3;
         double FuelConsumed = 4;
         double Co2Emission = 5;
         double Distance = 6;

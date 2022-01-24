@@ -21,12 +21,12 @@
       <mat-card class='mat-elevation-z'>
         <div *ngIf='alertCategoryList.length > 0 && initData.length > 0'>
           <app-alerts-filter (filterValues)="getFilteredValues($event)" [initData]='initData' [translationData]='translationData'  [alertStatusList]='alertStatusList' [vehicleGroupList]='vehicleGroupList'
-          [associatedVehicleData] = "associatedVehicleData" [vehicleByVehGroupList] ="vehicleByVehGroupList" [filteredVehicles] = "filteredVehicles" [alertCategoryList]='alertCategoryList' [alertTypeList]='alertTypeList' [alertCriticalityList]='alertCriticalityList' [vehicleList]='vehicleList'>
+            [associatedVehicleData] = "associatedVehicleData" [vehicleByVehGroupList] ="vehicleByVehGroupList" [filteredVehicles] = "filteredVehicles" [alertCategoryList]='alertCategoryList' [alertTypeList]='alertTypeList' [alertCriticalityList]='alertCriticalityList' [vehicleList]='vehicleList'>
           </app-alerts-filter>        
         </div>  
         <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
           <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllAlertDetails }}
+              <span class='font-18-px line-height-27px font-helvetica-md'>{{ translationData.lblAllAlertDetails }}
                   <!-- ({{ dataSource.filteredData.length }}) -->
               </span>
           </div>

@@ -7,6 +7,7 @@ namespace net.atos.daf.ct2.dashboardservice.entity
 {
     public static class DashboardConstants
     {
+        public const string INTERNAL_SERVER_MSG = "Error occured, Please check with DAF IT team for more info.";
         public const string GET_FLEETKPI_DETAILS_SUCCESS_MSG = "Fleet KPI details fetched successfully.";
         public const string GET_FLEETKPI_DETAILS_FAILURE_MSG = "Fleet KPI details fetched failed. With Error : {0}";
 

@@ -1,12 +1,12 @@
 <form [formGroup]="corridorFormGroup">
-<mat-card  class='mat-elevation-z'>
-    <div style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="margin-bottom-xlg">
+<mat-card class='mat-elevation-z'>
+    <div class='font-18-px line-height-27px font-helvetica-md' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="margin-bottom-xlg">
         <span>{{ translationData.lblRouteCalculating}}</span>
     </div>
 <div #map class='mapDiv' style="width: 100%; height: 450px; margin-bottom: 25px"></div>
 <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm">
     <div class="col-sm-4 areaWidth" fxLayout="column" fxLayoutAlign="left">
-        <mat-label>
+        <mat-label class='font-16-px line-height-24px'>
             <span>{{ translationData.lblCorridorLabel}}</span>
             <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
         </mat-label>
@@ -32,14 +32,13 @@
             </mat-error>
         </div>
         <div *ngIf="actionType === 'view'">
-            <span style='font-weight: 500!important;'>{{corridorName}}</span>
+            <span class='font-helvetica-md'>{{corridorName}}</span>
         </div>
     </div>
     <div class="col-sm-4 areaWidth" fxLayout="column" fxLayoutAlign="left">
-        <mat-label>
+        <mat-label class='font-16-px line-height-24px'>
             <span>{{ translationData.lblStartAddress}}</span>
             <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
-
         </mat-label>
         <div  *ngIf="actionType != 'view'">
             <div class="searchBoxContainer">
@@ -64,14 +63,13 @@
             </mat-error>
         </div>
         <div *ngIf="actionType == 'view'">
-            <span style='font-weight: 500!important;'>{{searchStr}}</span>
+            <span class='font-helvetica-md'>{{searchStr}}</span>
         </div>
     </div>
     <div class="col-sm-4 areaWidth" fxLayout="column" fxLayoutAlign="left">
-        <mat-label>
+        <mat-label class='font-16-px line-height-24px'>
             <span>{{ translationData.lblEndAddress}}</span>
             <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
-
         </mat-label>
         <div  *ngIf="actionType != 'view'">
             <div class="searchBoxContainer">
@@ -96,14 +94,14 @@
             </mat-error>
         </div>
         <div *ngIf="actionType == 'view'">
-            <span style='font-weight: 500!important;'>{{searchEndStr}}</span>
+            <span class='font-helvetica-md'>{{searchEndStr}}</span>
         </div>
     </div>
 </div>
 <div fxLayout="row" class="margin-bottom-sm">
     <div class="col-sm-4 areaWidth">
-        <span>{{ translationData.lblWidth}}
-        ({{ translationData.lblKm|| 'km' }}):</span>
+        <span class='font-16-px line-height-24px'>{{ translationData.lblWidth}}
+        <span class='font-14-px'>({{ translationData.lblKm|| 'km' }}):</span></span>
         <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
         <span>
             <input type="number" min="0" max="10" *ngIf="actionType != 'view'" class="sliderInput" formControlName="widthInput"  (focusout)="changeSliderInput()">
@@ -112,7 +110,7 @@
         {{ translationData.lblMaxkm || 'Width cannot be greater than 10km' }}
         </mat-error>
         <div *ngIf="actionType == 'view'">
-            <span style='font-weight: 500!important;'>{{corridorWidthKm}}</span>
+            <span class='font-helvetica-md'>{{corridorWidthKm}}</span>
         </div>
         <div *ngIf="actionType != 'view'">
             <ngx-slider [(value)]="corridorWidth" [options]="options" (mouseup)="sliderChanged()" (mousemove)="sliderChanged()"></ngx-slider>
@@ -126,7 +124,7 @@
         
     </div>
     <div *ngIf="viaRouteCount" class="col-sm-4 areaWidth">
-        <mat-label>
+        <mat-label class='font-16-px line-height-24px'>
             <span>{{ translationData.lblViaRoute || 'Via Route'}}</span>
         </mat-label>
         <div  *ngIf="actionType != 'view'">
@@ -165,7 +163,7 @@
     </div>
     <div *ngIf="actionType !== 'view'" class="col-sm-4 areaWidth">
         <button mat-flat-button color="primary" class="viaRouteBtn" (click)="addViaRoute()" [disabled]='viaRouteCount'>
-            <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblViaRoute}}
+            <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblViaRoute }}
         </button>
     </div> 
     
@@ -174,10 +172,10 @@
 <div fxLayout="row" class="margin-bottom-sm">
 <div *ngIf="actionType !== 'view'" class="col-sm-4 areaWidth">
     <button mat-button color="primary" (click)="searchRoute()" [disabled]='searchDisable'>
-        {{ translationData.lblSearch}}
+        {{ translationData.lblSearch }}
     </button> &nbsp;&nbsp;&nbsp;&nbsp;
     <button mat-button color="primary" (click)="onReset()" [disabled]='searchDisable'>
-        {{translationData.lblReset}}
+        {{ translationData.lblReset }}
     </button>
 </div> 
 </div>
@@ -189,7 +187,7 @@
     <mat-expansion-panel>
         <mat-expansion-panel-header>
             <mat-panel-title>
-                {{ translationData.lblAdditionalData || 'Additional Data' }}
+                <span class='font-18-px line-height-27px font-helvetica-md'>{{ translationData.lblAdditionalData || 'Additional Data' }}</span>
             </mat-panel-title>
         </mat-expansion-panel-header>
 
@@ -202,22 +200,21 @@
                 <mat-expansion-panel>
                     <mat-expansion-panel-header>
                         <mat-panel-title>
-                            {{ translationData.lblAttributes || 'Attributes' }}
-                            
+                            <span class='font-16-px line-height-24px font-helvetica-md'>{{ translationData.lblAttributes || 'Attributes' }}</span>
                         </mat-panel-title>
                     </mat-expansion-panel-header>
-                    <div fxLayout="row" fxLayoutAlign="space-around center" class="container full-width margin-bottom-sm">
+                    <div fxLayout="row" fxLayoutAlign="space-around center" class="areaWidth container full-width margin-bottom-sm">
                         <span class="col-sm">
-                            <mat-label><span>{{ translationData.lblTrailer || 'Trailer' }}</span></mat-label>
+                            <mat-label><span class='font-16-px line-height-24px'>{{ translationData.lblTrailer || 'Trailer' }}</span></mat-label>
                             <mat-form-field *ngIf="actionType !== 'view'"appearance="outline" class="full-width">
                                 <mat-select formControlName="trailer"  [(value)]="selectedTrailerId" (selectionChange)="trailerSelected($event)" [disabled]="actionType==='view'">
                                     <mat-option *ngFor="let type of trailerList" [value]="type">
-                                        {{type}}
+                                        {{ type }}
                                     </mat-option>
                                 </mat-select>
                             </mat-form-field>
                             <div *ngIf="actionType === 'view'">
-                                <span style='font-weight: 500!important;'>{{trailerValue}}</span>
+                                <span class='font-helvetica-md'>{{ trailerValue }}</span>
                             </div>
                         </span>
                         <mat-checkbox class="example-margin col-sm" [checked]="explosiveChecked" (change)="attributeCheck($event.checked,'explosive')" [disabled]="actionType==='view'">{{ translationData.lblExplosive || 'Explosive' }}</mat-checkbox>
@@ -244,7 +241,7 @@
                 <mat-expansion-panel>
                     <mat-expansion-panel-header>
                         <mat-panel-title>
-                            {{ translationData.lblExclusions || 'Exclusions' }}
+                            <span class='font-16-px line-height-24px font-helvetica-md'>{{ translationData.lblExclusions || 'Exclusions' }}</span>
                         </mat-panel-title>
                     </mat-expansion-panel-header>
                         <div fxLayout="row"  fxLayoutAlign="space-around center" class="container full-width margin-bottom-sm">
@@ -265,13 +262,13 @@
                 <mat-expansion-panel>
                     <mat-expansion-panel-header>
                         <mat-panel-title>
-                            {{ translationData.lblVehicleSize || 'Vehicle Size' }}
+                            <span class='font-16-px line-height-24px font-helvetica-md'>{{ translationData.lblVehicleSize || 'Vehicle Size' }}</span>
                         </mat-panel-title>
                     </mat-expansion-panel-header>
                     <div fxLayout="row" fxLayoutGap="20px" class="full-width margin-bottom-xlg">
                         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                             <div>
-                                <mat-label><span>{{ translationData.lblHeight|| 'Height' }}:</span></mat-label>
+                                <mat-label class='font-16-px line-height-24px'><span>{{ translationData.lblHeight|| 'Height' }}:</span></mat-label>
                                 <mat-form-field  *ngIf="actionType !== 'view'" appearance="outline" class='full-width'>
                                     <input type="number" maxlength="50" (focusout)="vehicleSizeFocusOut()" 
                                         matInput formControlName="vehicleHeight">
@@ -284,12 +281,12 @@
                                 </mat-error>
                             </div>
                             <div *ngIf="actionType === 'view'">
-                                <span style='font-weight: 500!important;'>{{vehicleHeightValue}}</span>
+                                <span class='font-helvetica-md'>{{ vehicleHeightValue }}</span>
                             </div>
                         </div>
                         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                             <div>
-                                <mat-label><span>{{ translationData.lblWidth}}:</span></mat-label>
+                                <mat-label class='font-16-px line-height-24px'><span>{{ translationData.lblWidth}}:</span></mat-label>
                                 <mat-form-field  *ngIf="actionType !== 'view'" appearance="outline" class='full-width'>
                                     <input type="number" maxlength="50"  (focusout)="vehicleSizeFocusOut()"
                                         matInput formControlName="vehicleWidth">
@@ -302,12 +299,12 @@
                                 </mat-error>
                             </div>
                             <div *ngIf="actionType === 'view'">
-                                <span style='font-weight: 500!important;'>{{vehicleWidthValue}}</span>
+                                <span class='font-helvetica-md'>{{vehicleWidthValue}}</span>
                             </div>
                         </div>
                         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                             <div>
-                                <mat-label><span>{{ translationData.lblLength|| 'Length' }}:</span></mat-label>
+                                <mat-label class='font-16-px line-height-24px'><span>{{ translationData.lblLength|| 'Length' }}:</span></mat-label>
                                 <mat-form-field  *ngIf="actionType !== 'view'" appearance="outline" class='full-width'>
                                     <input type="number" maxlength="50"  (focusout)="vehicleSizeFocusOut()"
                                         matInput formControlName="vehicleLength">
@@ -320,14 +317,14 @@
                                 </mat-error>
                             </div>
                             <div *ngIf="actionType === 'view'">
-                                <span style='font-weight: 500!important;'>{{vehicleLengthValue}}</span>
+                                <span class='font-helvetica-md'>{{vehicleLengthValue}}</span>
                             </div>
                         </div>
                     </div>
                     <div fxLayout="row" fxLayoutGap="20px" class="full-width margin-bottom-xlg">
                         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                             <div>
-                                <mat-label><span>{{ translationData.lblLimitedWeight|| 'Limited Weight' }}:</span></mat-label>
+                                <mat-label class='font-16-px line-height-24px'><span>{{ translationData.lblLimitedWeight|| 'Limited Weight' }}:</span></mat-label>
                                 <mat-form-field *ngIf="actionType !== 'view'" appearance="outline" class='full-width'>
                                     <input type="number" maxlength="50"  (focusout)="vehicleSizeFocusOut()"
                                         matInput formControlName="limitedWeight">
@@ -340,12 +337,12 @@
                                 </mat-error>
                             </div>
                             <div *ngIf="actionType === 'view'">
-                                <span style='font-weight: 500!important;'>{{vehicleLimitedWtValue}}</span>
+                                <span class='font-helvetica-md'>{{vehicleLimitedWtValue}}</span>
                             </div>
                         </div>
                         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                             <div>
-                                <mat-label><span>{{ translationData.lblWeightPerAxle|| 'Weight Per Axle' }}:</span></mat-label>
+                                <mat-label class='font-16-px line-height-24px'><span>{{ translationData.lblWeightPerAxle|| 'Weight Per Axle' }}:</span></mat-label>
                                 <mat-form-field *ngIf="actionType !== 'view'" appearance="outline" class='full-width'>
                                     <input type="number" maxlength="50"  (focusout)="vehicleSizeFocusOut()"
                                         matInput formControlName="weightPerAxle">
@@ -358,7 +355,7 @@
                                 </mat-error>
                             </div>
                             <div *ngIf="actionType === 'view'">
-                                <span style='font-weight: 500!important;'>{{vehicleWtPerAxleValue}}</span>
+                                <span class='font-helvetica-md'>{{vehicleWtPerAxleValue}}</span>
                             </div>
                         </div>
                     </div>
@@ -376,13 +373,13 @@
 
 <div class="example-button-row pt-2" fxLayoutGap="20px" style="float:right;margin-top: 20px;">
     <span *ngIf="actionType !== 'view'">
-    <button mat-flat-button color="primary" (click)="backToCorridorList()">
+    <button class='resetCancelBtnColor' mat-flat-button color="primary" (click)="backToCorridorList()">
         <span>{{ translationData.lblCancel || 'Cancel' }}</span>
     </button>
     </span>
 
     <span *ngIf="actionType === 'edit'">
-   <button mat-button color="primary" (click)="resetToEditData()">  <!-- [disabled]="corridorFormGroup.pristine" -->
+   <button class='resetCancelBtnColor' mat-button color="primary" (click)="resetToEditData()">  <!-- [disabled]="corridorFormGroup.pristine" -->
         <span>{{ translationData.lblReset || 'Reset' }}</span>
     </button>
 </span>
@@ -392,7 +389,7 @@
     </button>
 </span>
 <span *ngIf="actionType === 'edit'">
-    <button mat-button  color="primary" (click)="createCorridorClicked()"><!--(!corridorFormGroup.valid || !strPresentStart || !strPresentEnd)-->
+    <button mat-button  color="primary" (click)="createCorridorClicked()" [disabled]="!onSearchClicked"><!--(!corridorFormGroup.valid || !strPresentStart || !strPresentEnd)-->
         <span>{{ translationData.lblSave || 'Save' }}</span>
     </button>
 </span>

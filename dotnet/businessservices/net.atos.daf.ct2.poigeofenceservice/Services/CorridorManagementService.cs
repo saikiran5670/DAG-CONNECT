@@ -10,6 +10,7 @@ using net.atos.daf.ct2.poigeofence;
 using net.atos.daf.ct2.poigeofenceservice.common;
 using net.atos.daf.ct2.poigeofenceservice.entity;
 using net.atos.daf.ct2.kafkacdc;
+using net.atos.daf.ct2.poigeofenceservice.Entity;
 
 namespace net.atos.daf.ct2.poigeofenceservice
 {
@@ -241,11 +242,11 @@ namespace net.atos.daf.ct2.poigeofenceservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetCorridorList)}: With Error:-", ex);
                 return await Task.FromResult(new CorridorResponseList
                 {
                     Code = Responsecode.Failed,
-                    Message = $"Exception while retrieving data from GetCorridorList : {ex.Message}"
+                    Message = POIGeofenceConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -307,7 +308,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 obj.ViaRoutDetails = new List<poigeofence.entity.ViaRoute>();
 
                 if (request != null && request.ViaAddressDetails != null)
-                { 
+                {
                     foreach (var item in request.ViaAddressDetails)
                     {
                         var trans = new poigeofence.entity.ViaRoute();
@@ -344,7 +345,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(AddRouteCorridor)}: With Error:-", ex);
                 //response.Message = "Not Deleted";
             }
             return await Task.FromResult(response);
@@ -381,7 +382,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(DeleteCorridor)}: With Error:-", ex);
             }
             return await Task.FromResult(response);
         }
@@ -429,7 +430,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(AddExistingTripCorridor)}: With Error:-", ex);
             }
             return await Task.FromResult(response);
         }
@@ -478,7 +479,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(UpdateExistingTripCorridor)}: With Error:-", ex);
             }
             return await Task.FromResult(response);
         }
@@ -582,11 +583,11 @@ namespace net.atos.daf.ct2.poigeofenceservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(UpdateRouteCorridor)}: With Error:-", ex);
                 UpdateRouteCorridorResponse objUpdateRouteCorridorResponse = new UpdateRouteCorridorResponse();
                 objUpdateRouteCorridorResponse.Response = new RouteCorridorAddResponse();
                 objUpdateRouteCorridorResponse.Response.Code = Responsecode.Failed;
-                objUpdateRouteCorridorResponse.Response.Message = $"Corridor Updation Failed due to - {ex.Message}";
+                objUpdateRouteCorridorResponse.Response.Message = POIGeofenceConstants.INTERNAL_SERVER_MSG;
                 return await Task.FromResult(objUpdateRouteCorridorResponse);
             }
         }

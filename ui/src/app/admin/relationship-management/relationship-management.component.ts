@@ -35,6 +35,7 @@ export class RelationshipManagementComponent implements OnInit {
   organizationId: number;
   localStLanguage: any;
   actionBtn:any;
+  actionType : any;
   showLoadingIndicator: any;
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   userType: any = localStorage.getItem("userType");
@@ -73,7 +74,7 @@ export class RelationshipManagementComponent implements OnInit {
     // if(this.organizationId == 1 || this.organizationId == 2)
     if(this.userType == 'Admin#Platform' || this.userType == 'Admin#Global')
     {
-      this.relationshipDisplayedColumns = ['name', 'features', 'level', 'code', 'description', 'action'];
+      this.relationshipDisplayedColumns = ['name', 'featureIds', 'level', 'code', 'description', 'action'];
     }
     let translationObj = {
       id: 0,
@@ -135,29 +136,41 @@ export class RelationshipManagementComponent implements OnInit {
 
       this.dataSource.filterPredicate = function(data, filter: any){
         return data.name.toLowerCase().includes(filter) ||
-               (data.featureIds.length).toString().includes(filter) ||
+                (data.featureIds.length).toString().includes(filter) ||
                data.levelVal.toLowerCase().includes(filter) ||
                data.code.toLowerCase().includes(filter) ||
                data.description.toLowerCase().includes(filter)
       };
       this.dataSource.sortData = (data : String[], sort: MatSort) => {
         const isAsc = sort.direction === 'asc';
-        let columnName = this.sort.active;
+          let columnName = this.sort.active;
         return data.sort((a: any, b: any) => {
           return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
         });
-      }
+    }
+
     });
 
   }
 
-  compare(a: Number | String, b: Number | String, isAsc: boolean, columnName: any) {
-    if(columnName == "name" || columnName =="description"){
-      if(!(a instanceof Number)) a = a.toString().toUpperCase();
-      if(!(b instanceof Number)) b = b.toString().toUpperCase();
+  compare(a: any, b: any, isAsc: boolean, columnName: any) {
+    if(columnName === 'name'|| columnName === 'code'|| columnName == 'description'){
+      if(a && !(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
+      if(a && !(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
+    // tslint:disable-next-line: align
+    }if(columnName === 'featureIds')
+    {
+        a = a.length;
+        b = b.length;
+    }
+    if(columnName === 'level')
+    {
+      if(a && !(a instanceof Number)) a = a.toString().toUpperCase();
+      if(a && !(b instanceof Number)) b = b.toString().toUpperCase();
     }
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
+
   getNewTagData(data: any){
     let currentDate = new Date().getTime();
     if(data.length > 0){
@@ -232,6 +245,7 @@ export class RelationshipManagementComponent implements OnInit {
     this.rowsData.push(row);
     this.editFlag = true;
     this.createStatus = false;
+    this.actionType = 'edit';
   }
 
   deleteRelationship(row: any){
@@ -266,8 +280,8 @@ export class RelationshipManagementComponent implements OnInit {
       else
         return ("Relationship '$' was successfully deleted").replace('$', relationshipName);
     } else {
-      if(this.translationData.lblAlertDeleteError)
-        return this.translationData.lblAlertDeleteError.replace('$', relationshipName);
+      if(this.translationData.lblRelationshipDeleteError)
+        return this.translationData.lblRelationshipDeleteError.replace('$', relationshipName);
       else
         return ("Relationship '$' cannot be deleted as it is mapped with organisation").replace('$', relationshipName);
     }

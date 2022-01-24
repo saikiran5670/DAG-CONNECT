@@ -2,6 +2,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ReportService } from '../../../services/report.service';
 import { Router } from '@angular/router';
+import { DataInterchangeService } from '../../../services/data-interchange.service';
 
 @Component({
   selector: 'app-driver-time-preferences',
@@ -28,7 +29,7 @@ export class DriverTimePreferencesComponent implements OnInit {
   selectionForChart = new SelectionModel(true, []);
   requestSent:boolean = false;
   showLoadingIndicator: boolean = false;
-  constructor(private reportService: ReportService, private router: Router) { }
+  constructor(private reportService: ReportService, private router: Router, private dataInterchangeService: DataInterchangeService) { }
 
   ngOnInit(){ 
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -70,11 +71,19 @@ export class DriverTimePreferencesComponent implements OnInit {
     }
   }
 
-  loadDriveTimePreferences(){
+  loadDriveTimePreferences(reloadFlag?: any){
     this.showLoadingIndicator=true;
     this.reportService.getReportUserPreference(this.reportId).subscribe((prefData : any) => {
       this.showLoadingIndicator=false;
       this.initData = prefData['userPreferences'];
+      if(reloadFlag){
+        let _dataObj: any = {
+          prefdata: this.initData,
+          type: 'drive time report' 
+        }
+        this.dataInterchangeService.getPrefData(_dataObj);
+        this.dataInterchangeService.closedPrefTab(false); // closed pref tab
+      }
       this.resetColumnData();
       this.preparePrefData(this.initData);
     }, (error)=>{
@@ -303,15 +312,17 @@ export class DriverTimePreferencesComponent implements OnInit {
       }
       this.showLoadingIndicator=true;
       this.reportService.updateReportUserPreference(objData).subscribe((_prefData: any) => {
-        this.showLoadingIndicator=false;
-        this.loadDriveTimePreferences();
-        this.setDriverTimeFlag.emit({ flag: false, msg: this.getSuccessMsg() });
+        this.showLoadingIndicator = false;
+        let _reloadFlag = false;
         if ((this.router.url).includes("drivetimemanagement")) {
-          this.reloadCurrentComponent();
+          _reloadFlag = true
+          //this.reloadCurrentComponent();
         }
+        this.loadDriveTimePreferences(_reloadFlag);
+        this.setDriverTimeFlag.emit({ flag: false, msg: this.getSuccessMsg() });
         this.requestSent = false;
       }, (error) => {
-        this.showLoadingIndicator=false;
+        this.showLoadingIndicator = false;
       });
     }
   }

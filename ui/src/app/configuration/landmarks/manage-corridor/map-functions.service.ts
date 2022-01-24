@@ -2,6 +2,7 @@ import { Injectable, Component, ElementRef, EventEmitter, Input, OnInit, Output,
 import { HereService } from 'src/app/services/here.service';
 import { CorridorService } from 'src/app/services/corridor.service';
 import { ConfigService } from '@ngx-config/core';
+import { decode, encode } from '../../../services/flexible-polyline';
 
 declare var H: any;
 
@@ -76,26 +77,38 @@ export class MapFunctionsService {
   //   this.initMap();
   // }
 
-  initMap(mapElement) {
-    //Step 2: initialize a map - this map is centered over Europe
-    this.defaultLayers  = this.platform.createDefaultLayers();
+  initMap(mapElement: any, translationData?: any) {
+    this.defaultLayers = this.platform.createDefaultLayers();
     this.hereMap = new H.Map(mapElement.nativeElement,
-      this.defaultLayers.vector.normal.map, {
+      this.defaultLayers.raster.normal.map, {
       center: { lat: 51.43175839453286, lng: 5.519981221425336 },
-      //center:{lat:41.881944, lng:-87.627778},
       zoom: 4,
       pixelRatio: window.devicePixelRatio || 1
     });
-
-    // add a resize listener to make sure that the map occupies the whole container
     window.addEventListener('resize', () => this.hereMap.getViewPort().resize());
-
-    // Behavior implements default interactions for pan/zoom (also on mobile touch environments)
     var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.hereMap));
-
-
-    // Create the default UI components
     this.ui = H.ui.UI.createDefault(this.hereMap, this.defaultLayers);
+    this.ui.removeControl("mapsettings");
+    // create custom one
+    var ms = new H.ui.MapSettingsControl({
+        baseLayers : [ { 
+          label: translationData ? translationData.lblNormal || "Normal" : "Normal", layer: this.defaultLayers.raster.normal.map
+        },{
+          label: translationData ? translationData.lblSatellite || "Satellite" : "Satellite", layer: this.defaultLayers.raster.satellite.map
+        }, {
+          label: translationData ? translationData.lblTerrain || "Terrain" : "Terrain", layer: this.defaultLayers.raster.terrain.map
+        }
+        ],
+      layers : [{
+            label: translationData ? translationData.lblLayerTraffic || "Layer.Traffic" : "Layer.Traffic", layer: this.defaultLayers.vector.normal.traffic
+        },
+        {
+            label: translationData ? translationData.lblLayerIncidents || "Layer.Incidents" : "Layer.Incidents", layer: this.defaultLayers.vector.normal.trafficincidents
+        }
+      ]
+    });
+    this.ui.addControl("customized", ms);
+
     var group = new H.map.Group();
     this.mapGroup = group;
   }
@@ -131,18 +144,22 @@ export class MapFunctionsService {
   // }
 
   group = new H.map.Group();
-
   viaRoutePlottedPoints = [];
 
-  viewSelectedRoutes(_selectedRoutes, accountOrganizationId?) {
+  viewSelectedRoutes(_selectedRoutes, accountOrganizationId?, isRCorridor?, translationData?: any) {
     let corridorName = '';
     let startAddress = '';
     let endAddress = '';
+    let transcorridorname = translationData?.lblCorridorName;
+    let transstartpoint = translationData?.lblStartPoint;
+    let transendpoint = translationData?.lblEndPoint;
+    let transwidth = translationData?.lblWidth;
     this.organizationId = accountOrganizationId;
     this.hereMap.removeLayer(this.defaultLayers.vector.normal.traffic);
     this.hereMap.removeLayer(this.defaultLayers.vector.normal.truck);
     this.transportOnceChecked = false;
     this.trafficOnceChecked = false;
+    this.viaRoutePlottedPoints = [];
  // var group = new H.map.Group();
  this.mapGroup.removeAll();
  this.hereMap.removeObjects(this.hereMap.getObjects())
@@ -198,12 +215,12 @@ export class MapFunctionsService {
         let endMarker = this.createEndMarker();
         const iconEnd = new H.map.Icon(endMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
         this.endMarker = new H.map.Marker({ lat: this.endAddressPositionLat, lng: this.endAddressPositionLong }, { icon: iconEnd });
-        let endMarkerHtml = `<div style="font-size:11px;font-family:Times New Roman">
+        let endMarkerHtml = `<div class='font-14-px line-height-21px font-helvetica-lt'>
         <table>
-        <tr><td><b>Corridor Name:</b></td> <td>${corridorName} </td></tr>
-        <tr><td><b>Start Point:</b></td><td>${startAddress}</td></tr>
-        <tr><td><b>End Point:</b></td><td>${endAddress}</td></tr>
-        <tr><td><b>Width:</b></td><td>${this.corridorWidthKm} km</td></tr>
+        <tr><td class='font-helvetica-md'>${transcorridorname}:</td> <td>${corridorName} </td></tr>
+        <tr><td class='font-helvetica-md'>${transstartpoint}:</td><td>${startAddress}</td></tr>
+        <tr><td class='font-helvetica-md'>${transendpoint}:</td><td>${endAddress}</td></tr>
+        <tr><td class='font-helvetica-md'>${transwidth}:</td><td>${this.corridorWidthKm} km</td></tr>
         </table>
         </div>`
         this.endMarker.setData(endMarkerHtml);
@@ -233,6 +250,21 @@ export class MapFunctionsService {
         }, false);
       }
         //this.group.addObjects([this.startMarker, this.endMarker]);
+        if(isRCorridor && _selectedRoutes[i].corridorType && _selectedRoutes[i].corridorType == 'R'){
+          let gpsLineString:any = [];
+          _selectedRoutes[i].viaAddressDetail.forEach(element => {
+            gpsLineString.push(element.latitude, element.longitude, 0);
+          });
+          if(_selectedRoutes[i].viaAddressDetail.length > 0){
+            // this.viaRouteCount = true;
+            this.viaRoutePlottedPoints = _selectedRoutes[i].viaAddressDetail.filter( e => e.type == "V");
+            this.viaRoutePlottedPoints.forEach(element => {
+              element["viaRoutName"] = element.corridorViaStopName;
+            });
+            this.plotViaStopPoints();
+          }
+          this.addTruckRouteShapeToMapEdit(gpsLineString);
+        } else {
         if (accountOrganizationId) {
           if (_selectedRoutes[i].id) {
             this.corridorService.getCorridorFullList(accountOrganizationId, _selectedRoutes[i].id).subscribe((data) => {
@@ -277,6 +309,7 @@ export class MapFunctionsService {
           this.calculateTruckRoute();
 
         }
+      }
         //this.removeBubble();
 
         // this.hereMap.getViewModel().setLookAtData({ bounds: group.getBoundingBox()});
@@ -284,6 +317,46 @@ export class MapFunctionsService {
       }
      
     }
+  }
+
+  viewSelectedRoutesCorridor(_selectedRoutes, accountOrganizationId?, translationData?: any){
+        this.viewSelectedRoutes(_selectedRoutes, accountOrganizationId, true, translationData);
+  }
+
+  addTruckRouteShapeToMapEdit(gpsLineString){
+        let co = [[19.14012, 72.88097, 0], [19.14012, 72.88097, 0]];
+        let ob = {
+          precision : 5,
+          thirdDim : 0,
+          thirdDimPrecision: 0,
+          polyline: co
+        };
+        let lineVal = encode(ob);
+        let linestring = H.geo.LineString.fromFlexiblePolyline(lineVal);
+        linestring.Y = gpsLineString;
+        this.corridorPath = new H.map.Polyline(linestring, {
+          style:  {
+            lineWidth: this.corridorWidthKm * 10,
+            strokeColor: 'rgba(181, 199, 239, 0.6)'
+          }
+        });
+        // Create a polyline to display the route:
+        let polylinePath = new H.map.Polyline(linestring, {
+          style:  {
+            lineWidth: 3,
+            strokeColor: '#436ddc'
+          }
+        });
+
+        // Add the polyline to the map
+        this.mapGroup.addObjects([this.corridorPath,polylinePath]);
+        this.hereMap.addObject(this.mapGroup);
+        // And zoom to its bounding rectangle
+        this.hereMap.getViewModel().setLookAtData({
+          bounds: this.mapGroup.getBoundingBox()
+        });
+    //   });
+    // }
   }
 
   removeBubble(){

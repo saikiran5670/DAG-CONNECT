@@ -17,7 +17,7 @@ namespace net.atos.daf.ct2.reportservice.Services
         {
             try
             {
-                var contextOrgId = Convert.ToInt32(context.RequestHeaders.Get("context_orgId")?.Value);
+                var contextOrgId = Convert.ToInt32(context.RequestHeaders.Get("context_orgid")?.Value);
 
                 var result = await _reportManager
                                             .GetFilteredFuelDeviation(
@@ -46,11 +46,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetFilteredFuelDeviation)}: With Error:-", ex);
                 return await Task.FromResult(new FuelDeviationResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "GetFilteredFuelDeviation get failed due to - " + ex.Message
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -87,11 +87,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetFuelDeviationCharts)}: With Error:-", ex);
                 return await Task.FromResult(new FuelDeviationChartResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "GetFilteredFuelDeviation get failed due to - " + ex.Message
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 });
             }
             #endregion

@@ -37,7 +37,7 @@ namespace net.atos.daf.ct2.fms.repository
                                         ,gps_datetime as gpstimestamp
                                         ,gps_speed as speed
                                from livefleet.livefleet_position_statistics
-                               WHERE 1=1";
+                               WHERE trip_id<>'' ";
                 var parameter = new DynamicParameters();
                 if (!string.IsNullOrEmpty(vin))
                 {
@@ -51,15 +51,15 @@ namespace net.atos.daf.ct2.fms.repository
                         case "yesterday"://yesterday
                             parameter.Add("@yesterdaytimestamp", GetDate(1));
                             parameter.Add("@timestamp", GetDate(0));
-                            queryStatement = string.Format("{0} {1}", queryStatement, "and (received_datetime >= @yesterdaytimestamp)");
+                            queryStatement = string.Format("{0} {1}", queryStatement, "and (created_datetime >= @yesterdaytimestamp)");
                             break;
                         case "today"://today
                             parameter.Add("@timestamp", GetDate(0));
-                            queryStatement = string.Format("{0} {1}", queryStatement, "and received_datetime >= @timestamp");
+                            queryStatement = string.Format("{0} {1}", queryStatement, "and created_datetime >= @timestamp");
                             break;
                         default:
                             parameter.Add("@millies", Convert.ToInt64(since));
-                            queryStatement = string.Format("{0} {1}", queryStatement, "and received_datetime >= @millies");
+                            queryStatement = string.Format("{0} {1}", queryStatement, "and created_datetime >= @millies");
                             break;
                     }
                 }
@@ -87,7 +87,7 @@ namespace net.atos.daf.ct2.fms.repository
                                         ,gps_datetime as gpstimestamp
                                         ,gps_speed as speed
                                from livefleet.livefleet_position_statistics
-                               WHERE 1=1";
+                               WHERE trip_id<>'' ";
                 var parameter = new DynamicParameters();
                 if (vin != null && vin.Count > 0)
                 {
@@ -101,15 +101,15 @@ namespace net.atos.daf.ct2.fms.repository
                         case "yesterday"://yesterday
                             parameter.Add("@yesterdaytimestamp", GetDate(1));
                             parameter.Add("@timestamp", GetDate(0));
-                            queryStatement = string.Format("{0} {1}", queryStatement, "and (received_datetime >= @yesterdaytimestamp)");
+                            queryStatement = string.Format("{0} {1}", queryStatement, "and (created_datetime >= @yesterdaytimestamp)");
                             break;
                         case "today"://today
                             parameter.Add("@timestamp", GetDate(0));
-                            queryStatement = string.Format("{0} {1}", queryStatement, "and received_datetime >= @timestamp");
+                            queryStatement = string.Format("{0} {1}", queryStatement, "and created_datetime >= @timestamp");
                             break;
                         default:
                             parameter.Add("@millies", Convert.ToInt64(since));
-                            queryStatement = string.Format("{0} {1}", queryStatement, "and received_datetime >= @millies");
+                            queryStatement = string.Format("{0} {1}", queryStatement, "and created_datetime >= @millies");
                             break;
                     }
                 }
@@ -168,7 +168,7 @@ namespace net.atos.daf.ct2.fms.repository
 										,total_engine_hours as TotalEngineHours
 										,wheelbased_speed as WheelBasedSpeed
                                from livefleet.livefleet_position_statistics
-                               WHERE 1=1";
+                               WHERE trip_id<>'' ";
                 var parameter = new DynamicParameters();
                 if (!string.IsNullOrEmpty(vin))
                 {
@@ -182,15 +182,15 @@ namespace net.atos.daf.ct2.fms.repository
                         case "yesterday"://yesterday
                             parameter.Add("@yesterdaytimestamp", GetDate(1));
                             parameter.Add("@timestamp", GetDate(0));
-                            queryStatement = string.Format("{0} {1}", queryStatement, "and (received_datetime >= @yesterdaytimestamp)");
+                            queryStatement = string.Format("{0} {1}", queryStatement, "and (created_datetime >= @yesterdaytimestamp)");
                             break;
                         case "today"://today
                             parameter.Add("@timestamp", GetDate(0));
-                            queryStatement = string.Format("{0} {1}", queryStatement, "and received_datetime >= @timestamp");
+                            queryStatement = string.Format("{0} {1}", queryStatement, "and created_datetime >= @timestamp");
                             break;
                         default:
                             parameter.Add("@millies", Convert.ToInt64(since));
-                            queryStatement = string.Format("{0} {1}", queryStatement, "and received_datetime >= @millies");
+                            queryStatement = string.Format("{0} {1}", queryStatement, "and created_datetime >= @millies");
                             break;
                     }
                 }
@@ -229,7 +229,7 @@ namespace net.atos.daf.ct2.fms.repository
 										,total_engine_hours as TotalEngineHours
 										,wheelbased_speed as WheelBasedSpeed
                                from livefleet.livefleet_position_statistics
-                               WHERE 1=1";
+                               WHERE trip_id<>'' ";
                 var parameter = new DynamicParameters();
                 if (vin != null && vin.Count > 0)
                 {
@@ -243,15 +243,15 @@ namespace net.atos.daf.ct2.fms.repository
                         case "yesterday"://yesterday
                             parameter.Add("@yesterdaytimestamp", GetDate(1));
                             parameter.Add("@timestamp", GetDate(0));
-                            queryStatement = string.Format("{0} {1}", queryStatement, "and (received_datetime >= @yesterdaytimestamp)");
+                            queryStatement = string.Format("{0} {1}", queryStatement, "and (created_datetime >= @yesterdaytimestamp)");
                             break;
                         case "today"://today
                             parameter.Add("@timestamp", GetDate(0));
-                            queryStatement = string.Format("{0} {1}", queryStatement, "and received_datetime >= @timestamp");
+                            queryStatement = string.Format("{0} {1}", queryStatement, "and created_datetime >= @timestamp");
                             break;
                         default:
                             parameter.Add("@millies", Convert.ToInt64(since));
-                            queryStatement = string.Format("{0} {1}", queryStatement, "and received_datetime >= @millies");
+                            queryStatement = string.Format("{0} {1}", queryStatement, "and created_datetime >= @millies");
                             break;
                     }
                 }

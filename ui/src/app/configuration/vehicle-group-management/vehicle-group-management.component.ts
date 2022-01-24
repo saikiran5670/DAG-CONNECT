@@ -111,23 +111,25 @@ export class VehicleGroupManagementComponent implements OnInit {
     }
     this.dataSource = new MatTableDataSource(this.initData);
     setTimeout(() => {
+
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
-      this.dataSource.sortdata = (data: String[], sort: MatSort) => {
+      this.dataSource.sortData = (data : String[], sort: MatSort) => {
         const isAsc = sort.direction === 'asc';
-        let columnName = this.sort.active;
-        return data.sort((a: any, b: any)=>{
+          let columnName = this.sort.active;
+        return data.sort((a: any, b: any) => {
           return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
         });
-      }
-      Util.applySearchFilter(this.dataSource, this.displayedColumns ,this.filterValue );
+    }
+
+    Util.applySearchFilter(this.dataSource, this.displayedColumns ,this.filterValue );
     });
   }
 
-  compare(a: Number | String, b: Number | String, isAsc: boolean, columnName: any) {
+  compare(a: Number | String, b:Number | String, isAsc: boolean, columnName: any) {
     if(columnName == "groupName"){
-      if(!(a instanceof Number)) a = a.toString().toUpperCase();
-      if(!(b instanceof Number)) b = b.toString().toUpperCase();
+      if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
+      if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
     }
     return ( a < b ? -1 : 1) * (isAsc ? 1: -1);
   }
@@ -234,7 +236,7 @@ export class VehicleGroupManagementComponent implements OnInit {
   deleteVehicleGroup(rowData: any){
     const options = {
       title: this.translationData.lblDelete || "Delete",
-      message: this.translationData.lblvehiclegrpdeletemsg || "Are you sure you want to delete '$' Vehicle Group?",
+      message: this.translationData.lblvehiclegrpconfirmdeletemsg || "Are you sure you want to delete '$' Vehicle Group?",
       cancelText: this.translationData.lblCancel || "Cancel",
       confirmText: this.translationData.lblDelete || "Delete"
     };

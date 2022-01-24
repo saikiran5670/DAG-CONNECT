@@ -33,6 +33,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         Task<bool> Terminate(bool Is_Terminate, int Modified_By, int Vehicle_Id);
         Task<bool> VehicleOptInOptOutHistory(int VehicleId);
         Task<Vehicle> GetVehicle(int Vehicle_Id);
+        Task<Vehicle> GetVehicleByVIN(string vin);
         Task<Vehicle> UpdateOrgVehicleDetails(Vehicle vehicle);
         Task<int> IsVINExists(string vin);
         Task<VehicleDetails> GetVehicleDetails(string vin);

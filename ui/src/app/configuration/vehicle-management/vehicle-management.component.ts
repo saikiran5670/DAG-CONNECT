@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { TranslationService } from '../../services/translation.service';
 import { Router } from '@angular/router';
 import { VehicleService } from 'src/app/services/vehicle.service';
+import { HttpClient } from "@angular/common/http";
 
 
 @Component({
@@ -21,7 +22,7 @@ export class VehicleManagementComponent implements OnInit {
   showLoadingIndicator: boolean = false;
   getVehiclesDataAPICall : any;
 
-  constructor(private vehicleService: VehicleService, private translationService: TranslationService, private route: Router,) {
+  constructor(private httpClient: HttpClient, private vehicleService: VehicleService, private translationService: TranslationService, private route: Router,) {
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.loadVehicleData()
   }
@@ -75,6 +76,12 @@ export class VehicleManagementComponent implements OnInit {
         this.showLoadingIndicator = false;
       }
     );
+    // this.showLoadingIndicator = true;
+    // this.httpClient.get('http://localhost:4200/assets/data/vehicleData.json').subscribe((res: any)=>{
+    //   console.log(res);
+    //   this.relationshipVehiclesData = res.sort((a, b) => b.hasOwned - a.hasOwned) ;
+    //   this.showLoadingIndicator = false;
+    // });
   }
   
   checkVehicleConnectionSetting(){

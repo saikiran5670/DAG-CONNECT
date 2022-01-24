@@ -97,14 +97,22 @@ public class DafConstants {
 	public static final String DTM_TS_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";	
 	
 	
+		
+	public static final int FUEL_CONSUMPTION_INDICATOR = 2;		
 	
-public static final int FUEL_CONSUMPTION_INDICATOR = 2;		
+	public static final String Index="I";
+	
+	public static final String STORE_HISTORICAL_DATA="store.historical.data";
+	public static final String INDEX_PROCESS="index.process";
+	public static final String INDEX_HBASE_PROCESS="index.hbase.process";
+	
+	public static final String JDBC_EXEC_OPTION_BATCH_SIZE = "jdbc.execution.options.batch.size";
+	public static final String JDBC_EXEC_OPTION_BATCH_INTERVAL_MILLISEC ="jdbc.execution.options.batch.interval.millisec";
+	public static final String JDBC_EXEC_OPTION_BATCH_MAX_RETRIES = "jdbc.execution.options.batch.max.retries";
+	public static final String CONNECTION_RETRY_TIME_MILLI = "connection.retry.time.milli";
+	public static final String JDBC_SINK_ENABLED = "jdbc.sink.enabled";
 
-public static final String Index="I";
 
-public static final String STORE_HISTORICAL_DATA="store.historical.data";
-public static final String INDEX_PROCESS="index.process";
-public static final String INDEX_HBASE_PROCESS="index.hbase.process";
 	
 	//master datamart
 		public static final String MASTER_POSTGRE_SERVER_NAME = "master_postgre_server_name";

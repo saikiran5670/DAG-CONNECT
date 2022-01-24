@@ -177,13 +177,13 @@ export class Util {
 
         let _date= date.split("T")[0];
         let _time= (date.split("T")[1]).slice(0, -6);
-         date=new Date();
+         date = new Date();
          date.setDate(_date.split("-")[2]);
          date.setMonth(_date.split("-")[1]-1);
          date.setYear(_date.split("-")[0]);
-         date.setHours(_time.split(":")[0]);
-         date.setMinutes(_time.split(":")[1]);
-         date.setSeconds(_time.split(":")[2]);
+         date.setHours(_time.split(":")[0] ? _time.split(":")[0] : 0);
+         date.setMinutes(_time.split(":")[1] ? _time.split(":")[1] : 0);
+         date.setSeconds(_time.split(":")[2] ? _time.split(":")[2] : 0);
 
          return date;
     }
@@ -308,7 +308,7 @@ export class Util {
         let diff = localTimeZoneOffset + PrefTzToGMT;
         let PrefTimeAsPerSelected = moment(_dateWithoutMiliSeconds).utcOffset(diff);
         let _convertedUtc = PrefTimeAsPerSelected['_d'].getTime();
-        console.log('_convertedUtc:' +_convertedUtc );             
+        console.log('_convertedUtc:' +_convertedUtc );
         return _convertedUtc;
         //}
         // let gmt_val:any =moment.utc(_dateWithoutMiliSeconds).valueOf();
@@ -401,6 +401,32 @@ public static applySearchFilter(filterData:any, columns:any, filterValue:string)
 
    for(let col of columns) {
   if(data[col]) {
+    if(data[col] instanceof Number && data[col].toLowerCase().includes(filter.toLowerCase())) {
+
+      return data;
+
+    }
+
+    if(!(data[col] instanceof Number) && data[col].toString().toLowerCase().includes(filter)) {
+
+      return data;
+    }
+  }
+
+}
+
+  }
+
+}
+public static applySearchFilterForUser(filterData:any, columns:any, filterValue:string){
+
+  filterData.filter = filterValue;
+
+  filterData.filterPredicate = (data: any, filter: string): boolean => {
+
+   for(let col of columns) {
+     if(col === 'roleName'|| col ==='accountGroupName' || col ==='accountCount' )
+  if(data[col] ) {
     if(data[col] instanceof Number && data[col].toLowerCase().includes(filter.toLowerCase())) {
 
       return data;

@@ -2,6 +2,7 @@
 {
     public static class AccountConstants
     {
+        public const string INTERNAL_SERVER_MSG = "Error occured, Please check with DAF IT team for more info.";
         public const string ERROR_INVALID_GRANT = "invalid_grant";
         public const string ERROR_PWD_EXPIRED = "Account is not fully set up";
         public const string ERROR_RESET_TOKEN_NOTFOUND = "Token not generated, Please contact DAF system Admin";

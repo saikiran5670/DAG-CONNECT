@@ -49,11 +49,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(CreateEcoScoreProfile)}: With Error:-", ex);
                 return await Task.FromResult(new CreateEcoScoreProfileResponse
                 {
                     Code = Responsecode.InternalServerError,
-                    Message = $"{nameof(CreateEcoScoreProfile)} failed due to - " + ex.Message
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -149,11 +149,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetEcoScoreProfiles)}: With Error:-", ex);
                 return await Task.FromResult(new GetEcoScoreProfileResponse
                 {
                     Code = Responsecode.InternalServerError,
-                    Message = $"{nameof(GetEcoScoreProfiles)} failed due to - " + ex.Message
+                    Message = $"{nameof(GetEcoScoreProfiles)}: {ReportConstants.INTERNAL_SERVER_MSG}."
                 });
             }
         }
@@ -207,11 +207,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetEcoScoreProfileKPIDetails)}: With Error:-", ex);
                 return await Task.FromResult(new GetEcoScoreProfileKPIResponse
                 {
                     Code = Responsecode.InternalServerError,
-                    Message = $"{nameof(GetEcoScoreProfileKPIDetails)} failed due to - " + ex.Message
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -354,11 +354,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(UpdateEcoScoreProfile)}: With Error:-", ex);
                 return await Task.FromResult(new UpdateEcoScoreProfileResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = entity.ReportConstants.UPDATE_ECOSCORE_PROFILE_FAIL_MSG + " due to - " + ex.Message
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -405,7 +405,7 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(DeleteEcoScoreProfile)}: With Error:-", ex);
             }
             return await Task.FromResult(response);
         }
@@ -440,11 +440,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetEcoScoreReportByAllDrivers)}: With Error:-", ex);
                 return await Task.FromResult(new GetEcoScoreReportByAllDriversResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "GetEcoScoreReportByAllDrivers get failed due to - " + ex.Message
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -475,7 +475,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                     }
                     catch (Exception ex)
                     {
-                        _logger.Error(null, ex);
+                        _logger.Error($"{nameof(GetEcoScoreReportCompareDrivers)}: With Error:-", ex);
                         throw new Exception("Error occurred while parsing the EcoScore compare drivers.");
                     }
                     response.Code = Responsecode.Success;
@@ -490,11 +490,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetEcoScoreReportCompareDrivers)}: With Error:-", ex);
                 return await Task.FromResult(new GetEcoScoreReportCompareDriversResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "GetEcoScoreReportCompareDrivers get failed due to - " + ex.Message
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -526,7 +526,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                     }
                     catch (Exception ex)
                     {
-                        _logger.Error(null, ex);
+                        _logger.Error($"{nameof(GetEcoScoreReportSingleDriver)}: With Error:-", ex);
                         throw new Exception("Error occurred while parsing the EcoScore single driver.");
                     }
                     var averageGrossWeight = await _reportManager.GetEcoScoreAverageGrossWeightChartData(_mapper.MapEcoScoreReportSingleDriverRequest(request));
@@ -549,11 +549,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetEcoScoreReportSingleDriver)}: With Error:-", ex);
                 return await Task.FromResult(new GetEcoScoreReportSingleDriverResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "GetEcoScoreReportSingleDriverResponse get failed due to - " + ex.Message
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -586,11 +586,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetEcoScoreReportTrendlines)}: With Error:-", ex);
                 return await Task.FromResult(new GetEcoScoreReportTrendlinesResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "GetEcoScoreReportTrendlinesResponse get failed due to - " + ex.Message
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -626,11 +626,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(CreateReportUserPreference)}: With Error:-", ex);
                 return new ReportUserPreferenceCreateResponse()
                 {
                     Code = Responsecode.InternalServerError,
-                    Message = $"{nameof(CreateReportUserPreference)} failed due to - " + ex.Message
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 };
             }
         }
@@ -667,7 +667,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                 }
                 catch (Exception ex)
                 {
-                    _logger.Error(null, ex);
+                    _logger.Error($"{nameof(GetReportUserPreference)}: With Error:-", ex);
                     throw new Exception("Error occurred while parsing the report user preferences or data is missing.");
                 }
 
@@ -675,11 +675,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetReportUserPreference)}: With Error:-", ex);
                 return new GetReportUserPreferenceResponse()
                 {
                     Code = Responsecode.InternalServerError,
-                    Message = $"{nameof(GetReportUserPreference)} failed due to - " + ex.Message
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 };
             }
         }
@@ -756,11 +756,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(CheckIfSubReportExist)}: With Error:-", ex);
                 return new CheckIfSubReportExistResponse()
                 {
                     Code = Responsecode.InternalServerError,
-                    Message = $"{nameof(CheckIfSubReportExist)} failed due to - " + ex.Message
+                    Message = ReportConstants.INTERNAL_SERVER_MSG
                 };
             }
         }

@@ -1,5 +1,5 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { Component, ElementRef, Inject, Input, OnInit, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, ElementRef, Inject, Input, OnInit, OnDestroy, ViewChild, ChangeDetectorRef, EventEmitter, Output } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -107,6 +107,8 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
   obs: Observable<any>;
   healthDdataSource: MatTableDataSource<any>;
   map_key: any = '';
+  getvehiclehealthstatusservicecall;
+  @Output() backToPage = new EventEmitter<object>();
 
 
   constructor(private _configService: ConfigService, private dataInterchangeService: DataInterchangeService,@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder,private organizationService: OrganizationService, private reportService: ReportService, private changeDetectorRef: ChangeDetectorRef) { 
@@ -126,11 +128,12 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     // console.log(this.healthData);
+    let warningType:any;
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
-    this.getWarningData();
+    this.getWarningData(warningType='C');
     this.vehicleHealthForm = this._formBuilder.group({
       warningType: ['AllWarnings', [Validators.required]],
       startDate: ['', []],
@@ -432,22 +435,27 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
     switch(this.prefDateFormat){
       case 'ddateformat_dd/mm/yyyy': {
         this.dateFormats.display.dateInput = "DD/MM/YYYY";
+        this.dateFormats.parse.dateInput = "DD/MM/YYYY";
         break;
       }
       case 'ddateformat_mm/dd/yyyy': {
         this.dateFormats.display.dateInput = "MM/DD/YYYY";
+        this.dateFormats.parse.dateInput = "MM/DD/YYYY";
         break;
       }
       case 'ddateformat_dd-mm-yyyy': {
         this.dateFormats.display.dateInput = "DD-MM-YYYY";
+        this.dateFormats.parse.dateInput = "DD-MM-YYYY";
         break;
       }
       case 'ddateformat_mm-dd-yyyy': {
         this.dateFormats.display.dateInput = "MM-DD-YYYY";
+        this.dateFormats.parse.dateInput = "MM-DD-YYYY";
         break;
       }
       default:{
         this.dateFormats.display.dateInput = "MM/DD/YYYY";
+        this.dateFormats.parse.dateInput = "MM/DD/YYYY";
       }
     }
   }
@@ -464,25 +472,23 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
       let endDateFromSearch = new Date(this.vehicleHealthSearchData.endDateStamp);
       this.startDateValue = this.setStartEndDateTime(startDateFromSearch, this.selectedStartTime, 'start');
       this.endDateValue = this.setStartEndDateTime(endDateFromSearch, this.selectedEndTime, 'end');
+      this.last3MonthDate = this.getLast3MonthDate();
+      this.todayDate = this.getTodayDate();
     }else{
-    this.selectionTab = 'today';
-    this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
-    this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
-    this.last3MonthDate = this.getLast3MonthDate();
-    this.todayDate = this.getTodayDate();
+      this.selectionTab = 'today';
+      this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
+      this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
+      this.last3MonthDate = this.getLast3MonthDate();
+      this.todayDate = this.getTodayDate();
     }
   }
 
   getTodayDate(){
     let _todayDate: any = Util.getUTCDate(this.prefTimeZone);
+    _todayDate.setHours(0);
+    _todayDate.setMinutes(0);
+    _todayDate.setSeconds(0);
     return _todayDate;
-    //let todayDate = new Date();
-    // let _date = moment.utc(todayDate.getTime());
-    // let _tz = moment.utc().tz('Europe/London');
-    // let __tz = moment.utc(todayDate.getTime()).tz('Europe/London').isDST();
-    // var timedifference = new Date().getTimezoneOffset(); //-- difference from the clients timezone from UTC time.
-    // let _tzOffset = this.getUtcOffset(todayDate);
-    // let dt = moment(todayDate).toDate();
   }
 
   // getUtcOffset(date) {
@@ -518,6 +524,9 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
     // let date = new Date();
     var date = Util.getUTCDate(this.prefTimeZone);
     date.setMonth(date.getMonth()-3);
+    date.setHours(0);
+    date.setMinutes(0);
+    date.setSeconds(0);
     return date;
   }
 
@@ -651,16 +660,34 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
 
   changeStartDateEvent(event: MatDatepickerInputEvent<any>){
     this.internalSelection = true;
-    //this.startDateValue = event.value._d;
-    this.startDateValue = this.setStartEndDateTime(event.value._d, this.selectedStartTime, 'start');
+    let dateTime: any = '';
+    if(event.value._d.getTime() >= this.last3MonthDate.getTime()){ // CurTime > Last3MonthTime
+      if(event.value._d.getTime() <= this.endDateValue.getTime()){ // CurTime < endDateValue
+        dateTime = event.value._d;
+      }else{
+        dateTime = this.endDateValue; 
+      }
+    }else{ 
+      dateTime = this.last3MonthDate;
+    }
+    this.startDateValue = this.setStartEndDateTime(dateTime, this.selectedStartTime, 'start');
     // this.resetTripFormControlValue(); // extra addded as per discuss with Atul
     // this.filterDateData(); // extra addded as per discuss with Atul
   }
 
   changeEndDateEvent(event: MatDatepickerInputEvent<any>){
-    //this.endDateValue = event.value._d;
     this.internalSelection = true;
-    this.endDateValue = this.setStartEndDateTime(event.value._d, this.selectedEndTime, 'end');
+    let dateTime: any = '';
+    if(event.value._d.getTime() <= this.todayDate.getTime()){ // EndTime > todayDate
+      if(event.value._d.getTime() >= this.startDateValue.getTime()){ // EndTime < startDateValue
+        dateTime = event.value._d;
+      }else{
+        dateTime = this.startDateValue; 
+      }
+    }else{ 
+      dateTime = this.todayDate;
+    }
+    this.endDateValue = this.setStartEndDateTime(dateTime, this.selectedEndTime, 'end');
     // this.resetTripFormControlValue(); // extra addded as per discuss with Atul
     // this.filterDateData(); // extra addded as per discuss with Atul
   }
@@ -670,18 +697,56 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
     this.markerArray = [];
     if (event == 0) {
       this.isCurrent = true;
+      this.getWarningData('C');
     } else {
       this.isCurrent = false;
+      this.getWarningData('H');
     }
     this.onSearch();
   }
   
-  getWarningData() {
+  getWarningData(warningdata) {
+    if(this.getvehiclehealthstatusservicecall) {
+      this.getvehiclehealthstatusservicecall.unsubscribe();
+    }
     this.showLoadingIndicator=true;
-    this.reportService.getvehiclehealthstatus(this.healthData.vin, this.localStLanguage.code).subscribe((res) => {
-      this.currentHealthData = this.processDataForActivatedAndDeactivatedTime(res);
-      this.historyHealthData = res;
+    this.getvehiclehealthstatusservicecall = this.reportService.getvehiclehealthstatus(this.healthData.vin, this.localStLanguage.code, warningdata).subscribe((res) => {
+      let healthStatusData = res;
+      let deactiveActiveData=[];
+      let healthStatusActiveData=healthStatusData.filter(item => item.warningType== "A");
+      healthStatusData.forEach((element,index) => {
+        element.warningActivatedForDeactive = '';
+        if(element.warningType== "D"){        
+           let healthFilterData = healthStatusActiveData.filter(item => item.warningClass == element.warningClass && item.warningNumber == element.warningNumber);
+           let activeDataObj;
+           healthFilterData.forEach(e => {
+            if(e.warningTimetamp < element.warningTimetamp){
+              element.warningActivatedForDeactive = e.warningTimetamp;
+              activeDataObj= e;
+             }    
+          });
+          if(activeDataObj != undefined )  {
+          deactiveActiveData.push(activeDataObj);
+          }          
+        }          
+      });     
+      let deactiveActiveToDeleteSet = new Set(deactiveActiveData);
+      let newHealthStatusData = healthStatusData.filter((item) => {
+        return !deactiveActiveToDeleteSet.has(item);
+      });
+      // console.log(deactiveActiveData);
+      // console.log(newHealthStatusData);            
+      if(warningdata=='C') {
+        this.currentHealthData = newHealthStatusData;//res;
+        this.applyDatatoCardPaginator(this.currentHealthData);
+      } else {
+        this.historyHealthData = newHealthStatusData;
+      }
+      // this.currentHealthData = this.processDataForActivatedAndDeactivatedTime(res);
+      
       this.onSearch();
+      this.showLoadingIndicator=false;
+    }, (error) => {
       this.showLoadingIndicator=false;
     });
   }
@@ -828,6 +893,11 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
       // let _driverName = elem.driverName ? elem.driverName : elem.driver1Id;
       // let _vehicleName = elem.vid ? elem.vid : elem.vin;
       let iconBubble;
+      let transwarningname = this.translationData.lblWarningName;
+      let transactivatedtime = this.translationData.lblActivatedTime;
+      let transdeactivatedtime = this.translationData.lblDeactivatedTime;
+      let transvehiclename = this.translationData.lblVehicleName;
+      let transposition = this.translationData.lblPosition;
       vehicleIconMarker.addEventListener('pointerenter', function (evt) {
         // event target is the marker itself, group is a parent event target
         // for all objects that it contains
@@ -835,19 +905,19 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
           // read custom data
           content:`<table style='width: 300px; font-size:12px;'>
             <tr>
-              <td style='width: 100px;'>Warning Name: </td> <td><b>${elem.warningName}</b></td>
+              <td style='width: 100px;'>${transwarningname}: </td> <td><b>${elem.warningName}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>Activated Time: </td> <td><b>${activatedTime}</b></td>
+              <td style='width: 100px;'>${transactivatedtime}: </td> <td><b>${activatedTime}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>Deactivated Time: </td> <td><b>${deactivatedTime}</b></td>
+              <td style='width: 100px;'>${transdeactivatedtime}: </td> <td><b>${deactivatedTime}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>Vehicle Name: </td> <td><b>${elem.vehicleName} km</b></td>
+              <td style='width: 100px;'>${transvehiclename}: </td> <td><b>${elem.vehicleName} km</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>Position: </td> <td><b>${elem.warningAddress}</b></td>
+              <td style='width: 100px;'>${transposition}: </td> <td><b>${elem.warningAddress}</b></td>
             </tr>
           </table>`
         });
@@ -1063,5 +1133,9 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
       }
     }
     return _date;
+  }
+
+  toBack(){
+    this.backToPage.emit();
   }
 }

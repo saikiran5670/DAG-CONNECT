@@ -6,6 +6,7 @@ import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms'
 import { Router } from '@angular/router';
 import { ReportMapService } from '../../../report/report-map.service';
 import { CustomValidators } from '../../../shared/custom.validators';
+import { DataInterchangeService } from '../../../services/data-interchange.service';
 
 @Component({
   selector: 'app-fleet-utilisation-preference',
@@ -41,38 +42,17 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
   timeDisplay: any = '00:00';
   fleetUtilForm: FormGroup;
   chartIndex: any = {};
-  lineBarDD: any = [{
-    type: 'L',
-    name: 'Line Chart'
-  },
-  {
-    type: 'B',
-    name: 'Bar Chart'
-  }];
+  lineBarDD: any = [];
   
-  donutPieDD: any = [{
-    type: 'D',
-    name: 'Donut Chart'
-  },
-  {
-    type: 'P',
-    name: 'Pie Chart'
-  }];
+  donutPieDD: any = [];
 
-  upperLowerDD: any = [{
-    type: 'L',
-    name: 'Lower'
-  },
-  {
-    type: 'U',
-    name: 'Upper'
-  }];
+  upperLowerDD: any = [];
   showLoadingIndicator: boolean = false;
   accountPreference: any;
   prefUnitFormat: any = 'dunit_Metric';
   requestSent:boolean = false;
   
-  constructor(private reportService: ReportService, private _formBuilder: FormBuilder, private router: Router, private reportMapService: ReportMapService) { }
+  constructor(private reportService: ReportService, private _formBuilder: FormBuilder, private router: Router, private reportMapService: ReportMapService, private dataInterchangeService: DataInterchangeService) { }
 
   ngOnInit() { 
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -82,6 +62,8 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
     this.roleID = parseInt(localStorage.getItem('accountRoleId'));
     let repoId: any = this.reportListData.filter(i => i.name == 'Fleet Utilisation Report');
     
+    this.setTranslationFunction();
+
     this.getUnitFormat(this.accountPreference);
     
     this.fleetUtilForm = this._formBuilder.group({
@@ -109,6 +91,35 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
       console.error("No report id found!")
     }
     // this.translationUpdate();
+  }
+
+  setTranslationFunction() {
+    this.lineBarDD = [{
+      type: 'L',
+      name: this.translationData.lblLineChart
+    },
+    {
+      type: 'B',
+      name: this.translationData.lblBarChart
+    }];
+    
+    this.donutPieDD = [{
+      type: 'D',
+      name: this.translationData.lblDonutChart
+    },
+    {
+      type: 'P',
+      name: this.translationData.lblPieChart
+    }];
+  
+    this.upperLowerDD = [{
+      type: 'L',
+      name: this.translationData.lblLower
+    },
+    {
+      type: 'U',
+      name: this.translationData.lblUpper
+    }];
   }
 
   getUnitFormat(accPref: any){
@@ -155,11 +166,19 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
     }
   }
 
-  loadFleetUtilisationPreferences(){
-    this.showLoadingIndicator=true;
+  loadFleetUtilisationPreferences(reloadFlag?: any){
+    this.showLoadingIndicator = true;
     this.reportService.getReportUserPreference(this.reportId).subscribe((prefData: any) => {
-      this.showLoadingIndicator=false;
+      this.showLoadingIndicator = false;
       this.initData = prefData['userPreferences'];
+      if(reloadFlag){ // refresh pref setting & goto trip report
+        let _dataObj: any = {
+          prefdata: this.initData,
+          type: 'fleet utilisation report' 
+        }
+        this.dataInterchangeService.getPrefData(_dataObj);
+        this.dataInterchangeService.closedPrefTab(false); // closed pref tab
+      }
       this.resetColumnData();
       this.preparePrefData(this.initData);
     }, (error)=>{
@@ -473,15 +492,17 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
       }
       this.showLoadingIndicator=true;
       this.reportService.updateReportUserPreference(objData).subscribe((prefData: any) => {
-        this.showLoadingIndicator=false;
-        this.loadFleetUtilisationPreferences();
-        this.setFleetUtilFlag.emit({ flag: false, msg: this.getSuccessMsg() });
+        this.showLoadingIndicator = false;
+        let _reloadFlag = false;
         if ((this.router.url).includes("fleetutilisation")) {
-          this.reloadCurrentComponent();
+          _reloadFlag = true
+          //this.reloadCurrentComponent();
         }
+        this.loadFleetUtilisationPreferences(_reloadFlag);
+        this.setFleetUtilFlag.emit({ flag: false, msg: this.getSuccessMsg() });
         this.requestSent = false;
       }, (error) => {
-        this.showLoadingIndicator=false;
+        this.showLoadingIndicator = false;
       });
     }
   }

@@ -22,6 +22,7 @@ export class CreateEditReportSchedulerComponent implements OnInit {
   @Input() reportSchedulerParameterData: any;
   @Output() backToPage = new EventEmitter<any>();
   
+  vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   breadcumMsg: any = '';
   reportSchedulerForm: FormGroup;
   accountOrganizationId: any;
@@ -36,6 +37,8 @@ export class CreateEditReportSchedulerComponent implements OnInit {
   RecipientList: any= [];
   selectedIndex: number = 0;
   tabVisibilityStatus: boolean = true;
+  tripReportFlag: boolean = false;
+  showError: boolean = false;
   selectionTab: string = 'D';
   startTimeDisplay: any = '00:00:00';
   endTimeDisplay: any = '23:59:59';
@@ -151,6 +154,14 @@ export class CreateEditReportSchedulerComponent implements OnInit {
       if(this.actionType == 'edit'){
         this.setDefaultValues();
       }
+
+      let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
+        if(vehicleDisplayId) {
+          let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+          if(vehicledisplay.length != 0) {
+            this.vehicleDisplayPreference = vehicledisplay[0].name;
+          }
+        }  
     });
   }
 
@@ -210,22 +221,27 @@ export class CreateEditReportSchedulerComponent implements OnInit {
     switch(this.prefDateFormat){
       case 'ddateformat_dd/mm/yyyy': {
         this.dateFormats.display.dateInput = "DD/MM/YYYY";
+        this.dateFormats.parse.dateInput = "DD/MM/YYYY";
         break;
       }
       case 'ddateformat_mm/dd/yyyy': {
         this.dateFormats.display.dateInput = "MM/DD/YYYY";
+        this.dateFormats.parse.dateInput = "MM/DD/YYYY";
         break;
       }
       case 'ddateformat_dd-mm-yyyy': {
         this.dateFormats.display.dateInput = "DD-MM-YYYY";
+        this.dateFormats.parse.dateInput = "DD-MM-YYYY";
         break;
       }
       case 'ddateformat_mm-dd-yyyy': {
         this.dateFormats.display.dateInput = "MM-DD-YYYY";
+        this.dateFormats.parse.dateInput = "MM-DD-YYYY";
         break;
       }
       default:{
         this.dateFormats.display.dateInput = "MM/DD/YYYY";
+        this.dateFormats.parse.dateInput = "MM/DD/YYYY";
       }
     }
   }
@@ -235,7 +251,6 @@ export class CreateEditReportSchedulerComponent implements OnInit {
     this.selectionTab= this.selectedRowData[0].frequencyType;
     this.selectionTimeRange(this.selectionTab);
     this.reportSchedulerForm.get('reportDispatchTime').setValue(this.selectedRowData[0].reportDispatchTime)
-
     this.reportSchedulerForm.get('reportType').setValue(this.selectedRowData[0].reportId);
     //this.onChangeReportType(this.selectedRowData[0].reportId);
     this.showDriverList= this.selectedRowData[0].isDriver;
@@ -254,7 +269,7 @@ export class CreateEditReportSchedulerComponent implements OnInit {
   getBreadcum() {
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / 
     ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} / 
-    ${this.translationData.lblPathReportScheduler ? this.translationData.lblPathReportScheduler : "ReportScheduler"} / 
+    ${this.translationData.lblReportScheduler || 'Report Scheduler' ? this.translationData.lblReportScheduler || 'Report Scheduler' : "ReportScheduler"} / 
     ${(this.actionType == 'edit') ? (this.translationData.lblEditScheduleDetails ? this.translationData.lblEditScheduleDetails : 'Edit Schedule Details') : (this.actionType == 'view') ? (this.translationData.lblViewScheduleDetails ? this.translationData.lblViewScheduleDetails : 'View Schedule Details') : (this.translationData.lblCreateScheduleDetails ? this.translationData.lblScheduleNewReport : 'Schedule New Report')}`;
   }
 
@@ -278,10 +293,13 @@ export class CreateEditReportSchedulerComponent implements OnInit {
       else
         return ("New Report Schedule for '$' Created Successfully").replace('$', reportName);
     }else if(this.actionType == 'edit') {
-      if (this.translationData.lblScheduleUpdatedSuccessfully)
-        return this.translationData.lblScheduleUpdatedSuccessfully.replace('$', reportName);
+      if (this.translationData.lblUpdatedSuccessfully)
+        { 
+          this.translationData.lblUpdatedSuccessfully = "'$' Updated Successfully";
+        return ("'$' Updated Successfully").replace('$', reportName);
+        }
       else
-        return ("Report Schedule for '$' Updated Successfully").replace('$', reportName);
+       return ("'$' Updated Successfully").replace('$', reportName);
     }
     else{
       return '';
@@ -303,8 +321,8 @@ export class CreateEditReportSchedulerComponent implements OnInit {
       endDate=  this.getTodayDate();
     }
     else{
-      startDate= Util.convertUtcToDateNoFormat(this.selectedRowData[0].startDate, this.prefTimeZone);
-      endDate= Util.convertUtcToDateNoFormat(this.selectedRowData[0].endDate, this.prefTimeZone);
+      startDate= new Date(this.selectedRowData[0].startDate);
+      endDate= new Date(this.selectedRowData[0].endDate);
     }
     this.selectionTab = timeRange;
     switch(timeRange){
@@ -396,6 +414,9 @@ export class CreateEditReportSchedulerComponent implements OnInit {
 
   getTodayDate(){
     let _todayDate: any = Util.getUTCDate(this.prefTimeZone);
+    _todayDate.setHours(0);
+    _todayDate.setMinutes(0);
+    _todayDate.setSeconds(0);
     return _todayDate;
   }
 
@@ -472,6 +493,13 @@ export class CreateEditReportSchedulerComponent implements OnInit {
   }
 
   onChangeReportType(value){
+    let data = this.ReportTypeList.filter(item => item.id == value);
+    if(data[0].reportName == 'Trip Report' && data[0].isVehicle){
+    this.tripReportFlag = true; }
+    else{
+      this.tripReportFlag = false;
+      this.showError = false;
+    }
     this.showDriverList = this.ReportTypeList.filter(item => item.id == value)[0].isDriver == 'Y' ? true : false;
   }
 
@@ -613,9 +641,12 @@ export class CreateEditReportSchedulerComponent implements OnInit {
         }
         scheduledReportRecipient.push(scheduledReportRecipientObj);
       });
-     
-
-      let scheduledReportVehicleRef = [
+      let scheduledReportVehicleRef;
+      if(this.reportSchedulerForm.controls.vehicle.value == 0 && this.tripReportFlag){
+          this.showError = true;
+      }
+      else{
+       scheduledReportVehicleRef = [
         {
           "scheduleReportId": 0,
           "vehicleGroupId": this.reportSchedulerForm.controls.vehicleGroup.value,
@@ -627,6 +658,7 @@ export class CreateEditReportSchedulerComponent implements OnInit {
           "modifiedBy": 0
         }
       ]
+    }
 
       let scheduledReportDriverRef = [
         {

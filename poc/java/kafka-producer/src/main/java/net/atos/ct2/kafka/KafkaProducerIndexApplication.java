@@ -20,8 +20,6 @@ public class KafkaProducerIndexApplication {
 
     public static ObjectMapper mapper = new ObjectMapper();
 
-
-
     public static void main(String[] args) throws Exception {
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         if(args.length < 0 )
@@ -37,7 +35,6 @@ public class KafkaProducerIndexApplication {
         Properties env = new Properties();
         InputStream iStream = new FileInputStream(prop);
         env.load(iStream);
-
 
         kafkaTopicProp.put("request.timeout.ms", env.getProperty("request.timeout.ms","60000"));
         kafkaTopicProp.put("client.id", env.getProperty("client.id"));
@@ -79,7 +76,7 @@ public class KafkaProducerIndexApplication {
                 .filter(index -> index.getVin()!=null)
                 .forEach(index -> {
                     try {
-                        producer.send(new ProducerRecord<String, Index>(sinkTopicName, "Index", index));
+                        producer.send(new ProducerRecord<String, Index>(sinkTopicName, index.getVin(), index));
                         System.out.println("data pushed:: "+mapper.writeValueAsString(index));
                     } catch (Exception e) {
                         e.printStackTrace();

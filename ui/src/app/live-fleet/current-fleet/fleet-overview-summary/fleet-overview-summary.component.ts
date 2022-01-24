@@ -61,11 +61,10 @@ export class FleetOverviewSummaryComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void { 
-    
+  ngOnInit(): void {
+
   }
 
-  showCharts:boolean = false;
   loadData(){
     let localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.showLoadingIndicator = true;
@@ -87,7 +86,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
       this.barChartLabels = [this.translationData.lblMovedVehicle, this.translationData.lblTotalVehicle];
       this.doughnutChartLabelsMileage = [(this.translationData.lblFleetMileageRate ), ''];
       this.doughnutChartLabelsUtil = [(this.translationData.lblFleetUtilizationRate), '', ''];
-      this.showCharts = true;
+      this.hideloader();
     }, (error) => {
       this.resetSummary();
       this.hideloader();
@@ -143,7 +142,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
   // chartHovered({ event, active }: { event: MouseEvent, active: {}[] }): void {
   //   console.log(event, active);
   // }
-  
+
   barChartColors: Color[] = [
     {
       backgroundColor: [ "#75c3f0", "#168cd0" ]
@@ -247,7 +246,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
   //this.mileageDone = (this.prefUnitFormat == 'dunit_Metric' ? tripDistance : (tripDistance * 0.621371)) + ' ' + this.unitValkm;
   let milDone:any = this.getDistance(tripDistance, this.prefUnitFormat);
   this.mileageDone = milDone + ' ' + this.unitValkm;
-  let totDriveTime = (Util.getHhMmTime((totalDriveTime/1000).toFixed(0))).split(':');
+  let totDriveTime = Util.getHhMmTime(totalDriveTime).split(':');
   this.driveTime = totDriveTime[0] + (this.translationData.lblhh ) + ' ' +totDriveTime[1] + (this.translationData.lblmm);
   this.barChartData = [
     { data: [this.movedVehicle, this.totalVehicle], label: '', barThickness: 16, barPercentage: 0.5 }
@@ -281,7 +280,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
   // distance in meter
   let _distance: any = 0;
   switch(unitFormat){
-    case 'dunit_Metric': { 
+    case 'dunit_Metric': {
       _distance = (distance/1000); //-- km
       break;
     }
@@ -294,6 +293,6 @@ export class FleetOverviewSummaryComponent implements OnInit {
       _distance = distance;
     }
   }
-  return _distance;    
+  return _distance;
 }
 }

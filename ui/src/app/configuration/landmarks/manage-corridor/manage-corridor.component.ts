@@ -107,9 +107,9 @@ export class ManageCorridorComponent implements OnInit {
   }
 
   compare(a:Number | String, b: Number | String, isAsc: boolean, columnName: any){
-    if(columnName == "corridoreName"){
-      if(!(a instanceof Number)) a = a.toString().toUpperCase();
-      if(!(b instanceof Number)) b = b.toString().toUpperCase();
+    if(columnName == 'corridoreName'|| columnName == 'startPoint'|| columnName == 'endPoint'){
+      if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toUpperCase();
+      if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toUpperCase();
     }
     return (a< b ? -1 : 1) * (isAsc ? 1: -1);
   }
@@ -141,7 +141,7 @@ export class ManageCorridorComponent implements OnInit {
 
   public ngAfterViewInit() {
     setTimeout(() => {
-    this.mapFunctions.initMap(this.mapElement);
+    this.mapFunctions.initMap(this.mapElement, this.translationData);
     }, 0);
   }
 
@@ -192,7 +192,7 @@ export class ManageCorridorComponent implements OnInit {
     let corridorId = rowData.id;
     const options = {
       title: this.translationData.lblDelete || "Delete",
-      message: this.translationData.lblAreyousureyouwanttodelete || "Are you sure you want to delete '$' ?",
+      message: this.translationData.lblAreyousureyouwanttodeleteCorridor + " '$'?",
       cancelText: this.translationData.lblCancel || "Cancel",
       confirmText: this.translationData.lblDelete || "Delete"
     };
@@ -250,7 +250,7 @@ export class ManageCorridorComponent implements OnInit {
 
   getcreatedMsg(name: any) {
     if (this.translationData.lblCreatedSuccessfully)
-      return this.translationData.lblCreatedSuccessfully.replace('$', name);
+      return this.translationData.lblCorridorCreatedSuccessfully.replace('$', name);
     else
       return ("Corridor '$' was created successfully").replace('$', name);
   }
@@ -264,7 +264,7 @@ export class ManageCorridorComponent implements OnInit {
 
   getNoDeletMsg(name: any) {
     if (this.translationData.lblCorridorwassuccessfullydeleted)
-      return this.translationData.lblCorridorwassuccessfullydeleted.replace('$', name);
+      return this.translationData.lblCorridorwasnotdeleted.replace('$', name);
     else
       return ("Corridor '$' cannot be deleted, it is associated with alert").replace('$', name);
   }
@@ -281,7 +281,7 @@ export class ManageCorridorComponent implements OnInit {
         this.selectedCorridors.select(row);
         this.markerArray.push(row);
       });
-      this.mapFunctions.viewSelectedRoutes(this.markerArray,this.accountOrganizationId);
+      this.mapFunctions.viewSelectedRoutes(this.markerArray,this.accountOrganizationId,this.translationData);
       this.showMap = true;
     }
   //  console.log(this.markerArray);
@@ -316,7 +316,8 @@ export class ManageCorridorComponent implements OnInit {
       let arr = this.markerArray.filter(item => item.id != row.id);
       this.markerArray = arr;
       }
-    this.mapFunctions.viewSelectedRoutes(this.markerArray,this.accountOrganizationId);
+      this.mapFunctions.viewSelectedRoutesCorridor(this.markerArray,this.accountOrganizationId,this.translationData);
+    // this.mapFunctions.viewSelectedRoutes(this.markerArray,this.accountOrganizationId);
 
      // this.addPolylineToMap();
   }
@@ -369,20 +370,20 @@ export class ManageCorridorComponent implements OnInit {
 
     this.tabVisibility.emit(true);
     if(_eventObj.successMsg=="create"){
-      var _msg =  "Corridor "+_eventObj.CreateCorridorName+" created successfully!"
+      var _msg = this.translationData.lblCorridorCreatedSuccessfully.replace('$', _eventObj.CreateCorridorName);//;  "Corridor '"+_eventObj.CreateCorridorName+"' created successfully!"
       this.successMsgBlink(_msg);
     }
     else if(_eventObj.successMsg=="update"){
-      var _msg = "Corridor updated successfully!"
+      var _msg = this.translationData.lblCorridorUpdatedSuccessfully;
       this.successMsgBlink(_msg);
   }
     else if(_eventObj.successMsg=="reject"){
-        var _msg = "Corridor label exists!"
+        var _msg = this.translationData.lblCorridorexists;//"Corridor label exists!"
         this.failureMsgBlink(_msg);
     }
     this.loadCorridorData();
     setTimeout(() => {
-      this.mapFunctions.initMap(this.mapElement);
+      this.mapFunctions.initMap(this.mapElement, this.translationData);
       }, 0);
   }
 

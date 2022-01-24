@@ -356,7 +356,9 @@ proceedStep(prefData: any, preference: any){
   }
 
   loadFilterDataBasedOnPrivileges(){
+    
     this.alertService.getAlertFilterDataBasedOnPrivileges(this.accountId, this.accountRoleId).subscribe((data) => {
+     
       this.alertCategoryTypeMasterData = data["enumTranslation"];
       this.alertCategoryTypeFilterData = data["alertCategoryFilterRequest"];
       this.associatedVehicleData = data["associatedVehicleRequest"];
@@ -854,19 +856,27 @@ proceedStep(prefData: any, preference: any){
         this.vehicleByVehGroupList= this.associatedVehicleData.filter(item => item.vehicleGroupDetails.includes(this.vehicle_group_selected+"~"));
       }
       else{ //if subscriptionType == 'v'
-        featuresData.forEach(element => {
-          let vehicle= this.associatedVehicleData.filter(item => item.vehicleId == element.vehicleId && item.vehicleGroupDetails.includes(this.vehicle_group_selected+"~"));
+        // featuresData.forEach(element => {
+        //   let vehicle= this.associatedVehicleData.filter(item => item.vehicleId == element.vehicleId && item.vehicleGroupDetails.includes(this.vehicle_group_selected+"~"));
+        //   if(vehicle.length > 0){
+        //     this.vehicleByVehGroupList.push(vehicle[0]);
+        //   }
+        //});
+        if(featuresData.length > 0){
+          let vehicle= this.associatedVehicleData.filter(item =>  item.vehicleGroupDetails.includes(this.vehicle_group_selected+"~"));
           if(vehicle.length > 0){
-            this.vehicleByVehGroupList.push(vehicle[0]);
+             this.vehicleByVehGroupList = vehicle.slice();
           }
-        });
+        }
       }
 
       //subscribed vehicles
-      this.vehicleByVehGroupList.forEach(element => {
-        element["subcriptionStatus"] = true;
-        this.vehicleListForTable.push(element);
-      });
+      // this.vehicleByVehGroupList.forEach(element => {
+      //   element["subcriptionStatus"] = true;
+      //   this.vehicleListForTable.push(element);
+      // });
+      
+      this.vehicleListForTable = this.vehicleByVehGroupList;
 
       //Commented because only vehicles from that group should be displayed.
       //non-subscribed vehicles
@@ -908,24 +918,42 @@ proceedStep(prefData: any, preference: any){
   loadMap() {
     if(this.alert_type_selected == 'C'){
       setTimeout(() => {
-        this.mapFunctions.initMap(this.mapElement);
+        this.mapFunctions.initMap(this.mapElement, this.translationData);
         }, 0);
     }
     else{
       let defaultLayers = this.platform.createDefaultLayers();
       setTimeout(() => {
-        this.map = new H.Map(
-          this.mapElement.nativeElement,
-          defaultLayers.vector.normal.map,
-          {
-            center: { lat: 51.43175839453286, lng: 5.519981221425336 },
-            zoom: 4,
-            pixelRatio: window.devicePixelRatio || 1
-          }
-        );
+        this.map = new H.Map(this.mapElement.nativeElement,
+          defaultLayers.raster.normal.map, {
+          center: { lat: 51.43175839453286, lng: 5.519981221425336 },
+          zoom: 4,
+          pixelRatio: window.devicePixelRatio || 1
+        });
         window.addEventListener('resize', () => this.map.getViewPort().resize());
         var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
-        this.ui = H.ui.UI.createDefault(this.map, defaultLayers);  
+        this.ui = H.ui.UI.createDefault(this.map, defaultLayers);
+        
+        this.ui.removeControl("mapsettings");
+        // create custom one
+        var ms = new H.ui.MapSettingsControl({
+            baseLayers : [ { 
+              label: this.translationData.lblNormal , layer: defaultLayers.raster.normal.map
+            },{
+              label: this.translationData.lblSatellite , layer: defaultLayers.raster.satellite.map
+            }, {
+              label: this.translationData.lblTerrain , layer: defaultLayers.raster.terrain.map
+            }
+            ],
+          layers : [{
+                label: this.translationData.lblLayerTraffic , layer: defaultLayers.vector.normal.traffic
+            },
+            {
+                label: this.translationData.lblLayerIncidents , layer: defaultLayers.vector.normal.trafficincidents
+            }
+          ]
+        });
+        this.ui.addControl("customized", ms);
       }, 1000);
     }
 }
@@ -954,16 +982,21 @@ PoiCheckboxClicked(event: any, row: any) {
       //For tooltip on info bubble
 
       var bubble;
+      var transPOIName = this.translationData.lblPOIName;
+      var transCategory = this.translationData.lblCategory;
+      var SubCategory = this.translationData.lblSubCategory;
+      var Address = this.translationData.lblAddress;
+      
       marker.addEventListener('pointerenter', function (evt) {
         // event target is the marker itself, group is a parent event target
         // for all objects that it contains
         bubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
           // read custom data
-          content:`<div>
-          <b>POI Name: ${element.name}</b><br>
-          <b>Category: ${element.categoryName}</b><br>
-          <b>Sub-Category: ${element.subCategoryName}</b><br>
-          <b>Address: ${element.address}</b>
+          content:`<div style='width:310px;' class='font-14-px line-height-21px'>
+          <span class='font-helvetica-md'>${transPOIName}:</span> ${element.name}<br>
+          <span class='font-helvetica-md'>${transCategory}:</span> ${element.categoryName}<br>
+          <span class='font-helvetica-md'>${SubCategory}:</span> ${element.subCategoryName}<br>
+          <span class='font-helvetica-md'>${Address}:</span> ${element.address}
           </div>`
         });
         // show info bubble
@@ -1067,15 +1100,18 @@ PoiCheckboxClicked(event: any, row: any) {
     this.map.addObject(circleGroup);
 
     var bubble;
+    var transCategory = this.translationData.lblCategory;
+    var SubCategory = this.translationData.lblSubCategory;
+    var GeofenceName = this.translationData.lblGeofence;
     circle.addEventListener('pointerenter', function (evt) {
       // event target is the marker itself, group is a parent event target
       // for all objects that it contains
       bubble =  new H.ui.InfoBubble({lat:rowData.latitude,lng:rowData.longitude}, {
         // read custom data
-        content:`<div>
-        <b>Geofence Name: ${rowData.name}</b><br>
-        <b>Category: ${rowData.categoryName}</b><br>
-        <b>Sub-Category: ${rowData.subCategoryName}</b><br>
+        content:`<div style='width:310px;' class='font-14-px line-height-21px'>
+        <span class='font-helvetica-md'>${GeofenceName}:</span> ${rowData.name}<br>
+        <span class='font-helvetica-md'>${transCategory}:</span> ${rowData.categoryName}<br>
+        <span class='font-helvetica-md'>${SubCategory}:</span> ${rowData.subCategoryName}<br>
         </div>`
       });
       // show info bubble
@@ -1125,6 +1161,9 @@ PoiCheckboxClicked(event: any, row: any) {
         map.addObject(mainGroup);
 
         var bubble;
+        var transCategory = this.translationData.lblCategory;
+        var SubCategory = this.translationData.lblSubCategory;
+        var GeofenceName = this.translationData.lblGeofence;
         // event listener for main group to show markers if moved in with mouse (or touched on touch devices)
         mainGroup.addEventListener('pointerenter', function(evt) {
           if (polygonTimeout) {
@@ -1136,10 +1175,10 @@ PoiCheckboxClicked(event: any, row: any) {
           
           bubble =  new H.ui.InfoBubble({ lat: rowData.latitude, lng: rowData.longitude } , {
             // read custom data
-            content:`<div>
-            <b>Geofence Name: ${rowData.name}</b><br>
-              <b>Category: ${rowData.categoryName}</b><br>
-              <b>Sub-Category: ${rowData.subCategoryName}</b><br>
+            content:`<div style='width:310px;' class='font-14-px line-height-21px'>
+              <span class='font-helvetica-md'>${GeofenceName}:</span> ${rowData.name}<br>
+              <span class='font-helvetica-md'>${transCategory}:</span> ${rowData.categoryName}<br>
+              <span class='font-helvetica-md'>${SubCategory}:</span> ${rowData.subCategoryName}<br>
             </div>`
           });
           // show info bubble
@@ -1424,7 +1463,7 @@ convertToFromTime(milliseconds: any){
     
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / 
     ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} / 
-    ${this.translationData.lblLandmarks ? this.translationData.lblAlerts : "Alerts"} / 
+    ${this.translationData.lblAlerts ? this.translationData.lblAlerts : "Alerts"} / 
     ${page}`;
   }
 
@@ -1743,7 +1782,7 @@ convertToFromTime(milliseconds: any){
 
   onPOIClick(row: any){
     const colsList = ['icon', 'landmarkname', 'categoryname', 'subcategoryname', 'address'];
-    const colsName = [this.translationData.lblIcon, this.translationData.lblName, this.translationData.lblCategory, this.translationData.lblSubCategory, this.translationData.lblAddress];
+    const colsName = [this.translationData.lblicon, this.translationData.lblName, this.translationData.lblCategory, this.translationData.lblSubCategory, this.translationData.lblAddress];
     const tableTitle = this.translationData.lblPOI;
     let objData = { 
       organizationid : this.accountOrganizationId,
@@ -1789,7 +1828,8 @@ convertToFromTime(milliseconds: any){
       tableData: tableData,
       colsList: colsList,
       colsName: colsName,
-      tableTitle: tableTitle
+      tableTitle: tableTitle,
+      translationData: this.translationData
     }
     this.dialogRef = this.dialog.open(CommonTableComponent, dialogConfig);
   }
@@ -2548,7 +2588,7 @@ convertToFromTime(milliseconds: any){
         {
          // this.alertForm.get('warningLevelThreshold').setValue('');  
           invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'warningLevelThreshold' + '"]');
-          this.filterDetailsErrorMsg ='Warning value should be less than critical value';
+          this.filterDetailsErrorMsg =this.translationData.lblWarningValueShouldbeLess;
         }
         else if((this.isAdvisoryLevelSelected && (this.alertForm.get('advisoryLevelThreshold').value == '')) ||
         ((this.isAdvisoryLevelSelected && this.isWarningLevelSelected ) && Number(this.alertForm.get('advisoryLevelThreshold').value) >= Number(this.alertForm.get('warningLevelThreshold').value )) ||
@@ -2556,7 +2596,7 @@ convertToFromTime(milliseconds: any){
         {
          // this.alertForm.get('advisoryLevelThreshold').setValue(''); 
         invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'advisoryLevelThreshold' + '"]');
-        this.filterDetailsErrorMsg ='Advisory value should be less than critical & warning value';
+        this.filterDetailsErrorMsg =this.translationData.lblAdvisoryValueShouldBeLess;
       }           
     }
     else{

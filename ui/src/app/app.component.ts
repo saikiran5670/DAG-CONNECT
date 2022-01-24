@@ -120,7 +120,7 @@ export class AppComponent {
     vehiclegroupmanagement: 'lblVehicleGroupManagement',
     termsandcondition: 'lblTermsAndConditions',
     featuremanagement: 'lblFeatureManagement',
-    organisationrelationshipmanagement: 'lblOrgnisationRelationshipManagement',
+    organisationrelationshipmanagement: 'lblOrganisationRelationshipManagement',
     relationshipmanagement: 'lblRelationshipManagement',
     translationmanagement: 'lblTranslationManagement',
     configurationmanagemnt: 'lblConfigurationManagemnt',
@@ -206,7 +206,7 @@ export class AppComponent {
         accountrolemanagement: 'lblAccountRoleManagement',
         vehiclegroupmanagement: 'lblVehicleGroupManagement',
         featuremanagement: 'lblFeatureManagement',
-        organisationrelationshipmanagement: 'lblOrgnisationRelationshipManagement',
+        organisationrelationshipmanagement: 'lblOrganisationRelationshipManagement',
         relationshipmanagement: 'lblRelationshipManagement',
         translationmanagement: 'lblTranslationManagement',
         configurationmanagemnt: 'lblConfigurationManagemnt',
@@ -428,6 +428,11 @@ export class AppComponent {
         }
       }
     });
+
+    this.dataInterchangeService.prefClosedSource$.subscribe((flag: any) => {
+      this.userPreferencesFlag = flag;
+    });
+
   }
 
   @HostListener('window:beforeunload', ['$event'])
@@ -537,11 +542,11 @@ export class AppComponent {
       }
       if (elem.subMenus.length > 0) { //-- If subMenus
         elem.subMenus.forEach(subMenuItem => {
-          landingPageMenus.push({ id: subMenuItem.menuId, value: `${elem.translatedName}.${subMenuItem.translatedName}`, url:`${elem.url}/${subMenuItem.url}` });
+          landingPageMenus.push({ menuLabelKey:elem.key, subMenuLabelKey:subMenuItem.key, id: subMenuItem.menuId, value: `${elem.translatedName}.${subMenuItem.translatedName}`, url:`${elem.url}/${subMenuItem.url}` });
         });
       } else {
         if (!elem.externalLink) { //-- external link not added
-          landingPageMenus.push({ id: elem.menuId, value: `${elem.translatedName}`, url:`${elem.url}` });
+          landingPageMenus.push({ menuLabelKey:elem.key, id: elem.menuId, value: `${elem.translatedName}`, url:`${elem.url}` });
         }
       }
     })
@@ -956,6 +961,7 @@ export class AppComponent {
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
+    this.translationService.applicationTranslationData = this.translationData;
   }
 
   ngOnInit() {
@@ -1065,8 +1071,20 @@ export class AppComponent {
     }
   }
 
-  navigateToPage(pageName) {
+  navigateToPage(menu) {
     //this.currentTitle = this.pageTitles[pageName];
+    if(menu.externalLink) {
+      if(menu.url == "information") {
+        let selectedLanguage = JSON.parse(localStorage.getItem("language"));
+        if(selectedLanguage.code == "nl-NL") {
+          menu.link = menu.link.replace('/en/','/nl-nl/');
+        }
+        if(selectedLanguage.code == "de-DE") {
+          menu.link = menu.link.replace('/en/','/de-de/');
+        }
+      }
+      window.open(menu.link, '_blank');
+    }
     if (this.menuCollapsed) {
       this.hideAllOpenMenus();
     }
@@ -1266,7 +1284,10 @@ export class AppComponent {
 
   transform(value: number): string {
     const minutes: number = Math.floor(value / 60);
-    return minutes + ':' + (value - minutes * 60);
+    let min: any = (minutes < 10) ? `0${minutes}` : `${minutes}`;
+    let sec: any = ((value - minutes * 60) < 10) ? `0${(value - minutes * 60)}` : `${(value - minutes * 60)}`;
+    return `${min}:${sec}`;
+    //return minutes + ':' + (value - minutes * 60);
   }
 
   clearMessages(): void {
@@ -1328,27 +1349,33 @@ export class AppComponent {
       case 'ddateformat_dd/mm/yyyy': {
         this.dateFormats.display.dateInput = "DD/MM/YYYY";      
         this.alertDateFormat='DD/MM/YYYY';
+        this.dateFormats.parse.dateInput = "DD/MM/YYYY";
         break;
       }
       case 'ddateformat_mm/dd/yyyy': {
         this.dateFormats.display.dateInput = "MM/DD/YYYY";
         this.alertDateFormat='MM/DD/YYYY';
+        this.dateFormats.parse.dateInput = "MM/DD/YYYY";
         break;
       }
       case 'ddateformat_dd-mm-yyyy': {
         this.dateFormats.display.dateInput = "DD-MM-YYYY";       
         this.alertDateFormat='DD-MM-YYYY';
+        this.dateFormats.parse.dateInput = "DD-MM-YYYY";
         break;
       }
       case 'ddateformat_mm-dd-yyyy': {
         this.dateFormats.display.dateInput = "MM-DD-YYYY";
         this.alertDateFormat='MM-DD-YYYY';
+        this.dateFormats.parse.dateInput = "MM-DD-YYYY";
         break;
       }
       default:{
         this.dateFormats.display.dateInput = "MM/DD/YYYY";
         this.alertDateFormat='MM/DD/YYYY';
+        this.dateFormats.parse.dateInput = "MM/DD/YYYY";
       }
+      localStorage.setItem("dateFormat", this.dateFormats.display.dateInput);
     }
   }
 

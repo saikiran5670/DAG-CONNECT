@@ -7,7 +7,7 @@
             <span class='custom-font' (click)="closeImport()">
                 <span>
                     <&nbsp;</span>
-                        <span class='backBtnCss'>{{ this.importTranslationData.lblBack  }}</span>
+                        <span class='backBtnCss'>{{ importTranslationData.lblBack  }}</span>
             </span>
         </div>
     </div>
@@ -15,7 +15,7 @@
     <form [formGroup]="importPackageFormGroup">
         <div class='margin-bottom-sm' fxLayout="row" fxLayoutAlign="space-between">
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ this.importTranslationData.importTitle}}</span>
+                <span class='font-18-px line-height-27px font-helvetica-md'>{{ importTranslationData.importTitle }}</span>
             </div>
            
       
@@ -24,40 +24,40 @@
             <div style='width: 60%' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                 <span style='display: flex; align-items: center;'>
                     <img matTooltip='Download' [src]='fileIcon' style="width: 30px; height: 30px;" />&nbsp;
-                    <a  (click)='downloadTemplate()' class='cursor-pointer' style='cursor: pointer; font: 1 16px/32px Roboto, "Helvetica Neue", sans-serif; text-decoration-line: underline;'>
-                        {{ this.importTranslationData.downloadTemplate}}
+                    <a class='font-16-px line-height-24px cursor-pointer' (click)='downloadTemplate()' style='cursor: pointer; text-decoration-line: underline;'>
+                        {{ importTranslationData.downloadTemplate }}
                     </a>
                 </span>
-                <span>{{ this.importTranslationData.downloadTemplateInstruction}}</span>
+                <span>{{ importTranslationData.downloadTemplateInstruction }}</span>
             </div>
             <div style='width: 90%; background: #ecf7fe; border-radius: 5px;' fxLayout="column" fxLayoutAlign="end">
                 <div style='padding: 30px;' fxLayout="row" fxLayoutGap="25px" fxLayoutAlign="start">
                     <div class='full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                         <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start">
                             <div class='areaWidth full-width myform-wrappe uploadArea' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                                <mat-label>{{this.importTranslationData.selectUpdatedFile}} <span class='mandatoryColor'>*</span></mat-label>
+                                <mat-label class='font-16-px line-height-24px'>{{ importTranslationData.selectUpdatedFile }} <span class='mandatoryColor'>*</span></mat-label>
                                 <mat-form-field appearance="outline">
                                     <ngx-mat-file-input #removableInput (change)="addfile($event)" [accept]="fileExtension" formControlName="uploadFile" placeholder="Upload File" ></ngx-mat-file-input>
-                                    <button mat-flat-button color="primary" matSuffix>{{ this.importTranslationData.browse }}</button>
+                                    <button mat-flat-button color="primary" matSuffix>{{ importTranslationData.browse }}</button>
                                 </mat-form-field>
                                 <mat-error *ngIf="importPackageFormGroup.get('uploadFile').hasError('required')">
-                                    {{ this.importTranslationData.selectFile }}
+                                    {{ importTranslationData.selectFile }}
                                 </mat-error>
                                 <mat-error *ngIf="importPackageFormGroup.get('uploadFile').hasError('maxContentSize')">
-                                    {{this.importTranslationData.totalSizeMustNotExceed  }} {{importPackageFormGroup.get('uploadFile')?.getError('maxContentSize').maxSize | byteFormat}} ({{importPackageFormGroup.get('uploadFile')?.getError('maxContentSize').actualSize
-                                    | byteFormat}}).
+                                    {{ importTranslationData.totalSizeMustNotExceed }} {{ importPackageFormGroup.get('uploadFile')?.getError('maxContentSize').maxSize | byteFormat }} ({{ importPackageFormGroup.get('uploadFile')?.getError('maxContentSize').actualSize
+                                    | byteFormat }}).
                                 </mat-error> 
                                <mat-error *ngIf="excelEmptyMsg">
-                                    {{ this.importTranslationData.emptyFile  }}
+                                    {{ importTranslationData.emptyFile  }}
                                 </mat-error> 
                                 <mat-error *ngIf="filetypeError">
-                                    {{ this.importTranslationData.invalidFileType}}
+                                    {{ importTranslationData.invalidFileType}}
                                 </mat-error> 
                             </div>
                             <div fxLayout="column" class='margin-top-adjust'>
                                 <button style='color: #fff;' [disabled]="!importPackageFormGroup.valid || excelEmptyMsg || filetypeError" [ngStyle]="{'margin-top': importPackageFormGroup.get('uploadFile').hasError('required') ? '0px' : '3px'}" mat-flat-button color="primary"
                                     (click)="importNewFile(removableInput)">
-                                    <mat-icon>arrow_circle_up</mat-icon> {{ this.importTranslationData.uploadButtonText}}
+                                    <mat-icon>arrow_circle_up</mat-icon> {{ importTranslationData.uploadButtonText}}
                                 </button>
                             </div>
                         </div>
@@ -73,7 +73,7 @@
   
     <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
         <div style='width:95%;' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ this.importTranslationData.importedFileDetails }} ( {{filelist.length}} )</span>
+            <span class='font-16-px line-height-24px font-helvetica-md'>{{ importTranslationData.importedFileDetails }} ({{ filelist.length }})</span>
         </div>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
             <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
@@ -82,12 +82,12 @@
     <div *ngIf="!packageCodeErrorMsg">
     <div fxLayout="row" fxLayoutAlign="start space-between">
         <div style='width:50%;' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-            <span>{{ this.importTranslationData.imported }} <span style='color: green'>{{importedCount}} {{this.importTranslationData.new}} {{importedCount>1 ? this.importTranslationData.fileTypeMultiple :this.importTranslationData.fileType}}</span></span>
+            <span>{{ importTranslationData.imported }} <span style='color: green'>{{importedCount}} {{importTranslationData.new}} {{importedCount>1 ? importTranslationData.fileTypeMultiple : importTranslationData.fileType}}</span></span>
         </div>
     </div>
     <div fxLayout="row" fxLayoutAlign="start space-between">
         <div style='width:50%;' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-            <span>{{ this.importTranslationData.rejected  }} <span [ngClass]="{'cursor-pointer': rejectedCount > 0}" (click)="(rejectedCount > 0) ? showRejectedPopup(rejectedList) : ''" style='color: red; text-decoration-line: underline;'>{{ rejectedCount }} {{ this.importTranslationData.fileTypeMultiple}}</span></span>
+            <span>{{ importTranslationData.rejected  }} <span [ngClass]="{'cursor-pointer': rejectedCount > 0}" (click)="(rejectedCount > 0) ? showRejectedPopup(rejectedList) : ''" style='color: red; text-decoration-line: underline;'>{{ rejectedCount }} {{ importTranslationData.fileTypeMultiple}}</span></span>
 
         </div>
     </div>

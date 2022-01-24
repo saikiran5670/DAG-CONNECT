@@ -30,6 +30,7 @@ export class ManageCategoryComponent implements OnInit , AfterViewInit{
   @ViewChild(MatSort) sort: MatSort;
   categoryList: any = [];
   subCategoryList: any = [];
+  initSubCategoryList: any = [];
   categoryTitleVisible: boolean = false;
   displayMessage: any = '';
   actionType: any;
@@ -122,9 +123,11 @@ export class ManageCategoryComponent implements OnInit , AfterViewInit{
           this.subCategoryList.push({
             id: elem.subCategoryId,
             name: elem.subCategoryName,
+            parentCategoryId: elem.parentCategoryId,
             organizationId: elem.organizationId
           });
         });
+        this.initSubCategoryList = JSON.parse(JSON.stringify(this.subCategoryList));
       }
     }
   }
@@ -162,9 +165,9 @@ export class ManageCategoryComponent implements OnInit , AfterViewInit{
   }
 
   compare(a: Number | String , b: Number  | String, isAsc: boolean, columnName: any){
-    if(columnName == 'parentCategoryName'){
-      if(!(a instanceof Number)) a = a.toString().toUpperCase();
-      if(!(b instanceof Number)) b = b.toString().toUpperCase();
+    if(columnName ==='parentCategoryName' || columnName ==='subCategoryName'){
+      if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toUpperCase();
+      if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toUpperCase();
     }
     return (a < b ? -1 : 1 ) * (isAsc ? 1 : -1);
   }
@@ -385,7 +388,8 @@ export class ManageCategoryComponent implements OnInit , AfterViewInit{
       tableData: tableData,
       colsList: colsList,
       colsName: colsName,
-      tableTitle: tableTitle
+      tableTitle: tableTitle,
+      translationData: this.translationData
     }
     this.dialogRef = this.dialog.open(CommonTableComponent, dialogConfig);
   }
@@ -394,6 +398,7 @@ export class ManageCategoryComponent implements OnInit , AfterViewInit{
     this.categorySelection = parseInt(_event.value);
     if(this.categorySelection == 0 && this.subCategorySelection == 0){
       this.onUpdateDataSource(this.allCategoryData); //-- load all data
+      this.subCategoryList = JSON.parse(JSON.stringify(this.initSubCategoryList));
     }
     else if(this.categorySelection == 0 && this.subCategorySelection != 0){
       let filterData = this.allCategoryData.filter(item => item.subCategoryId == this.subCategorySelection);
@@ -408,6 +413,7 @@ export class ManageCategoryComponent implements OnInit , AfterViewInit{
       let selectedId = this.categorySelection;
       let selectedSubId = this.subCategorySelection;
       let categoryData = this.allCategoryData.filter(item => item.parentCategoryId === selectedId);
+      this.subCategoryList = this.initSubCategoryList.filter(item => item.parentCategoryId === selectedId);
       if(selectedSubId != 0){
         categoryData = categoryData.filter(item => item.subCategoryId === selectedSubId);
       }

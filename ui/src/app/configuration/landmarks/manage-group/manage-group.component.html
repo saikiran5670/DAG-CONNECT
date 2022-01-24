@@ -12,7 +12,7 @@
         <mat-card class='mat-elevation-z'>
             <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblGroups || 'Groups' }}
+                    <span class='font-18-px line-height-27px font-helvetica-md'>{{ translationData.lblGroups || 'Groups' }}
                         ({{ dataSource.filteredData.length }})</span>
                 </div>
             </div>
@@ -72,13 +72,13 @@
                         <ng-container matColumnDef="action">
                             <mat-header-cell *matHeaderCellDef>{{ translationData.lblActions || 'Actions' }}</mat-header-cell>
                             <mat-cell *matCellDef="let row">
-                                <button class='actionBtn' mat-flat-button matTooltip="View" (click)="editViewlandmarkGroup(row, 'view')">
+                                <button class='actionBtn'  (click)="editViewlandmarkGroup(row, 'view')" mat-flat-button matTooltip="{{ translationData.lblView || 'View' }}" >
                                     <mat-icon>visibility</mat-icon>
                                 </button>
-                                <button *ngIf="!adminAccessType.adminReadOnlyAccess" class='actionBtn'  mat-flat-button (click)="editViewlandmarkGroup(row, 'edit')" matTooltip="Edit">
+                                <button *ngIf="!adminAccessType.adminReadOnlyAccess" class='actionBtn' (click)="editViewlandmarkGroup(row, 'edit')"  mat-flat-button  matTooltip= "{{ translationData.lblEdit || 'Edit' }}">
                                     <mat-icon>create</mat-icon>
                                 </button>
-                                <button *ngIf="adminAccessType.adminFullAccess" class='actionBtn'  mat-flat-button (click)="deleteLandmarkGroup(row)" matTooltip="Delete">
+                                <button *ngIf="adminAccessType.adminFullAccess" class='actionBtn'  (click)="deleteLandmarkGroup(row)"  mat-flat-button matTooltip= "{{ translationData.lblDelete || 'Delete' }}">
                                     <mat-icon class="deleteIcon">delete_outline</mat-icon>
                                 </button>
                             </mat-cell>

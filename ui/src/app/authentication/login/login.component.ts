@@ -50,7 +50,7 @@ export class LoginComponent implements OnInit {
       'password': [null, Validators.compose([Validators.required])]
     });
     this.forgotPasswordForm = this.fb.group({
-      'emailId': [null, Validators.compose([Validators.required, Validators.maxLength(120), Validators.pattern("^[A-Za-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$")])]
+      'emailId': [null, Validators.compose([Validators.required, Validators.maxLength(120), Validators.pattern("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+[.]+[a-zA-Z]{2,4}$")])]
     });
 
     this.cookiesFlag = this.cookieService.get('cookiePolicy') ? false : true;
@@ -332,6 +332,7 @@ export class LoginComponent implements OnInit {
   }
 
   public onResetPassword(values: object): void {
+    values['emailId'] = values['emailId'].toLowerCase(); 
     console.log("values:: ", values)
     if (this.forgotPasswordForm.valid) {
       this.accountService.resetPasswordInitiate(values).subscribe(data => {

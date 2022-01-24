@@ -44,10 +44,10 @@ namespace net.atos.daf.ct2.otasoftwareupdateservice
             }
             catch (Exception ex)
             {
-                _logger.Error("OTASoftwareUpdateManagementService:GetScheduleSoftwareUpdate", ex);
+                _logger.Error($"{nameof(GetScheduleSoftwareUpdate)}: With Error:-", ex);
                 return await Task.FromResult(new ScheduleSoftwareUpdateResponse
                 {
-                    Message = "Exception :-" + ex.Message,
+                    Message = OTASoftwareUpdateConstants.INTERNAL_SERVER_MSG,
                     HttpStatusCode = ResponseCode.InternalServerError
                 }); ;
             }

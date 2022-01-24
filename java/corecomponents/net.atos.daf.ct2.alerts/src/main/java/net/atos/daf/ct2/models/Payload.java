@@ -18,6 +18,25 @@ public class Payload<T> implements Serializable {
 
     private Optional<T> data;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
-    @Setter(AccessLevel.NONE)
     private final Long createdTimestamp = System.currentTimeMillis();
+
+    public Optional<T> getData() {
+        return data;
+    }
+
+    public void setData(Optional<T> data) {
+        this.data = data;
+    }
+
+    public Map<String, Object> getAdditionalProperties() {
+        return additionalProperties;
+    }
+
+    public void setAdditionalProperties(Map<String, Object> additionalProperties) {
+        this.additionalProperties = additionalProperties;
+    }
+
+    public Long getCreatedTimestamp() {
+        return createdTimestamp;
+    }
 }

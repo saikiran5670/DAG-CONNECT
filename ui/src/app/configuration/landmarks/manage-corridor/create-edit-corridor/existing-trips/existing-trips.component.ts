@@ -22,6 +22,7 @@ import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { MapFunctionsService } from '../../map-functions.service';
 import { ReplaySubject } from 'rxjs';
+import { Util } from 'src/app/shared/util';
 
 @Component({
   selector: 'app-existing-trips',
@@ -63,7 +64,7 @@ export class ExistingTripsComponent implements OnInit {
   dataSource: any = new MatTableDataSource([]);
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
-  displayedColumns = ['All', 'DriverName', 'distance', 'date', 'startPoint', 'endPoint'];
+  displayedColumns = ['All', 'DriverName', 'distance', 'startTimeStamp', 'startAddress', 'endAddress'];
   existingTripData: any = [];
   dataColValue: any = [];
   createEditStatus = false;
@@ -118,7 +119,9 @@ export class ExistingTripsComponent implements OnInit {
   organizationId: number;
   corridorId: number = 0;
   // localStLanguage: any;
-  accountId: any = JSON.parse(localStorage.getItem("accountId"));;
+  accountId: any = JSON.parse(localStorage.getItem("accountId"));
+  filterValue: string;
+;
   hereMap: any;
   distanceinKM = 0;
   viaRouteCount: boolean = false;
@@ -274,7 +277,7 @@ export class ExistingTripsComponent implements OnInit {
     // this.subscribeWidthValue();
     // this.existingTripForm.controls.widthInput.setValue(this.corridorWidthKm);
     setTimeout(() => {
-      this.mapFunctions.initMap(this.mapElement);
+      this.mapFunctions.initMap(this.mapElement, this.translationData);
     }, 0);
   }
 
@@ -302,22 +305,27 @@ export class ExistingTripsComponent implements OnInit {
     switch (this.prefDateFormat) {
       case 'dd/mm/yyyy': {
         this.dateFormats.display.dateInput = "DD/MM/YYYY";
+        this.dateFormats.parse.dateInput = "DD/MM/YYYY";
         break;
       }
       case 'mm/dd/yyyy': {
         this.dateFormats.display.dateInput = "MM/DD/YYYY";
+        this.dateFormats.parse.dateInput = "MM/DD/YYYY";
         break;
       }
       case 'dd-mm-yyyy': {
         this.dateFormats.display.dateInput = "DD-MM-YYYY";
+        this.dateFormats.parse.dateInput = "DD-MM-YYYY";
         break;
       }
       case 'mm-dd-yyyy': {
         this.dateFormats.display.dateInput = "MM-DD-YYYY";
+        this.dateFormats.parse.dateInput = "MM-DD-YYYY";
         break;
       }
       default: {
         this.dateFormats.display.dateInput = "MM/DD/YYYY";
+        this.dateFormats.parse.dateInput = "MM/DD/YYYY";
       }
     }
   }
@@ -346,6 +354,9 @@ export class ExistingTripsComponent implements OnInit {
 
   getTodayDate() {
     let todayDate = new Date(); //-- UTC
+    todayDate.setHours(0);
+    todayDate.setMinutes(0);
+    todayDate.setSeconds(0);
     return todayDate;
   }
 
@@ -370,6 +381,9 @@ export class ExistingTripsComponent implements OnInit {
   getLast3MonthDate() {
     let date = new Date();
     date.setMonth(date.getMonth() - 3);
+    date.setHours(0);
+    date.setMinutes(0);
+    date.setSeconds(0);
     return date;
   }
 
@@ -414,11 +428,31 @@ export class ExistingTripsComponent implements OnInit {
   }
 
   changeStartDateEvent(event: MatDatepickerInputEvent<any>) {
-    this.startDateValue = this.setStartEndDateTime(event.value._d, this.selectedStartTime, 'start');
+    let dateTime: any = '';
+    if(event.value._d.getTime() >= this.last3MonthDate.getTime()){ // CurTime > Last3MonthTime
+      if(event.value._d.getTime() <= this.endDateValue.getTime()){ // CurTime < endDateValue
+        dateTime = event.value._d;
+      }else{
+        dateTime = this.endDateValue;
+      }
+    }else{
+      dateTime = this.last3MonthDate;
+    }
+    this.startDateValue = this.setStartEndDateTime(dateTime, this.selectedStartTime, 'start');
   }
 
   changeEndDateEvent(event: MatDatepickerInputEvent<any>) {
-    this.endDateValue = this.setStartEndDateTime(event.value._d, this.selectedEndTime, 'end');
+    let dateTime: any = '';
+    if(event.value._d.getTime() <= this.todayDate.getTime()){ // EndTime > todayDate
+      if(event.value._d.getTime() >= this.startDateValue.getTime()){ // EndTime < startDateValue
+        dateTime = event.value._d;
+      }else{
+        dateTime = this.startDateValue;
+      }
+    }else{
+      dateTime = this.todayDate;
+    }
+    this.endDateValue = this.setStartEndDateTime(dateTime, this.selectedEndTime, 'end');
   }
 
   setStartEndDateTime(date: any, timeObj: any, type: any) {
@@ -1157,15 +1191,29 @@ export class ExistingTripsComponent implements OnInit {
         const isAsc = sort.direction === 'asc';
         return data.sort((a: any, b: any) => {
             let columnName = sort.active;
+            // if(columnName === date){
+            //   return this.compare(a[sort.active], b[sort.active], isAsc , date);
+            // }
             return this.compare(a[sort.active], b[sort.active], isAsc , columnName);
         });
       }
     });
+    Util.applySearchFilter(this.dataSource, this.displayedColumns ,this.filterValue );
   }
-  compare(a: Number | String, b: Number | String, isAsc: boolean, columnName: any) {
-
-    if(!(a instanceof Number)) a = a.toString().toUpperCase();
-    if(!(b instanceof Number)) b = b.toString().toUpperCase();
+  compare(a: any , b: any , isAsc: boolean, columnName: any) {
+    if(columnName == "startTimeStamp" ) {
+      if(!(a instanceof Number)) a = a.toString().toUpperCase();
+      if(!(b instanceof Number)) b = b.toString().toUpperCase();
+    }
+    if(columnName === "distance" ) {
+      var aa = a;
+      var bb = b;
+      return (aa < bb ? -1 : 1) * (isAsc ? 1 : -1);
+    }
+    if(columnName !== "distance" || columnName !== "startTimeStamp" ) {
+    if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toUpperCase();
+    if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toUpperCase();
+    }
 
   return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
 }

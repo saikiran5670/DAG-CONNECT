@@ -93,11 +93,11 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetReportParameter)}: With Error:-", ex);
                 return await Task.FromResult(new ReportParameterResponse
                 {
                     Code = ResponseCode.Failed,
-                    Message = "Get report parameter list fail : " + ex.Message
+                    Message = ReportSchedulerConstant.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -127,11 +127,11 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(CreateReportScheduler)}: With Error:-", ex);
                 return await Task.FromResult(new ReportSchedulerResponse
                 {
                     Code = ResponseCode.Failed,
-                    Message = "Create method in report scheduler fail : " + ex.Message
+                    Message = ReportSchedulerConstant.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -161,11 +161,11 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(UpdateReportScheduler)}: With Error:-", ex);
                 return await Task.FromResult(new ReportSchedulerResponse
                 {
                     Code = ResponseCode.Failed,
-                    Message = "Update method in report scheduler fail : " + ex.Message
+                    Message = ReportSchedulerConstant.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -176,7 +176,17 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
         {
             try
             {
-                IEnumerable<ReportSchedulerMap> reportSchedulerList = await _reportSchedulerManager.GetReportSchedulerList(request.OrganizationId);
+                var featureId = Convert.ToInt32(context.RequestHeaders.Get("report_feature_id").Value);
+
+                var vehicleDetailsAccountVisibilty
+                                              = await _visibilityManager
+                                                 .GetVehicleByAccountVisibility(request.AccountId, request.OrganizationId, request.ContextOrgId, featureId);
+
+                IEnumerable<int> vehicleIds = vehicleDetailsAccountVisibilty.Select(x => x.VehicleId).ToList().Distinct();
+
+                var vehgroupIds = vehicleDetailsAccountVisibilty.Select(x => x.VehicleGroupId).ToList().Distinct();
+
+                IEnumerable<ReportSchedulerMap> reportSchedulerList = await _reportSchedulerManager.GetReportSchedulerList(request.OrganizationId, vehicleIds.ToList(), vehgroupIds.ToList());
                 ReportSchedulerListResponse response = new ReportSchedulerListResponse();
                 if (reportSchedulerList.Any())
                 {
@@ -192,11 +202,38 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetReportSchedulerList)}: With Error:-", ex);
                 return await Task.FromResult(new ReportSchedulerListResponse
                 {
                     Code = ResponseCode.Failed,
-                    Message = ReportSchedulerConstant.REPORT_SCHEDULER_GET_FAIL_MSG + ex.Message
+                    Message = ReportSchedulerConstant.REPORT_SCHEDULER_GET_FAIL_MSG + ReportSchedulerConstant.INTERNAL_SERVER_MSG
+                });
+            }
+        }
+        public override async Task<ScheduledReportResponse> GetScheduledReport(ScheduledResponseIdRequest request, ServerCallContext context)
+        {
+            try
+            {
+                ScheduledReportResponse response = new ScheduledReportResponse();
+
+                var scheduledReportList = await _reportSchedulerManager.GetScheduledReport(request.ReportSchedulerId);
+
+                var res = JsonConvert.SerializeObject(scheduledReportList);
+                response.ScheduledReport.AddRange(
+                    JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<ScheduledReportRequest>>(res)
+                    );
+                response.Message = ReportSchedulerConstant.SHEDULED_REPORT_GET_SUCCESS_MSG;
+                response.Code = ResponseCode.Success;
+                _logger.Info(ReportSchedulerConstant.REPORT_SCHEDULER_GET_CALLED_MSG);
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"{nameof(GetScheduledReport)}: With Error:-", ex);
+                return await Task.FromResult(new ScheduledReportResponse
+                {
+                    Code = ResponseCode.Failed,
+                    Message = ReportSchedulerConstant.REPORT_SCHEDULER_GET_FAIL_MSG + ReportSchedulerConstant.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -229,7 +266,7 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(DeleteReportSchedule)}: With Error:-", ex);
                 return await Task.FromResult(new ReportStatusUpdateDeleteResponse
                 {
                     Message = $"Exception While deleting ReportSchedule with Report Id: {request.ReportId}",
@@ -268,7 +305,7 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(EnableDisableReportSchedule)}: With Error:-", ex);
                 return await Task.FromResult(new ReportStatusUpdateDeleteResponse
                 {
                     Message = $"Exception While Enable/Disable ReportSchedule with Report Id: {request.ReportId}",
@@ -324,11 +361,11 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetVehicleandVehicleGroupId)}: With Error:-", ex);
                 return await Task.FromResult(new VehicleandVehicleGroupIdResponse
                 {
                     Code = ResponseCode.Failed,
-                    Message = "Get Vehicle and Vehicle GroupId list fail : " + ex.Message
+                    Message = ReportSchedulerConstant.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -368,11 +405,11 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetPDFBinaryFormatById)}: With Error:-", ex);
                 return await Task.FromResult(new ReportPDFResponse
                 {
                     Code = ResponseCode.Failed,
-                    Message = string.Format("{0} {1}", ReportSchedulerConstant.REPORT_SCHEDULER_GETFORPDF_FAIL_MSG, ex.Message)
+                    Message = string.Format("{0} {1}", ReportSchedulerConstant.REPORT_SCHEDULER_GETFORPDF_FAIL_MSG, ReportSchedulerConstant.INTERNAL_SERVER_MSG)
                 });
             }
         }
@@ -428,11 +465,11 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(GetPDFBinaryFormatByToken)}: With Error:-", ex);
                 return await Task.FromResult(new ReportPDFResponse
                 {
                     Code = ResponseCode.Failed,
-                    Message = string.Format("{0} {1}", ReportSchedulerConstant.REPORT_SCHEDULER_GETFORPDF_FAIL_MSG, ex.Message)
+                    Message = string.Format("{0} {1}", ReportSchedulerConstant.REPORT_SCHEDULER_GETFORPDF_FAIL_MSG, ReportSchedulerConstant.INTERNAL_SERVER_MSG)
                 });
             }
         }
@@ -467,11 +504,11 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(UnSubscribeById)}: With Error:-", ex);
                 return await Task.FromResult(new UnSubscribeResponse
                 {
                     Code = ResponseCode.Failed,
-                    Message = string.Format("{0} {1}", ReportSchedulerConstant.UN_SUBCRIBE_FAIL_MSG2, ex.Message)
+                    Message = string.Format("{0} {1}", ReportSchedulerConstant.UN_SUBCRIBE_FAIL_MSG2, ReportSchedulerConstant.INTERNAL_SERVER_MSG)
                 });
             }
         }
@@ -506,11 +543,11 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(UnSubscribeAllByEmailId)}: With Error:-", ex);
                 return await Task.FromResult(new UnSubscribeAllResponse
                 {
                     Code = ResponseCode.Failed,
-                    Message = string.Format("{0} {1}", ReportSchedulerConstant.UN_SUBCRIBE_ALL_FAIL_MSG2, ex.Message)
+                    Message = string.Format("{0} {1}", ReportSchedulerConstant.UN_SUBCRIBE_ALL_FAIL_MSG2, ReportSchedulerConstant.INTERNAL_SERVER_MSG)
                 });
             }
         }

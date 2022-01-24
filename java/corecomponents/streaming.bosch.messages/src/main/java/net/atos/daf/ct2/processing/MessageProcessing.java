@@ -26,7 +26,7 @@ public class MessageProcessing<U, T> implements Serializable {
 	/* kafka topic data consuming as stream */
 	public void consumeBoschMessage(DataStream<KafkaRecord<U>> messageDataStream, String messageType1, String key,
 			String sinkTopicName, Properties properties, Class<T> tClass) {
-		System.out.println("message parsing start here");
+		//System.out.println("message parsing start here");
 		logger.info("consume Bosch Message message parsing start here");
 
 		DataStream<KafkaRecord<T>> finalKafkaPublishMessageSteream = messageDataStream.map(new MapFunction<KafkaRecord<U>, KafkaRecord<T>>() {
@@ -35,7 +35,7 @@ public class MessageProcessing<U, T> implements Serializable {
 			public KafkaRecord<T> map(KafkaRecord<U> value) {
 
 				logger.error("INFO: Raw Message processing start ====>" + value.toString());
-				System.out.println("INFO: Raw Message processing start at executor end ====>" + value.toString());
+			//	System.out.println("INFO: Raw Message processing start at executor end ====>" + value.toString());
 				try {
 					if ("Index".equalsIgnoreCase(key)) {
 
@@ -51,14 +51,11 @@ public class MessageProcessing<U, T> implements Serializable {
 							kafkaRecord.setKey(indexObj.getVin().toString());
 							kafkaRecord.setValue(record);
 							logger.info("Before Bosch Index message publishing  kafka record :: Message TYpe: " + key +"  Kafka Key =>  "+ indexObj.getVin().toString() + " , Extracted Message is::" + record);
-							System.out.println("before Bosch Index message publishing indexObj.toString() record :: "
-									+ key + "  Kafka Key =>  "+ indexObj.getVin().toString() + " Extracted Message is::" + indexObj.toString());
+						//	System.out.println("before Bosch Index message publishing indexObj.toString() record :: "+ key + "  Kafka Key =>  "+ indexObj.getVin().toString() + " Extracted Message is::" + indexObj.toString());
 							logger.info("Bosch Index message Data extraction is  successfully done.");
 							return kafkaRecord;
 						} else {
-							System.err.println(key + ":"
-									+ " Bosch Index Invalid message . mandatory fields are empty. Please check parse  Message"
-									+ indexObj.toString());
+							//System.err.println(key + ":"+ " Bosch Index Invalid message . mandatory fields are empty. Please check parse  Message"+ indexObj.toString());
 							logger.info(key + ":"
 									+ " Bosch Index Invalid message . mandatory fields are empty. Please check parse  Message"
 									+ indexObj.toString());
@@ -79,14 +76,11 @@ public class MessageProcessing<U, T> implements Serializable {
 							kafkaRecord.setValue(record);
 							logger.info("Before Bosch Monitor message publishing  kafka record :: TransId:"
 									+ monitorObj.getTransID() + " Kafka Key =>" + monitorObj.getVin().toString() + ", Extracted Message is::" + record);
-							System.out.println("before Bosch Monitor message publishing  record :: TransId: "
-									+  monitorObj.getTransID()  + " Kafka Key =>" + monitorObj.getVin().toString() + " Extracted Message is::" + monitorObj.toString());
+							//System.out.println("before Bosch Monitor message publishing  record :: TransId: "+  monitorObj.getTransID()  + " Kafka Key =>" + monitorObj.getVin().toString() + " Extracted Message is::" + monitorObj.toString());
 							logger.info("Bosch Monitor message Data extraction is  successfully done.");
 							return kafkaRecord;
 						} else {
-							System.err.println(key + ":" 
-									+ " Bosch Monitor message Invalid message . mandatory fields are empty. Please check parse  Message"
-									+ monitorObj.toString());
+							//System.err.println(key + ":" + " Bosch Monitor message Invalid message . mandatory fields are empty. Please check parse  Message"+ monitorObj.toString());
 							logger.info(key + ":"
 									+ " Bosch Invalid Monitor  message . mandatory fields are empty. Please check parse  Message"
 									+ monitorObj.toString());
@@ -106,14 +100,11 @@ public class MessageProcessing<U, T> implements Serializable {
 							kafkaRecord.setValue(record);
 							logger.info("Before Bosch Status message publishing  kafka record :: TransId :"
 									+ statusObj.getTransID()  + " Kafka Key =>" + statusObj.getVin().toString() + " Extracted Message is::" + record);
-							System.out.println("Before Bosch Status publishing  record :: TransId :"
-									+  statusObj.getTransID()  + "  Kafka Key =>  "+ statusObj.getVin().toString() +" Extracted Message is::" + statusObj.toString());
+							//System.out.println("Before Bosch Status publishing  record :: TransId :"+  statusObj.getTransID()  + "  Kafka Key =>  "+ statusObj.getVin().toString() +" Extracted Message is::" + statusObj.toString());
 							logger.info("Bosch Status Data extraction is  successfully done.");
 							return kafkaRecord;
 						} else {
-							System.err.println(key + ":"
-									+ " Bosch Status Invalid message . mandatory fields are empty. Please check parse  Message"
-									+ statusObj.toString());
+							//System.err.println(key + ":"+ " Bosch Status Invalid message . mandatory fields are empty. Please check parse  Message"+ statusObj.toString());
 							logger.info(key + ":"
 									+ " Bosch Invalid Status message . mandatory fields are empty. Please check parse  Message"
 									+ statusObj.toString());
@@ -125,8 +116,7 @@ public class MessageProcessing<U, T> implements Serializable {
 					ex.printStackTrace();
 					logger.error("Error while Bosch data processing for publish on kafka topic . Raw message is :"
 							+ value.toString());
-					System.out.println("Error while Bosch data processing for publish on kafka topic . Raw message is :"
-							+ value.toString());
+					//System.out.println("Error while Bosch data processing for publish on kafka topic . Raw message is :"+ value.toString());
 					logger.error("Bosch Raw Message processing  ending failed" + ex.getMessage());
 					logger.error(" Bosch Data  parsing and  data setting in index object failed "
 							+ ExceptionUtils.getFullStackTrace(ex));
@@ -141,7 +131,7 @@ public class MessageProcessing<U, T> implements Serializable {
 						new KafkaMessageSerializeSchema<T>(sinkTopicName), properties,
 						FlinkKafkaProducer.Semantic.EXACTLY_ONCE));
 
-		System.out.println("Message publish on kafka topic " + sinkTopicName + "successfully.");
+	//	System.out.println("Message publish on kafka topic " + sinkTopicName + "successfully.");
 		logger.info("Message publish on kafka topic " + sinkTopicName + "successfully.");
 		
 		//TODO  for publish Raw Message.

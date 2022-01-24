@@ -33,8 +33,10 @@ export class AlertsComponent implements OnInit {
   actionType: any = '';
   UnitTypeVal: any;
   selectedRowData: any= [];
+  singleVehicle: any =[];
   titleText: string;
   translationData: any= {};
+  vehicleByVehGroupList: any= [];
   localStLanguage: any;
   dataSource: any;
   initData: any = [];
@@ -73,8 +75,9 @@ export class AlertsComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   filterValue: any;
-  singleVehicle: any =[];
-  vehicleByVehGroupList: any= [];
+  accountPrefObj: any;
+  prefData: any;
+  vehicleDisplayPreference: any= 'dvehicledisplay_VehicleIdentificationNumber';
 
   public filteredVehicles: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
@@ -86,7 +89,9 @@ export class AlertsComponent implements OnInit {
     private vehicleService: VehicleService,
     private alertService: AlertService,
     private dialogService: ConfirmDialogService,
-    private reportMapService: ReportMapService ) { }
+    private reportMapService: ReportMapService ) {
+      this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
+     }
 
     ngOnInit() {
       this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -115,7 +120,10 @@ export class AlertsComponent implements OnInit {
         // this.loadFiltersData();
         this.loadDataBasedOnPrivileges();
       });
-      this.translationService.getPreferences(this.localStLanguage).subscribe((res) => { this.generalPreferences = res; this.getUnits() });
+      this.translationService.getPreferences(this.localStLanguage).subscribe((res) => {
+        this.generalPreferences = res; this.getUnits();
+        this.prefData = res;
+      });
     }
 
     getUnits() {
@@ -153,11 +161,11 @@ export class AlertsComponent implements OnInit {
       this.alertStatusList=[{
        id: 1,
        value:"A",
-       key:'Active'
+       key:this.translationData.lblActive
       },{
         id: 2,
         value:"I",
-        key:'Suspended'
+        key:this.translationData.lblSuspended
        }
     ]
     this.loadDataBasedOnPrivileges();
@@ -192,8 +200,9 @@ export class AlertsComponent implements OnInit {
           }
         });
       }
+
       this.alertTypeList = this.alertTypeListBasedOnPrivilege;
-     
+
       if(this.alertTypeList.length != 0){
         this.alertCategoryTypeMasterData.forEach(element => {
           this.alertTypeList.forEach(item => {
@@ -207,40 +216,45 @@ export class AlertsComponent implements OnInit {
       }
 
       this.associatedVehicleData.forEach(element => {
-        if(element.vehicleGroupDetails != ""){
+        if(element.vehicleGroupDetails && element.vehicleGroupDetails != ""){
           let vehicleGroupDetails= element.vehicleGroupDetails.split(",");
           vehicleGroupDetails.forEach(item => {
             let itemSplit = item.split("~");
             if(itemSplit[2] != 'S') {
-              let vehicleGroupObj= {
-                "vehicleGroupId" : itemSplit[0],
-                "vehicleGroupName" : itemSplit[1],
-                "vehicleId" : parseInt(element.vehicleId)
-              }
-              this.vehicleGroupListBasedOnPrivilege.push(vehicleGroupObj);
-              this.vehicleList.push(vehicleGroupObj);
-             }
-             else{
-              this.singleVehicle.push(element);
-             }
-            });
-          }
-
-        //this.vehicleListBasedOnPrivilege.push({"vehicleId" : element.vehicleId});
+            let vehicleGroupObj= {
+              "vehicleGroupId" : (itemSplit[0] && itemSplit[0] != '') ? parseInt(itemSplit[0]) : 0,
+              "vehicleGroupName" : itemSplit[1],
+              "vehicleId" : parseInt(element.vehicleId)
+            }
+            this.vehicleGroupListBasedOnPrivilege.push(vehicleGroupObj);
+            this.vehicleList.push(vehicleGroupObj);
+           }
+           else{
+            this.singleVehicle.push(element);
+           }
+          });
+        }
+        if(element.vehicleId && element.vehicleId != ''){
+          this.vehicleListBasedOnPrivilege.push({"vehicleId" : parseInt(element.vehicleId)});
+        }
       });
 
       this.vehicleGroupListBasedOnPrivilege = this.removeDuplicates(this.vehicleGroupListBasedOnPrivilege, "vehicleGroupId");
+      // this.vehicleList = this.vehicleGroupListBasedOnPrivilege;
+
       this.vehicleByVehGroupList = this.getUniqueVINs([...this.associatedVehicleData, ...this.singleVehicle]);
+      // this.resetVehiclesFilter();
       this.alertStatusList = [{
         id: 1,
         value: "A",
-        key: 'Active'
+        key:this.translationData.lblActive
       }, {
         id: 2,
         value: "I",
-        key: 'Suspended'
+        key:this.translationData.lblSuspended
       }
       ]
+
       this.loadAlertsData();
     })
   }
@@ -267,7 +281,7 @@ export class AlertsComponent implements OnInit {
 
     return unique;
   }
-  
+
   removeDuplicates(originalArray, prop) {
     var newArray = [];
     var lookupObject  = {};
@@ -361,71 +375,7 @@ export class AlertsComponent implements OnInit {
 
       this.originalAlertData= JSON.parse(JSON.stringify(data)); //Clone array of objects
       this.initData.forEach(item => {
-
-        let unitTypeEnum;
-        switch(item.category +item.type){
-            case 'LH': unitTypeEnum= "H";
-            item.UnitTypeVal =  this.translationData.lblHours;
-            break;
-
-            case 'LD':
-            if(this.prefUnitFormat == 'dunit_Metric'){
-              unitTypeEnum= "K";
-              item.UnitTypeVal = this.translationData.lblkm;
-             }
-              else{
-              unitTypeEnum= "L";
-              item.UnitTypeVal = this.translationData.lblmile;
-              }
-              break;
-
-            case 'LU': unitTypeEnum= "H";
-            item.UnitTypeVal =  this.translationData.lblHours;
-             break;
-
-            case 'LG':
-            if(this.prefUnitFormat == 'dunit_Metric'){
-              unitTypeEnum= "K";
-              item.UnitTypeVal = this.translationData.lblkm;}
-              else{
-              unitTypeEnum= "L";
-              item.UnitTypeVal = this.translationData.lblmile;
-              }
-             break;
-
-            case 'FP': unitTypeEnum= "P";
-            item.UnitTypeVal =  "%"
-            break;
-
-            case 'FL': unitTypeEnum= "P";
-            item.UnitTypeVal =  "%"
-            break;
-
-            case 'FT': unitTypeEnum= "P";
-            item.UnitTypeVal =  "%"
-            break;
-
-            case 'FI': unitTypeEnum= "S";
-            item.UnitTypeVal = this.translationData.lblSeconds;
-            break;
-
-            case 'FA':
-            if(this.prefUnitFormat == 'dunit_Metric'){
-              unitTypeEnum= "A";
-              item.UnitTypeVal = this.translationData.lblkilometerperhour;
-            }
-              else{
-                unitTypeEnum= "B";
-                item.UnitTypeVal = this.translationData.lblMilesPerHour
-              }
-              break;
-
-            case 'FF': unitTypeEnum= "P";
-            item.UnitTypeVal =  "%"
-            break;
-
-            return item.UnitTypeVal;
-          }
+        this.setUnitOfThreshold(item);
 
       let catVal = this.alertCategoryList.filter(cat => cat.enum == item.category);
       catVal.forEach(obj => {
@@ -503,8 +453,25 @@ export class AlertsComponent implements OnInit {
           findTest.value === test.value
           )
        );
-      } else {
-        item.vehicleGroupName = item.vehicleName;
+      } else {//according to pref
+        let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
+        if(vehicleDisplayId) {
+          let vehicledisplay = this.prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+          if(vehicledisplay.length != 0) {
+            this.vehicleDisplayPreference = vehicledisplay[0].name;
+          }
+        }
+        if(this.vehicleDisplayPreference == 'dvehicledisplay_VehicleName'){
+          item.vehicleGroupName = item.vehicleName;
+        }
+        else if(this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber'){
+          item.vehicleGroupName = item.vin;
+        }
+        else{
+          item.vehicleGroupName = item.regNo;
+        }
+        // item.vehicleGroupName = item.vehicleName;
+
       }
      });
       this.updateDatasource(this.initData);
@@ -531,6 +498,93 @@ export class AlertsComponent implements OnInit {
    return threshold;
  }
 
+ setUnitOfThreshold(item){
+  let unitTypeEnum, unitType;
+  switch(item.category +item.type){
+    case 'LH': unitTypeEnum= "H";
+    item.UnitTypeVal =  this.translationData.lblHours;
+    break;
+
+    case 'LD':
+    if(this.prefUnitFormat == 'dunit_Metric'){
+      unitTypeEnum= "K";
+      item.UnitTypeVal = this.translationData.lblkm;
+     }
+      else{
+      unitTypeEnum= "L";
+      item.UnitTypeVal = this.translationData.lblmile;
+      }
+      break;
+
+    case 'LU': unitTypeEnum= "H";
+    // item.UnitTypeVal =  this.translationData.lblHours;
+     unitType = item.alertUrgencyLevelRefs? item.alertUrgencyLevelRefs[0].unitType : 'S';
+    if(unitType == 'H'){
+      item.UnitTypeVal = this.translationData.lblHours;
+    }
+    else if(unitType == 'T'){
+      item.UnitTypeVal = this.translationData.lblMinutes;
+    }
+    else{
+      item.UnitTypeVal = this.translationData.lblSeconds;
+    }
+     break;
+
+    case 'LG':
+    if(this.prefUnitFormat == 'dunit_Metric'){
+      unitTypeEnum= "K";
+      item.UnitTypeVal = this.translationData.lblkm;}
+      else{
+      unitTypeEnum= "L";
+      item.UnitTypeVal = this.translationData.lblmile;
+      }
+     break;
+
+    case 'FP': unitTypeEnum= "P";
+    item.UnitTypeVal =  "%"
+    break;
+
+    case 'FL': unitTypeEnum= "P";
+    item.UnitTypeVal =  "%"
+    break;
+
+    case 'FT': unitTypeEnum= "P";
+    item.UnitTypeVal =  "%"
+    break;
+
+    case 'FI': unitTypeEnum= "S";
+    // item.UnitTypeVal = this.translationData.lblSeconds;
+    unitType = item.alertUrgencyLevelRefs? item.alertUrgencyLevelRefs[0].unitType : 'S';
+    if(unitType == 'H'){
+      item.UnitTypeVal = this.translationData.lblHours;
+    }
+    else if(unitType == 'T'){
+      item.UnitTypeVal = this.translationData.lblMinutes;
+    }
+    else{
+      item.UnitTypeVal = this.translationData.lblSeconds;
+    }
+    break;
+
+    case 'FA':
+    if(this.prefUnitFormat == 'dunit_Metric'){
+      unitTypeEnum= "A";
+      item.UnitTypeVal = this.translationData.lblkilometerperhour;
+    }
+      else{
+        unitTypeEnum= "B";
+        item.UnitTypeVal = this.translationData.lblMilesPerHour
+      }
+      break;
+
+    case 'FF': unitTypeEnum= "P";
+    item.UnitTypeVal =  "%"
+    break;
+
+    return item.UnitTypeVal;
+  }
+ }
+
  getFilteredValues(dataSource){
   this.dataSource = dataSource;
   this.dataSource.paginator = this.paginator;
@@ -540,7 +594,16 @@ export class AlertsComponent implements OnInit {
     if(data && data.length > 0){
       this.initData = this.getNewTagData(data);
     }
+    this.initData = data;
     this.dataSource = new MatTableDataSource(this.initData);
+    this.initData.forEach((ele,index) => {
+      if(ele.state == 'A'){
+        this.initData[index]["status"] = this.translationData.lblActive;
+      }
+      if(ele.state == 'I'){
+        this.initData[index]["status"] =this.translationData.lblSuspended;
+      }
+    });
     setTimeout(()=>{
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
@@ -564,7 +627,9 @@ export class AlertsComponent implements OnInit {
         data.name.toString().toLowerCase().includes(filter) ||
         data.category.toString().toLowerCase().includes(filter) ||
          data.type.toString().toLowerCase().includes(filter) ||
-        data.highThresholdValue.toString().includes(filter)
+         data.vehicleGroupName.toString().toLowerCase().includes(filter) ||
+        data.status.toString().toLowerCase().includes(filter)
+       // data.highThresholdValue.toString().includes(filter)
       );
     };
       this.dataSource.sortData = (data : String[], sort: MatSort) => {
@@ -692,7 +757,7 @@ export class AlertsComponent implements OnInit {
   onChangeAlertStatus(rowData: any){
     const options = {
       title: this.translationData.lblAlert,
-      message: this.translationData.lblYouwanttoDetails,
+      message:  (rowData.state == 'A') ?  this.translationData.lblYouwanttoDeActivate  : this.translationData.lblYouwanttoActivate,
       cancelText: this.translationData.lblCancel,
       confirmText: (rowData.state == 'A') ? this.translationData.lblDeactivate : this.translationData.lblActivate,
       status: rowData.state == 'A' ? 'Suspend' : 'Activate' ,

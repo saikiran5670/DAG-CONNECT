@@ -26,6 +26,7 @@ import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import * as moment from 'moment-timezone';
 import { ReportMapService } from '../../../../report/report-map.service';
 import { ConfigService } from '@ngx-config/core';
+import { MapFunctionsService } from '../../../landmarks/manage-corridor/map-functions.service';
 
 declare var H: any;
 
@@ -133,7 +134,8 @@ export class AlertAdvancedFilterComponent implements OnInit {
               private dialogService: ConfirmDialogService,
               private geofenceService: GeofenceService,
               private el: ElementRef,
-              private reportMapService: ReportMapService,  private _configService: ConfigService) {
+              private reportMapService: ReportMapService,  private _configService: ConfigService,
+              private mapFunctions: MapFunctionsService) {
    this.map_key = _configService.getSettings("hereMap").api_key;
     this.platform = new H.service.Platform({
       "apikey":this.map_key
@@ -328,24 +330,50 @@ export class AlertAdvancedFilterComponent implements OnInit {
   onApplyOnChange(event: any){
     this.selectedApplyOn = event.value;
   }
-
-  loadMapData(){
-    let defaultLayers = this.platform.createDefaultLayers();
-    setTimeout(() => {
-      this.map = new H.Map(
-        this.mapElement.nativeElement,
-        defaultLayers.vector.normal.map,
-        {
+  loadMapData() {
+    if(this.alert_type_selected == 'C'){
+      setTimeout(() => {
+        this.mapFunctions.initMap(this.mapElement, this.translationData);
+        }, 0);
+    }
+    else{
+      let defaultLayers = this.platform.createDefaultLayers();
+      setTimeout(() => {
+        this.map = new H.Map(this.mapElement.nativeElement,
+          defaultLayers.raster.normal.map, {
           center: { lat: 51.43175839453286, lng: 5.519981221425336 },
           zoom: 4,
           pixelRatio: window.devicePixelRatio || 1
-        }
-      );
-      window.addEventListener('resize', () => this.map.getViewPort().resize());
-      var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
-      this.ui = H.ui.UI.createDefault(this.map, defaultLayers);  
-    }, 1000);
-  }
+        });
+        window.addEventListener('resize', () => this.map.getViewPort().resize());
+        var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
+        this.ui = H.ui.UI.createDefault(this.map, defaultLayers);
+        
+        this.ui.removeControl("mapsettings");
+        // create custom one
+        var ms = new H.ui.MapSettingsControl({
+            baseLayers : [ { 
+              label: this.translationData.lblNormal , layer: defaultLayers.raster.normal.map
+            },{
+              label: this.translationData.lblSatellite , layer: defaultLayers.raster.satellite.map
+            }, {
+              label: this.translationData.lblTerrain , layer: defaultLayers.raster.terrain.map
+            }
+            ],
+          layers : [{
+                label: this.translationData.lblLayerTraffic , layer: defaultLayers.vector.normal.traffic
+            },
+            {
+                label: this.translationData.lblLayerIncidents , layer: defaultLayers.vector.normal.trafficincidents
+            }
+          ]
+        });
+        this.ui.addControl("customized", ms);
+      }, 1000);
+    }
+}
+
+ 
 
   onChangePOI(event: any){
     if(event.checked){
@@ -594,16 +622,20 @@ export class AlertAdvancedFilterComponent implements OnInit {
          //For tooltip on info bubble
 
         var bubble;
+        var transPOIName = this.translationData.lblPOIName;
+        var transCategory = this.translationData.lblCategory;
+        var SubCategory = this.translationData.lblSubCategory;
+        var Address = this.translationData.lblAddress;
         marker.addEventListener('pointerenter', function (evt) {
           // event target is the marker itself, group is a parent event target
           // for all objects that it contains
           bubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
             // read custom data
             content:`<div>
-            <b>POI Name: ${element.name}</b><br>
-            <b>Category: ${element.categoryName}</b><br>
-            <b>Sub-Category: ${element.subCategoryName}</b><br>
-            <b>Address: ${element.address}</b>
+            <b>${transPOIName}: ${element.name}</b><br>
+            <b>${transCategory}: ${element.categoryName}</b><br>
+            <b>${SubCategory}: ${element.subCategoryName}</b><br>
+            <b>${Address}: ${element.address}</b>
             </div>`
           });
           // show info bubble
@@ -721,15 +753,18 @@ export class AlertAdvancedFilterComponent implements OnInit {
       this.map.addObject(circleGroup);
 
       var bubble;
+      var transCategory = this.translationData.lblCategory;
+      var SubCategory = this.translationData.lblSubCategory;
+      var GeofenceName = this.translationData.lblGeofence;
     circle.addEventListener('pointerenter', function (evt) {
       // event target is the marker itself, group is a parent event target
       // for all objects that it contains
       bubble =  new H.ui.InfoBubble({lat:rowData.latitude,lng:rowData.longitude}, {
         // read custom data
         content:`<div>
-        <b>Geofence Name: ${rowData.name}</b><br>
-        <b>Category: ${rowData.categoryName}</b><br>
-        <b>Sub-Category: ${rowData.subCategoryName}</b><br>
+        <b>${GeofenceName}: ${rowData.name}</b><br>
+        <b>${transCategory}: ${rowData.categoryName}</b><br>
+        <b>${SubCategory}: ${rowData.subCategoryName}</b><br>
         </div>`
       });
       // show info bubble
@@ -779,6 +814,9 @@ export class AlertAdvancedFilterComponent implements OnInit {
           map.addObject(mainGroup);
 
           var bubble;
+          var transCategory = this.translationData.lblCategory;
+          var SubCategory = this.translationData.lblSubCategory;
+          var GeofenceName = this.translationData.lblGeofence;
           mainGroup.addEventListener('pointerenter', function(evt) {
             if (polygonTimeout) {
               clearTimeout(polygonTimeout);
@@ -790,9 +828,9 @@ export class AlertAdvancedFilterComponent implements OnInit {
             bubble =  new H.ui.InfoBubble({ lat: rowData.latitude, lng: rowData.longitude } , {
               // read custom data
               content:`<div>
-              <b>Geofence Name: ${rowData.name}</b><br>
-                <b>Category: ${rowData.categoryName}</b><br>
-                <b>Sub-Category: ${rowData.subCategoryName}</b><br>
+              <b>${GeofenceName}: ${rowData.name}</b><br>
+                <b>${transCategory}: ${rowData.categoryName}</b><br>
+                <b>${SubCategory}: ${rowData.subCategoryName}</b><br>
               </div>`
             });
             // show info bubble
@@ -948,7 +986,8 @@ export class AlertAdvancedFilterComponent implements OnInit {
             tableData: tableData,
             colsList: colsList,
             colsName: colsName,
-            tableTitle: tableTitle
+            tableTitle: tableTitle,
+            translationData: this.translationData
           }
           this.dialogRef = this.dialog.open(CommonTableComponent, dialogConfig);
         }
@@ -1125,7 +1164,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
 
 let urgencylevelStartDate = 0;
 let urgencylevelEndDate = 0;
-if(this.selectedApplyOn == 'C'){
+// if(this.selectedApplyOn == 'C'){
   if(this.periodSelectionComponent !=undefined){
   this.alertTimingDetail = this.periodSelectionComponent.getAlertTimingPayload();
   urgencylevelStartDate = Util.convertDateToUtc(this.setStartEndDateTime(this.alertAdvancedFilterForm.controls.fromDate.value, this.alertAdvancedFilterForm.controls.fromTimeRange.value, "start"));
@@ -1133,8 +1172,8 @@ if(this.selectedApplyOn == 'C'){
   
   this.alertTimingDetail.forEach(element => {
     element["type"] = "F";
-    element["startDate"] =urgencylevelStartDate;
-    element["endDate"] =urgencylevelEndDate;
+    // element["startDate"] =urgencylevelStartDate;
+    // element["endDate"] =urgencylevelEndDate;
   });
   }
   else{
@@ -1146,12 +1185,12 @@ if(this.selectedApplyOn == 'C'){
   urgencylevelEndDate = Util.convertDateToUtc(this.setStartEndDateTime(this.periodSelectedDateTime[0].endDate, this.periodSelectedDateTime[0].toTime, "end"));;
 
 
-}
-else{
-    this.alertTimingDetail = [];
-    urgencylevelStartDate = 0;
-    urgencylevelEndDate = 0;
-  }
+// }
+// else{
+//     this.alertTimingDetail = [];
+//     urgencylevelStartDate = 0;
+//     urgencylevelEndDate = 0;
+//   }
  
 //Fuel Increase & Fuel Loss
   if ((this.alert_category_selected == 'F') && (this.alert_type_selected == 'P' || this.alert_type_selected == 'L' || this.alert_type_selected == 'T')) {

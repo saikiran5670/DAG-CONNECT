@@ -2,6 +2,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ReportService } from '../../../services/report.service';
 import { Router } from '@angular/router';
+import { DataInterchangeService } from '../../../services/data-interchange.service';
 
 @Component({
   selector: 'app-trip-report-preference',
@@ -28,7 +29,7 @@ export class TripReportPreferenceComponent implements OnInit {
   requestSent:boolean = false;
   showLoadingIndicator: boolean = false;
 
-  constructor(private reportService: ReportService, private router: Router) { }
+  constructor(private reportService: ReportService, private router: Router, private dataInterchangeService: DataInterchangeService) { }
 
   ngOnInit(){ 
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -76,15 +77,23 @@ export class TripReportPreferenceComponent implements OnInit {
     }
   }
 
-  loadTripReportPreferences(){
+  loadTripReportPreferences(reloadFlag?: any){
     this.showLoadingIndicator=true;
     this.reportService.getReportUserPreference(this.reportId).subscribe((prefData : any) => {
-      this.showLoadingIndicator=false;
+      this.showLoadingIndicator = false;
       this.initData = prefData['userPreferences'];
+      if(reloadFlag){ // refresh pref setting & goto trip report
+        let _dataObj: any = {
+          prefdata: this.initData,
+          type: 'trip report' 
+        }
+        this.dataInterchangeService.getPrefData(_dataObj);
+        this.dataInterchangeService.closedPrefTab(false); // closed pref tab
+      }
       this.resetColumnData();
       this.getTranslatedColumnName(this.initData);
       this.validateRequiredField();
-    }, (error)=>{
+    }, (error) => {
       this.showLoadingIndicator=false;
       this.initData = [];
       this.tripPrefData = [];
@@ -234,12 +243,14 @@ export class TripReportPreferenceComponent implements OnInit {
       }
       this.showLoadingIndicator=true;
       this.reportService.updateReportUserPreference(objData).subscribe((_tripPrefData: any) => {
-        this.showLoadingIndicator=false;
-        this.loadTripReportPreferences();
-        this.setTripReportFlag.emit({ flag: false, msg: this.getSuccessMsg() });
+        this.showLoadingIndicator = false;
+        let _reloadFlag = false;
         if ((this.router.url).includes("tripreport")) {
-          this.reloadCurrentComponent();
+          _reloadFlag = true
+          //this.reloadCurrentComponent();
         }
+        this.loadTripReportPreferences(_reloadFlag);
+        this.setTripReportFlag.emit({ flag: false, msg: this.getSuccessMsg() });
         this.requestSent = false;
       }, (error) => {
         this.showLoadingIndicator=false;

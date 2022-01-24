@@ -1,11 +1,11 @@
 <mat-card class="block">
 <div  fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblVehicleDetails }}</span>
+            <span style="font-size: 15px;" class='font-helvetica-md'>{{ translationData.lblVehicleDetails }}</span>
         </div>
-    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center" class='margin-right-xxlg'>
         <span class='custom-font' (click)="toBack()">
-            <span>
+            <span style='color: #353c45;'>
                 <&nbsp;</span>
                     <span class='backBtnCss'>{{ translationData.lblBack  }}</span>
         </span>
@@ -14,8 +14,8 @@
 <div>
     <div class="full-width vehicleList-div" *ngIf='gridData'>
         <div class="vehicleList-icon">
-            <span id="steps" class="step-image" [innerHTML]="gridData.icon"  matTooltip="Health Status: {{gridData.vehicleHealthStatusType}} 
-            &#13; Alert: {{gridData.alertName}}"> </span>
+            <span id="steps" class="step-image" [innerHTML]="gridData.icon"  matTooltip="{{translationData.lblHealthStatus}}: {{gridData.vehicleHealthStatusType}} 
+            &#13; {{translationData.lblAlert}}: {{gridData.alertName}}"> </span>
         </div>
         <div class="vehicleList-details">
         <div>
@@ -58,29 +58,29 @@
     </div>
  </div>  
 
- <div  *ngIf='gridData' fxLayout="row" fxLayoutAlign="start" class="full-width vehicleInfo" fxLayoutGap="10px">
-    <div  style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
-        <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
+ <div *ngIf='gridData' fxLayout="row" fxLayoutAlign="start" class="full-width vehicleInfo margin-bottom-sm" fxLayoutGap="5px">
+    <div style='padding: 10px; background: #e7e7e7;' class='min-width-30-per'>
+        <div class="areaWidth margin-bottom-5 font-helvetica-lt" fxLayout="column" fxLayoutAlign="left">
             <span>{{ translationData.lblCurrentMileage }} </span>
         </div>
-        <div class="areaWidth min-width-35-per vehicleInfo" fxLayout="column" fxLayoutAlign="left">
-            <span><b>{{mileagewithUnit}}{{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm ) : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile ) : (translationData.lblmile )  }}</b></span>
+        <div class="areaWidth vehicleInfo font-helvetica-md" fxLayout="column" fxLayoutAlign="left">
+            <span><b>{{ mileagewithUnit }} {{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm ) : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile ) : (translationData.lblmile )  }}</b></span>
         </div>
     </div>
-    <div  style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
-        <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
+    <div  style='padding: 10px; background: #e7e7e7;' class='min-width-30-per'>
+        <div class="areaWidth margin-bottom-5 font-helvetica-lt" fxLayout="column" fxLayoutAlign="left">
             <span>{{ translationData.lblNextServiceIn }} </span>
         </div>
-        <div class="areaWidth min-width-35-per vehicleInfo" fxLayout="column" fxLayoutAlign="left">
-            <span><b>{{nextservicing}}{{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm ) : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile ) : (translationData.lblmile)  }}</b></span>
+        <div class="areaWidth vehicleInfo font-helvetica-md" fxLayout="column" fxLayoutAlign="left">
+            <span><b>{{nextservicing}} {{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm ) : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile ) : (translationData.lblmile)  }}</b></span>
         </div>
     </div>
-    <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
-        <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="right">
+    <div style='padding: 10px; background: #e7e7e7;' class='min-width-30-per'>
+        <div class="areaWidth margin-bottom-5 font-helvetica-lt" fxLayout="column" fxLayoutAlign="right">
             <span>{{ translationData.lblHealthStatus }} </span>
         </div>
-        <div class="areaWidth min-width-35-per vehicleInfo" fxLayout="column" fxLayoutAlign="right">
-            <span><b>{{gridData.vehicleHealthStatusType}}</b></span>
+        <div class="areaWidth vehicleInfo font-helvetica-md" fxLayout="column" fxLayoutAlign="right">
+            <span><b>{{ gridData.vehicleHealthStatusType }}</b></span>
         </div>
     </div>
 </div>
@@ -88,7 +88,7 @@
     <div  *ngIf='gridData' class='mat-elevation-z no-padding margin-bottom-xlg'>
         <div  fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAlerts }} ({{alertLength}})</span>
+                <span style="font-size: 16px;" class='font-helvetica-md'>{{ translationData.lblAlerts }} ({{alertLength}})</span>
             </div>
         <div *ngIf='alertLength>0' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
             <span class='custom-font' (click)="gotoLogBook()">
@@ -101,13 +101,13 @@
         <div *ngIf='alertLength>0' >
         <div class="full-width vehicleList-div" *ngFor="let item of gridData.fleetOverviewAlert">
         <div class="alertList-icon">
-        <span  *ngIf="item.level == 'Critical'">
+        <span  *ngIf="item.level == 'Critical' || item.level == 'C'">
             <i class="material-icons" [style]="{ 'color':'#FF0000' } ">warning</i> 
             </span> 
-            <span  *ngIf="item.level == 'Warning'">
+            <span  *ngIf="item.level == 'warning' || item.level == 'W'">
             <i class="material-icons" [style]="{ 'color':'#FFBF00' } ">warning</i> 
             </span>
-            <span *ngIf="item.level == 'Advisory'">
+            <span *ngIf="item.level == 'Advisory' || item.level == 'A'">
             <i class="material-icons" [style]="{ 'color':'#FFFF00' } ">warning</i> 
             </span>  
         </div>

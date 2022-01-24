@@ -3,7 +3,7 @@
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
       <span class='custom-font' (click)="backToFleetUtilReport()">
         <span><&nbsp;</span>
-        <span class='backBtnCss'>{{ translationData.lblBack  }}</span></span>
+        <span class='backBtnCss'>{{ translationData.lblBack }}</span></span>
     </div>
   </div>
   <form [formGroup]="tripForm">
@@ -12,14 +12,14 @@
         <mat-expansion-panel-header class="full-width">
           <mat-panel-title>
             <span>
-              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSearchReportParameters  }}</span>
+              <span>{{ translationData.lblSearchReportParameters }}</span>
             </span>
           </mat-panel-title>
         </mat-expansion-panel-header>
         <div>
           <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
             <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ translationData.lblTimeRange  }} <span class='mandatoryColor'>*</span></mat-label>
+              <mat-label class='font-16-px line-height-24px'>{{ translationData.lblTimeRange }} <span class='mandatoryColor'>*</span></mat-label>
               <div style='margin-top: 5px;'>
                 <button [disabled]="selectionTab == 'today'" (click)="selectionTimeRange('today')" [ngClass]="{'selectedBtn': selectionTab == 'today'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblToday  }}</button>
                 <button [disabled]="selectionTab == 'yesterday'" (click)="selectionTimeRange('yesterday')" [ngClass]="{'selectedBtn': selectionTab == 'yesterday'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblYesterday  }}</button>
@@ -29,9 +29,9 @@
               </div>
             </div>
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ translationData.lblVehicleGroup  }} <span class='mandatoryColor'>*</span></mat-label>
+              <mat-label class='font-16-px line-height-24px'>{{ translationData.lblVehicleGroup }} <span class='mandatoryColor'>*</span></mat-label>
               <mat-form-field appearance="outline">
-                <mat-select [disabled]="vehicleGrpDD.length == 0" (selectionChange)="onVehicleGroupChange($event)" placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}"  formControlName="vehicleGroup">
+                <mat-select [disabled]="vehicleGrpDD.length == 0" (selectionChange)="onVehicleGroupChange($event, true)" placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}"  formControlName="vehicleGroup">
                   <mat-option>
                     <ngx-mat-select-search (keyup)="filterVehicleGroups(vehicleSearch.value)" placeholderLabel="{{ translationData.lblSearch|| 'Search' }}" #vehicleSearch>
                       <mat-icon (click)="resetVehicleGroupFilter()" ngxMatSelectSearchClear>close</mat-icon>
@@ -43,7 +43,7 @@
                 </mat-select>
               </mat-form-field> 
               <mat-error *ngIf="tripForm.get('vehicleGroup').hasError('required') && vehicleGrpDD.length > 0">
-                {{translationData.lblPleaseSelectvehicleGroup  }}
+                {{ translationData.lblPleaseSelectvehicleGroup  }}
               </mat-error>
             </div>
           </div>
@@ -51,7 +51,7 @@
             <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
                 <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
-                  <mat-label>{{ translationData.lblFrom  }} <span class='mandatoryColor'>*</span></mat-label>
+                  <mat-label class='font-16-px line-height-24px'>{{ translationData.lblFrom  }} <span class='mandatoryColor'>*</span></mat-label>
                   <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
                     <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
                       <mat-form-field appearance="outline">
@@ -71,7 +71,7 @@
                   </div>
                 </div>
                 <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
-                  <mat-label>{{ translationData.lblTo  }} <span class='mandatoryColor'>*</span></mat-label>
+                  <mat-label class='font-16-px line-height-24px'>{{ translationData.lblTo }} <span class='mandatoryColor'>*</span></mat-label>
                   <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
                     <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
                       <mat-form-field appearance="outline">
@@ -93,7 +93,7 @@
               </div>
             </div>
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ translationData.lblVehicle  }} <span class='mandatoryColor'>*</span></mat-label>
+              <mat-label class='font-16-px line-height-24px'>{{ translationData.lblVehicle }} <span class='mandatoryColor'>*</span></mat-label>
               <mat-form-field appearance="outline">              
                 <mat-select [disabled]="vehicleDD.length == 0" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle  }}" formControlName="vehicle">
                     <mat-option>
@@ -128,8 +128,8 @@
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title>
           <span>
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif; margin-right: 20px;'>{{ translationData.lblMapView }}</span>
-            <span><mat-icon style='vertical-align: middle;'>info</mat-icon>&nbsp;{{ translationData.lblMapInfoText  }}</span>
+            <span style='margin-right: 20px;'>{{ translationData.lblMapView }}</span>
+            <span class='font-helvetica-lt' style="font-size: 14px; line-height: 21px;"><mat-icon style='vertical-align: middle;'>info</mat-icon>&nbsp;{{ translationData.lblMapInfoText }}</span>
           </span>
         </mat-panel-title>
       </mat-expansion-panel-header>
@@ -146,7 +146,7 @@
         <div [ngClass]="{'filterHide': !advanceFilterOpen}" class='advFilterBox'>
           <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
             <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
-              <div fxLayout="row" fxLayoutAlign="space-between" class="full-width font-14" fxLayoutGap="10px">{{
+              <div fxLayout="row" fxLayoutAlign="space-between" class="full-width font-helvetica-md font-14-px line-height-21px margin-bottom-5" fxLayoutGap="10px">{{
                 translationData.lblDisplayViews || 'Display View(s)'}}</div>
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
                 <mat-checkbox (change)='changeAlertSelection($event)'>{{ translationData.lblAlerts  }}</mat-checkbox>
@@ -163,7 +163,7 @@
               </div>
             </div>
             <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
-              <div fxLayout="row" fxLayoutAlign="start" class="full-width font-14" fxLayoutGap="10px">{{
+              <div fxLayout="row" fxLayoutAlign="start" class="full-width font-helvetica-md font-14-px line-height-21px margin-bottom-5" fxLayoutGap="10px">{{
                 translationData.lblUserPOIs }}</div>
               <div class='scrollArea' *ngIf='userPOIList.length > 0'>
                 <div *ngFor="let userPOI of userPOIList; let i = index" class="full-width" fxLayoutGap="10px">
@@ -184,7 +184,7 @@
               <div *ngIf='userPOIList.length == 0'>{{ translationData.lblNoUserPOIFound  }}</div>
             </div>
             <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
-              <div fxLayout="row" fxLayoutAlign="space-between" class="full-width font-14" fxLayoutGap="10px">{{
+              <div fxLayout="row" fxLayoutAlign="space-between" class="full-width font-helvetica-md font-14-px line-height-21px margin-bottom-5" fxLayoutGap="10px">{{
                 translationData.lblHerePOIs }}</div>
                 <div *ngFor="let herePOI of herePOIList; let i = index" fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
                   <mat-checkbox (click)='$event.stopPropagation()'
@@ -192,7 +192,7 @@
                 </div>
             </div>
             <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
-              <div fxLayout="row" fxLayoutAlign="space-between" class="full-width font-14" fxLayoutGap="10px">{{
+              <div fxLayout="row" fxLayoutAlign="space-between" class="full-width font-helvetica-md font-14-px line-height-21px margin-bottom-5" fxLayoutGap="10px">{{
                 translationData.lblTripRepresentation }}</div>
                 <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
                   <mat-radio-group (change)='onMapRepresentationChange($event)' class='radioAlign' formControlName='trackType'>
@@ -219,39 +219,39 @@
     <mat-expansion-panel [(expanded)]="tableExpandPanel" class="full-width" fxLayoutGap="10px">
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title>
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblTripReportDetails }}</span>
+          <span>{{ translationData.lblTripReportDetails }}</span>
         </mat-panel-title>
       </mat-expansion-panel-header>
       <div *ngIf='initData.length == 0'>
-        <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;' fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound  }}</div>
+        <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound  }}</div>
         <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblSelectionMessage  }}</div>
       </div>
       <div *ngIf='initData.length > 0' [ngClass]="{'reportTable': displayedColumns.length > 7}">
        <div id="charts">
-        <div style='padding: 20px; margin-bottom: 10px; background: #bee3f8;'>
+        <div style='padding: 30px 20px; margin-bottom: 10px; background: #bee3f8;'>
           <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <span>
-                <span>{{ translationData.lblFrom  }}: </span>
-                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.fromDate }}</span>
+                <span>{{ translationData.lblFrom }}: </span>
+                <span class='font-helvetica-md'>{{ tableInfoObj.fromDate }}</span>
               </span>
             </div>
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <span>{{ translationData.lblVehicleGroup  }}: </span>
-                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vehGroupName }}</span>
+                <span class='font-helvetica-md'>{{ tableInfoObj.vehGroupName }}</span>
               </span>
             </div>
             <div *ngIf='showField.vin' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <span>{{ translationData.lblVehicleVIN }}: </span>
-                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vin }}</span>
+                <span class='font-helvetica-md'>{{ tableInfoObj.vin }}</span>
               </span>
             </div>
             <div *ngIf='!showField.vin' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <span>{{ translationData.lblTo  }}: </span>
-                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.endDate }}</span>
+                <span class='font-helvetica-md'>{{ tableInfoObj.endDate }}</span>
               </span>
             </div>
           </div>
@@ -259,19 +259,19 @@
             <div *ngIf='showField.vin' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <span>{{ translationData.lblTo  }}: </span>
-                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.endDate }}</span>
+                <span class='font-helvetica-md'>{{ tableInfoObj.endDate }}</span>
               </span>
             </div>
             <div *ngIf='showField.vehicleName' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <span>{{ translationData.lblVehicleName  }}: </span>
-                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vehicleName }}</span>
+                <span class='font-helvetica-md'>{{ tableInfoObj.vehicleName }}</span>
               </span>
             </div>
             <div *ngIf='showField.regNo' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <span>{{ translationData.lblRegPlateNumber  }}: </span>
-                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.regNo }}</span>
+                <span class='font-helvetica-md'>{{ tableInfoObj.regNo }}</span>
               </span>
             </div>
           </div>
@@ -301,14 +301,14 @@
                 <mat-checkbox (change)='$event ? masterToggleForTrip() : null'
                   [checked]='selectedTrip.hasValue() && isAllSelectedForTrip()'
                   [indeterminate]='selectedTrip.hasValue() && !isAllSelectedForTrip()'
-                  [aria-label]='checkboxLabelForTrip()' matTooltip="{{ translationData.lblAllCheckboxViewTooltipMsg || 'Select to view all on map' }}">
+                  [aria-label]='checkboxLabelForTrip()' matTooltip="{{ translationData.lblAllCheckboxViewMapTooltip }}">
                 </mat-checkbox>
                 <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll  }}</span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row" class="max-width-10-per">
                 <mat-checkbox (click)='$event.stopPropagation()'
                   (change)='$event ? selectedTrip.toggle(row) : null; tripCheckboxClicked($event, row)' [checked]='selectedTrip.isSelected(row)'
-                  [aria-label]='checkboxLabelForTrip(row)' matTooltip="{{ translationData.lblCheckboxViewTooltipMsg || 'Select to view on map' }}">
+                  [aria-label]='checkboxLabelForTrip(row)' matTooltip="{{ translationData.lblCheckboxViewMapTooltip }}">
                 </mat-checkbox>
               </mat-cell>
             </ng-container>
@@ -338,28 +338,28 @@
               <mat-cell *matCellDef="let row">{{ row.convertedEndTime != '' ? row.convertedEndTime : '-' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="distance">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDistance  }} <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile ) : (translationData.lblkm ) }})</span>
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDistance  }} <span style="font-size: 14px;">({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile ) : (translationData.lblkm ) }})</span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.convertedDistance != '' ? row.convertedDistance : '-' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="idleDuration">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblIdleDuration  }} <span style="font-weight: normal;">({{ translationData.lblhhmm  }})</span>
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblIdleDuration  }} <span style="font-size: 14px;">({{ translationData.lblhhmm  }})</span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.convertedIdleDuration != '' ? row.convertedIdleDuration : '-' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="averageSpeed">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageSpeed  }} <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmileh ) : (translationData.lblkmh) }})</span>
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageSpeed  }} <span style="font-size: 14px;">({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmileh ) : (translationData.lblkmh) }})</span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.convertedAverageSpeed != '' ? row.convertedAverageSpeed : '-' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="averageWeight">
               <!-- <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageWeight || 'Average Weight' }} <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblpound || 'pound') : (translationData.lblton || 'ton') }})</span> -->
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageWeight  }} <span style="font-weight: normal;">({{ translationData.lblton || 't' }})</span>
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageWeight  }} <span style="font-size: 14px;">({{ translationData.lblton || 't' }})</span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.convertedAverageWeight != '' ? row.convertedAverageWeight : '0.00' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="odometer">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblOdometer  }} <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile ) : (translationData.lblkm ) }})</span>
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblOdometer  }} <span style="font-size: 14px;">({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile ) : (translationData.lblkm ) }})</span>
               </mat-header-cell>
               <mat-cell matTooltip='{{ row.convertedOdometer }}' *matCellDef="let row">{{ row.convertedOdometer != '' ? row.convertedOdometer : '-' }}</mat-cell>
             </ng-container>
@@ -379,12 +379,12 @@
               <mat-cell *matCellDef="let row">{{ row.convertedFuelConsumed100Km != '' ? row.convertedFuelConsumed100Km : '-' }}</mat-cell>
             </ng-container> -->
             <ng-container matColumnDef="fuelConsumed">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFuelConsumed || 'Fuel Consumed'  }} <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgal || 'gal' ) : (translationData.lblltr || 'ltr' ) }})</span>
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFuelConsumed || 'Fuel Consumed'  }} <span style="font-size: 14px;">({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgal || 'gal' ) : (translationData.lblltr || 'ltr' ) }})</span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.convertedFuelConsumed != '' ? row.convertedFuelConsumed : '-' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="drivingTime">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDrivingTime }} <span style="font-weight: normal;">({{ translationData.lblhhmm  }})</span>
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDrivingTime }} <span style="font-size: 14px;">({{ translationData.lblhhmm  }})</span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.convertedDrivingTime != '' ? row.convertedDrivingTime : '-' }}</mat-cell>
             </ng-container>

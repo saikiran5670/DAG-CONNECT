@@ -79,6 +79,7 @@ export class CreateEditViewGeofenceComponent implements OnInit {
   dataService: any;
   searchMarker: any = {};
   accessType: any = {};
+  defaultLayers: any;
 
   @ViewChild("map")
   public mapElement: ElementRef;
@@ -129,9 +130,9 @@ export class CreateEditViewGeofenceComponent implements OnInit {
       });
     //this.initMap();
     if(this.accessType && !this.accessType.globalPOIAccess){
-      this.types = ['Regular'];
+      this.types = [this.translationData.lblRegular];
     }else{
-      this.types = ['Regular', 'Global'];
+      this.types = [this.translationData.lblRegular, this.translationData.lblGlobal];
     }
 
     this.breadcumMsg = this.getBreadcum(this.actionType);
@@ -279,11 +280,11 @@ export class CreateEditViewGeofenceComponent implements OnInit {
       Util.applySearchFilter(this.dataSourceForPOI, this.displayedColumns ,this.filterValue );
   });
 }
-  compare(a: Number | String, b: Number | String, isAsc: boolean, columnName: any) {
-
-    if(!(a instanceof Number)) a = a.toString().toUpperCase();
-    if(!(b instanceof Number)) b = b.toString().toUpperCase();
-
+  compare(a: any, b: any, isAsc: boolean, columnName: any) {
+    if(columnName === 'name' || columnName === 'categoryName' || columnName === 'categoryName' || columnName === 'address'){
+    if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toUpperCase();
+    if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toUpperCase();
+    }
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
 }
 
@@ -652,7 +653,7 @@ export class CreateEditViewGeofenceComponent implements OnInit {
     //if(this.actionType == 'create'){
       var bubble = new H.ui.InfoBubble({ lng: 13.4050, lat: 52.5200 }, {
         //content: this.polygoanGeofence ? (this.translationData.lblPolygonInfoText || '<b>Click on map to create polygon points</b>') : (this.translationData.lblCircularInfoText || '<b>Select POI from below list to map with this Geofence</b>')
-        content: (this.translationData.lblCircularInfoText || '<b>Select POI from below list to map with this Geofence</b>')
+        content: `<span class='font-14-px line-height-21px font-helvetica-md'>${this.translationData.lblCircularInfoText || 'Select POI from below list to map with this Geofence'}</span>`
       });
       this.uiElem.addBubble(bubble);
       // if(this.polygoanGeofence){
@@ -857,23 +858,38 @@ export class CreateEditViewGeofenceComponent implements OnInit {
   }
 
   initMap(){
-    let defaultLayers = this.platform.createDefaultLayers();
-    //Step 2: initialize a map - this map is centered over Europe
+    this.defaultLayers = this.platform.createDefaultLayers();
     this.hereMap = new H.Map(this.mapElement.nativeElement,
-      defaultLayers.vector.normal.map, {
+      this.defaultLayers.raster.normal.map, {
       center: { lat: 51.43175839453286, lng: 5.519981221425336 },
-      //center:{lat:41.881944, lng:-87.627778},
       zoom: 4,
       pixelRatio: window.devicePixelRatio || 1
     });
-
-    // add a resize listener to make sure that the map occupies the whole container
     window.addEventListener('resize', () => this.hereMap.getViewPort().resize());
-
-    // Behavior implements default interactions for pan/zoom (also on mobile touch environments)
     var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.hereMap));
-    var ui = H.ui.UI.createDefault(this.hereMap, defaultLayers);
-    this.uiElem = ui;
+    this.ui = H.ui.UI.createDefault(this.hereMap, this.defaultLayers);
+
+    this.ui.removeControl("mapsettings");
+    // create custom one
+    var ms = new H.ui.MapSettingsControl({
+        baseLayers : [ {
+          label: this.translationData.lblNormal || "Normal", layer: this.defaultLayers.raster.normal.map
+        },{
+          label: this.translationData.lblSatellite || "Satellite", layer: this.defaultLayers.raster.satellite.map
+        }, {
+          label: this.translationData.lblTerrain || "Terrain", layer: this.defaultLayers.raster.terrain.map
+        }
+        ],
+      layers : [{
+            label: this.translationData.lblLayerTraffic || "Layer.Traffic", layer: this.defaultLayers.vector.normal.traffic
+        },
+        {
+            label: this.translationData.lblLayerIncidents || "Layer.Incidents", layer: this.defaultLayers.vector.normal.trafficincidents
+        }
+      ]
+    });
+    this.ui.addControl("customized", ms);
+    this.uiElem = this.ui;
   }
 
   createResizableCircle(_radius: any, rowData: any) {

@@ -14,13 +14,13 @@
     <mat-expansion-panel-header class="full-width">
       <mat-panel-title>
         <div fxLayout="row" fxLayoutAlign='center center'>
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDriverName  }}: {{ selectedDriverName }} - {{ translationData.lblOverallPerformance }} </span>
+          <span>{{ translationData.lblDriverName }}: {{ selectedDriverName }} - {{ translationData.lblOverallPerformance }} </span>
           <span matTooltip="{{ translationData.lblOverallPerformanceInfo}}">
             <mat-icon class='margin-right-10'>info</mat-icon></span>
         </div>
       </mat-panel-title>
     </mat-expansion-panel-header>
-      <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
+      <div style='padding: 20px; margin-bottom: 10px; background: #bee3f8;'>
             <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
               <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
                 <span>
@@ -55,28 +55,28 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
               <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
-                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ fromDisplayDate }}</span>
+                <span class='font-helvetica-md'>{{ fromDisplayDate }}</span>
               </div>
               <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
-                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ toDisplayDate }}</span>
+                <span class='font-helvetica-md'>{{ toDisplayDate }}</span>
               </div>
               <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
-                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ selectedVehicle }}</span>
+                <span class='font-helvetica-md'>{{ selectedVehicle }}</span>
               </div>
               <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
-                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ selectedVehicleGroup }}</span>
+                <span class='font-helvetica-md'>{{ selectedVehicleGroup }}</span>
               </div>
               <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
-                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ selectedDriverId }}</span>
+                <span class='font-helvetica-md'>{{ selectedDriverId }}</span>
               </div>
               <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
-                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ selectedDriverOption }}</span>
+                <span class='font-helvetica-md'>{{ selectedDriverOption }}</span>
               </div>
             </div>
             </div>
             <div fxLayout="row" id="charts-overallPerformancePanel" fxLayoutAlign="space-between" fxLayoutGap="0px">
               <div style="display: block">
-                <div class="text-center"><span><b>{{ translationData.lblEcoScore  }}</b></span></div>
+                <div class='font-16-px line-height-24px font-helvetica-md text-center'><span>{{ translationData.lblEcoScore }}</span></div>
                 <canvas #chart1 baseChart
                   [data]="doughnutChartDataEcoScore"
                   [labels]="doughnutChartLabelsEcoScore"
@@ -87,7 +87,7 @@
                 </canvas>
               </div>
               <div style="display: block" class="relative">
-                <div class="text-center"><span><b>{{ translationData.lblFuelConsumption  }}</b></span></div>
+                <div class='font-16-px line-height-24px font-helvetica-md text-center'><span>{{ translationData.lblFuelConsumption }}</span></div>
                 <canvas baseChart
                   [data]="doughnutChartDataFuelConsumption"
                   [labels]="doughnutChartLabelsFuelConsumption"
@@ -98,7 +98,7 @@
                 </canvas>
               </div>
               <div style="display: block" class="relative">
-                <div class="text-center"><span><b>{{ translationData.lblAnticipationScore  }}</b></span></div>
+                <div class='font-16-px line-height-24px font-helvetica-md text-center'><span>{{ translationData.lblAnticipationScore }}</span></div>
                 <canvas baseChart
                   [data]="doughnutChartDataAnticipationScore"
                   [labels]="doughnutChartLabelsAnticipationScore"
@@ -109,7 +109,7 @@
                 </canvas>
               </div>
                <div style="display: block" class="relative">
-                <div class="text-center"><span><b>{{ translationData.lblBrakingscore  }}</b></span></div>
+                <div class='font-16-px line-height-24px font-helvetica-md text-center'><span>{{ translationData.lblBrakingscore  }}</span></div>
                 <canvas baseChart
                   [data]="doughnutChartDataBrakingScore"
                   [labels]="doughnutChartLabelsBrakingScore"
@@ -129,14 +129,14 @@
               <mat-expansion-panel-header class="full-width">
                 <mat-panel-title>
                   <div fxLayout="row" fxLayoutAlign='center center'>
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblTrendlines }}</span>
+                    <span>{{ translationData.lblTrendlines }}</span>
                     <span matTooltip="{{ translationData.lblTrendLinesInfo }}">
                       <mat-icon class='margin-right-10'>info</mat-icon>
                     </span>
                   </div>
                 </mat-panel-title>
               </mat-expansion-panel-header>
-              <span>{{ translationData.lblZoom  }}</span>
+              <span class='font-16-px line-height-24px'>{{ translationData.lblZoom }}</span>
               <br/>
               <button [disabled]="selectionTabTrend == 'today' " (click)="updateOptions('today')" [ngClass]="{'selectedBtn': selectionTabTrend == 'today'}" class='margin-right-10 no-margin margin-bottom-sm matButton' mat-raised-button>{{translationData.lblToday  }}</button>
               <button [disabled]="selectionTabTrend == 'yesterday' || selectionLimitYesterday" (click)="updateOptions('yesterday')" [ngClass]="{'selectedBtn': selectionTabTrend == 'yesterday'}" class='margin-right-10 no-margin margin-bottom-sm matButton' mat-raised-button>{{translationData.lblYesterday  }}</button>
@@ -177,14 +177,14 @@
               <mat-expansion-panel-header class="full-width">
                 <mat-panel-title>
                   <div fxLayout="row" fxLayoutAlign='center center'>
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblGeneral  }} </span>
+                    <span>{{ translationData.lblGeneral }} </span>
                     <span matTooltip="{{ translationData.lblGeneralInfo }}">
                       <mat-icon class='margin-right-10'>info</mat-icon></span>
                   </div>
                 </mat-panel-title>
               </mat-expansion-panel-header>
               <div class="container-fluid" id="grid_general_driver_table">
-                <angular-slickgrid gridId="grid_general_table"
+                <angular-slickgrid class="general" gridId="grid_general_table"
                 [columnDefinitions]="columnDefinitionsGen"
                 [gridOptions]="gridOptionsGen"
                 [datasetHierarchical]="datasetGen"
@@ -199,7 +199,7 @@
               <mat-expansion-panel-header class="full-width">
                 <mat-panel-title>
                   <span>
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblCharts }}</span>
+                    <span class='font-18-px line-height-27px font-helvetica-md'>{{ translationData.lblCharts }}</span>
                   </span>
                 </mat-panel-title>
               </mat-expansion-panel-header>
@@ -220,7 +220,7 @@
                   <mat-form-field appearance="outline" class="full-width">
                     <mat-select [(value)]="vehicleSelected" [disabled]="vehicleListGeneral.length <= 1" (selectionChange)="loadPieChart($event.value)">
                       <mat-option *ngFor="let vehicle of vehicleListGeneral" [value]="vehicle.id">
-                        {{ vehicle.name }}
+                        {{ vehicle.name == 'Overall Driver' ? translationData.lblOverallDriver : vehicle.name }}
                       </mat-option>
                     </mat-select>
                   </mat-form-field>
@@ -268,7 +268,7 @@
               <mat-expansion-panel-header class="full-width">
                 <mat-panel-title>
                   <div fxLayout="row" fxLayoutAlign='center center'>
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDriverPerformance }}</span>
+                    <span>{{ translationData.lblDriverPerformance }}</span>
                     <span matTooltip="{{ translationData.lblGeneralInfo  }}">
                       <mat-icon class='margin-right-10'>info</mat-icon></span>
                   </div>
@@ -291,7 +291,7 @@
               <mat-expansion-panel-header class="full-width">
                 <mat-panel-title>
                   <span>
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblCharts }}</span>
+                    <span class='font-18-px line-height-27px font-helvetica-md'>{{ translationData.lblCharts }}</span>
                   </span>
                 </mat-panel-title>
               </mat-expansion-panel-header>
@@ -312,7 +312,7 @@
                 <mat-form-field appearance="outline" class="full-width">
                   <mat-select [(value)]="vehicleSelected" [disabled]="vehicleListGeneral.length <= 1" (selectionChange)="loadPieChartPerformance($event.value)">
                     <mat-option *ngFor="let vehicle of vehicleListGeneral" [value]="vehicle.id">
-                      {{ vehicle.name }}
+                      {{ vehicle.name == 'Overall Driver' ? translationData.lblOverallDriver : vehicle.name }}
                     </mat-option>
                   </mat-select>
                 </mat-form-field>

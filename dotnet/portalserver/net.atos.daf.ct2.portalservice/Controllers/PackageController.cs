@@ -111,12 +111,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                             "Create method in Package controller", 0, packageResponse.PackageId, JsonConvert.SerializeObject(request),
                                              _userDetails);
 
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Create)}: With Error:-", ex);
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
                 {
                     return StatusCode(400, PortalConstants.ExceptionKeyWord.FK_CONSTRAINT);
                 }
-                return StatusCode(500, "Please contact system administrator. " + ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
 
 
             }
@@ -209,12 +209,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                              "Update method in Package controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
                                               _userDetails);
 
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Update)}: With Error:-", ex);
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
-                return StatusCode(500, "Please contact system administrator. " + ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -278,8 +278,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(Get)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -330,8 +330,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                             "Delete method in Package controller", packageRequest.Id, packageRequest.Id, JsonConvert.SerializeObject(packageId),
                                              _userDetails);
 
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(Delete)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -373,7 +373,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     else
                     {
                         if (packageResponse.PackageList.Count == 0)
-                            return StatusCode(409, "package code already exists");
+                        {
+                            packageResponse.Responsecode = Responsecode.Conflict;
+                            packageResponse.Message = "package code already exists or some packages got rejected as feature name was not correct";
+                            return Ok(packageResponse);
+                        }
                         else
                         {
                             return StatusCode(500, "Package response is null");
@@ -393,12 +397,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                              "Import method in Package controller", 0, 0, JsonConvert.SerializeObject(request),
                                               _userDetails);
 
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Import)}: With Error:-", ex);
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
-                return StatusCode(500, "Please contact system administrator. " + ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 
@@ -458,8 +462,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                             "UpdatePackageStatus method in Package controller", 0, 0, JsonConvert.SerializeObject(request),
                                              _userDetails);
 
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.Error($"{nameof(UpdatePackageStatus)}: With Error:-", ex);
+                return StatusCode(500, PortalConstants.ExceptionKeyWord.INTERNAL_SERVER_MSG);
             }
         }
 

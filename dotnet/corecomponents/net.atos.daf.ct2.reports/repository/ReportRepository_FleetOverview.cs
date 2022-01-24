@@ -357,6 +357,22 @@ namespace net.atos.daf.ct2.reports.repository
                 throw;
             }
         }
+        public async Task<IEnumerable<string>> GetEnumList(IEnumerable<int> alertFeatureIds)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@alertFeatureIds", alertFeatureIds);
+                var queryStatementFeature = @"select enum from translation.enumtranslation where feature_id = ANY(@alertFeatureIds)";
+                IEnumerable<string> resultFeaturEnum = await _dataAccess.QueryAsync<string>(queryStatementFeature, parameter);
+                return resultFeaturEnum;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public async Task<List<FleetOverviewDetails>> GetFleetOverviewDetails_NeverMoved(FleetOverviewFilter fleetOverviewFilter)
         {
             List<FleetOverviewDetails> fleetOverviewDetails = new List<FleetOverviewDetails>();
@@ -457,7 +473,7 @@ namespace net.atos.daf.ct2.reports.repository
                     CWVR.vin as lcts_vin,
                     'N' as lcts_VehicleDrivingStatusType,
                     case when warning_class >=4 and warning_class <= 7 then 'T'
-                    when warning_class >=8 and warning_class <= 10 then 'V'
+                    when warning_class >=8 and warning_class <= 11 then 'V'
                     else 'N' end as lcts_VehicleHealthStatusType,                                
                     CWVR.warning_class as lcts_LatestWarningClass,
                     CWVR.warning_number as lcts_LatestWarningNumber,

@@ -14,14 +14,14 @@
         <mat-expansion-panel-header class="full-width">
           <mat-panel-title>
             <span>
-              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSearchReportParameters}}</span>
+              <span>{{ translationData.lblSearchReportParameters }}</span>
             </span>
           </mat-panel-title>
         </mat-expansion-panel-header>
          <div>
           <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
             <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ translationData.lblTimeRange  }} <span class='mandatoryColor'>*</span></mat-label>
+              <mat-label class='font-16-px line-height-24px'>{{ translationData.lblTimeRange }} <span class='mandatoryColor'>*</span></mat-label>
               <div style='margin-top: 5px;'>
                 <button [disabled]="selectionTab == 'today'" (click)="selectionTimeRange('today')" [ngClass]="{'selectedBtn': selectionTab == 'today'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblToday}}</button>
                 <button [disabled]="selectionTab == 'yesterday'" (click)="selectionTimeRange('yesterday')" [ngClass]="{'selectedBtn': selectionTab == 'yesterday'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblYesterday  }}</button>
@@ -33,11 +33,11 @@
               </div>
             </div>
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ translationData.lblVehicleGroup  }} <span class='mandatoryColor'>*</span></mat-label>
+              <mat-label class='font-16-px line-height-24px'>{{ translationData.lblVehicleGroup }} <span class='mandatoryColor'>*</span></mat-label>
               <mat-form-field appearance="outline">
                 <mat-select [disabled]="driverDD.length == 0" (selectionChange)="onVehicleGroupChange($event)" placeholder="{{ translationData.lblSelectVehicleGroup  }}"  formControlName="vehicleGroup">
                     <mat-option>
-                        <ngx-mat-select-search (keyup)="filterVehicleGroups(vehicleSearch.value)" placeholderLabel="{{ translationData.lblSearch|| 'Search' }}" #vehicleSearch>
+                        <ngx-mat-select-search (keyup)="filterVehicleGroups(vehicleSearch.value)" placeholderLabel="{{ translationData.lblSearch }}" #vehicleSearch>
                           <mat-icon (click)="resetVehicleGroupFilter()" ngxMatSelectSearchClear>close</mat-icon>
                         </ngx-mat-select-search>
                       </mat-option>
@@ -55,11 +55,11 @@
             <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
                 <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
-                  <mat-label>{{ translationData.lblFrom  }} <span class='mandatoryColor'>*</span></mat-label>
+                  <mat-label class='font-16-px line-height-24px'>{{ translationData.lblFrom  }} <span class='mandatoryColor'>*</span></mat-label>
                   <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
                     <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
                       <mat-form-field appearance="outline">
-                        <input matInput [(ngModel)]="startDateValue" (dateChange)="changeStartDateEvent($event)" [min]='last3MonthDate' [max]='endDateValue' [matDatepicker]="startPicker" formControlName="startDate">
+                        <input matInput [(ngModel)]="startDateValue" (dateChange)="changeStartDateEvent($event)" [min]='lastYearDate' [max]='endDateValue' [matDatepicker]="startPicker" formControlName="startDate">
                         <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
                         <mat-datepicker #startPicker></mat-datepicker>
                       </mat-form-field>
@@ -75,7 +75,7 @@
                   </div>
                 </div>
                 <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
-                  <mat-label>{{ translationData.lblTo  }} <span class='mandatoryColor'>*</span></mat-label>
+                  <mat-label class='font-16-px line-height-24px'>{{ translationData.lblTo }} <span class='mandatoryColor'>*</span></mat-label>
                   <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
                     <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
                       <mat-form-field appearance="outline">
@@ -97,11 +97,11 @@
               </div>
             </div>
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ translationData.lblVehicle  }} <span class='mandatoryColor'>*</span></mat-label>
+              <mat-label class='font-16-px line-height-24px'>{{ translationData.lblVehicle }} <span class='mandatoryColor'>*</span></mat-label>
               <mat-form-field appearance="outline">
                 <mat-select [disabled]="driverDD.length == 0" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle  }}" formControlName="vehicle">
                     <mat-option>
-                        <ngx-mat-select-search (keyup)="filterVehicle(search.value)" placeholderLabel="{{ translationData.lblSearch|| 'Search' }}"  #search>
+                        <ngx-mat-select-search (keyup)="filterVehicle(search.value)" placeholderLabel="{{ translationData.lblSearch }}"  #search>
                           <mat-icon (click)="resetVehicleFilter()" ngxMatSelectSearchClear>close</mat-icon>
                         </ngx-mat-select-search>
                       </mat-option>
@@ -122,7 +122,7 @@
             <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
                 <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
-                   <div fxLayout="row" fxLayoutGap="2px">
+                   <div fxLayout="row" fxLayoutGap="5px">
                     <mat-checkbox (change)="validateMinTripVal()" [(ngModel)]='minTripCheck' formControlName="minTripCheck"></mat-checkbox><mat-label>{{ translationData.lblMinTripDistance  }} 
                       <span style="font-weight: normal;">({{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm ) :
                          (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile ) : (translationData.lblmile ) }})</span>
@@ -135,8 +135,8 @@
                   </div>
                 </div>
                 <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
-                  <div fxLayout="row" fxLayoutGap="2px">
-                    <mat-checkbox (change)="validateMinDistVal()" [(ngModel)]='minDriverCheck' formControlName="minDriverCheck"></mat-checkbox><mat-label>{{ translationData.lblMinDriverTotalDist || 'Minimum Driver Total Distance' }} 
+                  <div fxLayout="row" fxLayoutGap="5px">
+                    <mat-checkbox (change)="validateMinDistVal()" [(ngModel)]='minDriverCheck' formControlName="minDriverCheck"></mat-checkbox><mat-label>{{ translationData.lblMinDriverTotalDist  }} 
                       <span style="font-weight: normal;">({{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm ) :
                         (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile ) : (translationData.lblmile ) }})</span>
                       <span class='mandatoryColor'>*</span></mat-label>
@@ -150,11 +150,11 @@
               </div>
             </div>
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ translationData.lblDriver }} <span class='mandatoryColor'>*</span></mat-label>
+              <mat-label class='font-16-px line-height-24px'>{{ translationData.lblDriver }} <span class='mandatoryColor'>*</span></mat-label>
               <mat-form-field appearance="outline">
-              <mat-select [disabled]="driverDD.length == 0" (selectionChange)="onDriverChange($event)" placeholder="{{ translationData.lblSelectDriver || 'Select Driver' }}" formControlName="driver">
+              <mat-select [disabled]="driverDD.length == 0" (selectionChange)="onDriverChange($event)" placeholder="{{ translationData.lblSelectDriver }}" formControlName="driver">
                   <mat-option>
-                      <ngx-mat-select-search (keyup)="filterDriver(DriverSearch.value)" placeholderLabel="{{ translationData.lblSearch|| 'Search' }}" #DriverSearch>
+                      <ngx-mat-select-search (keyup)="filterDriver(DriverSearch.value)" placeholderLabel="{{ translationData.lblSearch }}" #DriverSearch>
                         <mat-icon (click)="resetDriverFilter()" ngxMatSelectSearchClear>close</mat-icon>
                       </ngx-mat-select-search>
                     </mat-option>
@@ -164,27 +164,27 @@
               </mat-select>
               </mat-form-field>
               <mat-error *ngIf="ecoScoreForm.get('driver').hasError('required') && this.driverDD.length > 0">
-              {{translationData.lblPleaseSelectDriver  }}
+              {{ translationData.lblPleaseSelectDriver }}
               </mat-error>
               <mat-error *ngIf="this.driverListData.length === 0">
-              {{translationData.lblNoDriverAvailable  }}
+              {{ translationData.lblNoDriverAvailable }}
               </mat-error>
             </div>
           </div>
           <div fxLayout="row"  class='areaWidth' fxLayoutAlign="end"> 
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <mat-error *ngIf="minTripInputCheck">
-                {{translationData.lblPleaseSelectDriverMinDist  }}
+                {{ translationData.lblPleaseSelectDriverMinDist }}
               </mat-error>
             </div>
             <div class="areaWidth min-width-30-per" style="padding-left: 50px;" fxLayout="column" fxLayoutAlign="left">
               <mat-error *ngIf="minDriverInputCheck">
-                {{translationData.lblPleaseSelectTotalDriverDist  }}
+                {{ translationData.lblPleaseSelectTotalDriverDist }}
               </mat-error>
             </div>
             <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left"></div>
             <button class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
-              (click)='onReset()'>{{translationData.lblReset  }}</button>
+              (click)='onReset()'>{{translationData.lblReset }}</button>
             <!--<button [disabled]="!ecoScoreForm.valid || minDriverInputCheck || minTripInputCheck" class='no-margin' mat-raised-button color="primary"
               (click)='onSearch()'>{{ translationData.lblSearch || 'Search' }}</button>-->
               <button  class='no-margin' mat-raised-button color="primary"
@@ -198,11 +198,11 @@
       <mat-expansion-panel [(expanded)]="noDetailsExpandPanel" class="full-width" fxLayoutGap="10px">
         <mat-expansion-panel-header class="full-width" >
           <mat-panel-title >
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblEcoScoreReportdetails  }}</span>
+            <span>{{ translationData.lblEcoScoreReportdetails  }}</span>
           </mat-panel-title>
         </mat-expansion-panel-header>
         <div *ngIf='initData.length == 0'>
-          <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;' fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound  }}</div>
+          <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound  }}</div>
           <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblSelectionMessage }}</div>
         </div>
       </mat-expansion-panel>
@@ -211,11 +211,11 @@
       <mat-expansion-panel  [(expanded)]="generalExpandPanel" class="full-width" fxLayoutGap="10px">
         <mat-expansion-panel-header class="full-width">
           <mat-panel-title >
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblRanking  }}</span>
+            <span>{{ translationData.lblRanking }}</span>
           </mat-panel-title>
         </mat-expansion-panel-header>
         <div *ngIf='initData.length > 0' [ngClass]="{'reportTable': displayedColumns.length > 7}">
-          <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
+          <div style='padding: 20px; margin-bottom: 10px; background: #bee3f8;'>
             <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
               <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
                 <span>
@@ -224,17 +224,17 @@
               </div>
               <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
                 <span>
-                  <span>{{ translationData.lblTo}} </span>
+                  <span>{{ translationData.lblTo }} </span>
                 </span>
               </div>
               <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
                 <span>
-                  <span>{{ translationData.lblVehicle  }} </span>
+                  <span>{{ translationData.lblVehicle }} </span>
                 </span>
               </div>
               <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
                 <span>
-                  <span>{{ translationData.lblVehicleGroup}} </span>
+                  <span>{{ translationData.lblVehicleGroup }} </span>
                 </span>
               </div>
               <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
@@ -244,7 +244,7 @@
               </div>
               <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
                 <span>
-                  <span>{{ translationData.lblDriverName  }} </span>
+                  <span>{{ translationData.lblDriverName }} </span>
                 </span>
               </div>
               <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
@@ -255,25 +255,25 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
               <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
-                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ fromDisplayDate }}</span>
+                <span class='font-helvetica-md'>{{ fromDisplayDate }}</span>
               </div>
               <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
-                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ toDisplayDate }}</span>
+                <span class='font-helvetica-md'>{{ toDisplayDate }}</span>
               </div>
               <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
-                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ selectedVehicle }}</span>
+                <span class='font-helvetica-md'>{{ selectedVehicle }}</span>
               </div>
               <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
-                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ selectedVehicleGroup }}</span>
+                <span class='font-helvetica-md'>{{ selectedVehicleGroup }}</span>
               </div>
               <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
-                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ selectedDriverId }}</span>
+                <span class='font-helvetica-md'>{{ selectedDriverId }}</span>
               </div>
               <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
-                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ selectedDriverName }}</span>
+                <span class='font-helvetica-md'>{{ selectedDriverName }}</span>
               </div>
               <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
-                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ selectedDriverOption }}</span>
+                <span class='font-helvetica-md'>{{ selectedDriverOption }}</span>
               </div>
             </div>
           </div>
@@ -287,7 +287,7 @@
               </mat-form-field>
             </div>
             <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-              <span>{{ translationData.lblTargetProfile }} </span>
+              <span class='font-16-px line-height-24px'>{{ translationData.lblTargetProfile }} </span>
               <mat-form-field appearance="outline">
                 <mat-select [disabled]="profileList.length == 0" [(value)]="targetProfileSelected" (selectionChange)="onProfileChange($event)" placeholder="{{ translationData.lblSelectVehicle  }}" formControlName="profile">
                 <mat-option *ngFor="let pro of profileList" [value]="pro.profileId">
@@ -300,7 +300,7 @@
           <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm' fxLayoutGap="10px">
             <div fxLayout="row" fxLayoutAlign="end" class='areaWidth' fxLayoutGap="10px">             
               <button mat-button *ngFor="let driver of selectedDriversEcoScore" (click)="deselectDriver(driver)">
-                {{driver.driverName}}
+                {{ driver.driverName }}
                 <mat-icon>close</mat-icon>
               </button>
               <button [disabled]="!compareButton" class='no-margin min-width-35-per' mat-raised-button color="primary"
@@ -311,7 +311,7 @@
             <div class='areaWidth' fxLayout="column" fxLayoutAlign="left">
               <div fxLayout="row" fxLayoutAlign='center center'>
                 <mat-icon class='margin-right-10'>info</mat-icon>
-                <span>{{ translationData.lblSelect2to4DriversCompare  }} </span>
+                <span>{{ translationData.lblSelect2to4DriversCompare }} </span>
               </div>
             </div>
             <div class='areaWidth' fxLayout="column" fxLayoutAlign="end">
@@ -329,12 +329,12 @@
               matSort #exporter="matTableExporter">
               <ng-container matColumnDef="select">
                 <mat-header-cell *matHeaderCellDef>
-                  <mat-checkbox (change)='$event ? masterToggleForEcoScore() : null' ></mat-checkbox>
+                  <mat-checkbox (change)='$event ? masterToggleForEcoScore() : null' [disabled]='initData.length > 4 ? true : null'></mat-checkbox>
                   <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll }}</span>
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row">
                   <span [ngClass]="{ 'marginLeft-14': row.newTag }"></span>
-                  <mat-checkbox (change)='rowSelected($event, row)'  [checked]='selectedEcoScore.isSelected(row)'></mat-checkbox>
+                  <mat-checkbox (change)='rowSelected($event, row)' [disabled]='row.disabled == true ? true : null'  [checked]='selectedEcoScore.isSelected(row)'></mat-checkbox>
                 </mat-cell>
               </ng-container>
               <ng-container *ngIf='showField.ranking' matColumnDef="ranking">
@@ -383,11 +383,11 @@
         <mat-expansion-panel [(expanded)]="noDetailsExpandPanel" class="full-width" fxLayoutGap="10px">
           <mat-expansion-panel-header class="full-width" >
             <mat-panel-title >
-              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblEcoScoreReportDriverdetails  }}</span>
+              <span>{{ translationData.lblEcoScoreReportDriverdetails  }}</span>
             </mat-panel-title>
           </mat-expansion-panel-header>
           <div>
-            <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;' fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound  }}</div>
+            <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound  }}</div>
             <div *ngIf="!isSearched" fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblSelectionMessage  }}</div>
             <div *ngIf="isSearched" fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound }}</div>
           </div>

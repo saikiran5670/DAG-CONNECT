@@ -49,7 +49,7 @@ public class PostgreConnection implements Serializable{
 		return url;
 	}
 	
-	private String encodeValue(String value) {
+	public String encodeValue(String value) {
 		try {
 			return URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
 		} catch (UnsupportedEncodingException ex) {

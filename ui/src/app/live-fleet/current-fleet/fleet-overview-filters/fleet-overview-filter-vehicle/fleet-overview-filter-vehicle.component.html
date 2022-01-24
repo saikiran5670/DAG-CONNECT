@@ -2,7 +2,7 @@
     <mat-expansion-panel *ngIf='!isVehicleDetails' style="padding: 0px; height: calc(100vh - 45px); overflow: auto; margin-top: 10px;" [expanded]="true"  class="full-width margin-bottom-xlg" fxLayoutGap="10px">
       <mat-expansion-panel-header class="full-width" style="height: 45px;">
         <mat-panel-title>
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblVehicleList }}({{noRecordFlag ? '0' : vehicleListData.length}})</span>
+          <span style="font-size: 16px; line-height: 24px;">{{ translationData.lblVehicleList }} ({{noRecordFlag ? '0' : vehicleListData.length}})</span>
        </mat-panel-title>
       </mat-expansion-panel-header>
       <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class="checkbox">
@@ -12,13 +12,13 @@
      <div  *ngIf="!noRecordFlag">
         <div class="full-width vehicleList-div" *ngFor="let item of vehicleListData" (click) ='openVehicleDetails(item)'>
             <div class="vehicleList-icon" *ngIf= "!drivingStatus">
-                <span id="steps" class="step-image" [innerHTML]="item.icon"  matTooltip="Health Status: {{item.vehicleHealthStatusType}} 
-                &#13; Alert: {{item.alertName}}"> </span>
+                <span id="steps" class="step-image" [innerHTML]="item.icon"  matTooltip="{{translationData.lblHealthStatus}}: {{item.vehicleHealthStatusType}} 
+                &#13; {{translationData.lblAlert || 'Alert'}}: {{item.alertName}}"> </span>
             </div>
             <div class='rippleSVG'  *ngIf= "drivingStatus">
             <div class="vehicleList-icon">
-                <span id="steps" class="step-image" [innerHTML]="item.icon"  matTooltip="Health Status: {{item.vehicleHealthStatusType}} 
-                &#13; Alert: {{item.alertName}}"> </span>
+                <span id="steps" class="step-image" [innerHTML]="item.icon"  matTooltip="{{translationData.lblHealthStatus}}: {{item.vehicleHealthStatusType}} 
+                &#13; {{translationData.lblAlert || 'Alert'}}: {{item.alertName}}"> </span>
             </div>
         </div>
             <div class="vehicleList-details">
@@ -58,7 +58,7 @@
   [levelList] = "levelList" 
   [vehInfoPrefData]='vehInfoPrefData'
   [filterData]="filterData"
-  (backToPage)='checkCreationForVehicleDetails($event)'
+  (backToPage)='checkCreationForVehicleDetails($event,true)'
   [todayFlagClicked]="todayFlagClicked"></app-vehicle-details>
 </div>
 

@@ -557,14 +557,14 @@ namespace net.atos.daf.ct2.reportscheduler.repository
         #endregion
 
         #region Get Report Scheduler
-        public async Task<IEnumerable<ReportSchedulerMap>> GetReportSchedulerList(int organizationid)
+        public async Task<IEnumerable<ReportSchedulerMap>> GetReportSchedulerList(int organizationid, List<int> vehicleIds, List<int> groupIds)
         {
             MapperRepo repositoryMapper = new MapperRepo();
             try
             {
-                var parameterAlert = new DynamicParameters();
+                var parameter = new DynamicParameters();
 
-                string queryAlert = @"SELECT repsch.id as repsch_id, 
+                string query = @"SELECT repsch.id as repsch_id, 
                                             repsch.organization_id as repsch_organization_id, 
                                             repsch.report_id as repsch_report_id,
 											rep.name as rep_reportname,
@@ -610,41 +610,61 @@ namespace net.atos.daf.ct2.reportscheduler.repository
 					                        (CASE WHEN grp.group_type='S' THEN vehs.name END) as vehiclename,
 					                        (CASE WHEN grp.group_type<>'S' THEN grp.name END) as vehiclegroupname,
                                             grp.group_type as vehiclegrouptype,
-                                            grp.function_enum as functionenum,
-                                            schrep.id as schrep_id, 
-                                            schrep.schedule_report_id as schrep_schedule_report_id,                                            
-                                            schrep.downloaded_at as schrep_downloaded_at, 
-                                            schrep.valid_till as schrep_valid_till, 
-                                            schrep.created_at as schrep_created_at, 
-                                            schrep.start_date as schrep_start_date, 
-                                            schrep.end_date as schrep_end_date
+                                            grp.function_enum as functionenum                                           
 	                                    FROM master.reportscheduler as repsch
 	                                    LEFT JOIN master.scheduledreportdriverref as driveref
 	                                    ON repsch.id=driveref.report_schedule_id AND driveref.state='A'
 	                                    LEFT JOIN master.scheduledreportrecipient as receipt
 	                                    ON repsch.id=receipt.schedule_report_id AND repsch.status <>'D' AND receipt.state='A'
 	                                    LEFT JOIN master.scheduledreportvehicleref as vehref
-	                                    ON repsch.id=vehref.report_schedule_id AND repsch.status <>'D' AND vehref.state='A'
-	                                    LEFT JOIN master.scheduledreport as schrep
-	                                    ON repsch.id=schrep.schedule_report_id AND repsch.status <>'D' AND schrep.valid_till > @currentDate
+	                                    ON repsch.id=vehref.report_schedule_id AND repsch.status <>'D' AND vehref.state='A'	                                   
                                         LEFT JOIN master.group grp 
 					                    on vehref.vehicle_group_id=grp.id
 					                    LEFT JOIN master.groupref vgrpref
 					                    on  grp.id=vgrpref.group_id and grp.object_type='V'	
 					                    LEFT JOIN master.vehicle veh
-					                    on vgrpref.ref_id=veh.id 
+					                    on vgrpref.ref_id=veh.id and veh.id = ANY(@vehicleIds)
                                         LEFT JOIN master.vehicle vehs
-					                    on grp.ref_id=vehs.id and grp.group_type='S'
+					                    on grp.ref_id=vehs.id and grp.group_type='S' and vehs.id = ANY(@vehicleIds)
 										LEFT JOIN master.driver dr
 										on driveref.driver_id = dr.id and dr.state='A'
 										INNER JOIN master.report rep
-										on rep.id=repsch.report_id ";
+										on rep.id=repsch.report_id";
                 long currentdate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
-                queryAlert = queryAlert + " where repsch.organization_id = @organization_id and repsch.status<>'D'";
-                parameterAlert.Add("@organization_id", organizationid);
-                parameterAlert.Add("@currentDate", currentdate);
-                IEnumerable<ReportSchedulerResult> reportSchedulerResult = await _dataAccess.QueryAsync<ReportSchedulerResult>(queryAlert, parameterAlert);
-                return repositoryMapper.GetReportSchedulerList(reportSchedulerResult);
+                query = query + " where repsch.organization_id = @organization_id and repsch.status<>'D'";
+                parameter.Add("@organization_id", organizationid);
+                parameter.Add("@currentDate", currentdate);
+                parameter.Add("@vehicleIds", vehicleIds);
+                parameter.Add("@groupIds", groupIds);
+                IEnumerable<ReportSchedulerResult> reportSchedulerResult = await _dataAccess.QueryAsync<ReportSchedulerResult>(query, parameter);
+                return await repositoryMapper.GetReportSchedulerList(reportSchedulerResult);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<ScheduledReport>> GetScheduledReport(int reportschedulerId)
+        {
+            MapperRepo repositoryMapper = new MapperRepo();
+            try
+            {
+                var parameter = new DynamicParameters();
+
+                string query = @"SELECT schrep.id as Id, 
+                                            schrep.schedule_report_id as ScheduleReportId,                                            
+                                            schrep.downloaded_at as DownloadedAt, 
+                                            schrep.valid_till as ValidTill, 
+                                            schrep.created_at as CreatedAt, 
+                                            schrep.start_date as StartDate, 
+                                            schrep.end_date as EndDate
+											FROM master.scheduledreport as schrep
+											WHERE schrep.schedule_report_id =@reportschedulerId AND schrep.valid_till > @currentDate";
+                long currentdate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
+                parameter.Add("@reportschedulerId", reportschedulerId);
+                parameter.Add("@currentDate", currentdate);
+                return await _dataAccess.QueryAsync<ScheduledReport>(query, parameter);
             }
             catch (Exception)
             {
@@ -772,6 +792,54 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 }
             }
             catch
+            {
+                throw;
+            }
+        }
+        #endregion
+
+        #region Get Feature id by Account Id and Org ID
+        public async Task<IEnumerable<int>> GetfeaturesByAccountAndOrgId(int accountid, int organizationid, string featureName = "alerts.")
+        {
+            try
+            {
+                var parameterType = new DynamicParameters();
+                var queryStatement =
+                    @"SELECT DISTINCT features.id as Id
+                    FROM 
+                    (
+	                    --Account Route
+	                    SELECT f.id
+	                    FROM master.Account acc
+	                    INNER JOIN master.AccountRole ar ON acc.id = ar.account_id AND acc.id = @account_id AND ar.organization_id = @organization_id AND acc.state = 'A'
+	                    INNER JOIN master.Role r ON ar.role_id = r.id AND r.state = 'A'
+	                    INNER JOIN master.FeatureSet fset ON r.feature_set_id = fset.id AND fset.state = 'A'
+	                    INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
+	                    INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.state = 'A' AND f.type <> 'D' AND lower(f.name) like @feature_name and r.level <= f.level
+	                    INTERSECT 
+	                    (
+		                    SELECT f.id
+		                    FROM
+		                    (
+			                    SELECT pkg.feature_set_id
+			                    FROM master.Package pkg
+			                    INNER JOIN master.Subscription s ON s.package_id = pkg.id AND s.organization_id = @organization_id AND s.state = 'A' AND pkg.state = 'A'
+			                    UNION
+			                    SELECT pkg.feature_set_id FROM master.Package pkg WHERE pkg.type='P' AND pkg.state = 'A'	--Consider platform type packages
+		                    ) subs
+		                    INNER JOIN master.FeatureSet fset ON subs.feature_set_id = fset.id AND fset.state = 'A'
+		                    INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
+		                    INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.state = 'A' AND f.type <> 'D' AND lower(f.name) like @feature_name
+	                    )    
+                    ) features";
+
+                parameterType.Add("@organization_id", organizationid);
+                parameterType.Add("@account_id", accountid);
+                parameterType.Add("@feature_name", $"{featureName}%");
+
+                return await _dataAccess.QueryAsync<int>(queryStatement, parameterType);
+            }
+            catch (Exception)
             {
                 throw;
             }

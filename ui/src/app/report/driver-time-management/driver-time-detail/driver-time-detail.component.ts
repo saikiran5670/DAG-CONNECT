@@ -12,6 +12,7 @@ import { Workbook } from 'exceljs';
 import * as fs from 'file-saver';
 import * as Highcharts from 'highcharts';
 import ColumnRange from 'highcharts/highcharts-more';
+import { MAT_DATE_FORMATS } from '@angular/material/core';
 ColumnRange(Highcharts);
 
 @Component({
@@ -70,6 +71,7 @@ export class DriverTimeDetailComponent implements OnInit {
     serviceTime: number;
     restTime: number;
   }
+  dateFormats: any;
   dayWiseSummaryList: any =[];
   chartOptions: any;
   chart: Highcharts.Chart;
@@ -90,6 +92,7 @@ export class DriverTimeDetailComponent implements OnInit {
   ngOnInit(): void {
     // this.createChart(this.chartData);
     this.showLoadingIndicator = true;
+    this.setPrefFormatDate();
   }
 
   ngOnChanges(){
@@ -160,7 +163,7 @@ export class DriverTimeDetailComponent implements OnInit {
     // });
     
     let driveData=[], workData=[], restData=[], availableData=[];
-    let startTime='';
+    let startTime: any;
     let currentArray;
     let newObj=[];
     this.dayWiseSummaryList=[];
@@ -168,7 +171,8 @@ export class DriverTimeDetailComponent implements OnInit {
       // let _startTime1 = Util.convertUtcToDateTZ(element.startTime,this.prefTimeZone);
       let _startTime = Util.convertUtcToHour(element.startTime,this.prefTimeZone);
       let _endTime = Util.convertUtcToHour(element.endTime,this.prefTimeZone);
-      let _startTimeDate = Util.convertUtcToDateStart(element.startTime, this.prefTimeZone);
+      // let _startTimeDate = Util.convertUtcToDateStart(element.startTime, this.prefTimeZone);
+      let _startTimeDate = Util.getMillisecondsToUTCDate(new Date(element.startTime), this.prefTimeZone);
       let isValid=true;
       if(_startTime == _endTime || (_startTime) > (_endTime)){
         isValid=false;
@@ -177,7 +181,9 @@ export class DriverTimeDetailComponent implements OnInit {
       if(isValid && element.duration > 0){
         // console.log('start'+element.startTime+' end '+element.endTime+' activity'+element.activityDate+' duration'+element.duration);
         
-        startTime=Util.convertUtcToDateFormat2(_startTimeDate, this.prefTimeZone);
+        // startTime=Util.convertUtcToDateFormat2(_startTimeDate, this.prefTimeZone);------
+        let formatDate = Util.convertUtcToDateAndTimeFormat(_startTimeDate, this.prefTimeZone,this.dateFormats);
+       startTime = formatDate[0];
         // startTime=this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false);
         // console.log('sta'+_startTime+' end'+_endTime+' sa'+Util.convertUtcToDateStart(element.startTime, this.prefTimeZone)+' ac'+Util.convertUtcToDateFormat2(element.activityDate, this.prefTimeZone));
         let restObj={
@@ -194,25 +200,25 @@ export class DriverTimeDetailComponent implements OnInit {
         // console.log(currentArray[0].date+ ' ' + currentArray[0].restTime + ' ' + currentArray[0].workTime + ' ' + currentArray[0].availableTime + ' ' + currentArray[0].serviceTime);
         if(element.code === 0){
           restObj['color']='#8ac543';
-          restObj['type']='Rest';
+          restObj['type']=this.translationData.lblRest;
           // restData.push(restObj);
           newObj.push(restObj);
           currentArray['restTime'] = currentArray.restTime + element.duration;
         } else if(element.code === 1){
           restObj['color']='#dddee2';
-          restObj['type']='Available';
+          restObj['type']=this.translationData.lblAvailable;
           // availableData.push(restObj);
           newObj.push(restObj);
           currentArray['availableTime']= currentArray.availableTime + element.duration;
         } else if(element.code === 2){
           restObj['color']='#fc5f01';
-          restObj['type']='Work';
+          restObj['type']=this.translationData.lblWork;
           // workData.push(restObj);
           newObj.push(restObj);
           currentArray['workTime']= currentArray.workTime + element.duration;
         } else if(element.code === 3){
           restObj['color']='#00529b';
-          restObj['type']='Drive';
+          restObj['type']=this.translationData.lblDrive;
           // driveData.push(restObj);
           newObj.push(restObj);
           currentArray['driveTime']= currentArray.driveTime + element.duration;
@@ -225,6 +231,10 @@ export class DriverTimeDetailComponent implements OnInit {
     let totWorkTime=0;
     let totRestTime=0;
     let totServiceTime=0;
+    let transFrom = this.translationData.lblFrom;
+    let transTo = this.translationData.lblTo;
+    let transDuration = this.translationData.lblDuration;
+
     this.dayWiseSummaryList.forEach(element => {
       totDriveTime += element.driveTime;
       totAvailableTime += element.availableTime;
@@ -258,22 +268,40 @@ export class DriverTimeDetailComponent implements OnInit {
           panning: true,
           panKey: 'shift'
         },
-        // exporting: {
-        //   enabled: false
-        // },
+        credits: {
+          enabled: false
+        },
+        style: {
+          fontFamily: 'fontAwesome'
+        },
         tooltip:{
           formatter(e){
-            // console.log(this);
-            // let yAxisValues = e.chart.yAxis[0].ticks
-            return (
-              `<div class='chartTT'> 
-                <div style='font-weight: bold;'><img matTooltip='activity' class='mr-1' src=${this.point.type} style="width: 16px; height: 16px;" />${this.point.type} </div>
-                <br/><div>From:${this.point.actualDate}&nbsp;${this.point.low}</div>
-                <br/><div>To:${this.point.actualDate}&nbsp;${this.point.high} </div>
-                <br/><div>Duration: ${Util.getTimeHHMMSS(this.point.duration)}</div>
-              </div>`
+            var symbol = '';
+            if (this.point) {
+                switch ( this.point.type) {
+                    case 'Work':
+                        symbol = '<img matTooltip="activity" class="mr-1" src="/assets/activityIcons/work.svg" style="width: 16px; height: 16px;" />';
+                        break;
+                    case 'Rest':
+                        symbol = '<img matTooltip="activity" class="mr-1" src="/assets/activityIcons/rest.svg" style="width: 16px; height: 16px;" />';
+                        break;
+                    case 'Drive':
+                        symbol = '<img matTooltip="activity" class="mr-1" src="/assets/activityIcons/drive.svg" style="width: 16px; height: 16px;" />';
+                        break;
+                    case 'Available':                      
+                        symbol='<img matTooltip="activity" class="mr-1" src="/assets/activityIcons/available.svg" style="width: 16px; height: 16px;" />'
+                        break;                            
+                    }
+                }
+                return (
+               '<div class="driveChartTT" style="border: 0px;"><div style="font-weight: bold;"><span style="font-size: 15px;">' +
+                symbol + '</span>'+ this.point.type +'</div>'+
+               '<div>'+transFrom+':'+ this.point.actualDate +'&nbsp;&nbsp;'+ this.point.low +'</div>'+
+               '<div>'+transTo+':'+ this.point.actualDate+'&nbsp;&nbsp;'+this.point.high +'</div>'+
+               '<div>'+transDuration+':' + Util.getTimeHHMMSS(this.point.duration)+'</div>'+
+               '</div>'
             )
-        }},
+        },  useHTML: true},
         series: [{
           data: newObj
         }],
@@ -372,6 +400,31 @@ export class DriverTimeDetailComponent implements OnInit {
       // this.showLoadingIndicator=false;
   }
 
+  setPrefFormatDate(){
+    switch(this.prefDateFormat){
+      case 'ddateformat_dd/mm/yyyy': {
+        this.dateFormats = "DD/MM/YYYY"; 
+        break;
+      }
+      case 'ddateformat_mm/dd/yyyy': {
+        this.dateFormats = "MM/DD/YYYY";
+        break;
+      }
+      case 'ddateformat_dd-mm-yyyy': {
+        this.dateFormats = "DD-MM-YYYY";  
+        break;
+      }
+      case 'ddateformat_mm-dd-yyyy': {
+        this.dateFormats = "MM-DD-YYYY";
+        break;
+      }
+      default: {
+        this.dateFormats = "MM/DD/YYYY";
+      }
+    }
+  }
+
+
   setGraphData(){
     let dateArray = this.detailConvertedData.map(data=>data.startTime);
     let driveTimeArray = this.detailConvertedData.map(data=>data.driveTime);
@@ -425,26 +478,26 @@ export class DriverTimeDetailComponent implements OnInit {
 
   getPDFExcelHeader(){
     let col: any = [];
-    col = [`${this.translationData.lblDate || 'Date'}`, `${this.translationData.lblDriveTimehhmm || 'Drive Time(hh:mm)' }`, `${this.translationData.lblWorkTimehhmm || 'Work Time(hh:mm)' }`, `${this.translationData.lblServiceTimehhmm || 'Service Time(hh:mm)' }`, `${this.translationData.lblRestTimehhmm || 'Rest Time(hh:mm)' }`, `${this.translationData.lblAvailableTimehhmm || 'Available Time(hh:mm)' }`];
+    col = [`${this.translationData.lblDate || 'Date'}`, `${this.translationData.lblDriveTime + ' (' + this.translationData.lblhhmm + ')' }`, `${this.translationData.lblWorkTime + ' (' + this.translationData.lblhhmm + ')'}`, `${this.translationData.lblServiceTime + ' (' + this.translationData.lblhhmm + ')' }`, `${this.translationData.lblRestTime + ' (' + this.translationData.lblhhmm + ')' }`, `${this.translationData.lblAvailableTime + ' (' + this.translationData.lblhhmm + ')' }`];
     return col;
   }
   
   getExcelSummaryHeader(){
     let col: any = [];
-    col = [`${this.translationData.lblReportName || 'Report Name'}`, `${this.translationData.lblReportCreated || 'Report Created'}`, `${this.translationData.lblReportStartTime || 'Report Start Time'}`, `${this.translationData.lblReportEndTime || 'Report End Time' }`, `${this.translationData.lblDriverName || 'Driver Name' }`, `${this.translationData.lblDriverId || 'Driver Id' }`, `${this.translationData.lblTotalDriveTimehhmm || 'Total Drive Time(hh:mm)' }`, `${this.translationData.lblTotalWorkTimehhmm || 'Total Work Time(hh:mm)' }`, `${this.translationData.lblTotalAvailableTimehhmm || 'Total Available Time(hh:mm)' }`, `${this.translationData.lblTotalRestTimehhmm || 'Total Rest Time(hh:mm)' }`, `${this.translationData.lblTotalServiceTimehhmm || 'Total Service Time(hh:mm)' }`];
+    col = [`${this.translationData.lblReportName || 'Report Name'}`, `${this.translationData.lblReportCreated || 'Report Created'}`, `${this.translationData.lblReportStartTime || 'Report Start Time'}`, `${this.translationData.lblReportEndTime || 'Report End Time' }`, `${this.translationData.lblDriverName || 'Driver Name' }`, `${this.translationData.lblDriverId || 'Driver Id' }`, `${this.translationData.lblTotalDriveTime + ' (' + this.translationData.lblhhmm + ')' }`, `${this.translationData.lblTotalWorkTime + ' (' + this.translationData.lblhhmm + ')' }`, `${this.translationData.lblTotalAvailableTime + ' (' + this.translationData.lblhhmm + ')' }`, `${this.translationData.lblTotalRestTime + ' (' + this.translationData.lblhhmm + ')' }`, `${this.translationData.lblTotalServiceTime + ' (' + this.translationData.lblhhmm + ')' }`];
     return col;
   }
 
   exportAsExcelFile(){    
-  const title = 'Driver Details Time Report';
-  const summary = 'Summary Section';
-  const detail = 'Detail Section';
+  const title = this.translationData.lblDriverTimeReportDetails;
+  const summary = this.translationData.lblSummarySection;
+  const detail = this.translationData.lblAllDetails;
   // const header = ['Date', 'Drive Time(hh:mm)', 'Work Time(hh:mm)', 'Service Time(hh:mm)', 'Rest Time(hh:mm)', 'Available Time(hh:mm)'];
   // const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Driver Name', 'Driver Id', 'Total Drive Time(hh:mm)', 'Total Work Time(hh:mm)', 'Total Available Time(hh:mm)', 'Total Rest Time(hh:mm)', 'Total Service Time(hh:mm)'];
   const header = this.getPDFExcelHeader();
   const summaryHeader = this.getExcelSummaryHeader();
   this.summaryObj=[
-    ['Driver Details Time Report', new Date(), this.driverDetails.fromDisplayDate, this.driverDetails.toDisplayDate,
+    [this.translationData.lblDriverTimeReportDetails, new Date(), this.driverDetails.fromDisplayDate, this.driverDetails.toDisplayDate,
     this.driverDetails.selectedDriverName, this.driverDetails.selectedDriverId, this.driverDetails.driveTime, this.driverDetails.workTime, 
     this.driverDetails.availableTime, this.driverDetails.restTime, this.driverDetails.serviceTime
     ]
@@ -514,7 +567,7 @@ export class DriverTimeDetailComponent implements OnInit {
     var doc = new jsPDF();
 
     doc.setFontSize(18);
-    doc.text('Driver Details', 11, 8);
+    doc.text(this.translationData.lblDriverTimeReportDetails, 11, 8);
     doc.setFontSize(11);
     doc.setTextColor(100);
 

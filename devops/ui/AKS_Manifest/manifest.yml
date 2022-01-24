@@ -36,7 +36,7 @@ spec:
             topologyKey: "kubernetes.io/hostname"
       containers:
       - name: uimanagement-container
-        image: #{acrurl}#/uiservice
+        image: #{acrurl}#/uiservice:#{Build.BuildNumber}#
         #image: acrakspzfu3h3wyefhu.azurecr.io/uiservice
         imagePullPolicy: "Always"
         volumeMounts:

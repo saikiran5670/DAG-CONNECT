@@ -10,6 +10,7 @@ using net.atos.daf.ct2.kafkacdc;
 using net.atos.daf.ct2.package;
 using net.atos.daf.ct2.package.entity;
 using net.atos.daf.ct2.packageservice.Common;
+using net.atos.daf.ct2.packageservice.entity;
 using Newtonsoft.Json;
 
 namespace net.atos.daf.ct2.packageservice
@@ -66,9 +67,10 @@ namespace net.atos.daf.ct2.packageservice
             }
             catch (Exception ex)
             {
+                _logger.Error($"{nameof(Create)}: With Error:-", ex);
                 return await Task.FromResult(new PackageResponse
                 {
-                    Message = "Exception " + ex.Message,
+                    Message = PackageConstants.INTERNAL_SERVER_MSG,
                     Code = Responsecode.Failed
                 });
             }
@@ -127,9 +129,10 @@ namespace net.atos.daf.ct2.packageservice
             }
             catch (Exception ex)
             {
+                _logger.Error($"{nameof(Update)}: With Error:-", ex);
                 return await Task.FromResult(new PackageResponse
                 {
-                    Message = "Exception " + ex.Message
+                    Message = PackageConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
@@ -166,11 +169,11 @@ namespace net.atos.daf.ct2.packageservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Delete)}: With Error:-", ex);
                 return await Task.FromResult(new PackageResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "Package Deletion Failed due to - " + ex.Message,
+                    Message = PackageConstants.INTERNAL_SERVER_MSG,
 
                 });
             }
@@ -208,10 +211,10 @@ namespace net.atos.daf.ct2.packageservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Get)}: With Error:-", ex);
                 return await Task.FromResult(new GetPackageResponce
                 {
-                    Message = "Exception " + ex.Message,
+                    Message = PackageConstants.INTERNAL_SERVER_MSG,
                     Code = Responsecode.Failed
                 });
             }
@@ -232,25 +235,38 @@ namespace net.atos.daf.ct2.packageservice
                     Description = x.Description,
                     FeatureSetID = x.FeatureSetID,
                     Name = x.Name,
-                    //  Status = x.Status,
                     Type = x.Type,
                     State = x.State
                 }).ToList());
-
                 var packageImported = await _packageManager.Import(packages);
-                response.PackageList.AddRange(packageImported
-                                     .Select(x => new GetPackageRequest()
-                                     {
-                                         Id = x.Id,
-                                         Code = x.Code,
-                                         Description = x.Description,
-                                         Name = x.Name,
-                                         FeatureSetID = x.FeatureSetID,
-                                         // Status = x.Status,
-                                         Type = x.Type,
-                                         State = x.State,
-                                         CreatedAt = x.CreatedAt
-                                     }).ToList());
+                var packagesRes = JsonConvert.SerializeObject(packageImported.PackageList);
+                var duplicatePackagesRes = JsonConvert.SerializeObject(packageImported.DuplicatePackages);
+
+                if (packagesRes != null & packagesRes.Length > 0)
+                {
+                    response.PackageList.AddRange(
+                           JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<GetPackageRequest>>(packagesRes,
+                           new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
+                }
+                if (duplicatePackagesRes != null & duplicatePackagesRes.Length > 0)
+                {
+                    response.DuplicatePackages.AddRange(
+                      JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<GetPackageRequest>>(duplicatePackagesRes,
+                      new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
+                }
+                var rejectedPackagesRes = JsonConvert.SerializeObject(request.RejectedPackages);
+                if (rejectedPackagesRes != null && rejectedPackagesRes.Length > 0)
+                {
+                    response.RejectedPackages.AddRange(request.RejectedPackages.Select(x => new GetPackageRequest()
+                    {
+                        Code = x.Code ?? string.Empty,
+                        Description = x.Description ?? string.Empty,
+                        FeatureSetID = x.FeatureSetID,
+                        Name = x.Name ?? string.Empty,
+                        Type = x.Type ?? string.Empty,
+                        State = x.State ?? string.Empty
+                    }).ToList());
+                }
 
                 response.Code = Responsecode.Success;
                 response.Message = "Package imported successfully.";
@@ -259,10 +275,10 @@ namespace net.atos.daf.ct2.packageservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
+                _logger.Error($"{nameof(Import)}: With Error:-", ex);
                 return await Task.FromResult(new ImportPackageResponce
                 {
-                    Message = "Exception " + ex.Message,
+                    Message = PackageConstants.INTERNAL_SERVER_MSG,
                     Code = Responsecode.Failed
                 });
             }
@@ -309,9 +325,10 @@ namespace net.atos.daf.ct2.packageservice
             }
             catch (Exception ex)
             {
+                _logger.Error($"{nameof(UpdatePackageState)}: With Error:-", ex);
                 return await Task.FromResult(new UpdatePackageStateResponse
                 {
-                    Message = "Exception " + ex.Message
+                    Message = PackageConstants.INTERNAL_SERVER_MSG
                 });
             }
         }
