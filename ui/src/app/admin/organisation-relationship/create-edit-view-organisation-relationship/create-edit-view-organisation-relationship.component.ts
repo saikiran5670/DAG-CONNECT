@@ -62,6 +62,8 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
   orgRltShipCreateButton: boolean = false;
   duplicateRecordMsg: any = '';
   resposne: any;
+  vehicleData:any;
+  orgData:any;
   dialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
   showLoadingIndicator: boolean = false;
 
@@ -89,10 +91,10 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
         this.organizationService.GetOrgRelationdetails(objData).subscribe((data: any) => {
           if(data)
           {
-            let vehicleData = data.vehicleGroup;
-            this.loadVehicleGridData(vehicleData);
-            let orgData = data.organizationData;
-            this.loadOrgGridData(orgData);
+            this.vehicleData =data.vehicleGroup;
+            this.loadVehicleGridData(this.vehicleData);
+            this.orgData = data.organizationData;
+            this.loadOrgGridData(this.orgData);
             this.relationshipList = data.relationShipData;
           }
           this.showLoadingIndicator=false;
@@ -130,21 +132,24 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
            this.dataSourceOrg.sort = this.sort.toArray()[1];
             this.dataSourceOrg.sortData = (data: String[], sort: MatSort) => {
             const isAsc = sort.direction === 'asc';
-            return data.sort((a: any, b: any) => {
-                let columnName = sort.active;
+            let columnName = sort.active;            
+            return data.sort((a: any, b: any) => {               
                 return this.compareData(a[sort.active], b[sort.active], isAsc, columnName);
             });
           }
           });
     Util.applySearchFilter(this.dataSourceOrg, this.organisationNameDisplayColumn , this.filterValue );
-
   }
   compareData(a: Number | String, b: Number | String, isAsc: boolean, columnName: any) {
-    if(columnName === 'groupName' || columnName === 'organizationName' )
+    if(columnName === 'groupName' || columnName === 'organizationName'){
     if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
     if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
-
-  return ( a < b ? -1 : 1) * (isAsc ? 1: -1);
+    return ( a < b ? -1 : 1) * (isAsc ? 1: -1);
+    }
+    else if(columnName === 'organizationId')
+   {
+      return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+   } 
 }
 
 
@@ -339,19 +344,39 @@ if(vehicleList != '' && orgList != ''){
         return ("Organisation Relationship '$' Updated Successfully").replace('$', name1);
     }
   }
-
+  
   applyFilterOnVehicle(filterValue: string) {
-    filterValue = filterValue.trim(); // Remove whitespace
-    filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
-    this.dataSourceVehicle.filter = filterValue;
+    this.dataSourceVehicle = this.vehicleData ;
+    filterValue = filterValue.trim();
+    filterValue = filterValue.toLowerCase();
+
+    const filteredData = this.vehicleData.filter(value => {​​​​​​​​
+      const searchStr = filterValue.toLowerCase();
+      const groupName = value.groupName.toLowerCase().toString().includes(searchStr);     
+      return groupName;
+    }​​​​​​​​);
+
+    this.dataSourceVehicle = filteredData;
+    this.loadVehicleGridData( this.dataSourceVehicle);
   }
 
   applyFilterOnOrg(filterValue: string) {
-    filterValue = filterValue.trim(); // Remove whitespace
-    filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
-    this.dataSourceOrg.filter = filterValue;
-  }
+    this.dataSourceOrg = this.orgData ;
+    filterValue = filterValue.trim();
+    filterValue = filterValue.toLowerCase();
 
+    const filteredData = this.orgData.filter(value => {​​​​​​​​
+      let newOrgId:string = value.organizationId.toString();
+      const searchStr = filterValue.toLowerCase();
+      const organizationName = value.organizationName.toLowerCase().toString().includes(searchStr);
+      const organizationId = newOrgId.toLowerCase().toString().includes(searchStr);    
+      return organizationName || organizationId;
+    }​​​​​​​​);
+
+    this.dataSourceOrg = filteredData;
+    this.loadOrgGridData( this.dataSourceOrg);
+  }
+ 
   masterToggleForOrgRelationship() {
     this.isAllSelectedForOrgRelationship()
       ? this.selectedOrgRelations.clear()
