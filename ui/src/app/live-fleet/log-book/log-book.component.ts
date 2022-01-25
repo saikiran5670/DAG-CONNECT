@@ -399,7 +399,8 @@ ngOnDestroy(){
     this.setDefaultStartEndTime();
     this.setPrefFormatDate();
     if(!this._state){
-    this.setDefaultTodayDate();
+      this.selectionTimeRange('today');
+    // this.setDefaultTodayDate();
     }
     this.getReportPreferences();
     setTimeout(() => {
@@ -740,9 +741,9 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
       if(!this._state){
       this.filterDateData();
       }
-      else{
+      // else{
         this.setDefaultTodayDate();
-      }
+      // }
       this.loadUserPOI();
       // if(this._state && this._state.fromAlertsNotifications){
       //   this.onVehicleGroupChange(this._state.data[0].vehicleGroupId);
@@ -921,6 +922,7 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
       }, (error)=>{
           this.hideloader();
           this.initData = [];
+          this.vehicleGrpDD = [];
           this.tableInfoObj = {};
           this.updateDataSource(this.initData);
 
@@ -1622,8 +1624,8 @@ let prepare = []
       }
     }
     this.resetLogFormControlValue(); // extra addded as per discuss with Atul
- 
-    this.filterDateData(); // extra addded as per discuss with Atul
+    //commenting below line as this method is called in loadWholeTripData().
+    //this.filterDateData(); // extra addded as per discuss with Atul
   
   }
 
