@@ -30,7 +30,7 @@ import * as fs from 'file-saver';
 import { CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteData } from 'ng2-completer';
 import { treeExportFormatter } from 'angular-slickgrid';
 import { ReplaySubject } from 'rxjs';
-
+import { DataInterchangeService } from '../../services/data-interchange.service';
 
 declare var H: any;
 
@@ -185,11 +185,21 @@ public filteredVehicleNames: ReplaySubject<String[]> = new ReplaySubject<String[
 
 
 
-constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private landmarkCategoryService: LandmarkCategoryService, private router: Router, private organizationService: OrganizationService, private _configService: ConfigService, private hereService: HereService,private completerService: CompleterService) {
+constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private landmarkCategoryService: LandmarkCategoryService, private router: Router, private organizationService: OrganizationService, private _configService: ConfigService, private hereService: HereService,private completerService: CompleterService, private dataInterchangeService: DataInterchangeService) {
   this.map_key =  _configService.getSettings("hereMap").api_key;
   // setTimeout(() => {
   //   this.initMap();
   //   }, 10);
+
+  this.dataInterchangeService.prefSource$.subscribe((prefResp: any) => {
+    if(prefResp && (prefResp.type == 'logbook') && prefResp.prefdata){
+      this.displayedColumns = [ 'all','alertLevel', 'alertGeneratedTime', 'vehicleRegNo', 'alertType', 'alertName', 'alertCategory', 'tripStartTime', 'tripEndTime', 'vehicleName','vin','occurrence','thresholdValue'];
+      this.resetTripPrefData();
+      this.reportPrefData = prefResp.prefdata;
+      this.getTranslatedColumnName(this.reportPrefData);
+      this.setDisplayColumnBaseOnPref();
+    }
+  });
 
   const navigation = this.router.getCurrentNavigation();
   this._state = navigation.extras.state as {
@@ -208,7 +218,7 @@ constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationSe
   });
 
   this.configureAutoSuggest();
-  this.defaultTranslation();
+  // this.defaultTranslation();
 
 
   if(this._state){
@@ -399,7 +409,8 @@ ngOnDestroy(){
     this.setDefaultStartEndTime();
     this.setPrefFormatDate();
     if(!this._state){
-    this.setDefaultTodayDate();
+      this.selectionTimeRange('today');
+    // this.setDefaultTodayDate();
     }
     this.getReportPreferences();
     setTimeout(() => {
@@ -740,9 +751,9 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
       if(!this._state){
       this.filterDateData();
       }
-      else{
+      // else{
         this.setDefaultTodayDate();
-      }
+      // }
       this.loadUserPOI();
       // if(this._state && this._state.fromAlertsNotifications){
       //   this.onVehicleGroupChange(this._state.data[0].vehicleGroupId);
@@ -921,6 +932,7 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
       }, (error)=>{
           this.hideloader();
           this.initData = [];
+          this.vehicleGrpDD = [];
           this.tableInfoObj = {};
           this.updateDataSource(this.initData);
 
@@ -1554,13 +1566,13 @@ let prepare = []
 
   getLastMonthDate(){
     var date = Util.getUTCDate(this.prefTimeZone);
-    date.setMonth(date.getMonth()-1);
+    date.setDate(date.getDate()-30);
     return date;
   }
 
   getLast3MonthDate(){
     var date = Util.getUTCDate(this.prefTimeZone);
-    date.setMonth(date.getMonth()-3);
+    date.setDate(date.getDate()-90);
     date.setHours(0);
     date.setMinutes(0);
     date.setSeconds(0);
@@ -1622,8 +1634,8 @@ let prepare = []
       }
     }
     this.resetLogFormControlValue(); // extra addded as per discuss with Atul
- 
-    this.filterDateData(); // extra addded as per discuss with Atul
+    //commenting below line as this method is called in loadWholeTripData().
+    //this.filterDateData(); // extra addded as per discuss with Atul
   
   }
 
