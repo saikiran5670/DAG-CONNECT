@@ -169,15 +169,20 @@ export class RouteCalculatingComponent implements OnInit {
   constructor(private hereService: HereService,private formBuilder: FormBuilder, private corridorService : CorridorService,
     private completerService: CompleterService, private config: ConfigService,private landmarkCategoryService: LandmarkCategoryService) {
       this.showLoadingIndicator = true;
+      // console.log(this.hereService.hereMapsdata);
       this.map_key =  config.getSettings("hereMap").api_key;
      this.map_id =  config.getSettings("hereMap").app_id;
      this.map_code =  config.getSettings("hereMap").app_code;
+    // this.hereService.getHEREMapsInfo().subscribe((data: any) => {
+    //   this.map_key = this.hereService.hereMapsdata.apiKey;
+    //   this.map_id = this.hereService.hereMapsdata.appId;
+    //   this.map_code =  this.hereService.hereMapsdata.appCode;
 
-
-    this.platform = new H.service.Platform({
-      "apikey": this.map_key
-    });
-    this.configureAutoSuggest();
+      this.platform = new H.service.Platform({
+        "apikey": this.map_key
+      });
+      this.configureAutoSuggest();
+    // });
     setTimeout(()=>{   
       this.hideloader();
     }); 
@@ -241,8 +246,8 @@ export class RouteCalculatingComponent implements OnInit {
     }, (error) => {
       this.userPOIList = [];
     });
-    this.widthUnit = this.unitFormat == 'dunit_Metric' ? this.translationData.lblKm : this.translationData.lblMiles;
-    this.maxDistance = this.unitFormat == 'dunit_Metric' ? this.translationData.lblMaxkm + ' 10 ' +this.translationData.lblKm : this.translationData.lblMaxkm + ' 6.21371 '+this.translationData.lblMiles;
+    this.widthUnit = this.unitFormat == 'dunit_Metric' ? this.translationData.lblKm : this.translationData.lblmile;
+    this.maxDistance = this.unitFormat == 'dunit_Metric' ? this.translationData.lblMaxkm + ' 10 ' +this.translationData.lblKm : this.translationData.lblMaxkm + ' 6.21371 '+this.translationData.lblmile;
   }
 
   subscribeWidthValue(){
