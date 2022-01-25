@@ -615,6 +615,7 @@ ngOnDestroy(){
 
     if(this._state && this._state.fromDashboard == true){
       this.selectionTimeRange('today');
+      this.filterDateData();
     }
     if (this._state && this._state.fromVehicleDetails) {
       this.loadWholeTripData();
