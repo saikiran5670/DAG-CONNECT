@@ -1048,6 +1048,7 @@ export class AppComponent {
       this.prefDateFormat = prefData.dateformat[0].name;
       this.prefUnitFormat = prefData.unit[0].name;
     }
+    localStorage.setItem("unitFormat", this.prefUnitFormat);
     // this.selectionTimeRange('lastweek');
   }
 
