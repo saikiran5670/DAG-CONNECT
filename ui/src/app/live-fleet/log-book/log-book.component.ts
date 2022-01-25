@@ -669,8 +669,8 @@ ngOnDestroy(){
     }
 
 if(!this._state){
-  this.logBookForm.get('vehicle').setValue("all");
   this.logBookForm.get('vehicleGroup').setValue("all");
+  this.logBookForm.get('vehicle').setValue("all");
   this.logBookForm.get('alertLevel').setValue("all");
   this.logBookForm.get('alertType').setValue("all");
   this.logBookForm.get('alertCategory').setValue("all");
@@ -1139,17 +1139,17 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
        }
      }
 
-    if(this.showBack && this.selectionTab == 'today'){
-    if(this._state.fromDashboard == true && this._state.logisticFlag == true){
-      this.logBookForm.get('alertCategory').setValue("L");
-    }
-    if(this._state.fromDashboard == true && this._state.fuelFlag == true){
-      this.logBookForm.get('alertCategory').setValue("F");
-    }
-    if(this._state.fromDashboard == true && this._state.repairFlag == true){
-      this.logBookForm.get('alertCategory').setValue("R");
-    }
-  }
+  //   if(this.showBack && this.selectionTab == 'today'){
+  //   if(this._state.fromDashboard == true && this._state.logisticFlag == true){
+  //     this.logBookForm.get('alertCategory').setValue("L");
+  //   }
+  //   if(this._state.fromDashboard == true && this._state.fuelFlag == true){
+  //     this.logBookForm.get('alertCategory').setValue("F");
+  //   }
+  //   if(this._state.fromDashboard == true && this._state.repairFlag == true){
+  //     this.logBookForm.get('alertCategory').setValue("R");
+  //   }
+  // }
       //for alerts & notification individual alert click
     // if(this._state && this._state.fromAlertsNotifications == true && this._state.data.length > 0){
     //   this.selectionTab = '';
@@ -1733,7 +1733,8 @@ let prepare = []
         distinctVIN = filterVIN.filter((value, index, self) => self.indexOf(value) === index);
         if(distinctVIN.length > 0){
           distinctVIN.forEach(element => {
-            let _item = this.wholeLogBookData?.associatedVehicleRequest?.filter(i => i.vin === element && i.groupType != 'S');
+            // let _item = this.wholeLogBookData?.associatedVehicleRequest?.filter(i => i.vin === element && i.groupType != 'S');
+            let _item = this.wholeLogBookData?.associatedVehicleRequest?.filter(i => i.vin === element);
             if(_item.length > 0){
               this.vehicleListData.push(_item[0]); //-- unique VIN data added
               _item.forEach(element => {
@@ -1777,6 +1778,7 @@ let prepare = []
      let vehicleData = this.vehicleListData.slice();
         this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
         console.log("vehicleDD 5", this.vehicleDD);
+        this.resetVehicleNamesFilter();
         if(this.vehicleDD.length > 0){
       this.resetLogFormControlValue();
      }
