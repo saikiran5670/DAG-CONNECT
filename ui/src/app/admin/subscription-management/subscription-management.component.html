@@ -14,20 +14,20 @@
     <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
         <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
             <mat-form-field appearance="outline">
-                <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch }}">
+                <input matInput [formControl]="searchFilter"  placeholder="{{ translationData.lblSearch }}">
                 <span matPrefix><mat-icon>search</mat-icon></span>
             </mat-form-field>
         </div>
         <div class="areaWidth min-width-10-per" fxLayoutAlign="right">
           <mat-form-field appearance="outline" class="full-width">
             <!-- <mat-select [(value)]="accountOrganizationId" (selectionChange)="applyFilterOnOrganization($event.value)" [disabled] = "organisationData.length == 1" > -->
-            <mat-select placeholder="{{ translationData.lblOrganisation || 'Organisation' }}" [disabled]="contextOrgId == 0" [(ngModel)]="orgTypeSelection" (selectionChange)="onOrgTypeSelection($event)">
-              <mat-option value="0">{{ translationData.lblAll || 'All' }}</mat-option>
+            <mat-select placeholder="{{ translationData.lblOrganisation || 'Organisation' }}" [formControl]="orgTypeSelection" [disabled]="contextOrgId == 0">
+              <mat-option value="allOrg">{{ translationData.lblAll || 'All' }}</mat-option>
               <mat-option *ngFor="let options of organisationData" [value]="options.id" >
                 {{ options.name }}
               </mat-option>
             </mat-select>
-            <!-- <mat-select placeholder="{{ translationData.lblSelectOrganisation || 'Select Organisation' }}" (selectionChange)="applyFilterOnOrganization($event.value)" >
+            <!-- <mat-select placeholder="{{ translationData.lblSelectOrganisation || 'Select Organisation' }}" (selectionChange)="onOrgTypeSelection($event.value)" >
               <mat-option *ngFor="let options of organizationList" [value]="options.id" [disabled] = "organizationList.length == 1">
                 {{options.name}}
               </mat-option>
@@ -36,8 +36,8 @@
         </div>
         <div class="areaWidth min-width-10-per" fxLayoutAlign="right">
           <mat-form-field appearance="outline" class="full-width">
-            <mat-select placeholder="{{ translationData.lblSelectType }}" [(ngModel)]="typeSelection" (selectionChange)="ontypeSelectionChange($event.value)">
-              <mat-option value="0">{{translationData.lblAll}}</mat-option>
+            <mat-select placeholder="{{ translationData.lblSelectType }}" [formControl]="typeSelection" >
+              <mat-option value="allType">{{translationData.lblAll}}</mat-option>
               <mat-option *ngFor="let options of TypeList" [value]="options.name">
                 {{ options.name }}
               </mat-option>
@@ -46,8 +46,8 @@
         </div>
       <div class="areaWidth min-width-10-per" fxLayoutAlign="right">
         <mat-form-field appearance="outline" class="full-width">
-          <mat-select placeholder="{{ translationData.lblSelectStatus }}" [(ngModel)]="statusSelection" (selectionChange)="onStatusTypeSelection($event.value)">
-            <mat-option value="0">{{translationData.lblAll}}</mat-option>
+          <mat-select placeholder="{{ translationData.lblSelectStatus }}" [formControl]="statusFilter">
+            <mat-option value="allStatus">{{translationData.lblAll}}</mat-option>
             <mat-option *ngFor="let options of StatusList" [value]="options.name">
               {{ options.name }}
             </mat-option>

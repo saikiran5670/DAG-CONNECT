@@ -933,7 +933,6 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
       }, (error)=>{
           this.hideloader();
           this.initData = [];
-          this.vehicleGrpDD = [];
           this.tableInfoObj = {};
           this.updateDataSource(this.initData);
 
