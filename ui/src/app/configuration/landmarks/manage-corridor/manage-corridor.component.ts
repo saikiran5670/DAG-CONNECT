@@ -29,6 +29,7 @@ export class ManageCorridorComponent implements OnInit {
   accountOrganizationId: any = 0;
   searchMarker: any = {};
   corridorCreatedMsg: any = '';
+  trackType: any = 'snail';
   suggestionData : any;
   actionType : string;
   titleVisible : boolean = false;
@@ -39,8 +40,12 @@ export class ManageCorridorComponent implements OnInit {
   dataSource: any;
   markerArray: any = [];
   corridorNameList = [];
+  userPOIList: any = [];
+  herePOIList: any = [];
+  displayPOIList: any = [];
   dataService: any;
   routeType = 'R';
+  displayRouteView: any = 'C';
   corridorTypeId = 46;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -55,6 +60,8 @@ export class ManageCorridorComponent implements OnInit {
   selectedCorridors = new SelectionModel(true, []);
   filterValue: string;
   searchStr: any;
+  tripTraceArray: any;
+  startMarker: any;
 
 
   constructor(
@@ -97,7 +104,7 @@ export class ManageCorridorComponent implements OnInit {
             from: 'search'
           };
           this.showSearchMarker(this.searchMarker);
-        }
+              }
       });
     }
   }
@@ -429,15 +436,28 @@ export class ManageCorridorComponent implements OnInit {
   }
 
 
-
   moveMapToSelectedPOI(map, lat, lon){
     map.setCenter({lat:lat, lng:lon});
     map.setZoom(15);
   }
+  getCategoryPOIIcon(){
+    let locMarkup = `<svg width="25" height="39" viewBox="0 0 25 39" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M22.9991 12.423C23.2909 20.9156 12.622 28.5702 12.622 28.5702C12.622 28.5702 1.45279 21.6661 1.16091 13.1735C1.06139 10.2776 2.11633 7.46075 4.09368 5.34265C6.07103 3.22455 8.8088 1.9787 11.7047 1.87917C14.6006 1.77965 17.4175 2.83459 19.5356 4.81194C21.6537 6.78929 22.8995 9.52706 22.9991 12.423Z" stroke="#00529C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M12.6012 37.9638C12.6012 37.9638 22.5882 18.1394 22.3924 12.444C22.1967 6.74858 17.421 2.29022 11.7255 2.48596C6.03013 2.6817 1.57177 7.45742 1.76751 13.1528C1.96325 18.8482 12.6012 37.9638 12.6012 37.9638Z" fill="#00529C"/>
+    <path d="M12.3824 21.594C17.4077 21.4213 21.3486 17.4111 21.1845 12.637C21.0204 7.86293 16.8136 4.13277 11.7882 4.30549C6.76283 4.4782 2.82198 8.48838 2.98605 13.2625C3.15013 18.0366 7.357 21.7667 12.3824 21.594Z" fill="white"/>
+    </svg>`;
+      return locMarkup;
+  }
+
   showSearchMarker(markerData: any){
     if(markerData && markerData.lat && markerData.lng){
       //let selectedMarker = new H.map.Marker({ lat: markerData.lat, lng: markerData.lng });
       if(markerData.from && markerData.from == 'search'){
+        let locMarkup = this.getCategoryPOIIcon();
+        let markerSizeIcon = { w: 25, h: 39 };
+        const locIcon = new H.map.Icon(locMarkup, { size: markerSizeIcon, anchor: { x: Math.round(markerSizeIcon.w / 2), y: Math.round(markerSizeIcon.h / 2) } });
+        let locMarkupIcon = new H.map.Marker({ lat: markerData.lat, lng: markerData.lng }, { icon: locIcon });
+        this.map.addObject(locMarkupIcon);
         this.map.setCenter({lat: markerData.lat, lng: markerData.lng}, 'default');
       }
       //this.map.addObject(selectedMarker);
