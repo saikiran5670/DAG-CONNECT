@@ -550,15 +550,15 @@ export class CreateEditReportSchedulerComponent implements OnInit {
 
           let nextDate= new Date(endDate);
           nextDate.setDate(nextDate.getDate()+1);
-          nextScheduledRunDate = Util.convertDateToUtc(this.setStartEndDateTime(nextDate, this.reportSchedulerForm.controls.reportDispatchTime.value+":00", 'start'));
+          nextScheduledRunDate = Util.getMillisecondsToUTCDate(this.setStartEndDateTime(nextDate, this.reportSchedulerForm.controls.reportDispatchTime.value+":00", 'start'),this.prefTimeZone);
         }
         else{
-          startDate = Util.convertDateToUtc(this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start'));
-          endDate = Util.convertDateToUtc(this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end'));
+          startDate = Util.getMillisecondsToUTCDate(this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start'),this.prefTimeZone);
+          endDate = Util.getMillisecondsToUTCDate(this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end'),this.prefTimeZone);
 
           let nextDate= new Date();
           nextDate.setDate(nextDate.getDate()+1);
-          nextScheduledRunDate = Util.convertDateToUtc(this.setStartEndDateTime(nextDate, this.reportSchedulerForm.controls.reportDispatchTime.value+":00", 'start'));
+          nextScheduledRunDate = Util.getMillisecondsToUTCDate(this.setStartEndDateTime(nextDate, this.reportSchedulerForm.controls.reportDispatchTime.value+":00", 'start'),this.prefTimeZone);
         }
         break;
       }
@@ -569,47 +569,47 @@ export class CreateEditReportSchedulerComponent implements OnInit {
           
           let nextDateFromDay= new Date(endDate);
           nextDateFromDay.setDate(nextDateFromDay.getDate()+1);
-          nextScheduledRunDate = Util.convertDateToUtc(this.setStartEndDateTime(nextDateFromDay, this.selectedStartTime, 'start'));
+          nextScheduledRunDate = Util.getMillisecondsToUTCDate(this.setStartEndDateTime(nextDateFromDay, this.selectedStartTime, 'start'),this.prefTimeZone);
         }
         else{
           let startDateFromDay = this.getDateFromDay(this.reportSchedulerForm.controls.weeklyStartDay.value);
-          startDate = Util.convertDateToUtc(this.setStartEndDateTime(startDateFromDay, this.selectedStartTime, 'start'));
+          startDate = Util.getMillisecondsToUTCDate(this.setStartEndDateTime(startDateFromDay, this.selectedStartTime, 'start'),this.prefTimeZone);
 
           let endDateFromDay = startDateFromDay;
           endDateFromDay.setDate(endDateFromDay.getDate()+6);
-          endDate = Util.convertDateToUtc(this.setStartEndDateTime(endDateFromDay, this.selectedEndTime, 'end'));
+          endDate = Util.getMillisecondsToUTCDate(this.setStartEndDateTime(endDateFromDay, this.selectedEndTime, 'end'),this.prefTimeZone);
 
           let nextDateFromDay= endDateFromDay;
           nextDateFromDay.setDate(nextDateFromDay.getDate()+1);
-          nextScheduledRunDate = Util.convertDateToUtc(this.setStartEndDateTime(nextDateFromDay, this.selectedStartTime, 'start'));
+          nextScheduledRunDate = Util.getMillisecondsToUTCDate(this.setStartEndDateTime(nextDateFromDay, this.selectedStartTime, 'start'),this.prefTimeZone);
         }
         break;
       }
       case 'B': {
-        startDate = Util.convertDateToUtc(this.setStartEndDateTime(this.reportSchedulerForm.controls.biweeklyStartDate.value, this.selectedStartTime, 'start'));
-        endDate = Util.convertDateToUtc(this.setStartEndDateTime(this.reportSchedulerForm.controls.biweeklyEndDate.value, this.selectedEndTime, 'end'));
+        startDate = Util.getMillisecondsToUTCDate(this.setStartEndDateTime(this.reportSchedulerForm.controls.biweeklyStartDate.value, this.selectedStartTime, 'start'),this.prefTimeZone);
+        endDate = Util.getMillisecondsToUTCDate(this.setStartEndDateTime(this.reportSchedulerForm.controls.biweeklyEndDate.value, this.selectedEndTime, 'end'),this.prefTimeZone);
 
         let nextDate= this.reportSchedulerForm.controls.biweeklyEndDate.value;
         nextDate.setDate(nextDate.getDate()+1);
-        nextScheduledRunDate = Util.convertDateToUtc(this.setStartEndDateTime(nextDate, this.reportSchedulerForm.controls.reportDispatchTime.value+":00", 'start'));
+        nextScheduledRunDate = Util.getMillisecondsToUTCDate(this.setStartEndDateTime(nextDate, this.reportSchedulerForm.controls.reportDispatchTime.value+":00", 'start'),this.prefTimeZone);
         break;
       }
       case 'M': {
-        startDate = Util.convertDateToUtc(this.setStartEndDateTime(this.reportSchedulerForm.controls.monthlyStartDate.value, this.selectedStartTime, 'start'));
-        endDate = Util.convertDateToUtc(this.setStartEndDateTime(this.reportSchedulerForm.controls.monthlyEndDate.value, this.selectedEndTime, 'end'));
+        startDate = Util.getMillisecondsToUTCDate(this.setStartEndDateTime(this.reportSchedulerForm.controls.monthlyStartDate.value, this.selectedStartTime, 'start'),this.prefTimeZone);
+        endDate = Util.getMillisecondsToUTCDate(this.setStartEndDateTime(this.reportSchedulerForm.controls.monthlyEndDate.value, this.selectedEndTime, 'end'),this.prefTimeZone);
 
         let nextDate= this.reportSchedulerForm.controls.monthlyEndDate.value;
         nextDate.setDate(nextDate.getDate()+1);
-        nextScheduledRunDate = Util.convertDateToUtc(this.setStartEndDateTime(nextDate, this.reportSchedulerForm.controls.reportDispatchTime.value+":00", 'start'));
+        nextScheduledRunDate = Util.getMillisecondsToUTCDate(this.setStartEndDateTime(nextDate, this.reportSchedulerForm.controls.reportDispatchTime.value+":00", 'start'),this.prefTimeZone);
         break;
       }
       case 'Q': {
-        startDate = Util.convertDateToUtc(this.setStartEndDateTime(this.reportSchedulerForm.controls.quarterlyStartDate.value, this.selectedStartTime, 'start'));
-        endDate = Util.convertDateToUtc(this.setStartEndDateTime(this.reportSchedulerForm.controls.quarterlyEndDate.value, this.selectedEndTime, 'end'));
+        startDate = Util.getMillisecondsToUTCDate(this.setStartEndDateTime(this.reportSchedulerForm.controls.quarterlyStartDate.value, this.selectedStartTime, 'start'),this.prefTimeZone);
+        endDate = Util.getMillisecondsToUTCDate(this.setStartEndDateTime(this.reportSchedulerForm.controls.quarterlyEndDate.value, this.selectedEndTime, 'end'),this.prefTimeZone);
 
         let nextDate= this.reportSchedulerForm.controls.quarterlyEndDate.value;
         nextDate.setDate(nextDate.getDate()+1);
-        nextScheduledRunDate = Util.convertDateToUtc(this.setStartEndDateTime(nextDate, this.reportSchedulerForm.controls.reportDispatchTime.value+":00", 'start'));
+        nextScheduledRunDate = Util.getMillisecondsToUTCDate(this.setStartEndDateTime(nextDate, this.reportSchedulerForm.controls.reportDispatchTime.value+":00", 'start'),this.prefTimeZone);
         break;
       }
 

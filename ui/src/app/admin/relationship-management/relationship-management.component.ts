@@ -129,6 +129,7 @@ export class RelationshipManagementComponent implements OnInit {
     this.initData = this.getNewTagData(filterData);
     this.initData.map(obj =>{ 
       obj.levelVal = obj.level === 10 ? 'PlatformAdmin' : obj.level === 20 ? 'GlobalAdmin' : obj.level === 30 ? 'OrgAdmin' : obj.level === 40 ? 'Account' : '';
+      obj.editDeleteStatus = (obj.level === 10 && obj.code.toUpperCase() === 'OWNER' || obj.code.toUpperCase() === 'OEM') ? false : true;
     });
 
     setTimeout(()=>{
