@@ -422,7 +422,12 @@ export class ManageCorridorComponent implements OnInit {
       this.successMsgBlink(_msg);
     }
     else if(_eventObj.successMsg=="update"){
-      var _msg = this.translationData.lblCorridorUpdatedSuccessfully;
+      var _msg:any = '';
+      if(this.translationData.lblCorridorUpdatedSuccessfully) {
+        _msg = this.translationData.lblCorridorUpdatedSuccessfully.replace('$', _eventObj.corridorName);
+      } else {
+        _msg = ("'$' Corridor Updated Successfully").replace('$', _eventObj.corridorName);
+      }
       this.successMsgBlink(_msg);
   }
     else if(_eventObj.successMsg=="reject"){

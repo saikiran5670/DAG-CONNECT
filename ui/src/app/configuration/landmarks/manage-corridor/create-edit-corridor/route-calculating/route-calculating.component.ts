@@ -761,6 +761,7 @@ export class RouteCalculatingComponent implements OnInit {
               booleanFlag: false,
               successMsg: "update",
               fromCreate:true,
+              corridorName:this.corridorFormGroup.controls.label.value
             }  
             this.backToUpdate.emit(emitObj);
         }
