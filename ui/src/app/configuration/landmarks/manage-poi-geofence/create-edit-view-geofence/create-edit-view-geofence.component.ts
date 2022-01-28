@@ -336,7 +336,7 @@ export class CreateEditViewGeofenceComponent implements OnInit {
       this.polygonGeofenceFormGroup.get("city").setValue(city);
       this.polygonGeofenceFormGroup.get("country").setValue(country);
     }
-    //console.log("pointArray:: ", this.polygonPointArray)
+    ////console.log("pointArray:: ", this.polygonPointArray)
   }
 
   onCancel() {
@@ -710,7 +710,7 @@ export class CreateEditViewGeofenceComponent implements OnInit {
         }
 
         if(!thisRef.isPolyCreated && pointsArray.length >= 9){
-          //console.log("show create polygon btn...");
+          ////console.log("show create polygon btn...");
           thisRef.showCreatePolygonButton(map, pointsArray);
         }
       });
@@ -794,8 +794,8 @@ export class CreateEditViewGeofenceComponent implements OnInit {
           var pointer = evt.currentPointer,
               geoLineString = polygon.getGeometry().getExterior(),
               geoPoint = map.screenToGeo(pointer.viewportX, pointer.viewportY);
-              //console.log('geoPoint:',geoPoint);
-              //console.log('geoLineString:',geoLineString);
+              ////console.log('geoPoint:',geoPoint);
+              ////console.log('geoLineString:',geoLineString);
           // set new position for vertice marker
           evt.target.setGeometry(geoPoint);
 
@@ -812,7 +812,7 @@ export class CreateEditViewGeofenceComponent implements OnInit {
           var coordinate = map.screenToGeo(ev.currentPointer.viewportX,
             ev.currentPointer.viewportY);
             let nodeIndex = ev.target.getData()['verticeIndex'];
-          //console.log("index:: ", ev.target.getData()['verticeIndex']);
+          ////console.log("index:: ", ev.target.getData()['verticeIndex']);
           let _position = Math.abs(coordinate.lat.toFixed(4)) + "," + Math.abs(coordinate.lng.toFixed(4));
             if(_position){
               thisRef.hereService.getAddressFromLatLng(_position).then(result => {
@@ -836,7 +836,7 @@ export class CreateEditViewGeofenceComponent implements OnInit {
   }
 
   drawPolygon(){
-    //console.log("create polygon...", this.polyPoints);
+    ////console.log("create polygon...", this.polyPoints);
     if(this.actionType == 'view' || this.actionType == 'edit'){
       this.polyPoints = [];
       this.selectedElementData.nodes.forEach(element => {

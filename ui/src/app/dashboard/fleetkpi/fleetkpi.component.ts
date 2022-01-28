@@ -598,7 +598,7 @@ export class FleetkpiComponent implements OnInit {
     }
     if(!this.getFleetKPIDataAPI){
       this.getFleetKPIDataAPI = this.dashboardService.getFleetKPIData(_kpiPayload).subscribe((kpiData: any)=>{
-        //console.log(kpiData);
+        ////console.log(kpiData);
         this.dataError = false;
         this.kpiData = kpiData;
         this.activeVehicles = kpiData['fleetKpis']?.vehicleCount;

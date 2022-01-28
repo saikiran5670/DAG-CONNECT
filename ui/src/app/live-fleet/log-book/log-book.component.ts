@@ -432,7 +432,7 @@ ngOnDestroy(){
         console.error("No report id found!")
       }
     }, (error)=>{
-      console.log('Report not found...', error);
+      //console.log('Report not found...', error);
       reportListData = [{name: 'Logbook', id: this.logbookPrefId}];
       // this.getLogbookPref();
     });
@@ -758,7 +758,7 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
       this.hideloader();
       this.logbookDataFlag = true;
       this.wholeLogBookData = logBookDataData;
-      //console.log("this.wholeLogBookData:---------------------------: ", this.wholeLogBookData);
+      ////console.log("this.wholeLogBookData:---------------------------: ", this.wholeLogBookData);
       if(!this._state){
       this.filterDateData();
       }
@@ -856,7 +856,7 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
     let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);
     //let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
     let _vinData = this.vehicleDD.filter(item => item.vin == parseInt(this.logBookForm.controls.vehicle.value));
-    console.log("vehicleDD", this.vehicleDD);
+    //console.log("vehicleDD", this.vehicleDD);
     if(_vinData.length > 0){
       this.showLoadingIndicator = true;
     }
@@ -970,12 +970,12 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
     let aCtgry : any = '';
 
     let vehGrpCount = this.vehicleGrpDD.filter(i => i.vehicleGroupId == parseInt(this.logBookForm.controls.vehicleGroup.value));
-    console.log("vhicleGrpDD1", this.vehicleGrpDD);
+    //console.log("vhicleGrpDD1", this.vehicleGrpDD);
     if(vehGrpCount.length > 0){
     vehGrpName = vehGrpCount[0].vehicleGroupName;
     }
     let vehCount = this.vehicleDD.filter(i => i.vin == this.logBookForm.controls.vehicle.value);
-    console.log("vehicleDD1", this.vehicleDD);
+    //console.log("vehicleDD1", this.vehicleDD);
     if(vehCount.length > 0){
     vehName = vehCount[0].vin;
 
@@ -1207,7 +1207,7 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
       this.vehicleDD=[];
       let vehicleData = this.vehicleListData.slice();
       this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
-      console.log("vehicleDD 2", this.vehicleDD);
+      //console.log("vehicleDD 2", this.vehicleDD);
 
     }
     else{
@@ -1220,17 +1220,17 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
             }
         }
         this.vehicleGrpDD.forEach(element => {
-          console.log("vhicleGrpDD2", this.vehicleGrpDD);
+          //console.log("vhicleGrpDD2", this.vehicleGrpDD);
 
           let vehicle = this.wholeLogBookData.associatedVehicleRequest.filter(item => item.vehicleId == element.vehicleId && item.vehicleGroupDetails.includes(vehicle_group_selected + "~"));
           //  let vehicle= element.filter(item => item.vehicleId == value);
           if (vehicle.length > 0) {
             this.vehicleDD.push(vehicle[0]);
-            console.log("vehicleDD 3", this.vehicleDD);
+            //console.log("vehicleDD 3", this.vehicleDD);
           }
         });
         this.vehicleDD = this.getUnique(this.vehicleDD, "vehicleName");
-        console.log("vehicleDD 4", this.vehicleDD);
+        //console.log("vehicleDD 4", this.vehicleDD);
         this.vehicleDD.sort(this.compareVehName);
         this.resetVehicleNamesFilter();
       
@@ -1717,10 +1717,10 @@ let prepare = []
     let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
     let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
 
-    //console.log("this.wholeLogBookData.associatedVehicleRequest ---:: ", this.wholeLogBookData.associatedVehicleRequest);
-    //console.log("this.wholeLogBookData.alFilterResponse---::", this.wholeLogBookData.alFilterResponse);
-    //console.log("this.wholeLogBookData.alertTypeFilterRequest---::", this.wholeLogBookData.alertTypeFilterRequest);
-    //console.log("this.wholeLogBookData.acFilterResponse---::", this.wholeLogBookData.acFilterResponse);
+    ////console.log("this.wholeLogBookData.associatedVehicleRequest ---:: ", this.wholeLogBookData.associatedVehicleRequest);
+    ////console.log("this.wholeLogBookData.alFilterResponse---::", this.wholeLogBookData.alFilterResponse);
+    ////console.log("this.wholeLogBookData.alertTypeFilterRequest---::", this.wholeLogBookData.alertTypeFilterRequest);
+    ////console.log("this.wholeLogBookData.acFilterResponse---::", this.wholeLogBookData.acFilterResponse);
 
     let filterData = this.wholeLogBookData["enumTranslation"];
     filterData.forEach(element => {
@@ -1787,7 +1787,7 @@ let prepare = []
      }
      let vehicleData = this.vehicleListData.slice();
         this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
-        console.log("vehicleDD 5", this.vehicleDD);
+        //console.log("vehicleDD 5", this.vehicleDD);
         this.resetVehicleNamesFilter();
         if(this.vehicleDD.length > 0){
       this.resetLogFormControlValue();
@@ -1813,7 +1813,7 @@ let prepare = []
             "vehicleId": element.vehicleId
           }
           this.vehicleGrpDD.push(vehicleGroupObj);
-          console.log("vhicleGrpDD4", this.vehicleGrpDD);
+          //console.log("vhicleGrpDD4", this.vehicleGrpDD);
 
         } else {
           this.singleVehicle.push(element);
@@ -1821,13 +1821,13 @@ let prepare = []
       });
     });
     this.vehicleGrpDD = this.getUnique(this.vehicleGrpDD, "vehicleGroupId");
-    console.log("vhicleGrpDD5", this.vehicleGrpDD);
+    //console.log("vhicleGrpDD5", this.vehicleGrpDD);
     this.vehicleGrpDD.sort(this.compareGrpName);
     this.resetVehicleGroupFilter();
 
 
     this.vehicleGrpDD.forEach(element => {
-      console.log("vhicleGrpDD6", this.vehicleGrpDD);
+      //console.log("vhicleGrpDD6", this.vehicleGrpDD);
 
       element.vehicleGroupId = parseInt(element.vehicleGroupId);
     });
@@ -2279,7 +2279,7 @@ let prepare = []
     this.vehicleIconMarker = null;
    }
    filterVehicleGroups(vehicleGroupSearch){
-    console.log("filterVehicleGroups is called");
+    //console.log("filterVehicleGroups is called");
     if(!this.filteredVehicleGroups){
       return;
     }
@@ -2292,10 +2292,10 @@ let prepare = []
     this.filteredVehicleGroups.next(
        this.vehicleGrpDD.filter(item => item.vehicleGroupName.toLowerCase().indexOf(vehicleGroupSearch) > -1)
     );
-    console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
+    //console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
   }
   filterVehicleNames(vehicleNameSearch){
-    console.log("filterVehicleNames is called");
+    //console.log("filterVehicleNames is called");
     if(!this.filteredVehicleNames){
       return;
     }
@@ -2308,7 +2308,7 @@ let prepare = []
     this.filteredVehicleNames.next(
        this.vehicleDD.filter(item => item.vehicleName.toLowerCase().indexOf(vehicleNameSearch) > -1)
     );
-    console.log("this.filteredVehicleNames", this.filteredVehicleNames);
+    //console.log("this.filteredVehicleNames", this.filteredVehicleNames);
   }
 
 

@@ -136,7 +136,7 @@ checkboxChecked: boolean = false;
       }
 
       this.timings = this.timings.filter(itm => itm.data.length > 0);
-      console.log(this.timings);
+      //console.log(this.timings);
     }
  
   }

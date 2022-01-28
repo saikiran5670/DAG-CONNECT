@@ -128,7 +128,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // console.log(this.healthData);
+    // //console.log(this.healthData);
     let warningType:any;
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
@@ -240,7 +240,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
       else if (warningType == 'Deactive') {
         this.filteredHistoryHealthData = this.filteredHistoryHealthData.filter((item: any) => item.warningType == 'D');
       }
-      console.log("filterrredData", this.filteredHistoryHealthData)
+      //console.log("filterrredData", this.filteredHistoryHealthData)
       this.applyDatatoCardPaginator(this.filteredHistoryHealthData);
       this.setGeneralFleetValue();
     }
@@ -305,7 +305,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
     } else {
       sorteddata = this.sortWarningData(warning, this.filteredHistoryHealthData);
     }
-    console.log(sorteddata);
+    //console.log(sorteddata);
     this.applyDatatoCardPaginator(sorteddata);
   }
 
@@ -463,7 +463,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
 
   setDefaultTodayDate(){
     if(!this.internalSelection && this.vehicleHealthSearchData.modifiedFrom !== "") {
-      //console.log("---if vehicleHealthSearchData startDateStamp exist")
+      ////console.log("---if vehicleHealthSearchData startDateStamp exist")
       if(this.vehicleHealthSearchData.timeRangeSelection !== ""){
         this.selectionTab = this.vehicleHealthSearchData.timeRangeSelection;
       }else{
@@ -534,14 +534,14 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
   setStartEndDateTime(date: any, timeObj: any, type: any){
 
     if(type == "start"){
-      console.log("--date type--",date)
-      console.log("--date type--",timeObj)
+      //console.log("--date type--",date)
+      //console.log("--date type--",timeObj)
       // this.fleetUtilizationSearchData["startDateStamp"] = date;
       // this.fleetUtilizationSearchData.testDate = date;
       // this.fleetUtilizationSearchData["startTimeStamp"] = timeObj;
       // this.setGlobalSearchData(this.fleetUtilizationSearchData)
       // localStorage.setItem("globalSearchFilterData", JSON.stringify(this.globalSearchFilterData));
-      // console.log("---time after function called--",timeObj)
+      // //console.log("---time after function called--",timeObj)
     }else if(type == "end") {
       // this.fleetUtilizationSearchData["endDateStamp"] = date;
       // this.fleetUtilizationSearchData["endTimeStamp"] = timeObj;
@@ -735,8 +735,8 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
       let newHealthStatusData = healthStatusData.filter((item) => {
         return !deactiveActiveToDeleteSet.has(item);
       });
-      // console.log(deactiveActiveData);
-      // console.log(newHealthStatusData);            
+      // //console.log(deactiveActiveData);
+      // //console.log(newHealthStatusData);            
       if(warningdata=='C') {
         this.currentHealthData = newHealthStatusData;//res;
         this.applyDatatoCardPaginator(this.currentHealthData);
@@ -760,7 +760,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
       if(!groupedObj[warning.warningClass+'_'+warning.warningNumber]) groupedObj[warning.warningClass+'_'+warning.warningNumber] = [];
       groupedObj[warning.warningClass+'_'+warning.warningNumber].push(warning);
     }
-    console.log("groupedObj",groupedObj)
+    //console.log("groupedObj",groupedObj)
     for(let key in groupedObj) {
       if(groupedObj[key][0].warningType == 'A') {
       // let activatedObj = groupedObj[key].filter(item => item.warningType == "A");
@@ -789,8 +789,8 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
 
   markerArray: any = [];
   checkboxClicked(event:any,data:any) {
-    // console.log("event",event);
-    // console.log("data",data);
+    // //console.log("event",event);
+    // //console.log("data",data);
     if(event.checked) {
       this.markerArray.push(data);
     } else {

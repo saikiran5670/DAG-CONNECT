@@ -173,7 +173,7 @@ export class VehicleConnectSettingsComponent implements OnInit {
        const index = this.vehicleOptInOut.indexOf(e.target.value)
        this.vehicleOptInOut.splice(index,1);
     }   
-    console.log(this.vehicleOptInOut);
+    //console.log(this.vehicleOptInOut);
   }
 
   getVehicleData(item: any){

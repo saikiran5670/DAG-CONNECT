@@ -47,9 +47,9 @@ export class PieChartComponent implements OnInit {
     this.pieChartLabels = this.chartLabels;
     this.pieChartData = this.chartData;
     this.pieChartColors[0].backgroundColor = this.pieChartColor;
-    console.log("this.chartLabels", this.chartLabels)
-    console.log("this.chartData", this.chartData)
-    console.log("this.pieChartColor", this.pieChartColor)
+    //console.log("this.chartLabels", this.chartLabels)
+    //console.log("this.chartData", this.chartData)
+    //console.log("this.pieChartColor", this.pieChartColor)
   }
 
 }

@@ -129,8 +129,8 @@ export class VehicleDetailsComponent implements OnInit {
     this.index = 0;
     this.index = event;
     // const buffer = Math.floor(this.viewport.getViewportSize() / this.itemSize);
-    // console.log(buffer, 'event');
-    // console.log((this.viewport.getRenderedRange()), "range start");
+    // //console.log(buffer, 'event');
+    // //console.log((this.viewport.getRenderedRange()), "range start");
   }
 
   // onsortChange(event) {
@@ -139,7 +139,7 @@ export class VehicleDetailsComponent implements OnInit {
   // }
 
   // onClickVIN() {
-  //   console.log("clikc called", this.showProcessingFlag);
+  //   //console.log("clikc called", this.showProcessingFlag);
   //   this.showProcessingFlag = true;
   //   setTimeout(() => { this.showProcessingFlag = false, 3000 });
   // }
@@ -236,7 +236,7 @@ export class VehicleDetailsComponent implements OnInit {
       this.hideloader();
     } else {
       this.vehicleService.getVehicleAssociatedGroups(rowData.id).subscribe((res) => {
-        console.log("res", res)
+        //console.log("res", res)
         rowData['associatedGroups'] = res;
         this.selectedRowData = rowData;
         this.actionType = type;
@@ -267,7 +267,7 @@ export class VehicleDetailsComponent implements OnInit {
   }
 
   //   exportAsCSV(){
-  //     console.log("Yes, It is working Properly");
+  //     //console.log("Yes, It is working Properly");
   //     this.matTableExporter.exportTable('csv', {fileName:'VehicleMgmt_Data', sheet: 'sheet_name'});
 
   // }

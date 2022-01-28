@@ -196,7 +196,7 @@ get24Time(_time: any){
     this.hubConnection
     .start()
     .then(() => {
-        console.log('Hub Connection Started!');
+        //console.log('Hub Connection Started!');
         // let a = {alertCategory: "L",
         // alertCategoryKey: "enumcategory_logisticsalerts",
         // alertGeneratedTime: 1632202819045,
@@ -224,7 +224,7 @@ get24Time(_time: any){
     })
     .catch(err => 
       { 
-        console.log('Error while starting connection: ' + err);
+        //console.log('Error while starting connection: ' + err);
         this.AlertNotifcaionList.push('Error while starting connection: ' + err);
        })
   }
@@ -236,7 +236,7 @@ get24Time(_time: any){
         // // this.hubConnection.invoke("NotifyAlert", "187,36")
         // .catch(err => 
         //   { 
-        //       console.log(err);
+        //       //console.log(err);
         //       this.AlertNotifcaionList.push(err);
         //   });
 
@@ -245,7 +245,7 @@ get24Time(_time: any){
     this.hubConnection.invoke("PushNotificationForAlert")
     //  this.hubConnection.invoke("ReadKafkaMessages", 187, 36)
     .catch(err => 
-      {           console.log("PushNotificationForAlert = ", err);
+      {           //console.log("PushNotificationForAlert = ", err);
           this.AlertNotifcaionList.push(err);
       });
 
@@ -258,7 +258,7 @@ get24Time(_time: any){
       this.hubConnection.on("PushNotificationForAlertResponse", (notificationMessage) => {
        notificationMessage= JSON.parse(notificationMessage);
        this.notificationCount++;
-       console.log("PushNotificationForAlertResponse = ",notificationMessage);
+       //console.log("PushNotificationForAlertResponse = ",notificationMessage);
         this.AlertNotifcaionList.push(notificationMessage);
       //  notificationMessage["alertTypeValue"] = this.translationData[notificationMessage["alertTypeKey"]] 
         if(this.notificationData.length < 5){
@@ -274,14 +274,14 @@ get24Time(_time: any){
     //For error response
      //this.hubConnection.on("askServerResponse", (errorMessage) => {
      this.hubConnection.on("PushNotificationForAlertError", (errorMessage) => {
-      console.log("PushNotificationForAlertError Error = ", errorMessage);
+      //console.log("PushNotificationForAlertError Error = ", errorMessage);
       this.AlertNotifcaionList.push(errorMessage);
   })
 
 //   this.hubConnection.on("TestAlertResponse", (notificationMessage) => {​​​​​
 //     notificationMessage= JSON.parse(JSON.parse(notificationMessage));
 //     this.notificationCount++;
-//     // console.log("TestAlertResponse message = ",notificationMessage);
+//     // //console.log("TestAlertResponse message = ",notificationMessage);
 //     this.AlertNotifcaionList.push(notificationMessage);
     
 //     if(this.notificationData.length < 5){
@@ -295,7 +295,7 @@ get24Time(_time: any){
 //  }​​​​​)
 // ​
 //  this.hubConnection.on("TestErrorResponse", (errorMessage) => {​​​​​
-//    console.log(errorMessage);
+//    //console.log(errorMessage);
 //    this.AlertNotifcaionList.push(errorMessage);
 // }​​​​​)
 

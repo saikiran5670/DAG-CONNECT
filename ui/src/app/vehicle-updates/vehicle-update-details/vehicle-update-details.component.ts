@@ -296,7 +296,7 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
         }
         if (element.scheduleDateTime) {
           element.scheduleDateTime = new Date( element.scheduleDateTime);
-         // console.log('Default:',this.prefDefaultTimeFormat, this.prefDefaultDateFormat);
+         // //console.log('Default:',this.prefDefaultTimeFormat, this.prefDefaultDateFormat);
           element.scheduleDateTime = this.formStartDate(element.scheduleDateTime, this.prefDefaultTimeFormat, this.prefDefaultDateFormat);
         } else {
           element.scheduleDateTime = '-';
@@ -368,7 +368,7 @@ export class VehicleUpdateDetailsComponent implements OnInit, OnChanges {
 
     }, (error) => {
       this.hideloader();
-      console.log("error:: ", error)
+      //console.log("error:: ", error)
     });
   }
  
@@ -500,7 +500,7 @@ showConfirmDailog(schedulerData: any) {
        })        
          // let successMsg =`${this.schedulerData.campaignID} ${this.formattedDate} ${this.scheduledTime} scheduled successfully.`
           // this.successMsgBlink(successMsg);
-          console.log("error:: ", error);
+          //console.log("error:: ", error);
         });
       }
     });

@@ -78,12 +78,12 @@ export class DtcTranslationComponent implements OnInit {
 
   processTranslation(transData: any){
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    //console.log("process translationData:: ", this.translationData)
+    ////console.log("process translationData:: ", this.translationData)
   } 
 
   loadTranslationData(){ 
     this.translationService.getdtcWarningDetails().subscribe((getTransData: any) => {
-      console.log("GetTranslatedData:: ", getTransData);
+      //console.log("GetTranslatedData:: ", getTransData);
       this.loadTransData = getTransData;  
     });
   }
@@ -101,11 +101,11 @@ export class DtcTranslationComponent implements OnInit {
         var workbook = XLSX.read(bstr, {type:"binary"});    
         var first_sheet_name = workbook.SheetNames[0];    
         var worksheet = workbook.Sheets[first_sheet_name];    
-        //console.log(XLSX.utils.sheet_to_json(worksheet,{raw:true}));    
+        ////console.log(XLSX.utils.sheet_to_json(worksheet,{raw:true}));    
         var arraylist = XLSX.utils.sheet_to_json(worksheet,{raw:true});     
         this.filelist = [];
         this.filelist = arraylist;
-        //console.log("this.filelist:: ", this.filelist);
+        ////console.log("this.filelist:: ", this.filelist);
     }    
   }
 
@@ -120,7 +120,7 @@ export class DtcTranslationComponent implements OnInit {
 
     if(transUploadData.length > 0){
        this.translationService.importDTCTranslationData({ dtcWarningToImport: transUploadData }).subscribe((importedData: any) => {
-        console.log("importedData:: ", importedData);
+        //console.log("importedData:: ", importedData);
         this.successMsg = true;
         this.loadTranslationData();
         setTimeout(() => {  
@@ -143,7 +143,7 @@ export class DtcTranslationComponent implements OnInit {
       });
     }
     }else{
-      console.log("Empty Excel File...");
+      //console.log("Empty Excel File...");
       this.excelEmptyMsg = true;
       clearInput.clear();
     } 
@@ -207,7 +207,7 @@ export class DtcTranslationComponent implements OnInit {
     let headerRow = worksheet.addRow(header);
     // Cell Style : Fill and Border
     headerRow.eachCell((cell, number) => {
-      //console.log(cell)
+      ////console.log(cell)
       if(number != 6){
         cell.fill = {
           type: 'pattern',
@@ -263,7 +263,7 @@ export class DtcTranslationComponent implements OnInit {
   }  
   this.uploadIconList = []; 
   this.uploadIconList =  this.unzipfiles;
-  console.log(this.unzipfiles);  
+  //console.log(this.unzipfiles);  
 }
   singleIconSvgFile(files) {     
     Object.keys(files).forEach((filename)=> { 
@@ -283,7 +283,7 @@ export class DtcTranslationComponent implements OnInit {
         transUploadData.push(this.getuploadIconData(element));
       });
       this.translationService.updatedtcIconDetails({ dtcWarningUpdateIcon: transUploadData }).subscribe((uploadedData: any) => {
-        console.log("uploadedData:: ", uploadedData);      
+        //console.log("uploadedData:: ", uploadedData);      
         this.successIconMsg = true;        
         setTimeout(() => {         
           this.successIconMsg = false;        
@@ -299,7 +299,7 @@ export class DtcTranslationComponent implements OnInit {
       });
     }else{
       alert(`${this.translationData.lblsvgfilenotfound || 'svg file not found.'}`);
-      console.log("svg file not found...");
+      //console.log("svg file not found...");
       //this.svgEmptyMsg = true;
       clearInput.clear();
     }

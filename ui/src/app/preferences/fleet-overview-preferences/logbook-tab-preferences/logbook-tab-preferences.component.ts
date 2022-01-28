@@ -213,7 +213,7 @@ export class LogbookTabPreferencesComponent implements OnInit {
         this.requestSent = false;
       }, (error) => {
         this.showLoadingIndicator=false;
-        console.log(error);
+        //console.log(error);
       });
     }
   }

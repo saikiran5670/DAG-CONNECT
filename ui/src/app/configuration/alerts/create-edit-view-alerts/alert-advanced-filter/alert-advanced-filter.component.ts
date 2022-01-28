@@ -144,7 +144,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
    }
 
   ngOnInit(): void {
-    console.log(this.prefUnitFormat);
+    //console.log(this.prefUnitFormat);
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     //this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
     if(localStorage.getItem('contextOrgId')){
@@ -529,7 +529,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
           }
         }
       }, (error) => {
-        //console.log(error)
+        ////console.log(error)
       });
     }
 

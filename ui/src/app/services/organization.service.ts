@@ -119,7 +119,7 @@ export class OrganizationService {
    }
 
    getRelationshipByRelationID(dataId: any): Observable<any[]> {
-     console.log("--data in service--", dataId)
+     //console.log("--data in service--", dataId)
     let headerObj = this.generateHeader();
     const headers = {
      headers: new HttpHeaders({ headerObj }),

@@ -173,7 +173,7 @@ export class LiveFleetMapComponent implements OnInit {
   showIcons = true;
   alertsChecked : boolean = false;
   mapIconData(){
-   // console.log(this.detailsData)
+   // //console.log(this.detailsData)
     //this.tripTraceArray = this.detailsData;
     let _ui = this.fleetMapService.getUI();
    // this.fleetMapService.setIconsOnMap(this.detailsData);

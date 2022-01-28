@@ -108,7 +108,7 @@ export class FleetMapService {
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    //console.log("process translationData:: ", this.translationData)
+    ////console.log("process translationData:: ", this.translationData)
   }
 
   setInitialPref(prefData, preference) {
@@ -237,7 +237,7 @@ export class FleetMapService {
     // this.hereMap.addLayer(poi.raster.normal.map);
 
     // this.hereSerive.getHerePois().subscribe(data=>{
-    //   console.log(data)
+    //   //console.log(data)
     // });
 
   }
@@ -339,12 +339,12 @@ export class FleetMapService {
     if (POIArr.length > 0) {
       POIArr.forEach(element => {
         this.herePOISearch.request(this.entryPoint.SEARCH, { 'at': lat + "," + lng, 'q': element }, (data) => {
-          //console.log(data);
+          ////console.log(data);
           for (let i = 0; i < data.results.items.length; i++) {
             this.dropMapPOIMarker({ "lat": data.results.items[i].position[0], "lng": data.results.items[i].position[1] }, data.results.items[i], element, _ui);
           }
         }, error => {
-          console.log('ERROR: ' + error);
+          //console.log('ERROR: ' + error);
         });
       });
       if (selectedRoutes && selectedRoutes.length == 0) {
@@ -1805,7 +1805,7 @@ export class FleetMapService {
     this.hereMap.addLayer(this.clusteringLayer, 100); // set z-index to cluster
     clusteredDataProvider.addEventListener('tap', (event) => {
       // Log data bound to the marker that has been tapped:
-      //console.log(event.target.getData(), data)
+      ////console.log(event.target.getData(), data)
       this.afterPlusClick(data, ui);
     });
   }

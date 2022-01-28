@@ -166,7 +166,7 @@ export class DashboardPreferencesComponent implements OnInit {
 
       
     }, (error) => {
-      console.log('Report not found...', error);
+      //console.log('Report not found...', error);
       this.hideloader();
       this.reportListData = [];
     });
@@ -182,7 +182,7 @@ export class DashboardPreferencesComponent implements OnInit {
       this.hideloader();
       this.initData = prefData['userPreferences'];
       this.getDashboardPreferenceResponse = this.initData;
-      //console.log("dataaaaaaa--->", this.getDashboardPreferenceResponse);
+      ////console.log("dataaaaaaa--->", this.getDashboardPreferenceResponse);
       this.getUnits();
       this.resetColumnData();
       this.prepareDataDashboardPref();
@@ -243,10 +243,10 @@ export class DashboardPreferencesComponent implements OnInit {
           _data = element;
           if (this.translationData[element.key]) {
             _data.translatedName = this.translationData[element.key];
-            //console.log("translated name....", _data.translatedName);
+            ////console.log("translated name....", _data.translatedName);
           } else {
             _data.translatedName = this.getName(element.name);
-            //console.log("translated name1....", _data.translatedName);
+            ////console.log("translated name1....", _data.translatedName);
           }
           // _data.translatedName = this.getName(element.name);
           this.fleetKPIColumnData.push(_data);
@@ -379,7 +379,7 @@ export class DashboardPreferencesComponent implements OnInit {
   }
 
   masterToggle(section) {
-    console.log(!this.dashboardPreferenceForm.valid ||(this.selectionForFleetKPIColumns.selected.length == 0 && this.fleetKPIColumnData.length > 0) || (this.selectionForVehicleUtilizationColumns.selected.length == 0 && this.vehicleUtilizationColumnData.length > 0) || (this.selectionForTodayLiveVehicleColumns.selected.length == 0 && this.todayLiveVehicleColumnData.length > 0) || (this.selectionForAlertLast24HoursColumns.selected.length == 0 && this.alertLast24HoursColumnData.length > 0))
+    //console.log(!this.dashboardPreferenceForm.valid ||(this.selectionForFleetKPIColumns.selected.length == 0 && this.fleetKPIColumnData.length > 0) || (this.selectionForVehicleUtilizationColumns.selected.length == 0 && this.vehicleUtilizationColumnData.length > 0) || (this.selectionForTodayLiveVehicleColumns.selected.length == 0 && this.todayLiveVehicleColumnData.length > 0) || (this.selectionForAlertLast24HoursColumns.selected.length == 0 && this.alertLast24HoursColumnData.length > 0))
     if (this.isAllSelected(section)) {
       this["selectionFor" + section + "Columns"].clear();
     } else {
@@ -396,8 +396,8 @@ export class DashboardPreferencesComponent implements OnInit {
   }
 
   getSaveObject(columnData, selectionData) {
-    // console.log("selcted data", selectionData);
-    // console.log("coloumn dataaaa", columnData);
+    // //console.log("selcted data", selectionData);
+    // //console.log("coloumn dataaaa", columnData);
     let saveArr = [];
     this[columnData].forEach(element => {
       let sSearch = this[selectionData].selected.filter(item => item.dataAttributeId == element.dataAttributeId);
@@ -509,7 +509,7 @@ export class DashboardPreferencesComponent implements OnInit {
 
     });
 
-    //console.log("save Object", [..._fleetKPIArr, ..._vehicleUtilizationArr, ..._todayLiveVehicleArr, ..._alertLast24HoursArr])
+    ////console.log("save Object", [..._fleetKPIArr, ..._vehicleUtilizationArr, ..._todayLiveVehicleArr, ..._alertLast24HoursArr])
     // return [..._fleetKPIArr, ..._vehicleUtilizationArr, ..._todayLiveVehicleArr, ..._alertLast24HoursArr];
 
 
