@@ -93,10 +93,11 @@ export class CreateEditCorridorComponent implements OnInit {
     this.backToPage.emit(emitObj);
   }
 
-  backFromUpdate(){
+  backFromUpdate(_event){
     let emitObj = {
       booleanFlag: false,
       successMsg: "update",
+      corridorName: _event.corridorName
     }  
     this.backToPage.emit(emitObj);
   }

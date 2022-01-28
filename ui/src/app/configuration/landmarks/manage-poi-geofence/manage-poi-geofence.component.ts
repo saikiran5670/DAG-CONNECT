@@ -1385,6 +1385,8 @@ export class ManagePoiGeofenceComponent implements OnInit {
       this.importTranslationData.existError = this.translationData.lblNamealreadyexists || 'POI name already exists';
       this.importTranslationData.input1mandatoryReason = this.translationData.lblNameMandatoryReason || '$ is mandatory input';
       this.importTranslationData.lblBack = this.translationData.lblBack || 'Back';
+      this.importTranslationData.duplicatePOI = this.translationData.lblDuplicatePOI || 'Duplicate POI';
+      this.importTranslationData.valueCannotExceed20 = this.translationData.lblValueCannotExceed20 || 'Max length should be 20';
       this.tableTitle = this.translationData.lblTableTitle || 'Rejected POI Details';
       this.tableColumnName = [this.translationData.lblOrganizationId || 'OrganizationId',
                               this.translationData.lblCategoryName || 'Category Name',
