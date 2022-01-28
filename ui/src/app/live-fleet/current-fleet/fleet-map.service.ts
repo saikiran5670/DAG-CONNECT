@@ -59,7 +59,8 @@ export class FleetMapService {
   translationData: any = {};
 
   constructor(private organizationService: OrganizationService, private translationService: TranslationService, private hereSerive: HereService, private _configService: ConfigService, private reportMapService: ReportMapService) {
-    this.map_key = _configService.getSettings("hereMap").api_key;
+    // this.map_key = _configService.getSettings("hereMap").api_key;
+    this.map_key = localStorage.getItem("hereMapsK");
     this.platform = new H.service.Platform({
       "apikey": this.map_key
     });
