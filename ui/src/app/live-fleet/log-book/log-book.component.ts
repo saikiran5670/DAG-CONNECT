@@ -41,6 +41,7 @@ declare var H: any;
 })
 
 export class LogBookComponent implements OnInit, OnDestroy {
+logbookFilterData: any;
 searchStr: string = "";
 suggestionData: any;
 selectedMarker: any;
@@ -619,7 +620,7 @@ ngOnDestroy(){
       this.filterDateData();
     }
     if (this._state && this._state.fromVehicleDetails) {
-      this.loadWholeTripData();
+      //this.loadWholeTripData();
       if (this._state.data.todayFlag || (this._state.data.startDate == 0 && this._state.data.endDate == 0)) {
         if(this.prefTimeFormat == 24){
           this.startTimeDisplay = '00:00:00';
@@ -678,9 +679,13 @@ if(!this._state){
 }
 
   if(this._state && this._state.fromVehicleDetails){
+    this.filterDateData();
     this.logBookForm.get('vehicleGroup').setValue(this._state.data.vehicleGroupId);
     this.onVehicleGroupChange(this._state.data.vehicleGroupId);
     this.logBookForm.get('vehicle').setValue(this._state.data.vin);
+    this.logBookForm.get('alertLevel').setValue("all");
+    this.logBookForm.get('alertType').setValue("all");
+    this.logBookForm.get('alertCategory').setValue("all");
 
   }
 
@@ -737,7 +742,7 @@ if(!this._state){
     this.logBookForm.get('alertCategory').setValue("all");
   }
 // }
-if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAlerts || this._state.fromDashboard == true)){
+if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAlerts || this._state.fromDashboard == true || this._state.fromVehicleDetails)){
   this.onSearch();
 }
 
@@ -745,7 +750,11 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
 
   loadWholeTripData(){
     this.showLoadingIndicator = true;
-    this.reportService.getLogBookfilterdetails().subscribe((logBookDataData: any) => {
+
+    if(this.logbookFilterData){
+      this.logbookFilterData.unsubscribe();
+    }
+    this.logbookFilterData = this.reportService.getLogBookfilterdetails().subscribe((logBookDataData: any) => {
       this.hideloader();
       this.logbookDataFlag = true;
       this.wholeLogBookData = logBookDataData;
@@ -761,6 +770,7 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
       //   this.onVehicleGroupChange(this._state.data[0].vehicleGroupId);
       // }
     }, (error)=>{
+      this.logbookFilterData.unsubscribe();
       this.hideloader();
       this.wholeLogBookData.vinLogBookList = [];
       this.wholeLogBookData.vehicleDetailsWithAccountVisibiltyList = [];
