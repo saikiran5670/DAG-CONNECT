@@ -61,9 +61,16 @@
 
             <div class="chart-container" style="position: relative; height:150px; width:19vw; margin-left: -50px;"
               *ngIf="index !== 0 && i == 5">
-              <canvas id="chart" baseChart [data]="row[column]" [labels]="doughnutChartLabels"
+              <div *ngIf = "chartType == 'doughnut'" class="chart-wrapper">       
+              <canvas id="chart_doughnut" baseChart [data]="row[column]" [labels]="doughnutChartLabels"
                 [chartType]="doughnutChartType">
               </canvas>
+              </div>
+              <div *ngIf = "chartType == 'pie'" class="chart-wrapper">      
+              <canvas id="chart_pie" baseChart [data]="row[column]" [labels]="doughnutChartLabels"
+                [chartType]="pieChartType">
+              </canvas>
+              </div>
             </div>
 
           </mat-cell>

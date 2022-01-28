@@ -50,6 +50,8 @@ export class FuelBenchmarkingTableComponent implements OnInit {
     [55, 25, 20]
   ];
   doughnutChartType: ChartType = 'doughnut';
+  public pieChartType: ChartType = 'pie';  
+  chartType:any;
   // accountOrganizationId: any;
   // accountId: any;
 
@@ -155,9 +157,9 @@ export class FuelBenchmarkingTableComponent implements OnInit {
           lowthresholdValue = pref.thresholdValue;
         } else if (pref.key == "rp_fb_chart_fuelconsumption") {
           if(pref.chartType == "P") {
-            this.doughnutChartType = 'pie';
+            this.chartType = 'pie';
           } else {
-            this.doughnutChartType = 'doughnut';
+            this.chartType = 'doughnut';
           }
         }
       }
