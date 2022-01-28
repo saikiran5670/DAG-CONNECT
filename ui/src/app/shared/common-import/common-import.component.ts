@@ -421,41 +421,39 @@ export class CommonImportComponent implements OnInit {
   {
     let valid=0;
     switch(id){
-      case 'C' : for(let i=0; i< this.poiData.length; i++)
-                {
+      case 'C' : for(let i=0; i< this.poiData.length; i++) {
                   if(name != ''){
-                  if(this.poiData[i].categoryName == name){
-                  valid=1;
-                    return this.poiData[i].categoryId;
-                  }
-                  else{
-                    valid=0;}
+                    if(this.poiData[i].categoryName == name){
+                    valid = 1;
+                      return this.poiData[i].categoryId;
+                    }
+                    else{
+                      valid = 0;
+                    }
                   }
                   else{ 
                     return 0;
                   }
                 }
-                if(valid == 0)
-                {
+                if(valid == 0) {
                   return 'invalid';
                 }
                 break;
-      case 'S'  : for(let i=0; i< this.poiData.length; i++)
-                  {
+      case 'S'  : for(let i=0; i<this.poiData.length; i++) {
                     if(name != ''){
-                    if(this.poiData[i].subCategoryName == name){
-                      valid=1;
-                      return this.poiData[i].subCategoryId;                    
-                    }
-                    else{
-                      valid=0;}
+                      if(this.poiData[i].subCategoryName == name){
+                        valid = 1;
+                        return this.poiData[i].subCategoryId;                    
+                      }
+                      else{
+                        valid = 0;
+                      }
                     }
                     else{ 
-                    return 0;
+                      return 0;
                     }
                   }
-                  if(valid == 0)
-                  {
+                  if(valid == 0) {
                     return 'invalid';
                   }
                   break;
@@ -1017,15 +1015,14 @@ export class CommonImportComponent implements OnInit {
     }
 
     if(type == 'subCategoryId'){
-       if(value == 'invalid')
-       {
+      if(value == 'invalid') {
         obj.status = false;
         obj.reason = ' Sub Category name invalid';
-       }
-      else{
+      }
+      else {
         obj.status = true;
         obj.reason = 'correct data';
-     }
+      }
       return obj;
     }
 
@@ -1055,6 +1052,23 @@ export class CommonImportComponent implements OnInit {
         return obj;
       }
     }
+
+    if(type === 'name'){
+      if(value.length > 20){
+        obj.status = false;
+        obj.reason = this.importTranslationData.valueCannotExceed20;
+        return obj;
+      }
+      else if(value != ''){
+        let _s: any = this.poiData.filter(i => i.name == value);
+        if(_s && _s.length > 0){
+          obj.status = false;
+          obj.reason = this.importTranslationData.duplicatePOI;
+          return obj;
+        }
+      }
+    }
+
     if(!SpecialCharRegex.test(value)){
       obj.status = false;
       obj.reason = this.importTranslationData.specialCharNotAllowedReason;
