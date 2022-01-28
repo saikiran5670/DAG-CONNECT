@@ -282,14 +282,18 @@ export class CurrentFleetComponent implements OnInit {
         data: this.detailsData
       }
       this.dataInterchangeService.getVehicleData(_dataObj);
-      if (this._state && this._state.data) {
-        this.userPreferencesSetting();
-        this.toBack();
-      }
+      // if (this._state && this._state.data) {
+      //   this.userPreferencesSetting();
+      //   this.toBack();
+      // }
     }, (err) => {
       this.hideLoader();
       this.getFilterData();
     });
+    if (this._state && this._state.data) {
+      this.userPreferencesSetting();
+      this.toBack();
+    }
   }
 
   getFilterPOIData(){
