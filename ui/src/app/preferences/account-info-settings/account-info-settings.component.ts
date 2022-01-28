@@ -261,7 +261,7 @@ export class AccountInfoSettingsComponent implements OnInit {
             timezoneId: data.timezone,
             unitId: data.unit,
             vehicleDisplayId: data.vehicleDisplay,
-            pageRefreshTime : 1,
+            pageRefreshTime : 2,
             landingPageDisplayId: this.landingPageDisplayDropdownData[0].id //-- set default landing page for org
             //landingPageDisplayId: data.landingPageDisplay
           };

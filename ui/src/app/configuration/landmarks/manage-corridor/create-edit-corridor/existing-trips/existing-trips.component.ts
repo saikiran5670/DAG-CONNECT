@@ -196,10 +196,10 @@ export class ExistingTripsComponent implements OnInit {
     private mapFunctions: MapFunctionsService, private organizationService: OrganizationService,
     private completerService: CompleterService, private config: ConfigService) {
 
-    this.map_key = config.getSettings("hereMap").api_key;
-    this.map_id = config.getSettings("hereMap").app_id;
-    this.map_code = config.getSettings("hereMap").app_code;
-
+    // this.map_key = config.getSettings("hereMap").api_key;
+    // this.map_id = config.getSettings("hereMap").app_id;
+    // this.map_code = config.getSettings("hereMap").app_code;
+    this.map_key = localStorage.getItem("hereMapsK");
 
     this.platform = new H.service.Platform({
       "apikey": this.map_key

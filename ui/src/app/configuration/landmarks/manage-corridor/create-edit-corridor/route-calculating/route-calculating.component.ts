@@ -170,9 +170,10 @@ export class RouteCalculatingComponent implements OnInit {
     private completerService: CompleterService, private config: ConfigService,private landmarkCategoryService: LandmarkCategoryService) {
       this.showLoadingIndicator = true;
       // console.log(this.hereService.hereMapsdata);
-      this.map_key =  config.getSettings("hereMap").api_key;
-     this.map_id =  config.getSettings("hereMap").app_id;
-     this.map_code =  config.getSettings("hereMap").app_code;
+    //   this.map_key =  config.getSettings("hereMap").api_key;
+    //  this.map_id =  config.getSettings("hereMap").app_id;
+    //  this.map_code =  config.getSettings("hereMap").app_code;
+    this.map_key = localStorage.getItem("hereMapsK");
     // this.hereService.getHEREMapsInfo().subscribe((data: any) => {
     //   this.map_key = this.hereService.hereMapsdata.apiKey;
     //   this.map_id = this.hereService.hereMapsdata.appId;
@@ -761,6 +762,7 @@ export class RouteCalculatingComponent implements OnInit {
               booleanFlag: false,
               successMsg: "update",
               fromCreate:true,
+              corridorName:this.corridorFormGroup.controls.label.value
             }  
             this.backToUpdate.emit(emitObj);
         }

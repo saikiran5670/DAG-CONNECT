@@ -84,7 +84,8 @@ export class LiveFleetMapComponent implements OnInit {
     private fleetMapService:FleetMapService,
     private dataInterchangeService:DataInterchangeService,
     private completerService: CompleterService) {
-    this.map_key = _configService.getSettings("hereMap").api_key;
+    // this.map_key = _configService.getSettings("hereMap").api_key;
+    this.map_key = localStorage.getItem("hereMapsK");
     //Add for Search Fucntionality with Zoom
     ///this.query = "starbucks";
     this.platform = new H.service.Platform({
