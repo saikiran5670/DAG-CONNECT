@@ -25,7 +25,8 @@ export class CommonMapComponent implements OnInit {
 
   public constructor(private organizationService: OrganizationService, private _configService: ConfigService) {
     this.query = "starbucks";
-    this.map_key = _configService.getSettings("hereMap").api_key;
+    // this.map_key = _configService.getSettings("hereMap").api_key;
+    this.map_key = localStorage.getItem("hereMapsK");
       this.platform = new H.service.Platform({
           "apikey": this.map_key
       });

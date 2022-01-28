@@ -542,7 +542,8 @@ tripTraceArray: any = [];
                 }else{
                   this.showBack = false;
                 }
-                this.map_key =  _configService.getSettings("hereMap").api_key;
+                // this.map_key =  _configService.getSettings("hereMap").api_key;
+                this.map_key = localStorage.getItem("hereMapsK");
                 //Add for Search Fucntionality with Zoom
                 this.query = "starbucks";
                 this.platform = new H.service.Platform({
@@ -1292,7 +1293,7 @@ createEndMarker(){
       if(!this.showMapPanel){ //- map panel not shown already
         this.showMapPanel = true;
         setTimeout(() => {
-          this.mapService.initMap(this.mapElement);
+          this.mapService.initMap(this.mapElement, this.translationData);
         }, 0);
       }else{
         this.mapService.clearRoutesFromMap();

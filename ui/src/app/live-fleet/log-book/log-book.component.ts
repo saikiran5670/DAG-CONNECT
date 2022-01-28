@@ -186,7 +186,8 @@ public filteredVehicleNames: ReplaySubject<String[]> = new ReplaySubject<String[
 
 
 constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private landmarkCategoryService: LandmarkCategoryService, private router: Router, private organizationService: OrganizationService, private _configService: ConfigService, private hereService: HereService,private completerService: CompleterService, private dataInterchangeService: DataInterchangeService) {
-  this.map_key =  _configService.getSettings("hereMap").api_key;
+  // this.map_key =  _configService.getSettings("hereMap").api_key;
+  this.map_key = localStorage.getItem("hereMapsK");
   // setTimeout(() => {
   //   this.initMap();
   //   }, 10);
