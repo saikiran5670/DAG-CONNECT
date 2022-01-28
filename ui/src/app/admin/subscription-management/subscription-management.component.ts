@@ -15,7 +15,7 @@ import { MatTableExporterDirective } from 'mat-table-exporter';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { FormControl } from '@angular/forms';
-import { element } from 'protractor';
+import { element, utils } from 'protractor';
 import { Util } from 'src/app/shared/util';
 
 @Component({
@@ -63,9 +63,19 @@ export class SubscriptionManagementComponent implements OnInit {
   accountDetails : any =[];
   TypeList: any = [ ];
   StatusList: any;
-
   showLoadingIndicator: any = true;
   filterData: any = [];
+  updateDatasource: any;
+  orgTypeSelection= new FormControl();
+  typeSelection= new FormControl();
+  statusFilter= new FormControl();
+  searchFilter= new FormControl();
+  filteredValues = {
+    status: '',
+    org: '',
+    type: '',
+    search: ''
+  };
   filterValue: string;
 
   constructor(
@@ -175,6 +185,45 @@ export class SubscriptionManagementComponent implements OnInit {
         this.getTranslatedNames();
     });
 
+    this.orgTypeSelection.valueChanges.subscribe(filterValue => {
+      if(filterValue==='allOrg'){
+        this.filteredValues['org'] = '';
+      } else{
+        this.filteredValues['org'] = filterValue;
+      }
+      this.dataSource.filter = JSON.stringify(this.filteredValues);
+    });
+    this.typeSelection.valueChanges.subscribe(filterValue => {
+      if(filterValue==='allType'){
+        this.filteredValues['type'] = '';
+      } else{
+        if(filterValue==='Organisation'){
+          this.filteredValues['type'] = 'Organization';
+        }
+        if(filterValue==='VIN'){
+          this.filteredValues['type'] = 'subscriber';
+        }
+        if(filterValue==='Org+VIN'){
+          this.filteredValues['type'] = 'donator';
+        }
+      }
+      this.dataSource.filter = JSON.stringify(this.filteredValues);
+    });
+    this.statusFilter.valueChanges.subscribe(filterValue => {
+      if(filterValue==='allStatus'){
+        this.filteredValues['status'] = '';
+      } else if(filterValue === 'Active'){
+        this.filteredValues['status'] = 'true';
+      } else if(filterValue === 'Inactive'){
+        this.filteredValues['status'] = 'false';
+      }
+      this.dataSource.filter = JSON.stringify(this.filteredValues);
+    });
+    this.searchFilter.valueChanges.subscribe(filterValue => {
+      this.filteredValues['search'] = filterValue;
+      this.dataSource.filter = JSON.stringify(this.filteredValues);
+    });
+
 
   //   this.StatusList= [
   //     {
@@ -221,12 +270,12 @@ export class SubscriptionManagementComponent implements OnInit {
       this.filterData = this.initData;
       this.hideloader();
       this.getOrgListData();
-      this.updatedTableData(this.initData);
+      this.updatedTableData(this.filterData);
     }, (error) => {
       this.hideloader();
       this.initData = [];
       this.getOrgListData();
-      this.updatedTableData(this.initData);
+      this.updatedTableData(this.filterData);
     });
   }
 
@@ -247,42 +296,67 @@ export class SubscriptionManagementComponent implements OnInit {
       }
     });
   }
-
+  getNewTagData(data: any) {
+    let currentDate = new Date().getTime();
+    if (data.length > 0) {
+      data.forEach(row => {
+        let createdDate = parseInt(row.createdAt);
+        let nextDate = createdDate + 86400000;
+        if (currentDate > createdDate && currentDate < nextDate) {
+          row.newTag = true;
+        } else {
+          row.newTag = false;
+        }
+      });
+      let newTrueData = data.filter(item => item.newTag == true);
+      newTrueData.sort((userobj1, userobj2) => parseInt(userobj2.createdAt) - parseInt(userobj1.createdAt));
+      let newFalseData = data.filter(item => item.newTag == false);
+      Array.prototype.push.apply(newTrueData, newFalseData);
+      return newTrueData;
+    }
+    else {
+      return data;
+    }
+  }
   updatedTableData(tableData : any) {
-    this.initData = tableData;
+
     this.initData.forEach((ele,index) => {
       if(ele.state == 'A'){
-        this.initData[index]["status"] = 'active';
+        this.initData[index]["status"] = 'true';
       }
       if(ele.state == 'I'){
-        this.initData[index]["status"] = 'inactive';
+        this.initData[index]["status"] = 'false';
       }
-      if(ele.type == 'O'){
-        this.initData[index]["orgType"] = 'organisation';
+      if(ele.type =='Organization'){
+        this.initData[index]["typeOfOrg"] = 'Organization';
       }
-      else if(ele.type == 'V'){
-        this.initData[index]["orgType"] = 'org+vin';
+      if(ele.type =='VIN'){
+        this.initData[index]["typeOfOrg"] = 'subscriber';
       }
-      else if(ele.type != 'O' && ele.type != 'V') {
-        this.initData[index]["orgType"] = 'vin';
+      if(ele.type =='Org+VIN'){
+        this.initData[index]["typeOfOrg"] = 'donator';
       }
-    });
+    }),
+    this.initData = this.getNewTagData(tableData);
+    this.dataSource = new MatTableDataSource(this.initData);
     setTimeout(()=>{
-      this.dataSource = new MatTableDataSource(tableData);
+      this.dataSource = new MatTableDataSource(this.initData);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
-      this.dataSource.filterPredicate = function(data, filter: any){
-           return data.packageCode.toString().toLowerCase().includes(filter) ||
-               data.subscriptionId.toLowerCase().includes(filter) ||
-               data.name.toLowerCase().toLowerCase().includes(filter) ||
-              //  data.type.toLowerCase().includes(filter) ||
-              //  data.state.toLowerCase().includes(filter)  ||
-               data.orgType.toLowerCase().includes(filter) ||
-               data.status.toLowerCase().includes(filter)  ||
-               data.count.toString().includes(filter) ||
-               (getDt(data.subscriptionStartDate)).toString().toLowerCase().includes(filter) ||
-              (getDt(data.subscriptionEndDate)).toString().toLowerCase().includes(filter)
-      }
+
+        this.dataSource.filterPredicate = function(data, filter: any){
+          let val = JSON.parse(filter);
+          return (val.org === '' || data.subscriptionId.toString() === val.org.toString() ) &&
+                  (val.type === '' || data.typeOfOrg.toString() === val.type.toString() ) &&
+                  (val.status === '' || data.status.toString() === val.status.toString() ) &&
+                  (data.subscriptionId.toLowerCase().indexOf(val.search.toLowerCase()) !== -1 ||
+                    data.packageCode.toLowerCase().indexOf(val.search.toLowerCase()) !== -1 ||
+                    data.name.toLowerCase().indexOf(val.search.toLowerCase()) !== -1 ||
+                    data.typeOfOrg.toLowerCase().indexOf(val.search.toLowerCase()) !== -1 ||
+                    (getDt(data.startDate)).toString().toLowerCase().indexOf(val.search.toLowerCase()) !== -1 ||
+                    (getDt(data.endDate)).toString().toLowerCase().indexOf(val.search.toLowerCase()) !== -1
+                  )
+          };
       this.dataSource.sortData = (data:String[], sort: MatSort) => {
         const isAsc = sort.direction === 'asc';
         let columnName = this.sort.active;
@@ -290,7 +364,6 @@ export class SubscriptionManagementComponent implements OnInit {
           return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
         });
       }
-
     });
   }
 
@@ -371,11 +444,13 @@ export class SubscriptionManagementComponent implements OnInit {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
   }
 
-  applyFilter(filterValue: string) {
-    filterValue = filterValue.trim(); // Remove whitespace
-    filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
-    this.dataSource.filter= filterValue;
-  }
+  // applyFilter(filterValue: string) {
+  //   filterValue = filterValue.trim(); // Remove whitespace
+  //   filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
+  //   this.dataSource.filter= filterValue;
+  // }
+
+
 
   masterToggleForSubscription() {
     this.isAllSelectedForSubscription()
@@ -397,34 +472,6 @@ export class SubscriptionManagementComponent implements OnInit {
     else
       return `${this.selectionForSubscription.isSelected(row) ? 'deselect' : 'select'
         } row`;
-  }
-
-  filterStatus(selectedValue) {
-    selectedValue = selectedValue.trim();
-    selectedValue = selectedValue.toLowerCase();
-    this.dataSource.filter= selectedValue != 'all' ? selectedValue : ''
-  }
-
-  applyFilterOnOrganization(filterValue: string){
-      this.subscriptionService.getSubscriptions(filterValue).subscribe((data : any) => {
-      this.initData = data["subscriptionList"];
-      this.filterData = this.initData;
-      this.updatedTableData(this.initData);
-      this.changedOrgId = filterValue;
-    });
-   }
-
-   applyFilterOnStatus(status: any){
-      let newData = this.filterData.filter(element=>element.state == ((status==1) ? "A" : "I"));
-      this.updatedTableData(newData);
-  }
-
-  applyFilterOnType(data: any, type: any){
-    this.subscriptionService.getSubscriptionByType(this.changedOrgId ? this.changedOrgId : this.accountOrganizationId, type).subscribe((data : any) => {
-      this.initData = data["subscriptionList"];
-      this.filterData = this.initData;
-      this.updatedTableData(this.initData);
-    });
   }
 
   hideloader() {

@@ -75,6 +75,10 @@ export class RouteCalculatingComponent implements OnInit {
   routeOutlineMarker : any;
   endAddressPositionLat : number = 0;
   endAddressPositionLong : number = 0;
+  unitFormat: string = localStorage.getItem("unitFormat");
+  widthUnit: string = '';
+  maxDistance: string = '';
+
   
   explosiveChecked :boolean = false;
   gasChecked :boolean = false;
@@ -165,15 +169,20 @@ export class RouteCalculatingComponent implements OnInit {
   constructor(private hereService: HereService,private formBuilder: FormBuilder, private corridorService : CorridorService,
     private completerService: CompleterService, private config: ConfigService,private landmarkCategoryService: LandmarkCategoryService) {
       this.showLoadingIndicator = true;
+      // console.log(this.hereService.hereMapsdata);
       this.map_key =  config.getSettings("hereMap").api_key;
      this.map_id =  config.getSettings("hereMap").app_id;
      this.map_code =  config.getSettings("hereMap").app_code;
+    // this.hereService.getHEREMapsInfo().subscribe((data: any) => {
+    //   this.map_key = this.hereService.hereMapsdata.apiKey;
+    //   this.map_id = this.hereService.hereMapsdata.appId;
+    //   this.map_code =  this.hereService.hereMapsdata.appCode;
 
-
-    this.platform = new H.service.Platform({
-      "apikey": this.map_key
-    });
-    this.configureAutoSuggest();
+      this.platform = new H.service.Platform({
+        "apikey": this.map_key
+      });
+      this.configureAutoSuggest();
+    // });
     setTimeout(()=>{   
       this.hideloader();
     }); 
@@ -237,20 +246,27 @@ export class RouteCalculatingComponent implements OnInit {
     }, (error) => {
       this.userPOIList = [];
     });
-    
+    this.widthUnit = this.unitFormat == 'dunit_Metric' ? this.translationData.lblKm : this.translationData.lblmile;
+    this.maxDistance = this.unitFormat == 'dunit_Metric' ? this.translationData.lblMaxkm + ' 10 ' +this.translationData.lblKm : this.translationData.lblMaxkm + ' 6.21371 '+this.translationData.lblmile;
   }
 
   subscribeWidthValue(){
     this.corridorFormGroup.get("widthInput").valueChanges.subscribe(x => {
      
       this.corridorWidthKm = Number(x);
-      if(Number(x) > 10)
+      if(this.unitFormat == 'dunit_Imperial' && Number(x) > 6.21371){
+        this.corridorWidthKm =6.21371;
+        this.corridorFormGroup.controls.widthInput.setValue(this.corridorWidthKm);
+      } else if(this.unitFormat == 'dunit_Metric' && Number(x) > 10)
       {
         this.corridorWidthKm =10;
         this.corridorFormGroup.controls.widthInput.setValue(this.corridorWidthKm);
 
       }
-      this.corridorWidth = this.corridorWidthKm  * 1000;
+      if(this.unitFormat == 'dunit_Imperial')
+        this.corridorWidth = this.corridorWidthKm * 1.60934 * 1000;
+      else if(this.unitFormat == 'dunit_Metric')
+        this.corridorWidth = this.corridorWidthKm  * 1000;
       this.checkRoutePlot();
       this.updateWidth();
       //this.calculateAB();
@@ -298,7 +314,7 @@ export class RouteCalculatingComponent implements OnInit {
       this.endAddressPositionLat = _selectedElementData.endLat;
       this.endAddressPositionLong = _selectedElementData.endLong;
       this.corridorWidth = _selectedElementData.width;
-      this.corridorWidthKm = this.corridorWidth / 1000;
+      this.corridorWidthKm = this.unitFormat == 'dunit_Metric' ? this.corridorWidth / 1000 : this.unitFormat == 'dunit_Imperial' ? Number((this.corridorWidth / (1.60934 * 1000)).toFixed(2)) : this.corridorWidth / 1000;
 
       this.plotStartPoint();
       this.plotEndPoint();
@@ -484,8 +500,15 @@ export class RouteCalculatingComponent implements OnInit {
   sliderChanged(){
      // this.corridorWidth = _event.value;
      this.onSearchClicked = false;
+     if(this.unitFormat == 'dunit_Imperial')
+      this.corridorWidthKm = this.corridorWidth / (1.60934*1000);
+     else if(this.unitFormat == 'dunit_Metric')
       this.corridorWidthKm = this.corridorWidth / 1000;
-      if(this.corridorWidthKm > 10)
+
+      if(this.unitFormat == 'dunit_Imperial' && (this.corridorWidth == 10000 || this.corridorWidthKm > 6.21371)){
+        this.corridorWidthKm=6.21371;
+      }
+      else if(this.unitFormat == 'dunit_Metric' && this.corridorWidthKm > 10)
       {
         this.corridorWidthKm=10;
       }
@@ -507,7 +530,7 @@ export class RouteCalculatingComponent implements OnInit {
   changeSliderInput(){
     this.onSearchClicked = false;
     this.corridorWidthKm = this.corridorFormGroup.controls.widthInput.value;
-    this.corridorWidth = this.corridorWidthKm * 1000;
+    this.corridorWidth = this.unitFormat == 'dunit_Metric' ? this.corridorWidthKm * 1000 : this.unitFormat == 'dunit_Imperial' ? this.corridorWidthKm * 1.60934 * 1000 : this.corridorWidthKm * 1000;
   }
   
   formatLabel(value:number){

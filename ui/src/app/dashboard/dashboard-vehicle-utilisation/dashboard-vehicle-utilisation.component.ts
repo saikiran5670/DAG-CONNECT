@@ -27,6 +27,8 @@ export class DashboardVehicleUtilisationComponent implements OnInit {
   timeDChartType: any;
   mileageDChartType: any;
   selectionTab: any;
+  startTime: any;
+  endTime: any;
   logisticFlag: boolean = true;
   fromDashboard:boolean = true;
   clickButton:boolean = true;
@@ -557,8 +559,17 @@ getAlert24HoursAPI: any;
      });
     }
 
- let alertPayload ={
-  "viNs": this.finalVinList
+let endDateValue = Util.getUTCDate(this.prefTimeZone); //todaydate
+let startDateValue = this.getLast24Date(endDateValue); //last24 date
+// this.startTime = Util.convertDateToUtc(startDateValue);
+// this.endTime = Util.convertDateToUtc(endDateValue);
+this.startTime = Util.getMillisecondsToUTCDate(startDateValue, this.prefTimeZone);
+this.endTime= Util.getMillisecondsToUTCDate(endDateValue, this.prefTimeZone);
+
+let alertPayload ={
+  // "viNs": this.finalVinList
+  "startDateTime": this.startTime,
+  "endDateTime" : this.endTime
  }
  if(!this.getAlert24HoursAPI){
   this.getAlert24HoursAPI = this.dashboardService.getAlert24Hours(alertPayload).subscribe((alertData)=>{
@@ -570,6 +581,11 @@ getAlert24HoursAPI: any;
        this.repairAndMaintenanceCount = this.alertsData.repairAndMaintenance;
        this.toatlSum = this.alertsData.critical + this.alertsData.warning +this.alertsData.advisory;
        this.setAlertChartData();
+    }
+    else{
+      this.logisticCount = 0;
+      this.fuelAndDriverCount = 0;
+      this.repairAndMaintenanceCount = 0;
     }
   });
  }
@@ -614,6 +630,11 @@ setAlertChartData(){
     }
   }
     
+}
+
+getLast24Date(todayDate){
+let yesterdayDate = new Date(todayDate.getTime() - (24 * 60 * 60 * 1000));
+return yesterdayDate;
 }
 
 checkForPreference(fieldKey) {
@@ -762,11 +783,13 @@ if(this.prefTimeFormat == 12){
       this.totalThresholdDistance = this.distancebasedThreshold * this.totalActiveVehicles * 90;
     }
 
+    this.totalThreshold = this.totalThreshold / 1000; //threshold is coming in ms to converting it into sec.
+
     percentage1 = (this.totalDrivingTime/this.totalThreshold)* 100; 
     percentage1 = parseFloat(percentage1).toFixed(2);
     percentage2 = (this.totalDistance/this.totalThresholdDistance)* 100;
     percentage2 = parseFloat(percentage2).toFixed(2);
-
+  
     if(this.distanceChartType == 'bar'){
         let label1 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkms || 'Kms') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'Miles') : (this.translationData.lblmile || 'Miles');
         // let startDate = Util.convertDateToUtc(this.startDateValue-1);
@@ -989,47 +1012,47 @@ if(this.prefTimeFormat == 12){
     ];
   }
 
-  switch (_prefLimitTime) {
-    case 'U':{
-      if(this.timebasedThreshold > this.totalDistance){ //red
+  // switch (_prefLimitTime) { //time based utilisation
+    // case 'U':{
+      if(this.totalDrivingTime < this.totalThreshold){ //red color
         this.doughnutChartColors= [
           {
-            backgroundColor: ['#65C3F7 ','#F4AF85 '],
-            hoverBackgroundColor: ['#65C3F7 ','#F4AF85 '],
+            backgroundColor: ['#ff0000 ','#cecece '],
+            hoverBackgroundColor: ['#ff0000 ','#cecece '],
           },
         ];
         }
-      else{
-          this.doughnutChartColors= [
-            {
-              backgroundColor: ['#F4AF85 ','#65C3F7 '],
-              hoverBackgroundColor: ['#F4AF85 ','#65C3F7 '],
+      // else{
+      //     this.doughnutChartColors= [
+      //       {
+      //         backgroundColor: ['#F4AF85 ','#65C3F7 '],
+      //         hoverBackgroundColor: ['#F4AF85 ','#65C3F7 '],
 
-            }];
-          }
-        }
-              break;
-     case 'L':{
-        if(this.timebasedThreshold < this.totalDistance){
+      //       }];
+      //     }
+        // }
+    //           break;
+      // case 'L':{
+      if(this.totalDrivingTime >= this.totalThreshold){ //green
           this.doughnutChartColors= [
             {
-              backgroundColor: ['#F4AF85 ','#65C3F7 '],
-              hoverBackgroundColor: ['#F4AF85 ','#65C3F7 '],
+              backgroundColor: ['#89c64d ','#cecece '],
+              hoverBackgroundColor: ['#89c64d ','#cecece '],
 
             }];
                 }
-                else{
-                  this.doughnutChartColors= [
-                    {
-                      backgroundColor: ['#65C3F7 ','#F4AF85 '],
-                      hoverBackgroundColor: ['#65C3F7 ','#F4AF85 '],
-                    },
-                  ];
-                }
-              }
-            default:
-              break;
-          }
+                // else{
+                //   this.doughnutChartColors= [
+                //     {
+                //       backgroundColor: ['#65C3F7 ','#F4AF85 '],
+                //       hoverBackgroundColor: ['#65C3F7 ','#F4AF85 '],
+                //     },
+                //   ];
+                // }
+              //  }
+            //  default:
+            //    break;
+          // }
   //for time based utilisation
   if(this.timeDChartType =='doughnut'){
     this.doughnut_barOptions = {
@@ -1048,7 +1071,7 @@ if(this.prefTimeFormat == 12){
       },
         }
     }
-    this.doughnutChartLabels1 = [`${this.translationData.lblFullUtilisation || 'Full Utilisation'} >${this.getTimeDisplay(this.totalThreshold)}`,`${this.translationData.lblUnderUtilisation || 'Under Utilisation'} < ${this.getTimeDisplay(this.totalThreshold)}`];
+    this.doughnutChartLabels1 = [`${this.translationData.lblFullUtilisation || 'Full Utilisation'} >${this.getTimeDisplay(this.totalThreshold *1000)}`,`${this.translationData.lblUnderUtilisation || 'Under Utilisation'} < ${this.getTimeDisplay(this.totalThreshold *1000)}`];
     // this.doughnutChartData1 = [[55, 25, 20]];
     if(percentage1 > 100){
       this.doughnutChartData1 = [percentage1, 0];
@@ -1075,7 +1098,7 @@ if(this.prefTimeFormat == 12){
       },
         }
       }
-    this.timePieChartLabels = [`${this.translationData.lblFullUtilisation || 'Full Utilisation'} >${this.getTimeDisplay(this.totalThreshold)}`,`${this.translationData.lblUnderUtilisation || 'Under Utilisation' } < ${this.getTimeDisplay(this.totalThreshold)}`];
+    this.timePieChartLabels = [`${this.translationData.lblFullUtilisation || 'Full Utilisation'} >${this.getTimeDisplay(this.totalThreshold*1000)}`,`${this.translationData.lblUnderUtilisation || 'Under Utilisation' } < ${this.getTimeDisplay(this.totalThreshold *1000)}`];
     if(percentage1 > 100){
       this.timePieChartData = [percentage1, 0];
     }
@@ -1086,47 +1109,47 @@ if(this.prefTimeFormat == 12){
   }
 
   //for distance based utilisation
-  switch (_prefLimitDistance) {
-    case 'U':{
-      if(this.timebasedThreshold > this.totalDistance){ //red
+  // switch (_prefLimitDistance) { //upper/lower option is not there so commented
+    // case 'U':{
+      if(this.totalDistance < this.totalThresholdDistance){ //red color
         this.doughnutChartColors= [
           {
-            backgroundColor: ['#65C3F7 ','#F4AF85 '],
-            hoverBackgroundColor: ['#65C3F7 ','#F4AF85 '],
+            backgroundColor: ['#ff0000 ','#89c64d '],
+            hoverBackgroundColor: ['#ff0000 ','#89c64d '],
           },
         ];
         }
-      else{
-          this.doughnutChartColors= [
-            {
-              backgroundColor: ['#F4AF85 ','#65C3F7 '],
-              hoverBackgroundColor: ['#F4AF85 ','#65C3F7 '],
+      // else{
+      //     this.doughnutChartColors= [
+      //       {
+      //         backgroundColor: ['#F4AF85 ','#65C3F7 '],
+      //         hoverBackgroundColor: ['#F4AF85 ','#65C3F7 '],
 
-            }];
-          }
-        }
-              break;
-     case 'L':{
-        if(this.timebasedThreshold < this.totalDistance){
+      //       }];
+      //     }
+    //     }
+    //           break;
+    //  case 'L':{
+        if(this.totalDistance >= this.totalThresholdDistance){ //green
           this.doughnutChartColors= [
             {
-              backgroundColor: ['#F4AF85 ','#65C3F7 '],
-              hoverBackgroundColor: ['#F4AF85 ','#65C3F7 '],
+              backgroundColor: ['#89c64d ','#ff0000 '],
+              hoverBackgroundColor: ['#89c64d ','#ff0000 '],
 
             }];
                 }
-                else{
-                  this.doughnutChartColors= [
-                    {
-                      backgroundColor: ['#65C3F7 ','#F4AF85 '],
-                      hoverBackgroundColor: ['#65C3F7 ','#F4AF85 '],
-                    },
-                  ];
-                }
-              }
-            default:
-              break;
-          }
+                // else{
+                //   this.doughnutChartColors= [
+                //     {
+                //       backgroundColor: ['#65C3F7 ','#F4AF85 '],
+                //       hoverBackgroundColor: ['#65C3F7 ','#F4AF85 '],
+                //     },
+                //   ];
+                // }
+            //   }
+            // default:
+            //   break;
+          // }
 
   let label3;
   if(this.prefUnitFormat == 'dunit_Metric'){

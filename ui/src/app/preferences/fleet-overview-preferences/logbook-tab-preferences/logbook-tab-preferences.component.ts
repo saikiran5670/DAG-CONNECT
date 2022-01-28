@@ -2,6 +2,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { ReportService } from 'src/app/services/report.service';
+import { DataInterchangeService } from '../../../services/data-interchange.service';
 
 @Component({
   selector: 'app-logbook-tab-preferences',
@@ -22,7 +23,7 @@ export class LogbookTabPreferencesComponent implements OnInit {
   requestSent:boolean = false;
   showLoadingIndicator: boolean = false;
 
-  constructor(private reportService: ReportService, private router: Router) { }
+  constructor(private reportService: ReportService, private router: Router, private dataInterchangeService: DataInterchangeService) { }
 
   ngOnInit() {
     let repoId: any = this.reportListData.filter(i => i.name == 'Logbook');
@@ -60,16 +61,24 @@ export class LogbookTabPreferencesComponent implements OnInit {
     };
   }
 
-  loadLogbookPreferences(){
-    this.showLoadingIndicator=true;
+  loadLogbookPreferences(reloadFlag?: any){
+    this.showLoadingIndicator = true;
     this.reportService.getReportUserPreference(this.reportId).subscribe((prefData : any) => {
-      this.showLoadingIndicator=false;
+      this.showLoadingIndicator = false;
       this.initData = prefData['userPreferences'];
+      if(reloadFlag){ // refresh pref setting & goto logbook 
+        let _dataObj: any = {
+          prefdata: this.initData,
+          type: 'logbook' 
+        }
+        this.dataInterchangeService.getPrefData(_dataObj);
+        this.dataInterchangeService.closedPrefTab(false); // closed pref tab
+      }
       this.resetColumnData();
       this.getTranslatedColumnName(this.initData);
       this.validateRequiredField();
     }, (error)=>{
-      this.showLoadingIndicator=false;
+      this.showLoadingIndicator = false;
       this.initData = [];
       this.resetColumnData();
     });
@@ -190,12 +199,17 @@ export class LogbookTabPreferencesComponent implements OnInit {
       }
       this.showLoadingIndicator=true;
       this.reportService.updateReportUserPreference(objData).subscribe((_tripPrefData: any) => {
-        this.showLoadingIndicator=false;
-        this.loadLogbookPreferences();
-        this.setLogbookFlag.emit({ flag: false, msg: this.getSuccessMsg() });
+        this.showLoadingIndicator = false;
+
+        let _reloadFlag = false;
         if ((this.router.url).includes("fleetoverview/logbook")) {
-          this.reloadCurrentComponent();
+          _reloadFlag = true;
         }
+        this.loadLogbookPreferences(_reloadFlag);
+        this.setLogbookFlag.emit({ flag: false, msg: this.getSuccessMsg() });
+        // if ((this.router.url).includes("fleetoverview/logbook")) {
+        //   this.reloadCurrentComponent();
+        // }
         this.requestSent = false;
       }, (error) => {
         this.showLoadingIndicator=false;

@@ -2459,7 +2459,7 @@ getLast3MonthDate(){
     // let date = new Date();
     if (this.prefTimeZone) {
     var date = Util.getUTCDate(this.prefTimeZone);
-    date.setMonth(date.getMonth()-3);
+    date.setDate(date.getDate()-90);
     return date;
     }
   }
@@ -2727,7 +2727,7 @@ setVehicleGroupAndVehiclePreSelection() {
   getLastMonthDate(){
     // let date = new Date();
     var date = Util.getUTCDate(this.prefTimeZone);
-    date.setMonth(date.getMonth()-1);
+    date.setDate(date.getDate()-30);
     return date;
   }
 
@@ -3312,10 +3312,22 @@ setVehicleGroupAndVehiclePreSelection() {
       // sum += parseFloat(element.convertedFuelConsumption);
       // });
       // sum= sum.toFixed(2)*1;
-      let fuelConsumed = this.sumOfColumns('fuelconsumed');
-      let distance = this.sumOfColumns('distance');
-      let convertedConsumption:any = this.reportMapService.getFuelConsumptionSummary(fuelConsumed,distance,this.prefUnitFormat);
-      sum= convertedConsumption.toFixed(2)*1;
+      // let fuelConsumed = this.sumOfColumns('fuelconsumed');
+      // let distance = this.sumOfColumns('distance');
+      // let convertedConsumption:any = this.reportMapService.getFuelConsumptionSummary(fuelConsumed,distance,this.prefUnitFormat);
+      // sum= convertedConsumption.toFixed(2)*1;
+      // break;
+      let fuelConsumed_data=0;
+      let distance_data=0; 
+      this.displayData.forEach(element => {      
+        if(element.fuelConsumed !='Infinity'){
+          fuelConsumed_data += parseFloat(element.fuelConsumed);
+          distance_data += parseFloat(element.distance);
+        }
+      });
+      let convertedConsumption: any = this.reportMapService.getFuelConsumptionSummary(fuelConsumed_data, distance_data, this.prefUnitFormat);
+      let convertedFuelConsumption: any = this.prefUnitFormat=='dunit_Imperial' ?  this.reportMapService.getFuelConsumedUnits(convertedConsumption.toFixed(5)*1,this.prefUnitFormat,true) : convertedConsumption.toFixed(2)*1;
+      sum = convertedFuelConsumption;
       break;
     }
     case 'co2emission': {

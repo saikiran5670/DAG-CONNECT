@@ -25,6 +25,7 @@ export class UserDetailTableComponent implements OnInit {
   colsList: any;
   filterValue: any;
   colValues: any;
+  customWidth: boolean = false;
 
   constructor(
     @Inject(MAT_DIALOG_DATA)
@@ -33,12 +34,13 @@ export class UserDetailTableComponent implements OnInit {
       colsList: any,
       colsName: any,
       tableTitle: any,
-      translationData: any
+      translationData: any,
+      popupWidth?: any
     },
     private mdDialogRef: MatDialogRef<UserDetailTableComponent>
   ) {
+    this.customWidth = data.popupWidth ? true : false;
     this.updateDataSource(this.data.tableData);
-
   }
 
   updateDataSource(tabel: any) {
@@ -118,7 +120,9 @@ export class UserDetailTableComponent implements OnInit {
     this.onClose(false);
   }
 
-  ngOnInit(){ console.log('trans',this.data.translationData);}
+  ngOnInit(){ 
+    
+  }
 
   applyFilter(filterValue: string) {
     filterValue = filterValue.trim(); // Remove whitespace

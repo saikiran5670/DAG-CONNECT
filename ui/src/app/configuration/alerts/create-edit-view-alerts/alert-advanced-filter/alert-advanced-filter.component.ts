@@ -338,38 +338,40 @@ export class AlertAdvancedFilterComponent implements OnInit {
     }
     else{
       let defaultLayers = this.platform.createDefaultLayers();
-      setTimeout(() => {
-        this.map = new H.Map(this.mapElement.nativeElement,
-          defaultLayers.raster.normal.map, {
-          center: { lat: 51.43175839453286, lng: 5.519981221425336 },
-          zoom: 4,
-          pixelRatio: window.devicePixelRatio || 1
-        });
-        window.addEventListener('resize', () => this.map.getViewPort().resize());
-        var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
-        this.ui = H.ui.UI.createDefault(this.map, defaultLayers);
-        
-        this.ui.removeControl("mapsettings");
-        // create custom one
-        var ms = new H.ui.MapSettingsControl({
-            baseLayers : [ { 
-              label: this.translationData.lblNormal , layer: defaultLayers.raster.normal.map
-            },{
-              label: this.translationData.lblSatellite , layer: defaultLayers.raster.satellite.map
-            }, {
-              label: this.translationData.lblTerrain , layer: defaultLayers.raster.terrain.map
-            }
-            ],
-          layers : [{
-                label: this.translationData.lblLayerTraffic , layer: defaultLayers.vector.normal.traffic
-            },
-            {
-                label: this.translationData.lblLayerIncidents , layer: defaultLayers.vector.normal.trafficincidents
-            }
-          ]
-        });
-        this.ui.addControl("customized", ms);
-      }, 1000);
+      if(this.mapElement){
+        setTimeout(() => {
+          this.map = new H.Map(this.mapElement.nativeElement,
+            defaultLayers.raster.normal.map, {
+            center: { lat: 51.43175839453286, lng: 5.519981221425336 },
+            zoom: 4,
+            pixelRatio: window.devicePixelRatio || 1
+          });
+          window.addEventListener('resize', () => this.map.getViewPort().resize());
+          var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
+          this.ui = H.ui.UI.createDefault(this.map, defaultLayers);
+          
+          this.ui.removeControl("mapsettings");
+          // create custom one
+          var ms = new H.ui.MapSettingsControl({
+              baseLayers : [ { 
+                label: this.translationData.lblNormal , layer: defaultLayers.raster.normal.map
+              },{
+                label: this.translationData.lblSatellite , layer: defaultLayers.raster.satellite.map
+              }, {
+                label: this.translationData.lblTerrain , layer: defaultLayers.raster.terrain.map
+              }
+              ],
+            layers : [{
+                  label: this.translationData.lblLayerTraffic , layer: defaultLayers.vector.normal.traffic
+              },
+              {
+                  label: this.translationData.lblLayerIncidents , layer: defaultLayers.vector.normal.trafficincidents
+              }
+            ]
+          });
+          this.ui.addControl("customized", ms);
+        }, 1000);
+      }
     }
 }
 

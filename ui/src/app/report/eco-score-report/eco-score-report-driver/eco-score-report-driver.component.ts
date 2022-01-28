@@ -45,6 +45,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
   @Input() selectionTab: string;
   @Input() trendLineSearchDataParam: any;
   @Output() vehicleLimitExceeds = new EventEmitter<object>();
+  @Output() backToMainPage = new EventEmitter<any>();
   @ViewChild("trendLineChart") trendLineChart: ChartComponent;
   @ViewChild("brushChart") brushChart: ChartComponent;
   public chartOptionsApex: Partial<ChartOptionsApex>;
@@ -636,19 +637,19 @@ titleStyle: any = { name: 'sans-serif', family: 4, size: 11, bold: true };
 
   getLastMonthDate(){
     var date = Util.getUTCDate(this.prefObj.prefTimeZone);
-    date.setMonth(date.getMonth()-1);
+    date.setDate(date.getDate()-1);
     return date.getTime();
   }
 
   getLast3MonthDate(){
     var date = Util.getUTCDate(this.prefObj.prefTimeZone);
-    date.setMonth(date.getMonth()-3);
+    date.setDate(date.getDate()-3);
     return date.getTime();
   }
 
   getLast6MonthDate(){
     var date = Util.getUTCDate(this.prefObj.prefTimeZone);
-    date.setMonth(date.getMonth()-6);
+    date.setDate(date.getDate()-6);
     return date.getTime();
   }
 
@@ -1685,5 +1686,13 @@ this.barChartOptionsPerformance = {
       doc.addImage(performanceBarHref, 'PNG', 10, 40, oWidth, performanceBarHeight) ;
       doc.save(this.translationData.lblExportName+'.pdf');
     });
+  }
+
+  backToMainPageCall(){
+    let emitObj = {
+      booleanFlag: false,
+      successMsg: ""
+    }  
+    this.backToMainPage.emit(emitObj);
   }
 }

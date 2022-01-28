@@ -30,7 +30,7 @@ import * as fs from 'file-saver';
 import { CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteData } from 'ng2-completer';
 import { treeExportFormatter } from 'angular-slickgrid';
 import { ReplaySubject } from 'rxjs';
-
+import { DataInterchangeService } from '../../services/data-interchange.service';
 
 declare var H: any;
 
@@ -120,6 +120,7 @@ herePOIList: any = [];
 displayPOIList: any = [];
 internalSelection: boolean = false;
 fromMoreAlertsFlag: boolean = false;
+logbookDataFlag: boolean = false;
 herePOIArr: any = [];
 getLogbookDetailsAPICall: any;
 prefMapData: any = [
@@ -184,11 +185,21 @@ public filteredVehicleNames: ReplaySubject<String[]> = new ReplaySubject<String[
 
 
 
-constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private landmarkCategoryService: LandmarkCategoryService, private router: Router, private organizationService: OrganizationService, private _configService: ConfigService, private hereService: HereService,private completerService: CompleterService) {
+constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private landmarkCategoryService: LandmarkCategoryService, private router: Router, private organizationService: OrganizationService, private _configService: ConfigService, private hereService: HereService,private completerService: CompleterService, private dataInterchangeService: DataInterchangeService) {
   this.map_key =  _configService.getSettings("hereMap").api_key;
   // setTimeout(() => {
   //   this.initMap();
   //   }, 10);
+
+  this.dataInterchangeService.prefSource$.subscribe((prefResp: any) => {
+    if(prefResp && (prefResp.type == 'logbook') && prefResp.prefdata){
+      this.displayedColumns = [ 'all','alertLevel', 'alertGeneratedTime', 'vehicleRegNo', 'alertType', 'alertName', 'alertCategory', 'tripStartTime', 'tripEndTime', 'vehicleName','vin','occurrence','thresholdValue'];
+      this.resetTripPrefData();
+      this.reportPrefData = prefResp.prefdata;
+      this.getTranslatedColumnName(this.reportPrefData);
+      this.setDisplayColumnBaseOnPref();
+    }
+  });
 
   const navigation = this.router.getCurrentNavigation();
   this._state = navigation.extras.state as {
@@ -197,9 +208,9 @@ constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationSe
     fromVehicleDetails: boolean,
     data: any
   };
-  setTimeout(() => {
-  this.loadWholeTripData();
-  },5);
+  // setTimeout(() => {
+  // this.loadWholeTripData();
+  // },5);
   //Add for Search Fucntionality with Zoom
   this.query = "starbucks";
   this.platform = new H.service.Platform({
@@ -207,7 +218,7 @@ constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationSe
   });
 
   this.configureAutoSuggest();
-  this.defaultTranslation();
+  // this.defaultTranslation();
 
 
   if(this._state){
@@ -229,7 +240,9 @@ defaultTranslation(){
 }
 
 ngOnDestroy(){
-  this.getLogbookDetailsAPICall.unsubscribe();
+  if(this.getLogbookDetailsAPICall){
+    this.getLogbookDetailsAPICall.unsubscribe();
+  }
   this.globalSearchFilterData["vehicleGroupDropDownValue"] = this.logBookForm.controls.vehicleGroup.value;
   this.globalSearchFilterData["vehicleDropDownValue"] = this.logBookForm.controls.vehicle.value;
   this.globalSearchFilterData["timeRangeSelection"] = this.selectionTab;
@@ -247,7 +260,7 @@ ngOnDestroy(){
     this.globalSearchFilterData["endTimeStamp"] = this.endTimeDisplay;
   }
   this.setGlobalSearchData(this.globalSearchFilterData);
-  
+
 }
 
   ngOnInit() {
@@ -280,6 +293,13 @@ ngOnDestroy(){
       filter: "",
       menuId: 4 //-- for log-book
     }
+    if(this._state &&  (this._state.fromAlertsNotifications || this._state.fromMoreAlerts)){
+      this.showMapPanel = true;
+      setTimeout(() => {
+        this.initMap();
+        },0);
+    }
+    
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
       this.mapFilterForm.get('trackType').setValue('snail');
@@ -299,24 +319,25 @@ ngOnDestroy(){
 
         }
         if(this.showBack){
-          if(this._state.fromDashboard == true){
-          this.selectionTimeRange('today');}
+        //   if(this._state.fromDashboard == true){
+        //   this.selectionTimeRange('today');
+        // }
 
           if(this._state && this._state.fromAlertsNotifications == true){
             this.fromAlertsNotifications = true;
             this.showMapPanel = true;
-            setTimeout(() => {
-              this.initMap();
-             },0);
-            this.setDefaultTodayDate();
+            // setTimeout(() => {
+            //   this.initMap();
+            //  },0);
+            // this.setDefaultTodayDate();
           }
           if(this._state.fromMoreAlerts == true){
             this.showMapPanel = true;
             this.fromMoreAlertsFlag = true;
-            setTimeout(() => {
-              this.initMap();
-            },0);
-            this.setDefaultTodayDate();
+            // setTimeout(() => {
+            //   this.initMap();
+            // },0);
+            // this.setDefaultTodayDate();
           }
 
           // if(this._state.fromMoreAlerts == true){
@@ -327,13 +348,12 @@ ngOnDestroy(){
     // if(this._state.fromDashboard == true){
     // this.selectionTimeRange('yesterday');
     // }
-    if(this._state &&  this._state.fromAlertsNotifications){
-      this.showMapPanel = true;
-      setTimeout(() => {
-        this.initMap();
-        },0);
-    }
-
+ 
+    // if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAlerts)){
+    //   setTimeout(() => {
+    //     this.onSearch();
+    //   }, 0);
+    // }
 
   }
 
@@ -388,8 +408,14 @@ ngOnDestroy(){
     }
     this.setDefaultStartEndTime();
     this.setPrefFormatDate();
-    this.setDefaultTodayDate();
+    if(!this._state){
+      this.selectionTimeRange('today');
+    // this.setDefaultTodayDate();
+    }
     this.getReportPreferences();
+    setTimeout(() => {
+      this.loadWholeTripData();
+      },5);
   }
 
   getReportPreferences(){
@@ -587,6 +613,10 @@ ngOnDestroy(){
 
   setDefaultTodayDate() {
 
+    if(this._state && this._state.fromDashboard == true){
+      this.selectionTimeRange('today');
+      this.filterDateData();
+    }
     if (this._state && this._state.fromVehicleDetails) {
       this.loadWholeTripData();
       if (this._state.data.todayFlag || (this._state.data.startDate == 0 && this._state.data.endDate == 0)) {
@@ -630,19 +660,21 @@ ngOnDestroy(){
       this.todayDate = this.getTodayDate();
     } else {
       this.selectionTab = 'today';
+      if(this._state && !this._state.fromDashboard){
       this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
       this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
       this.last3MonthDate = this.getLast3MonthDate();
       this.todayDate = this.getTodayDate();
+      }
     }
 
-
-  this.logBookForm.get('vehicle').setValue("all");
+if(!this._state){
   this.logBookForm.get('vehicleGroup').setValue("all");
+  this.logBookForm.get('vehicle').setValue("all");
   this.logBookForm.get('alertLevel').setValue("all");
   this.logBookForm.get('alertType').setValue("all");
   this.logBookForm.get('alertCategory').setValue("all");
-
+}
 
   if(this._state && this._state.fromVehicleDetails){
     this.logBookForm.get('vehicleGroup').setValue(this._state.data.vehicleGroupId);
@@ -663,7 +695,7 @@ ngOnDestroy(){
   }
 }
   //for alerts & notification individual alert click
-  if(this.fromAlertsNotifications == true && this._state.data.length > 0){
+  if(this._state && this._state.fromAlertsNotifications == true && this._state.data.length > 0){
     this.selectionTab = '';
     // let sdate = this._state.data[0].date + ' ' + '00:00:00 AM';
     // let startDate: any = new Date( sdate +'UTC');
@@ -674,6 +706,7 @@ ngOnDestroy(){
     this.endDateValue = this.setStartEndDateTime(new Date(this._state.data[0].alertGeneratedTime), this.selectedEndTime, 'end');
     this.last3MonthDate = this.getLast3MonthDate();
     this.todayDate = this.getTodayDate();
+    this.filterDateData();
     this.logBookForm.get('alertLevel').setValue(this._state.data[0].urgencyLevel);
     this.logBookForm.get('alertType').setValue(this._state.data[0].alertType);
     this.logBookForm.get('alertCategory').setValue(this._state.data[0].alertCategory);
@@ -684,25 +717,44 @@ ngOnDestroy(){
       else{
         this.logBookForm.get('vehicleGroup').setValue('all');
       }
+      if(this.logbookDataFlag){
       this.onVehicleGroupChange(this._state.data[0].vehicleGroupId);
+      }
   }
-  if(this.fromMoreAlertsFlag == true){
+  // if(this.fromMoreAlertsFlag == true){
+     if(this._state && this._state.fromMoreAlerts){
     this.selectionTab ='';
     this.startDateValue = this.setStartEndDateTime(new Date(this._state.data.startDate), this.selectedStartTime, 'start');
     this.endDateValue = this.setStartEndDateTime(new Date(this._state.data.endDate), this.selectedEndTime, 'end');
     this.last3MonthDate = this.getLast3MonthDate();
     this.todayDate = this.getTodayDate();
+    this.filterDateData();
+    this.logBookForm.get('vehicle').setValue("all");
+    this.logBookForm.get('vehicleGroup').setValue("all");
+    this.logBookForm.get('alertLevel').setValue("all");
+    this.logBookForm.get('alertType').setValue("all");
+    this.logBookForm.get('alertCategory').setValue("all");
   }
 // }
+if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAlerts || this._state.fromDashboard == true)){
+  this.onSearch();
+}
+
 }
 
   loadWholeTripData(){
     this.showLoadingIndicator = true;
     this.reportService.getLogBookfilterdetails().subscribe((logBookDataData: any) => {
       this.hideloader();
+      this.logbookDataFlag = true;
       this.wholeLogBookData = logBookDataData;
       //console.log("this.wholeLogBookData:---------------------------: ", this.wholeLogBookData);
+      if(!this._state){
       this.filterDateData();
+      }
+      // else{
+        this.setDefaultTodayDate();
+      // }
       this.loadUserPOI();
       // if(this._state && this._state.fromAlertsNotifications){
       //   this.onVehicleGroupChange(this._state.data[0].vehicleGroupId);
@@ -789,10 +841,10 @@ ngOnDestroy(){
     this.advanceFilterOpen = false;
     this.searchMarker = {};
     //this.internalSelection = true;
-    let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
-    let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
+    let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone);
+    let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);
     //let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
-    let _vinData = this.vehicleDD.filter(item => item.vehicleId == parseInt(this.logBookForm.controls.vehicle.value));
+    let _vinData = this.vehicleDD.filter(item => item.vin == parseInt(this.logBookForm.controls.vehicle.value));
     console.log("vehicleDD", this.vehicleDD);
     if(_vinData.length > 0){
       this.showLoadingIndicator = true;
@@ -823,14 +875,12 @@ ngOnDestroy(){
           "end_time": _endTime
         }
 
-if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
-        setTimeout(() => {
-          this.initMap();
-        }, 0);
-      }
+
       this.showLoadingIndicator = true;
       this.getLogbookDetailsAPICall = this.reportService.getLogbookDetails(objData).subscribe((logbookData: any) => {
         this.hideloader();
+        let logBookResult = logbookData;
+        // let logBookResult : any = this.removeDuplicates(logbookData, "alertId");
         let newLogbookData = [];
         logbookData.forEach(element => {
           if(this._state && this._state.fromAlertsNotifications && (element.alertId == this._state.data[0].alertId)){
@@ -866,7 +916,8 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
                  }
         });
 
-        if(this._state && this._state.fromAlertsNotifications){
+        if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAlerts))
+        {
           logbookData = newLogbookData;
           logbookData.forEach(element => {
           // this.selectedTrip.select(element);
@@ -875,9 +926,10 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
           });
           this.showMap = true;
         }
-        this.initData = logbookData;
+        this.initData = logBookResult;
         this.setTableInfo();
         this.updateDataSource(this.initData);
+
       }, (error)=>{
           this.hideloader();
           this.initData = [];
@@ -887,6 +939,11 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
       });
 
   }
+
+  getLast24Date(todayDate){
+    let yesterdayDate = new Date(todayDate.getTime() - (24 * 60 * 60 * 1000));
+    return yesterdayDate;
+    }
 
   checkBoxSelectionForAlertNotification() {
     this.dataSource.data.forEach(element => {
@@ -1034,6 +1091,19 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
     this.selectionTimeRange('today');
   }
 
+
+  removeDuplicates(originalArray, prop) {
+    var newArray = [];
+    var lookupObject  = {};
+    for(var i in originalArray) {
+       lookupObject[originalArray[i][prop]] = originalArray[i];
+    }
+    for(i in lookupObject) {
+        newArray.push(lookupObject[i]);
+    }
+     return newArray;
+  }
+
   resetLogFormControlValue(){
     if(!this.internalSelection && this.globalSearchFilterData.modifiedFrom !== ""){
       if(this._state){
@@ -1068,55 +1138,41 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
        }
      }
 
-    if(this.showBack && this.selectionTab == 'today'){
-    if(this._state.fromDashboard == true && this._state.logisticFlag == true){
-      this.logBookForm.get('alertCategory').setValue("L");
-    }
-    if(this._state.fromDashboard == true && this._state.fuelFlag == true){
-      this.logBookForm.get('alertCategory').setValue("F");
-    }
-    if(this._state.fromDashboard == true && this._state.repairFlag == true){
-      this.logBookForm.get('alertCategory').setValue("R");
-    }
-  }
+  //   if(this.showBack && this.selectionTab == 'today'){
+  //   if(this._state.fromDashboard == true && this._state.logisticFlag == true){
+  //     this.logBookForm.get('alertCategory').setValue("L");
+  //   }
+  //   if(this._state.fromDashboard == true && this._state.fuelFlag == true){
+  //     this.logBookForm.get('alertCategory').setValue("F");
+  //   }
+  //   if(this._state.fromDashboard == true && this._state.repairFlag == true){
+  //     this.logBookForm.get('alertCategory').setValue("R");
+  //   }
+  // }
       //for alerts & notification individual alert click
-    if(this.fromAlertsNotifications == true && this._state.data.length > 0){
-      this.selectionTab = '';
-      // let sdate = this._state.data[0].date + ' ' + '00:00:00 AM';
-      // let startDate = new Date( sdate +' UTC');
-      // startDate.toString();
-      // let newDate = new Date(this._state.data[0].date + 'UTC');
-      // newDate.toString();
-      this.startDateValue = this.setStartEndDateTime(new Date(this._state.data[0].alertGeneratedTime), this.selectedStartTime, 'start');
-      this.endDateValue = this.setStartEndDateTime(new Date(this._state.data[0].alertGeneratedTime), this.selectedEndTime, 'end');
-      this.logBookForm.get('alertLevel').setValue(this._state.data[0].urgencyLevel);
-      this.logBookForm.get('alertType').setValue(this._state.data[0].alertType);
-      this.logBookForm.get('alertCategory').setValue(this._state.data[0].alertCategory);
-      if(this._state.data[0].vehicleGroupId != 0){
-      this.logBookForm.get('vehicleGroup').setValue(this._state.data[0].vehicleGroupId);
-      }
-      else{
-        this.logBookForm.get('vehicleGroup').setValue('all');
-      }
-      this.onVehicleGroupChange(this._state.data[0].vehicleGroupId);
-      this.fromAlertsNotifications = false;
-    }
+    // if(this._state && this._state.fromAlertsNotifications == true && this._state.data.length > 0){
+    //   this.selectionTab = '';
+    //   this.startDateValue = this.setStartEndDateTime(new Date(this._state.data[0].alertGeneratedTime), this.selectedStartTime, 'start');
+    //   this.endDateValue = this.setStartEndDateTime(new Date(this._state.data[0].alertGeneratedTime), this.selectedEndTime, 'end');
+    //   this.logBookForm.get('alertLevel').setValue(this._state.data[0].urgencyLevel);
+    //   this.logBookForm.get('alertType').setValue(this._state.data[0].alertType);
+    //   this.logBookForm.get('alertCategory').setValue(this._state.data[0].alertCategory);
+    //   if(this._state.data[0].vehicleGroupId != 0){
+    //   this.logBookForm.get('vehicleGroup').setValue(this._state.data[0].vehicleGroupId);
+    //   }
+    //   else{
+    //     this.logBookForm.get('vehicleGroup').setValue('all');
+    //   }
+    //   this.onVehicleGroupChange(this._state.data[0].vehicleGroupId);
+    //   this.fromAlertsNotifications = false;
+    // }
 
-    if(this.fromMoreAlertsFlag == true){
-      this.selectionTab = '';
-      // let startDate = Util.convertUtcToDateAndTimeFormat(this._state.data.startDate, this.prefTimeZone,this.dateFormats.display.dateInput);
-      // let sDate = startDate[0]+ ' ' + '00:00:00 AM';
-      // let moreStartDate = new Date( sDate +' UTC');
-      // moreStartDate.toString();
-      // let endDate = Util.convertUtcToDateAndTimeFormat(this._state.data.endDate, this.prefTimeZone,this.dateFormats.display.dateInput);
-      // let eDate = endDate[0]+ ' ' + '00:00:00 AM';
-      // let moreEndDate = new Date( eDate +' UTC');
-      // moreEndDate.toString();
-      this.startDateValue = this.setStartEndDateTime(new Date(this._state.data.startDate), this.selectedStartTime, 'start');
-      this.endDateValue = this.setStartEndDateTime(new Date(this._state.data.endDate), this.selectedEndTime, 'end');
-      // this.startDateValue = this.setStartEndDateTime(moreStartDate, this.selectedStartTime, 'start');
-      // this.endDateValue = this.setStartEndDateTime(moreEndDate, this.selectedEndTime, 'end');
-    }
+    // // if(this.fromMoreAlertsFlag == true){
+    //   if(this._state && this._state.fromMoreAlerts){
+    //   this.selectionTab = '';
+    //   this.startDateValue = this.setStartEndDateTime(new Date(this._state.data.startDate), this.selectedStartTime, 'start');
+    //   this.endDateValue = this.setStartEndDateTime(new Date(this._state.data.endDate), this.selectedEndTime, 'end');
+    // }
 
   }
 
@@ -1144,23 +1200,29 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
 
     }
     else{
-      let vehicle_group_selected:any = parseInt(value);
-      this.vehicleGrpDD.forEach(element => {
-        console.log("vhicleGrpDD2", this.vehicleGrpDD);
 
-       let vehicle= this.wholeLogBookData.associatedVehicleRequest.filter(item => item.vehicleId == element.vehicleId && item.vehicleGroupDetails.includes(vehicle_group_selected+"~"));
-      //  let vehicle= element.filter(item => item.vehicleId == value);
-       if(vehicle.length > 0){
-        this.vehicleDD.push(vehicle[0]);
-        console.log("vehicleDD 3", this.vehicleDD);
-
+        let vehicle_group_selected: any = parseInt(value);
+        if(this._state && this._state.fromAlertsNotifications){
+          let vehicle = this.wholeLogBookData.associatedVehicleRequest.filter(item => item.vin == this._state.data[0].vin && item.vehicleGroupDetails.includes(vehicle_group_selected + "~"));
+            if(vehicle && vehicle.length > 0){
+              this.logBookForm.get('vehicle').setValue(vehicle[0].vin);
+            }
         }
-      });
-      this.vehicleDD = this.getUnique(this.vehicleDD, "vehicleName");
-      console.log("vehicleDD 4", this.vehicleDD);
-      this.vehicleDD.sort(this.compareVehName);
-      this.resetVehicleNamesFilter();
+        this.vehicleGrpDD.forEach(element => {
+          console.log("vhicleGrpDD2", this.vehicleGrpDD);
 
+          let vehicle = this.wholeLogBookData.associatedVehicleRequest.filter(item => item.vehicleId == element.vehicleId && item.vehicleGroupDetails.includes(vehicle_group_selected + "~"));
+          //  let vehicle= element.filter(item => item.vehicleId == value);
+          if (vehicle.length > 0) {
+            this.vehicleDD.push(vehicle[0]);
+            console.log("vehicleDD 3", this.vehicleDD);
+          }
+        });
+        this.vehicleDD = this.getUnique(this.vehicleDD, "vehicleName");
+        console.log("vehicleDD 4", this.vehicleDD);
+        this.vehicleDD.sort(this.compareVehName);
+        this.resetVehicleNamesFilter();
+      
     }
   }
 
@@ -1461,7 +1523,9 @@ let prepare = []
     }
     this.startDateValue = this.setStartEndDateTime(this.startDateValue, this.selectedStartTime, 'start');
     this.resetLogFormControlValue(); // extra addded as per discuss with Atul
+    
     this.filterDateData(); // extra addded as per discuss with Atul
+ 
   }
 
   endTimeChanged(selectedTime: any) {
@@ -1475,7 +1539,9 @@ let prepare = []
     }
     this.endDateValue = this.setStartEndDateTime(this.endDateValue, this.selectedEndTime, 'end');
     this.resetLogFormControlValue(); // extra addded as per discuss with Atul
+    
     this.filterDateData(); // extra addded as per discuss with Atul
+
   }
 
   getTodayDate(){
@@ -1500,13 +1566,13 @@ let prepare = []
 
   getLastMonthDate(){
     var date = Util.getUTCDate(this.prefTimeZone);
-    date.setMonth(date.getMonth()-1);
+    date.setDate(date.getDate()-30);
     return date;
   }
 
   getLast3MonthDate(){
     var date = Util.getUTCDate(this.prefTimeZone);
-    date.setMonth(date.getMonth()-3);
+    date.setDate(date.getDate()-90);
     date.setHours(0);
     date.setMinutes(0);
     date.setSeconds(0);
@@ -1519,8 +1585,23 @@ let prepare = []
       case 'today': {
         this.selectionTab = 'today';
         this.setDefaultStartEndTime();
+        if(this._state && this._state.fromDashboard){ //start date & end date should select from last 24 hours for dashboard
+          this.endDateValue = Util.getUTCDate(this.prefTimeZone); //todaydate
+          this.startDateValue = this.getLast24Date(this.endDateValue); //last24 date 
+          // this.selectedStartTime  = Util.convertUtcToDateAndTimeFormat(this.startDateValue , this.prefTimeZone);
+          let startTime  = Util.convertUtcToDateAndTimeFormat(this.startDateValue , this.prefTimeZone);
+          this.selectedStartTime = startTime[1];
+          let endTime = Util.convertUtcToDateAndTimeFormat(this.endDateValue , this.prefTimeZone);
+          this.selectedEndTime = endTime[1];
+          this.startTimeDisplay = (this.prefTimeFormat == 24) ? `${this.selectedEndTime}:00` : this.selectedEndTime;
+          this.endTimeDisplay = (this.prefTimeFormat == 24) ? `${this.selectedEndTime}:00` : this.selectedEndTime;
+
+        }
+        else{
         this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
         this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
+        }
+        
         break;
       }
       case 'yesterday': {
@@ -1553,7 +1634,9 @@ let prepare = []
       }
     }
     this.resetLogFormControlValue(); // extra addded as per discuss with Atul
-    this.filterDateData(); // extra addded as per discuss with Atul
+    //commenting below line as this method is called in loadWholeTripData().
+    //this.filterDateData(); // extra addded as per discuss with Atul
+  
   }
 
   changeStartDateEvent(event: MatDatepickerInputEvent<any>){
@@ -1563,9 +1646,9 @@ let prepare = []
       if(event.value._d.getTime() <= this.endDateValue.getTime()){ // CurTime < endDateValue
         dateTime = event.value._d;
       }else{
-        dateTime = this.endDateValue; 
+        dateTime = this.endDateValue;
       }
-    }else{ 
+    }else{
       dateTime = this.last3MonthDate;
     }
     this.startDateValue = this.setStartEndDateTime(dateTime, this.selectedStartTime, 'start');
@@ -1580,9 +1663,9 @@ let prepare = []
       if(event.value._d.getTime() >= this.startDateValue.getTime()){ // EndTime < startDateValue
         dateTime = event.value._d;
       }else{
-        dateTime = this.startDateValue; 
+        dateTime = this.startDateValue;
       }
-    }else{ 
+    }else{
       dateTime = this.todayDate;
     }
     this.endDateValue = this.setStartEndDateTime(dateTime, this.selectedEndTime, 'end');
@@ -1649,7 +1732,8 @@ let prepare = []
         distinctVIN = filterVIN.filter((value, index, self) => self.indexOf(value) === index);
         if(distinctVIN.length > 0){
           distinctVIN.forEach(element => {
-            let _item = this.wholeLogBookData?.associatedVehicleRequest?.filter(i => i.vin === element && i.groupType != 'S');
+            // let _item = this.wholeLogBookData?.associatedVehicleRequest?.filter(i => i.vin === element && i.groupType != 'S');
+            let _item = this.wholeLogBookData?.associatedVehicleRequest?.filter(i => i.vin === element);
             if(_item.length > 0){
               this.vehicleListData.push(_item[0]); //-- unique VIN data added
               _item.forEach(element => {
@@ -1659,7 +1743,8 @@ let prepare = []
           });
         }
       }else{
-        if(this.fromAlertsNotifications == false && this.fromMoreAlertsFlag == false){
+        // if(this.fromAlertsNotifications == false && this.fromMoreAlertsFlag == false){
+          if(this._state && this._state.fromAlertsNotifications == false && this._state.fromMoreAlerts == false){
         this.resetFilterValues();}
       }
     }
@@ -1692,10 +1777,14 @@ let prepare = []
      let vehicleData = this.vehicleListData.slice();
         this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
         console.log("vehicleDD 5", this.vehicleDD);
+        this.resetVehicleNamesFilter();
         if(this.vehicleDD.length > 0){
       this.resetLogFormControlValue();
      }
      this.setVehicleGroupAndVehiclePreSelection();
+  //    if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAlertsFlag || this._state.fromDashboard == true)){
+  //     this.onSearch();
+  //  }
     //  if(this.showBack){
     //    this.onSearch();
     //  }

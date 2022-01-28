@@ -18,6 +18,7 @@ import { Util } from 'src/app/shared/util';
 })
 export class RelationshipManagementComponent implements OnInit {
   dataSource: any;
+  userLevel: any = 40;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
@@ -51,7 +52,7 @@ export class RelationshipManagementComponent implements OnInit {
     // console.log("---initial value of viewRelationshipFromOrg",this.viewRelationshipFromOrg)
     // console.log(history.state);
     this.viewRelationshipFromOrg = history.state.viewRelationshipFromOrg;
-
+    this.userLevel = parseInt(localStorage.getItem('userLevel'));
     if(this.viewRelationshipFromOrg){
       let relationShipId = history.state.rowData.relationShipId;
       let newData = {};
@@ -124,10 +125,12 @@ export class RelationshipManagementComponent implements OnInit {
   }
 
   updateDataSource(tableData: any){
-    this.initData = this.getNewTagData(tableData);
-    this.initData.map(obj =>{   //temporary
-      obj.levelVal = obj.level === 10? 'PlatformAdmin': obj.level=== 20 ? 'GlobalAdmin': obj.level=== 30 ? 'OrgAdmin' :obj.level=== 40? 'Account' : '';
-    })
+    let filterData = tableData.filter(i => i.level >= this.userLevel); // get records >= loged In userlevel
+    this.initData = this.getNewTagData(filterData);
+    this.initData.map(obj =>{ 
+      obj.levelVal = obj.level === 10 ? 'PlatformAdmin' : obj.level === 20 ? 'GlobalAdmin' : obj.level === 30 ? 'OrgAdmin' : obj.level === 40 ? 'Account' : '';
+      obj.editDeleteStatus = (obj.level === 10 && obj.code.toUpperCase() === 'OWNER' || obj.code.toUpperCase() === 'OEM') ? false : true;
+    });
 
     setTimeout(()=>{
       this.dataSource = new MatTableDataSource(this.initData);

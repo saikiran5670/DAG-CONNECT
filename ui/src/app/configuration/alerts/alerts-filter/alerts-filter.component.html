@@ -47,7 +47,7 @@
                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
             <mat-label class='font-16-px line-height-24px'>{{ translationData.lblVehicle }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
-                <mat-select placeholder="{{translationData.lblSelectVehicle }}" (selectionChange)="filterChange('vehicleGroupName',$event)"  [(ngModel)]="alertVehicle">
+                <mat-select placeholder="{{translationData.lblSelectVehicle }}" (selectionChange)="filterChange('vehicleGroupName',$event, true)"  [(ngModel)]="alertVehicle">
 
                 <mat-option value=''>{{ translationData.lblAll || 'All'}}</mat-option>
                 <mat-option *ngFor="let vehList of filteredVehicles | async"  [value]="vehList.vehicleId">

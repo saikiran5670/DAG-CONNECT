@@ -14,6 +14,7 @@ import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dial
 import { ReportMapService } from '../../report/report-map.service';
 import { Util } from 'src/app/shared/util';
 import { ReplaySubject } from 'rxjs';
+import { OrganizationService } from '../../services/organization.service';
 
 @Component({
   selector: 'app-alerts',
@@ -26,6 +27,9 @@ export class AlertsComponent implements OnInit {
   grpTitleVisible : boolean = false;
   errorMsgVisible: boolean = false;
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
+  prefTimeFormat: any = 24;
+  prefTimeZone: any = 'dtimezone_Asia/Kolkata';
+  prefDateFormat: any = 'ddateformat_dd-mm-yyyy';
   highThresholdUnitType: any;
   displayMessage: any;
   createViewEditStatus: boolean = false;
@@ -68,7 +72,7 @@ export class AlertsComponent implements OnInit {
   alertCategoryTypeMasterData: any= [];
   alertCategoryTypeFilterData: any= [];
   associatedVehicleData: any= [];
-  generalPreferences: any;
+  //generalPreferences: any;
   dialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
   dialogVeh: MatDialogRef<UserDetailTableComponent>;
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -78,6 +82,7 @@ export class AlertsComponent implements OnInit {
   accountPrefObj: any;
   prefData: any;
   vehicleDisplayPreference: any= 'dvehicledisplay_VehicleIdentificationNumber';
+  finalVehicleGroupList: any = [];
 
   public filteredVehicles: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
@@ -89,12 +94,12 @@ export class AlertsComponent implements OnInit {
     private vehicleService: VehicleService,
     private alertService: AlertService,
     private dialogService: ConfirmDialogService,
-    private reportMapService: ReportMapService ) {
-      this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
-     }
+    private reportMapService: ReportMapService,
+    private organizationService: OrganizationService) { }
 
     ngOnInit() {
       this.localStLanguage = JSON.parse(localStorage.getItem("language"));
+      this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
       //this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
       if(localStorage.getItem('contextOrgId')){
         this.accountOrganizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
@@ -102,8 +107,8 @@ export class AlertsComponent implements OnInit {
       else{
         this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
       }
-      let accountPreference = JSON.parse(localStorage.getItem('accountInfo')).accountPreference;
-      this.unitId = accountPreference.unitId;
+      // let accountPreference = JSON.parse(localStorage.getItem('accountInfo')).accountPreference;
+      // this.unitId = accountPreference.unitId;
       this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
       this.accountRoleId = localStorage.getItem('accountRoleId') ? parseInt(localStorage.getItem('accountRoleId')) : 0;
       let translationObj = {
@@ -115,28 +120,60 @@ export class AlertsComponent implements OnInit {
         filter: "",
         menuId: 17 //-- for alerts
       }
+      this.showLoadingIndicator = true;
       this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
         this.processTranslation(data);
+        this.hideloader();
         // this.loadFiltersData();
         this.loadDataBasedOnPrivileges();
       });
-      this.translationService.getPreferences(this.localStLanguage).subscribe((res) => {
-        this.generalPreferences = res; this.getUnits();
-        this.prefData = res;
+      this.translationService.getPreferences(this.localStLanguage).subscribe((res: any) => {
+        if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
+          this.proceedStep(res, this.accountPrefObj.accountPreference);
+          //this.showLoadingIndicator = false;
+        }else{ //-- org pref
+          this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
+            this.proceedStep(res, orgPref);
+            //this.showLoadingIndicator = false;
+          }, (error) => { // failed org API
+            //this.showLoadingIndicator = false;
+            let pref: any = {};
+            this.proceedStep(res, pref);
+          });
+        }
+
       });
     }
 
-    getUnits() {
-      let unitObj = this.generalPreferences?.unit.filter(item => item.id == this.unitId);
-      if (unitObj && unitObj.length != 0) {
-        this.prefUnit = unitObj[0].value;
-        if (this.prefUnit == 'Imperial') {
-          this.prefUnitFormat = 'dunit_Imperial';
-        } else {
-          this.prefUnitFormat = 'dunit_Metric';
+    proceedStep(_prefData: any, preference: any){
+      //this.generalPreferences = _prefData; 
+      //this.getUnits();
+      this.prefData = _prefData;
+      let _search = _prefData?.timeformat.filter(i => i.id == preference.timeFormatId);
+      this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
+      this.prefTimeZone = _prefData?.timezone.filter(i => i.id == preference.timezoneId)[0].name;
+      this.prefDateFormat = _prefData?.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+      this.prefUnitFormat = _prefData?.unit.filter(i => i.id == preference.unitId)[0].name; 
+      let vehicleDisplayId = preference.vehicleDisplayId;
+      if(vehicleDisplayId) {
+        let vehicledisplay = _prefData?.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+        if(vehicledisplay.length != 0) {
+          this.vehicleDisplayPreference = vehicledisplay[0].name;
         }
-      }
+      } 
     }
+
+    // getUnits() {
+    //   let unitObj = this.generalPreferences?.unit.filter(item => item.id == this.unitId);
+    //   if (unitObj && unitObj.length != 0) {
+    //     this.prefUnit = unitObj[0].value;
+    //     if (this.prefUnit == 'Imperial') {
+    //       this.prefUnitFormat = 'dunit_Imperial';
+    //     } else {
+    //       this.prefUnitFormat = 'dunit_Metric';
+    //     }
+    //   }
+    // }
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
@@ -241,6 +278,7 @@ export class AlertsComponent implements OnInit {
 
       this.vehicleGroupListBasedOnPrivilege = this.removeDuplicates(this.vehicleGroupListBasedOnPrivilege, "vehicleGroupId");
       // this.vehicleList = this.vehicleGroupListBasedOnPrivilege;
+      this.finalVehicleGroupList = this.vehicleGroupListBasedOnPrivilege.filter(i => i.vehicleGroupId >= 0); // NaN removed
 
       this.vehicleByVehGroupList = this.getUniqueVINs([...this.associatedVehicleData, ...this.singleVehicle]);
       // this.resetVehiclesFilter();
@@ -363,7 +401,9 @@ export class AlertsComponent implements OnInit {
       roleId: 0,
       name: ""
     }
+    this.showLoadingIndicator = true;
     this.alertService.getAlertData(this.accountId, this.accountOrganizationId).subscribe((data) => {
+      this.hideloader();
       let initDataBasedOnPrivilege = data;
       // this.initData =data;
       initDataBasedOnPrivilege.forEach(item => {
@@ -383,7 +423,8 @@ export class AlertsComponent implements OnInit {
       });
       let typeVal = this.alertTypeList.filter(type => type.enum == item.type);
       typeVal.forEach(obj => {
-        item["type"]=obj.value;
+        item["keyType"] = obj.key; // add feature key
+        item["type"] = obj.value;
       });
 
       let alertUrgency=({
@@ -456,7 +497,7 @@ export class AlertsComponent implements OnInit {
       } else {//according to pref
         let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
         if(vehicleDisplayId) {
-          let vehicledisplay = this.prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+          let vehicledisplay = this.prefData?.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
           if(vehicledisplay.length != 0) {
             this.vehicleDisplayPreference = vehicledisplay[0].name;
           }
@@ -476,8 +517,8 @@ export class AlertsComponent implements OnInit {
      });
       this.updateDatasource(this.initData);
     }, (error) => {
-    })
-   this.hideloader();
+      this.hideloader();
+    });
  }
 
  getConvertedThresholdValues(originalThreshold,unitType){
@@ -797,8 +838,8 @@ export class AlertsComponent implements OnInit {
   }
 
   onVehicleGroupClick(data: any) {
-    const colsList = ['name','vin','licensePlateNumber'];
-    const colsName =[this.translationData.lblVehicleName, this.translationData.lblVIN, this.translationData.lblRegistrationNumber];
+    const colsList = ['name','vin','licensePlateNumber', 'status'];
+    const colsName =[this.translationData.lblVehicleName, this.translationData.lblVIN, this.translationData.lblRegistrationNumber, this.translationData.lblStatus];
     const tableTitle =`${data.vehicleGroupName} - ${this.translationData.lblVehicles}`;
    let objData = {
       groupId: data.vehicleGroupId,
@@ -808,9 +849,44 @@ export class AlertsComponent implements OnInit {
       // groupType: data.groupType,
       // functionEnum: data.functionEnum
     }
+    this.showLoadingIndicator = true;
     this.vehicleService.getVehiclesDetails(objData).subscribe((vehList: any) => {
-      this.callToCommonTable(vehList, colsList, colsName, tableTitle);
+      this.hideloader();
+      let _vehList: any = this.addSubscribrNonSubscribeStatus(vehList, data); // #22342
+      this.callToCommonTable(_vehList, colsList, colsName, tableTitle);
+    }, (error) => {
+      this.hideloader();
     });
+  }
+
+  addSubscribrNonSubscribeStatus(_vehList: any, rowData: any){
+    if(rowData && rowData.keyType && rowData.keyType != ''){
+      let featuresData: any = this.alertCategoryTypeFilterData.filter(i => i.featureKey == rowData.keyType);
+      if(featuresData.length == 1 && featuresData[0].subscriptionType == 'O'){ // org based - all subscribe
+        _vehList.forEach(element => {
+          element.status = "Subscribed";
+        });
+      }else{
+        if(featuresData.length > 0){
+          let _orgSub: any = featuresData.filter(i => i.subscriptionType == 'O'); // find org based subscription
+          if(_orgSub && _orgSub.length > 0){ // all vehicle subscribe
+            _vehList.forEach(element => {
+              element.status = "Subscribed";
+            });
+          }else{ // all vehicle subscribe
+            _vehList.forEach(_el => {
+              let _find: any = featuresData.filter(j => j.vehicleId == _el.id && j.subscriptionType == 'V');
+              if(_find && _find.length > 0){ // find 'V'
+                _el.status = "Subscribed";
+              }else{ // non-subscribe
+                _el.status = "Non-Subscribed";
+              }
+            });
+          }
+        }
+      }
+    }
+    return _vehList;
   }
 
   callToCommonTable(tableData: any, colsList: any, colsName: any, tableTitle: any){
@@ -820,8 +896,10 @@ export class AlertsComponent implements OnInit {
     dialogConfig.data = {
       tableData: tableData,
       colsList: colsList,
-      colsName:colsName,
-      tableTitle: tableTitle
+      colsName: colsName,
+      tableTitle: tableTitle,
+      translationData: this.translationData,
+      popupWidth: true
     }
     this.dialogVeh = this.dialog.open(UserDetailTableComponent, dialogConfig);
   }

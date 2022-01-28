@@ -42,7 +42,9 @@ export class DataTableComponent implements OnInit {
   ngOnInit(): void {
     this.updatedTableData(this.tableData);
   }
-
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+  }
   applyFilter(filterValue: string) {
     filterValue = filterValue.trim(); // Remove whitespace
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
@@ -222,10 +224,16 @@ export class DataTableComponent implements OnInit {
 
     }
 
-    if(columnName === "reportName" || columnName === "name" ||columnName === "vehicleGroupAndVehicleList"){
+    if(columnName === "reportName" || columnName === "name" ||columnName === "vehicleGroupAndVehicleList" ||columnName === "code" ||columnName === "name"){
       if (!(a instanceof Number)) a = a ?  a.replace(/[^\w\s]/gi, 'z').toString().toUpperCase() : '';
       if (!(b instanceof Number)) b = b ?  b.replace(/[^\w\s]/gi, 'z').toString().toUpperCase() : '';
 
+    }
+
+    if(columnName === "isExclusive"){
+      var cc = a;
+      var dd = b;
+      return (cc > dd ? -1 : 1) * (isAsc ? 1 : -1);
     }
 
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);

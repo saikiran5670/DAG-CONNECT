@@ -44,11 +44,11 @@
               <mat-label class='font-16-px line-height-24px'>{{ translationData.lblVehicleGroup}} <span class='mandatoryColor'>*</span>
               </mat-label>
               <mat-form-field class="full-width" appearance="outline">
-                <mat-select [disabled]="vehicleGroupIdsSet.length == 0" (selectionChange)="vehicleGroupSelection($event)"
+                <mat-select [disabled]="vehicleGroupList.length == 0" (selectionChange)="vehicleGroupSelection($event)"
                   placeholder="{{ translationData.lblSelectVehicleGroup}}"
                   formControlName="vehicleGroup" required>
-                  <mat-option *ngFor="let vehicleGroupData of vehicleGroupIdsSet" [value]="vehicleGroupData">
-                    {{ vehicleGroupData}}
+                  <mat-option *ngFor="let vehicleGroupData of newVehicleGrpList" [value]="vehicleGroupData.vehicleGroupId">
+                    {{ vehicleGroupData.vehicleGroupName}}
                   </mat-option>
                 </mat-select>
               </mat-form-field>

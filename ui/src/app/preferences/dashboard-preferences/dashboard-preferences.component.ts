@@ -367,8 +367,8 @@ export class DashboardPreferencesComponent implements OnInit {
     var h = Math.floor(d / 3600);
     var m = Math.floor(d % 3600 / 60);
     var s = Math.floor(d % 3600 % 60);
-    var hDisplay = h > 0 ? h + "," : "";
-    var mDisplay = m > 0 ? m + "," : "";
+    var hDisplay = h > 0 ? h + "," : ",";
+    var mDisplay = m > 0 ? m + "," : ",";
     var sDisplay = s > 0 ? s + "," : "";
     return hDisplay + mDisplay + sDisplay;
   }
@@ -541,7 +541,7 @@ export class DashboardPreferencesComponent implements OnInit {
     let unitObj = this.generalPreferences?.unit.filter(item => item.id == this.unitId);
     if (unitObj && unitObj.length != 0) {
       this.prefUnit = unitObj[0].value;
-      if (this.prefUnit == 'dunit_Imperial') {
+      if (this.prefUnit == 'Imperial') {
         this.prefUnitFormat = 'dunit_Imperial';
       } else {
         this.prefUnitFormat = 'dunit_Metric';

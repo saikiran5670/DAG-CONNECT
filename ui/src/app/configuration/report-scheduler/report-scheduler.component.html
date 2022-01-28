@@ -143,7 +143,7 @@
         
         <app-data-table *ngIf="!showLoadingIndicator" [tableData]="initData" [translationData]="translationData"
         [columnCodes]="columnCodes" [columnLabels]="columnLabels" [actionColumnElements]="actionColumnElements" [action2ColumnElements]="action2ColumnElements" [topRightElements]="topRightElements" [topLeftElements]="topLeftElements"
-        [viewStatusColumnElements]="viewStatusColumnElements" [nextScheduleRunDateColumnElements]="nextScheduleRunDateColumnElements" [showExport]="false" #gridComp>
+        [action2ColumnElements]="action2ColumnElements" [viewStatusColumnElements]="viewStatusColumnElements" [nextScheduleRunDateColumnElements]="nextScheduleRunDateColumnElements" [showExport]="false" #gridComp>
 
         <ng-template #topLeftElements let-gridData='rowData'>
           <div class='areaWidth' fxLayoutAlign="center center">
@@ -179,13 +179,25 @@
         </ng-template>
     
         <ng-template #viewStatusColumnElements let-gridData='rowData'>
-          <button [disabled]="adminAccessType.adminReadOnlyAccess" class='actionBtn' mat-flat-button (click)="onChangeReportSchedulerStatus(gridData)" matTooltip="{{ gridData.status == 'A' ? (translationData.lblClickToDeactivate || 'Click to Deactivate') : translationData.lblClickToActivate || 'Click to Activate' }}">
-            <mat-slide-toggle [disabled]="adminAccessType.adminReadOnlyAccess" color="primary" [checked]='gridData.status == "A" ? true : false' >
+          <button [disabled]="adminAccessType.adminReadOnlyAccess" class='actionBtn' mat-flat-button (click)="onChangeReportSchedulerStatus(gridData)" matTooltip="{{ gridData.status == 'Active' ? (translationData.lblClickToDeactivate || 'Click to Deactivate') : translationData.lblClickToActivate || 'Click to Activate' }}">
+            <mat-slide-toggle [disabled]="adminAccessType.adminReadOnlyAccess" color="primary" [checked]='gridData.status == "Active" ? true : false' >
           </mat-slide-toggle>&nbsp;
-          <span>{{ gridData.status == "A" ? (translationData.lblActive || 'Active') : translationData.lblSuspended || 'Suspended' }}</span>
+          <span>{{ gridData.status == "Active" ? (translationData.lblActive || 'Active') : translationData.lblSuspended || 'Suspended' }}</span>
           </button>
         </ng-template>
-     
+        
+        <ng-template #action2ColumnElements let-gridData='rowData' style="width:200px;">
+         <span class="text-truncate" *ngIf="gridData.scheduledReportVehicleRef.length == 1">{{  gridData.vehicleGroupAndVehicleList }} </span>  
+          <span class="text-truncate" style="max-width: 60px;" *ngIf="gridData.scheduledReportVehicleRef.length > 1 &&  associatedVehicle.length > 0">{{associatedVehicleGroup[0].vehicleGroupName}} </span>  
+
+          <div *ngIf="gridData.scheduledReportVehicleRef.length > 1">
+                <div [ngClass]="{'cursor-pointer': (associatedVehicle.length > 0)}" (click)="( associatedVehicle.length > 0) ? showVehiclePopup(associatedVehicle) : ''" >
+                <img src='assets/images/icons/vehicleStatus/Group.svg' style="width: 40px; height: 40px;" />
+                <span class='iconTxt'>{{ associatedVehicle.length }}</span>
+              </div>    
+          </div>
+        </ng-template>
+        
         <ng-template #actionColumnElements let-gridData='rowData'>
           <button class='actionBtn' mat-flat-button (click)="onViewReportScheduler(gridData, 'view')" matTooltip="{{ translationData.lblView || 'view' }}">
             <mat-icon>visibility</mat-icon>

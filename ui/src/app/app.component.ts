@@ -91,6 +91,7 @@ export class AppComponent {
   vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   startTimeDisplay: any = '00:00:00';
   selectedStartTime: any = '00:00';
+  isUserLogin: boolean = false;
   // notificationDetails: any= [];
   private pageTitles = {
     dashboard: 'lblDashboard',
@@ -972,7 +973,9 @@ export class AppComponent {
     this.languageId = JSON.parse(localStorage.getItem("language"));
     let _langCode = this.localStLanguage ? this.localStLanguage.code  :  "EN-GB";
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
+    this.isUserLogin = JSON.parse(localStorage.getItem('isUserLogin'));
 
+    if(this.isUserLogin){
       this.translationService.getPreferences(_langCode).subscribe((prefData: any) => {
         if(this.accountPrefObj && this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
           this.proceedStep(prefData, this.accountPrefObj.accountPreference);
@@ -997,7 +1000,7 @@ export class AppComponent {
         }  
 
       });
-
+    }
     //this.getOrgListData();
     if (this.router.url) {
       //this.isLogedIn = true;
@@ -1045,6 +1048,7 @@ export class AppComponent {
       this.prefDateFormat = prefData.dateformat[0].name;
       this.prefUnitFormat = prefData.unit[0].name;
     }
+    localStorage.setItem("unitFormat", this.prefUnitFormat);
     // this.selectionTimeRange('lastweek');
   }
 
@@ -1076,13 +1080,56 @@ export class AppComponent {
     if(menu.externalLink) {
       if(menu.url == "information") {
         let selectedLanguage = JSON.parse(localStorage.getItem("language"));
-        if(selectedLanguage.code == "nl-NL") {
-          menu.link = menu.link.replace('/en/','/nl-nl/');
-        }
-        if(selectedLanguage.code == "de-DE") {
-          menu.link = menu.link.replace('/en/','/de-de/');
+        // if(selectedLanguage.code == "nl-NL") { //dutch(netherland)
+        //   menu.link = menu.link.replace('/en/','/nl-nl/');
+        // }
+        // if(selectedLanguage.code == "de-DE") {
+        //   menu.link = menu.link.replace('/en/','/de-de/');
+        // }
+        switch(selectedLanguage.code){
+          case 'nl-NL': { //dutch(netherland)
+            menu.link = menu.link.replace('/en/','/nl-nl/');
+            break;
+          }
+          case 'de-DE': { 
+            menu.link = menu.link.replace('/en/','/de-de/');
+            break;
+          }
+          case 'cs-CZ': { //Czech
+            menu.link = menu.link.replace('/en/','/cs-cz/');
+            break;
+          }
+          case 'fr-FR': { //French 
+            menu.link = menu.link.replace('/en/','/fr-fr/');
+            break;
+          }
+          case 'es-ES': { //Spanish
+            menu.link = menu.link.replace('/en/','/es-es/');
+            break;
+          }
+          case 'hu-HU': { //Hungarian 
+            menu.link = menu.link.replace('/en/','/hu-hu/');
+            break;
+          }
+          case 'it-IT': { //Italian 
+            menu.link = menu.link.replace('/en/','/it-it/');
+            break;
+          }
+          case 'pt-PT': { //Portugese  
+            menu.link = menu.link.replace('/en/','/pt-pt/');
+            break;
+          }
+          case 'pl-PL': { //Polish
+            menu.link = menu.link.replace('/en/','/pl-pl/');
+            break;
+          }
+          case 'Tr-tr': { //Turkish  
+            menu.link = menu.link.replace('/en/','/tr-tr/');
+            break;
+          }
         }
       }
+     
       window.open(menu.link, '_blank');
     }
     if (this.menuCollapsed) {
@@ -1375,8 +1422,8 @@ export class AppComponent {
         this.alertDateFormat='MM/DD/YYYY';
         this.dateFormats.parse.dateInput = "MM/DD/YYYY";
       }
-      localStorage.setItem("dateFormat", this.dateFormats.display.dateInput);
     }
+    localStorage.setItem("dateFormat", this.dateFormats.display.dateInput);
   }
 
   getOfflineNotifications(){

@@ -18,6 +18,7 @@ import { LandmarkCategoryService } from '../../services/landmarkCategory.service
 //var jsPDF = require('jspdf');
 import * as moment from 'moment-timezone';
 import { Util } from '../../shared/util';
+import * as Highcharts from 'highcharts';
 import { MultiDataSet, Label, Color, SingleDataSet} from 'ng2-charts';
 import html2canvas from 'html2canvas';
 import { ChartOptions, ChartType, ChartDataSets } from 'chart.js';
@@ -74,7 +75,8 @@ export class FleetUtilisationComponent implements OnInit, OnDestroy {
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
-
+  public chartOptions1: any;
+  public chartOptions: any;
   tripData: any = [];
   vehicleDD: any = [];
   singleVehicle: any = [];
@@ -112,6 +114,7 @@ export class FleetUtilisationComponent implements OnInit, OnDestroy {
   distanceChartType : boolean = false;
   fleetUtilReportId: any = 5;
   chartLabelDateFormat:any ='MM/DD/YYYY';
+  highchartDateFormat:any ='%d-%m-%Y';
   showField: any = {
     vehicleName: true,
     vin: true,
@@ -469,7 +472,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
   idleDurationSumConverted: any;
   filterValue: string;
   _state: any;
-
+  highcharts = Highcharts;  
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private router: Router, private organizationService: OrganizationService, private datePipe: DatePipe, private dataInterchangeService: DataInterchangeService) {
     // this.defaultTranslation();
     this.dataInterchangeService.prefSource$.subscribe((prefResp: any) => {
@@ -1107,7 +1110,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     }
     // this.idleDurationCount()
     this.calendarOptions.initialDate = this.startDateValue;
-    this.calendarOptions.validRange = { start: `${new Date(this.startDateValue).getFullYear()}-${(new Date(this.startDateValue).getMonth() + 1).toString().padStart(2, '0')}-${new Date(this.startDateValue).getDate().toString().padStart(2, '0')}`, end :  `${new Date(this.endDateValue).getFullYear()}-${(new Date(this.endDateValue).getMonth() + 1).toString().padStart(2, '0')}-${new Date(this.endDateValue).getDate().toString().padStart(2, '0')}`};
+    this.calendarOptions.validRange = { start: `${new Date(this.startDateValue).getFullYear()}-${(new Date(this.startDateValue).getMonth() + 1).toString().padStart(2, '0')}-${new Date(this.startDateValue).getDate().toString().padStart(2, '0')}`, end :  `${new Date(this.endDateValue).getFullYear()}-${(new Date(this.endDateValue).getMonth() + 1).toString().padStart(2, '0')}-${(new Date(this.endDateValue).getDate() + 1).toString().padStart(2, '0')}`};
   }
 
   resetChartData(){
@@ -1182,14 +1185,15 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     this.calendarValue = [];
     chartData.forEach(e => {
       var date = this.reportMapService.getStartTime(e.calenderDate, this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, false); // new Date(e.calenderDate);
-      var resultDate =  this.datePipe.transform(e.calenderDate,'MM/dd/yyyy');
+      // var resultDate =  this.datePipe.transform(e.calenderDate,'MM/dd/yyyy');
+      var resultDate =  e.calenderDate;
       this.chartsLabelsdefined.push(resultDate);
 
       // this.barVarticleData.push(this.reportMapService.convertDistanceUnits(e.averagedistanceperday, this.prefUnitFormat));
       let averagedistanceperday = (this.reportMapService.convertDistanceUnits(e.averagedistance, this.prefUnitFormat));
-      this.barVarticleData.push({ x:resultDate , y: averagedistanceperday});
+      this.barVarticleData.push({ x:resultDate ,y: Number(averagedistanceperday)});
       let avgDistBarData = ((this.reportMapService.convertDistanceUnits(e.averagedistance, this.prefUnitFormat))/e.vehiclecount);
-      this.averageDistanceBarData.push({ x:resultDate , y: avgDistBarData.toFixed(2) });
+      this.averageDistanceBarData.push({ x:resultDate , y: Number(avgDistBarData.toFixed(2)) });
 
       this.lineChartVehicleCount.push({ x:resultDate , y: e.vehiclecount });
       this.calendarSelectedValues(e);
@@ -1219,80 +1223,207 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
   }
 
   assignChartData(){
-    this.VehicleBarChartOptions.scales.xAxes[0].time.displayFormats.day = this.chartLabelDateFormat;
-    this.VehicleBarChartOptions.scales.xAxes[0].time.tooltipFormat =  this.chartLabelDateFormat;
-    this.VehicleBarChartOptions.scales.yAxes[0].scaleLabel.labelString = `${this.translationData.lblvalue || 'value'}(${this.translationData.lblnumberofvehicles || 'number of vehicles'})`;
-    this.VehicleBarChartOptions.scales.xAxes[0].scaleLabel.labelString = this.translationData.lblDates || 'Dates';
-    // let startDate =this.startDateValue;
-    // let endDate = this.endDateValue;
-    // this.chartsLabelsdefined=[ startDate, endDate ]
+    // this.VehicleBarChartOptions.scales.xAxes[0].time.displayFormats.day = this.chartLabelDateFormat;
+    // this.VehicleBarChartOptions.scales.xAxes[0].time.tooltipFormat =  this.chartLabelDateFormat;
+    // this.VehicleBarChartOptions.scales.yAxes[0].scaleLabel.labelString = `${this.translationData.lblvalue || 'value'}(${this.translationData.lblnumberofvehicles || 'number of vehicles'})`;
+    // this.VehicleBarChartOptions.scales.xAxes[0].scaleLabel.labelString = this.translationData.lblDates || 'Dates';
+    // // let startDate =this.startDateValue;
+    // // let endDate = this.endDateValue;
+    // // this.chartsLabelsdefined=[ startDate, endDate ]
 
-    this.lineChartLabels = this.chartsLabelsdefined;
-    this.barChartLabels= this.chartsLabelsdefined;
-    this.barChartData = [
-      {
-        label: (this.prefUnitFormat == 'dunit_Metric') ? `${this.translationData.lblAveragedistancepervehicle || 'Average distance per vehicle'} (${this.translationData.lblkmperday || 'km/day'})` : `${this.translationData.lblAveragedistancepervehicle || 'Average distance per vehicle'} (${this.translationData.lblmilesperday || 'miles/day'})`,
-        type: 'bar',
-        backgroundColor: '#7BC5EC',
-        hoverBackgroundColor: '#7BC5EC',
-        yAxesID: "y-axis-1",
-        data: this.averageDistanceBarData,
-        },
-        {
-          label:  this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm || 'km'})` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles ||'miles'})`,
-          type: 'bar',
-          backgroundColor: '#4679CC',
-          hoverBackgroundColor: '#4679CC',
-          yAxesID: "y-axis-1",
-          data: this.barVarticleData
-        },
-    ];
-    this.barChartOptions.scales.yAxes[1].scaleLabel.labelString = this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblkmperday || 'km/day' })` : `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblmilesperday || 'miles/day'})`;
-    this.barChartOptions.scales.yAxes[0].scaleLabel.labelString =  this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm || 'km'})` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles ||'miles'})`;
-    this.barChartOptions.scales.xAxes[0].time.displayFormats.day = this.chartLabelDateFormat;
-    this.barChartOptions.scales.xAxes[0].time.tooltipFormat =  this.chartLabelDateFormat;
-    this.barChartOptions.scales.xAxes[0].scaleLabel.labelString = this.translationData.lblDates || 'Dates'
+    // this.lineChartLabels = this.chartsLabelsdefined;
+    // this.barChartLabels= this.chartsLabelsdefined;
+    // this.barChartData = [
+    //   {
+    //     label: (this.prefUnitFormat == 'dunit_Metric') ? `${this.translationData.lblAveragedistancepervehicle || 'Average distance per vehicle'} (${this.translationData.lblkmperday || 'km/day'})` : `${this.translationData.lblAveragedistancepervehicle || 'Average distance per vehicle'} (${this.translationData.lblmilesperday || 'miles/day'})`,
+    //     type: 'bar',
+    //     backgroundColor: '#7BC5EC',
+    //     hoverBackgroundColor: '#7BC5EC',
+    //     yAxesID: "y-axis-1",
+    //     data: this.averageDistanceBarData,
+    //     },
+    //     {
+    //       label:  this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm || 'km'})` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles ||'miles'})`,
+    //       type: 'bar',
+    //       backgroundColor: '#4679CC',
+    //       hoverBackgroundColor: '#4679CC',
+    //       yAxesID: "y-axis-1",
+    //       data: this.barVarticleData
+    //     },
+    // ];
+    // this.barChartOptions.scales.yAxes[1].scaleLabel.labelString = this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblkmperday || 'km/day' })` : `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblmilesperday || 'miles/day'})`;
+    // this.barChartOptions.scales.yAxes[0].scaleLabel.labelString =  this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm || 'km'})` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles ||'miles'})`;
+    // this.barChartOptions.scales.xAxes[0].time.displayFormats.day = this.chartLabelDateFormat;
+    // this.barChartOptions.scales.xAxes[0].time.tooltipFormat =  this.chartLabelDateFormat;
+    // this.barChartOptions.scales.xAxes[0].scaleLabel.labelString = this.translationData.lblDates || 'Dates'
 
-    this.distanceLineChartData = [
-      {
-        data: this.averageDistanceBarData,
-        yAxesID: "y-axis-1",
-        label: this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblAveragedistancepervehicle || 'Average distance per vehicle'}(${this.translationData.lblkmperday || 'km/day' })` : `${this.translationData.lblAveragedistancepervehicle || 'Average distance per vehicle'}(${this.translationData.lblmilesperday || 'miles/day'})`
+    // this.distanceLineChartData = [
+    //   {
+    //     data: this.averageDistanceBarData,
+    //     yAxesID: "y-axis-1",
+    //     label: this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblAveragedistancepervehicle || 'Average distance per vehicle'}(${this.translationData.lblkmperday || 'km/day' })` : `${this.translationData.lblAveragedistancepervehicle || 'Average distance per vehicle'}(${this.translationData.lblmilesperday || 'miles/day'})`
+    //   },
+    //   {
+    //     data: this.barVarticleData,
+    //     yAxesID: "y-axis-2",
+    //     label:  this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm || 'km'})` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles ||'miles'})`,
+
+
+    //   },
+    // ];
+    // this.distanceLineChartOptions.scales.yAxes[1].scaleLabel.labelString = this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblkmperday || 'km/day' })` : `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblmilesperday || 'miles/day'})`;
+    // this.distanceLineChartOptions.scales.yAxes[0].scaleLabel.labelString =  this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm || 'km'})` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles ||'miles'})`;
+    // this.distanceLineChartOptions.scales.xAxes[0].time.displayFormats.day = this.chartLabelDateFormat;
+    // this.distanceLineChartOptions.scales.xAxes[0].time.tooltipFormat =  this.chartLabelDateFormat;
+    // this.distanceLineChartOptions.scales.xAxes[0].scaleLabel.labelString = this.translationData.lblDates || 'Dates';
+
+    // this.lineChartData = [
+    //   { data: this.lineChartVehicleCount, label: this.translationData.lblnumberofvehicles || 'Number of Vehicles' },
+    // ];
+    // this.lineChartOptions.scales.xAxes[0].time.displayFormats.day = this.chartLabelDateFormat;
+    // this.lineChartOptions.scales.xAxes[0].time.tooltipFormat =  this.chartLabelDateFormat;
+    // this.lineChartOptions.scales.yAxes[0].scaleLabel.labelString = `${this.translationData.lblvalue || 'value'}(${this.translationData.lblnumberofvehicles || 'number of vehicles'})`;
+    // this.lineChartOptions.scales.xAxes[0].scaleLabel.labelString = this.translationData.lblDates || 'Dates';
+    // this.VehicleBarChartData = [
+    //   {
+    //     label: this.translationData.lblnumberofvehicles || 'Number of Vehicles',
+    //     type: 'bar',
+    //     backgroundColor: '#7BC5EC',
+    //     hoverBackgroundColor: '#7BC5EC',
+    //     yAxesID: "y-axis-1",
+    //     data: this.lineChartVehicleCount,
+    //     },
+    // ];
+    // this.lineChartLabels = this.chartsLabelsdefined;
+    // this.barChartLabels= this.chartsLabelsdefined;
+    this.chartOptions = {   
+      rangeSelector: {
+        selected: 0
+      }, 
+      chart: {
+        type:this.activeVehicleChartType? 'line' : 'column',       
       },
+      title: {
+        text: ''
+      },
+      legend: {
+        symbolRadius: 0
+      },
+      tooltip: {
+        xDateFormat: this.highchartDateFormat,        
+        shared: true,
+      }, 
+      yAxis: {
+      min: 0,
+      max:  Math.max(...this.lineChartVehicleCount.map(o => o.y)),
+      step:1,
+      title: {
+        text: `${this.translationData.lblvalue || 'value'}(${this.translationData.lblnumberofvehicles || 'number of vehicles'})`
+      },
+      gridLineWidth: 1
+    },
+    xAxis : {
+      max :  Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone),
+      min :  Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone),
+      type : 'datetime',       
+      tickInterval:!this.distanceChartType && (this.endDateValue.toDateString() == this.startDateValue.toDateString())? 2 * 24 * 3600000 : 1 * 24 * 3600000 ,  
+      labels: {       
+        //step:this.selectionTab == 'last3month' ?  Math.ceil(this.averageDistanceBarData.length/12) : Math.ceil(this.averageDistanceBarData.length/5),
+        step:(this.selectionTab == 'last3month') ? ( this.averageDistanceBarData.length > 50 && this.averageDistanceBarData.length < 60  ? Math.ceil(this.averageDistanceBarData.length/10) : (this.averageDistanceBarData.length > 60 && this.averageDistanceBarData.length < 99  ? Math.ceil(this.averageDistanceBarData.length/12):(this.averageDistanceBarData.length > 99 ? Math.ceil(this.averageDistanceBarData.length/24): (this.averageDistanceBarData.length > 20 && this.averageDistanceBarData.length < 50 ? Math.ceil(this.averageDistanceBarData.length/6): Math.ceil(this.averageDistanceBarData.length/2))))) : Math.ceil(this.averageDistanceBarData.length/5),
+        rotation: (this.selectionTab == 'last3month' || this.selectionTab == 'lastmonth') ? -45 :  0 ,
+        },
+        dateTimeLabelFormats: {
+            day:this.highchartDateFormat  
+        },
+        title: {
+          text:this.translationData.lblDates || 'Dates'
+        }           
+      },
+      series: [
       {
+      name: this.translationData.lblnumberofvehicles || 'Number of Vehicles',
+      data: this.lineChartVehicleCount,         
+      }],   
+     }; 
+
+     this.chartOptions1 = {   
+        rangeSelector: {
+          selected: 0
+        }, 
+        chart: {
+          // type: "column",
+          type: this.distanceChartType? 'spline' : 'column',
+        },
+        title: {
+          text: ''
+        },      
+        legend: {
+          symbolRadius: 0,
+       },
+       credits: {
+        enabled: false
+    },
+        tooltip: {
+          xDateFormat: this.highchartDateFormat,        
+          shared: true,
+        },
+        plotOptions: {
+         column: {      
+            pointWidth: (this.selectionTab == 'last3month' ?  2: (this.selectionTab == 'lastweek' ? 22:  ((this.selectionTab == 'yesterday' || this.selectionTab == 'today') ? 50: 4 ))),
+           // borderWidth: 0.5,
+          }             
+        },
+        yAxis: [{
+        min: 0,
+        //max:  Math.max(...this.averageDistanceBarData.map(o => o.y)),
+        title: {
+          text: this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm || 'km'})` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles ||'miles'})`
+        },      
+        opposite: true 
+        }, { //--- Secondary yAxis
+        min: 0,
+        max:  Math.max(...this.lineChartVehicleCount.map(o => o.y)),      
+        title: {
+          text: this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblkmperday || 'km/day' })` : `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblmilesperday || 'miles/day'})`
+        },
+        lineWidth:1,
+      }],
+      xAxis : {
+        // allowDecimals : false,
+        // endOnTick : false,
+        // ordinal : false,
+        // startOnTick : false,  
+        max :  Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone),
+        min :  Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone),          
+        type : 'datetime',       
+        tickInterval:!this.distanceChartType && (this.endDateValue.toDateString() == this.startDateValue.toDateString())? 2 * 24 * 3600000 : 1 * 24 * 3600000 ,   
+        labels: {       
+          step:(this.selectionTab == 'last3month') ? ( this.averageDistanceBarData.length > 50 && this.averageDistanceBarData.length < 60  ? Math.ceil(this.averageDistanceBarData.length/10) : (this.averageDistanceBarData.length > 60 && this.averageDistanceBarData.length < 99  ? Math.ceil(this.averageDistanceBarData.length/12):(this.averageDistanceBarData.length > 99 ? Math.ceil(this.averageDistanceBarData.length/24): (this.averageDistanceBarData.length > 20 && this.averageDistanceBarData.length < 50 ? Math.ceil(this.averageDistanceBarData.length/6): Math.ceil(this.averageDistanceBarData.length/2))))) : Math.ceil(this.averageDistanceBarData.length/5),
+          rotation: (this.selectionTab == 'last3month' || this.selectionTab == 'lastmonth') ? -45 :  0 ,
+          },
+          dateTimeLabelFormats: {
+              day:this.highchartDateFormat  
+          },
+          title: {
+            text:this.translationData.lblDates || 'Dates'
+          },
+        },
+        series: [
+        {
+        name:  this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblAveragedistancepervehicle || 'Average distance per vehicle'}(${this.translationData.lblkmperday || 'km/day' })` : `${this.translationData.lblAveragedistancepervehicle || 'Average distance per vehicle'}(${this.translationData.lblmilesperday || 'miles/day'})`,
+        data: this.averageDistanceBarData, 
+        yAxesID: "y-axis-1",
+        color: '#7BC5EC',   
+        }, 
+        {
+        name: this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm || 'km'})` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles ||'miles'})`,
         data: this.barVarticleData,
         yAxesID: "y-axis-2",
-        label:  this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm || 'km'})` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles ||'miles'})`,
-
-
-      },
-    ];
-    this.distanceLineChartOptions.scales.yAxes[1].scaleLabel.labelString = this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblkmperday || 'km/day' })` : `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblmilesperday || 'miles/day'})`;
-    this.distanceLineChartOptions.scales.yAxes[0].scaleLabel.labelString =  this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm || 'km'})` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles ||'miles'})`;
-    this.distanceLineChartOptions.scales.xAxes[0].time.displayFormats.day = this.chartLabelDateFormat;
-    this.distanceLineChartOptions.scales.xAxes[0].time.tooltipFormat =  this.chartLabelDateFormat;
-    this.distanceLineChartOptions.scales.xAxes[0].scaleLabel.labelString = this.translationData.lblDates || 'Dates';
-
-    this.lineChartData = [
-      { data: this.lineChartVehicleCount, label: this.translationData.lblnumberofvehicles || 'Number of Vehicles' },
-    ];
-    this.lineChartOptions.scales.xAxes[0].time.displayFormats.day = this.chartLabelDateFormat;
-    this.lineChartOptions.scales.xAxes[0].time.tooltipFormat =  this.chartLabelDateFormat;
-    this.lineChartOptions.scales.yAxes[0].scaleLabel.labelString = `${this.translationData.lblvalue || 'value'}(${this.translationData.lblnumberofvehicles || 'number of vehicles'})`;
-    this.lineChartOptions.scales.xAxes[0].scaleLabel.labelString = this.translationData.lblDates || 'Dates';
-    this.VehicleBarChartData = [
-      {
-        label: this.translationData.lblnumberofvehicles || 'Number of Vehicles',
-        type: 'bar',
-        backgroundColor: '#7BC5EC',
-        hoverBackgroundColor: '#7BC5EC',
-        yAxesID: "y-axis-1",
-        data: this.lineChartVehicleCount,
-        },
-    ];
-    this.lineChartLabels = this.chartsLabelsdefined;
-    this.barChartLabels= this.chartsLabelsdefined;
-  }
+        color: '#4679CC',       
+         }],   
+       };
+      // console.log('1:',this.chartOptions1,'2:',this.chartOptions1)        
+      }
 
   calendarSelectedValues(element: any){
       switch(this.calendarpreferenceOption){
@@ -1613,30 +1744,35 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
         this.dateFormats.display.dateInput = "DD/MM/YYYY";
         this.chartLabelDateFormat='DD/MM/YYYY';
         this.dateFormats.parse.dateInput = "DD/MM/YYYY";
+        this.highchartDateFormat ='%d/%m/%Y';
         break;
       }
       case 'ddateformat_mm/dd/yyyy': {
         this.dateFormats.display.dateInput = "MM/DD/YYYY";
         this.chartLabelDateFormat='MM/DD/YYYY';
         this.dateFormats.parse.dateInput = "MM/DD/YYYY";
+        this.highchartDateFormat ='%m/%d/%Y';
         break;
       }
       case 'ddateformat_dd-mm-yyyy': {
         this.dateFormats.display.dateInput = "DD-MM-YYYY";
         this.chartLabelDateFormat='DD-MM-YYYY';
         this.dateFormats.parse.dateInput = "DD-MM-YYYY";
+        this.highchartDateFormat ='%d-%m-%Y';
         break;
       }
       case 'ddateformat_mm-dd-yyyy': {
         this.dateFormats.display.dateInput = "MM-DD-YYYY";
         this.chartLabelDateFormat='MM-DD-YYYY';
         this.dateFormats.parse.dateInput = "MM-DD-YYYY";
+        this.highchartDateFormat ='%m-%d-%Y';
         break;
       }
       default:{
         this.dateFormats.display.dateInput = "MM/DD/YYYY";
         this.chartLabelDateFormat='MM/DD/YYYY';
         this.dateFormats.parse.dateInput = "MM/DD/YYYY";
+        this.highchartDateFormat ='%m/%d/%Y';
       }
     }
   }
@@ -1775,13 +1911,13 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
 
   getLastMonthDate(){
     var date = Util.getUTCDate(this.prefTimeZone);
-    date.setMonth(date.getMonth()-1);
+    date.setDate(date.getDate()-30);
     return date;
   }
 
   getLast3MonthDate(){
     var date = Util.getUTCDate(this.prefTimeZone);
-    date.setMonth(date.getMonth()-3);
+    date.setDate(date.getDate()-90);
     date.setHours(0);
     date.setMinutes(0);
     date.setSeconds(0);

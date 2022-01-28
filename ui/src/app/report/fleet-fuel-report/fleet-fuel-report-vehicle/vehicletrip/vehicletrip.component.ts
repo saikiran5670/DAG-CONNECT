@@ -882,7 +882,8 @@ tripTraceArray: any = [];
       value: "",
       filter: "",
       menuId: 9 //-- for fleet fuel report
-    }  
+    }
+    
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
       this.mapFilterForm.get('trackType').setValue('snail');
@@ -899,8 +900,8 @@ tripTraceArray: any = [];
       //       this.proceedStep(prefData, pref);
       //     });
       //   }
-        this.callToNext();
         this.loadfleetFuelDetails(this.vehicleDetails);
+        this.callToNext();
         if(this.vehicleDetails){
           this.onSearch();
          }
@@ -1540,7 +1541,7 @@ createEndMarker(){
         "endDateTime":_endTime,
         "viNs":  _vinData,
       }
-      this.loadfleetFuelDetails(this.vehicleDetails);
+      // this.loadfleetFuelDetails(this.vehicleDetails);
        this.setTableInfo();
       //  this.updateDataSource(this.FuelData);
       // this.hideloader();
@@ -2350,7 +2351,7 @@ setDefaultTodayDate(){
 getLast3MonthDate(){
     // let date = new Date();
     var date = Util.getUTCDate(this.prefTimeZone);
-    date.setMonth(date.getMonth()-3);
+    date.setDate(date.getDate()-90);
     return date;
   }
 
@@ -2618,7 +2619,7 @@ setVehicleGroupAndVehiclePreSelection() {
   getLastMonthDate(){
     // let date = new Date();
     var date = Util.getUTCDate(this.prefTimeZone);
-    date.setMonth(date.getMonth()-1);
+    date.setDate(date.getDate()-30);
     return date;
   }
 
@@ -2680,7 +2681,7 @@ setVehicleGroupAndVehiclePreSelection() {
     let unitValkg1 = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton ) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lbltons ) : (this.translationData.lbltons);
     //let unitValkmhr = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h(%)') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.translationData.lblkmh || 'km/h(%)') : (this.translationData.translationData.lblkmh || 'km/h(%)');
 
-    const header =  [this.translationData.lblVehicleName, this.translationData.lblVIN, this.translationData.lblPlateNo, this.translationData.lblReportStartTime, this.translationData.lblReportEndTime, this.translationData.lblAverageSpeed+'('+unitValkmh+')',this.translationData.lblMaxSpeed+'('+unitValkmh+')', this.translationData.lblDistance+'('+unitValkm+')',this.translationData.lblStartPosition, this.translationData.lblEndPosition,
+    const header =  [this.translationData.lblVehicleName, this.translationData.lblVIN, this.translationData.lblPlateNo, this.translationData.lblstartDate, this.translationData.lblendDate, this.translationData.lblAverageSpeed+'('+unitValkmh+')',this.translationData.lblMaxSpeed+'('+unitValkmh+')', this.translationData.lblDistance+'('+unitValkm+')',this.translationData.lblStartPosition, this.translationData.lblEndPosition,
     this.translationData.lblFuelConsumed+'('+unitValuekm+')', this.translationData.lblFuelConsumption+'('+unitVal100km+')',this.translationData.lblCO2Emission+'('+unitValkg1+')',  this.translationData.lblIdleDuration+'(%)',this.translationData.lblPTODuration+'(%)',this.translationData.lblCruiseControlDistance+ccdOne+'('+unitValkmh+')%',
     this.translationData.lblCruiseControlDistance+' '+ccdTwo+'('+unitValkmh+')%',this.translationData.lblCruiseControlDistance+' '+ccdThree+'('+unitValkmh+')%',this.translationData.lblHeavyThrottleDuration+'(%)',this.translationData.lblHarshBrakeDuration+'(%)', this.translationData.lblGrossWeightComb+' '+unitValkg1, this.translationData.lblAverageTrafficClassification,
     this.translationData.lblCCFuelConsumption+'('+unitVal100km+')',this.translationData.lblFuelconsumptionCCnonactive+'('+unitVal100km+')',this.translationData.lblIdlingConsumption,this.translationData.lblDPAScore,this.translationData.lblIdlingwithPTO+'(hh:mm:ss)',this.translationData.lblIdlingwithPTO+'(%)',this.translationData.lblIdlingwithoutPTO+' (hh:mm:ss)',this.translationData.lblIdlingwithoutPTO+'(%)',this.translationData.lblFootBrake,this.translationData.lblCO2Emission+' '+this.translationData.lblgmpkm,this.translationData.lblidlingConsumptionValue+' ('+unitVal100km+')'];
@@ -3202,12 +3203,24 @@ setVehicleGroupAndVehiclePreSelection() {
       // });
     }
     case 'fuelConsumption': { 
-      let s = this.displayData.forEach(element => {
-        if(element.convertedFuelConsumption !='Infinity'){
-          sum += parseFloat(element.convertedFuelConsumption);
+      // let s = this.displayData.forEach(element => {
+      //   if(element.convertedFuelConsumption !='Infinity'){
+      //     sum += parseFloat(element.convertedFuelConsumption);
+      //   }
+      // });
+      // sum= sum.toFixed(2)*1;
+      // break;
+      let fuelConsumed_data=0;
+      let distance_data=0; 
+      this.displayData.forEach(element => {      
+        if(element.fuelConsumed !='Infinity'){
+          fuelConsumed_data += parseFloat(element.fuelConsumed);
+          distance_data += parseFloat(element.distance);
         }
       });
-      sum= sum.toFixed(2)*1;
+      let convertedConsumption: any = this.reportMapService.getFuelConsumptionSummary(fuelConsumed_data, distance_data, this.prefUnitFormat);
+      let convertedFuelConsumption: any = this.prefUnitFormat=='dunit_Imperial' ?  this.reportMapService.getFuelConsumedUnits(convertedConsumption.toFixed(5)*1,this.prefUnitFormat,true) : convertedConsumption.toFixed(2)*1;
+      sum = convertedFuelConsumption;
       break;
     }
     case 'co2emission': { 

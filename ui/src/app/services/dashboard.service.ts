@@ -135,8 +135,11 @@ export class DashboardService {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .get<any[]>(
-        `${this.dashboardServiceUrl}/alert24hours`, headers
+      // .get<any[]>(
+      //   `${this.dashboardServiceUrl}/alert24hours`, headers
+      // )
+      .post<any[]>(
+        `${this.dashboardServiceUrl}/alert24hours`, data, headers
       )
       .pipe(catchError(this.handleError));
   }

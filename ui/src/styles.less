@@ -251,13 +251,17 @@ Refer : https://styleguide.daf.com/en/guidelines-for-developers/use-of-colors
 .loginPageContainer{
     // height: 610px;
     height: calc(100vh - 48px) !important;
-    width: 100%;
+    max-width: 100%;
     background-image: url(assets/images/DAF-login-background.jpg); 
         background-repeat: no-repeat; 
-        background-size: 100% 100%;
+        // background-size: 100% 100%;
+        background-size: cover;
+        // background: url(assets/images/DAF-login-background.jpg) no-repeat center fixed;
         //background-size:cover;
         background-position: fixed !important;
         background-attachment: fixed !important;
+        background-position-x: center;
+        background-position-y: center;
     .loginPageBg{
         
 
@@ -1287,7 +1291,7 @@ mat-cell:first-of-type, mat-header-cell:first-of-type, mat-footer-cell:first-of-
     border-radius: 50%;
     box-shadow: 0px 0px 2px 2px;
     animation: pulse-animation 2s infinite;
-   
+    pointer-events: none !important;
   }
 
   @keyframes pulse-animation {
