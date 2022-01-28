@@ -1000,6 +1000,9 @@ export class AppComponent {
         }  
 
       });
+      this.reportService.getHEREMapsInfo().subscribe((data: any) => {
+        localStorage.setItem("hereMapsK", data.apiKey);
+      });
     }
     //this.getOrgListData();
     if (this.router.url) {

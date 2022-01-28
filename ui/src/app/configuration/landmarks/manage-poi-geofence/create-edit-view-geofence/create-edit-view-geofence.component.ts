@@ -87,7 +87,8 @@ export class CreateEditViewGeofenceComponent implements OnInit {
 
   constructor(private _configService: ConfigService, private completerService: CompleterService, private hereService: HereService, private _formBuilder: FormBuilder, private geofenceService: GeofenceService) {
     this.query = "starbucks";
-    this.map_key = _configService.getSettings("hereMap").api_key;
+    // this.map_key = _configService.getSettings("hereMap").api_key;
+    this.map_key = localStorage.getItem("hereMapsK");
     this.platform = new H.service.Platform({
       "apikey": this.map_key
     });

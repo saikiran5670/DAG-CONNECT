@@ -85,7 +85,8 @@ export class CreateEditViewPoiComponent implements OnInit {
     // this.platform = new H.service.Platform({
     //   "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
     // });
-    this.map_key = _configService.getSettings("hereMap").api_key;
+    // this.map_key = _configService.getSettings("hereMap").api_key;
+      this.map_key = localStorage.getItem("hereMapsK");
       this.platform = new H.service.Platform({
         "apikey": this.map_key 
       });
