@@ -290,10 +290,10 @@ export class ManageCorridorComponent implements OnInit {
   openSnackBar(message: string, action: string) {
     let snackBarRef = this._snackBar.open(message, action, { duration: 2000 });
     snackBarRef.afterDismissed().subscribe(() => {
-      //console.log('The snackbar is dismissed');
+      ////console.log('The snackbar is dismissed');
     });
     snackBarRef.onAction().subscribe(() => {
-      //console.log('The snackbar action was triggered!');
+      ////console.log('The snackbar action was triggered!');
     });
   }
 
@@ -333,7 +333,7 @@ export class ManageCorridorComponent implements OnInit {
       this.mapFunctions.viewSelectedRoutes(this.markerArray,this.accountOrganizationId,this.translationData);
       this.showMap = true;
     }
-  //  console.log(this.markerArray);
+  //  //console.log(this.markerArray);
 
     //this.addPolylineToMap();
   }
@@ -354,8 +354,8 @@ export class ManageCorridorComponent implements OnInit {
 
   checkboxClicked(event: any, row: any) {
     this.showMap = this.selectedCorridors.selected.length > 0 ? true : false;
-    //console.log(this.selectedpois.selected.length)
-    //console.log(row);
+    ////console.log(this.selectedpois.selected.length)
+    ////console.log(row);
     this.mapFunctions.clearRoutesFromMap();
     if(event.checked){ //-- add new marker
       this.markerArray.push(row);
@@ -372,10 +372,10 @@ export class ManageCorridorComponent implements OnInit {
   }
 
   addPolylineToMap(){
-    console.log(this.markerArray);
+    //console.log(this.markerArray);
     var lineString = new H.geo.LineString();
     this.markerArray.forEach(element => {
-      console.log(element.startLat)
+      //console.log(element.startLat)
     lineString.pushPoint({lat : element.startLat, lng: element.startLong});
     lineString.pushPoint({lat : element.endLat, lng: element.endLong});
     // lineString.pushPoint({lat:48.8567, lng:2.3508});

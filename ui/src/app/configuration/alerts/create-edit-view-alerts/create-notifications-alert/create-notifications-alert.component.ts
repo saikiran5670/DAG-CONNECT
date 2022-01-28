@@ -145,8 +145,8 @@ export class CreateNotificationsAlertComponent implements OnInit, OnChanges {
   constructor(private _formBuilder: FormBuilder, private alertService: AlertService, private el: ElementRef) { }
 
   ngOnInit(): void {
-    console.log("action type=" + this.actionType);
-    console.log("critical" +this.criticalLevel);
+    //console.log("action type=" + this.actionType);
+    //console.log("critical" +this.criticalLevel);
     this.getTransContactMode();
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     //this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
@@ -174,7 +174,7 @@ export class CreateNotificationsAlertComponent implements OnInit, OnChanges {
           CustomValidators.specialCharValidationForName('recipientLabel'),
         ]
       });
-    console.log(this.selectedRowData);
+    //console.log(this.selectedRowData);
    this.notificationForm.addControl('criticalLevelThreshold', new FormControl(''));
    this.notificationForm.addControl('warningLevelThreshold', new FormControl(''));
    this.notificationForm.addControl('advisoryLevelThreshold', new FormControl(''));
@@ -645,7 +645,7 @@ getLevelValues(){
 
   deleteWebNotificationRow(index: number) {
     this.FormWebArray.removeAt(index);
-    console.log("deleted");
+    //console.log("deleted");
     this.wsIndex = this.wsIndex - 1;
     this.wsCount = this.wsCount - 1;
     if(this.actionType == "edit"){
@@ -655,7 +655,7 @@ getLevelValues(){
 
   deleteEmailNotificationRow(index: number) {
     this.FormEmailArray.removeAt(index);
-    console.log("deleted");
+    //console.log("deleted");
     this.emailIndex = this.emailIndex - 1;
     this.emailCount = this.emailCount - 1;
     if(this.actionType == "edit"){
@@ -665,7 +665,7 @@ getLevelValues(){
 
   deleteSMSNotificationRow(index: number) {
     this.FormSMSArray.removeAt(index);
-    console.log("deleted");
+    //console.log("deleted");
     this.smsIndex = this.smsIndex - 1;
     this.smsCount = this.smsCount - 1;
     if(this.actionType == "edit"){
@@ -752,7 +752,7 @@ getLevelValues(){
   }
 
   validateMobileNumber(index){
-    // console.log(this.notificationForm.controls['FormSMSArray']['controls'][index].value.mobileNumber.number);
+    // //console.log(this.notificationForm.controls['FormSMSArray']['controls'][index].value.mobileNumber.number);
     if(this.notificationForm.controls['FormSMSArray']['controls'][index].value.mobileNumber != null){
       let phone= (this.notificationForm.controls['FormSMSArray']['controls'][index].value.mobileNumber.number);
       if(phone!= undefined && phone.length > 0){
@@ -918,7 +918,7 @@ getLevelValues(){
       else{
         this.isEmailValidate=true;
       }  
-      console.log('notificationForm:'+ this.notificationForm.get('FormEmailArray').valid);
+      //console.log('notificationForm:'+ this.notificationForm.get('FormEmailArray').valid);
       if (this.actionType == 'create' || this.actionType == 'duplicate') {
         this.FormEmailArray.controls.forEach((item, index) => {
           let emailNotificationLimits = [];

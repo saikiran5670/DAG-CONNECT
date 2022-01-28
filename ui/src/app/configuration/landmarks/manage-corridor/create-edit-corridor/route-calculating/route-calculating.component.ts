@@ -169,7 +169,7 @@ export class RouteCalculatingComponent implements OnInit {
   constructor(private hereService: HereService,private formBuilder: FormBuilder, private corridorService : CorridorService,
     private completerService: CompleterService, private config: ConfigService,private landmarkCategoryService: LandmarkCategoryService) {
       this.showLoadingIndicator = true;
-      // console.log(this.hereService.hereMapsdata);
+      // //console.log(this.hereService.hereMapsdata);
     //   this.map_key =  config.getSettings("hereMap").api_key;
     //  this.map_id =  config.getSettings("hereMap").app_id;
     //  this.map_code =  config.getSettings("hereMap").app_code;
@@ -297,7 +297,7 @@ export class RouteCalculatingComponent implements OnInit {
       this.corridorId = _selectedElementData.id;
       if(this.corridorId){
           this.corridorService.getCorridorFullList(this.organizationId,this.corridorId).subscribe((data)=>{
-              //console.log(data)
+              ////console.log(data)
               if(data[0]["corridorProperties"]){
                  this.additionalData =  data[0]["corridorProperties"];
                  this.setAdditionalData();
@@ -729,7 +729,7 @@ export class RouteCalculatingComponent implements OnInit {
         "vehicleSizeWeightPerAxle": this.corridorFormGroup.controls.weightPerAxle.value ? this.corridorFormGroup.controls.weightPerAxle.value : 0,
       }
     }
-    console.log(corridorObj)
+    //console.log(corridorObj)
     if(this.actionType === 'create'){
       this.corridorService.createRouteCorridor(corridorObj).subscribe((responseData)=>{
         if(responseData.code === 200){
@@ -889,13 +889,13 @@ export class RouteCalculatingComponent implements OnInit {
   }
 
   onKeyUp(){
-    console.log('here');
-    console.log(this.suggestionData)
-    console.log(this.poiSuggestions)
+    //console.log('here');
+    //console.log(this.suggestionData)
+    //console.log(this.poiSuggestions)
   }
 
   onSelected(selectedAddress: any){
-    //console.log(item.title)
+    ////console.log(item.title)
    
     if(this.searchStr){
        this.searchStrError = false;
@@ -1105,7 +1105,7 @@ export class RouteCalculatingComponent implements OnInit {
     if(event.target.value == "") {
       this.activeSearchList = false;
     }
-    ////console.log("----search value called--",event.target.value);
+    //////console.log("----search value called--",event.target.value);
     let inputData = event.target.value;
           // "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
       // var a = https://places.ls.hereapi.com/places/v1/autosuggest?at=40.74917,-73.98529&q=chrysler&apiKey="BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw";
@@ -1140,7 +1140,7 @@ export class RouteCalculatingComponent implements OnInit {
     if(event.target.value == "") {
       this.activeEndList = false;
     }
-    ////console.log("----search value called--",event.target.value);
+    //////console.log("----search value called--",event.target.value);
     let inputData = event.target.value;
           // "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
       // var a = https://places.ls.hereapi.com/places/v1/autosuggest?at=40.74917,-73.98529&q=chrysler&apiKey="BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw";
@@ -1330,7 +1330,7 @@ export class RouteCalculatingComponent implements OnInit {
       this.routeDistance += section.travelSummary.length;
       let linestring = H.geo.LineString.fromFlexiblePolyline(section.polyline);
      var coordinates = decode(section.polyline);
-      console.log(coordinates);
+      //console.log(coordinates);
       let polyl = coordinates.polyline;
       let counter=0;
       let sampledLineString: any =[];
@@ -1342,7 +1342,7 @@ export class RouteCalculatingComponent implements OnInit {
           sampledLineString.push(polylc[0], polylc[1], 0);
           this.appendGpsCoordinates('R', '', polylc[0], polylc[1]);
         }
-        // console.log(counter);
+        // //console.log(counter);
         if(counter > threshold){
           sampledLineString.push(polylc5[0], polylc5[1], 0);
           this.appendGpsCoordinates('R', '', polylc5[0], polylc5[1]);
@@ -1352,13 +1352,13 @@ export class RouteCalculatingComponent implements OnInit {
       if(this.viaRoutePlottedPoints && this.viaRoutePlottedPoints.length > 0 && this.viaRoutePlottedPoints[index]){
         this.appendGpsCoordinates('V', this.viaRoutePlottedPoints[index].viaRoutName, this.viaRoutePlottedPoints[index].latitude, this.viaRoutePlottedPoints[index].longitude);
       }
-      // console.log(this.distanceInKmBetweenEarthCoordinates(19.14045, 72.88235, 12.96618, 77.5869)*1000+' Meters');
-      console.log(linestring);
+      // //console.log(this.distanceInKmBetweenEarthCoordinates(19.14045, 72.88235, 12.96618, 77.5869)*1000+' Meters');
+      //console.log(linestring);
       linestring.Y = sampledLineString;
-      console.log(linestring);
+      //console.log(linestring);
       this.renderGpsCoordinatesInMap(linestring);
     });
-    console.log(this.sampledGpsCoordinates);
+    //console.log(this.sampledGpsCoordinates);
   }
   }
 

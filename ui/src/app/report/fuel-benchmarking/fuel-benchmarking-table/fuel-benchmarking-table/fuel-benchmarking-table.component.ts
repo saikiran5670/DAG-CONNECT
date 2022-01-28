@@ -79,7 +79,7 @@ export class FuelBenchmarkingTableComponent implements OnInit {
   }
 
   loadBenchmarkTable() {
-    // //console.log("=====prefUnitFormat====",this.prefUnitFormat)
+    // ////console.log("=====prefUnitFormat====",this.prefUnitFormat)
     //to check if benchmark selection chage
     if (this.benchmarkSelectionChange && this.displayedColumns.length > 1) {
       this.displayedColumns = this.displayedColumns.splice(0, 1)
@@ -128,7 +128,7 @@ export class FuelBenchmarkingTableComponent implements OnInit {
           let indCol = Number(colIndx) - 1;
           this.dataSource[colIndx][column] = this.updateDoughnutChartData(this.dataSource[indCol][column]);
         }else if(this.firstColumn[colIndx] == 'numberOfActiveVehicles'){
-          //console.log("total vehicles", data);
+          ////console.log("total vehicles", data);
           this.dataSource[colIndx][column] = data.fuelBenchmarkDetails.numberOfActiveVehicles + "/" + data.fuelBenchmarkDetails.numberOfTotalVehicles;
         }
         else {

@@ -200,7 +200,7 @@ export class CurrentFleetComponent implements OnInit {
         console.error("No report id found!")
       }
     }, (error)=>{
-      console.log('Report not found...', error);
+      //console.log('Report not found...', error);
       reportListData = [{name: 'Fleet Overview', id: this.currentFleetReportId}];
       // this.callPreferences();
     });
@@ -213,7 +213,7 @@ export class CurrentFleetComponent implements OnInit {
       this.getTranslatedColumnName(_preferencesData);
       this.getFilterPOIData();
     }, (error)=>{
-      console.log('Pref not found...');
+      //console.log('Pref not found...');
       this.hideLoader();
       this.getFilterPOIData();
     });
@@ -272,7 +272,8 @@ export class CurrentFleetComponent implements OnInit {
       "days": 0,
       "languagecode":"cs-CZ"
     }
-    this.reportService.getFleetOverviewDetails(objData).subscribe((data: any) => {
+    //this.reportService.getFleetOverviewDetails(objData).subscribe((data: any) => {
+      let data: any = [{"id":78008,"tripId":"1.0-697f64cd-10dc-420f-87f0-ff5352704065","vin":"XLRTEH4100G056913","startTimeStamp":1643278649812,"endTimeStamp":1643281021186,"driver1Id":"Unknown","tripDistance":0,"drivingTime":7,"fuelConsumption":7616,"vehicleDrivingStatusType":"D","odometerVal":6244600,"distanceUntilNextService":0,"latestReceivedPositionLattitude":51.434084,"latestReceivedPositionLongitude":5.505118,"latestReceivedPositionHeading":42.73242950439453,"startPositionLattitude":51.434,"startPositionLongitude":5.50547,"startPositionHeading":0,"latestProcessedMessageTimeStamp":1643281021186,"vehicleHealthStatusType":"N","latestWarningClass":0,"latestWarningNumber":0,"latestWarningType":" ","latestWarningTimestamp":0,"latestWarningPositionLatitude":0,"latestWarningPositionLongitude":0,"vid":"2892e24f-b2a5-4640-bbc8-cfc2bd4c2929","registrationNo":"","driverName":"","latestGeolocationAddressId":3122,"latestGeolocationAddress":"Hugo van der Goeslaan 1A, 5643 TW Eindhoven, Nederland","startGeolocationAddressId":3136,"startGeolocationAddress":"DAF, 5643 Eindhoven, Nederland","latestWarningGeolocationAddressId":3136,"latestWarningGeolocationAddress":"DAF, 5643 Eindhoven, Nederland","latestWarningName":"","liveFleetPosition":[{"gpsAltitude":21,"gpsHeading":42.73242950439453,"gpsLatitude":51.434084,"gpsLongitude":5.505118,"fuelconsumtion":7616,"co2Emission":22.0864,"id":740503,"messageTimeStamp":1643281021186},{"gpsAltitude":45,"gpsHeading":63.23147964477539,"gpsLatitude":51.434032,"gpsLongitude":5.505451,"fuelconsumtion":6581,"co2Emission":19.0849,"id":740499,"messageTimeStamp":1643280722803},{"gpsAltitude":34,"gpsHeading":0,"gpsLatitude":51.4341,"gpsLongitude":5.50528,"fuelconsumtion":5740,"co2Emission":16.646,"id":740495,"messageTimeStamp":1643280421214},{"gpsAltitude":20,"gpsHeading":0,"gpsLatitude":51.4341,"gpsLongitude":5.50524,"fuelconsumtion":4895,"co2Emission":14.1955,"id":740492,"messageTimeStamp":1643280121195},{"gpsAltitude":49,"gpsHeading":118.92279815673828,"gpsLatitude":51.43402,"gpsLongitude":5.505404,"fuelconsumtion":4190,"co2Emission":12.151,"id":740490,"messageTimeStamp":1643279821216},{"gpsAltitude":39,"gpsHeading":0,"gpsLatitude":51.434,"gpsLongitude":5.50561,"fuelconsumtion":3217,"co2Emission":9.3293,"id":740489,"messageTimeStamp":1643279521202},{"gpsAltitude":29,"gpsHeading":87.70860290527344,"gpsLatitude":51.434078,"gpsLongitude":5.505196,"fuelconsumtion":2240,"co2Emission":6.496,"id":740482,"messageTimeStamp":1643279222761},{"gpsAltitude":41,"gpsHeading":0,"gpsLatitude":51.4341,"gpsLongitude":5.50527,"fuelconsumtion":1358,"co2Emission":3.9382,"id":740479,"messageTimeStamp":1643278919103},{"gpsAltitude":46,"gpsHeading":0,"gpsLatitude":51.434,"gpsLongitude":5.50547,"fuelconsumtion":0,"co2Emission":0,"id":740477,"messageTimeStamp":1643278649812}],"fleetOverviewAlert":[],"vehicleName":"Testbench_XLRTEH4100G056913"},{"id":78010,"tripId":"0.0-64b8a3d7-0a54-4309-b8fb-c2b251c960f9","vin":"XLRTG47MS0E931918","startTimeStamp":1643280159785,"endTimeStamp":1643280159785,"driver1Id":"PL B000379008000021","tripDistance":0,"drivingTime":0,"fuelConsumption":0,"vehicleDrivingStatusType":"I","odometerVal":6421705,"distanceUntilNextService":0,"latestReceivedPositionLattitude":51.4341,"latestReceivedPositionLongitude":5.50537,"latestReceivedPositionHeading":0,"startPositionLattitude":51.4341,"startPositionLongitude":5.50537,"startPositionHeading":0,"latestProcessedMessageTimeStamp":1643280159785,"vehicleHealthStatusType":"N","latestWarningClass":0,"latestWarningNumber":0,"latestWarningType":" ","latestWarningTimestamp":0,"latestWarningPositionLatitude":0,"latestWarningPositionLongitude":0,"vid":"25fefd3e-d6fb-44a2-9e13-0377c3949bd2","registrationNo":"","driverName":"","latestGeolocationAddressId":3127,"latestGeolocationAddress":"Hugo van der Goeslaan 1A, 5643 TW Eindhoven, Nederland","startGeolocationAddressId":3127,"startGeolocationAddress":"Hugo van der Goeslaan 1A, 5643 TW Eindhoven, Nederland","latestWarningGeolocationAddressId":3127,"latestWarningGeolocationAddress":"Hugo van der Goeslaan 1A, 5643 TW Eindhoven, Nederland","latestWarningName":"","liveFleetPosition":[{"gpsAltitude":35,"gpsHeading":0,"gpsLatitude":51.4341,"gpsLongitude":5.50537,"fuelconsumtion":0,"co2Emission":0,"id":740494,"messageTimeStamp":1643280159785}],"fleetOverviewAlert":[],"vehicleName":"Testbench_XLRTG47MS0E931918"}]
       this.hideLoader();
       let processedData = this.fleetMapService.processedLiveFLeetData(data);
       this.detailsData = processedData;
@@ -286,10 +287,10 @@ export class CurrentFleetComponent implements OnInit {
         this.userPreferencesSetting();
         this.toBack();
       }
-    }, (err) => {
-      this.hideLoader();
-      this.getFilterData();
-    });
+    // }, (err) => {
+    //   this.hideLoader();
+    //   this.getFilterData();
+    // });
   }
 
   getFilterPOIData(){

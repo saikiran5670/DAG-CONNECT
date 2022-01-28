@@ -96,7 +96,7 @@ export class CreateEditViewVehicleAccountAccessRelationshipComponent implements 
   }
 
   getBreadcum(type: any){
-    console.log("getBreadcum is called");
+    //console.log("getBreadcum is called");
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } /
     ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} /
     ${this.translationData.lblAccessRelationshipManagement ? this.translationData.lblAccessRelationshipManagement : 'Access Relationship Management'} /
@@ -205,7 +205,7 @@ export class CreateEditViewVehicleAccountAccessRelationshipComponent implements 
           this.hideloader();
         }, (error) => {
           this.hideloader();
-          console.log("error:: ", error);
+          //console.log("error:: ", error);
         });
       }
       else{ //-- update
@@ -214,7 +214,7 @@ export class CreateEditViewVehicleAccountAccessRelationshipComponent implements 
           this.hideloader();
         }, (error) => {
           this.hideloader();
-          console.log("error:: ", error);
+          //console.log("error:: ", error);
         });
       }
     }
@@ -225,7 +225,7 @@ export class CreateEditViewVehicleAccountAccessRelationshipComponent implements 
           this.hideloader();
         }, (error) => {
           this.hideloader();
-          console.log("error:: ", error);
+          //console.log("error:: ", error);
         });
       }
       else{ //-- update
@@ -234,7 +234,7 @@ export class CreateEditViewVehicleAccountAccessRelationshipComponent implements 
           this.hideloader();
         }, (error) => {
           this.hideloader();
-          console.log("error:: ", error);
+          //console.log("error:: ", error);
         });
       }
     }

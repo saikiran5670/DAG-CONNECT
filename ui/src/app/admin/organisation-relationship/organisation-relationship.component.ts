@@ -267,7 +267,7 @@ export class OrganisationRelationshipComponent implements OnInit {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
     this.defaultTranslation();
 
-    //console.log("process translationData:: ", this.translationData)
+    ////console.log("process translationData:: ", this.translationData)
   }
 
   newRelationship(){

@@ -77,8 +77,8 @@ this.setUpClickListener(map);
             // let y = Math.abs(coord.lng.toFixed(4)) + ((coord.lng > 0) ? 'E' : 'W')
             let x = Math.abs(coord.lat.toFixed(4));
             let y = Math.abs(coord.lng.toFixed(4));
-            console.log("latitude=" +x);
-            console.log("longi=" +y);
+            //console.log("latitude=" +x);
+            //console.log("longi=" +y);
             let locations = new H.map.Marker({lat:x, lng:y});
             map.addObject(locations);
 

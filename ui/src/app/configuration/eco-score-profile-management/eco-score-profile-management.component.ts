@@ -359,10 +359,10 @@ export class EcoScoreProfileManagementComponent implements OnInit {
   openSnackBar(message: string, action: string) {
     let snackBarRef = this._snackBar.open(message, action, { duration: 2000 });
     snackBarRef.afterDismissed().subscribe(() => {
-      console.log('The snackbar is dismissed');
+      //console.log('The snackbar is dismissed');
     });
     snackBarRef.onAction().subscribe(() => {
-      console.log('The snackbar action was triggered!');
+      //console.log('The snackbar action was triggered!');
     });
   }
 
@@ -389,7 +389,7 @@ export class EcoScoreProfileManagementComponent implements OnInit {
     if(this.actionType === 'create'){
       this.isDAFStandard = event.checked;
     } else {
-      console.log(event.checked);
+      //console.log(event.checked);
       this.isSelected = event.checked;
     }
   }
@@ -448,6 +448,6 @@ export class EcoScoreProfileManagementComponent implements OnInit {
     else {
       this.changedKPIData.push(item);
  }
-  //console.log(this.changedKPIData);
+  ////console.log(this.changedKPIData);
 }
 }

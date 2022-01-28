@@ -679,7 +679,7 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.fleetFuelSearchData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
-   // console.log("----globalSearchFilterData---",this.fleetUtilizationSearchData)
+   // //console.log("----globalSearchFilterData---",this.fleetUtilizationSearchData)
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
@@ -767,7 +767,7 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
       "LanguageCode": "EN-GB"
     }
     this.reportService.getFleetFueldriverDetails(getFleetFuelObj).subscribe((data:any) => {
-    // console.log("---getting data from getFleetFuelDetailsAPI---",data)
+    // //console.log("---getting data from getFleetFuelDetailsAPI---",data)
     this.displayData = data["fleetFuelDetails"];
     this.FuelData = this.reportMapService.getConvertedFleetFuelDataBasedOnPref(this.displayData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
     // this.setTableInfo();
@@ -820,7 +820,7 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
       }
 
     }, (error)=>{
-      console.log('Report not found...', error);
+      //console.log('Report not found...', error);
       reportListData = [{name: 'Fleet Fuel Report', id: this.fleetFuelReportId}];
       // this.getTripReportPreferences();
     });
@@ -963,7 +963,7 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
 
 
        }, (error)=>{
-          //console.log(error);
+          ////console.log(error);
          this.hideloader();
          this.tripData = [];
           this.tableInfoObj = {};
@@ -1806,7 +1806,7 @@ setPrefFormatDate(){
 
 setDefaultTodayDate(){
   if(!this.internalSelection && this.fleetFuelSearchData && this.fleetFuelSearchData.modifiedFrom !== "") {
-    //console.log("---if fleetUtilizationSearchData startDateStamp exist")
+    ////console.log("---if fleetUtilizationSearchData startDateStamp exist")
     if(this.fleetFuelSearchData.timeRangeSelection !== ""){
       this.selectionTab = this.fleetFuelSearchData.timeRangeSelection;
     }else{
@@ -1968,13 +1968,13 @@ setDefaultTodayDate(){
 
     let vehicleData = this.vehicleListData.slice();
     this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
-    //console.log("vehicleDD 1", this.vehicleDD);
+    ////console.log("vehicleDD 1", this.vehicleDD);
     this.vehicleDD.sort(this.compareVin);
     this.resetVehicleFilter();
 
     if(this.vehicleListData.length > 0){
       this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
-     // console.log("vehicleDD 2", this.vehicleDD);
+     // //console.log("vehicleDD 2", this.vehicleDD);
       this.resetVehicleFilter();
       this.resetTripFormControlValue();
     };
@@ -2009,14 +2009,14 @@ setVehicleGroupAndVehiclePreSelection() {
       if(parseInt(event.value) == 0){ //-- all group
         let vehicleData = this.vehicleListData.slice();
         this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
-        console.log("vehicleDD 3", this.vehicleDD);
+        //console.log("vehicleDD 3", this.vehicleDD);
       }else{
       let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
         if(search.length > 0){
           this.vehicleDD = [];
           search.forEach(element => {
             this.vehicleDD.push(element);
-            console.log("vehicleDD 4", this.vehicleDD);
+            //console.log("vehicleDD 4", this.vehicleDD);
           });
         }
       }
@@ -2636,7 +2636,7 @@ setVehicleGroupAndVehiclePreSelection() {
       body: prepare,
       theme: 'striped',
       didDrawCell: data => {
-        //console.log(data.column.index)
+        ////console.log(data.column.index)
       }
     })
     doc.save('fleetFuelByDriver.pdf');
@@ -2783,7 +2783,7 @@ setVehicleGroupAndVehiclePreSelection() {
   }
 
     filterVehicleGroups(vehicleSearch){
-    console.log("filterVehicleGroups called");
+    //console.log("filterVehicleGroups called");
     if(!this.vehicleGrpDD){
       return;
     }
@@ -2796,12 +2796,12 @@ setVehicleGroupAndVehiclePreSelection() {
     this.filteredVehicleGroups.next(
       this.vehicleGrpDD.filter(item => item.vehicleGroupName.toLowerCase().indexOf(vehicleSearch) > -1)
     );
-    console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
+    //console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
 
   }
 
   filterVehicle(VehicleSearch){
-    console.log("vehicle dropdown called");
+    //console.log("vehicle dropdown called");
     if(!this.vehicleDD){
       return;
     }
@@ -2814,7 +2814,7 @@ setVehicleGroupAndVehiclePreSelection() {
     this.filteredVehicle.next(
       this.vehicleDD.filter(item => item.vin?.toLowerCase()?.indexOf(VehicleSearch) > -1)
     );
-    console.log("filtered vehicles", this.filteredVehicle);
+    //console.log("filtered vehicles", this.filteredVehicle);
   }
 
   resetVehicleFilter(){

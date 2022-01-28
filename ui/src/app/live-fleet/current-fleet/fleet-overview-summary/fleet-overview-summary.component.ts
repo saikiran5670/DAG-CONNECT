@@ -186,11 +186,11 @@ export class FleetOverviewSummaryComponent implements OnInit {
 
   // // events
   // chartClicked({ event, active }: { event: MouseEvent, active: {}[] }): void {
-  //   console.log(event, active);
+  //   //console.log(event, active);
   // }
 
   // chartHovered({ event, active }: { event: MouseEvent, active: {}[] }): void {
-  //   console.log(event, active);
+  //   //console.log(event, active);
   // }
 
   barChartColors: Color[] = [
