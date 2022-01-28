@@ -326,6 +326,9 @@ export class AppComponent {
       localStorage.setItem("globalSearchFilterData", JSON.stringify(this.globalSearchFilterData));
       //this.getAccountInfo();
       // this.getNavigationMenu();
+      this.reportService.getHEREMapsInfo().subscribe((data: any) => {
+        localStorage.setItem("hereMapsK", data.apiKey);
+      });
     });
     //ToDo: below part to be removed after preferences/dashboard part is developed
     localStorage.setItem("liveFleetMileageThreshold", "1000");
@@ -474,10 +477,10 @@ export class AppComponent {
           // }
           //this.getReportDetails();
         }, (err) => {
-          console.log(err);
+          //console.log(err);
         });
       }, (error) => {
-        console.log(error);
+        //console.log(error);
       });
     }
   }
@@ -487,7 +490,7 @@ export class AppComponent {
       this.reportListData = reportList.reportDetails;
       this.getFleetOverviewPreferences(this.reportListData);
     }, (error)=>{
-      console.log('Report not found...', error);
+      //console.log('Report not found...', error);
       this.reportListData = []
     });
   }
@@ -504,7 +507,7 @@ export class AppComponent {
     //   let _prefData = prefData['userPreferences'];
     //   this.getTranslatedColumnName(_prefData);
     // }, (error)=>{
-    //   console.log('Pref not found...')
+    //   //console.log('Pref not found...')
     // });
   }
 
@@ -551,7 +554,7 @@ export class AppComponent {
         }
       }
     })
-    //console.log("accountNavMenu:: ", landingPageMenus)
+    ////console.log("accountNavMenu:: ", landingPageMenus)
     localStorage.setItem("accountNavMenu", JSON.stringify(landingPageMenus));
     //localStorage.setItem("accountNavMenu", JSON.stringify(landingPageMenus));
     
@@ -602,7 +605,7 @@ export class AppComponent {
       }
       
       // https://stackoverflow.com/questions/40983055/how-to-reload-the-current-route-with-the-angular-2-router
-      // console.log(_link);
+      // //console.log(_link);
       this.router.navigateByUrl('/switchorgrole', { skipLocationChange: true }).then(() =>
       this.router.navigate([_link]));
       
@@ -774,7 +777,7 @@ export class AppComponent {
 
   public detectDevice() {
     this.deviceInfo = this.deviceService.getDeviceInfo();
-    //console.log("this.deviceInfo:: ", this.deviceInfo);
+    ////console.log("this.deviceInfo:: ", this.deviceInfo);
     if (this.deviceInfo.deviceType == 'mobile') {
       this.menuCollapsed = true;
     }
@@ -782,17 +785,17 @@ export class AppComponent {
 
   // public isMobile() {
   //   this.isMobilevar = this.deviceService.isMobile();
-  //   console.log("this.isMobilevar:: ", this.isMobilevar);
+  //   //console.log("this.isMobilevar:: ", this.isMobilevar);
   // }
 
   // public isTablet() {
   //   this.isTabletvar = this.deviceService.isTablet();
-  //   console.log("this.isTabletvar:: ", this.isTabletvar);
+  //   //console.log("this.isTabletvar:: ", this.isTabletvar);
   // }
 
   // public isDesktop() {
   //   this.isDesktopvar = this.deviceService.isDesktop();
-  //   console.log("this.isDesktopvar:: ", this.isDesktopvar);
+  //   //console.log("this.isDesktopvar:: ", this.isDesktopvar);
   // }
 
   defaultTranslation() {
@@ -892,7 +895,7 @@ export class AppComponent {
         this.appForm.get("languageSelection").setValue(this.localStLanguage.id); //-- set language dropdown
 
         this.organizationService.getAllOrganizations().subscribe((data: any) => {
-          console.log("organizationService Data", data);
+          //console.log("organizationService Data", data);
           if (data) {
             this.organizationList = data["organizationList"];
             this.filteredOrganizationList.next(this.organizationList);
@@ -1000,9 +1003,7 @@ export class AppComponent {
         }  
 
       });
-      this.reportService.getHEREMapsInfo().subscribe((data: any) => {
-        localStorage.setItem("hereMapsK", data.apiKey);
-      });
+     
     }
     //this.getOrgListData();
     if (this.router.url) {
@@ -1018,7 +1019,7 @@ export class AppComponent {
 
     // this.langFilterCtrl.valueChanges
     //   .subscribe(() => {
-    //     console.log("called")
+    //     //console.log("called")
     //     this.filterLanguages();
     //   });
 
@@ -1255,7 +1256,7 @@ export class AppComponent {
       this.accountService.setUserSelection(sessionObject).subscribe((data) =>{
         this.getNavigationMenu();
       }, (error) => {
-        console.log(error)
+        //console.log(error)
       });
     }
   }
@@ -1311,7 +1312,7 @@ export class AppComponent {
         this.getMenu(data, 'orgContextSwitch', accountData);
       });
     }, (error) => {
-      console.log(error)
+      //console.log(error)
     });
   }
 
@@ -1374,7 +1375,7 @@ export class AppComponent {
     this.filteredOrganizationList.next(
       this.organizationList.filter(item => item.name.toLowerCase().indexOf(search) > -1)
     );
-    console.log("this.filteredOrganizationList",this.filteredOrganizationList) 
+    //console.log("this.filteredOrganizationList",this.filteredOrganizationList) 
    }
 
   filterLanguages(search) {
@@ -1390,7 +1391,7 @@ export class AppComponent {
     this.filteredLanguages.next(
       this.languages.filter(item => item.name.toLowerCase().indexOf(search) > -1)
     );
-    console.log("this.filteredLanguages",this.filteredLanguages) 
+    //console.log("this.filteredLanguages",this.filteredLanguages) 
    }
 
    //********************************** Date Time Functions *******************************************//
