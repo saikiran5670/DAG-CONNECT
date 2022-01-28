@@ -555,7 +555,7 @@ tripTraceArray: any = [];
                
   ngOnInit(): void {
     this.fleetFuelSearchData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
-    // console.log("----globalSearchFilterData---",this.fleetUtilizationSearchData)
+    // //console.log("----globalSearchFilterData---",this.fleetUtilizationSearchData)
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
@@ -912,7 +912,7 @@ createEndMarker(){
     }
     this.showLoadingIndicator=true;
     this.reportService.getVehicleTripDetails(getFleetFuelObj).subscribe((data:any) => {
-    // console.log("---getting data from getFleetFueldriverDetailsAPI---",data)
+    // //console.log("---getting data from getFleetFueldriverDetailsAPI---",data)
     this.displayData = data["fleetFuelDetails"];
     this.FuelData = this.reportMapService.getConvertedFleetFuelDataBasedOnPref(this.displayData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
     // this.setTableInfo();
@@ -1255,7 +1255,7 @@ createEndMarker(){
 
       
        }, (error)=>{
-          //console.log(error);
+          ////console.log(error);
          this.hideloader();
          this.tripData = [];
           this.tableInfoObj = {};
@@ -1699,7 +1699,7 @@ setPrefFormatDate(){
 
 setDefaultTodayDate(){
   if(!this.internalSelection && this.fleetFuelSearchData.modifiedFrom !== "") {
-    //console.log("---if fleetUtilizationSearchData startDateStamp exist")
+    ////console.log("---if fleetUtilizationSearchData startDateStamp exist")
     if(this.fleetFuelSearchData.timeRangeSelection !== ""){
       this.selectionTab = this.fleetFuelSearchData.timeRangeSelection;
     }else{
@@ -1721,14 +1721,14 @@ setDefaultTodayDate(){
 setStartEndDateTime(date: any, timeObj: any, type: any){
 
     if(type == "start"){
-      console.log("--date type--",date)
-      console.log("--date type--",timeObj)
+      //console.log("--date type--",date)
+      //console.log("--date type--",timeObj)
       // this.fleetUtilizationSearchData["startDateStamp"] = date;
       // this.fleetUtilizationSearchData.testDate = date;
       // this.fleetUtilizationSearchData["startTimeStamp"] = timeObj;
       // this.setGlobalSearchData(this.fleetUtilizationSearchData)
       // localStorage.setItem("globalSearchFilterData", JSON.stringify(this.globalSearchFilterData));
-      // console.log("---time after function called--",timeObj)
+      // //console.log("---time after function called--",timeObj)
     }else if(type == "end") {
       // this.fleetUtilizationSearchData["endDateStamp"] = date;
       // this.fleetUtilizationSearchData["endTimeStamp"] = timeObj;
@@ -2397,7 +2397,7 @@ setVehicleGroupAndVehiclePreSelection() {
       body: prepare,
       theme: 'striped',
       didDrawCell: data => {
-        //console.log(data.column.index)
+        ////console.log(data.column.index)
       }
     })
 

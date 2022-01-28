@@ -33,7 +33,7 @@ export class FleetOverviewPreferencesComponent implements OnInit {
       this.reportListData = reportList.reportDetails;
       this.getPreferences();
     }, (error)=>{
-      console.log('Report not found...', error);
+      //console.log('Report not found...', error);
       this.hideloader();
       this.reportListData = [];
     });
@@ -44,7 +44,7 @@ export class FleetOverviewPreferencesComponent implements OnInit {
     this.translationService.getPreferences(languageCode).subscribe((res: any) => {
       this.generalPreferences = res
     }, (error)=>{
-      console.log('pref not present...');
+      //console.log('pref not present...');
     });
   }
 

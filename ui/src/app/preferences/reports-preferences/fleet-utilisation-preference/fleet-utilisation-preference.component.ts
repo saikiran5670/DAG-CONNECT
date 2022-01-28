@@ -536,7 +536,7 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
       // 4- Keep only seconds not extracted to minutes:
       minutes = parseInt(minutes);
       seconds = seconds % 60;
-      //console.log( hours+":"+minutes+":"+seconds);
+      ////console.log( hours+":"+minutes+":"+seconds);
       return `${hours < 10 ? '0'+hours : hours}:${minutes < 10 ? '0'+minutes : minutes}`;
     }else{
       return '00:00';

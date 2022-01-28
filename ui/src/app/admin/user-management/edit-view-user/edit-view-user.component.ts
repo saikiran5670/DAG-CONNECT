@@ -229,7 +229,7 @@ export class EditViewUserComponent implements OnInit {
   loadAccountGroupTable(){
     let filterAccountGroupData = this.filterAccountGroupTableData();
     this.selecteUserGrpDataSource = new MatTableDataSource(filterAccountGroupData);
-    //console.log("Testing 2 ---------------------------");
+    ////console.log("Testing 2 ---------------------------");
     setTimeout(()=>{
       this.selecteUserGrpDataSource.paginator = this.paginator.toArray()[1];
       this.selecteUserGrpDataSource.sort = this.sort.toArray()[1];
@@ -443,7 +443,7 @@ export class EditViewUserComponent implements OnInit {
       this.successMsgBlink(this.getSuccessMsg('accountInfo'));
      }, (error) => {
        this.emailErrorMsg=error.error;
-       console.log('error:',error);
+       //console.log('error:',error);
     });
   }
 

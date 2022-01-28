@@ -42,7 +42,7 @@ export class CreateEditCorridorComponent implements OnInit {
     if(this.actionType ==='create'){
       this.selectedCorridorTypeId = 46;
     }
-    //console.log(this.selectedCorridorTypeId)
+    ////console.log(this.selectedCorridorTypeId)
   }
 
   loadDropdownData(){
@@ -61,7 +61,7 @@ export class CreateEditCorridorComponent implements OnInit {
       this.vinTripList = vinTrip;
       this.showLoadingIndicator = false;
 
-      // console.log(this.vehicleGroupList)
+      // //console.log(this.vehicleGroupList)
     });
   }
   

@@ -29,12 +29,12 @@ export class AppComponent implements OnInit, OnDestroy {
       this.hubConnection
       .start()
       .then(() => {
-          console.log('Hub Connection Started!');
+          //console.log('Hub Connection Started!');
           this.AlertNotifcaionList.push('Hub Connection Started!');
       })
       .catch(err => 
         { 
-          console.log('Error while starting connection: ' + err);
+          //console.log('Error while starting connection: ' + err);
           this.AlertNotifcaionList.push('Error while starting connection: ' + err);
          })
   }
@@ -49,9 +49,9 @@ export class AppComponent implements OnInit, OnDestroy {
  
   askServerListenerForNotifyAlert(){
        this.hubConnection.on("NotifyAlertResponse", (notificationMessgae) => {
-          console.log(notificationMessgae);
+          //console.log(notificationMessgae);
           this.AlertNotifcaionList.push(notificationMessgae);
-          console.log(this.AlertNotifcaionList);
+          //console.log(this.AlertNotifcaionList);
       })
   }
 

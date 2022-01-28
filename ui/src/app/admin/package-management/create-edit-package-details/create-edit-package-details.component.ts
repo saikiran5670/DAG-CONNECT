@@ -67,7 +67,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
       }
     });
     this.translatedvalues();
-    console.log(this.translationData);
+    //console.log(this.translationData);
     if(this.showType){
       this.TypeList = this.TypeList2;
     } else {

@@ -78,7 +78,7 @@ export class VehicleManagementComponent implements OnInit {
     );
     // this.showLoadingIndicator = true;
     // this.httpClient.get('http://localhost:4200/assets/data/vehicleData.json').subscribe((res: any)=>{
-    //   console.log(res);
+    //   //console.log(res);
     //   this.relationshipVehiclesData = res.sort((a, b) => b.hasOwned - a.hasOwned) ;
     //   this.showLoadingIndicator = false;
     // });
@@ -88,7 +88,7 @@ export class VehicleManagementComponent implements OnInit {
     localStorage.getItem("accountFeatures");
     this.accountOrganizationSetting = localStorage.getItem('accountFeatures');
     let data = JSON.parse(this.accountOrganizationSetting)["features"];
-    console.log(data);
+    //console.log(data);
    data.forEach(element => {
       if(element.key == 'feat_vehiclemanagement_vehicleconnectionsetting')
       {

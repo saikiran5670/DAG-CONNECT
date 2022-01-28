@@ -107,7 +107,7 @@ export class CommonImportComponent implements OnInit {
     let headerRow = worksheet.addRow(header);
     // Cell Style : Fill and Border
     // headerRow.eachCell((cell, number) => {
-    //   //console.log(cell)
+    //   ////console.log(cell)
     //   if(number != 5){
     //     cell.fill = {
     //       type: 'pattern',
@@ -250,7 +250,7 @@ export class CommonImportComponent implements OnInit {
         }
       )
     }
-    //console.log(packagesToImport)
+    ////console.log(packagesToImport)
     this.validateImportData(packagesToImport,removableInput)
   }
 
@@ -356,7 +356,7 @@ export class CommonImportComponent implements OnInit {
     });
     this.callImportAPI(validData,invalidData,removableInput)
 
-    //console.log(validData , invalidData)
+    ////console.log(validData , invalidData)
     return { validDriverList: validData, invalidDriverList: invalidData };
 
   }
@@ -564,7 +564,7 @@ export class CommonImportComponent implements OnInit {
     });
 
     this.callPOIImportAPI(validData,invalidData,removableInput)
-    //console.log(validData , invalidData)
+    ////console.log(validData , invalidData)
     //return { validDriverList: validData, invalidDriverList: invalidData };
   }
 
@@ -613,7 +613,7 @@ export class CommonImportComponent implements OnInit {
 
   //import Geofence function
   formatNewData(){
-    //console.log( this.parsedGPXData);
+    ////console.log( this.parsedGPXData);
     let gpxData = this.parsedGPXData;
     let gpxInfo = gpxData["gpx"]["metadata"];
     let organizedGPXData = [];
@@ -793,7 +793,7 @@ export class CommonImportComponent implements OnInit {
     this.importedCount = 0;
     if(validData.length > 0){
         this.geofenceService.importGeofenceGpx(validData).subscribe((resultData)=>{
-         // console.log(resultData)
+         // //console.log(resultData)
           this.showImportStatus = true;
           removableInput.clear();
           this.importedCount = resultData.addedCount;

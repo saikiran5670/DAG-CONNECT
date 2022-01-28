@@ -182,7 +182,7 @@ export class OrganisationDetailsComponent implements OnInit {
       (acc, cur) => ({ ...acc, [cur.name]: cur.value }),
       {}
     );
-    //console.log("process translationData:: ", this.translationData)
+    ////console.log("process translationData:: ", this.translationData)
   }
 
   applyFilter(filterValue: string) {

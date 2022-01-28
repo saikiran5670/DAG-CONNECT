@@ -285,7 +285,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
       let marker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: this.getSVGIcon() });
       this.map.addObject(marker);
       var bubble;
-      console.log('t1',this.translationData);
+      //console.log('t1',this.translationData);
       let translatedPoiName = this.translationData.lblPOIName;
       let translatedCategory = this.translationData.lblCategory;
       let translatedSubCategory = this.translationData.lblSubCategory;
@@ -934,7 +934,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
     if(poiList != ''){
       poiList = poiList.slice(0, -2);
     }
-    console.log(poiList);
+    //console.log(poiList);
     this.dialogService.DeleteModelOpen(options, poiList);
     this.dialogService.confirmedDel().subscribe((res) => {
     if (res) {
@@ -1030,7 +1030,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
       });
     }
     else{
-      //console.log("geofence id not found...");
+      ////console.log("geofence id not found...");
     }
   }
 
