@@ -260,7 +260,7 @@
 
         <ng-template #action2ColumnElements let-gridData='rowData'>
           <ng-container *ngIf="gridData.hasOwned">
-            <button [disabled]='adminAccessType.adminReadOnlyAccess' class='actionBtn terminatedBtn' mat-flat-button (click)="onChangeTerminatedStatus(gridData)" matTooltip="{{ gridData.status == 'T' ? (translationData.lblClicktoterminate || '') : translationData.lblClicktoterminate || 'Click to terminate' }}">
+            <button [disabled]='adminAccessType.adminReadOnlyAccess' class='actionBtn terminatedBtn' mat-flat-button (click)="onChangeTerminatedStatus(gridData)" matTooltip="{{ gridData.status == 'T' ? (translationData.lblTerminated || '') : translationData.lblerminated || 'Terminated' }}">
               <mat-slide-toggle [disabled]='adminAccessType.adminReadOnlyAccess || gridData.status == "T"' color="primary" [checked]='gridData.status == "T" ? true : false' >
             </mat-slide-toggle>&nbsp;        
             </button>

@@ -8,7 +8,7 @@ import { ConfigService } from '@ngx-config/core';
 export class ExternalAuthService {
     private domainUrl: string;
     constructor(private httpClient: HttpClient, private config: ConfigService) {
-        this.domainUrl = config.getSettings("foundationServices").authZuoraSSOServiceURL;
+        this.domainUrl = config.getSettings("authentication").authRESTServiceURL + '/account/sso';
     }
 
     generateHeader() {

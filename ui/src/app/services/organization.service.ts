@@ -15,7 +15,7 @@ export class OrganizationService {
     organizationServiceUrl: string = '';
 
   constructor(private httpClient: HttpClient, private config: ConfigService) {
-    this.organizationServiceUrl = config.getSettings("foundationServices").organizationRESTServiceURL;
+    this.organizationServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/organization';
   }
 
   private handleError(errResponse: HttpErrorResponse) {

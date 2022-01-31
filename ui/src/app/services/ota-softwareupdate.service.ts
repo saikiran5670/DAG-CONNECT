@@ -11,7 +11,7 @@ import { ConfigService } from '@ngx-config/core';
 export class OtaSoftwareUpdateService {
   otaSoftwareUpdateServiceUrl: string = '';
     constructor(private httpClient: HttpClient, private config: ConfigService) {
-      this.otaSoftwareUpdateServiceUrl = config.getSettings("foundationServices").vehicleUpdateRESTServiceUrl;
+      this.otaSoftwareUpdateServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/otasoftwareupdate';
     }
 
   generateHeader() {

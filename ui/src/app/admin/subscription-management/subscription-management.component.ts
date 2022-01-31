@@ -85,7 +85,7 @@ export class SubscriptionManagementComponent implements OnInit {
     private dialogService: ConfirmDialogService,
     private subscriptionService: SubscriptionService,
     public dialog: MatDialog) {
-    this.domainUrl= config.getSettings("foundationServices").authZuoraSSOServiceURL;
+    this.domainUrl= config.getSettings("authentication").authRESTServiceURL + '/account/sso';
     // this.defaultTranslation();
   }
 
