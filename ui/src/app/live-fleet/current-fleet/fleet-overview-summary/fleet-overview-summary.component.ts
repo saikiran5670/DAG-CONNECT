@@ -1,4 +1,4 @@
-import { Component, OnInit,Input, SimpleChanges } from '@angular/core';
+import { Component, OnInit,Input, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
 import { Color, Label, MultiDataSet } from 'ng2-charts';
 import { Subscription } from 'rxjs';
@@ -44,7 +44,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
   filterInvoked: boolean = false;
   showLoadingIndicator: any = false;
 
-  constructor(private messageService: MessageService, private reportService: ReportService, private fleetMapService: FleetMapService, private organizationService: OrganizationService, private translationService: TranslationService) {
+  constructor(private messageService: MessageService, private reportService: ReportService, private fleetMapService: FleetMapService, private organizationService: OrganizationService, private translationService: TranslationService, private cdref: ChangeDetectorRef,) {
     //this.loadData();
     this.subscription = this.messageService.getMessage().subscribe(message => {
       if (message.key.indexOf("refreshData") < 0 && message.key.indexOf("refreshTimer") < 0) {
@@ -63,6 +63,10 @@ export class FleetOverviewSummaryComponent implements OnInit {
         this.loadData();
       }
     });
+  }
+
+  ngAfterViewInit(){
+    this.cdref.detectChanges();
   }
 
   ngOnChanges(changes: SimpleChanges) {
