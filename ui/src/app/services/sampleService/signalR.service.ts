@@ -41,7 +41,7 @@ export class SignalRService {
   accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
   constructor(private httpClient: HttpClient, private config: ConfigService, private translationService: TranslationService, private organizationService: OrganizationService, @Inject(MAT_DATE_FORMATS) private dateFormats) {
     let _langCode = this.localStLanguage ? this.localStLanguage.code  :  "EN-GB";
-    this.signalRServiceURL = config.getSettings("foundationServices").signalRServiceURL;  
+    this.signalRServiceURL = config.getSettings("authentication").authRESTServiceURL + '/notificationhub';  
     
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
     this.isUserLogin = JSON.parse(localStorage.getItem('isUserLogin'));

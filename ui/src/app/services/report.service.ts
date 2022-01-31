@@ -15,7 +15,7 @@ export class ReportService {
   reportServiceUrl: string = '';
 
   constructor(private httpClient: HttpClient, private config: ConfigService) {
-    this.reportServiceUrl = config.getSettings("foundationServices").reportRESTServiceURL;
+    this.reportServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/report';
   }
 
   generateHeader() {

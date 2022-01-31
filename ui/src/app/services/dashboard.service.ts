@@ -17,7 +17,7 @@ import { ConfigService } from '@ngx-config/core';
 export class DashboardService {
   dashboardServiceUrl : any;
   constructor(private httpClient: HttpClient, private config: ConfigService) { 
-    this.dashboardServiceUrl = config.getSettings("foundationServices").dashboardRESTServiceURL;
+    this.dashboardServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/dashboard';
 
   }
 

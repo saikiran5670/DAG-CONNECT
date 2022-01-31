@@ -15,7 +15,7 @@ export class ReportSchedulerService {
   reportSchedulerServiceURL: string = '';
   
   constructor(private httpClient: HttpClient, private config: ConfigService) {
-    this.reportSchedulerServiceURL = config.getSettings("foundationServices").reportSchedulerRESTServiceURL;
+    this.reportSchedulerServiceURL = config.getSettings("authentication").authRESTServiceURL + '/reportscheduler';
   }
 
   generateHeader(){

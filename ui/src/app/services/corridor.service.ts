@@ -19,8 +19,8 @@ export class CorridorService {
   hereMapApiUrl: string = 'https://places.ls.hereapi.com';
 
   constructor(private httpClient: HttpClient, private config: ConfigService) {
-    this.corridorServiceUrl = config.getSettings("foundationServices").corridorRESTServiceURL;
-    this.reportCorridorUrl = config.getSettings("foundationServices").reportRESTServiceURL;
+    this.corridorServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/corridor';
+    this.reportCorridorUrl = config.getSettings("authentication").authRESTServiceURL + '/report';
    }
 
    generateHeader(){
