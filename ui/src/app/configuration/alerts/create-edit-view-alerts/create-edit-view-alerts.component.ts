@@ -2794,15 +2794,17 @@ convertToFromTime(milliseconds: any){
   getAlertCreatedMessage() {
     let alertName = `${this.alertForm.controls.alertName.value}`;
     if(this.actionType == 'create' || this.actionType == 'duplicate') {
-      if(this.translationData.lblAlertCreatedSuccessfully)
-        return this.translationData.lblAlertCreatedSuccessfully.replace('$', alertName);
-      else
-        return ("Alert '$' Created Successfully").replace('$', alertName);
+      // if(this.translationData.lblAlertCreatedSuccessfully)
+      //   return this.translationData.lblAlertCreatedSuccessfully.replace('$', alertName);
+      // else
+      //   return ("Alert '$' Created Successfully").replace('$', alertName);
+      return ("New Alert '$' Created Successfully").replace('$', alertName);
     }else if(this.actionType == 'edit') {
-      if (this.translationData.lblAlertUpdatedSuccessfully)
-        return this.translationData.lblAlertUpdatedSuccessfully.replace('$', alertName);
-      else
-        return ("Alert '$' Updated Successfully").replace('$', alertName);
+      // if (this.translationData.lblAlertUpdatedSuccessfully)
+      //   return this.translationData.lblAlertUpdatedSuccessfully.replace('$', alertName);
+      // else
+      //   return ("Alert '$' Updated Successfully").replace('$', alertName);
+      return ("Alert '$' Updated Successfully").replace('$', alertName);
     }
     else{
       return '';
