@@ -99,7 +99,7 @@ export class VehicleDetailsComponent implements OnInit {
       this.levelList.forEach(element => {
         if(item.level ==element.value)
         {         
-         item.level = element.name;
+         item.originLevel = element.name;
         }
        });              
     }); 
@@ -124,7 +124,7 @@ export class VehicleDetailsComponent implements OnInit {
     this.gridData.fleetOverviewAlert.forEach(element => {
       this.filterData.alertLevel.forEach(item => {
         if(item.value == element.level){        
-          element.level = this.translationData[item.name]; 
+          element.originLevel = this.translationData[item.name]; 
         }
       });
     });
