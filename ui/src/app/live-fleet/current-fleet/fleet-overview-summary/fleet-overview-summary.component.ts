@@ -302,9 +302,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
           if(criticalCount > 0){
             this.criticalAlert = criticalCount;
           }  
-        }    
-        // if(element.latestWarningType && element.latestWarningType === 'C')
-        //   this.criticalAlert += 1;
+        }  
       }
     });
   }
