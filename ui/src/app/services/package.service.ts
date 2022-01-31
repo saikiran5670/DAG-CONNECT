@@ -15,8 +15,8 @@ export class PackageService {
   featureServiceUrl: string = '';
 
   constructor(private httpClient: HttpClient, private config: ConfigService) {
-    this.PackageServiceUrl = config.getSettings("foundationServices").packageRESTServiceURL;
-    this.featureServiceUrl = config.getSettings("foundationServices").featureRESTServiceURL;
+    this.PackageServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/package';
+    this.featureServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/feature';
   }
 
   generateHeader(){

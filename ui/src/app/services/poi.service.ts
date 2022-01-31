@@ -18,7 +18,7 @@ export class POIService {
   private platform: any;
 
   constructor(private httpClient: HttpClient, private config: ConfigService) {
-    this.PoiServiceUrl = config.getSettings("foundationServices").poiRESTServiceURL;
+    this.PoiServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/poi';
     // this.map_key = config.getSettings("hereMap").api_key;
     this.map_key = localStorage.getItem("hereMapsK");
     this.platform = new H.service.Platform({

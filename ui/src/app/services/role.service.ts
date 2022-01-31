@@ -16,8 +16,8 @@ export class RoleService {
     featureServiceUrl: string = '';
 
   constructor(private httpClient: HttpClient, private config: ConfigService) {
-    this.roleServiceUrl = config.getSettings("foundationServices").roleRESTServiceURL;
-    this.featureServiceUrl = config.getSettings("foundationServices").featureRESTServiceURL;
+    this.roleServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/role';
+    this.featureServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/feature';
   }
 
   private handleError(errResponse: HttpErrorResponse) {

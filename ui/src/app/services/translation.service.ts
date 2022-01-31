@@ -11,7 +11,7 @@ export class TranslationService {
     private translationUrl: string;
     public applicationTranslationData:any = {};
     constructor(private httpClient: HttpClient, private config: ConfigService) {
-        this.translationUrl = config.getSettings("foundationServices").translationRESTServiceURL;
+        this.translationUrl = config.getSettings("authentication").authRESTServiceURL + '/translation';
     }
 
     generateHeader(){

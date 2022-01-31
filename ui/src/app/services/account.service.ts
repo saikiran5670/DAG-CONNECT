@@ -15,7 +15,7 @@ export class AccountService {
   accountServiceUrl: string = '';
 
   constructor(private httpClient: HttpClient, private config: ConfigService) {
-    this.accountServiceUrl = config.getSettings("foundationServices").accountRESTServiceURL;
+    this.accountServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/account';
   }
 
   generateHeader(){
