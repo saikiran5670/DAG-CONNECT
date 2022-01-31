@@ -270,7 +270,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
     let vins = this.summaryData.filter((elem) => elem.vin);
     let uniqueVin = [...new Set(vins)];
     this.totalVehicle = uniqueVin.length;
-
+    let criticalCount = 0;
     this.summaryData.forEach(element => {
       if(element.drivingTime)
         totalDriveTime += element.drivingTime;
@@ -288,8 +288,23 @@ export class FleetOverviewSummaryComponent implements OnInit {
         } else if(element.vehicleHealthStatusType === 'T'){
             this.stopNow += 1;
         }
-        if(element.latestWarningType && element.latestWarningType === 'C')
-          this.criticalAlert += 1;
+        if(element.fleetOverviewAlert.length > 0){         
+          let isCritical = true;
+          element.fleetOverviewAlert.forEach(ele => {
+            if(isCritical){
+              if(ele.level === 'C' ){
+                criticalCount += ele.level === 'C' ? 1 : 0;   
+                isCritical = false; 
+                return;             
+              }             
+            }                         
+          });        
+          if(criticalCount > 0){
+            this.criticalAlert = criticalCount;
+          }  
+        }    
+        // if(element.latestWarningType && element.latestWarningType === 'C')
+        //   this.criticalAlert += 1;
       }
     });
   }
