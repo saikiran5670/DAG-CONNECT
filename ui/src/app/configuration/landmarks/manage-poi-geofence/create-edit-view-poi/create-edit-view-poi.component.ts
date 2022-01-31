@@ -140,7 +140,7 @@ export class CreateEditViewPoiComponent implements OnInit {
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
     this.accessType = JSON.parse(localStorage.getItem("accessType"));
     this.poiFormGroup = this._formBuilder.group({
-      name: ['', [Validators.required, CustomValidators.noWhitespaceValidatorforDesc, Validators.min(1), Validators.max(100)]],
+      name: ['', [Validators.required, CustomValidators.noWhitespaceValidatorforDesc]],
       category: ['', [Validators.required]],
       type: ['', []],
       subcategory: [''],

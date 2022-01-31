@@ -1054,9 +1054,9 @@ export class CommonImportComponent implements OnInit {
     }
 
     if(type === 'name'){
-      if(value.length > 20){
+      if(value.length > 100){
         obj.status = false;
-        obj.reason = this.importTranslationData.valueCannotExceed20;
+        obj.reason = this.importTranslationData.poiMaxLength;
         return obj;
       }
       else if(value != ''){
