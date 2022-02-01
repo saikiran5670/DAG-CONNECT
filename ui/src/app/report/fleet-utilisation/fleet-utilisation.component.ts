@@ -935,7 +935,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       this.hideloader();
       this.wholeTripData = tripData;
       this.filterDateData();
-      this.updateDataSource(this.dataSource);
+      this.updateDataSource(this.tripData);
     }, (error)=>{
       this.hideloader();
       this.wholeTripData.vinTripList = [];
