@@ -78,6 +78,21 @@ export class VehicleDetailsComponent implements OnInit {
  
   }
 
+  checkForPreference(fieldKey) {
+    if (this.vehInfoPrefData) {
+      let filterData = this.vehInfoPrefData.filter(item => item.key.includes('rp_fo_fleetoverview_'+fieldKey));
+      if (filterData.length > 0) {
+        if (filterData[0].state == 'A') {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+  
+
   proceedStep(prefData: any, preference: any){
     let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
     if(_search.length > 0){
