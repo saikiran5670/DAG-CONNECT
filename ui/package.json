@@ -4,10 +4,11 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "export NODE_OPTIONS=--max_old_space_size=64384 && ng build --configuration=production --aot --build-optimizer --optimization",
+    "build": "export NODE_OPTIONS=--max_old_space_size=64384 && ng build --configuration=production --aot --build-optimizer --optimization && gzipper compress ./dist/ngHereApp ./dist/ngHereApp-gzip",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
+
   },
   "private": true,
   "dependencies": {
