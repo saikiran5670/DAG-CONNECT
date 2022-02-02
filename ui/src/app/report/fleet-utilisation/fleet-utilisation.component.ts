@@ -1522,7 +1522,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
         return data.vehicleName.toString().toLowerCase().includes(filter) ||
             data.vin.toString().toLowerCase().includes(filter) ||
             data.registrationNumber.toString().toLowerCase().includes(filter) ||
-            data.convertedDistance.includes(filter) ||
+            data.convertedDistance.toString().toLowerCase().includes(filter) ||
             data.numberOfTrips.toString().toLowerCase().includes(filter)  ||
             data.convertedTripTime.includes(filter) ||
             data.convertedDrivingTime.includes(filter)  ||
