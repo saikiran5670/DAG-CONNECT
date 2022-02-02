@@ -204,7 +204,7 @@ export class FleetOverviewTabPreferencesComponent implements OnInit {
       this.showLoadingIndicator=true;
       this.reportService.updateReportUserPreference(objData).subscribe((prefData: any) => {
         this.showLoadingIndicator=false;
-        this.setTimerValueInLocalStorage(parseInt(this.fleetOverviewForm.controls.refreshTime.value));
+         // this.setTimerValueInLocalStorage(parseInt(this.fleetOverviewForm.controls.refreshTime.value));
         this.loadFleetOverviewPreferences();
         this.setFleetOverviewFlag.emit({ flag: false, msg: this.getSuccessMsg() });
         if ((this.router.url).includes("fleetoverview/fleetoverview")) {
