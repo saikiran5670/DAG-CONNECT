@@ -11,4 +11,4 @@ RUN npm run build --prod
 # Stage 2
 FROM nginxinc/nginx-unprivileged:1.18-alpine
 COPY --from=build-step /app/dist/ngHereApp-gzip /usr/share/nginx/html
-COPY /app/nginx.conf /etc/nginx/
+COPY --from=build-step /app/nginx.conf /etc/nginx/
