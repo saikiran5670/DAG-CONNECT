@@ -415,14 +415,15 @@ ngOnDestroy(){
     }
     this.setDefaultStartEndTime();
     this.setPrefFormatDate();
-    if(!this._state){
-      this.selectionTimeRange('today');
-    // this.setDefaultTodayDate();
-    }
-    this.getReportPreferences();
     setTimeout(() => {
       this.loadWholeTripData();
       },5);
+    // if(!this._state){
+    //   this.selectionTimeRange('today');
+    // this.setDefaultTodayDate();
+    // }
+    this.getReportPreferences();
+
   }
 
   getReportPreferences(){
@@ -765,6 +766,7 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
       this.wholeLogBookData = logBookDataData;
       ////console.log("this.wholeLogBookData:---------------------------: ", this.wholeLogBookData);
       if(!this._state){
+        this.selectionTimeRange('today');
       this.filterDateData();
       }
       // else{
@@ -1650,8 +1652,7 @@ let prepare = []
       }
     }
     this.resetLogFormControlValue(); // extra addded as per discuss with Atul
-    //commenting below line as this method is called in loadWholeTripData().
-    //this.filterDateData(); // extra addded as per discuss with Atul
+     this.filterDateData(); // extra addded as per discuss with Atul
   
   }
 
