@@ -27,7 +27,7 @@
                     </div>
                     <div style='width: 90%; background: #ecf7fe; border-radius: 5px;' fxLayout="column" fxLayoutAlign="end">
                         <div style='padding: 30px;' fxLayout="row" fxLayoutGap="25px" fxLayoutAlign="start">
-                            <div class='full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                            <div class='full-width' fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="left">
                                 <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start">
                                     <div class='areaWidth full-width myform-wrappe uploadArea' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                                         <mat-label class='font-16-px line-height-24px'>{{ translationData.lblUploadTranslationDataFile }} <span class='mandatoryColor'>*</span></mat-label>
@@ -49,8 +49,8 @@
                                             {{ translationData.lblFileLegthError || 'File name should be between 1 and 50 characters' }}
                                         </mat-error>
                                     </div>
-                                    <div fxLayout="column" fxLayoutAlign="space-around" class='margin-bottom-sm'>
-                                        <button style='color: #fff;' [disabled]="!uploadTranslationDataFormGroup.valid || excelEmptyMsg || excelFileLengthFlag" [ngStyle]="{'margin-top': uploadTranslationDataFormGroup.get('uploadFile').hasError('required') ? '9px' : '29px' }" mat-flat-button color="primary"
+                                    <div fxLayout="column" fxLayoutAlign="space-around" >
+                                        <button style='color: #fff;' [disabled]="!uploadTranslationDataFormGroup.valid || excelEmptyMsg || excelFileLengthFlag" [ngStyle]="{'margin-top': uploadTranslationDataFormGroup.get('uploadFile').hasError('required') || excelFileLengthFlag ? '0px' : '24px' }" mat-flat-button color="primary"
                                             (click)="uploadTranslationData()">
                                             <mat-icon>arrow_circle_up</mat-icon> {{ translationData.lblUploadFile }}
                                         </button>

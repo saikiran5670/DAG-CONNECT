@@ -201,7 +201,7 @@
               </div>
               <br/>
               <br/>
-          <div id="generalChart">    
+          <div id="generalChart">
           <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
             <mat-expansion-panel [(expanded)]="generalChartPanel" class="full-width" fxLayoutGap="10px">
               <mat-expansion-panel-header class="full-width">
@@ -211,13 +211,14 @@
                   </span>
                 </mat-panel-title>
               </mat-expansion-panel-header>
-              <div fxLayout="row" fxLayoutAlign='left' fxLayoutGap="10px">
-                <div class="areaWidth min-width-7-per" fxLayout="column" (click)="toggleGeneralCharts('bar')" fxLayoutAlign="left">
+              <div *ngIf="generalGraphPrefObj.bar || generalGraphPrefObj.pie" >
+              <div fxLayout="row" fxLayoutAlign='left' fxLayoutGap="10px" >
+                <div class="areaWidth min-width-7-per" fxLayout="column" (click)="toggleGeneralCharts('bar')" fxLayoutAlign="left" *ngIf="generalGraphPrefObj.bar">
                   <div class="chartSelection" [ngClass]="showGeneralBar ? 'enable' : 'disable'">
                     <i class="fa fa-bar-chart" aria-hidden="true"></i>
                     &nbsp;<span class="chartTitle">{{ translationData.lblBarChart }}</span></div>
                 </div>
-                <div class="areaWidth min-width-7-per" fxLayout="column" (click)="toggleGeneralCharts('pie')" fxLayoutAlign="left">
+                <div class="areaWidth min-width-7-per" fxLayout="column" (click)="toggleGeneralCharts('pie')" fxLayoutAlign="left" *ngIf="generalGraphPrefObj.pie">
                   <div class="chartSelection" [ngClass]="showGeneralPie ? 'enable' : 'disable'">
                     <i class="fa fa-pie-chart" aria-hidden="true"></i>
                     &nbsp;<span class="chartTitle">{{ translationData.lblPiechart }}</span></div>
@@ -266,6 +267,7 @@
               <br/>
               <br/>
               <br/>
+            </div>
             </mat-expansion-panel>
           </mat-card>
           </div>
@@ -303,13 +305,14 @@
                   </span>
                 </mat-panel-title>
               </mat-expansion-panel-header>
+              <div *ngIf="driverPerformanceGraphPrefObj.bar || driverPerformanceGraphPrefObj.pie" >
               <div fxLayout="row" fxLayoutAlign='left' fxLayoutGap="10px" style="display: inline-block;">
-                <div class="areaWidth min-width-7-per" fxLayout="column" (click)="togglePerformanceCharts('bar')" fxLayoutAlign="left">
+                <div class="areaWidth min-width-7-per" fxLayout="column" (click)="togglePerformanceCharts('bar')" fxLayoutAlign="left" *ngIf="driverPerformanceGraphPrefObj.bar">
                   <div class="chartSelection" [ngClass]="showPerformanceBar ? 'enable' : 'disable'">
                     <i class="fa fa-bar-chart" aria-hidden="true"></i>
                     &nbsp;<span class="chartTitle">{{ translationData.lblBarChart  }}</span></div>
                 </div>
-                <div class="areaWidth min-width-7-per" fxLayout="column" (click)="togglePerformanceCharts('pie')" fxLayoutAlign="left">
+                <div class="areaWidth min-width-7-per" fxLayout="column" (click)="togglePerformanceCharts('pie')" fxLayoutAlign="left" *ngIf="driverPerformanceGraphPrefObj.pie">
                   <div class="chartSelection" [ngClass]="showPerformancePie ? 'enable' : 'disable'">
                     <i class="fa fa-pie-chart" aria-hidden="true">
                     &nbsp;</i><span class="chartTitle">{{ translationData.lblPiechart  }}</span></div>
@@ -352,6 +355,7 @@
                 [plugins]="pieChartPlugins"
                 [legend]="pieChartLegend">
                 </canvas>
+              </div>
               </div>
             </mat-expansion-panel>
           </mat-card>
