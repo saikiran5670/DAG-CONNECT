@@ -289,6 +289,7 @@ export class CurrentFleetComponent implements OnInit {
     }, (err) => {
       this.hideLoader();
       this.getFilterData();
+      this.detailsData = [];
     });
     if (this._state && this._state.data) {
       this.userPreferencesSetting();

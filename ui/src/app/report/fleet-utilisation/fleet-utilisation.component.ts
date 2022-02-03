@@ -1075,9 +1075,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       this.reportService.getFleetDetails(searchDataParam).subscribe((_fleetData: any) => {
 
        this.tripData = this.reportMapService.getConvertedFleetDataBasedOnPref(_fleetData["fleetDetails"], this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
-      
-     
-    console.log("fleet utilisation trip data:", this.tripData);
+      console.log("fleet utilisation trip data:", this.tripData);
        this.setTableInfo();
       this.updateDataSource(this.tripData);
       this.hideloader();
@@ -1520,18 +1518,18 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       this.dataSource.sort = this.sort;
       this.dataSource.filterPredicate = function(data, filter: any){
         return data.vehicleName.toString().toLowerCase().includes(filter) ||
-            data.vin.toString().toLowerCase().includes(filter) ||
-            data.registrationNumber.toString().toLowerCase().includes(filter) ||
-            data.convertedDistance.toString().toLowerCase().includes(filter) ||
-            data.numberOfTrips.toString().toLowerCase().includes(filter)  ||
-            data.convertedTripTime.includes(filter) ||
-            data.convertedDrivingTime.includes(filter)  ||
-            data.convertedIdleDuration.includes(filter) ||
-            data.convertedStopTime.includes(filter) ||
-            data.convertedAverageDistance.includes(filter) ||
-            data.convertedAverageSpeed.includes(filter) ||
-            data.convertedAverageWeight.includes(filter) ||
-            data.convertedOdometer.includes(filter)
+            data.vin?.toString().toLowerCase().includes(filter) ||
+            data.registrationNumber?.toString().toLowerCase().includes(filter) ||
+            data.convertedDistance?.toString().toLowerCase().includes(filter) ||
+            data.numberOfTrips?.toString().toLowerCase().includes(filter)  ||
+            data.convertedTripTime?.toString().toLowerCase().includes(filter) ||
+            data.convertedDrivingTime?.toString().toLowerCase().includes(filter)  ||
+            data.convertedIdleDuration?.toString().toLowerCase().includes(filter) ||
+            data.convertedStopTime?.toString().toLowerCase().includes(filter) ||
+            data.convertedAverageDistance?.toString().toLowerCase().includes(filter) ||
+            data.convertedAverageSpeed?.toString().toLowerCase().includes(filter) ||
+            data.convertedAverageWeight?.toString().toLowerCase().includes(filter) ||
+            data.convertedOdometer?.toString().toLowerCase().includes(filter)
    }
       // this.dataSource.sortData = (data: String[], sort: MatSort) => {
       //   const isAsc = sort.direction === 'asc';
