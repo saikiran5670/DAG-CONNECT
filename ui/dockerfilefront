@@ -10,5 +10,6 @@ RUN npm run build --prod
 
 # Stage 2
 FROM nginxinc/nginx-unprivileged:1.18-alpine
+RUN --from=build-step rm -rf /usr/share/nginx/html/*.html
 COPY --from=build-step /app/dist/ngHereApp-gzip /usr/share/nginx/html
 COPY --from=build-step /app/nginx.conf /etc/nginx/
