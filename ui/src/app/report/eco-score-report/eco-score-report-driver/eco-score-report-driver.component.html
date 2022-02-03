@@ -221,7 +221,7 @@
                 <div class="areaWidth min-width-7-per" fxLayout="column" (click)="toggleGeneralCharts('pie')" fxLayoutAlign="left" *ngIf="generalGraphPrefObj.pie">
                   <div class="chartSelection" [ngClass]="showGeneralPie ? 'enable' : 'disable'">
                     <i class="fa fa-pie-chart" aria-hidden="true"></i>
-                    &nbsp;<span class="chartTitle">{{ translationData.lblPiechart }}</span></div>
+                    &nbsp;<span class="chartTitle">{{ translationData.lblPiechart || "Pie chart" }}</span></div>
                 </div>
               </div>
                 <div style="float: right;" *ngIf="showGeneralPie">
@@ -315,7 +315,7 @@
                 <div class="areaWidth min-width-7-per" fxLayout="column" (click)="togglePerformanceCharts('pie')" fxLayoutAlign="left" *ngIf="driverPerformanceGraphPrefObj.pie">
                   <div class="chartSelection" [ngClass]="showPerformancePie ? 'enable' : 'disable'">
                     <i class="fa fa-pie-chart" aria-hidden="true">
-                    &nbsp;</i><span class="chartTitle">{{ translationData.lblPiechart  }}</span></div>
+                    &nbsp;</i><span class="chartTitle">{{ translationData.lblPiechart || "Pie chart"  }}</span></div>
                 </div>
               </div>
               <div style="float: right;" *ngIf="showPerformancePie">
