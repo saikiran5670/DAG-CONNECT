@@ -24,7 +24,7 @@ import { Util } from 'src/app/shared/util';
 import { DomSanitizer } from '@angular/platform-browser';
 
 declare var H: any;
-const createGpx = require('gps-to-gpx').default;
+// const createGpx = require('gps-to-gpx').default;
 
 @Component({
   selector: 'app-manage-poi-geofence',
