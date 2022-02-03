@@ -10,6 +10,6 @@ RUN npm run build --prod
 
 # Stage 2
 FROM nginxinc/nginx-unprivileged:1.18-alpine
-RUN  rm -rf /usr/share/nginx/html/*.html
+RUN mkdir /usr/share/nginx/tmp && mv /usr/share/nginx/*.html /usr/share/nginx/tmp/
 COPY --from=build-step /app/dist/ngHereApp-gzip /usr/share/nginx/html
 COPY --from=build-step /app/nginx.conf /etc/nginx/
