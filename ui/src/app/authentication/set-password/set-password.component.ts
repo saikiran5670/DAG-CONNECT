@@ -84,6 +84,7 @@ export class SetPasswordComponent implements OnInit {
       if(this.buttonName == "Create"){
         this.accountService.createpassword(objData).subscribe((data)=>{
           if(data){
+            this.callOuterTranslation(this.token);
             this.isChangePwdSuccess= true;
           }
         }, (error) => {
@@ -102,6 +103,7 @@ export class SetPasswordComponent implements OnInit {
       else if(this.buttonName == "Reset"){
         this.accountService.resetPassword(objData).subscribe((data)=>{
           if(data){
+            this.callOuterTranslation(this.token);
             this.isChangePwdSuccess= true;
           }
         }, (error) => {
@@ -117,6 +119,14 @@ export class SetPasswordComponent implements OnInit {
             }
         });
       }
+    }
+  }
+
+  callOuterTranslation(token: string) {
+    if(token) {
+      this.accountService.getResetPasswordUnauthorised(token).subscribe((translatedData)=> {
+        console.log(translatedData);
+      });
     }
   }
 
