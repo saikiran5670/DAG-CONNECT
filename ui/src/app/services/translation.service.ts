@@ -246,6 +246,16 @@ export class TranslationService {
         .pipe(catchError(this.handleError));
     }
 
+    getResetPasswordUnauthorised(data: string) {
+      let headerObj = this.generateHeader();
+      const headers = {
+        headers: new HttpHeaders({ headerObj }),
+      };
+      return this.httpClient
+        .get<any[]>(`${this.translationUrl}/getResetPasswordUnauthorised?token=${data}`,headers)
+        .pipe(catchError(this.handleError));
+    }
+
     private handleError(errResponse: HttpErrorResponse) {
       console.error('Error : ', errResponse.error);
       return throwError(
