@@ -398,8 +398,7 @@ export class AccountService {
     const headers = new HttpHeaders().set('Content-Type', 'application/json'); 
 
     return this.httpClient.post<any[]>(
-      `${this.translationServiceUrl}/getResetPasswordUnauthorised`, 
-       data , 
+      `${this.translationServiceUrl}/getResetPasswordUnauthorised?token=${data}`, 
       { headers, responseType: 'text' as 'json'}
     ).pipe(catchError(this.handleError));
   }
