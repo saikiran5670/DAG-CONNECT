@@ -13,11 +13,9 @@ import { ConfigService } from '@ngx-config/core';
 @Injectable()
 export class AccountService {
   accountServiceUrl: string = '';
-  translationServiceUrl: string = '';
 
   constructor(private httpClient: HttpClient, private config: ConfigService) {
     this.accountServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/account';
-    this.translationServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/translation';
   }
 
   generateHeader(){
@@ -394,14 +392,6 @@ export class AccountService {
     ).pipe(catchError(this.handleError));
   }
 
-  getResetPasswordUnauthorised(data: string) {
-    const headers = new HttpHeaders().set('Content-Type', 'application/json'); 
-
-    return this.httpClient.post<any[]>(
-      `${this.translationServiceUrl}/getResetPasswordUnauthorised?token=${data}`, 
-      { headers, responseType: 'text' as 'json'}
-    ).pipe(catchError(this.handleError));
-  }
 
   getMenuFeatures(data): Observable<any[]> {
     let headerObj = this.generateHeader();
