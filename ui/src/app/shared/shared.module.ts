@@ -34,7 +34,6 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { LayoutModule } from '@angular/cdk/layout';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { NgxUiLoaderModule } from 'ngx-ui-loader';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { DragDropModule } from '@angular/cdk/drag-drop';
@@ -92,7 +91,6 @@ import { CommonBreadcrumbsComponent } from './common-breadcrumbs/common-breadcru
     LayoutModule,
     FormsModule,
     ReactiveFormsModule,
-    NgxUiLoaderModule,
     MatFormFieldModule,
     DragDropModule,
     MaterialFileInputModule,
@@ -135,7 +133,6 @@ import { CommonBreadcrumbsComponent } from './common-breadcrumbs/common-breadcru
     MatTooltipModule,
     MatStepperModule,
     LayoutModule,
-    NgxUiLoaderModule,
     MatFormFieldModule,
     DragDropModule,
     MaterialFileInputModule,
