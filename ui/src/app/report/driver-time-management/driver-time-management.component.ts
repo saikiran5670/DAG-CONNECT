@@ -612,6 +612,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   
     let _vehicelIds = [];
     let _driverIds =[];
+    let _hashDriverIds = [];
     if (parseInt(this.driverTimeForm.controls.vehicle.value) === 0) {
       _vehicelIds = this.vehicleListData.map(data => data.vin);
       _vehicelIds.shift();
@@ -625,15 +626,19 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
        
     }
 
+    
     if (parseInt(this.driverTimeForm.controls.driver.value) === 0) {
       this.allDriversSelected = true;
       _driverIds = this.driverListData.map(data=>data.driverID);
       _driverIds.shift();
+
+      _hashDriverIds = this.driverListData.map(data=>data.hashedDriverID); 
+      _hashDriverIds.shift();
     }
     else {
       this.allDriversSelected = false;
       _driverIds = this.driverListData.filter(item => item.driverID == (this.driverTimeForm.controls.driver.value)).map(data=>data.driverID);
-     
+      _hashDriverIds = this.driverListData.filter(item => item.driverID == (this.driverTimeForm.controls.driver.value)).map(data=>data.hashedDriverID);
     }
     
    
@@ -643,7 +648,8 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       "startDateTime":_startTime,
       "endDateTime":_endTime,
       "viNs": _vehicelIds,
-      "driverIds":_driverIds
+      "driverIds":_driverIds,
+      "HashedDriverIds":_hashDriverIds
     }
     if(_vehicelIds.length > 0){
       this.showLoadingIndicator = true;
@@ -719,7 +725,8 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
           this.graphPayload = {
             "startDateTime": _startTime,
             "endDateTime": _endTime,
-            "driverId": _driverIds[0]
+            "driverId": _driverIds[0],
+            "hashedDriverId": _hashDriverIds[0]
     
           }
         }
@@ -1214,7 +1221,8 @@ getExcelSummaryHeader(){
     this.graphPayload = {   
       "startDateTime":Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone),//this.startDateValue,
       "endDateTime":  Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone), //this.endDateValue,
-      "driverId": _row.driverId
+      "driverId": _row.driverId,
+      "hashedDriverId": _row.hashedDriverId
     }
     // this.driverDetails = 
     //   [

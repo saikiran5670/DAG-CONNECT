@@ -644,8 +644,14 @@
               </mat-cell> -->
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_driverid')">
                 <!-- <span >{{row.driverID}}</span> -->
-                <span *ngIf="!row.unknownDriver" class='navigatePoint' (click)='onDriverSelected(row)'>{{ row.driverID }}</span>
-                <span *ngIf="row.unknownDriver" class='navigatePoint' (click)='onDriverSelected(row)'>*</span>
+                <!-- <span *ngIf="!row.unknownDriver" class='navigatePoint' (click)='onDriverSelected(row)'>{{ row.driverID }}</span>
+                <span *ngIf="row.unknownDriver" class='navigatePoint' (click)='onDriverSelected(row)'>*</span> -->
+                <!-- <span *ngIf="row.hashedDriverId != null" class='navigatePoint' (click)='onDriverSelected(row)'>{{ row.hashedDriverId.length > 9 ? row.hashedDriverId.substring(0, 9) + "..." : row.hashedDriverId }}</span>
+                <span *ngIf="row.hashedDriverId == null" class='navigatePoint' (click)='onDriverSelected(row)'>Unknown</span> -->
+                <span *ngIf=" row.driverID != '' && row.hashedDriverId != '' && row.hashedDriverId != null  " class='navigatePoint' (click)='onDriverSelected(row)'>{{ row.driverID }}</span>
+                <span *ngIf=" row.driverID != '' && row.hashedDriverId == null || row.hashedDriverId == '' " class='navigatePoint' (click)='onDriverSelected(row)'>*</span>
+                <span *ngIf=" row.driverID == null || row.driverID == '' && row.hashedDriverId == null || row.hashedDriverId == '' " class='navigatePoint' (click)='onDriverSelected(row)'>Unknown</span>
+
               </mat-cell>
           </ng-container>
 
