@@ -976,7 +976,8 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
       "endDateTime": _endTime,
       "viNs": _vinData,
       "LanguageCode": "EN-GB",
-      "driverId": ""
+      "driverId": "",
+      "hashedDriverId":""
     }
     this.showLoadingIndicator=true;
    this.reportService.getdriverGraphDetails(searchDataParam).subscribe((graphData: any) => {
