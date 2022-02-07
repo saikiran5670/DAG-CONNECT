@@ -66,7 +66,6 @@ export class CommonImportComponent implements OnInit {
     }
     else if(this.importFileComponent === 'geofence'){
       this.fileExtension = '.gpx';
-     // this.fileIcon = 'assets/images/icons/microsoftExcel/gpx_icon_30.png';
     }
     this.importPackageFormGroup = this._formBuilder.group({
       uploadFile: [
