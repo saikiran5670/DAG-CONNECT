@@ -1,7 +1,6 @@
 import * as moment from 'moment-timezone';
 
 const countriesData = require('moment-timezone/data/meta/latest.json');
-const languageCodeData = require('../data.static/LanguageCodeAndCountryCodeMapping.json');
 
 export class Util {
     public static convertDateToUtc(date: any){

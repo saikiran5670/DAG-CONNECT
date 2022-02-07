@@ -7,7 +7,7 @@ import { SearchCriteriaComponent } from './search-criteria/search-criteria.compo
 @Component({
   selector: 'app-vehicle-performance-report',
   templateUrl: './vehicle-performance-report.component.html',
-  styleUrls: ['./vehicle-performance-report.component.css']
+  styleUrls: ['./vehicle-performance-report.component.less']
 })
 export class VehiclePerformanceReportComponent implements OnInit {
   @ViewChild('searchCriteria') searchCriteria : SearchCriteriaComponent
