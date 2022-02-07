@@ -1430,6 +1430,17 @@ export class ExistingTripsComponent implements OnInit {
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+      this.dataSource.filterPredicate = function(data: any, filter: string): boolean {
+        let driverName = data.driverFirstName+" "+data.driverLastName;
+        let startDate = moment(data.startTimeStamp).format("DD/MM/YYYY-h:mm:ss")
+        return (  
+          driverName.toString().toLowerCase().includes(filter) || 
+          data.distance.toString().toLowerCase().includes(filter) ||
+          startDate.toString().toLowerCase().includes(filter) ||
+          data.startAddress.toString().toLowerCase().includes(filter) ||
+          data.endAddress.toString().toLowerCase().includes(filter)
+        );
+      };
       this.dataSource.sortData = (data: String[], sort: MatSort) => {
         const isAsc = sort.direction === 'asc';
         return data.sort((a: any, b: any) => {

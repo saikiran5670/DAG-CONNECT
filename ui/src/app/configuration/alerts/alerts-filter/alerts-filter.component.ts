@@ -230,21 +230,31 @@ export class AlertsFilterComponent implements OnInit {
           let critical  = data.alertUrgencyLevelRefs.filter(lvl=> lvl.urgencyLevelType == 'C');
           let warning   = data.alertUrgencyLevelRefs.filter(lvl=> lvl.urgencyLevelType == 'W');
           let advisory  = data.alertUrgencyLevelRefs.filter(lvl=> lvl.urgencyLevelType == 'A');
-         if(critical.length > 0){
+         
+          if(critical.length > 0){
             critical.forEach(obj => { 
             data["highUrgencyLevel"]=obj.urgencyLevelType;
             data["highThresholdValue"]=obj.thresholdValue;
+              if(searchTerms.highUrgencyLevel == ''){
+                data["highThresholdValue"]= obj.unitType !='N'? this.getConvertedThresholdValues(obj.thresholdValue, obj.unitType) : obj.thresholdValue;
+              }
             });
           }else if(warning.length > 0){
             warning.forEach(obj => { 
             data["highUrgencyLevel"]=obj.urgencyLevelType;
             data["highThresholdValue"]=obj.thresholdValue;
+            if(searchTerms.highUrgencyLevel == ''){
+              data["highThresholdValue"]= obj.unitType !='N'? this.getConvertedThresholdValues(obj.thresholdValue, obj.unitType) : obj.thresholdValue;
+            }
           });
           }
           else {
             advisory.forEach(obj => { 
             data["highUrgencyLevel"]=obj.urgencyLevelType;
             data["highThresholdValue"]=obj.thresholdValue;
+            if(searchTerms.highUrgencyLevel == ''){
+              data["highThresholdValue"]= obj.unitType !='N'? this.getConvertedThresholdValues(obj.thresholdValue, obj.unitType) : obj.thresholdValue;
+            }
           });
           }                     
          }         
