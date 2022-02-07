@@ -2,7 +2,6 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { OrganisationDetailsComponent } from './organisation-details.component_old';
 import { TranslationService } from '../../services/translation.service';
-// import { HttpDataService } from '../../services/sampleService/http-data.service';
 import { ConfigService, ConfigLoader } from '@ngx-config/core';
 
 import { HttpClient, HttpHandler } from '@angular/common/http';

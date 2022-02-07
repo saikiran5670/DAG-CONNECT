@@ -1,18 +1,9 @@
 import { Inject, Injectable } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
-import { of } from 'rxjs';
-import { delay, catchError } from 'rxjs/internal/operators';
 import * as signalR from '@microsoft/signalr';
-import {
-  HttpClient,
-  HttpErrorResponse,
-  HttpHeaders,
-} from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { ConfigService } from '@ngx-config/core';
-import { SignalrAlertNotificationComponent } from 'src/app/signalr-alert-notification/signalr-alert-notification.component';
-import { TranslationService } from '../translation.service';
-import { OrganizationService } from '../organization.service';
-import { Router } from '@angular/router';
+import { TranslationService } from '../services/translation.service';
+import { OrganizationService } from '../services/organization.service';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { Util } from 'src/app/shared/util';
 
@@ -196,28 +187,6 @@ get24Time(_time: any){
     this.hubConnection
     .start()
     .then(() => {
-        //console.log('Hub Connection Started!');
-        // let a = {alertCategory: "L",
-        // alertCategoryKey: "enumcategory_logisticsalerts",
-        // alertGeneratedTime: 1632202819045,
-        // alertId: 702,
-        // alertName: null,
-        // alertType: "I",
-        // alertTypeKey: "",
-        // createdBy: 143,
-        // date: "09/21/2021",
-        // time: "11:10 AM",
-        // tripAlertId: 0,
-        // tripId: "33f90302-6b78-4bff-830b-a2604a7a821c",
-        // urgencyLevel: "C",
-        // urgencyTypeKey: "enumurgencylevel_critical",
-        // vehicleGroupId: 0,
-        // vehicleGroupName: "",
-        // vehicleLicencePlate: "PLOI098OO1",
-        // vehicleName: "demo",
-        // vin: "XLR0998HGFFT70000"
-        // }
-        //   this.notificationData.push(a)
         this.askServerListenerForNotifyAlert();
         this.askServerForNotifyAlert();
         this.AlertNotifcaionList.push('Hub Connection Started!');
@@ -231,26 +200,11 @@ get24Time(_time: any){
   
 
   askServerForNotifyAlert() {
-        //Mock method to get notifications
-        // this.hubConnection.invoke("NotifyAlert", `${this.accountId},${this.accountOrganizationId}`)
-        // // this.hubConnection.invoke("NotifyAlert", "187,36")
-        // .catch(err => 
-        //   { 
-        //       //console.log(err);
-        //       this.AlertNotifcaionList.push(err);
-        //   });
-
-    //Actual method to get notifications
-   //   this.hubConnection.invoke("ReadKafkaMessages", this.accountId, this.accountOrganizationId)
-    this.hubConnection.invoke("PushNotificationForAlert")
-    //  this.hubConnection.invoke("ReadKafkaMessages", 187, 36)
-    .catch(err => 
+   this.hubConnection.invoke("PushNotificationForAlert")
+   .catch(err => 
       {           //console.log("PushNotificationForAlert = ", err);
           this.AlertNotifcaionList.push(err);
       });
-
-    
-
   }
   
   askServerListenerForNotifyAlert(){
@@ -276,29 +230,7 @@ get24Time(_time: any){
      this.hubConnection.on("PushNotificationForAlertError", (errorMessage) => {
       //console.log("PushNotificationForAlertError Error = ", errorMessage);
       this.AlertNotifcaionList.push(errorMessage);
-  })
-
-//   this.hubConnection.on("TestAlertResponse", (notificationMessage) => {​​​​​
-//     notificationMessage= JSON.parse(JSON.parse(notificationMessage));
-//     this.notificationCount++;
-//     // //console.log("TestAlertResponse message = ",notificationMessage);
-//     this.AlertNotifcaionList.push(notificationMessage);
-    
-//     if(this.notificationData.length < 5){
-//       this.notificationData.push(notificationMessage);
-//     }
-//     else{
-//       this.notificationData.shift();
-//       this.notificationData.push(notificationMessage);
-//     }
-//     this.getDateAndTime();
-//  }​​​​​)
-// ​
-//  this.hubConnection.on("TestErrorResponse", (errorMessage) => {​​​​​
-//    //console.log(errorMessage);
-//    this.AlertNotifcaionList.push(errorMessage);
-// }​​​​​)
-
+    })
 
   }
   
