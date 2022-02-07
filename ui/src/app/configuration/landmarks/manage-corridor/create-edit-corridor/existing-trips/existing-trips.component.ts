@@ -1430,6 +1430,17 @@ export class ExistingTripsComponent implements OnInit {
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+      this.dataSource.filterPredicate = function(data: any, filter: string): boolean {
+        let driverName = data.driverFirstName+" "+data.driverLastName;
+        let startDate = moment(data.startTimeStamp).format("DD/MM/YYYY-h:mm:ss")
+        return (  
+          driverName.toString().toLowerCase().includes(filter) || 
+          data.distance.toString().toLowerCase().includes(filter) ||
+          startDate.toString().toLowerCase().includes(filter) ||
+          data.startAddress.toString().toLowerCase().includes(filter) ||
+          data.endAddress.toString().toLowerCase().includes(filter)
+        );
+      };
       this.dataSource.sortData = (data: String[], sort: MatSort) => {
         const isAsc = sort.direction === 'asc';
         return data.sort((a: any, b: any) => {
@@ -1453,10 +1464,10 @@ export class ExistingTripsComponent implements OnInit {
       var bb = b;
       return (aa < bb ? -1 : 1) * (isAsc ? 1 : -1);
     }
-    if (columnName !== "distance" || columnName !== "startTimeStamp") {
-      if (!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toUpperCase();
-      if (!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toUpperCase();
-    }
+    // if (columnName !== "distance" || columnName !== "startTimeStamp") {
+    //   if (!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toUpperCase();
+    //   if (!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toUpperCase();
+    // }
 
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
