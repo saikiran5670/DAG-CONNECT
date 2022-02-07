@@ -553,6 +553,7 @@ export class UserManagementComponent implements OnInit {
 
   getFilteredValues(dataSource){
     let val = JSON.parse(dataSource.filter);
+    this.dataSource = new MatTableDataSource(this.initData);
     this.dataSource = this.dataSource.data.filter((item)=>{
       let isGroup = false;
       let isRole = false;
@@ -583,7 +584,7 @@ export class UserManagementComponent implements OnInit {
       return isGroup && isRole && isName;
     });
     setTimeout(()=>{
-      this.dataSource = new MatTableDataSource(this.initData);
+      this.dataSource = new MatTableDataSource(this.dataSource);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
     });
