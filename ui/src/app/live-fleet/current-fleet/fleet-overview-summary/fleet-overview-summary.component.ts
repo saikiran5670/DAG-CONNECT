@@ -18,6 +18,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
   @Input() translationData: any = {};
   @Input() detailsData: any = [];
   @Input() filterData: any = {};
+  @Input() totalVehicleCount: number;
   criticalAlert: number = 0;
   mileageDone: string = '';
   drivers: number = 0;
@@ -75,21 +76,22 @@ export class FleetOverviewSummaryComponent implements OnInit {
       this.detailsData = changes.detailsData.currentValue;
       this.stepForword(this.detailsData, true);
     }
-    if(changes && changes.filterData && changes.filterData.currentValue){
-      this.filterData = changes.filterData.currentValue;
+    if(changes && changes.totalVehicleCount){
+      // this.filterData = changes.filterData.currentValue;
+      this.totalVehicle = Number(changes.totalVehicleCount.currentValue);
       this.updateVehicleGraph();
     }
 
   } 
   updateVehicleGraph(){
-    let distinctVIN = [];
-    if(this.filterData && this.filterData.vehicleGroups && this.filterData.vehicleGroups.length > 0){
-     let vehIds = this.filterData.vehicleGroups.map(i => i.vehicleId);
-     if(vehIds && vehIds.length > 0){
-      distinctVIN = vehIds.filter((value, index, self) => self.indexOf(value) === index);
-     }
-    }
-    this.totalVehicle = distinctVIN.length;
+    // let distinctVIN = [];
+    // if(this.filterData && this.filterData.vehicleGroups && this.filterData.vehicleGroups.length > 0){
+    //  let vehIds = this.filterData.vehicleGroups.map(i => i.vehicleId);
+    //  if(vehIds && vehIds.length > 0){
+    //   distinctVIN = vehIds.filter((value, index, self) => self.indexOf(value) === index);
+    //  }
+    // }
+    // this.totalVehicle = distinctVIN.length;
     this.barChartData = [
       { data: [this.movedVehicle, this.totalVehicle], label: '', barThickness: 16, barPercentage: 0.5 }
     ];
@@ -139,7 +141,8 @@ export class FleetOverviewSummaryComponent implements OnInit {
       "languagecode": localStLanguage.code
     }
     this.reportService.getFleetOverviewDetails(objData).subscribe((data: any) => {
-      let filterData = this.fleetMapService.processedLiveFLeetData(data);
+      this.totalVehicle = data.visibleVehiclesCount;
+      let filterData = this.fleetMapService.processedLiveFLeetData(data.fleetOverviewDetailList);
       this.stepForword(filterData);
       //this.summaryData = filterData;
       // this.unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm ) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile) : (this.translationData.lblmile);

@@ -279,7 +279,7 @@ ngOnChanges(changes: SimpleChanges) {
 
     let driverSelected = this.driverList.filter((elem)=> elem.driverId === this.driverVehicleForm.get("driver").value);
     this.reportService.getFleetOverviewDetails(this.objData).subscribe((fleetdata:any) => {
-    let data = this.fleetMapService.processedLiveFLeetData(fleetdata);
+    let data = this.fleetMapService.processedLiveFLeetData(fleetdata.fleetOverviewDetailList);
 
     let val:any;
      if(driverSelected.length>0){
@@ -1161,7 +1161,7 @@ removeDuplicates(originalArray, prop) {
     //   this.getFleetOverviewDetails.unsubscribe();
     // }
     this.getFleetOverviewDetails = this.reportService.getFleetOverviewDetails(this.objData).subscribe((fleetdata:any) => {
-      let data = this.fleetMapService.processedLiveFLeetData(fleetdata);
+      let data = this.fleetMapService.processedLiveFLeetData(fleetdata.fleetOverviewDetailList);
     this.fleetData = data;
 
     let val = [{vehicleGroup : vehicleGroupSel.vehicleGroupName, data : data}];
