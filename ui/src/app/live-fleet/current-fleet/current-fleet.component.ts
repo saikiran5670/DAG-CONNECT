@@ -44,6 +44,7 @@ export class CurrentFleetComponent implements OnInit {
   filterData : any;
   filterPOIData : any;
   showLoadingIndicator: boolean = false;
+  totalVehicleCount: number;
 
   // detailsData =[
   //   {
@@ -273,8 +274,9 @@ export class CurrentFleetComponent implements OnInit {
       "languagecode":"cs-CZ"
     }
     this.reportService.getFleetOverviewDetails(objData).subscribe((data: any) => {
+      this.totalVehicleCount = data.visibleVinsCount;
       this.hideLoader();
-      let processedData = this.fleetMapService.processedLiveFLeetData(data);
+      let processedData = this.fleetMapService.processedLiveFLeetData(data.fleetOverviewDetailList);
       this.detailsData = processedData;
       this.getFilterData();
       let _dataObj = {
