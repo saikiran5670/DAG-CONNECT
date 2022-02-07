@@ -174,6 +174,12 @@ export class FleetOverviewSummaryComponent implements OnInit {
       }
       this.resetSummary();
     }
+    if(this.totalVehicle){
+      this.barChartLabels = [this.translationData.lblMovedVehicle, this.translationData.lblTotalVehicle];
+      this.barChartData = [
+        { data: [this.movedVehicle, this.totalVehicle], label: '', barThickness: 16, barPercentage: 0.5 }
+      ];
+    }
   }
 
   hideloader() {
