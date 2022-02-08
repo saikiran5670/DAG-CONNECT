@@ -150,11 +150,11 @@
                       <mat-cell *matCellDef="let row">
                         <button [disabled]="row.endDate != 0 || adminAccessType.adminReadOnlyAccess" class='actionBtn' mat-flat-button (click)="changeOrgRelationStatus(row)" matTooltip="{{ row.allowChain == 'Active'? (translationData.lblClickToDeactivate ) : translationData.lblClickToActivate }}">
                           <mat-slide-toggle color="primary"  
-                          [disabled]="row.allowChain == 'InActive'  || adminAccessType.adminReadOnlyAccess" 
+                          [disabled]="row.endDate != 0  || adminAccessType.adminReadOnlyAccess" 
                           [checked]='row.allowChain == "Active" && row.endDate == 0 ? true : false'
                            >
                         </mat-slide-toggle>&nbsp;
-                        <span>{{ row.allowChain == "Active" ? (translationData.lblActive ) : translationData.lblInActive  }}</span>
+                        <span>{{ (row.allowChain == "Active" && row.endDate == 0) ? (translationData.lblActive ) : translationData.lblInActive  }}</span>
                         </button>
                       </mat-cell>
                     </ng-container>
@@ -167,7 +167,7 @@
                     <mat-header-row *matHeaderRowDef="orgrelationshipDisplayedColumns"></mat-header-row>
                     <mat-row *matRowDef="let row; columns: orgrelationshipDisplayedColumns;" 
                     (click)="row.endDate != 0"
-                    [ngStyle]="row.endDate != 0 && {'background-color': 'lightgrey'}" >
+                    [ngStyle]="row.endDate != 0 ? {'background-color': 'lightgrey'} : null" >
                     </mat-row>
                 </mat-table>
                 <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>

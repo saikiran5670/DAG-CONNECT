@@ -1138,7 +1138,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     this.advanceFilterOpen = false;
     this.selectedPOI.clear();
     this.resetTripFormControlValue();
-    this.filterDateData(); // extra addded as per discuss with Atul
+    //this.filterDateData(); // extra addded as per discuss with Atul //commented because it is calling onSearch method and data gets loaded
 
   }
 
