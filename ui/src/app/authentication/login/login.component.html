@@ -33,23 +33,17 @@
                 <div *ngIf='!forgotPwdFlag && !resetPwdFlag' fxLayout="row" fxLayoutAlign="start" class='fieldContainer'>
                     <div fxLayout="column" fxLayoutAlign="start" class='full-width'>
                         <form [formGroup]="loginForm" (ngSubmit)="onLogin(loginForm.value)">
-        
                             <div fxLayout="column" fxLayoutAlign="start" fxLayoutGap="15" class='loginField'>
-                            
                                   <div fxLayout="row" fxLayoutAlign="start">
                                     <div fxLayout="column" fxLayoutAlign="center" class='loginIcon'>
                                         <mat-icon>account_circle</mat-icon>
                                     </div>
                                     <div fxLayout="column" fxLayoutAlign="start" class='full-width'>
                                         <mat-form-field appearance="fill">
-                                            <!-- <input maxlength="120" matInput placeholder="User name" formControlName="username" pattern="[a-zA-Z0-9.-_]{1,}@[a-zA-Z.-]{2,}[.]{1}[a-zA-Z]{2,}" required> -->
                                             <input maxlength="120" matInput placeholder="User Name" formControlName="username" required>
                                             <mat-error *ngIf="loginForm.get('username').hasError('required')">
                                               User Name is required
                                             </mat-error>
-                                            <!-- <mat-error *ngIf="loginForm.get('username').hasError('email')">
-                                                Please enter valid user name
-                                            </mat-error> -->
                                         </mat-form-field>
                                     </div>
                                   </div> 
@@ -64,7 +58,6 @@
                                             <mat-icon>{{hide ? 'visibility' : 'visibility_off'}}</mat-icon>
                                             </button>
                                             <mat-error *ngIf="loginForm.controls.password.errors?.required">Password is required</mat-error>
-                                            <!-- <mat-error *ngIf="loginForm.controls.password.hasError('minlength')">Password should be minimum 6 characters</mat-error> -->
                                           </mat-form-field>
                                     </div>
                                   </div> 
@@ -172,14 +165,5 @@
                 </div>
             </div>
         </div>
-        <!-- <div fxLayout="column">
-            <a href='https://www.daf.com/en/legal/privacy-statement' target='_blank'><span>Private Statement</span></a>
-        </div>
-        <div fxLayout="column">
-            <a href='https://www.daf.com/' target='_blank'><span>Support: DAF.Connect@DAFTRUCKS.com</span></a>
-        </div>
-        <div fxLayout="column">
-            <a href='https://www.daf.com/' target='_blank' class='display-flex'><span><mat-icon class='pdfIcon'>picture_as_pdf</mat-icon></span><span class='pdfLink'>Quick Reference Guide</span></a>
-        </div> -->
     </div>
 </footer>
