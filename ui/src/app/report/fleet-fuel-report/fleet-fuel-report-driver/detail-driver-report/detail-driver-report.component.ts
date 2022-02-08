@@ -1278,19 +1278,26 @@ createEndMarker(){
   loadfleetFuelDetails(driverDetails: any){
     this.showLoadingIndicator=true;
     let hashedDriverId;
-    let driverID = 0;
-    if(driverDetails.driverID.includes('~*')){
-      driverID = driverDetails.driverID.split('~')[0];
-    }
-    else{
-      driverID =driverDetails.driverID;
-    }
+    let driverID;
+    // if(driverDetails.driverID.includes('~*')){
+    //   driverID = driverDetails.driverID.split('~')[0];
+    // }
+    // else{
+    //   driverID =driverDetails.driverID;
+    // }
     
     if(driverDetails.hashedDriverId == null) {
       hashedDriverId = "";
     } else {
       hashedDriverId = driverDetails.hashedDriverId;
     }
+
+    if(driverDetails.driverID == null) {
+      driverID = "";
+    } else {
+      driverID = driverDetails.driverID;
+    }
+
 
     let getFleetFuelObj = {
       "startDateTime": this.dateDetails.startTime,

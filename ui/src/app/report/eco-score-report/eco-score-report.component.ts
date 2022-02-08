@@ -118,7 +118,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   selectedDriversEcoScore = [];
   selectedDriverOption: any;
   selectedDriverId: String;
-  selectedhashedDriverId: any;
+  // selectedhashedDriverId: any;
   selectedDriverName: String;
   ecoScoreDriver: boolean = false;
   compareEcoScore: boolean = false;
@@ -982,7 +982,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     this.selectedVehicleGroup = this.vehicleGroupListData.filter(item => item.vehicleGroupId == parseInt(this.ecoScoreForm.controls.vehicleGroup.value))[0]["vehicleGroupName"];
     this.selectedVehicle = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.ecoScoreForm.controls.vehicle.value))[0]["vehicleName"];
     this.selectedDriverId = this.driverListData.filter(item => (item.driverID).toString() == (this.ecoScoreForm.controls.driver.value))[0]["driverID"];
-    this.selectedhashedDriverId = this.driverListData.filter(item => (item.driverID).toString() == (this.ecoScoreForm.controls.driver.value))[0]["hashedDriverID"];
+    // this.selectedhashedDriverId = this.driverListData.filter(item => (item.driverID).toString() == (this.ecoScoreForm.controls.driver.value))[0]["hashedDriverID"];
     let driverFirstName = this.driverListData.filter(item => (item.driverID).toString() == (this.ecoScoreForm.controls.driver.value))[0]["firstName"];
     let driverLastName = this.driverListData.filter(item => (item.driverID).toString() == (this.ecoScoreForm.controls.driver.value))[0]["lastName"];
     this.selectedDriverName = (driverFirstName !== undefined) ? driverFirstName : '' +" "+ (driverLastName !== undefined) ? driverLastName : '';
@@ -1181,7 +1181,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
 
   onDriverSelected(_row){
     this.selectedDriverId = _row.driverId;
-    this.selectedhashedDriverId = _row.hashedDriverId;
+    // this.selectedhashedDriverId = _row.hashedDriverId;
     this.selectedDriverName = _row.driverName;
     this.loadSingleDriverDetails();
     this.ecoScoreForm.get('driver').setValue(this.selectedDriverId);
@@ -1189,7 +1189,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   }
 
   loadSingleDriverDetails(){
-    let hashedDrivid;
+    // let hashedDrivid;
     this.showLoadingIndicator=true;
     this.selectedDriverData = {
       startDate: this.fromDisplayDate,
@@ -1232,14 +1232,13 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     else if(this.prefUnitFormat === 'dunit_Imperial')
       _prefUnit = 'Imperial';
   
-  console.log(this.selectedhashedDriverId,"************************************")    
+  // console.log(this.selectedhashedDriverId,"********")    
   
   let searchDataParam = {
     "startDateTime": _startTime,
     "endDateTime": _endTime,
     "viNs": _vehicelIds,
     "driverId": this.selectedDriverId,
-    "hashedDriverId": this.selectedhashedDriverId,
     "minTripDistance": _minTripVal,
     "minDriverTotalDistance": _minDriverDist,
     "targetProfileId": 2,
@@ -1547,12 +1546,12 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       // let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
       let _vehicelIds = [];
       let _driverIds =[];
-      let _hashDriverIds = [];
+      // let _hashDriverIds = [];
       var _minTripVal =0;
       let _minDriverDist=0;
 
       _driverIds = this.selectedEcoScore.selected.map(a => a.driverId);
-      _hashDriverIds = this.selectedEcoScore.selected.map(a => a.hashedDriverId);
+      // _hashDriverIds = this.selectedEcoScore.selected.map(a => a.hashedDriverId);
       //_vehicelIds = this.selectedEcoScore.selected.map(a => a.vin);
       if (parseInt(this.ecoScoreForm.controls.vehicle.value) === 0) {
         _vehicelIds = this.vehicleListData.map(data => data.vin);
@@ -1576,7 +1575,6 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
         "endDateTime":_endTime,
         "viNs": _vehicelIds,
         "driverIds":_driverIds,
-        "HashedDriverIds":_hashDriverIds,
         "minTripDistance":_minTripVal,
         "minDriverTotalDistance": _minDriverDist,
         "targetProfileId": 2,

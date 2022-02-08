@@ -1214,6 +1214,8 @@ getExcelSummaryHeader(){
         this.setGeneralDriverDetailValue(element.cummulativeDriverList);
      }
     });
+
+    let hashedId = (this.driverListData.filter(elem=>elem.driverID === _row.driverId)[0]['hashedDriverID']);
  //   this.driverDetails = this.allDriverData.map(item=>item.driverDetailList).filter(i=>i.driverID === _row.driverId)
  
     this.detailConvertedData = this.reportMapService.getDriverDetailsTimeDataBasedOnPref(this.driverDetails, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
@@ -1222,7 +1224,7 @@ getExcelSummaryHeader(){
       "startDateTime":Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone),//this.startDateValue,
       "endDateTime":  Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone), //this.endDateValue,
       "driverId": _row.driverId,
-      "hashedDriverId": _row.hashedDriverId
+      "hashedDriverId": hashedId
     }
     // this.driverDetails = 
     //   [
