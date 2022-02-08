@@ -178,6 +178,7 @@ _state: any ;
 map_key: any = '';
 platform: any = '';
 vehicleIconMarker : any;
+noRecordFound: boolean = false;
 
 public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
@@ -944,6 +945,11 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
           });
           this.showMap = true;
         }
+        if(logBookResult.length == 0) {
+          this.noRecordFound = true;
+        } else {
+          this.noRecordFound = false;
+        }
         this.initData = logBookResult;
         this.setTableInfo();
         this.updateDataSource(this.initData);
@@ -951,6 +957,7 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
       }, (error)=>{
           this.hideloader();
           this.initData = [];
+          this.noRecordFound = true;
           this.tableInfoObj = {};
           this.updateDataSource(this.initData);
 

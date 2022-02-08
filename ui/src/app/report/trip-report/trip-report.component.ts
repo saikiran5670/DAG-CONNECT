@@ -185,6 +185,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
   platform: any = '';
   alertsChecked: any = false;
   tripPrefData: any = [];
+  noRecordFound: boolean = false;
 
   public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
@@ -657,12 +658,18 @@ export class TripReportComponent implements OnInit, OnDestroy {
         ////console.log(_tripData);
         this.hideloader();
         this.tripData = this.reportMapService.convertTripReportDataBasedOnPref(_tripData.tripData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat, this.prefTimeZone);
+        if(this.tripData.length == 0) {
+          this.noRecordFound = true;
+        } else {
+          this.noRecordFound = false;
+        }
         this.setTableInfo();
         this.updateDataSource(this.tripData);
       }, (error) => {
         ////console.log(error);
         this.hideloader();
         this.tripData = [];
+        this.noRecordFound = true;
         this.tableInfoObj = {};
         this.updateDataSource(this.tripData);
       });
