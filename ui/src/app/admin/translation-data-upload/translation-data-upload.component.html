@@ -116,12 +116,19 @@
                     </div>
                 </div> -->
                 <app-data-table *ngIf="!showLoadingIndicator" [tableData]="initData" [translationData]="translationData"
-                    [columnCodes]="columnCodes" [columnLabels]="columnLabels" [displayedColumns]="displayedColumns" [actionColumnElements]="actionColumnElements">
+                    [columnCodes]="columnCodes" [columnLabels]="columnLabels" [displayedColumns]="displayedColumns" [actionColumnElements]="actionColumnElements"   [createdAtRunDateColumnElements]="createdAtRunDateColumnElements" >
                 
                     <ng-template #actionColumnElements let-gridData='rowData'>
                         <button class='actionBtn' mat-flat-button (click)="onDownloadExcel(gridData)" matTooltip="{{ translationData.lblDownload  }}">
                             <img src='assets/images/icons/microsoftExcel/excel_icon.svg' style="width: 20px; height: 20px;" />
                         </button>
+                    </ng-template>
+
+                    <ng-template #createdAtRunDateColumnElements let-gridData='rowData'>
+                        <span>
+                    
+                          {{gridData.createdAt| date:nextScheduleDateFormat}}
+                        </span>
                     </ng-template>
                     
                 </app-data-table>

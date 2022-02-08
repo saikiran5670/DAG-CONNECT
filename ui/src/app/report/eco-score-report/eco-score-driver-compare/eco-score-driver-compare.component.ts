@@ -11,7 +11,7 @@ import {
 @Component({
   selector: 'app-eco-score-driver-compare',
   templateUrl: './eco-score-driver-compare.component.html',
-  styleUrls: ['./eco-score-driver-compare.component.css'],
+  styleUrls: ['./eco-score-driver-compare.component.less'],
   encapsulation: ViewEncapsulation.None
 })
 export class EcoScoreDriverCompareComponent implements OnInit {

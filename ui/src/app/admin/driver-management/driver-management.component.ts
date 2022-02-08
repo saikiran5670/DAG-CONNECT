@@ -40,7 +40,6 @@ export class DriverManagementComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   importDriverFormGroup: FormGroup;
   consentFormGroup: FormGroup;
-  templateFileUrl: string = 'assets/docs/driverTemplate.xlsx';
   templateFileName: string = 'driver-Template.xlsx';
   dialogRef: MatDialogRef<ConsentOptComponent>;
   @ViewChild('UploadFileInput') uploadFileInput: ElementRef;

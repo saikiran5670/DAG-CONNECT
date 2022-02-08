@@ -1277,18 +1277,34 @@ createEndMarker(){
 
   loadfleetFuelDetails(driverDetails: any){
     this.showLoadingIndicator=true;
-    let driverID = 0;
-    if(driverDetails.driverID.includes('~*')){
-      driverID = driverDetails.driverID.split('~')[0];
+    let hashedDriverId;
+    let driverID;
+    // if(driverDetails.driverID.includes('~*')){
+    //   driverID = driverDetails.driverID.split('~')[0];
+    // }
+    // else{
+    //   driverID =driverDetails.driverID;
+    // }
+    
+    if(driverDetails.hashedDriverId == null) {
+      hashedDriverId = "";
+    } else {
+      hashedDriverId = driverDetails.hashedDriverId;
     }
-    else{
-      driverID =driverDetails.driverID;
+
+    if(driverDetails.driverID == null) {
+      driverID = "";
+    } else {
+      driverID = driverDetails.driverID;
     }
+
+
     let getFleetFuelObj = {
       "startDateTime": this.dateDetails.startTime,
       "endDateTime": this.dateDetails.endTime,
       "vin": driverDetails.vin,
-      "driverId": driverID
+      "driverId": driverID,
+      "hashedDriverId":hashedDriverId
     }
     this.reportService.getDriverTripDetails(getFleetFuelObj).subscribe((data:any) => {
     ////console.log("---getting data from getFleetFueldriverDetailsAPI---",data)
@@ -1308,7 +1324,8 @@ createEndMarker(){
       "endDateTime":this.dateDetails.endTime,
       "viNs": [driverDetails.vin],
       "LanguageCode": "EN-GB",
-      "driverId": driverID // #20102 - driverId added to get driver specific info
+      "driverId": driverID, // #20102 - driverId added to get driver specific info
+      "hashedDriverId":hashedDriverId
     }
     this.reportService.getdriverGraphDetails(searchDataParam).subscribe((graphData: any) => {
       this.chartDataSet = [];

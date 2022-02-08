@@ -39,7 +39,7 @@
         <ng-container [matColumnDef]="column" *ngFor="let column of columnCodes; let i=index;">
 
             <ng-container
-                *ngIf="column != 'status' && column != 'action2' && column != 'action' && column != 'nextScheduleRunDate' && column != 'select' && column != 'isExclusive'">
+                *ngIf="column != 'status' && column != 'action2' && column != 'action' && column != 'te' && column != 'select' && column != 'isExclusive' && column != 'createdAt' && column != 'nextScheduleRunDate'">
                 <mat-header-cell *matHeaderCellDef mat-sort-header style="word-break: break-all;">{{ translationData['lbl'+columnLabels[i]]  }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                     <span *ngIf="row.newTag && i == 0" class='newTagIcon marginLeft-24'></span>
@@ -81,6 +81,13 @@
                     <ng-container *ngTemplateOutlet='nextScheduleRunDateColumnElements; context: {rowData: row}'></ng-container>
                 </mat-cell>
            </ng-container>
+
+           <ng-container *ngIf="column == 'createdAt'">
+            <mat-header-cell *matHeaderCellDef mat-sort-header style="word-break: break-all;">{{ translationData['lbl'+columnLabels[i]] }}</mat-header-cell>
+            <mat-cell *matCellDef="let row" >
+                <ng-container *ngTemplateOutlet='createdAtRunDateColumnElements; context: {rowData: row}'></ng-container>
+            </mat-cell>
+       </ng-container>
             <ng-container  *ngIf="column == 'isExclusive'">
                 <mat-header-cell mat-sort-header *matHeaderCellDef style="word-break: break-all;">{{ translationData['lbl'+columnLabels[i]]  }}
                 </mat-header-cell>

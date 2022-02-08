@@ -1464,7 +1464,7 @@ export class ExistingTripsComponent implements OnInit {
       var bb = b;
       return (aa < bb ? -1 : 1) * (isAsc ? 1 : -1);
     }
-    if (columnName !== "distance" || columnName !== "startTimeStamp") {
+    if (columnName === "startAddress" || columnName === "endAddress") {
       if (!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toUpperCase();
       if (!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toUpperCase();
     }
