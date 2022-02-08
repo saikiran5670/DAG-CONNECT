@@ -32,7 +32,7 @@
     "@ngx-config/http-loader": "^9.0.0",
     "@ngx-translate/core": "^13.0.0",
     "angular-highcharts": "6.2.3",
-    "angular-ng-autocomplete": "^2.0.5",
+    "angular-ng-autocomplete": "2.0.5",
     "angular-slickgrid": "^2.30.2",
     "apexcharts": "^3.27.3",
     "bootstrap": "^4.5.2",
