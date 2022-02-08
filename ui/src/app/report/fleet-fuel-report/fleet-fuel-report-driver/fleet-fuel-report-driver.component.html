@@ -204,15 +204,13 @@
 
         </mat-expansion-panel-header>
 
-        <div *ngIf='displayData.length == 0'>
-
-          <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound || '' }}
-
+        <div *ngIf='noRecordFound'>
+          <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound || '' }}</div>
+        </div>
+        <div *ngIf='displayData.length == 0 && !noRecordFound'>
+          <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblSelectionMessage || 
+            'Please select and search required fields from top to view the details' }}
           </div>
-
-          <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblSelectionMessage || 'Please select and search required fields from top to view the details'
-            }}</div>
-
         </div>
         <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
 
