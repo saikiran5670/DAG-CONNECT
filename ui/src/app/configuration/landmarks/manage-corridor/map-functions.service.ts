@@ -48,7 +48,8 @@ export class MapFunctionsService {
   ui: any;
 
   constructor(private hereService: HereService, private corridorService: CorridorService, private _configService: ConfigService) {
-    this.map_key = _configService.getSettings("hereMap").api_key;
+    // this.map_key = _configService.getSettings("hereMap").api_key;
+    this.map_key = localStorage.getItem("hereMapsK");
     this.platform = new H.service.Platform({
       "apikey": this.map_key
     });
@@ -274,7 +275,7 @@ export class MapFunctionsService {
         if (accountOrganizationId) {
           if (_selectedRoutes[i].id) {
             this.corridorService.getCorridorFullList(accountOrganizationId, _selectedRoutes[i].id).subscribe((data) => {
-              //console.log(data)
+              ////console.log(data)
               if (data[0]["corridorProperties"]) {
                 this.additionalData = data[0]["corridorProperties"];
                 this.setAdditionalData();
@@ -732,7 +733,7 @@ export class MapFunctionsService {
 
 
     //this.corridorPath.setStyle( this.corridorPath.getStyle().getCopy({linewidth:_width}));
-    //console.log(geoLineString)
+    ////console.log(geoLineString)
     //this.corridorPath.setGeometry(geoLineString);
   }
 }

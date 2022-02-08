@@ -210,7 +210,8 @@ export class CreateEditViewAlertsComponent implements OnInit {
               private _configService: ConfigService,
               private mapFunctions: MapFunctionsService ) 
   {
-    this.map_key = _configService.getSettings("hereMap").api_key;
+    // this.map_key = _configService.getSettings("hereMap").api_key;
+    this.map_key = localStorage.getItem("hereMapsK");
     this.platform = new H.service.Platform({
       "apikey": this.map_key
     });  
@@ -361,7 +362,7 @@ public ngAfterViewInit() {
 //   // this.setPrefFormatDate();
 //   // this.setDefaultTodayDate();
 //   // this.getReportPreferences();
-//   // console.log(this.prefUnitFormat);
+//   // //console.log(this.prefUnitFormat);
 // }
 
   toBack() {
@@ -784,7 +785,7 @@ public ngAfterViewInit() {
             "vehicleId": parseInt(element.vehicleId)
           }
           this.vehicleGroupList.push(vehicleGroupObj);
-          console.log("vehicleGroupList 1", this.vehicleGroupList);
+          //console.log("vehicleGroupList 1", this.vehicleGroupList);
         } else {
           this.singleVehicle.push(element);
         }
@@ -792,7 +793,7 @@ public ngAfterViewInit() {
      });
      this.vehicleGroupList = this.getUnique(this.vehicleGroupList, "vehicleGroupId");
      this.vehicleGroupList = this.removeNaNrecords(this.vehicleGroupList); 
-     console.log("vehicleGroupList 2", this.vehicleGroupList); 
+     //console.log("vehicleGroupList 2", this.vehicleGroupList); 
      this.vehicleGroupList.sort(this.compareHere);
      this.resetVehicleGroupFilter();
 
@@ -835,7 +836,7 @@ public ngAfterViewInit() {
         //   let vehicle = this.associatedVehicleData.filter(item => item.vehicleId == element.vehicleId);
         //   if(vehicle.length > 0){
         //     this.vehicleByVehGroupList.push(vehicle[0]);
-        //     //console.log("vehicleByVehGroupList 5", this.vehicleByVehGroupList);
+        //     ////console.log("vehicleByVehGroupList 5", this.vehicleByVehGroupList);
         //     this.vehicleByVehGroupList.sort(this.compareVehicleList);
         //     this.resetVehiclesFilter();
         //   }
@@ -883,7 +884,7 @@ public ngAfterViewInit() {
  
     //subscribed vehicles
     // this.vehicleByVehGroupList.forEach(element => {
-    //   //console.log("vehicleByVehGroupList 6", this.vehicleByVehGroupList);
+    //   ////console.log("vehicleByVehGroupList 6", this.vehicleByVehGroupList);
     //   element["subcriptionStatus"] = true;
     //   this.vehicleListForTable.push(element);
     // });
@@ -1509,7 +1510,7 @@ PoiCheckboxClicked(event: any, row: any) {
   }
   
   setDefaultValue(){
-     console.log(this.selectedRowData);
+     //console.log(this.selectedRowData);
     this.alertForm.get('alertName').setValue(this.selectedRowData.name);
     this.alertForm.get('alertCategory').setValue(this.selectedRowData.category);
 
@@ -1782,7 +1783,7 @@ convertToFromTime(milliseconds: any){
         }
       }
     }, (error) => {
-      //console.log(error)
+      ////console.log(error)
     });
   }
 
@@ -2194,7 +2195,7 @@ convertToFromTime(milliseconds: any){
     let urgencylevelEndDate = 0;
     if(this.panelOpenState){
       this.notifications= this.notificationComponent.getNotificationDetails();
-      //console.log(this.notifications); 
+      ////console.log(this.notifications); 
     }
     if(this.alert_category_selected == 'L' && this.alert_type_selected === 'S'){ //Hours of Service
       let alertTimingRefHoursOfService = this.periodSelectionComponent.getAlertTimingPayload();
@@ -2793,15 +2794,17 @@ convertToFromTime(milliseconds: any){
   getAlertCreatedMessage() {
     let alertName = `${this.alertForm.controls.alertName.value}`;
     if(this.actionType == 'create' || this.actionType == 'duplicate') {
-      if(this.translationData.lblAlertCreatedSuccessfully)
-        return this.translationData.lblAlertCreatedSuccessfully.replace('$', alertName);
-      else
-        return ("Alert '$' Created Successfully").replace('$', alertName);
+      // if(this.translationData.lblAlertCreatedSuccessfully)
+      //   return this.translationData.lblAlertCreatedSuccessfully.replace('$', alertName);
+      // else
+      //   return ("Alert '$' Created Successfully").replace('$', alertName);
+      return ("New Alert '$' Created Successfully").replace('$', alertName);
     }else if(this.actionType == 'edit') {
-      if (this.translationData.lblAlertUpdatedSuccessfully)
-        return this.translationData.lblAlertUpdatedSuccessfully.replace('$', alertName);
-      else
-        return ("Alert '$' Updated Successfully").replace('$', alertName);
+      // if (this.translationData.lblAlertUpdatedSuccessfully)
+      //   return this.translationData.lblAlertUpdatedSuccessfully.replace('$', alertName);
+      // else
+      //   return ("Alert '$' Updated Successfully").replace('$', alertName);
+      return ("Alert '$' Updated Successfully").replace('$', alertName);
     }
     else{
       return '';
@@ -3059,7 +3062,7 @@ keyPressNumbers(event) {
 
 onKey(event: any) { // without type info
   // let values += event.target.value + ' | ';
- //  console.log('Key Up',event);
+ //  //console.log('Key Up',event);
 }
 
 onChange($event){
@@ -3079,7 +3082,7 @@ ngOnChanges(changes: SimpleChanges) {
   }}
 
   filterVehicleGroups(vehicleSearch){
-    console.log("filterVehicleGroups called");
+    //console.log("filterVehicleGroups called");
     if(!this.vehicleGroupList){
       return;
     }
@@ -3092,11 +3095,11 @@ ngOnChanges(changes: SimpleChanges) {
      this.filteredVehicleGroups.next(
        this.vehicleGroupList.filter(item=> item.vehicleGroupName.toLowerCase().indexOf(vehicleSearch) > -1)
      );
-     console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
+     //console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
 }
 
 filterVehicles(search){
-  console.log("filterVehicles called");
+  //console.log("filterVehicles called");
   if(!this.vehicleByVehGroupList){
     return;
   }
@@ -3109,7 +3112,7 @@ filterVehicles(search){
    this.filteredVehicles.next(
      this.vehicleByVehGroupList.filter(item=> item.vin.toLowerCase().indexOf(search) > -1)
    );
-   console.log("this.filteredVehicles", this.filteredVehicles);
+   //console.log("this.filteredVehicles", this.filteredVehicles);
 }
 
 setStartEndDateTime(date: any, timeObj: any, type: any){

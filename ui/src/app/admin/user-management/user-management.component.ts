@@ -186,7 +186,7 @@ export class UserManagementComponent implements OnInit {
       this.hideloader();
       this.getUserSettingsDropdownValues();
       if(this.userDetailsType != undefined){
-        console.log(localStorage.getItem('selectedRowItems'));
+        //console.log(localStorage.getItem('selectedRowItems'));
         let sessionVal = JSON.parse(localStorage.getItem('selectedRowItems'));
         this.editViewUser(sessionVal, this.userDetailsType)
       }
@@ -225,7 +225,7 @@ export class UserManagementComponent implements OnInit {
 
   processTranslation(transData: any){
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    //console.log("process translationData:: ", this.translationData)
+    ////console.log("process translationData:: ", this.translationData)
   }
 
   ngAfterViewInit() { }
@@ -396,7 +396,7 @@ export class UserManagementComponent implements OnInit {
          }
       });
     }, (error) => {
-      console.log('error');
+      //console.log('error');
       this.hideloader();
     });
   }
@@ -553,6 +553,7 @@ export class UserManagementComponent implements OnInit {
 
   getFilteredValues(dataSource){
     let val = JSON.parse(dataSource.filter);
+    this.dataSource = new MatTableDataSource(this.initData);
     this.dataSource = this.dataSource.data.filter((item)=>{
       let isGroup = false;
       let isRole = false;
@@ -583,7 +584,7 @@ export class UserManagementComponent implements OnInit {
       return isGroup && isRole && isName;
     });
     setTimeout(()=>{
-      this.dataSource = new MatTableDataSource(this.initData);
+      this.dataSource = new MatTableDataSource(this.dataSource);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
     });

@@ -4,7 +4,6 @@ import { FileValidator } from 'ngx-material-file-input';
 import * as FileSaver from 'file-saver';
 import { Workbook } from 'exceljs';
 import * as XLSX from 'xlsx';
-import { packageModel } from '../../models/package.model';
 import { PackageService } from '../../services/package.service';
 import { POIService } from '../../services/poi.service';
 import { GeofenceService } from '../../services/landmarkGeofence.service';
@@ -66,7 +65,6 @@ export class CommonImportComponent implements OnInit {
     }
     else if(this.importFileComponent === 'geofence'){
       this.fileExtension = '.gpx';
-     // this.fileIcon = 'assets/images/icons/microsoftExcel/gpx_icon_30.png';
     }
     this.importPackageFormGroup = this._formBuilder.group({
       uploadFile: [
@@ -107,7 +105,7 @@ export class CommonImportComponent implements OnInit {
     let headerRow = worksheet.addRow(header);
     // Cell Style : Fill and Border
     // headerRow.eachCell((cell, number) => {
-    //   //console.log(cell)
+    //   ////console.log(cell)
     //   if(number != 5){
     //     cell.fill = {
     //       type: 'pattern',
@@ -233,7 +231,7 @@ export class CommonImportComponent implements OnInit {
   }
 
   preparePackageDataToImport(removableInput){
-    let packagesToImport = [];//new packageModel().importPackage;
+    let packagesToImport = [];
     for(let i = 0; i < this.filelist.length ; i++){
       packagesToImport.push(
         {
@@ -250,7 +248,7 @@ export class CommonImportComponent implements OnInit {
         }
       )
     }
-    //console.log(packagesToImport)
+    ////console.log(packagesToImport)
     this.validateImportData(packagesToImport,removableInput)
   }
 
@@ -356,7 +354,7 @@ export class CommonImportComponent implements OnInit {
     });
     this.callImportAPI(validData,invalidData,removableInput)
 
-    //console.log(validData , invalidData)
+    ////console.log(validData , invalidData)
     return { validDriverList: validData, invalidDriverList: invalidData };
 
   }
@@ -421,41 +419,39 @@ export class CommonImportComponent implements OnInit {
   {
     let valid=0;
     switch(id){
-      case 'C' : for(let i=0; i< this.poiData.length; i++)
-                {
+      case 'C' : for(let i=0; i< this.poiData.length; i++) {
                   if(name != ''){
-                  if(this.poiData[i].categoryName == name){
-                  valid=1;
-                    return this.poiData[i].categoryId;
-                  }
-                  else{
-                    valid=0;}
+                    if(this.poiData[i].categoryName == name){
+                    valid = 1;
+                      return this.poiData[i].categoryId;
+                    }
+                    else{
+                      valid = 0;
+                    }
                   }
                   else{ 
                     return 0;
                   }
                 }
-                if(valid == 0)
-                {
+                if(valid == 0) {
                   return 'invalid';
                 }
                 break;
-      case 'S'  : for(let i=0; i< this.poiData.length; i++)
-                  {
+      case 'S'  : for(let i=0; i<this.poiData.length; i++) {
                     if(name != ''){
-                    if(this.poiData[i].subCategoryName == name){
-                      valid=1;
-                      return this.poiData[i].subCategoryId;                    
-                    }
-                    else{
-                      valid=0;}
+                      if(this.poiData[i].subCategoryName == name){
+                        valid = 1;
+                        return this.poiData[i].subCategoryId;                    
+                      }
+                      else{
+                        valid = 0;
+                      }
                     }
                     else{ 
-                    return 0;
+                      return 0;
                     }
                   }
-                  if(valid == 0)
-                  {
+                  if(valid == 0) {
                     return 'invalid';
                   }
                   break;
@@ -465,7 +461,7 @@ export class CommonImportComponent implements OnInit {
 
   // POI import functions
   preparePOIDataToImport(removableInput){
-    let packagesToImport = [];//new packageModel().importPackage;
+    let packagesToImport = [];
     for(let i = 0; i < this.filelist.length ; i++){
       packagesToImport.push(
         {
@@ -566,7 +562,7 @@ export class CommonImportComponent implements OnInit {
     });
 
     this.callPOIImportAPI(validData,invalidData,removableInput)
-    //console.log(validData , invalidData)
+    ////console.log(validData , invalidData)
     //return { validDriverList: validData, invalidDriverList: invalidData };
   }
 
@@ -615,7 +611,7 @@ export class CommonImportComponent implements OnInit {
 
   //import Geofence function
   formatNewData(){
-    //console.log( this.parsedGPXData);
+    ////console.log( this.parsedGPXData);
     let gpxData = this.parsedGPXData;
     let gpxInfo = gpxData["gpx"]["metadata"];
     let organizedGPXData = [];
@@ -795,7 +791,7 @@ export class CommonImportComponent implements OnInit {
     this.importedCount = 0;
     if(validData.length > 0){
         this.geofenceService.importGeofenceGpx(validData).subscribe((resultData)=>{
-         // console.log(resultData)
+         // //console.log(resultData)
           this.showImportStatus = true;
           removableInput.clear();
           this.importedCount = resultData.addedCount;
@@ -1017,15 +1013,14 @@ export class CommonImportComponent implements OnInit {
     }
 
     if(type == 'subCategoryId'){
-       if(value == 'invalid')
-       {
+      if(value == 'invalid') {
         obj.status = false;
         obj.reason = ' Sub Category name invalid';
-       }
-      else{
+      }
+      else {
         obj.status = true;
         obj.reason = 'correct data';
-     }
+      }
       return obj;
     }
 
@@ -1055,6 +1050,23 @@ export class CommonImportComponent implements OnInit {
         return obj;
       }
     }
+
+    if(type === 'name'){
+      if(value.length > 100){
+        obj.status = false;
+        obj.reason = this.importTranslationData.poiMaxLength;
+        return obj;
+      }
+      else if(value != ''){
+        let _s: any = this.poiData.filter(i => i.name == value);
+        if(_s && _s.length > 0){
+          obj.status = false;
+          obj.reason = this.importTranslationData.duplicatePOI;
+          return obj;
+        }
+      }
+    }
+
     if(!SpecialCharRegex.test(value)){
       obj.status = false;
       obj.reason = this.importTranslationData.specialCharNotAllowedReason;

@@ -28,7 +28,8 @@ export class MapService {
     endAddressPositionLong: number = 0;
 
     constructor(private hereService: HereService, private ReportService: ReportService,  private _configService: ConfigService) {
-      this.map_key = _configService.getSettings("hereMap").api_key;
+      // this.map_key = _configService.getSettings("hereMap").api_key;
+      this.map_key = localStorage.getItem("hereMapsK");
       this.platform = new H.service.Platform({
           "apikey": this.map_key
       });

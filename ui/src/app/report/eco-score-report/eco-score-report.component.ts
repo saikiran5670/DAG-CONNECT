@@ -118,6 +118,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   selectedDriversEcoScore = [];
   selectedDriverOption: any;
   selectedDriverId: String;
+  // selectedhashedDriverId: any;
   selectedDriverName: String;
   ecoScoreDriver: boolean = false;
   compareEcoScore: boolean = false;
@@ -371,7 +372,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
         console.error("No report id found!")
       }
     }, (error)=>{
-      console.log('Report not found...', error);
+      //console.log('Report not found...', error);
       reportListData = [{name: 'EcoScore Report', id: this.reportId}];
       // this.getEcoScoreReportPreferences();
     });
@@ -493,7 +494,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(){
-    console.log("component destroy...");
+    //console.log("component destroy...");
     this.searchFilterpersistData["vehicleGroupDropDownValue"] = this.ecoScoreForm.controls.vehicleGroup.value;
     this.searchFilterpersistData["vehicleDropDownValue"] = this.ecoScoreForm.controls.vehicle.value;
     this.searchFilterpersistData["driverDropDownValue"] = this.ecoScoreForm.controls.driver.value;
@@ -547,7 +548,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    console.log(this.translationData);
+    //console.log(this.translationData);
   }
 
   vehicleDD = [];
@@ -566,14 +567,14 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       this.ecoScoreForm.get('driver').setValue(0);
     //  let vehicleData = this.vehicleGroupListData.slice();
     //  this.vehicleDD = this.getUniqueVINs([ ...vehicleData,...this.singleVehicle]);
-    //   console.log("vehicleDD 1", this.vehicleDD);
+    //   //console.log("vehicleDD 1", this.vehicleDD);
     }else{
       let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
       if(search.length > 0){
         //this.vehicleDD = [];
         search.forEach(element => {
           this.vehicleDD.push(element);
-          //console.log("vehicleDD 2", this.vehicleDD);
+          ////console.log("vehicleDD 2", this.vehicleDD);
         });
       }   
       this.vehicleDD.push({ vehicleId: 0, vehicleName: this.translationData.lblAll  }); 
@@ -608,7 +609,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     if(event.value==0){
       this.driverDD = this.driverListData;
       this.ecoScoreForm.get('driver').setValue(0);
-      console.log("driverDD 1", this.driverDD);
+      //console.log("driverDD 1", this.driverDD);
       // this.driverListData = this.finalDriverList;
     }else{
       // let selectedVin = this.vehicleListData.filter(i=>i.vehicleId === parseInt(event.value))[0]['vin'];
@@ -619,7 +620,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
        // this.driverDD = [];
         search.forEach(element => {
           this.driverDD.push(element);
-         // console.log("driverDD 2", this.driverDD);
+         // //console.log("driverDD 2", this.driverDD);
         });
       }
     }   
@@ -878,7 +879,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       this.driverListData = filteredDriverList;
       this.vehicleListData = filteredVehicleList;
       this.vehicleGroupListData = finalVehicleList;
-      console.log("vehicleGroupListData 1", this.vehicleGroupListData);
+      //console.log("vehicleGroupListData 1", this.vehicleGroupListData);
       this.vehicleGroupListData.sort(this.compareGrpName);
       this.resetVehicleGroupFilter();
       if(this.vehicleGroupListData.length >0){
@@ -981,6 +982,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     this.selectedVehicleGroup = this.vehicleGroupListData.filter(item => item.vehicleGroupId == parseInt(this.ecoScoreForm.controls.vehicleGroup.value))[0]["vehicleGroupName"];
     this.selectedVehicle = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.ecoScoreForm.controls.vehicle.value))[0]["vehicleName"];
     this.selectedDriverId = this.driverListData.filter(item => (item.driverID).toString() == (this.ecoScoreForm.controls.driver.value))[0]["driverID"];
+    // this.selectedhashedDriverId = this.driverListData.filter(item => (item.driverID).toString() == (this.ecoScoreForm.controls.driver.value))[0]["hashedDriverID"];
     let driverFirstName = this.driverListData.filter(item => (item.driverID).toString() == (this.ecoScoreForm.controls.driver.value))[0]["firstName"];
     let driverLastName = this.driverListData.filter(item => (item.driverID).toString() == (this.ecoScoreForm.controls.driver.value))[0]["lastName"];
     this.selectedDriverName = (driverFirstName !== undefined) ? driverFirstName : '' +" "+ (driverLastName !== undefined) ? driverLastName : '';
@@ -1024,7 +1026,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   }
 
   compare(a: any, b: any, isAsc: boolean) {
-    //console.log(a+' '+b);
+    ////console.log(a+' '+b);
     if(a === undefined || a === null || b === undefined || b === null)
       return 1;
     if(a !== undefined && a !== null && isNaN(a) && !(a instanceof Number)) a = a.toString().toLowerCase();
@@ -1179,6 +1181,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
 
   onDriverSelected(_row){
     this.selectedDriverId = _row.driverId;
+    // this.selectedhashedDriverId = _row.hashedDriverId;
     this.selectedDriverName = _row.driverName;
     this.loadSingleDriverDetails();
     this.ecoScoreForm.get('driver').setValue(this.selectedDriverId);
@@ -1186,6 +1189,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   }
 
   loadSingleDriverDetails(){
+    // let hashedDrivid;
     this.showLoadingIndicator=true;
     this.selectedDriverData = {
       startDate: this.fromDisplayDate,
@@ -1227,7 +1231,9 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       _prefUnit = 'Metric';
     else if(this.prefUnitFormat === 'dunit_Imperial')
       _prefUnit = 'Imperial';
-
+  
+  // console.log(this.selectedhashedDriverId,"********")    
+  
   let searchDataParam = {
     "startDateTime": _startTime,
     "endDateTime": _endTime,
@@ -1249,7 +1255,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       this.reportService.getEcoScoreSingleDriverTrendLines(searchDataParam).subscribe((_trendLine: any) => {
         // this.ecoScoreDriverDetailsTrendLine = JSON.parse('{"code":200,"message":"Eco-Score Trendline Report details fetched successfully.","trendlines":[{"vin":"Overall","vehicleName":"Overall","kpiInfo":{"ecoScoreCompany":{"name":"EcoScore.DriverPerformance.EcoScore","key":"rp_ecoscore","uoM":"","data":{"07/08/2021":"6.3"}},"ecoScore":{"name":"EcoScore.DriverPerformance.EcoScore","key":"rp_ecoscore","uoM":"","data":{"07/08/2021":"6.3"}},"fuelConsumption":{"name":"EcoScore.DriverPerformance.FuelConsumption","key":"rp_fuelconsumption","uoM":"mpg","data":{"07/08/2021":"999918.6"}},"cruiseControlUsage":{"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage","key":"rp_cruisecontrolusage","uoM":"%","data":{"07/08/2021":"77.8"}},"cruiseControlUsage3050":{"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage.CruiseControlUsage30-50km/h(%)","key":"rp_CruiseControlUsage30","uoM":"mph(%)","data":{"07/08/2021":"0.3"}},"cruiseControlUsage5075":{"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage.CruiseControlUsage50-75km/h(%)","key":"rp_cruisecontroldistance50","uoM":"mph(%)","data":{"07/08/2021":"1.6"}},"cruiseControlUsage75":{"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage.CruiseControlUsage>75km/h(%)","key":"rp_cruisecontroldistance75","uoM":"mph(%)","data":{"07/08/2021":"76.0"}},"ptoUsage":{"name":"EcoScore.DriverPerformance.FuelConsumption.PTOUsage(%)","key":"rp_ptousage","uoM":"%","data":{"07/08/2021":"0.0"}},"ptoDuration":{"name":"EcoScore.DriverPerformance.FuelConsumption.PTODuration","key":"rp_ptoduration","uoM":"hh:mm:ss","data":{"07/08/2021":"00:00:00"}},"averageDrivingSpeed":{"name":"EcoScore.DriverPerformance.FuelConsumption.AverageDrivingSpeed","key":"rp_averagedrivingspeed","uoM":"mph","data":{"07/08/2021":"41.6"}},"averageSpeed":{"name":"EcoScore.DriverPerformance.FuelConsumption.AverageSpeed","key":"rp_averagespeed","uoM":"mph","data":{"07/08/2021":"39.3"}},"heavyThrottling":{"name":"EcoScore.DriverPerformance.FuelConsumption.HeavyThrottling(%)","key":"rp_heavythrottling","uoM":"%","data":{"07/08/2021":"0.5"}},"heavyThrottleDuration":{"name":"EcoScore.DriverPerformance.FuelConsumption.HeavyThrottleDuration","key":"rp_heavythrottleduration","uoM":"hh:mm:ss","data":{"07/08/2021":"00:03:15"}},"idling":{"name":"EcoScore.DriverPerformance.FuelConsumption.Idling(%)","key":"rp_idling","uoM":"%","data":{"07/08/2021":"5.5"}},"idleDuration":{"name":"EcoScore.DriverPerformance.FuelConsumption.IdleDuration","key":"rp_idleduration","uoM":"hh:mm:ss","data":{"07/08/2021":"00:39:26"}},"brakingScore":{"name":"EcoScore.DriverPerformance.BrakingScore","key":"rp_brakingscore","uoM":"","data":{"07/08/2021":"6.0"}},"harshBraking":{"name":"EcoScore.DriverPerformance.BrakingScore.HarshBraking(%)","key":"rp_harshbraking","uoM":"%","data":{"07/08/2021":"21.1"}},"harshBrakeDuration":{"name":"EcoScore.DriverPerformance.BrakingScore.HarshBrakeDuration","key":"rp_harshbrakeduration","uoM":"hh:mm:ss","data":{"07/08/2021":"00:04:32"}},"brakeDuration":{"name":"EcoScore.DriverPerformance.BrakingScore.BrakeDuration","key":"rp_brakeduration","uoM":"hh:mm:ss","data":{"07/08/2021":"00:00:00"}},"braking":{"name":"EcoScore.DriverPerformance.BrakingScore.Braking(%)","key":"rp_braking","uoM":"%","data":{"07/08/2021":"3.2"}},"anticipationScore":{"name":"EcoScore.DriverPerformance.AnticipationScore","key":"rp_anticipationscore","uoM":"","data":{"07/08/2021":"6.7"}}}},{"vin":"XLR0998HGFFT76666","vehicleName":"Vehicle 111","kpiInfo":{"ecoScoreCompany":{"name":"EcoScore.DriverPerformance.EcoScore","key":"rp_ecoscore","uoM":"","data":{"07/08/2021":"6.3"}},"ecoScore":{"name":"EcoScore.DriverPerformance.EcoScore","key":"rp_ecoscore","uoM":"","data":{"07/08/2021":"6.3"}},"fuelConsumption":{"name":"EcoScore.DriverPerformance.FuelConsumption","key":"rp_fuelconsumption","uoM":"mpg","data":{"07/08/2021":"999918.6"}},"cruiseControlUsage":{"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage","key":"rp_cruisecontrolusage","uoM":"%","data":{"07/08/2021":"77.8"}},"cruiseControlUsage3050":{"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage.CruiseControlUsage30-50km/h(%)","key":"rp_CruiseControlUsage30","uoM":"mph(%)","data":{"07/08/2021":"0.3"}},"cruiseControlUsage5075":{"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage.CruiseControlUsage50-75km/h(%)","key":"rp_cruisecontroldistance50","uoM":"mph(%)","data":{"07/08/2021":"1.6"}},"cruiseControlUsage75":{"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage.CruiseControlUsage>75km/h(%)","key":"rp_cruisecontroldistance75","uoM":"mph(%)","data":{"07/08/2021":"76.0"}},"ptoUsage":{"name":"EcoScore.DriverPerformance.FuelConsumption.PTOUsage(%)","key":"rp_ptousage","uoM":"%","data":{"07/08/2021":"0.0"}},"ptoDuration":{"name":"EcoScore.DriverPerformance.FuelConsumption.PTODuration","key":"rp_ptoduration","uoM":"hh:mm:ss","data":{"07/08/2021":"00:00:00"}},"averageDrivingSpeed":{"name":"EcoScore.DriverPerformance.FuelConsumption.AverageDrivingSpeed","key":"rp_averagedrivingspeed","uoM":"mph","data":{"07/08/2021":"41.6"}},"averageSpeed":{"name":"EcoScore.DriverPerformance.FuelConsumption.AverageSpeed","key":"rp_averagespeed","uoM":"mph","data":{"07/08/2021":"39.3"}},"heavyThrottling":{"name":"EcoScore.DriverPerformance.FuelConsumption.HeavyThrottling(%)","key":"rp_heavythrottling","uoM":"%","data":{"07/08/2021":"0.5"}},"heavyThrottleDuration":{"name":"EcoScore.DriverPerformance.FuelConsumption.HeavyThrottleDuration","key":"rp_heavythrottleduration","uoM":"hh:mm:ss","data":{"07/08/2021":"00:03:15"}},"idling":{"name":"EcoScore.DriverPerformance.FuelConsumption.Idling(%)","key":"rp_idling","uoM":"%","data":{"07/08/2021":"5.5"}},"idleDuration":{"name":"EcoScore.DriverPerformance.FuelConsumption.IdleDuration","key":"rp_idleduration","uoM":"hh:mm:ss","data":{"07/08/2021":"00:39:26"}},"brakingScore":{"name":"EcoScore.DriverPerformance.BrakingScore","key":"rp_brakingscore","uoM":"","data":{"07/08/2021":"6.0"}},"harshBraking":{"name":"EcoScore.DriverPerformance.BrakingScore.HarshBraking(%)","key":"rp_harshbraking","uoM":"%","data":{"07/08/2021":"21.1"}},"harshBrakeDuration":{"name":"EcoScore.DriverPerformance.BrakingScore.HarshBrakeDuration","key":"rp_harshbrakeduration","uoM":"hh:mm:ss","data":{"07/08/2021":"00:04:32"}},"brakeDuration":{"name":"EcoScore.DriverPerformance.BrakingScore.BrakeDuration","key":"rp_brakeduration","uoM":"hh:mm:ss","data":{"07/08/2021":"00:00:00"}},"braking":{"name":"EcoScore.DriverPerformance.BrakingScore.Braking(%)","key":"rp_braking","uoM":"%","data":{"07/08/2021":"3.2"}},"anticipationScore":{"name":"EcoScore.DriverPerformance.AnticipationScore","key":"rp_anticipationscore","uoM":"","data":{"07/08/2021":"6.7"}}}}]}');
         this.ecoScoreDriverDetailsTrendLine = _trendLine;
-        // console.log("trendlines "+_trendLine);
+        // //console.log("trendlines "+_trendLine);
         this.driverSelected = true;
         this.compareEcoScore = false;
         this.ecoScoreDriver = true;
@@ -1540,10 +1546,12 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       // let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
       let _vehicelIds = [];
       let _driverIds =[];
+      // let _hashDriverIds = [];
       var _minTripVal =0;
       let _minDriverDist=0;
 
       _driverIds = this.selectedEcoScore.selected.map(a => a.driverId);
+      // _hashDriverIds = this.selectedEcoScore.selected.map(a => a.hashedDriverId);
       //_vehicelIds = this.selectedEcoScore.selected.map(a => a.vin);
       if (parseInt(this.ecoScoreForm.controls.vehicle.value) === 0) {
         _vehicelIds = this.vehicleListData.map(data => data.vin);
@@ -1738,7 +1746,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   }
 
     filterVehicleGroups(vehicleSearch){
-    console.log("filterVehicleGroups called");
+    //console.log("filterVehicleGroups called");
     if(!this.vehicleGroupListData){
       return;
     }
@@ -1751,12 +1759,12 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     this.filteredVehicleGroups.next(
       this.vehicleGroupListData.filter(item => item.vehicleGroupName.toLowerCase().indexOf(vehicleSearch) > -1)
     );
-   // console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
+   // //console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
 
   }
 
   filterVehicle(search){
-    console.log("vehicle dropdown called");
+    //console.log("vehicle dropdown called");
     if(!this.vehicleDD){
       return;
     }
@@ -1769,11 +1777,11 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     this.filteredVehicle.next(
       this.vehicleDD.filter(item => item.vin?.toLowerCase()?.indexOf(search) > -1)
     );
-    //console.log("filtered vehicles", this.filteredVehicle);
+    ////console.log("filtered vehicles", this.filteredVehicle);
   }
 
   filterDriver(DriverSearch){
-    console.log("vehicle dropdown called");
+    //console.log("vehicle dropdown called");
     if(!this.driverDD){
       return;
     }
@@ -1786,7 +1794,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     this.filteredDriver.next(
       this.driverDD.filter(item => item.firstName.toLowerCase().indexOf(DriverSearch) > -1)
     );
-    //console.log("filteredDriver vehicles", this.filteredDriver);
+    ////console.log("filteredDriver vehicles", this.filteredDriver);
   }
 
   resetVehicleFilter(){

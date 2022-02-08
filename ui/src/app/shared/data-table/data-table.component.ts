@@ -29,6 +29,7 @@ export class DataTableComponent implements OnInit {
   @Input() showExport;
   @Input() exportFileName;
   @Input() nextScheduleRunDateColumnElements;
+  @Input() createdAtRunDateColumnElements;
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -58,7 +59,7 @@ export class DataTableComponent implements OnInit {
   //   let fileName = this.exportFileName || 'Data';
   //   let actionIndex = this.columnCodes.indexOf('action');
   //   this.matTableExporter.hiddenColumns = [actionIndex];
-  //   console.log("exporter",this.matTableExporter.exporter);
+  //   //console.log("exporter",this.matTableExporter.exporter);
   //   this.matTableExporter.exportTable('csv', { fileName: fileName, sheet: fileName });
   // }
 
@@ -240,7 +241,7 @@ export class DataTableComponent implements OnInit {
   }
 
 //  sortUploadedDate(a,b,isAsc?,col?){
-//    console.log("It is going inside");
+//    //console.log("It is going inside");
 //   return new Date(a).valueOf() - new Date(b).valueOf();
 //  }
 

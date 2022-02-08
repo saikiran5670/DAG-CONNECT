@@ -14,7 +14,7 @@ export class AlertService {
     alertServiceUrl: string = '';
 
   constructor(private httpClient: HttpClient, private config: ConfigService) {
-    this.alertServiceUrl = config.getSettings("foundationServices").alertRESTServiceURL;
+    this.alertServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/alert';
   }
 
   private handleError(errResponse: HttpErrorResponse) {

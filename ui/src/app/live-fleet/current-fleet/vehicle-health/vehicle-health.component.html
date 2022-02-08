@@ -259,6 +259,10 @@
                   <span [ngClass]="[isCurrent ? 'name_small warning_danger' : 'name_small']">{{ translationData.lblActivatedTime || 'Activated Time' }}</span>
                     <div class="full-width" style="font-size: 13px;padding-top: 2px;">{{ warning.warningTimetamp | date: 'yyyy/MM/dd h:mm:ss a' }}</div>
                   </span>
+                  <span *ngIf='isCurrent'>
+                    <span [ngClass]="[isCurrent ? 'name_small warning_danger' : 'name_small']">{{ translationData.lblActivatedTime || 'Activated Time' }}</span>
+                    <div class="full-width" style="font-size: 13px;padding-top: 2px;">{{ warning.warningTimetamp | date: 'yyyy/MM/dd h:mm:ss a' }}</div>
+                  </span>
                   <span *ngIf='warning.warningType=="D"'>                     
                      <span class="name_small">{{ translationData.lblActivatedTime || 'Activated Time' }}</span>                   
                      <div class="full-width" style="font-size: 13px;padding-top: 2px;">{{ warning.warningActivatedForDeactive ? (warning.warningActivatedForDeactive | date: 'yyyy/MM/dd h:mm:ss a') : '-' }}</div>

@@ -489,7 +489,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       fromTripReport: boolean,
       vehicleDropDownId: any
     };
-    //console.log(state)
+    ////console.log(state)
     if(this._state){
       this.fromTripPageBack = true;
     }else{
@@ -505,7 +505,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
 
   ngOnInit(): void {
     this.fleetUtilizationSearchData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
-    // console.log("----globalSearchFilterData---",this.fleetUtilizationSearchData)
+    // //console.log("----globalSearchFilterData---",this.fleetUtilizationSearchData)
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
@@ -638,7 +638,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
         //console.error("No report id found!")
       }
     }, (error)=>{
-      //console.log('Report not found...', error);
+      ////console.log('Report not found...', error);
       reportListData = [{name: 'Fleet Utilisation Report', id: this.tripReportId}];
       // this.getFleetUtilPreferences();
     });
@@ -870,7 +870,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       // 4- Keep only seconds not extracted to minutes:
       minutes = parseInt(minutes);
       seconds = seconds % 60;
-      //console.log( hours+":"+minutes+":"+seconds);
+      ////console.log( hours+":"+minutes+":"+seconds);
       return `${hours < 10 ? '0'+hours : hours} ${this.translationData.lblHour} ${minutes < 10 ? '0'+minutes : minutes} ${this.translationData.lblMinute}`;
     }else{
       return `'00 ${this.translationData.lblHour} 00 ${this.translationData.lblMinute}'`;
@@ -888,7 +888,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       this.setPDFTranslations();
     }, 0);
 
-    ////console.log("process translationData:: ", this.translationData)
+    //////console.log("process translationData:: ", this.translationData)
   }
 
   setPDFTranslations(){
@@ -935,7 +935,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       this.hideloader();
       this.wholeTripData = tripData;
       this.filterDateData();
-      this.updateDataSource(this.dataSource);
+      this.updateDataSource(this.tripData);
     }, (error)=>{
       this.hideloader();
       this.wholeTripData.vinTripList = [];
@@ -953,7 +953,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     // let _yesterday = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
     // let currentStartTime = Util.convertDateToUtc(_last3m); //_last3m.getTime();
     // let currentEndTime = Util.convertDateToUtc(_yesterday); // _yesterday.getTime();
-    //console.log(currentStartTime + "<->" + currentEndTime);
+    ////console.log(currentStartTime + "<->" + currentEndTime);
     let currentStartTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone);
     let currentEndTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);
     // let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
@@ -971,7 +971,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       if(vinArray.length > 0){
         // this.singleVehicle = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i=> i.groupType == 'S');//commenting this line for bug #22168
         distinctVIN = vinArray.filter((value, index, self) => self.indexOf(value) === index);
-        ////console.log("distinctVIN:: ", distinctVIN);
+        //////console.log("distinctVIN:: ", distinctVIN);
         if(distinctVIN.length > 0){
           distinctVIN.forEach(element => {
             // let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element && i.groupType != 'S');
@@ -984,7 +984,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
               });
             }
           });
-          ////console.log("finalVINDataList:: ", finalVINDataList);
+          //////console.log("finalVINDataList:: ", finalVINDataList);
         }
       }else{
         // this.fleetUtilizationSearchData["vehicleGroupDropDownValue"] = '';
@@ -1017,7 +1017,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
     let vehicleData = this.vehicleListData.slice();
     this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
-    //console.log("vehicleDD 1", this.vehicleDD);
+    ////console.log("vehicleDD 1", this.vehicleDD);
     this.vehicleDD.sort(this.compareVin);
     this.resetVehicleFilter();
 
@@ -1053,8 +1053,8 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     //_endTime = Util.getMillisecondsToUTCDate(_endTime, this.prefTimeZone);
 
 
-    //  console.log('start:'+ _startTime, 'end:'+_endTime);
-    //  console.log('start:'+Util.utcToDateConversionTimeZone(this.startDateValue.getTime(), this.prefTimeZone), 'end:'+Util.utcToDateConversionTimeZone(this.endDateValue.getTime(), this.prefTimeZone));
+    //  //console.log('start:'+ _startTime, 'end:'+_endTime);
+    //  //console.log('start:'+Util.utcToDateConversionTimeZone(this.startDateValue.getTime(), this.prefTimeZone), 'end:'+Util.utcToDateConversionTimeZone(this.endDateValue.getTime(), this.prefTimeZone));
     let _vinData: any = [];
     if( parseInt(this.tripForm.controls.vehicle.value ) == 0){
          _vinData = this.vehicleDD.filter(i => i.vehicleId != 0).map(item => item.vin);
@@ -1075,7 +1075,8 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       this.reportService.getFleetDetails(searchDataParam).subscribe((_fleetData: any) => {
 
        this.tripData = this.reportMapService.getConvertedFleetDataBasedOnPref(_fleetData["fleetDetails"], this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
-      this.setTableInfo();
+      console.log("fleet utilisation trip data:", this.tripData);
+       this.setTableInfo();
       this.updateDataSource(this.tripData);
       this.hideloader();
       this.isChartsOpen = true;
@@ -1097,7 +1098,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       this.timePieChartData = [percentage2, 100- percentage2];
       this.idleDurationCount();
       }, (error)=>{
-         //console.log(error);
+         ////console.log(error);
         this.hideloader();
         this.tripData = [];
          this.tableInfoObj = {};
@@ -1422,14 +1423,14 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
         color: '#4679CC',       
          }],   
        };
-      // console.log('1:',this.chartOptions1,'2:',this.chartOptions1)        
+      // //console.log('1:',this.chartOptions1,'2:',this.chartOptions1)        
       }
 
   calendarSelectedValues(element: any){
       switch(this.calendarpreferenceOption){
       case "rp_fu_report_calendarview_averageweight": {  // avg weight
         this.calendarOptions.events =[ {title : `${this.reportMapService.convertWeightUnits(element.averageweight, this.prefUnitFormat, true)}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}];
-        //console.log(this.calendarOptions.events);
+        ////console.log(this.calendarOptions.events);
         break;
       }
       case "rp_fu_report_calendarview_idleduration":{ // idle duration
@@ -1507,7 +1508,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
   }
 
   updateDataSource(tableData: any) {
-    //console.log("tableData", tableData);
+    ////console.log("tableData", tableData);
     this.initData = tableData;
     this.showMap = false;
     this.selectedTrip.clear();
@@ -1517,18 +1518,18 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       this.dataSource.sort = this.sort;
       this.dataSource.filterPredicate = function(data, filter: any){
         return data.vehicleName.toString().toLowerCase().includes(filter) ||
-            data.vin.toString().toLowerCase().includes(filter) ||
-            data.registrationNumber.toString().toLowerCase().includes(filter) ||
-            data.convertedDistance.toString().toLowerCase().includes(filter) ||
-            data.numberOfTrips.toString().toLowerCase().includes(filter)  ||
-            data.convertedTripTime.toString().toLowerCase().includes(filter) ||
-            data.convertedDrivingTime.toString().toLowerCase().includes(filter)  ||
-            data.convertedIdleDuration.toString().toLowerCase().includes(filter) ||
-            data.convertedStopTime.toLowerCase().toString().includes(filter) ||
-            data.convertedAverageDistance.toLowerCase().toString().includes(filter) ||
-            data.convertedAverageSpeed.toLowerCase().toString().includes(filter) ||
-            data.convertedAverageWeight.toLowerCase().toString().includes(filter) ||
-            data.convertedOdometer.toLowerCase().toString().includes(filter)
+            data.vin?.toString().toLowerCase().includes(filter) ||
+            data.registrationNumber?.toString().toLowerCase().includes(filter) ||
+            data.convertedDistance?.toString().toLowerCase().includes(filter) ||
+            data.numberOfTrips?.toString().toLowerCase().includes(filter)  ||
+            data.convertedTripTime?.toString().toLowerCase().includes(filter) ||
+            data.convertedDrivingTime?.toString().toLowerCase().includes(filter)  ||
+            data.convertedIdleDuration?.toString().toLowerCase().includes(filter) ||
+            data.convertedStopTime?.toString().toLowerCase().includes(filter) ||
+            data.convertedAverageDistance?.toString().toLowerCase().includes(filter) ||
+            data.convertedAverageSpeed?.toString().toLowerCase().includes(filter) ||
+            data.convertedAverageWeight?.toString().toLowerCase().includes(filter) ||
+            data.convertedOdometer?.toString().toLowerCase().includes(filter)
    }
       // this.dataSource.sortData = (data: String[], sort: MatSort) => {
       //   const isAsc = sort.direction === 'asc';
@@ -1574,7 +1575,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
         //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
         let vehicleData = this.vehicleListData.slice();
         this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
-        //console.log("vehicleDD 2", this.vehicleDD);
+        ////console.log("vehicleDD 2", this.vehicleDD);
       }else{
       //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
       let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
@@ -1582,7 +1583,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
           this.vehicleDD = [];
           search.forEach(element => {
             this.vehicleDD.push(element);
-            //console.log("vehicleDD 3", this.vehicleDD);
+            ////console.log("vehicleDD 3", this.vehicleDD);
 
           });
         }
@@ -1787,7 +1788,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
 
   setDefaultTodayDate(){
     if(!this.internalSelection && this.fleetUtilizationSearchData.modifiedFrom !== "") {
-      //console.log("---if fleetUtilizationSearchData startDateStamp exist")
+      ////console.log("---if fleetUtilizationSearchData startDateStamp exist")
       if(this.fleetUtilizationSearchData.timeRangeSelection !== ""){
         this.selectionTab = this.fleetUtilizationSearchData.timeRangeSelection;
       }else{
@@ -2016,7 +2017,7 @@ getAllSummaryData(){
 
   this.initData.forEach(item => {
     let idleDurations = Util.getHhMmTime(parseFloat(item.idleDuration));
-   //console.log("initData", this.initData);
+   ////console.log("initData", this.initData);
   worksheet.addRow([item.vehicleName,item.vin, item.registrationNumber,item.convertedDistance,
       item.numberOfTrips,item.convertedTripTime, item.convertedDrivingTime, idleDurations,
       item.convertedStopTime, item.convertedAverageDistance, item.convertedAverageSpeed, item.convertedAverageWeight,
@@ -2109,7 +2110,7 @@ getAllSummaryData(){
 
     this.initData.forEach(item => {
       let idleDurations = Util.getHhMmTime(parseFloat(item.idleDuration));
-            // console.log("initData", this.initData);
+            // //console.log("initData", this.initData);
        prepare.push([item.vehicleName,item.vin, item.registrationNumber,item.convertedDistance,
          item.numberOfTrips,item.convertedTripTime, item.convertedDrivingTime, idleDurations,
          item.convertedStopTime, item.convertedAverageDistance, item.convertedAverageSpeed, item.convertedAverageWeight,
@@ -2155,7 +2156,7 @@ getAllSummaryData(){
       body: prepare,
       theme: 'striped',
       didDrawCell: data => {
-        //console.log(data.column.index)
+        ////console.log(data.column.index)
       }
     })
     doc.save('tripFleetUtilisation.pdf');
@@ -2192,7 +2193,7 @@ getAllSummaryData(){
   }
 
   filterVehicleGroups(vehicleSearch){
-    //console.log("filterVehicleGroups called");
+    ////console.log("filterVehicleGroups called");
     if(!this.vehicleGrpDD){
       return;
     }
@@ -2205,12 +2206,12 @@ getAllSummaryData(){
     this.filteredVehicleGroups.next(
       this.vehicleGrpDD.filter(item => item.vehicleGroupName.toLowerCase().indexOf(vehicleSearch) > -1)
     );
-    //console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
+    ////console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
 
   }
 
   filterVehicle(VehicleSearch){
-    //console.log("vehicle dropdown called");
+    ////console.log("vehicle dropdown called");
     if(!this.vehicleDD){
       return;
     }
@@ -2223,7 +2224,7 @@ getAllSummaryData(){
     this.filteredVehicle.next(
       this.vehicleDD.filter(item => item.vin?.toLowerCase()?.indexOf(VehicleSearch) > -1)
     );
-    //console.log("filtered vehicles", this.filteredVehicle);
+    ////console.log("filtered vehicles", this.filteredVehicle);
   }
 
   resetVehicleFilter(){

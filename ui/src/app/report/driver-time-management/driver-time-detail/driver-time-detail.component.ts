@@ -177,15 +177,15 @@ export class DriverTimeDetailComponent implements OnInit {
       if(_startTime == _endTime || (_startTime) > (_endTime)){
         isValid=false;
       }
-      // console.log(this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false));
+      // //console.log(this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false));
       if(isValid && element.duration > 0){
-        // console.log('start'+element.startTime+' end '+element.endTime+' activity'+element.activityDate+' duration'+element.duration);
+        // //console.log('start'+element.startTime+' end '+element.endTime+' activity'+element.activityDate+' duration'+element.duration);
         
         // startTime=Util.convertUtcToDateFormat2(_startTimeDate, this.prefTimeZone);------
         let formatDate = Util.convertUtcToDateAndTimeFormat(_startTimeDate, this.prefTimeZone,this.dateFormats);
        startTime = formatDate[0];
         // startTime=this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false);
-        // console.log('sta'+_startTime+' end'+_endTime+' sa'+Util.convertUtcToDateStart(element.startTime, this.prefTimeZone)+' ac'+Util.convertUtcToDateFormat2(element.activityDate, this.prefTimeZone));
+        // //console.log('sta'+_startTime+' end'+_endTime+' sa'+Util.convertUtcToDateStart(element.startTime, this.prefTimeZone)+' ac'+Util.convertUtcToDateFormat2(element.activityDate, this.prefTimeZone));
         let restObj={
           x :  _startTimeDate,
           // actualDate: this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false),
@@ -197,7 +197,7 @@ export class DriverTimeDetailComponent implements OnInit {
         const found = this.dayWiseSummaryList.some(el => el.startTime === startTime);
         if (!found) this.dayWiseSummaryList.push({ startTime: startTime, restTime: 0,  availableTime: 0, workTime: 0, driveTime: 0});
         currentArray=this.dayWiseSummaryList.filter(el => el.startTime === startTime)[0];
-        // console.log(currentArray[0].date+ ' ' + currentArray[0].restTime + ' ' + currentArray[0].workTime + ' ' + currentArray[0].availableTime + ' ' + currentArray[0].serviceTime);
+        // //console.log(currentArray[0].date+ ' ' + currentArray[0].restTime + ' ' + currentArray[0].workTime + ' ' + currentArray[0].availableTime + ' ' + currentArray[0].serviceTime);
         if(element.code === 0){
           restObj['color']='#8ac543';
           restObj['type']=this.translationData.lblRest;
@@ -223,7 +223,7 @@ export class DriverTimeDetailComponent implements OnInit {
           newObj.push(restObj);
           currentArray['driveTime']= currentArray.driveTime + element.duration;
         }
-        // console.log(currentArray.date+ ' ' + currentArray.restTime + ' ' + currentArray.workTime + ' ' + currentArray.availableTime + ' ' + currentArray.serviceTime);
+        // //console.log(currentArray.date+ ' ' + currentArray.restTime + ' ' + currentArray.workTime + ' ' + currentArray.availableTime + ' ' + currentArray.serviceTime);
     }
     });
     let totDriveTime=0;
@@ -246,7 +246,7 @@ export class DriverTimeDetailComponent implements OnInit {
       element['availableTime'] = Util.getHhMmTimeFromMS(element.availableTime);
       element['workTime'] = Util.getHhMmTimeFromMS(element.workTime);
       element['driveTime'] = Util.getHhMmTimeFromMS(element.driveTime);
-      // console.log(element);
+      // //console.log(element);
     });
     this.totalDriveTime = Util.getHhMmTimeFromMS(totDriveTime);
     this.totalAvailableTime = Util.getHhMmTimeFromMS(totAvailableTime);
@@ -255,7 +255,7 @@ export class DriverTimeDetailComponent implements OnInit {
     this.totalServiceTime = Util.getHhMmTimeFromMS(totServiceTime);
     const tz=this.prefTimeZone;
     this.updateDataSource(this.dayWiseSummaryList);
-      // console.log("newObj" +JSON.stringify(newObj));
+      // //console.log("newObj" +JSON.stringify(newObj));
       this.chartOptions = {
         title: {
           enabled: false,
@@ -437,7 +437,7 @@ export class DriverTimeDetailComponent implements OnInit {
 
   getActualDate(_utc: any){
     let date=this.reportMapService.getStartTime(_utc,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false);
-    console.log(date);
+    //console.log(date);
     return date;
   }
 
@@ -450,7 +450,7 @@ export class DriverTimeDetailComponent implements OnInit {
   tableInfoObj = {};
  
   onZoomReset(){
-    console.log('reset')
+    //console.log('reset')
   }
 
   updateDataSource(tableData: any) {
@@ -463,11 +463,11 @@ export class DriverTimeDetailComponent implements OnInit {
   }
 
   public chartClicked({ event, active }: { event: MouseEvent, active: {}[] }): void {
-    //console.log(event, active);
+    ////console.log(event, active);
   }
 
   public chartHovered({ event, active }: { event: MouseEvent, active: {}[] }): void {
-    //console.log(event, active);
+    ////console.log(event, active);
   }
   
   applyFilter(filterValue: string) {
@@ -593,7 +593,7 @@ export class DriverTimeDetailComponent implements OnInit {
       body: prepare,
       theme: 'striped',
       didDrawCell: data => {
-        //console.log(data.column.index)
+        ////console.log(data.column.index)
       }
     })
     // below line for Download PDF document  

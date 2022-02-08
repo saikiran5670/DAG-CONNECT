@@ -161,7 +161,7 @@ export class UserGroupManagementComponent implements OnInit {
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    //console.log("process translationData:: ", this.translationData)
+    ////console.log("process translationData:: ", this.translationData)
   }
 
   applyFilter(filterValue: string) {
@@ -296,11 +296,11 @@ export class UserGroupManagementComponent implements OnInit {
               this.notDeleteDialogRef.afterClosed().subscribe((res: any) => {
               });
             }else if(!deleteResp.isDeleted && deleteResp.canDelete){ // exception/error
-              console.log('error while deleting...')
+              //console.log('error while deleting...')
             }else if(deleteResp.isDeleted && !deleteResp.canDelete){ // NA
-              console.log('error while deleting...')
+              //console.log('error while deleting...')
             }else{
-              console.log('error while deleting...')
+              //console.log('error while deleting...')
             }
           }
         }, (error)=>{

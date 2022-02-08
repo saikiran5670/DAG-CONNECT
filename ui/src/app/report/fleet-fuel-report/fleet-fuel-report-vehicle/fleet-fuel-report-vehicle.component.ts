@@ -755,7 +755,7 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
       "LanguageCode": "EN-GB"
     }
     this.reportService.getFleetFuelDetails(getFleetFuelObj).subscribe((data:any) => {
-    console.log("---getting data from getFleetFuelDetailsAPI---",data)
+    //console.log("---getting data from getFleetFuelDetailsAPI---",data)
     this.displayData = data["fleetFuelDetails"];
     this.FuelData = this.reportMapService.getConvertedFleetFuelDataBasedOnPref(this.displayData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
     //this.setTableInfo();
@@ -811,7 +811,7 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
       }
 
     }, (error)=>{
-      console.log('Report not found...', error);
+      //console.log('Report not found...', error);
       reportListData = [{name: 'Fleet Fuel Report', id: this.fleetFuelReportId}];
       // this.getTripReportPreferences();
     });
@@ -954,7 +954,7 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
 
 
        }, (error)=>{
-          //console.log(error);
+          ////console.log(error);
          this.hideloader();
          this.tripData = [];
           this.tableInfoObj = {};
@@ -1742,7 +1742,7 @@ setPrefFormatDate(){
 
 setDefaultTodayDate(){
   if(!this.internalSelection && this.fleetFuelSearchData.modifiedFrom !== "") {
-    //console.log("---if fleetUtilizationSearchData startDateStamp exist")
+    ////console.log("---if fleetUtilizationSearchData startDateStamp exist")
     if(this.fleetFuelSearchData.timeRangeSelection !== ""){
       this.selectionTab = this.fleetFuelSearchData.timeRangeSelection;
     }else{
@@ -1884,7 +1884,7 @@ setDefaultTodayDate(){
           let count = this.vehicleGroupListData.filter(j => j.vehicleGroupId == element);
           if(count.length > 0){
             this.vehicleGrpDD.push(count[0]); //-- unique Veh grp data added
-            console.log("vehicleGrpDD 1", this.vehicleGrpDD);
+            //console.log("vehicleGrpDD 1", this.vehicleGrpDD);
 
             this.vehicleGrpDD.sort(this.compare);
             //this.vehicleDD.sort(this.compare);
@@ -1900,7 +1900,7 @@ setDefaultTodayDate(){
 
     let vehicleData = this.vehicleListData.slice();
     this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
-    console.log("vehicleDD 1", this.vehicleDD);
+    //console.log("vehicleDD 1", this.vehicleDD);
     this.vehicleDD.sort(this.compareVin);
     this.resetVehicleFilter();
 
@@ -1955,14 +1955,14 @@ setVehicleGroupAndVehiclePreSelection() {
       if(parseInt(event.value) == 0){ //-- all group
         let vehicleData = this.vehicleListData.slice();
         this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
-        console.log("vehicleDD 2", this.vehicleDD);
+        //console.log("vehicleDD 2", this.vehicleDD);
       }else{
       let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
         if(search.length > 0){
           this.vehicleDD = [];
           search.forEach(element => {
             this.vehicleDD.push(element);
-            console.log("vehicleDD 3", this.vehicleDD);
+            //console.log("vehicleDD 3", this.vehicleDD);
           });
         }
       }
@@ -2363,7 +2363,7 @@ setVehicleGroupAndVehiclePreSelection() {
     //    body: prepareRanking,
     //    theme: 'striped',
     //    didDrawCell: data => {
-    //      //console.log(data.column.index)
+    //      ////console.log(data.column.index)
     //    }
     //  })
 
@@ -2702,7 +2702,7 @@ setVehicleGroupAndVehiclePreSelection() {
          body: prepareRanking,
          theme: 'striped',
          didDrawCell: data => {
-           //console.log(data.column.index)
+           ////console.log(data.column.index)
          }
        })
         doc.addPage();
@@ -2720,7 +2720,7 @@ setVehicleGroupAndVehiclePreSelection() {
       body: prepare,
       theme: 'striped',
       didDrawCell: data => {
-        //console.log(data.column.index)
+        ////console.log(data.column.index)
       }
     })
 
@@ -2739,7 +2739,7 @@ setVehicleGroupAndVehiclePreSelection() {
   onVehicleSelected(vehData:any){
     this.resetChartData();
     let s = this.vehicleGrpDD.filter(i=>i.vehicleGroupId==this.tripForm.controls.vehicleGroup.value)
-    console.log("vehicleGrpDD 2", this.vehicleGrpDD);
+    //console.log("vehicleGrpDD 2", this.vehicleGrpDD);
 
     let _s = this.vehicleDD.filter(i=>i.vin==vehData.vin)
     this.tripForm.get('vehicle').setValue(_s.length>0 ?  _s[0].vehicleId : 0)
@@ -2792,8 +2792,8 @@ setVehicleGroupAndVehiclePreSelection() {
     case 'idleDuration': {
       let s = this.displayData.forEach(element => {
         // let convertedDuration:any = this.convertTimeToMinutes(element.idleDuration);
-        // console.log("idleDuration", element.idleDuration);
-        // console.log("convertedDuration", convertedDuration);
+        // //console.log("idleDuration", element.idleDuration);
+        // //console.log("convertedDuration", convertedDuration);
         sum += parseFloat(element.idleDuration); // 16059 - time mismatch with dashboard.
         //  sum += parseFloat(element.idleDuration);
         });
@@ -2836,7 +2836,7 @@ setVehicleGroupAndVehiclePreSelection() {
   }
 
   filterVehicleGroups(vehicleSearch){
-    console.log("filterVehicleGroups called");
+    //console.log("filterVehicleGroups called");
     if(!this.vehicleGrpDD){
       return;
     }
@@ -2849,12 +2849,12 @@ setVehicleGroupAndVehiclePreSelection() {
     this.filteredVehicleGroups.next(
       this.vehicleGrpDD.filter(item => item.vehicleGroupName.toLowerCase().indexOf(vehicleSearch) > -1)
     );
-    console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
+    //console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
 
   }
 
   filterVehicle(VehicleSearch){
-    console.log("vehicle dropdown called");
+    //console.log("vehicle dropdown called");
     if(!this.vehicleDD){
       return;
     }
@@ -2867,7 +2867,7 @@ setVehicleGroupAndVehiclePreSelection() {
     this.filteredVehicle.next(
       this.vehicleDD.filter(item => item.vin?.toLowerCase()?.indexOf(VehicleSearch) > -1)
     );
-    console.log("filtered vehicles", this.filteredVehicle);
+    //console.log("filtered vehicles", this.filteredVehicle);
   }
 
 

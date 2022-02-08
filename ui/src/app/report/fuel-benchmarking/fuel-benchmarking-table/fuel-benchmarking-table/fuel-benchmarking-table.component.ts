@@ -50,6 +50,8 @@ export class FuelBenchmarkingTableComponent implements OnInit {
     [55, 25, 20]
   ];
   doughnutChartType: ChartType = 'doughnut';
+  public pieChartType: ChartType = 'pie';  
+  chartType:any;
   // accountOrganizationId: any;
   // accountId: any;
 
@@ -77,7 +79,7 @@ export class FuelBenchmarkingTableComponent implements OnInit {
   }
 
   loadBenchmarkTable() {
-    // //console.log("=====prefUnitFormat====",this.prefUnitFormat)
+    // ////console.log("=====prefUnitFormat====",this.prefUnitFormat)
     //to check if benchmark selection chage
     if (this.benchmarkSelectionChange && this.displayedColumns.length > 1) {
       this.displayedColumns = this.displayedColumns.splice(0, 1)
@@ -126,7 +128,7 @@ export class FuelBenchmarkingTableComponent implements OnInit {
           let indCol = Number(colIndx) - 1;
           this.dataSource[colIndx][column] = this.updateDoughnutChartData(this.dataSource[indCol][column]);
         }else if(this.firstColumn[colIndx] == 'numberOfActiveVehicles'){
-          //console.log("total vehicles", data);
+          ////console.log("total vehicles", data);
           this.dataSource[colIndx][column] = data.fuelBenchmarkDetails.numberOfActiveVehicles + "/" + data.fuelBenchmarkDetails.numberOfTotalVehicles;
         }
         else {
@@ -155,9 +157,9 @@ export class FuelBenchmarkingTableComponent implements OnInit {
           lowthresholdValue = pref.thresholdValue;
         } else if (pref.key == "rp_fb_chart_fuelconsumption") {
           if(pref.chartType == "P") {
-            this.doughnutChartType = 'pie';
+            this.chartType = 'pie';
           } else {
-            this.doughnutChartType = 'doughnut';
+            this.chartType = 'doughnut';
           }
         }
       }

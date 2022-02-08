@@ -303,7 +303,7 @@ getBreadcum(){
   }
 
   setDefaultValue(){
-    console.log(this.levelList);
+    //console.log(this.levelList);
     this.relationshipFormGroup.get("level").setValue( this.levelList[0].id);
     this.relationshipFormGroup.get("code").setValue(this.codeList[0].name);
   }

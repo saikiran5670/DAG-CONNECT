@@ -15,7 +15,7 @@ export class LandmarkGroupService {
     landmarkGroupServiceUrl: string = '';
 
   constructor(private httpClient: HttpClient, private config: ConfigService) {
-    this.landmarkGroupServiceUrl = config.getSettings("foundationServices").landmarkGroupRESTServiceURL;
+    this.landmarkGroupServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/landmarkgroup';
   }
 
   private handleError(errResponse: HttpErrorResponse) {

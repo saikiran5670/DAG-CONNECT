@@ -7,7 +7,7 @@ import { SearchCriteriaComponent } from './search-criteria/search-criteria.compo
 @Component({
   selector: 'app-vehicle-performance-report',
   templateUrl: './vehicle-performance-report.component.html',
-  styleUrls: ['./vehicle-performance-report.component.css']
+  styleUrls: ['./vehicle-performance-report.component.less']
 })
 export class VehiclePerformanceReportComponent implements OnInit {
   @ViewChild('searchCriteria') searchCriteria : SearchCriteriaComponent
@@ -332,7 +332,7 @@ export class VehiclePerformanceReportComponent implements OnInit {
       if(xaxisObj[0] && xaxisObj[0].axisvalues) {
         let tempArr = xaxisObj[0].axisvalues.split(',')
         tempArr = tempArr.map(el => el.replace(/'/g, ''));
-        console.log(tempArr);
+        //console.log(tempArr);
         return tempArr;
       }
     }

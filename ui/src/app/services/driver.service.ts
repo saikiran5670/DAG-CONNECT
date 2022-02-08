@@ -10,7 +10,7 @@ export class DriverService {
     driverServiceUrl: string = '';
 
     constructor(private httpClient: HttpClient, private config: ConfigService) {
-      this.driverServiceUrl = config.getSettings("foundationServices").driverRESTServiceURL;
+      this.driverServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/driver';
     }
 
     generateHeader(){
