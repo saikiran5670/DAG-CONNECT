@@ -392,6 +392,7 @@ export class AccountService {
     ).pipe(catchError(this.handleError));
   }
 
+
   getMenuFeatures(data): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {

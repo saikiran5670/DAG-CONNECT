@@ -22,7 +22,7 @@ import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { Util } from '../app/shared/util';
 import { element } from 'protractor';
 import { HttpClient } from '@angular/common/http';
-import { SignalRService } from './services/sampleService/signalR.service';
+import { SignalRService } from './services/signalR.service';
 import { AlertService } from './services/alert.service';
 
 @Component({

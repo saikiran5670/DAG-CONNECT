@@ -31,7 +31,7 @@ import { CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteDat
 import { treeExportFormatter } from 'angular-slickgrid';
 import { ReplaySubject } from 'rxjs';
 import { DataInterchangeService } from '../../services/data-interchange.service';
-
+import { MessageService } from '../../services/message.service';
 declare var H: any;
 
 @Component({
@@ -186,13 +186,13 @@ public filteredVehicleNames: ReplaySubject<String[]> = new ReplaySubject<String[
 
 
 
-constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private landmarkCategoryService: LandmarkCategoryService, private router: Router, private organizationService: OrganizationService, private _configService: ConfigService, private hereService: HereService,private completerService: CompleterService, private dataInterchangeService: DataInterchangeService) {
+constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private landmarkCategoryService: LandmarkCategoryService, private router: Router, private organizationService: OrganizationService, private _configService: ConfigService, private hereService: HereService,private completerService: CompleterService, private dataInterchangeService: DataInterchangeService, private messageService : MessageService,) {
   // this.map_key =  _configService.getSettings("hereMap").api_key;
   this.map_key = localStorage.getItem("hereMapsK");
   // setTimeout(() => {
   //   this.initMap();
   //   }, 10);
-
+  this.sendMessage();
   this.dataInterchangeService.prefSource$.subscribe((prefResp: any) => {
     if(prefResp && (prefResp.type == 'logbook') && prefResp.prefdata){
       this.displayedColumns = [ 'all','alertLevel', 'alertGeneratedTime', 'vehicleRegNo', 'alertType', 'alertName', 'alertCategory', 'tripStartTime', 'tripEndTime', 'vehicleName','vin','occurrence','thresholdValue'];
@@ -359,6 +359,11 @@ ngOnDestroy(){
 
   }
 
+  sendMessage(): void {
+    // send message to subscribers via observable subject
+    this.messageService.sendMessage('refreshTimer');
+  }
+
   changeHerePOISelection(event: any, hereData: any){
     this.herePOIArr = [];
     this.selectedHerePOI.selected.forEach(item => {
@@ -410,14 +415,15 @@ ngOnDestroy(){
     }
     this.setDefaultStartEndTime();
     this.setPrefFormatDate();
-    if(!this._state){
-      this.selectionTimeRange('today');
-    // this.setDefaultTodayDate();
-    }
-    this.getReportPreferences();
     setTimeout(() => {
       this.loadWholeTripData();
       },5);
+    // if(!this._state){
+    //   this.selectionTimeRange('today');
+    // this.setDefaultTodayDate();
+    // }
+    this.getReportPreferences();
+
   }
 
   getReportPreferences(){
@@ -760,6 +766,7 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
       this.wholeLogBookData = logBookDataData;
       ////console.log("this.wholeLogBookData:---------------------------: ", this.wholeLogBookData);
       if(!this._state){
+        this.selectionTimeRange('today');
       this.filterDateData();
       }
       // else{
@@ -1645,8 +1652,7 @@ let prepare = []
       }
     }
     this.resetLogFormControlValue(); // extra addded as per discuss with Atul
-    //commenting below line as this method is called in loadWholeTripData().
-    //this.filterDateData(); // extra addded as per discuss with Atul
+     this.filterDateData(); // extra addded as per discuss with Atul
   
   }
 

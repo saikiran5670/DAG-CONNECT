@@ -27,7 +27,7 @@ export type ChartOptions = {
 @Component({
   selector: 'app-heat-bubble-chart',
   templateUrl: './heat-bubble-chart.component.html',
-  styleUrls: ['./heat-bubble-chart.component.css']
+  styleUrls: ['./heat-bubble-chart.component.less']
 })
 export class HeatBubbleChartComponent implements OnInit, AfterViewChecked {
   @ViewChild("chart") chart: ChartComponent;

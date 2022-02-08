@@ -4,7 +4,6 @@ import { FileValidator } from 'ngx-material-file-input';
 import * as FileSaver from 'file-saver';
 import { Workbook } from 'exceljs';
 import * as XLSX from 'xlsx';
-import { packageModel } from '../../models/package.model';
 import { PackageService } from '../../services/package.service';
 import { POIService } from '../../services/poi.service';
 import { GeofenceService } from '../../services/landmarkGeofence.service';
@@ -66,7 +65,6 @@ export class CommonImportComponent implements OnInit {
     }
     else if(this.importFileComponent === 'geofence'){
       this.fileExtension = '.gpx';
-     // this.fileIcon = 'assets/images/icons/microsoftExcel/gpx_icon_30.png';
     }
     this.importPackageFormGroup = this._formBuilder.group({
       uploadFile: [
@@ -233,7 +231,7 @@ export class CommonImportComponent implements OnInit {
   }
 
   preparePackageDataToImport(removableInput){
-    let packagesToImport = [];//new packageModel().importPackage;
+    let packagesToImport = [];
     for(let i = 0; i < this.filelist.length ; i++){
       packagesToImport.push(
         {
@@ -463,7 +461,7 @@ export class CommonImportComponent implements OnInit {
 
   // POI import functions
   preparePOIDataToImport(removableInput){
-    let packagesToImport = [];//new packageModel().importPackage;
+    let packagesToImport = [];
     for(let i = 0; i < this.filelist.length ; i++){
       packagesToImport.push(
         {

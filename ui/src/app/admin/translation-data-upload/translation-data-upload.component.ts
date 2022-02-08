@@ -302,7 +302,7 @@ export class TranslationDataUploadComponent implements OnInit {
           let _fileName = this.uploadTranslationDataFormGroup.controls.uploadFile.value._fileNames;
           if(_fileName && _fileName != '' && _fileName.includes('.xlsx')){
             let charLength = _fileName.split('.xlsx')[0].length;
-            if(charLength > 45){ // file length error
+            if(charLength > 50){ // file length error
               this.excelFileLengthFlag = true;
             }
           }
