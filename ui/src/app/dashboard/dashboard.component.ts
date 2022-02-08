@@ -200,7 +200,7 @@ export class DashboardComponent implements OnInit {
         this.getVinsForDashboard();
       });
     }, (error) => {
-      console.log('Report not found...', error);
+      //console.log('Report not found...', error);
       this.hideloader();
       reportListData = [];
     });
@@ -230,7 +230,7 @@ export class DashboardComponent implements OnInit {
     }, (error) => {
       this.hideloader();
       this.noDataFound = true;
-      console.log('No data found for this organisation dashboard...');
+      //console.log('No data found for this organisation dashboard...');
     });
   }
 

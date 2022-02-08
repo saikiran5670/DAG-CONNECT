@@ -92,7 +92,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
     } else { // org pref
       this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any) => {
         this.proceedStep(prefData, orgPref);
-        console.log("orgPref", orgPref)
+        //console.log("orgPref", orgPref)
       }, (error) => { // failed org API
         let pref: any = {};
         this.proceedStep(prefData, pref);
@@ -332,7 +332,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
     }
     let vehicleData = this.vehicleListData.slice();
     this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
-    console.log("vehicleDD 1", this.vehicleDD);
+    //console.log("vehicleDD 1", this.vehicleDD);
     this.vehicleDD.sort(this.compareVin);
     this.resetVehicleFilter();
   }
@@ -441,14 +441,14 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
       if (parseInt(event.value) == 0) { //-- all group
         let vehicleData = this.vehicleListData.slice();
         this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
-        console.log("vehicleDD 2", this.vehicleDD);
+        //console.log("vehicleDD 2", this.vehicleDD);
       } else {
         let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
         if (search.length > 0) {
           this.vehicleDD = [];
           search.forEach(element => {
             this.vehicleDD.push(element);
-            console.log("vehicleDD 3", this.vehicleDD);
+            //console.log("vehicleDD 3", this.vehicleDD);
           });
         }
       }
@@ -625,7 +625,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   }
    
     filterVehicleGroups(vehicleSearch){
-    console.log("filterVehicleGroups called");
+    //console.log("filterVehicleGroups called");
     if(!this.vehicleGrpDD){
       return;
     }
@@ -638,12 +638,12 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
     this.filteredVehicleGroups.next(
       this.vehicleGrpDD.filter(item => item.vehicleGroupName.toLowerCase().indexOf(vehicleSearch) > -1)
     );
-    console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
+    //console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
 
   }
 
   filterVehicle(search){
-    console.log("vehicle dropdown called");
+    //console.log("vehicle dropdown called");
     if(!this.vehicleDD){
       return;
     }
@@ -656,7 +656,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
     this.filteredVehicle.next(
       this.vehicleDD.filter(item => item.vin.toLowerCase().indexOf(search) > -1)
     );
-    console.log("filtered vehicles", this.filteredVehicle);
+    //console.log("filtered vehicles", this.filteredVehicle);
   }
   
   resetVehicleFilter(){

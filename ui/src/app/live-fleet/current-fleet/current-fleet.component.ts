@@ -44,6 +44,7 @@ export class CurrentFleetComponent implements OnInit {
   filterData : any;
   filterPOIData : any;
   showLoadingIndicator: boolean = false;
+  totalVehicleCount: number;
 
   // detailsData =[
   //   {
@@ -200,7 +201,7 @@ export class CurrentFleetComponent implements OnInit {
         console.error("No report id found!")
       }
     }, (error)=>{
-      console.log('Report not found...', error);
+      //console.log('Report not found...', error);
       reportListData = [{name: 'Fleet Overview', id: this.currentFleetReportId}];
       // this.callPreferences();
     });
@@ -213,7 +214,7 @@ export class CurrentFleetComponent implements OnInit {
       this.getTranslatedColumnName(_preferencesData);
       this.getFilterPOIData();
     }, (error)=>{
-      console.log('Pref not found...');
+      //console.log('Pref not found...');
       this.hideLoader();
       this.getFilterPOIData();
     });
@@ -273,8 +274,9 @@ export class CurrentFleetComponent implements OnInit {
       "languagecode":"cs-CZ"
     }
     this.reportService.getFleetOverviewDetails(objData).subscribe((data: any) => {
+      this.totalVehicleCount = data.visibleVinsCount;
       this.hideLoader();
-      let processedData = this.fleetMapService.processedLiveFLeetData(data);
+      let processedData = this.fleetMapService.processedLiveFLeetData(data.fleetOverviewDetailList);
       this.detailsData = processedData;
       this.getFilterData();
       let _dataObj = {
@@ -282,14 +284,19 @@ export class CurrentFleetComponent implements OnInit {
         data: this.detailsData
       }
       this.dataInterchangeService.getVehicleData(_dataObj);
-      if (this._state && this._state.data) {
-        this.userPreferencesSetting();
-        this.toBack();
-      }
+      // if (this._state && this._state.data) {
+      //   this.userPreferencesSetting();
+      //   this.toBack();
+      // }
     }, (err) => {
       this.hideLoader();
       this.getFilterData();
+      this.detailsData = [];
     });
+    if (this._state && this._state.data) {
+      this.userPreferencesSetting();
+      this.toBack();
+    }
   }
 
   getFilterPOIData(){

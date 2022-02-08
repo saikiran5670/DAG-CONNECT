@@ -15,7 +15,7 @@ export class AccountService {
   accountServiceUrl: string = '';
 
   constructor(private httpClient: HttpClient, private config: ConfigService) {
-    this.accountServiceUrl = config.getSettings("foundationServices").accountRESTServiceURL;
+    this.accountServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/account';
   }
 
   generateHeader(){
@@ -391,6 +391,7 @@ export class AccountService {
       { headers, responseType: 'text' as 'json'}
     ).pipe(catchError(this.handleError));
   }
+
 
   getMenuFeatures(data): Observable<any[]> {
     let headerObj = this.generateHeader();

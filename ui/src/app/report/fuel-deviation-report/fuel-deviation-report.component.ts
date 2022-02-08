@@ -441,7 +441,8 @@ export class FuelDeviationReportComponent implements OnInit {
   public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private organizationService: OrganizationService, private _formBuilder: FormBuilder, private translationService: TranslationService, private reportService: ReportService, private reportMapService: ReportMapService, private completerService: CompleterService, private configService: ConfigService, private hereService: HereService, private matIconRegistry: MatIconRegistry,private domSanitizer: DomSanitizer,private datePipe: DatePipe, private dataInterchangeService: DataInterchangeService) {
-    this.map_key = this.configService.getSettings("hereMap").api_key;
+    // this.map_key = this.configService.getSettings("hereMap").api_key;
+    this.map_key = localStorage.getItem("hereMapsK");
     this.platform = new H.service.Platform({
       "apikey": this.map_key
     });
@@ -459,10 +460,8 @@ export class FuelDeviationReportComponent implements OnInit {
   }
 
   setIcons(){
-    this.matIconRegistry.addSvgIcon("fuel-desc-run", this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/icons/fuelDeviationIcons/fuel-decrease-run.svg"));
     this.matIconRegistry.addSvgIcon("fuel-incr-run", this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/icons/fuelDeviationIcons/fuel-increase-run.svg"));
     this.matIconRegistry.addSvgIcon("fuel-desc-stop", this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/icons/fuelDeviationIcons/fuel-decrease-stop.svg"));
-    this.matIconRegistry.addSvgIcon("fuel-incr-stop", this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/icons/fuelDeviationIcons/fuel-increase-stop.svg"));
   }
 
   ngOnDestroy() {
@@ -601,7 +600,7 @@ export class FuelDeviationReportComponent implements OnInit {
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    ////console.log("process translationData:: ", this.translationData)
+    //////console.log("process translationData:: ", this.translationData)
   }
 
   proceedStep(prefData: any, preference: any){
@@ -639,7 +638,7 @@ export class FuelDeviationReportComponent implements OnInit {
         console.error("No report id found!")
       }
     }, (error)=>{
-      console.log('Report not found...', error);
+      //console.log('Report not found...', error);
       reportListData = [{name: 'Fuel Deviation Report', id: this.fuelDeviationReportId}];
       // this.getFuelDeviationReportPreferences();
     });
@@ -700,7 +699,7 @@ export class FuelDeviationReportComponent implements OnInit {
       this.singleVehicle = this.wholeFuelDeviationData.vehicleDetailsWithAccountVisibiltyList.filter(i=> i.groupType == 'S');
       if(vinArray.length > 0){
         distinctVIN = vinArray.filter((value, index, self) => self.indexOf(value) === index);
-        ////console.log("distinctVIN:: ", distinctVIN);
+        //////console.log("distinctVIN:: ", distinctVIN);
         if(distinctVIN.length > 0){
           distinctVIN.forEach(element => {
             let _item = this.wholeFuelDeviationData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element  && i.groupType != 'S');
@@ -737,7 +736,7 @@ export class FuelDeviationReportComponent implements OnInit {
     }
     let vehicleData = this.vehicleListData.slice();
         this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
-        //console.log("vehicleDD 1", this.vehicleDD);
+        ////console.log("vehicleDD 1", this.vehicleDD);
         this.vehicleDD.sort(this.compareVin);
         this.resetVehicleFilter();
 
@@ -1123,7 +1122,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
       this.vehicleDD = [];
       let vehicleData = this.vehicleListData.slice();
       this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
-      //console.log("vehicleDD 2", this.vehicleDD);
+      ////console.log("vehicleDD 2", this.vehicleDD);
       this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll , registrationNo: this.translationData.lblAll , vin: this.translationData.lblAll  });
       this.resetVehicleFilter();
     }else{
@@ -1132,7 +1131,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
         this.vehicleDD = [];
         search.forEach(element => {
           this.vehicleDD.push(element);
-          //console.log("vehicleDD 3", this.vehicleDD);
+          ////console.log("vehicleDD 3", this.vehicleDD);
         });
       }
     }
@@ -1182,7 +1181,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
         viNs: _vinData
       }
       this.reportService.getFuelDeviationReportDetails(reportDataObj).subscribe((_fuelDeviationData: any) => {
-        //console.log(_fuelDeviationData);
+        ////console.log(_fuelDeviationData);
         this.reportService.getFuelDeviationReportCharts(reportDataObj).subscribe((_fuelDeviationChartData: any) => {
           this.hideloader();
           this.resetChartData();
@@ -1194,10 +1193,10 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
         }, (error) => {
           this.hideloader();
           this.resetChartData();
-          //console.log("No charts data available...");
+          ////console.log("No charts data available...");
         });
       }, (error)=>{
-        //console.log(error);
+        ////console.log(error);
         this.hideloader();
         this.fuelDeviationData = [];
         this.tableInfoObj = {};
@@ -1746,7 +1745,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
       body: prepare,
       theme: 'striped',
       didDrawCell: data => {
-        //console.log(data.column.index)
+        ////console.log(data.column.index)
       }
     })
     doc.save('FuelDeviationReport.pdf');
@@ -1917,7 +1916,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     this.filteredVehicleGroups.next(this.vehicleGrpDD.slice());
   }
   filterVehicleGroups(vehicleSearch){
-    //console.log("filterVehicleGroups called");
+    ////console.log("filterVehicleGroups called");
     if(!this.vehicleGrpDD){
       return;
     }
@@ -1930,12 +1929,12 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     this.filteredVehicleGroups.next(
       this.vehicleGrpDD.filter(item => item.vehicleGroupName.toLowerCase().indexOf(vehicleSearch) > -1)
     );
-    //console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
+    ////console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
 
   }
 
   filterVehicle(VehicleSearch){
-    //console.log("vehicle dropdown called");
+    ////console.log("vehicle dropdown called");
     if(!this.vehicleDD){
       return;
     }
@@ -1948,7 +1947,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     this.filteredVehicle.next(
       this.vehicleDD.filter(item => item.vin.toLowerCase().indexOf(VehicleSearch) > -1)
     );
-    //console.log("filtered vehicles", this.filteredVehicle);
+    ////console.log("filtered vehicles", this.filteredVehicle);
   }
 
   resetVehicleFilter(){

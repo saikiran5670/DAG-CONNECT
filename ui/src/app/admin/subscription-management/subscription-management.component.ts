@@ -85,7 +85,7 @@ export class SubscriptionManagementComponent implements OnInit {
     private dialogService: ConfirmDialogService,
     private subscriptionService: SubscriptionService,
     public dialog: MatDialog) {
-    this.domainUrl= config.getSettings("foundationServices").authZuoraSSOServiceURL;
+    this.domainUrl= config.getSettings("authentication").authRESTServiceURL + '/account/sso';
     // this.defaultTranslation();
   }
 
@@ -383,24 +383,24 @@ export class SubscriptionManagementComponent implements OnInit {
         window.open(data.body, '_blank');
       }
       else if(data.status === 401){
-        console.log("Error: Unauthorized");
+        //console.log("Error: Unauthorized");
      }
      else if(data.status == 302){
-      console.log("Error: Unauthorized");
+      //console.log("Error: Unauthorized");
      }
     },
     (error)=> {
        if(error.status == 404  || error.status == 403){
-        console.log("Error: not found");
+        //console.log("Error: not found");
        }
        else if(error.status === 401){
-        console.log("Error: Unauthorized");
+        //console.log("Error: Unauthorized");
        }
        else if(error.status == 302){
-        console.log("Error: Unauthorized");
+        //console.log("Error: Unauthorized");
        }
        else if(error.status == 500){
-        console.log("Error: Internal server error");
+        //console.log("Error: Internal server error");
        }
      })
     }

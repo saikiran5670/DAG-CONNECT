@@ -238,7 +238,7 @@ doughnutDistanceColors: Color[] = [
 
   ngOnInit(): void {
     this.setInitialPref(this.prefData,this.preference);
-    //console.log(this.finalVinList)
+    ////console.log(this.finalVinList)
     if(this.finalVinList.length >0){
         this.getLiveVehicleData();
     }
@@ -276,7 +276,7 @@ doughnutDistanceColors: Color[] = [
     }
     if(this.finalVinList && this.finalVinList.length > 0 && !this.todayLiveVehicalAPI){
       this.todayLiveVehicalAPI = this.dashboardService.getTodayLiveVehicleData(_vehiclePayload).subscribe((vehicleData)=>{
-        //console.log(vehicleData);
+        ////console.log(vehicleData);
         this.dataError = false;
         if(vehicleData){
           this.liveVehicleData = vehicleData;
@@ -303,7 +303,8 @@ doughnutDistanceColors: Color[] = [
   }
 
   getTimeDisplay(_timeValue: any){
-    let convertedTime =  Util.getHhMmTime(_timeValue); // Util.getHhMmTimeFromMS(_timeValue);
+    // let convertedTime =  Util.getHhMmTime(_timeValue); // Util.getHhMmTimeFromMS(_timeValue);
+    let convertedTime =  Util.getHhMmTimeFromMS(_timeValue);  // drivingtime is in ms
     let convertedTimeDisplay = '';
     if(convertedTime){
       if(convertedTime.indexOf(":") != -1){

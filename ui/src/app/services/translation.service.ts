@@ -11,7 +11,7 @@ export class TranslationService {
     private translationUrl: string;
     public applicationTranslationData:any = {};
     constructor(private httpClient: HttpClient, private config: ConfigService) {
-        this.translationUrl = config.getSettings("foundationServices").translationRESTServiceURL;
+        this.translationUrl = config.getSettings("authentication").authRESTServiceURL + '/translation';
     }
 
     generateHeader(){
@@ -243,6 +243,16 @@ export class TranslationService {
         .get<any>(
           `${this.translationUrl}/tac/getallversionsfortac?orgId=${data.orgId}&levelCode=${data.levelCode}&accountId=${data.accountId}`
             )
+        .pipe(catchError(this.handleError));
+    }
+
+    getResetPasswordUnauthorised(data: string) {
+      let headerObj = this.generateHeader();
+      const headers = {
+        headers: new HttpHeaders({ headerObj }),
+      };
+      return this.httpClient
+        .get<any[]>(`${this.translationUrl}/getResetPasswordUnauthorised?token=${data}`,headers)
         .pipe(catchError(this.handleError));
     }
 

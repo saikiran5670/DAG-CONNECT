@@ -45,7 +45,7 @@
                       {{ rer.vehicleGroupName }}
                   </mat-option>
                 </mat-select>
-              </mat-form-field> 
+              </mat-form-field>
               <mat-error *ngIf="ecoScoreForm.get('vehicleGroup').hasError('required') && driverDD.length > 0">
                 {{translationData.lblPleaseSelectvehicleGroup  }}
               </mat-error>
@@ -66,7 +66,7 @@
                     </div>
                     <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
                       <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" class="timepicker" style='margin-top: 4px;'>
-                        <span class='timeAdjustSpan'>{{ startTimeDisplay }}</span> 
+                        <span class='timeAdjustSpan'>{{ startTimeDisplay }}</span>
                         <input [max]='selectedEndTime' [(ngModel)]="selectedStartTime" class='inputBox' [format]="prefTimeFormat" [ngxTimepicker]="toggleStartTimepicker" [disableClick]="true" formControlName="startTime" readonly>
                         <ngx-material-timepicker-toggle [for]="toggleStartTimepicker"></ngx-material-timepicker-toggle>
                         <ngx-material-timepicker (timeChanged)="startTimeChanged($event)" #toggleStartTimepicker></ngx-material-timepicker>
@@ -117,13 +117,13 @@
               </mat-error>
             </div>
           </div>
-          
+
           <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg">
             <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
                 <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
                    <div fxLayout="row" fxLayoutGap="5px">
-                    <mat-checkbox (change)="validateMinTripVal()" [(ngModel)]='minTripCheck' formControlName="minTripCheck"></mat-checkbox><mat-label>{{ translationData.lblMinTripDistance  }} 
+                    <mat-checkbox (change)="validateMinTripVal()" [(ngModel)]='minTripCheck' formControlName="minTripCheck"></mat-checkbox><mat-label>{{ translationData.lblMinTripDistance  }}
                       <span style="font-weight: normal;">({{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm ) :
                          (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile ) : (translationData.lblmile ) }})</span>
                       <span class='mandatoryColor'>*</span></mat-label>
@@ -136,7 +136,7 @@
                 </div>
                 <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
                   <div fxLayout="row" fxLayoutGap="5px">
-                    <mat-checkbox (change)="validateMinDistVal()" [(ngModel)]='minDriverCheck' formControlName="minDriverCheck"></mat-checkbox><mat-label>{{ translationData.lblMinDriverTotalDist  }} 
+                    <mat-checkbox (change)="validateMinDistVal()" [(ngModel)]='minDriverCheck' formControlName="minDriverCheck"></mat-checkbox><mat-label>{{ translationData.lblMinDriverTotalDist  }}
                       <span style="font-weight: normal;">({{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm ) :
                         (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile ) : (translationData.lblmile ) }})</span>
                       <span class='mandatoryColor'>*</span></mat-label>
@@ -171,7 +171,7 @@
               </mat-error>
             </div>
           </div>
-          <div fxLayout="row"  class='areaWidth' fxLayoutAlign="end"> 
+          <div fxLayout="row"  class='areaWidth' fxLayoutAlign="end">
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <mat-error *ngIf="minTripInputCheck">
                 {{ translationData.lblPleaseSelectDriverMinDist }}
@@ -190,7 +190,7 @@
               <button  class='no-margin' mat-raised-button color="primary"
               (click)='onSearch()'>{{ translationData.lblSearch }}</button>
           </div>
-        </div> 
+        </div>
       </mat-expansion-panel>
     </mat-card>
     <div *ngIf="allDriversSelected && !driverSelected && !compareEcoScore">
@@ -295,10 +295,10 @@
                   </mat-option>
                 </mat-select>
               </mat-form-field>
-            </div>            
+            </div>
           </div>
           <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm' fxLayoutGap="10px">
-            <div fxLayout="row" fxLayoutAlign="end" class='areaWidth' fxLayoutGap="10px">             
+            <div fxLayout="row" fxLayoutAlign="end" class='areaWidth' fxLayoutGap="10px">
               <button mat-button *ngFor="let driver of selectedDriversEcoScore" (click)="deselectDriver(driver)">
                 {{ driver.driverName }}
                 <mat-icon>close</mat-icon>
@@ -323,8 +323,8 @@
                 <button mat-menu-item (click)="exportAsPDFFile()">{{ translationData.lblPDF  }}</button>
               </mat-menu>
             </div>
-          </div>          
-          
+          </div>
+
           <mat-table matTableExporter [dataSource]="dataSource" class="table-items"
               matSort #exporter="matTableExporter">
               <ng-container matColumnDef="select">
@@ -377,7 +377,7 @@
       [displayedColumns]='detaildisplayedColumns'  [showField]='showField' (backToMainPage)="backToMainPage()" [driverSelected]='driverSelected'
     ></app-driver-time-detail>
   </div> -->
- 
+
   <div *ngIf="ecoScoreDriver">
       <mat-card class='mat-elevation-z no-padding margin-bottom-xlg' *ngIf="noSingleDriverData">
         <mat-expansion-panel [(expanded)]="noDetailsExpandPanel" class="full-width" fxLayoutGap="10px">
@@ -393,8 +393,8 @@
           </div>
         </mat-expansion-panel>
       </mat-card>
-    <app-eco-score-report-driver (backToMainPage)='backToMainPage()' [ecoScoreDriverInfo]="selectedDriverData" [ecoScoreDriverDetails]="ecoScoreDriverDetails" 
-    [ecoScoreDriverDetailsTrendLine]="ecoScoreDriverDetailsTrendLine" [generalColumnData]='generalColumnData' [driverPerformanceColumnData]='driverPerformanceColumnData' 
+    <app-eco-score-report-driver (backToMainPage)='backToMainPage()' [driverPerformanceGraphColumnData]='driverPerformanceGraphColumnData' [generalGraphColumnData]="generalGraphColumnData" [ecoScoreDriverInfo]="selectedDriverData" [ecoScoreDriverDetails]="ecoScoreDriverDetails"
+    [ecoScoreDriverDetailsTrendLine]="ecoScoreDriverDetailsTrendLine"  [generalColumnData]='generalColumnData' [driverPerformanceColumnData]='driverPerformanceColumnData'
     [translationData]="translationData" [prefUnitFormat]='prefUnitFormat' [prefObj]='prefObj' [selectionTab]='selectionTab' [trendLineSearchDataParam]='trendLineSearchDataParam'
      (vehicleLimitExceeds)='vehicleLimitExceeds($event)' *ngIf="!noSingleDriverData"></app-eco-score-report-driver>
   </div>

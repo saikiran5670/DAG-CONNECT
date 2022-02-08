@@ -201,7 +201,7 @@ export class CreateEditViewFeaturesComponent implements OnInit {
         });
       }, (err) => {
         this.showLoadingIndicator=false;
-        //console.log(err);
+        ////console.log(err);
         if (err.status == 409) {
           this.duplicateEmailMsg = true;
           this.createButtonClicked = false;
@@ -247,7 +247,7 @@ export class CreateEditViewFeaturesComponent implements OnInit {
         });
       }, (err) => {
         this.showLoadingIndicator=false;
-        //console.log(err);
+        ////console.log(err);
         if (err.status == 409) {
           this.duplicateEmailMsg = true;
           this.createButtonClicked = false;
@@ -335,17 +335,17 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   //       if(!(this.selectedChildrens.includes(selectedParentId))){
   //         this.selectedChildrens.push(selectedParentId);
   //       }
-  //       console.log('parent Id is:- ', selectedParentId);
-  //       console.log("---selectedChildrens---",this.selectedChildrens)
+  //       //console.log('parent Id is:- ', selectedParentId);
+  //       //console.log("---selectedChildrens---",this.selectedChildrens)
   //     }
   //     //when unchecking(OFF)child toggle
   //       else if(!isChecked) {
   //         const index = this.selectedChildrens.indexOf(row.id);
   //           if (index > -1) {
   //            let removedValue =  this.selectedChildrens.splice(index, 1);
-  //             // console.log("--removing from array--",removedValue )
+  //             // //console.log("--removing from array--",removedValue )
   //           }
-  //           console.log("---selectedChildrens---",this.selectedChildrens)
+  //           //console.log("---selectedChildrens---",this.selectedChildrens)
   //     }
   //    }
   //    else {
@@ -365,7 +365,7 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   //           }
   //         }
   //       });
-  //       console.log("--allChildrenElements Id's--",this.allChildrenIds)
+  //       //console.log("--allChildrenElements Id's--",this.allChildrenIds)
   //     }
   //   }
   //   //make button disabled

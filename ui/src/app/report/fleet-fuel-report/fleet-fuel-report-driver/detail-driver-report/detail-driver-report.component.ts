@@ -867,7 +867,8 @@ tripTraceArray: any = [];
              //   }else{
              //     this.showBack = false;
              //   }
-                this.map_key =  _configService.getSettings("hereMap").api_key;
+                // this.map_key =  _configService.getSettings("hereMap").api_key;
+                this.map_key = localStorage.getItem("hereMapsK");
                 //Add for Search Fucntionality with Zoom
                 this.query = "starbucks";
                 this.platform = new H.service.Platform({
@@ -882,8 +883,8 @@ tripTraceArray: any = [];
 
   ngOnInit(): void {
     this.fleetFuelSearchData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
-    //console.log("translationData for driver" +this.translationData);
-    // console.log("----globalSearchFilterData---",this.fleetUtilizationSearchData)
+    ////console.log("translationData for driver" +this.translationData);
+    // //console.log("----globalSearchFilterData---",this.fleetUtilizationSearchData)
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
@@ -1290,7 +1291,7 @@ createEndMarker(){
       "driverId": driverID
     }
     this.reportService.getDriverTripDetails(getFleetFuelObj).subscribe((data:any) => {
-    //console.log("---getting data from getFleetFueldriverDetailsAPI---",data)
+    ////console.log("---getting data from getFleetFueldriverDetailsAPI---",data)
     this.displayData = data["fleetFuelDetails"];
     this.FuelData = this.reportMapService.getConvertedFleetFuelDataBasedOnPref(this.displayData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
     // this.setTableInfo();
@@ -1650,7 +1651,7 @@ createEndMarker(){
 
 
        }, (error)=>{
-          //console.log(error);
+          ////console.log(error);
          this.hideloader();
          this.tripData = [];
           //this.tableInfoObj = {};
@@ -2420,7 +2421,7 @@ setPrefFormatDate(){
 
 setDefaultTodayDate(){
   if(!this.internalSelection && this.fleetFuelSearchData.modifiedFrom !== "") {
-    //console.log("---if fleetUtilizationSearchData startDateStamp exist")
+    ////console.log("---if fleetUtilizationSearchData startDateStamp exist")
     if(this.fleetFuelSearchData.timeRangeSelection !== ""){
       this.selectionTab = this.fleetFuelSearchData.timeRangeSelection;
     }else{
@@ -3250,7 +3251,7 @@ setVehicleGroupAndVehiclePreSelection() {
         body: prepare,
         theme: 'striped',
         didDrawCell: data => {
-          console.log(data.column.index)
+          //console.log(data.column.index)
         }
       })
 
@@ -3367,7 +3368,7 @@ setVehicleGroupAndVehiclePreSelection() {
   }
 
     filterVehicleGroups(vehicleSearch){
-    console.log("filterVehicleGroups called");
+    //console.log("filterVehicleGroups called");
     if(!this.vehicleGrpDD){
       return;
     }
@@ -3380,12 +3381,12 @@ setVehicleGroupAndVehiclePreSelection() {
     this.filteredVehicleGroups.next(
       this.vehicleGrpDD.filter(item => item.vehicleGroupName.toLowerCase().indexOf(vehicleSearch) > -1)
     );
-    console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
+    //console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
 
   }
 
   filterVehicle(VehicleSearch){
-    console.log("vehicle dropdown called");
+    //console.log("vehicle dropdown called");
     if(!this.vehicleDD){
       return;
     }
@@ -3398,7 +3399,7 @@ setVehicleGroupAndVehiclePreSelection() {
     this.filteredVehicle.next(
       this.vehicleDD.filter(item => item.vehicleName.toLowerCase().indexOf(VehicleSearch) > -1)
     );
-    console.log("filtered vehicles", this.filteredVehicle);
+    //console.log("filtered vehicles", this.filteredVehicle);
   }
 
   resetVehicleFilter(){

@@ -225,11 +225,11 @@ export class AccountInfoSettingsComponent implements OnInit {
     this.translationService.getPreferences(languageCode).subscribe((data: any) => {
       let dropDownData = data;
       this.languageDropdownData = dropDownData.language;
-      console.log("languageDropdownData=>", this.languageDropdownData);
+      //console.log("languageDropdownData=>", this.languageDropdownData);
       this.languageDropdownData.sort(this.compare);    
       this.resetLanguageFilter();
       this.timezoneDropdownData = dropDownData.timezone;
-      console.log("timezoneDropdownData=>", this.timezoneDropdownData);
+      //console.log("timezoneDropdownData=>", this.timezoneDropdownData);
       this.timezoneDropdownData.sort(this.compare);
       this.resetTimezoneFilter();
       this.unitDropdownData = dropDownData.unit;
@@ -238,7 +238,7 @@ export class AccountInfoSettingsComponent implements OnInit {
       this.timeFormatDropdownData = dropDownData.timeformat;
       this.vehicleDisplayDropdownData = dropDownData.vehicledisplay;
       this.landingPageDisplayDropdownData = accountNavMenu;
-      console.log("landingPageDisplayDropDownData=>", this.landingPageDisplayDropdownData);
+      //console.log("landingPageDisplayDropDownData=>", this.landingPageDisplayDropdownData);
       this.landingPageDisplayDropdownData.sort(this.compare);
       this.resetLandingPageFilter();
       //this.landingPageDisplayDropdownData = dropDownData.landingpagedisplay;
@@ -261,7 +261,7 @@ export class AccountInfoSettingsComponent implements OnInit {
             timezoneId: data.timezone,
             unitId: data.unit,
             vehicleDisplayId: data.vehicleDisplay,
-            pageRefreshTime : 1,
+            pageRefreshTime : 2,
             landingPageDisplayId: this.landingPageDisplayDropdownData[0].id //-- set default landing page for org
             //landingPageDisplayId: data.landingPageDisplay
           };
@@ -745,13 +745,13 @@ export class AccountInfoSettingsComponent implements OnInit {
      this.filteredLanguages.next(
        this.languageDropdownData.filter(item=> item.value.toLowerCase().indexOf(search) > -1)
      );
-     console.log("this.filteredLanguages", this.filteredLanguages);
+     //console.log("this.filteredLanguages", this.filteredLanguages);
 
 
    }
 
    filterTimezones(timesearch){
-     console.log("filterTimezones called");
+     //console.log("filterTimezones called");
      if(!this.timezoneDropdownData){
        return;
      }
@@ -764,11 +764,11 @@ export class AccountInfoSettingsComponent implements OnInit {
       this.filteredTimezones.next(
         this.timezoneDropdownData.filter(item=> item.value.toLowerCase().indexOf(timesearch) > -1)
       );
-      console.log("this.filteredTimezones", this.filteredTimezones);
+      //console.log("this.filteredTimezones", this.filteredTimezones);
    }
 
    filterLandingPageDisplay(landingpagesearch){
-    console.log("LandingPageDisplay called");
+    //console.log("LandingPageDisplay called");
     if(!this.landingPageDisplayDropdownData){
       return;
     }
@@ -781,7 +781,7 @@ export class AccountInfoSettingsComponent implements OnInit {
     this.filteredLandingPageDisplay.next(
        this.landingPageDisplayDropdownData.filter(item=> item.value.toLowerCase().indexOf(landingpagesearch) > -1)
     );
-     console.log("this.filteredLandingPageDisplay", this.filteredLandingPageDisplay);
+     //console.log("this.filteredLandingPageDisplay", this.filteredLandingPageDisplay);
   }
   
 

@@ -15,7 +15,7 @@ export class OrganizationService {
     organizationServiceUrl: string = '';
 
   constructor(private httpClient: HttpClient, private config: ConfigService) {
-    this.organizationServiceUrl = config.getSettings("foundationServices").organizationRESTServiceURL;
+    this.organizationServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/organization';
   }
 
   private handleError(errResponse: HttpErrorResponse) {
@@ -119,7 +119,7 @@ export class OrganizationService {
    }
 
    getRelationshipByRelationID(dataId: any): Observable<any[]> {
-     console.log("--data in service--", dataId)
+     //console.log("--data in service--", dataId)
     let headerObj = this.generateHeader();
     const headers = {
      headers: new HttpHeaders({ headerObj }),

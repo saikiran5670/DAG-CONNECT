@@ -276,7 +276,7 @@ export class VehicleUpdatesComponent implements OnInit {
     }, (error) => {
       this.actionType = type;
       this.hideloader();
-      console.log("error:: ", error)
+      //console.log("error:: ", error)
     });
   }
 

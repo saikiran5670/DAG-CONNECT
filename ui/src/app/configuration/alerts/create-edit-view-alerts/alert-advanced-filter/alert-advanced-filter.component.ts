@@ -136,14 +136,15 @@ export class AlertAdvancedFilterComponent implements OnInit {
               private el: ElementRef,
               private reportMapService: ReportMapService,  private _configService: ConfigService,
               private mapFunctions: MapFunctionsService) {
-   this.map_key = _configService.getSettings("hereMap").api_key;
+  //  this.map_key = _configService.getSettings("hereMap").api_key;
+    this.map_key = localStorage.getItem("hereMapsK");
     this.platform = new H.service.Platform({
       "apikey":this.map_key
     });
    }
 
   ngOnInit(): void {
-    console.log(this.prefUnitFormat);
+    //console.log(this.prefUnitFormat);
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     //this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
     if(localStorage.getItem('contextOrgId')){
@@ -528,7 +529,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
           }
         }
       }, (error) => {
-        //console.log(error)
+        ////console.log(error)
       });
     }
 
