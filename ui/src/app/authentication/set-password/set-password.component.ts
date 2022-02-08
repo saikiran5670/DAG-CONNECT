@@ -125,6 +125,4 @@ export class SetPasswordComponent implements OnInit {
     this.isResetPwdInvalidate= false;
     this.router.navigate(['/auth/login']);
   }
-  
-
 }
