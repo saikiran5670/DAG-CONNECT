@@ -85,7 +85,7 @@ export class FeatureManagementComponent implements OnInit {
       this.initData = filterTypeData;
 
     }, (error) => {
-      console.log("error:: ", error);
+      //console.log("error:: ", error);
       this.hideloader();
     });
     this.gridComp.updatedTableData(this.initData);
@@ -144,7 +144,7 @@ export class FeatureManagementComponent implements OnInit {
 
   processTranslation(transData: any){
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    //console.log("process translationData:: ", this.translationData)
+    ////console.log("process translationData:: ", this.translationData)
   }
 
   applyFilter(filterValue: string) {

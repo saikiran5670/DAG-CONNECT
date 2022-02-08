@@ -105,7 +105,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
         this.getRoleFeatures();
       }
     }, (error) => {
-      console.log('error');
+      //console.log('error');
       this.getRoleFeatures();
     });
     this.doneFlag = this.createStatus ? false : true;
@@ -152,7 +152,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
       }
       this.roleTypes = [this.translationData.lblGlobal, this.translationData.lblOrganisation || 'Organisation'];
     }, (error) => {
-      console.log('error');
+      //console.log('error');
      });
   }
 
@@ -382,12 +382,12 @@ export class EditUserRoleDetailsComponent implements OnInit {
     this.isAllSelectedForFeatures() ?
       this.selectionForFeatures.clear() : this.dataSource.data.forEach(row => { this.selectionForFeatures.select(row) });
 
-    //console.log("==SelectionForFeatures---", this.selectionForFeatures)
+    ////console.log("==SelectionForFeatures---", this.selectionForFeatures)
     // const user = "Hello.World.abc"
 
     // var splitString = user.split(".")
 
-    // console.log(splitString[0])
+    // //console.log(splitString[0])
   }
 
   checkboxLabelForFeatures(row?: any): string {
@@ -401,26 +401,26 @@ export class EditUserRoleDetailsComponent implements OnInit {
 
   //From Neeraj code
   // onCheckboxChange(event: any, row: any) {
-  //   console.log(this.selectionForFeatures.isSelected(row) ? 'deselect' : 'select');
-  //   // console.log(this.selectionForFeatures.isSelected(row) ? 'deselect' : 'select');
+  //   //console.log(this.selectionForFeatures.isSelected(row) ? 'deselect' : 'select');
+  //   // //console.log(this.selectionForFeatures.isSelected(row) ? 'deselect' : 'select');
   //   var selectedName = row.name;
   //   if (selectedName.includes('.')) {
   //     //*****when the selected element is a child****
   //     var splitString = selectedName.split('.');
   //     var selectedElementParent = splitString[0];
-  //     // console.log('====selcetdElementParentInsideIF--', selectedElementParent);
+  //     // //console.log('====selcetdElementParentInsideIF--', selectedElementParent);
   //   } else {
-  //     console.log(
+  //     //console.log(
   //       this.selectionForFeatures.isSelected(row) ? 'deselect' : 'select'
   //     );
 
   //     //***when the selected element is a parent****
   //     let childOfSelectedElement = [];
   //     this.featuresData.map((getData) => {
-  //       // console.log("---getData--", getData)
+  //       // //console.log("---getData--", getData)
   //       if (getData.name.startsWith(selectedName)) {
   //         childOfSelectedElement.push(getData);
-  //         //console.log('-----childOfSelectedElement---', childOfSelectedElement);
+  //         ////console.log('-----childOfSelectedElement---', childOfSelectedElement);
   //       }
   //     });
 
@@ -431,11 +431,11 @@ export class EditUserRoleDetailsComponent implements OnInit {
   //         }
 
   //         // if (item.id == row.id) {​​​​​​​​
-  //         //   console.log('--inside if--',this.selectionForFeatures.isSelected(item));
+  //         //   //console.log('--inside if--',this.selectionForFeatures.isSelected(item));
   //         //   this.selectionForFeatures.deselect(item);
   //         //   break;
   //         // }​​​​​​​​ else {​​​​​​​​
-  //         //   console.log('--inside else--');
+  //         //   //console.log('--inside else--');
   //         //   this.selectionForFeatures.select(item);
   //         // }​​​​​​​​
   //         //}​​​​​​​​
@@ -454,7 +454,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
         this.preSelectedValues.push(feature.id);
       }
     })
-    // console.log("---preSelectedValues onInit()--",this.preSelectedValues);
+    // //console.log("---preSelectedValues onInit()--",this.preSelectedValues);
   // }
   }
 
@@ -467,7 +467,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
     }
     // if(this.textLengthCounter < maxLength) {
     //   this.remainingChar = maxLength - this.textLengthCounter;
-    //   console.log("--remainingChar--",this.remainingChar)
+    //   //console.log("--remainingChar--",this.remainingChar)
     // }
   }
 
@@ -476,12 +476,12 @@ export class EditUserRoleDetailsComponent implements OnInit {
   //   //   this.preSelectedValues.push(feature.id);
   //   // })
 
-  //   // console.log("---preSelectedValues onInit()--",this.preSelectedValues);
+  //   // //console.log("---preSelectedValues onInit()--",this.preSelectedValues);
   //   // let AllSelectedChilds=[];
   //   var selectedName = row.name;
   //   let selectedParentId = row.id;
   //   const isChecked = this.selectionForFeatures.isSelected(row) ? true : false;
-  //   //console.log('isChecked- ', isChecked);
+  //   ////console.log('isChecked- ', isChecked);
   //   if (selectedName.includes('.')) {
   //     //*****when the selected element is a child****
 
@@ -507,17 +507,17 @@ export class EditUserRoleDetailsComponent implements OnInit {
   //       if(!(this.selectedChildrens.includes(selectedParentId))){
   //         this.selectedChildrens.push(selectedParentId);
   //       }
-  //       console.log('parent Id is:- ', selectedParentId);
-  //       console.log("---selectedChildrens---",this.selectedChildrens)
+  //       //console.log('parent Id is:- ', selectedParentId);
+  //       //console.log("---selectedChildrens---",this.selectedChildrens)
   //     }
   //     //when unchecking(OFF)child toggle
   //       else if(!isChecked) {
   //         const index = this.selectedChildrens.indexOf(row.id);
   //           if (index > -1) {
   //            let removedValue =  this.selectedChildrens.splice(index, 1);
-  //             // console.log("--removing from array--",removedValue )
+  //             // //console.log("--removing from array--",removedValue )
   //           }
-  //           console.log("---selectedChildrens---",this.selectedChildrens)
+  //           //console.log("---selectedChildrens---",this.selectedChildrens)
   //     }
   //   } else {
   //     //***when the selected element is a parent****
@@ -536,7 +536,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
   //           }
   //         }
   //       });
-  //       console.log("--allChildrenElements Id's--",this.allChildrenIds)
+  //       //console.log("--allChildrenElements Id's--",this.allChildrenIds)
   //     }
   //   }
   //   var selectName = row.name;

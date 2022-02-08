@@ -189,7 +189,7 @@ ngOnChanges(changes: SimpleChanges) {
   updateDriverFilter(){
     // this.reportService.getFilterDetails().subscribe((data: any) => {
       // this.filterData = data;
-      //console.log("filterData=>", this.filterData);
+      ////console.log("filterData=>", this.filterData);
       this.driverList = [];
       if(this.selectedIndex == 1){
         this.filterData["driverList"].forEach(item=>{
@@ -279,7 +279,7 @@ ngOnChanges(changes: SimpleChanges) {
 
     let driverSelected = this.driverList.filter((elem)=> elem.driverId === this.driverVehicleForm.get("driver").value);
     this.reportService.getFleetOverviewDetails(this.objData).subscribe((fleetdata:any) => {
-    let data = this.fleetMapService.processedLiveFLeetData(fleetdata);
+    let data = this.fleetMapService.processedLiveFLeetData(fleetdata.fleetOverviewDetailList);
 
     let val:any;
      if(driverSelected.length>0){
@@ -310,7 +310,7 @@ ngOnChanges(changes: SimpleChanges) {
 
       });
     //  this.categoryList = this.removeDuplicates(newAlertCat, "value");
-    //  //console.log(newAlertCat);
+    //  ////console.log(newAlertCat);
       this.vehicleListData = data;
       this.forFilterVehicleListData = data;
 
@@ -390,12 +390,12 @@ ngOnChanges(changes: SimpleChanges) {
     if (!this.todayFlagClicked && this.selectedIndex == 0) {
       this.filterData["vehicleGroups"].forEach(item => {
         this.groupList.push(item);
-        ////console.log("groupList1", this.groupList);
+        //////console.log("groupList1", this.groupList);
 
       });
       this.groupList = this.removeDuplicates(this.groupList, "vehicleGroupId");
       this.filteredSelectGroups.next(this.groupList);
-      //console.log("groupList4", this.groupList);
+      ////console.log("groupList4", this.groupList);
       if(this.filterData && this.filterData.alertCategory){
         this.filterData["alertCategory"].forEach(item => {
           // let catName =  this.translationAlertData[item.name];
@@ -469,8 +469,8 @@ ngOnChanges(changes: SimpleChanges) {
           }
           this.groupList = this.removeDuplicates(this.groupList, "vehicleGroupId");
           this.finalgroupList = this.groupList;
-          //console.log("this.finalgroupList", this.finalgroupList);
-          //console.log("groupList3", this.groupList);
+          ////console.log("this.finalgroupList", this.finalgroupList);
+          ////console.log("groupList3", this.groupList);
           this.finalgroupList.sort(this.compare);
           this.resetSelectGroupFilter();
         });
@@ -1155,13 +1155,13 @@ removeDuplicates(originalArray, prop) {
       }
     }
     let vehicleGroupSel = this.groupList.filter((elem)=> elem.vehicleId === this.filterVehicleForm.get("group").value);
-    //console.log("groupList5", this.groupList);
+    ////console.log("groupList5", this.groupList);
 
     // if(this.getFleetOverviewDetails){
     //   this.getFleetOverviewDetails.unsubscribe();
     // }
     this.getFleetOverviewDetails = this.reportService.getFleetOverviewDetails(this.objData).subscribe((fleetdata:any) => {
-      let data = this.fleetMapService.processedLiveFLeetData(fleetdata);
+      let data = this.fleetMapService.processedLiveFLeetData(fleetdata.fleetOverviewDetailList);
     this.fleetData = data;
 
     let val = [{vehicleGroup : vehicleGroupSel.vehicleGroupName, data : data}];
@@ -1633,7 +1633,7 @@ getAlertConfig(_currentAlert){
 }
 
 filterSelectGroups(groupsearch){
-  //console.log("filterselectGroups called");
+  ////console.log("filterselectGroups called");
   if(!this.finalgroupList){
     return;
   }
@@ -1647,11 +1647,11 @@ filterSelectGroups(groupsearch){
     this.finalgroupList.filter(item => item.vehicleGroupName.toLowerCase().indexOf(groupsearch) > -1)
 
     );
-  //console.log("this.filteredSelectGroups", this.filteredSelectGroups);
+  ////console.log("this.filteredSelectGroups", this.filteredSelectGroups);
 }
 
 filterSelectDrivers(driversearch){
-  // console.log("filterSelectDrivers called", driversearch);
+  // //console.log("filterSelectDrivers called", driversearch);
 
   if (driversearch == "")
   {
@@ -1672,7 +1672,7 @@ filterSelectDrivers(driversearch){
   //   //this.finalDriverList.filter(item => item.firstName.toLowerCase().indexOf(driversearch) > -1)
   //   this.finalDriverList.filter(item => (item.firstName.toLowerCase() + ' ' + item.lastName.toLowerCase()).indexOf(driversearch) > -1)
   //   );
-  // console.log("this.filteredDrivers", this.driversListfilterGet);
+  // //console.log("this.filteredDrivers", this.driversListfilterGet);
 }
 
 }

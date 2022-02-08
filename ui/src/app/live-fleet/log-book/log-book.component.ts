@@ -31,7 +31,7 @@ import { CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteDat
 import { treeExportFormatter } from 'angular-slickgrid';
 import { ReplaySubject } from 'rxjs';
 import { DataInterchangeService } from '../../services/data-interchange.service';
-
+import { MessageService } from '../../services/message.service';
 declare var H: any;
 
 @Component({
@@ -41,6 +41,7 @@ declare var H: any;
 })
 
 export class LogBookComponent implements OnInit, OnDestroy {
+logbookFilterData: any;
 searchStr: string = "";
 suggestionData: any;
 selectedMarker: any;
@@ -185,12 +186,13 @@ public filteredVehicleNames: ReplaySubject<String[]> = new ReplaySubject<String[
 
 
 
-constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private landmarkCategoryService: LandmarkCategoryService, private router: Router, private organizationService: OrganizationService, private _configService: ConfigService, private hereService: HereService,private completerService: CompleterService, private dataInterchangeService: DataInterchangeService) {
-  this.map_key =  _configService.getSettings("hereMap").api_key;
+constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private landmarkCategoryService: LandmarkCategoryService, private router: Router, private organizationService: OrganizationService, private _configService: ConfigService, private hereService: HereService,private completerService: CompleterService, private dataInterchangeService: DataInterchangeService, private messageService : MessageService,) {
+  // this.map_key =  _configService.getSettings("hereMap").api_key;
+  this.map_key = localStorage.getItem("hereMapsK");
   // setTimeout(() => {
   //   this.initMap();
   //   }, 10);
-
+  this.sendMessage();
   this.dataInterchangeService.prefSource$.subscribe((prefResp: any) => {
     if(prefResp && (prefResp.type == 'logbook') && prefResp.prefdata){
       this.displayedColumns = [ 'all','alertLevel', 'alertGeneratedTime', 'vehicleRegNo', 'alertType', 'alertName', 'alertCategory', 'tripStartTime', 'tripEndTime', 'vehicleName','vin','occurrence','thresholdValue'];
@@ -357,6 +359,11 @@ ngOnDestroy(){
 
   }
 
+  sendMessage(): void {
+    // send message to subscribers via observable subject
+    this.messageService.sendMessage('refreshTimer');
+  }
+
   changeHerePOISelection(event: any, hereData: any){
     this.herePOIArr = [];
     this.selectedHerePOI.selected.forEach(item => {
@@ -408,14 +415,15 @@ ngOnDestroy(){
     }
     this.setDefaultStartEndTime();
     this.setPrefFormatDate();
-    if(!this._state){
-      this.selectionTimeRange('today');
-    // this.setDefaultTodayDate();
-    }
-    this.getReportPreferences();
     setTimeout(() => {
       this.loadWholeTripData();
       },5);
+    // if(!this._state){
+    //   this.selectionTimeRange('today');
+    // this.setDefaultTodayDate();
+    // }
+    this.getReportPreferences();
+
   }
 
   getReportPreferences(){
@@ -430,7 +438,7 @@ ngOnDestroy(){
         console.error("No report id found!")
       }
     }, (error)=>{
-      console.log('Report not found...', error);
+      //console.log('Report not found...', error);
       reportListData = [{name: 'Logbook', id: this.logbookPrefId}];
       // this.getLogbookPref();
     });
@@ -618,7 +626,7 @@ ngOnDestroy(){
       this.filterDateData();
     }
     if (this._state && this._state.fromVehicleDetails) {
-      this.loadWholeTripData();
+      //this.loadWholeTripData();
       if (this._state.data.todayFlag || (this._state.data.startDate == 0 && this._state.data.endDate == 0)) {
         if(this.prefTimeFormat == 24){
           this.startTimeDisplay = '00:00:00';
@@ -677,9 +685,13 @@ if(!this._state){
 }
 
   if(this._state && this._state.fromVehicleDetails){
+    this.filterDateData();
     this.logBookForm.get('vehicleGroup').setValue(this._state.data.vehicleGroupId);
     this.onVehicleGroupChange(this._state.data.vehicleGroupId);
     this.logBookForm.get('vehicle').setValue(this._state.data.vin);
+    this.logBookForm.get('alertLevel').setValue("all");
+    this.logBookForm.get('alertType').setValue("all");
+    this.logBookForm.get('alertCategory').setValue("all");
 
   }
 
@@ -736,7 +748,7 @@ if(!this._state){
     this.logBookForm.get('alertCategory').setValue("all");
   }
 // }
-if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAlerts || this._state.fromDashboard == true)){
+if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAlerts || this._state.fromDashboard == true || this._state.fromVehicleDetails)){
   this.onSearch();
 }
 
@@ -744,12 +756,17 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
 
   loadWholeTripData(){
     this.showLoadingIndicator = true;
-    this.reportService.getLogBookfilterdetails().subscribe((logBookDataData: any) => {
+
+    if(this.logbookFilterData){
+      this.logbookFilterData.unsubscribe();
+    }
+    this.logbookFilterData = this.reportService.getLogBookfilterdetails().subscribe((logBookDataData: any) => {
       this.hideloader();
       this.logbookDataFlag = true;
       this.wholeLogBookData = logBookDataData;
-      //console.log("this.wholeLogBookData:---------------------------: ", this.wholeLogBookData);
+      ////console.log("this.wholeLogBookData:---------------------------: ", this.wholeLogBookData);
       if(!this._state){
+        this.selectionTimeRange('today');
       this.filterDateData();
       }
       // else{
@@ -760,6 +777,7 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
       //   this.onVehicleGroupChange(this._state.data[0].vehicleGroupId);
       // }
     }, (error)=>{
+      this.logbookFilterData.unsubscribe();
       this.hideloader();
       this.wholeLogBookData.vinLogBookList = [];
       this.wholeLogBookData.vehicleDetailsWithAccountVisibiltyList = [];
@@ -845,7 +863,7 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
     let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);
     //let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
     let _vinData = this.vehicleDD.filter(item => item.vin == parseInt(this.logBookForm.controls.vehicle.value));
-    console.log("vehicleDD", this.vehicleDD);
+    //console.log("vehicleDD", this.vehicleDD);
     if(_vinData.length > 0){
       this.showLoadingIndicator = true;
     }
@@ -959,12 +977,12 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
     let aCtgry : any = '';
 
     let vehGrpCount = this.vehicleGrpDD.filter(i => i.vehicleGroupId == parseInt(this.logBookForm.controls.vehicleGroup.value));
-    console.log("vhicleGrpDD1", this.vehicleGrpDD);
+    //console.log("vhicleGrpDD1", this.vehicleGrpDD);
     if(vehGrpCount.length > 0){
     vehGrpName = vehGrpCount[0].vehicleGroupName;
     }
     let vehCount = this.vehicleDD.filter(i => i.vin == this.logBookForm.controls.vehicle.value);
-    console.log("vehicleDD1", this.vehicleDD);
+    //console.log("vehicleDD1", this.vehicleDD);
     if(vehCount.length > 0){
     vehName = vehCount[0].vin;
 
@@ -1196,7 +1214,7 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
       this.vehicleDD=[];
       let vehicleData = this.vehicleListData.slice();
       this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
-      console.log("vehicleDD 2", this.vehicleDD);
+      //console.log("vehicleDD 2", this.vehicleDD);
 
     }
     else{
@@ -1209,17 +1227,17 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
             }
         }
         this.vehicleGrpDD.forEach(element => {
-          console.log("vhicleGrpDD2", this.vehicleGrpDD);
+          //console.log("vhicleGrpDD2", this.vehicleGrpDD);
 
           let vehicle = this.wholeLogBookData.associatedVehicleRequest.filter(item => item.vehicleId == element.vehicleId && item.vehicleGroupDetails.includes(vehicle_group_selected + "~"));
           //  let vehicle= element.filter(item => item.vehicleId == value);
           if (vehicle.length > 0) {
             this.vehicleDD.push(vehicle[0]);
-            console.log("vehicleDD 3", this.vehicleDD);
+            //console.log("vehicleDD 3", this.vehicleDD);
           }
         });
         this.vehicleDD = this.getUnique(this.vehicleDD, "vehicleName");
-        console.log("vehicleDD 4", this.vehicleDD);
+        //console.log("vehicleDD 4", this.vehicleDD);
         this.vehicleDD.sort(this.compareVehName);
         this.resetVehicleNamesFilter();
       
@@ -1634,8 +1652,7 @@ let prepare = []
       }
     }
     this.resetLogFormControlValue(); // extra addded as per discuss with Atul
-    //commenting below line as this method is called in loadWholeTripData().
-    //this.filterDateData(); // extra addded as per discuss with Atul
+     this.filterDateData(); // extra addded as per discuss with Atul
   
   }
 
@@ -1706,10 +1723,10 @@ let prepare = []
     let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
     let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
 
-    //console.log("this.wholeLogBookData.associatedVehicleRequest ---:: ", this.wholeLogBookData.associatedVehicleRequest);
-    //console.log("this.wholeLogBookData.alFilterResponse---::", this.wholeLogBookData.alFilterResponse);
-    //console.log("this.wholeLogBookData.alertTypeFilterRequest---::", this.wholeLogBookData.alertTypeFilterRequest);
-    //console.log("this.wholeLogBookData.acFilterResponse---::", this.wholeLogBookData.acFilterResponse);
+    ////console.log("this.wholeLogBookData.associatedVehicleRequest ---:: ", this.wholeLogBookData.associatedVehicleRequest);
+    ////console.log("this.wholeLogBookData.alFilterResponse---::", this.wholeLogBookData.alFilterResponse);
+    ////console.log("this.wholeLogBookData.alertTypeFilterRequest---::", this.wholeLogBookData.alertTypeFilterRequest);
+    ////console.log("this.wholeLogBookData.acFilterResponse---::", this.wholeLogBookData.acFilterResponse);
 
     let filterData = this.wholeLogBookData["enumTranslation"];
     filterData.forEach(element => {
@@ -1776,7 +1793,7 @@ let prepare = []
      }
      let vehicleData = this.vehicleListData.slice();
         this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
-        console.log("vehicleDD 5", this.vehicleDD);
+        //console.log("vehicleDD 5", this.vehicleDD);
         this.resetVehicleNamesFilter();
         if(this.vehicleDD.length > 0){
       this.resetLogFormControlValue();
@@ -1802,7 +1819,7 @@ let prepare = []
             "vehicleId": element.vehicleId
           }
           this.vehicleGrpDD.push(vehicleGroupObj);
-          console.log("vhicleGrpDD4", this.vehicleGrpDD);
+          //console.log("vhicleGrpDD4", this.vehicleGrpDD);
 
         } else {
           this.singleVehicle.push(element);
@@ -1810,13 +1827,13 @@ let prepare = []
       });
     });
     this.vehicleGrpDD = this.getUnique(this.vehicleGrpDD, "vehicleGroupId");
-    console.log("vhicleGrpDD5", this.vehicleGrpDD);
+    //console.log("vhicleGrpDD5", this.vehicleGrpDD);
     this.vehicleGrpDD.sort(this.compareGrpName);
     this.resetVehicleGroupFilter();
 
 
     this.vehicleGrpDD.forEach(element => {
-      console.log("vhicleGrpDD6", this.vehicleGrpDD);
+      //console.log("vhicleGrpDD6", this.vehicleGrpDD);
 
       element.vehicleGroupId = parseInt(element.vehicleGroupId);
     });
@@ -2268,7 +2285,7 @@ let prepare = []
     this.vehicleIconMarker = null;
    }
    filterVehicleGroups(vehicleGroupSearch){
-    console.log("filterVehicleGroups is called");
+    //console.log("filterVehicleGroups is called");
     if(!this.filteredVehicleGroups){
       return;
     }
@@ -2281,10 +2298,10 @@ let prepare = []
     this.filteredVehicleGroups.next(
        this.vehicleGrpDD.filter(item => item.vehicleGroupName.toLowerCase().indexOf(vehicleGroupSearch) > -1)
     );
-    console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
+    //console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
   }
   filterVehicleNames(vehicleNameSearch){
-    console.log("filterVehicleNames is called");
+    //console.log("filterVehicleNames is called");
     if(!this.filteredVehicleNames){
       return;
     }
@@ -2297,7 +2314,7 @@ let prepare = []
     this.filteredVehicleNames.next(
        this.vehicleDD.filter(item => item.vehicleName.toLowerCase().indexOf(vehicleNameSearch) > -1)
     );
-    console.log("this.filteredVehicleNames", this.filteredVehicleNames);
+    //console.log("this.filteredVehicleNames", this.filteredVehicleNames);
   }
 
 

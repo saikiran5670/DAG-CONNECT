@@ -15,7 +15,7 @@ export class ReportService {
   reportServiceUrl: string = '';
 
   constructor(private httpClient: HttpClient, private config: ConfigService) {
-    this.reportServiceUrl = config.getSettings("foundationServices").reportRESTServiceURL;
+    this.reportServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/report';
   }
 
   generateHeader() {
@@ -585,6 +585,15 @@ export class ReportService {
       )
       .pipe(catchError(this.handleError));
   }
+
+  getHEREMapsInfo(): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = new HttpHeaders({ headerObj });
+    const options =  { headers: headers };
+    return this.httpClient
+      .get<any[]>(`${this.reportServiceUrl}/mapparameters`, options)
+      .pipe(catchError(this.handleError));
+}
 
   private handleError(errResponse: HttpErrorResponse) {
     console.error('Error : ', errResponse.error);

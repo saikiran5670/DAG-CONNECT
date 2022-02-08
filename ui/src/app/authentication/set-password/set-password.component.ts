@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AccountService } from 'src/app/services/account.service';
 import { CustomValidators } from 'src/app/shared/custom.validators';
+import { TranslationService } from '../../services/translation.service';
 
 @Component({
   selector: 'app-set-password',
@@ -23,8 +24,9 @@ export class SetPasswordComponent implements OnInit {
   errorMsg: string= '';
   errorCode: number= 0;
   isLinkActive: boolean= true;
+  successMessage: string='';
 
-  constructor(public router: Router, private route: ActivatedRoute, public fb: FormBuilder, private accountService: AccountService) {
+  constructor(public router: Router, private route: ActivatedRoute, public fb: FormBuilder, private accountService: AccountService, private translationService: TranslationService) {
     this.setPasswordForm = this.fb.group({
       'newPassword': [null, [Validators.required, Validators.minLength(10), Validators.maxLength(256)]],
       'confirmPassword': [null, [Validators.required]],
@@ -84,6 +86,7 @@ export class SetPasswordComponent implements OnInit {
       if(this.buttonName == "Create"){
         this.accountService.createpassword(objData).subscribe((data)=>{
           if(data){
+            this.callOuterTranslation(this.token);
             this.isChangePwdSuccess= true;
           }
         }, (error) => {
@@ -102,6 +105,7 @@ export class SetPasswordComponent implements OnInit {
       else if(this.buttonName == "Reset"){
         this.accountService.resetPassword(objData).subscribe((data)=>{
           if(data){
+            this.callOuterTranslation(this.token);
             this.isChangePwdSuccess= true;
           }
         }, (error) => {
@@ -117,6 +121,16 @@ export class SetPasswordComponent implements OnInit {
             }
         });
       }
+    }
+  }
+
+  callOuterTranslation(token: string) {
+    if(token) {
+      this.translationService.getResetPasswordUnauthorised(token).subscribe((translatedData:any)=> {
+        if(translatedData && translatedData.translatedMessage) {
+          this.successMessage = translatedData.translatedMessage;
+        }
+      });
     }
   }
 

@@ -103,7 +103,7 @@ export class AlertsFilterComponent implements OnInit {
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    //console.log("process translationData:: ", this.translationData)  
+    ////console.log("process translationData:: ", this.translationData)  
    }
 
   handleCategoryChange(filter, tempEnum, event) {
@@ -142,7 +142,7 @@ export class AlertsFilterComponent implements OnInit {
     }
   // Called on Filter change
   filterChange(filter, event, status? : boolean) {   
-    console.log("alertVehicle", this.alertVehicleGroup) 
+    //console.log("alertVehicle", this.alertVehicleGroup) 
     let event_val;      
       if(filter == "highUrgencyLevel"){          
         if(event.value == ''){          
@@ -230,28 +230,38 @@ export class AlertsFilterComponent implements OnInit {
           let critical  = data.alertUrgencyLevelRefs.filter(lvl=> lvl.urgencyLevelType == 'C');
           let warning   = data.alertUrgencyLevelRefs.filter(lvl=> lvl.urgencyLevelType == 'W');
           let advisory  = data.alertUrgencyLevelRefs.filter(lvl=> lvl.urgencyLevelType == 'A');
-         if(critical.length > 0){
+         
+          if(critical.length > 0){
             critical.forEach(obj => { 
             data["highUrgencyLevel"]=obj.urgencyLevelType;
             data["highThresholdValue"]=obj.thresholdValue;
+              if(searchTerms.highUrgencyLevel == ''){
+                data["highThresholdValue"]= obj.unitType !='N'? this.getConvertedThresholdValues(obj.thresholdValue, obj.unitType) : obj.thresholdValue;
+              }
             });
           }else if(warning.length > 0){
             warning.forEach(obj => { 
             data["highUrgencyLevel"]=obj.urgencyLevelType;
             data["highThresholdValue"]=obj.thresholdValue;
+            if(searchTerms.highUrgencyLevel == ''){
+              data["highThresholdValue"]= obj.unitType !='N'? this.getConvertedThresholdValues(obj.thresholdValue, obj.unitType) : obj.thresholdValue;
+            }
           });
           }
           else {
             advisory.forEach(obj => { 
             data["highUrgencyLevel"]=obj.urgencyLevelType;
             data["highThresholdValue"]=obj.thresholdValue;
+            if(searchTerms.highUrgencyLevel == ''){
+              data["highThresholdValue"]= obj.unitType !='N'? this.getConvertedThresholdValues(obj.thresholdValue, obj.unitType) : obj.thresholdValue;
+            }
           });
           }                     
          }         
           delete searchTerms[col];
         }
       }
-      console.log(searchTerms);
+      //console.log(searchTerms);
       let nameSearch = () => {
         let found = false;
         if (isFilterSet) {          

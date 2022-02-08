@@ -25,12 +25,12 @@ export class HereService {
     
     public constructor(private httpClient: HttpClient, 
     private _configService: ConfigService) {
-        this.map_key = _configService.getSettings("hereMap").api_key;
-        this.platform = new H.service.Platform({
-            "apikey": this.map_key
-        });
-        this.geocoder = this.platform.getGeocodingService();
-        this.router = this.platform.getRoutingService(null, 8);
+            this.map_key = localStorage.getItem("hereMapsK");
+            this.platform = new H.service.Platform({
+                "apikey": this.map_key
+            });
+            this.geocoder = this.platform.getGeocodingService();
+            this.router = this.platform.getRoutingService(null, 8);
     }
 
     public getAddress(query: string) {
@@ -132,5 +132,5 @@ export class HereService {
         let routeURL = 'https://autocomplete.search.hereapi.com/v1/autocomplete?'+'apiKey='+mapKey +'&limit=5'+'&q='+searchParam ;
         return this.httpClient.get<any>(routeURL);
     }
-    
+
 }

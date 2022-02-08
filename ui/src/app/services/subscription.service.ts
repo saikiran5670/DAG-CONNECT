@@ -16,9 +16,9 @@ export class SubscriptionService {
     organizationUrl: string = '';
 
   constructor(private httpClient: HttpClient, private config: ConfigService) {
-    this.SubscriptionServiceUrl = config.getSettings("foundationServices").subscriptionRESTServiceURL;
-    this.vehicleServiceUrl = config.getSettings("foundationServices").vehicleGroupRESTServiceUrl;
-    this.organizationUrl = config.getSettings("foundationServices").organizationRESTServiceURL;
+    this.SubscriptionServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/subscribe';
+    this.vehicleServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/vehicle';
+    this.organizationUrl = config.getSettings("authentication").authRESTServiceURL + '/organization';
   }
 
   generateHeader(){

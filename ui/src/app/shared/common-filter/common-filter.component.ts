@@ -57,7 +57,7 @@ export class CommonFilterComponent implements OnInit {
     this.accountService.getAccountGroupDetails(this.accountgrp).subscribe((grpData)=>{
       grpData.forEach(item => {
         this.userGroups.push(item.accountGroupName);
-        console.log("user groups", this.userGroups);
+        //console.log("user groups", this.userGroups);
         this.userGroups.sort(this.compare);
         this.resetuserGroupsFilter();
       })
@@ -66,7 +66,7 @@ export class CommonFilterComponent implements OnInit {
     this.roleService.getUserRoles(this.roleObj).subscribe((roleData) => {
      roleData.forEach(item => {
        this.roles.push(item.roleName);
-       console.log("roles", this.roles);
+       //console.log("roles", this.roles);
        this.roles.sort(this.compare);
        this.resetRolesFilter();
      })

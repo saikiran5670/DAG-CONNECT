@@ -78,6 +78,21 @@ export class VehicleDetailsComponent implements OnInit {
  
   }
 
+  checkForPreference(fieldKey) {
+    if (this.vehInfoPrefData) {
+      let filterData = this.vehInfoPrefData.filter(item => item.key.includes('rp_fo_fleetoverview_'+fieldKey));
+      if (filterData.length > 0) {
+        if (filterData[0].state == 'A') {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+  
+
   proceedStep(prefData: any, preference: any){
     let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
     if(_search.length > 0){
@@ -99,7 +114,7 @@ export class VehicleDetailsComponent implements OnInit {
       this.levelList.forEach(element => {
         if(item.level ==element.value)
         {         
-         item.level = element.name;
+         item.originLevel = element.name;
         }
        });              
     }); 
@@ -124,7 +139,7 @@ export class VehicleDetailsComponent implements OnInit {
     this.gridData.fleetOverviewAlert.forEach(element => {
       this.filterData.alertLevel.forEach(item => {
         if(item.value == element.level){        
-          element.level = this.translationData[item.name]; 
+          element.originLevel = this.translationData[item.name]; 
         }
       });
     });

@@ -105,12 +105,12 @@ export class FleetFuelPreferencesComponent implements OnInit {
   resetColumnData() {
     this.summaryColumnData = [];
     this.vehicleRankingColumnData = [];
-    console.log("vehicleRankingColumnData", this.vehicleRankingColumnData);
+    //console.log("vehicleRankingColumnData", this.vehicleRankingColumnData);
     this.chartsColumnData = [];
     this.vehicleDetailsColumnData = [];
-    console.log("vehicleDetailsColumnData", this.vehicleDetailsColumnData);
+    //console.log("vehicleDetailsColumnData", this.vehicleDetailsColumnData);
     this.singleVehicleDetailsColumnData = [];    
-    console.log("singleVehicleDetailsColumnData", this.singleVehicleDetailsColumnData);
+    //console.log("singleVehicleDetailsColumnData", this.singleVehicleDetailsColumnData);
   }
 
   setColumnCheckbox() {
@@ -327,7 +327,7 @@ export class FleetFuelPreferencesComponent implements OnInit {
         _chartsArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "C", chartType: this.fleetFuelForm.get([element.key]).value, thresholdType: "", thresholdValue: 0, reportId: element.reportId  });
       }
     });
-   // console.log("save Object", [..._summaryArr, ..._vehicleRankingArr, ..._vehicleDetailsArr, ..._singleVehicleDetailsArr, ..._chartsArr, ...parentArr])
+   // //console.log("save Object", [..._summaryArr, ..._vehicleRankingArr, ..._vehicleDetailsArr, ..._singleVehicleDetailsArr, ..._chartsArr, ...parentArr])
     return [..._summaryArr, ..._vehicleRankingArr, ..._vehicleDetailsArr, ..._singleVehicleDetailsArr, ..._chartsArr, ...parentArr];
   }
 

@@ -59,7 +59,7 @@ export class ReportsPreferencesComponent implements OnInit {
         this.hideloader();
       });
     }, (error)=>{
-      console.log('Report not found...', error);
+      //console.log('Report not found...', error);
       this.hideloader();
       this.reportListData = [];
     });

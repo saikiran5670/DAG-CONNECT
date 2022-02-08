@@ -223,7 +223,7 @@ export class CreateEditViewVehicleGroupComponent implements OnInit {
         this.showLoadingIndicator=false;
       }, (err) => {
         this.showLoadingIndicator=false;
-        //console.log(err);
+        ////console.log(err);
         if (err.status == 409) {
           this.duplicateVehicleGroupMsg = true;
         }
@@ -250,7 +250,7 @@ export class CreateEditViewVehicleGroupComponent implements OnInit {
         this.showLoadingIndicator=false;
       }, (err) => {
         this.showLoadingIndicator=false;
-        //console.log(err);
+        ////console.log(err);
         if (err.status == 409) {
           this.duplicateVehicleGroupMsg = true;
         }

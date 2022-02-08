@@ -49,8 +49,8 @@ export class RelationshipManagementComponent implements OnInit {
    }
 
   ngOnInit(): void {
-    // console.log("---initial value of viewRelationshipFromOrg",this.viewRelationshipFromOrg)
-    // console.log(history.state);
+    // //console.log("---initial value of viewRelationshipFromOrg",this.viewRelationshipFromOrg)
+    // //console.log(history.state);
     this.viewRelationshipFromOrg = history.state.viewRelationshipFromOrg;
     this.userLevel = parseInt(localStorage.getItem('userLevel'));
     if(this.viewRelationshipFromOrg){
@@ -99,7 +99,7 @@ export class RelationshipManagementComponent implements OnInit {
 
   processTranslation(transData: any){
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    //console.log("process translationData:: ", this.translationData)
+    ////console.log("process translationData:: ", this.translationData)
   }
 
   loadInitData() {

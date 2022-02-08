@@ -65,8 +65,8 @@ export class CreateEditViewGroupComponent implements OnInit {
         CustomValidators.specialCharValidationForNameWithoutRequired('landmarkGroupDescription')
       ]
     });
-console.log('Ac',this.actionType);
-console.log('TT',this.titleText);
+//console.log('Ac',this.actionType);
+//console.log('TT',this.titleText);
     if(this.actionType == 'edit' ){
       this.setDefaultValue();
     }
@@ -353,7 +353,7 @@ console.log('TT',this.titleText);
             this.backToPage.emit(emitObj);
           }, (err) => { });
         }, (err) => {
-          //console.log(err);
+          ////console.log(err);
           if (err.status == 409) {
             this.duplicateGroupMsg = true;
           }
@@ -392,7 +392,7 @@ console.log('TT',this.titleText);
         this.backToPage.emit(emitObj);
       }, (err) => { });
       }, (err) => {
-        //console.log(err);
+        ////console.log(err);
         if (err.status == 409) {
           this.duplicateGroupMsg = true;
         }

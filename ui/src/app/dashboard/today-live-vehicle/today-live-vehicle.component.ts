@@ -270,7 +270,8 @@ doughnutDistanceColors: Color[] = [
   }
 
   getTimeDisplay(_timeValue: any){
-    let convertedTime =  Util.getHhMmTime(_timeValue); // Util.getHhMmTimeFromMS(_timeValue);
+    // let convertedTime =  Util.getHhMmTime(_timeValue); // Util.getHhMmTimeFromMS(_timeValue);
+    let convertedTime =  Util.getHhMmTimeFromMS(_timeValue);  // drivingtime is in ms
     let convertedTimeDisplay = '';
     if(convertedTime){
       if(convertedTime.indexOf(":") != -1){

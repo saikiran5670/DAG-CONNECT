@@ -125,7 +125,8 @@ export class ManagePoiGeofenceComponent implements OnInit {
     private hereService: HereService,
     private domSanitizer: DomSanitizer
     ) {
-      this.map_key = _configService.getSettings("hereMap").api_key;
+      // this.map_key = _configService.getSettings("hereMap").api_key;
+      this.map_key = localStorage.getItem("hereMapsK");
       this.platform = new H.service.Platform({
         "apikey": this.map_key
       });
@@ -284,7 +285,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
       let marker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: this.getSVGIcon() });
       this.map.addObject(marker);
       var bubble;
-      console.log('t1',this.translationData);
+      //console.log('t1',this.translationData);
       let translatedPoiName = this.translationData.lblPOIName;
       let translatedCategory = this.translationData.lblCategory;
       let translatedSubCategory = this.translationData.lblSubCategory;
@@ -933,7 +934,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
     if(poiList != ''){
       poiList = poiList.slice(0, -2);
     }
-    console.log(poiList);
+    //console.log(poiList);
     this.dialogService.DeleteModelOpen(options, poiList);
     this.dialogService.confirmedDel().subscribe((res) => {
     if (res) {
@@ -1029,7 +1030,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
       });
     }
     else{
-      //console.log("geofence id not found...");
+      ////console.log("geofence id not found...");
     }
   }
 
@@ -1384,6 +1385,8 @@ export class ManagePoiGeofenceComponent implements OnInit {
       this.importTranslationData.existError = this.translationData.lblNamealreadyexists || 'POI name already exists';
       this.importTranslationData.input1mandatoryReason = this.translationData.lblNameMandatoryReason || '$ is mandatory input';
       this.importTranslationData.lblBack = this.translationData.lblBack || 'Back';
+      this.importTranslationData.duplicatePOI = this.translationData.lblDuplicatePOI || 'Duplicate POI';
+      this.importTranslationData.poiMaxLength = this.translationData.lblDataAttributeSetmaxlength || 'Max length should be 100';
       this.tableTitle = this.translationData.lblTableTitle || 'Rejected POI Details';
       this.tableColumnName = [this.translationData.lblOrganizationId || 'OrganizationId',
                               this.translationData.lblCategoryName || 'Category Name',

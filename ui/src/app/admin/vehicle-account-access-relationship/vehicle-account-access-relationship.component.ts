@@ -138,7 +138,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
 
   processTranslation(transData: any){
     this.translationData = transData.reduce((acc: any, cur: any) => ({ ...acc, [cur.name]: cur.value }), {});
-    //console.log("process translationData:: ", this.translationData)
+    ////console.log("process translationData:: ", this.translationData)
   }
 
   applyFilter(filterValue: string) {
@@ -189,7 +189,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
       this.createVehicleAccountAccessRelation = true;
     }, (error) => {
       this.hideloader();
-      console.log("error:: ", error)
+      //console.log("error:: ", error)
     });
   }
 
@@ -253,7 +253,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   }
 
   deleteAccessRelationship(element: any){
-    //console.log("delete item:: ", element);
+    ////console.log("delete item:: ", element);
     const options = {
       title: this.translationData.lblDelete,
       message: this.translationData.lblAreyousureyouwanttodeleteAssociationRelationship,
@@ -268,7 +268,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
             this.successMsgBlink(this.getDeletMsg(element.name));
             this.loadAccessRelationshipData();
           }, (error) => {
-            console.log("Error:: ", error);
+            //console.log("Error:: ", error);
           });
         }
         else{
@@ -276,7 +276,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
             this.successMsgBlink(this.getDeletMsg(element.name));
             this.loadAccessRelationshipData();
           }, (error) => {
-            console.log("Error:: ", error);
+            //console.log("Error:: ", error);
           });
         }
       }

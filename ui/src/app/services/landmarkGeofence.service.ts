@@ -14,7 +14,7 @@ export class GeofenceService {
     GeofenceServiceUrl: string = '';
 
   constructor(private httpClient: HttpClient, private config: ConfigService) {
-    this.GeofenceServiceUrl = config.getSettings("foundationServices").geofenceRESTServiceURL;
+    this.GeofenceServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/geofence';
   }
 
   generateHeader(){

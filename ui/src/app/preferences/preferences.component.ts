@@ -57,7 +57,7 @@ export class PreferencesComponent implements OnInit, AfterViewInit {
 
   processTranslation(transData: any){
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    //console.log("process translationData:: ", this.translationData)
+    ////console.log("process translationData:: ", this.translationData)
   }
 
   onTabChanged(event: any){

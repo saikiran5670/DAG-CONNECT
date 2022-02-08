@@ -16,9 +16,9 @@ export class LandmarkCategoryService {
     geofenceServiceUrl: string = '';
     
     constructor(private httpClient: HttpClient, private config: ConfigService) {
-        this.landmarkCategoryServiceUrl = config.getSettings("foundationServices").landmarkCategoryRESTServiceURL;
-        this.poiServiceUrl = config.getSettings("foundationServices").poiRESTServiceURL;
-        this.geofenceServiceUrl = config.getSettings("foundationServices").geofenceRESTServiceURL;
+        this.landmarkCategoryServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/poigeofence';
+        this.poiServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/poi';
+        this.geofenceServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/geofence';
     }
 
     generateHeader(){

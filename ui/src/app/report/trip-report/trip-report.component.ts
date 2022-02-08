@@ -191,7 +191,8 @@ export class TripReportComponent implements OnInit, OnDestroy {
   filterValue: string;
 
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private landmarkCategoryService: LandmarkCategoryService, private router: Router, private organizationService: OrganizationService, private completerService: CompleterService, private _configService: ConfigService, private hereService: HereService, private dataInterchangeService: DataInterchangeService) {
-    this.map_key = _configService.getSettings("hereMap").api_key;
+    // this.map_key = _configService.getSettings("hereMap").api_key;
+    this.map_key = localStorage.getItem("hereMapsK");
     //Add for Search Fucntionality with Zoom
     this.query = "starbucks";
     this.platform = new H.service.Platform({
@@ -377,7 +378,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
       }
 
     }, (error)=>{
-      //console.log('Report not found...', error);
+      ////console.log('Report not found...', error);
       reportListData = [{name: 'Trip Report', id: this.tripReportId}];
       // this.getTripReportPreferences();
     });
@@ -625,7 +626,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    ////console.log("process translationData:: ", this.translationData)
+    //////console.log("process translationData:: ", this.translationData)
   }
 
   public ngAfterViewInit() { }
@@ -653,13 +654,13 @@ export class TripReportComponent implements OnInit, OnDestroy {
     if (_vinData.length > 0) {
       this.showLoadingIndicator = true;
       this.reportService.getTripDetails(_startTime, _endTime, _vinData[0].vin).subscribe((_tripData: any) => {
-        //console.log(_tripData);
+        ////console.log(_tripData);
         this.hideloader();
         this.tripData = this.reportMapService.convertTripReportDataBasedOnPref(_tripData.tripData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat, this.prefTimeZone);
         this.setTableInfo();
         this.updateDataSource(this.tripData);
       }, (error) => {
-        //console.log(error);
+        ////console.log(error);
         this.hideloader();
         this.tripData = [];
         this.tableInfoObj = {};
@@ -748,14 +749,14 @@ export class TripReportComponent implements OnInit, OnDestroy {
       if (parseInt(event.value) == 0) { //-- all group
         let vehicleData = this.vehicleListData.slice();
         this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
-        //console.log("vehicleDD 1", this.vehicleDD);
+        ////console.log("vehicleDD 1", this.vehicleDD);
       } else {
         let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
         if (search.length > 0) {
           this.vehicleDD = [];
           search.forEach(element => {
             this.vehicleDD.push(element);
-            //console.log("vehicleDD 3", this.vehicleDD);
+            ////console.log("vehicleDD 3", this.vehicleDD);
           });
         }
       }
@@ -794,7 +795,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
 
   updateDataSource(tableData: any) {
     this.initData = tableData;
-    // console.log("----UpdateDataSource---initData", this.initData )
+    // //console.log("----UpdateDataSource---initData", this.initData )
     this.showMap = false;
     this.selectedTrip.clear();
     if (this.initData.length > 0) {
@@ -996,7 +997,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
       body: prepare,
       theme: 'striped',
       didDrawCell: data => {
-        //console.log(data.column.index)
+        ////console.log(data.column.index)
       }
     })
     // below line for Download PDF document
@@ -1226,7 +1227,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
     let currentEndTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);
     // let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
     // let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
-    //console.log(currentStartTime + "<->" + currentEndTime);
+    ////console.log(currentStartTime + "<->" + currentEndTime);
     if (this.wholeTripData &&  this.wholeTripData.vinTripList && this.wholeTripData.vinTripList.length > 0) {
       // this.wholeTripData.vinTripList =[
       //     {
@@ -1301,7 +1302,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
           let count = this.vehicleGroupListData.filter(j => j.vehicleGroupId == element);
           if (count.length > 0) {
             this.vehicleGrpDD.push(count[0]); //-- unique Veh grp data added
-            //console.log("vehicleGrpDD", this.vehicleGrpDD);
+            ////console.log("vehicleGrpDD", this.vehicleGrpDD);
             this.vehicleGrpDD.sort(this.compare);
            // this.vehicleDD.sort(this.compare);
             this.resetVehicleGroupFilter();
@@ -1319,7 +1320,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
     //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
     let vehicleData = this.vehicleListData.slice();
         this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
-        //console.log("vehicleDD 2", this.vehicleDD);
+        ////console.log("vehicleDD 2", this.vehicleDD);
         this.vehicleDD.sort(this.compareVin);
         this.resetVehicleFilter();
 
@@ -1560,7 +1561,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
   }
 
   filterVehicleGroups(vehicleSearch){
-    //console.log("filterVehicleGroups called");
+    ////console.log("filterVehicleGroups called");
     if(!this.vehicleGrpDD){
       return;
     }
@@ -1573,12 +1574,12 @@ export class TripReportComponent implements OnInit, OnDestroy {
     this.filteredVehicleGroups.next(
       this.vehicleGrpDD.filter(item => item.vehicleGroupName.toLowerCase().indexOf(vehicleSearch) > -1)
     );
-    //console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
+    ////console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
 
   }
 
   filterVehicle(VehicleSearch){
-    //console.log("vehicle dropdown called");
+    ////console.log("vehicle dropdown called");
     if(!this.vehicleDD){
       return;
     }
@@ -1591,7 +1592,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
     this.filteredVehicle.next(
       this.vehicleDD.filter(item => item.vin.toLowerCase().indexOf(VehicleSearch) > -1)
     );
-    //console.log("filtered vehicles", this.filteredVehicle);
+    ////console.log("filtered vehicles", this.filteredVehicle);
   }
 
   resetVehicleFilter(){

@@ -46,14 +46,12 @@ import { CustomPaginationComponent } from './custom-pagination/custom-pagination
 import { SpinnerComponent } from './spinner/spinner.component';
 import { ActiveInactiveDailogComponent } from './active-inactive-dailog/active-inactive-dailog.component';
 import { CommonImportComponent } from './common-import/common-import.component';
-import { CommonMapComponent } from './common-map/common-map.component';
 import { DataTableComponent } from './data-table/data-table.component';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
-import { CommonBreadcrumbsComponent } from './common-breadcrumbs/common-breadcrumbs.component';
 
 
 @NgModule({
-  declarations: [CommonFilterComponent, RemoveDuplicatesPipe, SafeStylePipe, CustomPaginationComponent, SpinnerComponent, ActiveInactiveDailogComponent,CommonImportComponent, CommonMapComponent, DataTableComponent, CommonBreadcrumbsComponent],
+  declarations: [CommonFilterComponent, RemoveDuplicatesPipe, SafeStylePipe, CustomPaginationComponent, SpinnerComponent, ActiveInactiveDailogComponent,CommonImportComponent, DataTableComponent],
   imports: [
     CommonModule,
     FlexLayoutModule,
@@ -141,9 +139,7 @@ import { CommonBreadcrumbsComponent } from './common-breadcrumbs/common-breadcru
     SafeStylePipe,
     SpinnerComponent,
     CommonImportComponent,
-    CommonMapComponent,
-    DataTableComponent,
-    CommonBreadcrumbsComponent
+    DataTableComponent
   ],
   providers: [{ provide: MatPaginatorIntl, useClass: CustomPaginationComponent}],
 })

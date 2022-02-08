@@ -17,11 +17,11 @@ export class UnsubscribeReportComponent implements OnInit {
 
   ngOnInit(): void {
     this.token=  this.route.snapshot.paramMap.get('token');
-    console.log("unsubscribe token = "+this.token);
+    //console.log("unsubscribe token = "+this.token);
     this.id= parseInt(this.route.snapshot.paramMap.get('id'));
-    console.log("unsubscribe id = "+this.id);
+    //console.log("unsubscribe id = "+this.id);
     this.emailId=  this.route.snapshot.paramMap.get('emailId');
-    console.log("unsubscribe emailId = "+this.emailId);
+    //console.log("unsubscribe emailId = "+this.emailId);
     if(this.id > 0){
       this.reportSchedulerService.getUnsubscribeForSingle(this.id,this.emailId).subscribe(response => {
         this.errorStatus= response.code;

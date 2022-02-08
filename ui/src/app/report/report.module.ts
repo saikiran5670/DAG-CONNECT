@@ -23,10 +23,8 @@ import { Ng2CompleterModule } from 'ng2-completer';
 import { EcoScoreReportComponent } from './eco-score-report/eco-score-report.component';
 import { EcoScoreDriverCompareComponent } from './eco-score-report/eco-score-driver-compare/eco-score-driver-compare.component';
 import { AngularSlickgridModule } from 'angular-slickgrid';
-//import { FleetfueldetailsComponent } from './fleet-fuel-report/fleetfueldetails/fleetfueldetails.component';
 import { EcoScoreReportDriverComponent } from './eco-score-report/eco-score-report-driver/eco-score-report-driver.component';
 import { FuelBenchmarkingComponent } from './fuel-benchmarking/fuel-benchmarking.component';
-//import { DetailVehicleReportComponent } from './fleet-fuel-report/detail-vehicle-report/detail-vehicle-report.component';
 import { DetailDriverReportComponent } from './fleet-fuel-report/fleet-fuel-report-driver/detail-driver-report/detail-driver-report.component';
 import { FuelBenchmarkingTableComponent } from './fuel-benchmarking/fuel-benchmarking-table/fuel-benchmarking-table/fuel-benchmarking-table.component';
 import { VehicletripComponent } from './fleet-fuel-report/fleet-fuel-report-vehicle/vehicletrip/vehicletrip.component';
@@ -73,8 +71,6 @@ export const MY_DATE_FORMAT = {
     HighchartsChartModule,
     NgxMatSelectSearchModule,
     AngularSlickgridModule.forRoot({
-      // add any Global Grid Options/Config you might want
-      // to avoid passing the same options over and over in each grids of your App
       enableAutoResize: true,
       autoResize: {
         containerId: 'demo-container',
