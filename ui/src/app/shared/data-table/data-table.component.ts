@@ -29,6 +29,7 @@ export class DataTableComponent implements OnInit {
   @Input() showExport;
   @Input() exportFileName;
   @Input() nextScheduleRunDateColumnElements;
+  @Input() createdAtRunDateColumnElements;
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
