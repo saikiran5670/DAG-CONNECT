@@ -110,8 +110,11 @@
                         <span>{{ translationData.lbldriverID || 'driver ID' }}: </span>
         
                         <!-- <span class='font-helvetica-md'>{{ driverDetails.driverID }} -->
-                          <span class='font-helvetica-md'>{{ driverDetails.unknownDriver ? '*' : driverDetails.driverID }}
-                        </span>
+                          <!-- <span class='font-helvetica-md'>{{ driverDetails.unknownDriver ? '*' : driverDetails.driverID }}
+                        </span> -->
+                        <span class='font-helvetica-md' *ngIf=" driverDetails.driverID != '' && driverDetails.hashedDriverId != '' && driverDetails.hashedDriverId != null  ">{{driverDetails.driverID }}</span>
+                        <span class='font-helvetica-md' *ngIf=" driverDetails.driverID != '' && driverDetails.driverID != null && driverDetails.hashedDriverId == null || driverDetails.hashedDriverId == '' ">*</span>
+                        <span class='font-helvetica-md' *ngIf=" driverDetails.driverID == null || driverDetails.driverID == '' && driverDetails.hashedDriverId == null || driverDetails.hashedDriverId == '' ">Unknown</span>
         
                       </span>
                     </div>

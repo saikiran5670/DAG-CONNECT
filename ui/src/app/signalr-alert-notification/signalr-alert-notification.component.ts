@@ -5,7 +5,7 @@ import { Util } from '../shared/util';
 import { TranslationService } from '../services/translation.service';
 import { OrganizationService } from '../services/organization.service';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
-import { SignalRService } from '../services/sampleService/signalR.service';
+import { SignalRService } from '../services/signalR.service';
 
 @Component({
   selector: 'app-signalr-alert-notification',
