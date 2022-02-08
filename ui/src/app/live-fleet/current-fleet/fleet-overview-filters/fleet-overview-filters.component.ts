@@ -104,7 +104,11 @@ constructor(private fleetMapService: FleetMapService, private messageService: Me
 
 ngAfterViewInit(){
   this.cdr.detectChanges();
-}
+   if(this.selectedIndex == 1){
+    this.updateDriverFilter();}
+  else{
+    this.updateVehicleFilter(); }
+ }
 
 ngOnChanges(changes: SimpleChanges) {
   if(changes && changes.filterData && changes.filterData.currentValue){
