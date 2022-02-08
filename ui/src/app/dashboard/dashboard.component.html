@@ -1,44 +1,7 @@
 <div class="bgtrans">
-    <!-- <mat-card class='margin-top-lg border-none bg-none no-padding full-width margin-top-40 mat-elevation-z' fxLayout="column" fxLayoutAlign="start start">
-    <mat-card-content class="full-width">
-      <div fxLayout="row" fxLayoutAlign="space-around" fxLayoutGap="25px">
-        <p style="color: darkgray; font-size: 2em">This screen is part of services feature</p> -->
-        <!-- <div class="dashboard-box-shadow bg-light bor-box chartHeight padding-10" fxFlex.xs="" fxFlex.sm=""
-          fxFlex.md="" fxFlex="30.5" fxLayout="column" fxLayoutAlign="start start">
-          <div class="full-width no-margin">
-            <div class="half-width bold-txt float-left">Pie Chart</div>
-          </div>
-            <canvas class="margin-top-30" baseChart [data]="doughnutChartData" [colors]="barChartColors"
-              [labels]="doughnutChartLabels" [options]="doughnut_barOptions" [legend]="barChartLegend"
-              [chartType]="doughnutChartType">
-            </canvas>
-        </div>
-        <div class="dashboard-box-shadow bg-light bor-box chartHeight padding-10" fxFlex.xs="" fxFlex.sm=""
-          fxFlex.md="" fxFlex="30.5" fxLayout="column" fxLayoutAlign="start start">
-          <div class="full-width no-margin">
-            <div class="half-width bold-txt float-left">Bar Chart</div>
-          </div>
-          <canvas class="margin-top-30" baseChart [datasets]="stack_barChartData"
-            [labels]="stack_barChartLabels" [options]="stack_barChartOptions" [plugins]="stack_barChartPlugins"
-            [legend]="stack_barChartLegend" [chartType]="stack_barChartType">
-          </canvas>
-        </div>
-        <div class="dashboard-box-shadow bg-light bor-box chartHeight padding-10" fxFlex.xs="" fxFlex.sm=""
-          fxFlex.md="" fxFlex="30.5" fxLayout="column" fxLayoutAlign="start start">
-          <div class="full-width no-margin">
-            <div class="half-width bold-txt float-left">Single Bar Chart</div>
-          </div>
-          <canvas class="margin-top-30" baseChart [datasets]="stack_barChartData_overdue"
-            [labels]="stack_barChartLabels_overdue" [options]="stack_barChartOptions"
-            [plugins]="stack_barChartPlugins" [legend]="stack_barChartLegend" [chartType]="stack_barChartType">
-          </canvas>
-        </div> -->
         <div class='custom-font' *ngIf='noDataFound'>{{ translationData.lblNodatafoundforthisorganisationsdashboard || "No data found for this organisation's dashboard" }}</div>
         <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
         <app-fleetkpi *ngIf='finalVinList.length > 0' [translationData] ="translationData"  [finalVinList]='finalVinList' [prefData]='prefData' [preference]='preference' [dashboardPrefData] ="dashboardPrefData"></app-fleetkpi>
         <app-today-live-vehicle *ngIf='finalVinList.length > 0' [translationData] ="translationData" [finalVinList]='finalVinList' [prefData]='prefData' [preference]='preference' [dashboardPrefData] ="dashboardPrefData"></app-today-live-vehicle>
         <app-dashboard-vehicle-utilisation *ngIf='finalVinList.length > 0'  [translationData] ="translationData" [finalVinList]='finalVinList' [prefData]='prefData' [preference]='preference' [dashboardPrefData] ="dashboardPrefData"></app-dashboard-vehicle-utilisation>
-      <!-- </div>
-    </mat-card-content>
-   </mat-card> -->
 </div>
