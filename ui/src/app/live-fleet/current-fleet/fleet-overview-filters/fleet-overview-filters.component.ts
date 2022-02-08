@@ -1370,7 +1370,14 @@ drawIcons(_selectedRoutes){
     this.svgIcon = this.sanitizer.bypassSecurityTrustHtml(_vehicleMarkerDetails.icon);
     elem =  Object.defineProperty(elem, "icon", {value : this.svgIcon,
     writable : true,enumerable : true, configurable : true});
-
+    if(_alertConfig && _alertConfig.level){
+      if(_alertConfig.level == 'Critical')
+        elem['alertName'] = this.translationData.enumurgencylevel_critical;
+      else if(_alertConfig.level == 'Warning')
+        elem['alertName'] = this.translationData.enumurgencylevel_warning;
+      else if(_alertConfig.level == 'Advisory')
+        elem['alertName'] = this.translationData.enumurgencylevel_advisory;
+    }
   });
 
 
