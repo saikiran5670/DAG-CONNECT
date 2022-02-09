@@ -823,6 +823,7 @@ tripTraceArray: any = [];
   map_key: any = '';
   platform: any = '';
   rowdata = [];
+  noRecordFound: boolean = false;
 
   constructor(private _formBuilder: FormBuilder, 
               private landmarkCategoryService: LandmarkCategoryService,
@@ -1228,6 +1229,11 @@ createEndMarker(){
     }
    this.reportService.getVehicleTripDetails(getFleetFuelObj).subscribe((data:any) => {
      // //console.log("---getting data from getFleetFuelvehicleDetailsAPI---",data)
+    if(data["fleetFuelDetails"].length == 0) {
+      this.noRecordFound = true;
+    } else {
+      this.noRecordFound = false;
+    }
     this.displayData = data["fleetFuelDetails"];  
     this.FuelData = this.reportMapService.getConvertedFleetFuelDataBasedOnPref(this.displayData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
     // this.setTableInfo();
@@ -1235,8 +1241,9 @@ createEndMarker(){
     this.setTableInfo();
     this.fuelConsumptionSummary = (this.prefUnitFormat == 'dunit_Metric')?((this.sumOfColumns('fuelconsumed')/this.sumOfColumns('distance')) * 100).toFixed(2) : (this.sumOfColumns('distance')/this.sumOfColumns('fuelconsumed')).toFixed(2);
     this.hideloader();
-    }, (complete)=>{
+    }, (error)=>{
       this.hideloader();
+      this.noRecordFound = true;
     });
     this.reportService.getGraphDetails(getFleetFuelObj).subscribe((graphData: any) => {
       this.chartDataSet=[];
