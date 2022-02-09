@@ -1102,6 +1102,7 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
     this.setDefaultTodayDate();
     this.tripData = [];
     this.vehicleListData = [];
+    this.noRecordFound = false;
     this.updateDataSource(this.tripData);
     this.resetLogFormControlValue();
     this.filterDateData(); // extra addded as per discuss with Atul

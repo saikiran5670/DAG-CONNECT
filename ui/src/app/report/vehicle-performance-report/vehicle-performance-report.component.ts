@@ -121,7 +121,7 @@ export class VehiclePerformanceReportComponent implements OnInit {
   xaxisB:any = {}
   yaxisB:any = {}
   
-
+  noRecordFound: boolean = false;
   
 
   constructor(private translationService: TranslationService, private reportService: ReportService) {
@@ -300,12 +300,15 @@ export class VehiclePerformanceReportComponent implements OnInit {
         this.yaxisVaues = this.processYaxis(res[0].vehPerformanceCharts);
         this.generatePieChartData(res[1].kpiData);
         this.search = true;
+        this.noRecordFound = false;
       } else {
         this.search = false;
+        this.noRecordFound = true;
       }
       this.showLoadingIndicator = false;
     }, (err) => {
       this.showLoadingIndicator = false;
+      this.noRecordFound = true;
     });    
   }
   
