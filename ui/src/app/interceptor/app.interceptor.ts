@@ -18,13 +18,17 @@ import { tap } from 'rxjs/operators';
 import { ErrorComponent } from '../error/error.component';
 
 @Injectable({ providedIn: 'root' })
-export class HttpErrorInterceptor implements HttpInterceptor {
+export class AppInterceptor implements HttpInterceptor {
   constructor(private dialogService: SessionDialogService) {}
 
   public intercept(
     request: HttpRequest<any>,
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
+    request = request.clone({
+      withCredentials: true
+    });
+    
     return next.handle(request).pipe(
       tap(
         (event: HttpEvent<any>) => {
