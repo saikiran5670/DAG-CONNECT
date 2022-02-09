@@ -15,7 +15,7 @@ import 'jspdf-autotable';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { Util } from '../../shared/util';
 import * as Highcharts from 'highcharts';
-import { Label, Color, SingleDataSet} from 'ng2-charts';
+import { Label, Color, SingleDataSet } from 'ng2-charts';
 import html2canvas from 'html2canvas';
 import { ChartOptions, ChartType, ChartDataSets } from 'chart.js';
 import { Router, NavigationExtras } from '@angular/router';
@@ -96,15 +96,15 @@ export class FleetUtilisationComponent implements OnInit, OnDestroy {
   chartsColumnData: any = [];
   calenderColumnData: any = [];
   detailColumnData: any = [];
-  timebasedThreshold : any = 0; // hh:mm
-  mileagebasedThreshold : any = 0; // km
-  mileageDChartType : boolean = true;
-  timeDChartType : boolean = true;
-  activeVehicleChartType : boolean = true;
-  distanceChartType : boolean = false;
+  timebasedThreshold: any = 0; // hh:mm
+  mileagebasedThreshold: any = 0; // km
+  mileageDChartType: boolean = true;
+  timeDChartType: boolean = true;
+  activeVehicleChartType: boolean = true;
+  distanceChartType: boolean = false;
   fleetUtilReportId: any = 5;
-  chartLabelDateFormat:any ='MM/DD/YYYY';
-  highchartDateFormat:any ='%d-%m-%Y';
+  chartLabelDateFormat: any = 'MM/DD/YYYY';
+  highchartDateFormat: any = '%d-%m-%Y';
   showField: any = {
     vehicleName: true,
     vin: true,
@@ -156,11 +156,11 @@ export class FleetUtilisationComponent implements OnInit, OnDestroy {
       value: 'numberOfTrips'
     },
     {
-      key:'rp_fu_report_details_triptime',
+      key: 'rp_fu_report_details_triptime',
       value: 'tripTime'
     },
     {
-      key:'rp_fu_report_details_stoptime',
+      key: 'rp_fu_report_details_stoptime',
       value: 'stopTime'
     }
   ];
@@ -168,271 +168,272 @@ export class FleetUtilisationComponent implements OnInit, OnDestroy {
   barVarticleData: any = [];
   averageDistanceBarData: any = [];
   lineChartVehicleCount: any = [];
-  greaterMileageCount :  any = 0;
-  greaterTimeCount :  any = 0;
-  calendarpreferenceOption : any = "";
+  greaterMileageCount: any = 0;
+  greaterTimeCount: any = 0;
+  calendarpreferenceOption: any = "";
   calendarValue: any = [];
-  summaryObj:any=[];
+  summaryObj: any = [];
   barChartOptions: any = {
-  responsive: true,
-  legend: {
-    position: 'bottom',
-  },
-  scales: {
-    yAxes: [{
-      id: "y-axis-1",
-      position: 'right',
-      type: 'linear',
-      ticks: {
-        beginAtZero:true
-      },
-      scaleLabel: {
-        display: true,
-        labelString: (this.prefUnitFormat == 'dunit_Metric') ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm  || 'km' })` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles  || 'miles' })`
-        }} ,{
-        id: "y-axis-2",
-        position: 'left',
-        type: 'linear',
-        ticks: {
-          steps: 10,
-          stepSize: 1,
-          beginAtZero:true,
-        },
-        scaleLabel: {
-          display: true,
-          labelString: (this.prefUnitFormat == 'dunit_Metric') ? `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblkmperday  || 'km/day' })` : `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblmilesperday  || 'miles/day' })`
-        }
-      }
-    ],
-    xAxes: [{
-      type:'time',
-      time:
-      {
-        tooltipFormat: this.chartLabelDateFormat,
-        unit: 'day',
-        stepSize:1,
-        displayFormats: {
-          day:  this.chartLabelDateFormat,
-         },
-      },
-    scaleLabel: {
-      display: true,
-      labelString: this.translationData.lblDates || 'Dates'
-    }
-  }]
-  }
-};
-barChartLabels: Label[] =this.chartsLabelsdefined;
-barChartType: ChartType = 'bar';
-barChartLegend = true;
-barChartPlugins = [];
-barChartData: any[] = [];
-distanceLineChartData:any[] =[]
-distanceLineChartColors: Color[] = [
-  {
-    borderColor: '#7BC5EC',
-    backgroundColor: 'rgba(255,255,0,0)',
-  },
-  {
-    borderColor: '#4679CC',
-    backgroundColor: 'rgba(255,255,0,0)',
-  },
-];
-public pieChartOptions: ChartOptions = {
-  responsive: true,
-  legend: {
-    position: 'bottom',
-  },
-};
-public mileagePieChartLabels: Label[] = [];
-public mileagePieChartData: SingleDataSet = [];
-public pieChartType: ChartType = 'pie';
-public pieChartLegend = true;
-public pieChartPlugins = [];
-doughnutChartLabels: Label[] = [];
-doughnutChartData: any = [];
-doughnutChartType: ChartType = 'doughnut';
-doughnutChartColors: Color[] = [
-  {
-    backgroundColor: ['#69EC0A','#7BC5EC'],
-  },
-];
-doughnutChartLabelsForTime: Label[] = [];
-doughnutChartDataForTime: any = [];
-doughnutChartTypeTime: ChartType = 'doughnut';
-public doughnut_barOptions: ChartOptions = {
-  responsive: true,
-  legend: {
-    position: 'bottom'
-  },
-  cutoutPercentage: 70,
-};
-public timePieChartLabels: Label[] = [];
-public timePieChartData: SingleDataSet = [];
-lineChartData: ChartDataSets[] = [];
-VehicleBarChartData = [];
-lineChartLabels: Label[] =this.chartsLabelsdefined;
-lineChartOptions = {
-  responsive: true,
-  legend: {
-    position: 'bottom',
-  },
-  scales: {
-    yAxes: [{
-      id: "y-axis-1",
-      position: 'left',
-      type: 'linear',
-      ticks: {
-        steps: 10,
-        stepSize: 1,
-        beginAtZero: true,
-      },
-      scaleLabel: {
-        display: true,
-        labelString: `${this.translationData.lblvalue || 'value'}(${this.translationData.lblnumberofvehicles || 'number of vehicles'})`
-      }
-    }],
-    xAxes: [{
-      type:'time',
-      time:
-      {
-        tooltipFormat: this.chartLabelDateFormat,
-        unit: 'day',
-        stepSize:1,
-        displayFormats: {
-          day:  this.chartLabelDateFormat,
-         },
-      },
-    scaleLabel: {
-      display: true,
-      labelString: this.translationData.lblDates || 'Dates'
-    }
-  }]
-  }
-};
-lineChartColors: Color[] = [
-  {
-    borderColor: '#7BC5EC',
-    backgroundColor: 'rgba(255,255,0,0)',
-  },
-];
-lineChartLegend = true;
-lineChartPlugins = [];
-lineChartType = 'line';
-VehicleBarChartOptions: any = {
-  responsive: true,
-  legend: {
-    position: 'bottom',
-  },
-  scales: {
-    yAxes: [{
-      id: "y-axis-1",
-      position: 'left',
-      type: 'linear',
-      ticks: {
-        steps: 10,
-        stepSize: 1,
-        beginAtZero:true
-      },
-      scaleLabel: {
-        display: true,
-        labelString: `${this.translationData.lblvalue || 'value'}(${this.translationData.lblnumberofvehicles || 'number of vehicles'})`
-      }}],
-
-    xAxes: [{
-      type:'time',
-      time:
-      {
-        tooltipFormat: this.chartLabelDateFormat,
-        unit: 'day',
-        stepSize:1,
-        displayFormats: {
-          day:  this.chartLabelDateFormat,
-         },
-      },
-    scaleLabel: {
-      display: true,
-      labelString: this.translationData.lblDates || 'Dates'
-    }
-  }]
-  }
-};
-fromTripPageBack: boolean = false;
-calendarOptions: CalendarOptions = {
-  initialView: 'dayGridMonth',
-  timeZone: 'local',
-  events: [ ],
-};
-distanceLineChartOptions = {
     responsive: true,
     legend: {
       position: 'bottom',
-       },
+    },
     scales: {
       yAxes: [{
         id: "y-axis-1",
         position: 'right',
         type: 'linear',
-         ticks: {
-          beginAtZero: true,
+        ticks: {
+          beginAtZero: true
         },
         scaleLabel: {
           display: true,
-          labelString: (this.prefUnitFormat == 'dunit_Metric') ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm  || 'km' })` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles  || 'miles' })`
-         }
-      },{
+          labelString: (this.prefUnitFormat == 'dunit_Metric') ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm || 'km'})` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles || 'miles'})`
+        }
+      }, {
         id: "y-axis-2",
         position: 'left',
         type: 'linear',
         ticks: {
           steps: 10,
           stepSize: 1,
-          beginAtZero:true,
+          beginAtZero: true,
         },
         scaleLabel: {
           display: true,
-          labelString: this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblkmperday  || 'km/day' })` : `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblmilesperday  || 'miles/day' })`
+          labelString: (this.prefUnitFormat == 'dunit_Metric') ? `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblkmperday || 'km/day'})` : `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblmilesperday || 'miles/day'})`
+        }
+      }
+      ],
+      xAxes: [{
+        type: 'time',
+        time:
+        {
+          tooltipFormat: this.chartLabelDateFormat,
+          unit: 'day',
+          stepSize: 1,
+          displayFormats: {
+            day: this.chartLabelDateFormat,
+          },
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.translationData.lblDates || 'Dates'
+        }
+      }]
+    }
+  };
+  barChartLabels: Label[] = this.chartsLabelsdefined;
+  barChartType: ChartType = 'bar';
+  barChartLegend = true;
+  barChartPlugins = [];
+  barChartData: any[] = [];
+  distanceLineChartData: any[] = []
+  distanceLineChartColors: Color[] = [
+    {
+      borderColor: '#7BC5EC',
+      backgroundColor: 'rgba(255,255,0,0)',
+    },
+    {
+      borderColor: '#4679CC',
+      backgroundColor: 'rgba(255,255,0,0)',
+    },
+  ];
+  public pieChartOptions: ChartOptions = {
+    responsive: true,
+    legend: {
+      position: 'bottom',
+    },
+  };
+  public mileagePieChartLabels: Label[] = [];
+  public mileagePieChartData: SingleDataSet = [];
+  public pieChartType: ChartType = 'pie';
+  public pieChartLegend = true;
+  public pieChartPlugins = [];
+  doughnutChartLabels: Label[] = [];
+  doughnutChartData: any = [];
+  doughnutChartType: ChartType = 'doughnut';
+  doughnutChartColors: Color[] = [
+    {
+      backgroundColor: ['#69EC0A', '#7BC5EC'],
+    },
+  ];
+  doughnutChartLabelsForTime: Label[] = [];
+  doughnutChartDataForTime: any = [];
+  doughnutChartTypeTime: ChartType = 'doughnut';
+  public doughnut_barOptions: ChartOptions = {
+    responsive: true,
+    legend: {
+      position: 'bottom'
+    },
+    cutoutPercentage: 70,
+  };
+  public timePieChartLabels: Label[] = [];
+  public timePieChartData: SingleDataSet = [];
+  lineChartData: ChartDataSets[] = [];
+  VehicleBarChartData = [];
+  lineChartLabels: Label[] = this.chartsLabelsdefined;
+  lineChartOptions = {
+    responsive: true,
+    legend: {
+      position: 'bottom',
+    },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          steps: 10,
+          stepSize: 1,
+          beginAtZero: true,
+        },
+        scaleLabel: {
+          display: true,
+          labelString: `${this.translationData.lblvalue || 'value'}(${this.translationData.lblnumberofvehicles || 'number of vehicles'})`
         }
       }],
       xAxes: [{
-        type:'time',
+        type: 'time',
         time:
         {
-          tooltipFormat:  this.chartLabelDateFormat,
+          tooltipFormat: this.chartLabelDateFormat,
           unit: 'day',
-          stepSize:1,
+          stepSize: 1,
           displayFormats: {
-            day:  this.chartLabelDateFormat,
-           },
+            day: this.chartLabelDateFormat,
+          },
         },
-      scaleLabel: {
-        display: true,
-        labelString: this.translationData.lblDates || 'Dates'
-      }
-    }]
+        scaleLabel: {
+          display: true,
+          labelString: this.translationData.lblDates || 'Dates'
+        }
+      }]
     }
   };
-public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
-public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
-idleDurationSumConverted: any;
-filterValue: string;
-_state: any;
-prefDetail: any = {};
-reportDetail: any = [];
-noOfVehStatus: boolean = false;
-idleDurationStatus: boolean = false;
-totalDistanceStatus: boolean = false;
-noOfTripsStatus: boolean = false;
-avgDistanceStatus: boolean = false;
-highcharts = Highcharts;  
-distanceChart: any = {};
-activeVehicleChart: any = {};
-mileageBasedChart: any = {};
-timeBasedChart: any = {};
+  lineChartColors: Color[] = [
+    {
+      borderColor: '#7BC5EC',
+      backgroundColor: 'rgba(255,255,0,0)',
+    },
+  ];
+  lineChartLegend = true;
+  lineChartPlugins = [];
+  lineChartType = 'line';
+  VehicleBarChartOptions: any = {
+    responsive: true,
+    legend: {
+      position: 'bottom',
+    },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          steps: 10,
+          stepSize: 1,
+          beginAtZero: true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: `${this.translationData.lblvalue || 'value'}(${this.translationData.lblnumberofvehicles || 'number of vehicles'})`
+        }
+      }],
+      xAxes: [{
+        type: 'time',
+        time:
+        {
+          tooltipFormat: this.chartLabelDateFormat,
+          unit: 'day',
+          stepSize: 1,
+          displayFormats: {
+            day: this.chartLabelDateFormat,
+          },
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.translationData.lblDates || 'Dates'
+        }
+      }]
+    }
+  };
+  fromTripPageBack: boolean = false;
+  calendarOptions: CalendarOptions = {
+    initialView: 'dayGridMonth',
+    timeZone: 'local',
+    events: [],
+  };
+  distanceLineChartOptions = {
+    responsive: true,
+    legend: {
+      position: 'bottom',
+    },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'right',
+        type: 'linear',
+        ticks: {
+          beginAtZero: true,
+        },
+        scaleLabel: {
+          display: true,
+          labelString: (this.prefUnitFormat == 'dunit_Metric') ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm || 'km'})` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles || 'miles'})`
+        }
+      }, {
+        id: "y-axis-2",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          steps: 10,
+          stepSize: 1,
+          beginAtZero: true,
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblkmperday || 'km/day'})` : `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblmilesperday || 'miles/day'})`
+        }
+      }],
+      xAxes: [{
+        type: 'time',
+        time:
+        {
+          tooltipFormat: this.chartLabelDateFormat,
+          unit: 'day',
+          stepSize: 1,
+          displayFormats: {
+            day: this.chartLabelDateFormat,
+          },
+        },
+        scaleLabel: {
+          display: true,
+          labelString: this.translationData.lblDates || 'Dates'
+        }
+      }]
+    }
+  };
+  public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  idleDurationSumConverted: any;
+  filterValue: string;
+  _state: any;
+  prefDetail: any = {};
+  reportDetail: any = [];
+  noOfVehStatus: boolean = false;
+  idleDurationStatus: boolean = false;
+  totalDistanceStatus: boolean = false;
+  noOfTripsStatus: boolean = false;
+  avgDistanceStatus: boolean = false;
+  highcharts = Highcharts;
+  distanceChart: any = {};
+  activeVehicleChart: any = {};
+  mileageBasedChart: any = {};
+  timeBasedChart: any = {};
 
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private router: Router, private organizationService: OrganizationService, private dataInterchangeService: DataInterchangeService) {
     this.dataInterchangeService.prefSource$.subscribe((prefResp: any) => {
-      if(prefResp && (prefResp.type == 'fleet utilisation report') && prefResp.prefdata){
+      if (prefResp && (prefResp.type == 'fleet utilisation report') && prefResp.prefdata) {
         this.displayedColumns = ['vehiclename', 'vin', 'registrationnumber', 'distance', 'numberOfTrips', 'tripTime', 'drivingTime', 'idleDuration', 'stopTime', 'averageDistancePerDay', 'averageSpeed', 'averageWeight', 'odometer'];
         this.reportPrefData = prefResp.prefdata;
         this.resetPref();
@@ -445,9 +446,9 @@ timeBasedChart: any = {};
       fromTripReport: boolean,
       vehicleDropDownId: any
     };
-    if(this._state){
+    if (this._state) {
       this.fromTripPageBack = true;
-    }else{
+    } else {
       this.fromTripPageBack = false;
     }
   }
@@ -479,36 +480,36 @@ timeBasedChart: any = {};
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
-      if(this.prefDetail){
-          if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
-            this.proceedStep(this.accountPrefObj.accountPreference);
-          }else{ // org pref
-            this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
-              this.proceedStep(orgPref);
-            }, (error) => {
-              this.proceedStep({});
-            });
+      if (this.prefDetail) {
+        if (this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != '') { // account pref
+          this.proceedStep(this.accountPrefObj.accountPreference);
+        } else { // org pref
+          this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any) => {
+            this.proceedStep(orgPref);
+          }, (error) => {
+            this.proceedStep({});
+          });
+        }
+        let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
+        if (vehicleDisplayId) {
+          let vehicledisplay = this.prefDetail.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+          if (vehicledisplay.length != 0) {
+            this.vehicleDisplayPreference = vehicledisplay[0].name;
           }
-          let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
-          if(vehicleDisplayId) {
-            let vehicledisplay = this.prefDetail.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
-            if(vehicledisplay.length != 0) {
-              this.vehicleDisplayPreference = vehicledisplay[0].name;
-            }
-          }
+        }
       }
     });
   }
 
-  proceedStep(preference: any){
+  proceedStep(preference: any) {
     let _search = this.prefDetail.timeformat.filter(i => i.id == preference.timeFormatId);
-    if(_search.length > 0){
-      this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
+    if (_search.length > 0) {
+      this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0, 2));
       this.prefTimeZone = this.prefDetail.timezone.filter(i => i.id == preference.timezoneId)[0].name;
       this.prefDateFormat = this.prefDetail.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
       this.prefUnitFormat = this.prefDetail.unit.filter(i => i.id == preference.unitId)[0].name;
-    }else{
-      this.prefTimeFormat = Number(this.prefDetail.timeformat[0].name.split("_")[1].substring(0,2));
+    } else {
+      this.prefTimeFormat = Number(this.prefDetail.timeformat[0].name.split("_")[1].substring(0, 2));
       this.prefTimeZone = this.prefDetail.timezone[0].name;
       this.prefDateFormat = this.prefDetail.dateformat[0].name;
       this.prefUnitFormat = this.prefDetail.unit[0].name;
@@ -519,19 +520,19 @@ timeBasedChart: any = {};
     this.getReportPreferences();
   }
 
-  getReportPreferences(){
-    if(this.reportDetail){
+  getReportPreferences() {
+    if (this.reportDetail) {
       let repoId: any = this.reportDetail.filter(i => i.name == 'Fleet Utilisation Report');
-      if(repoId.length > 0){
+      if (repoId.length > 0) {
         this.tripReportId = repoId[0].id;
         this.getFleetUtilPreferences();
-      }else{
+      } else {
         //console.error("No report id found!")
       }
     }
   }
 
-  ngOnDestroy(){
+  ngOnDestroy() {
     this.setFilterValues();
   }
 
@@ -540,7 +541,7 @@ timeBasedChart: any = {};
     this.setFilterValues();
   }
 
-  setFilterValues(){
+  setFilterValues() {
     this.fleetUtilizationSearchData["vehicleGroupDropDownValue"] = this.tripForm.controls.vehicleGroup.value;
     this.fleetUtilizationSearchData["vehicleDropDownValue"] = this.tripForm.controls.vehicle.value;
     this.fleetUtilizationSearchData["timeRangeSelection"] = this.selectionTab;
@@ -548,55 +549,55 @@ timeBasedChart: any = {};
     this.fleetUtilizationSearchData["endDateStamp"] = this.endDateValue;
     this.fleetUtilizationSearchData.testDate = this.startDateValue;
     this.fleetUtilizationSearchData.filterPrefTimeFormat = this.prefTimeFormat;
-    if(this.prefTimeFormat == 24){
+    if (this.prefTimeFormat == 24) {
       let _splitStartTime = this.startTimeDisplay.split(':');
       let _splitEndTime = this.endTimeDisplay.split(':');
       this.fleetUtilizationSearchData["startTimeStamp"] = `${_splitStartTime[0]}:${_splitStartTime[1]}`;
       this.fleetUtilizationSearchData["endTimeStamp"] = `${_splitEndTime[0]}:${_splitEndTime[1]}`;
-    }else{
+    } else {
       this.fleetUtilizationSearchData["startTimeStamp"] = this.startTimeDisplay;
       this.fleetUtilizationSearchData["endTimeStamp"] = this.endTimeDisplay;
     }
     this.setGlobalSearchData(this.fleetUtilizationSearchData);
   }
 
-  _get12Time(_sTime: any){
+  _get12Time(_sTime: any) {
     let _x = _sTime.split(':');
     let _yy: any = '';
-    if(_x[0] >= 12){ // 12 or > 12
-      if(_x[0] == 12){ // exact 12
+    if (_x[0] >= 12) { // 12 or > 12
+      if (_x[0] == 12) { // exact 12
         _yy = `${_x[0]}:${_x[1]} PM`;
-      }else{ // > 12
+      } else { // > 12
         let _xx = (_x[0] - 12);
         _yy = `${_xx}:${_x[1]} PM`;
       }
-    }else{ // < 12
+    } else { // < 12
       _yy = `${_x[0]}:${_x[1]} AM`;
     }
     return _yy;
   }
 
-  get24Time(_time: any){
+  get24Time(_time: any) {
     let _x = _time.split(':');
     let _y = _x[1].split(' ');
     let res: any = '';
-    if(_y[1] == 'PM'){ // PM
+    if (_y[1] == 'PM') { // PM
       let _z: any = parseInt(_x[0]) + 12;
       res = `${(_x[0] == 12) ? _x[0] : _z}:${_y[0]}`;
-    }else{ // AM
+    } else { // AM
       res = `${_x[0]}:${_y[0]}`;
     }
     return res;
   }
 
-  resetPref(){
+  resetPref() {
     this.summaryColumnData = [];
     this.chartsColumnData = [];
     this.calenderColumnData = [];
     this.detailColumnData = [];
   }
 
-  getFleetUtilPreferences(){
+  getFleetUtilPreferences() {
     this.reportService.getReportUserPreference(this.tripReportId).subscribe((data: any) => {
       this.reportPrefData = data["userPreferences"];
       this.resetPref();
@@ -610,28 +611,28 @@ timeBasedChart: any = {};
     });
   }
 
-  preparePrefData(prefData: any){
-    if(prefData && prefData.subReportUserPreferences && prefData.subReportUserPreferences.length > 0){
+  preparePrefData(prefData: any) {
+    if (prefData && prefData.subReportUserPreferences && prefData.subReportUserPreferences.length > 0) {
       prefData.subReportUserPreferences.forEach(element => {
-        if(element.key == 'rp_fu_report_calendarview'){
+        if (element.key == 'rp_fu_report_calendarview') {
           this.calenderCardView = (element.state == 'A') ? true : false;
         }
-        if(element.subReportUserPreferences && element.subReportUserPreferences.length > 0){
+        if (element.subReportUserPreferences && element.subReportUserPreferences.length > 0) {
           element.subReportUserPreferences.forEach(item => {
             let _data: any = item;
-            if(item.key.includes('rp_fu_report_summary_')){
+            if (item.key.includes('rp_fu_report_summary_')) {
               this.summaryColumnData.push(_data);
-            }else if(item.key.includes('rp_fu_report_chart_')){
-             this.chartsColumnData.push(_data);
-           }else if(item.key.includes('rp_fu_report_calendarview_')){
-            if(item.key == 'rp_fu_report_calendarview_expensiontype'){
-              this.isCalendarOpen = (item.state == "A") ? true : false;
-            }else{
-              this.calenderColumnData.push(_data);
-            }
-           }else if(item.key.includes('rp_fu_report_details_')){
+            } else if (item.key.includes('rp_fu_report_chart_')) {
+              this.chartsColumnData.push(_data);
+            } else if (item.key.includes('rp_fu_report_calendarview_')) {
+              if (item.key == 'rp_fu_report_calendarview_expensiontype') {
+                this.isCalendarOpen = (item.state == "A") ? true : false;
+              } else {
+                this.calenderColumnData.push(_data);
+              }
+            } else if (item.key.includes('rp_fu_report_details_')) {
               this.detailColumnData.push(_data);
-           }
+            }
           });
         }
       });
@@ -639,65 +640,65 @@ timeBasedChart: any = {};
     }
   }
 
-  setDefaultAttributeBaseOnPref(){
+  setDefaultAttributeBaseOnPref() {
     let prefUnit = (this.prefUnitFormat == 'dunit_Metric') ? this.translationData.lblkm || 'km' : this.translationData.lblmiles || 'miles';
-    if(this.detailColumnData.length > 0){ // details section
+    if (this.detailColumnData.length > 0) { // details section
       let filterPref = this.detailColumnData.filter(i => i.state == 'I');
-      if(filterPref.length > 0){
+      if (filterPref.length > 0) {
         filterPref.forEach(element => {
           let search = this.prefMapData.filter(i => i.key == element.key);
-          if(search.length > 0){
+          if (search.length > 0) {
             let index = this.displayedColumns.indexOf(search[0].value);
             if (index > -1) {
-                this.displayedColumns.splice(index, 1);
+              this.displayedColumns.splice(index, 1);
             }
           }
-          if(element.key == 'rp_fu_report_details_vehiclename'){
+          if (element.key == 'rp_fu_report_details_vehiclename') {
             this.showField.vehicleName = false;
-          }else if(element.key == 'rp_fu_report_details_vin'){
+          } else if (element.key == 'rp_fu_report_details_vin') {
             this.showField.vin = false;
-          }else if(element.key == 'rp_fu_report_details_registrationnumber'){
+          } else if (element.key == 'rp_fu_report_details_registrationnumber') {
             this.showField.regNo = false;
           }
         });
       }
     }
-    if(this.summaryColumnData.length > 0){ // summary section
+    if (this.summaryColumnData.length > 0) { // summary section
       this.summaryColumnData.forEach(element => {
-        if(element.key == 'rp_fu_report_summary_numberofvehicles'){
+        if (element.key == 'rp_fu_report_summary_numberofvehicles') {
           this.noOfVehStatus = element.state == "A" ? true : false;
-        }else if(element.key == 'rp_fu_report_summary_idleduration'){
+        } else if (element.key == 'rp_fu_report_summary_idleduration') {
           this.idleDurationStatus = element.state == "A" ? true : false;
-        }else if(element.key == 'rp_fu_report_summary_totaldistance'){
+        } else if (element.key == 'rp_fu_report_summary_totaldistance') {
           this.totalDistanceStatus = element.state == "A" ? true : false;
-        }else if(element.key == 'rp_fu_report_summary_numberoftrips'){
+        } else if (element.key == 'rp_fu_report_summary_numberoftrips') {
           this.noOfTripsStatus = element.state == "A" ? true : false;
-        }else if(element.key == 'rp_fu_report_summary_averagedistanceperday'){
+        } else if (element.key == 'rp_fu_report_summary_averagedistanceperday') {
           this.avgDistanceStatus = element.state == "A" ? true : false;
         }
       });
     }
-    if(this.calenderColumnData.length > 0){
+    if (this.calenderColumnData.length > 0) {
       let _s = this.calenderColumnData.filter(i => i.state == 'A');
-      if(_s.length == this.calenderColumnData.length){
+      if (_s.length == this.calenderColumnData.length) {
         this.calendarpreferenceOption = "rp_fu_report_calendarview_totaltrips";
-      }else {
+      } else {
         this.calendarpreferenceOption = _s[0].key;
       }
     }
-    if(this.chartsColumnData.length > 0){
+    if (this.chartsColumnData.length > 0) {
       this.chartsColumnData.forEach(element => {
-        if(element.key == "rp_fu_report_chart_distanceperday"){
+        if (element.key == "rp_fu_report_chart_distanceperday") {
           this.distanceChart.state = element.state == "A" ? true : false;
           this.distanceChart.chartType = element.chartType;
           this.distanceChartType = element.chartType == "L" ? true : false;
           this.barChartOptions.scales.xAxes[0].scaleLabel.labelString = this.translationData.lblDates || 'Dates'
-          this.barChartOptions.scales.yAxes[1].scaleLabel.labelString = this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblkmperday || 'km/day' })` : `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblmilesperday || 'miles/day'})`;
-          this.barChartOptions.scales.yAxes[0].scaleLabel.labelString =  this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm || 'km'})` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles ||'miles'})`;
-          this.distanceLineChartOptions.scales.yAxes[1].scaleLabel.labelString = this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblkmperday || 'km/day' })` : `${this.translationData.lblpervehicle} (${this.translationData.lblmilesperday || 'miles/day'})`;
-          this.distanceLineChartOptions.scales.yAxes[0].scaleLabel.labelString =  this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm || 'km'})` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles ||'miles'})`;
+          this.barChartOptions.scales.yAxes[1].scaleLabel.labelString = this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblkmperday || 'km/day'})` : `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblmilesperday || 'miles/day'})`;
+          this.barChartOptions.scales.yAxes[0].scaleLabel.labelString = this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm || 'km'})` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles || 'miles'})`;
+          this.distanceLineChartOptions.scales.yAxes[1].scaleLabel.labelString = this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblkmperday || 'km/day'})` : `${this.translationData.lblpervehicle} (${this.translationData.lblmilesperday || 'miles/day'})`;
+          this.distanceLineChartOptions.scales.yAxes[0].scaleLabel.labelString = this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm || 'km'})` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles || 'miles'})`;
           this.distanceLineChartOptions.scales.xAxes[0].scaleLabel.labelString = this.translationData.lblDates || 'Dates';
-        }else if(element.key == "rp_fu_report_chart_activevehiclperday"){
+        } else if (element.key == "rp_fu_report_chart_activevehiclperday") {
           this.activeVehicleChart.state = element.state == "A" ? true : false;
           this.activeVehicleChart.chartType = element.chartType;
           this.activeVehicleChartType = element.chartType == "L" ? true : false;
@@ -705,16 +706,16 @@ timeBasedChart: any = {};
           this.lineChartOptions.scales.xAxes[0].scaleLabel.labelString = this.translationData.lblDates || 'Dates';
           this.VehicleBarChartOptions.scales.yAxes[0].scaleLabel.labelString = `${this.translationData.lblvalue || 'value'}(${this.translationData.lblnumberofvehicles || 'number of vehicles'})`;
           this.VehicleBarChartOptions.scales.xAxes[0].scaleLabel.labelString = this.translationData.lblDates || 'Dates';
-        }else if(element.key == "rp_fu_report_chart_mileagebased"){
+        } else if (element.key == "rp_fu_report_chart_mileagebased") {
           this.mileageBasedChart.state = element.state == "A" ? true : false;
           this.mileageBasedChart.chartType = element.chartType;
           this.mileageBasedChart.thresholdValue = element.thresholdValue;
           this.mileageBasedChart.thresholdType = element.thresholdType;
           this.mileagebasedThreshold = parseInt(element.thresholdValue);
           this.mileageDChartType = element.chartType == "D" ? true : false;
-          this.doughnutChartLabels = [`${this.translationData.lblPercentageofvehicleswithdistancedoneabove || 'Percentage of vehicles with distance done above'} ${this.reportMapService.convertDistanceUnits(this.mileagebasedThreshold, this.prefUnitFormat)} `+ prefUnit, `${this.translationData.lblPercentageofvehicleswithdistancedoneunder || 'Percentage of vehicles with distance done under'} ${this.reportMapService.convertDistanceUnits(this.mileagebasedThreshold, this.prefUnitFormat)} `+ prefUnit]
-          this.mileagePieChartLabels = [`${this.translationData.lblPercentageofvehicleswithdistancedoneabove || 'Percentage of vehicles with distance done above'} ${this.reportMapService.convertDistanceUnits(this.mileagebasedThreshold, this.prefUnitFormat)} `+ prefUnit, `${this.translationData.lblPercentageofvehicleswithdistancedoneunder || 'Percentage of vehicles with distance done under'} ${this.reportMapService.convertDistanceUnits(this.mileagebasedThreshold, this.prefUnitFormat)} `+ prefUnit]
-        }else if(element.key == "rp_fu_report_chart_timebased"){
+          this.doughnutChartLabels = [`${this.translationData.lblPercentageofvehicleswithdistancedoneabove || 'Percentage of vehicles with distance done above'} ${this.reportMapService.convertDistanceUnits(this.mileagebasedThreshold, this.prefUnitFormat)} ` + prefUnit, `${this.translationData.lblPercentageofvehicleswithdistancedoneunder || 'Percentage of vehicles with distance done under'} ${this.reportMapService.convertDistanceUnits(this.mileagebasedThreshold, this.prefUnitFormat)} ` + prefUnit]
+          this.mileagePieChartLabels = [`${this.translationData.lblPercentageofvehicleswithdistancedoneabove || 'Percentage of vehicles with distance done above'} ${this.reportMapService.convertDistanceUnits(this.mileagebasedThreshold, this.prefUnitFormat)} ` + prefUnit, `${this.translationData.lblPercentageofvehicleswithdistancedoneunder || 'Percentage of vehicles with distance done under'} ${this.reportMapService.convertDistanceUnits(this.mileagebasedThreshold, this.prefUnitFormat)} ` + prefUnit]
+        } else if (element.key == "rp_fu_report_chart_timebased") {
           this.timeBasedChart.state = element.state == "A" ? true : false;
           this.timeBasedChart.chartType = element.chartType;
           this.timeBasedChart.thresholdValue = element.thresholdValue;
@@ -728,8 +729,8 @@ timeBasedChart: any = {};
     }
   }
 
-  convertMilisecondsToHHMM(ms: any){
-    if(ms){
+  convertMilisecondsToHHMM(ms: any) {
+    if (ms) {
       let seconds: any = ms / 1000;
       let hours: any = (seconds / 3600); // 3,600 seconds in 1 hour
       hours = parseInt(hours);
@@ -738,20 +739,20 @@ timeBasedChart: any = {};
       let minutes: any = (seconds / 60); // 60 seconds in 1 minute
       minutes = parseInt(minutes);
       seconds = seconds % 60;
-      return `${hours < 10 ? '0'+hours : hours} ${this.translationData.lblHour} ${minutes < 10 ? '0'+minutes : minutes} ${this.translationData.lblMinute}`;
-    }else{
+      return `${hours < 10 ? '0' + hours : hours} ${this.translationData.lblHour} ${minutes < 10 ? '0' + minutes : minutes} ${this.translationData.lblMinute}`;
+    } else {
       return `'00 ${this.translationData.lblHour} 00 ${this.translationData.lblMinute}'`;
     }
   }
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    setTimeout(() =>{
+    setTimeout(() => {
       this.setPDFTranslations();
     }, 0);
   }
 
-  setPDFTranslations(){
+  setPDFTranslations() {
     let transObj = {
       rp_fu_report_summary_averagedistanceperday: 'Average distance per day',
       rp_fu_report_summary_idleduration: 'Idle Duration',
@@ -785,46 +786,46 @@ timeBasedChart: any = {};
       rp_fu_report_details_idleduration: 'Idle Duration',
       rp_fu_report_details_distance: 'Distance'
     }
-    this.translationData = {...this.translationData, ...transObj};
+    this.translationData = { ...this.translationData, ...transObj };
   }
 
-  loadWholeTripData(){
+  loadWholeTripData() {
     this.showLoadingIndicator = true;
     this.reportService.getVINFromTripFleetUtilisation(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
       this.hideloader();
       this.wholeTripData = tripData;
       this.filterDateData();
       this.updateDataSource(this.tripData);
-    }, (error)=>{
+    }, (error) => {
       this.hideloader();
       this.wholeTripData.vinTripList = [];
       this.wholeTripData.vehicleDetailsWithAccountVisibiltyList = [];
     });
   }
 
-  filterDateData(){
+  filterDateData() {
     let distinctVIN: any = [];
     let finalVINDataList: any = [];
     this.vehicleListData = [];
     this.vehicleGrpDD = [];
     let currentStartTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone);
     let currentEndTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);
-    if(this.wholeTripData.vinTripList.length > 0){
+    if (this.wholeTripData.vinTripList.length > 0) {
       let vinArray = [];
       this.wholeTripData.vinTripList.forEach(element => {
-        if(element.endTimeStamp && element.endTimeStamp.length > 0){
-          let search =  element.endTimeStamp.filter(item => (item >= currentStartTime) && (item <= currentEndTime));
-          if(search.length > 0){
+        if (element.endTimeStamp && element.endTimeStamp.length > 0) {
+          let search = element.endTimeStamp.filter(item => (item >= currentStartTime) && (item <= currentEndTime));
+          if (search.length > 0) {
             vinArray.push(element.vin);
           }
         }
       });
-      if(vinArray.length > 0){
+      if (vinArray.length > 0) {
         distinctVIN = vinArray.filter((value, index, self) => self.indexOf(value) === index);
-        if(distinctVIN.length > 0){
+        if (distinctVIN.length > 0) {
           distinctVIN.forEach(element => {
             let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element);
-            if(_item.length > 0){
+            if (_item.length > 0) {
               this.vehicleListData.push(_item[0]); //-- unique VIN data added
               _item.forEach(element => {
                 finalVINDataList.push(element);
@@ -832,18 +833,18 @@ timeBasedChart: any = {};
             }
           });
         }
-      }else{
+      } else {
         this.tripForm.get('vehicle').setValue('');
         this.tripForm.get('vehicleGroup').setValue('');
       }
     }
     this.vehicleGroupListData = finalVINDataList;
-    if(this.vehicleGroupListData.length > 0){
+    if (this.vehicleGroupListData.length > 0) {
       let _s = this.vehicleGroupListData.map(item => item.vehicleGroupId).filter((value, index, self) => self.indexOf(value) === index);
-      if(_s.length > 0){
+      if (_s.length > 0) {
         _s.forEach(element => {
           let count = this.vehicleGroupListData.filter(j => j.vehicleGroupId == element);
-          if(count.length > 0){
+          if (count.length > 0) {
             this.vehicleGrpDD.push(count[0]); //-- unique Veh grp data added
             this.vehicleGrpDD.sort(this.compare);
             this.resetVehicleGroupFilter();
@@ -857,74 +858,74 @@ timeBasedChart: any = {};
     this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
     this.vehicleDD.sort(this.compareVin);
     this.resetVehicleFilter();
-    if(this.vehicleListData.length > 0){
+    if (this.vehicleListData.length > 0) {
       this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
       this.resetVehicleFilter();
       this.resetTripFormControlValue();
     };
     this.setVehicleGroupAndVehiclePreSelection();
-    if(this.fromTripPageBack){
+    if (this.fromTripPageBack) {
       this.onSearch();
     }
   }
 
-  getUniqueVINs(vinList: any){
+  getUniqueVINs(vinList: any) {
     let uniqueVINList = [];
-    for(let vin of vinList){
+    for (let vin of vinList) {
       let vinPresent = uniqueVINList.map(element => element.vin).indexOf(vin.vin);
-      if(vinPresent == -1) {
+      if (vinPresent == -1) {
         uniqueVINList.push(vin);
       }
     }
     return uniqueVINList;
   }
 
-  onSearch(){
+  onSearch() {
     this.resetChartData(); // reset chart data
     let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone);
     let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);
     let _vinData: any = [];
-    if( parseInt(this.tripForm.controls.vehicle.value ) == 0){
-         _vinData = this.vehicleDD.filter(i => i.vehicleId != 0).map(item => item.vin);
-    }else{
-       let search = this.vehicleDD.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
-       if(search.length > 0){
-         _vinData.push(search[0].vin);
-       }
+    if (parseInt(this.tripForm.controls.vehicle.value) == 0) {
+      _vinData = this.vehicleDD.filter(i => i.vehicleId != 0).map(item => item.vin);
+    } else {
+      let search = this.vehicleDD.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
+      if (search.length > 0) {
+        _vinData.push(search[0].vin);
+      }
     }
-    if(_vinData.length > 0){
+    if (_vinData.length > 0) {
       this.showLoadingIndicator = true;
       let searchDataParam = {
-        "startDateTime":_startTime,
-        "endDateTime":_endTime,
-        "viNs":  _vinData,
+        "startDateTime": _startTime,
+        "endDateTime": _endTime,
+        "viNs": _vinData,
       }
       this.reportService.getFleetDetails(searchDataParam).subscribe((_fleetData: any) => {
-      this.tripData = this.reportMapService.getConvertedFleetDataBasedOnPref(_fleetData["fleetDetails"], this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
-      this.setTableInfo();
-      this.updateDataSource(this.tripData);
-      this.hideloader();
-      this.isChartsOpen = true;
-      this.isSummaryOpen = true;
-      this.tripData.forEach(element => {
-        if(element.distance > this.mileagebasedThreshold){
-          this.greaterMileageCount = this.greaterMileageCount + 1;
-        }
-        if(element.drivingTime > this.timebasedThreshold){
-          this.greaterTimeCount = this.greaterTimeCount + 1;
-        }
-      });
-      let percentage1 = (this.greaterMileageCount/this.tripData.length)*100 ;
-      this.doughnutChartData = [percentage1, 100- percentage1];
-      this.mileagePieChartData = [percentage1,  100- percentage1]
-      let percentage2 = (this.greaterTimeCount/this.tripData.length)* 100;
-      this.doughnutChartDataForTime = [percentage2, 100- percentage2];
-      this.timePieChartData = [percentage2, 100- percentage2];
-      this.idleDurationCount();
-      }, (error)=>{
+        this.tripData = this.reportMapService.getConvertedFleetDataBasedOnPref(_fleetData["fleetDetails"], this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat, this.prefTimeZone);
+        this.setTableInfo();
+        this.updateDataSource(this.tripData);
+        this.hideloader();
+        this.isChartsOpen = true;
+        this.isSummaryOpen = true;
+        this.tripData.forEach(element => {
+          if (element.distance > this.mileagebasedThreshold) {
+            this.greaterMileageCount = this.greaterMileageCount + 1;
+          }
+          if (element.drivingTime > this.timebasedThreshold) {
+            this.greaterTimeCount = this.greaterTimeCount + 1;
+          }
+        });
+        let percentage1 = (this.greaterMileageCount / this.tripData.length) * 100;
+        this.doughnutChartData = [percentage1, 100 - percentage1];
+        this.mileagePieChartData = [percentage1, 100 - percentage1]
+        let percentage2 = (this.greaterTimeCount / this.tripData.length) * 100;
+        this.doughnutChartDataForTime = [percentage2, 100 - percentage2];
+        this.timePieChartData = [percentage2, 100 - percentage2];
+        this.idleDurationCount();
+      }, (error) => {
         this.hideloader();
         this.tripData = [];
-         this.tableInfoObj = {};
+        this.tableInfoObj = {};
         this.updateDataSource(this.tripData);
       });
       this.reportService.getCalendarDetails(searchDataParam).subscribe((calendarData: any) => {
@@ -932,10 +933,10 @@ timeBasedChart: any = {};
       })
     }
     this.calendarOptions.initialDate = this.startDateValue;
-    this.calendarOptions.validRange = { start: `${new Date(this.startDateValue).getFullYear()}-${(new Date(this.startDateValue).getMonth() + 1).toString().padStart(2, '0')}-${new Date(this.startDateValue).getDate().toString().padStart(2, '0')}`, end :  `${new Date(this.endDateValue).getFullYear()}-${(new Date(this.endDateValue).getMonth() + 1).toString().padStart(2, '0')}-${(new Date(this.endDateValue).getDate() + 1).toString().padStart(2, '0')}`};
+    this.calendarOptions.validRange = { start: `${new Date(this.startDateValue).getFullYear()}-${(new Date(this.startDateValue).getMonth() + 1).toString().padStart(2, '0')}-${new Date(this.startDateValue).getDate().toString().padStart(2, '0')}`, end: `${new Date(this.endDateValue).getFullYear()}-${(new Date(this.endDateValue).getMonth() + 1).toString().padStart(2, '0')}-${(new Date(this.endDateValue).getDate() + 1).toString().padStart(2, '0')}` };
   }
 
-  resetChartData(){
+  resetChartData() {
     this.doughnutChartData = [];
     this.doughnutChartDataForTime = [];
     this.barVarticleData = [];
@@ -944,7 +945,7 @@ timeBasedChart: any = {};
     this.averageDistanceBarData = [];
   }
 
-  onReset(){
+  onReset() {
     this.internalSelection = false;
     this.setDefaultStartEndTime();
     this.setDefaultTodayDate();
@@ -958,25 +959,25 @@ timeBasedChart: any = {};
     this.filterDateData();
   }
 
-  sumOfColumns(columnName : any){
+  sumOfColumns(columnName: any) {
     let sum: any = 0;
-    switch(columnName){
+    switch (columnName) {
       case 'distance': {
         let s = this.tripData.forEach(element => {
-         sum += parseFloat(element.convertedDistance);
+          sum += parseFloat(element.convertedDistance);
         });
         break;
-      }case 'NumberOfVehicles': {
+      } case 'NumberOfVehicles': {
         sum = this.tripData.length;
         break;
       } case 'NumberOfTrips': {
         let s = this.tripData.forEach(element => {
           sum += element.numberOfTrips;
-         });
+        });
         break;
-      }  case 'AverageDistancePerDay': {
+      } case 'AverageDistancePerDay': {
         let s = this.tripData.forEach(element => {
-         sum += parseFloat(element.convertedAverageDistance);
+          sum += parseFloat(element.convertedAverageDistance);
         });
         break;
       } case 'idleDuration': {
@@ -987,7 +988,7 @@ timeBasedChart: any = {};
           let hours = Math.floor(time / 3600);
           time %= 3600;
           let minutes = Math.floor(time / 60);
-          data = `${(hours >= 10) ? hours : ('0'+hours)}:${(minutes >= 10) ? minutes : ('0'+minutes)}`;
+          data = `${(hours >= 10) ? hours : ('0' + hours)}:${(minutes >= 10) ? minutes : ('0' + minutes)}`;
           sum = data;
         });
         break;
@@ -996,49 +997,49 @@ timeBasedChart: any = {};
     return sum;
   }
 
-  setChartData(chartData: any){
+  setChartData(chartData: any) {
     this.calendarValue = [];
     chartData.forEach(e => {
-      var resultDate =  e.calenderDate;
+      var resultDate = e.calenderDate;
       this.chartsLabelsdefined.push(resultDate);
       let averagedistanceperday = (this.reportMapService.convertDistanceUnits(e.averagedistance, this.prefUnitFormat));
-      this.barVarticleData.push({ x:resultDate ,y: Number(averagedistanceperday)});
-      let avgDistBarData = ((this.reportMapService.convertDistanceUnits(e.averagedistance, this.prefUnitFormat))/e.vehiclecount);
-      this.averageDistanceBarData.push({ x:resultDate , y: Number(avgDistBarData.toFixed(2)) });
-      this.lineChartVehicleCount.push({ x:resultDate , y: e.vehiclecount });
+      this.barVarticleData.push({ x: resultDate, y: Number(averagedistanceperday) });
+      let avgDistBarData = ((this.reportMapService.convertDistanceUnits(e.averagedistance, this.prefUnitFormat)) / e.vehiclecount);
+      this.averageDistanceBarData.push({ x: resultDate, y: Number(avgDistBarData.toFixed(2)) });
+      this.lineChartVehicleCount.push({ x: resultDate, y: e.vehiclecount });
       this.calendarSelectedValues(e);
     });
-    this.chartsLabelsdefined=[];
-    if( this.chartLabelDateFormat=='DD/MM/YYYY'){
+    this.chartsLabelsdefined = [];
+    if (this.chartLabelDateFormat == 'DD/MM/YYYY') {
       let startDate = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone);
       let endDate = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);
-      this.chartsLabelsdefined=[ startDate, endDate ];
+      this.chartsLabelsdefined = [startDate, endDate];
     }
-    else if( this.chartLabelDateFormat=='DD-MM-YYYY'){
+    else if (this.chartLabelDateFormat == 'DD-MM-YYYY') {
       let startDate = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone);
       let endDate = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);
-      this.chartsLabelsdefined=[ startDate, endDate ];
+      this.chartsLabelsdefined = [startDate, endDate];
     }
-    else if( this.chartLabelDateFormat=='MM-DD-YYYY'){
-      let startDate = `${this.startDateValue.getMonth()+1}-${this.startDateValue.getDate()}-${this.startDateValue.getFullYear()}`;;
-      let endDate = `${this.endDateValue.getMonth()+1}-${this.endDateValue.getDate()}-${this.endDateValue.getFullYear()}`;;
-      this.chartsLabelsdefined=[ startDate, endDate ];
+    else if (this.chartLabelDateFormat == 'MM-DD-YYYY') {
+      let startDate = `${this.startDateValue.getMonth() + 1}-${this.startDateValue.getDate()}-${this.startDateValue.getFullYear()}`;;
+      let endDate = `${this.endDateValue.getMonth() + 1}-${this.endDateValue.getDate()}-${this.endDateValue.getFullYear()}`;;
+      this.chartsLabelsdefined = [startDate, endDate];
     }
-    else{
-      let startDate = `${this.startDateValue.getMonth()+1}/${this.startDateValue.getDate()}/${this.startDateValue.getFullYear()}`;;
-      let endDate = `${this.endDateValue.getMonth()+1}/${this.endDateValue.getDate()}/${this.endDateValue.getFullYear()}`;;
-      this.chartsLabelsdefined=[ startDate, endDate ];
+    else {
+      let startDate = `${this.startDateValue.getMonth() + 1}/${this.startDateValue.getDate()}/${this.startDateValue.getFullYear()}`;;
+      let endDate = `${this.endDateValue.getMonth() + 1}/${this.endDateValue.getDate()}/${this.endDateValue.getFullYear()}`;;
+      this.chartsLabelsdefined = [startDate, endDate];
     }
     this.assignChartData();
   }
 
-  assignChartData(){
-    this.chartOptions = {   
+  assignChartData() {
+    this.chartOptions = {
       rangeSelector: {
         selected: 0
-      }, 
+      },
       chart: {
-        type:this.activeVehicleChartType? 'line' : 'column',       
+        type: this.activeVehicleChartType ? 'line' : 'column',
       },
       title: {
         text: ''
@@ -1047,146 +1048,146 @@ timeBasedChart: any = {};
         symbolRadius: 0
       },
       tooltip: {
-        xDateFormat: this.highchartDateFormat,        
+        xDateFormat: this.highchartDateFormat,
         shared: true,
-      }, 
-      yAxis: {
-      min: 0,
-      max:  Math.max(...this.lineChartVehicleCount.map(o => o.y)),
-      step:1,
-      title: {
-        text: `${this.translationData.lblvalue || 'value'}(${this.translationData.lblnumberofvehicles || 'number of vehicles'})`
       },
-      gridLineWidth: 1
-    },
-    xAxis : {
-      max :  Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone),
-      min :  Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone),
-      type : 'datetime',       
-      tickInterval:!this.distanceChartType && (this.endDateValue.toDateString() == this.startDateValue.toDateString())? 2 * 24 * 3600000 : 1 * 24 * 3600000 ,  
-      labels: {       
-        step:(this.selectionTab == 'last3month') ? ( this.averageDistanceBarData.length > 50 && this.averageDistanceBarData.length < 60  ? Math.ceil(this.averageDistanceBarData.length/10) : (this.averageDistanceBarData.length > 60 && this.averageDistanceBarData.length < 99  ? Math.ceil(this.averageDistanceBarData.length/12):(this.averageDistanceBarData.length > 99 ? Math.ceil(this.averageDistanceBarData.length/24): (this.averageDistanceBarData.length > 20 && this.averageDistanceBarData.length < 50 ? Math.ceil(this.averageDistanceBarData.length/6): Math.ceil(this.averageDistanceBarData.length/2))))) : Math.ceil(this.averageDistanceBarData.length/5),
-        rotation: (this.selectionTab == 'last3month' || this.selectionTab == 'lastmonth') ? -45 :  0 ,
+      yAxis: {
+        min: 0,
+        max: Math.max(...this.lineChartVehicleCount.map(o => o.y)),
+        step: 1,
+        title: {
+          text: `${this.translationData.lblvalue || 'value'}(${this.translationData.lblnumberofvehicles || 'number of vehicles'})`
+        },
+        gridLineWidth: 1
+      },
+      xAxis: {
+        max: Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone),
+        min: Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone),
+        type: 'datetime',
+        tickInterval: !this.distanceChartType && (this.endDateValue.toDateString() == this.startDateValue.toDateString()) ? 2 * 24 * 3600000 : 1 * 24 * 3600000,
+        labels: {
+          step: (this.selectionTab == 'last3month') ? (this.averageDistanceBarData.length > 50 && this.averageDistanceBarData.length < 60 ? Math.ceil(this.averageDistanceBarData.length / 10) : (this.averageDistanceBarData.length > 60 && this.averageDistanceBarData.length < 99 ? Math.ceil(this.averageDistanceBarData.length / 12) : (this.averageDistanceBarData.length > 99 ? Math.ceil(this.averageDistanceBarData.length / 24) : (this.averageDistanceBarData.length > 20 && this.averageDistanceBarData.length < 50 ? Math.ceil(this.averageDistanceBarData.length / 6) : Math.ceil(this.averageDistanceBarData.length / 2))))) : Math.ceil(this.averageDistanceBarData.length / 5),
+          rotation: (this.selectionTab == 'last3month' || this.selectionTab == 'lastmonth') ? -45 : 0,
         },
         dateTimeLabelFormats: {
-            day:this.highchartDateFormat  
+          day: this.highchartDateFormat
         },
         title: {
-          text:this.translationData.lblDates || 'Dates'
-        }           
+          text: this.translationData.lblDates || 'Dates'
+        }
       },
       series: [
-      {
-      name: this.translationData.lblnumberofvehicles || 'Number of Vehicles',
-      data: this.lineChartVehicleCount,         
-      }],   
-     }; 
+        {
+          name: this.translationData.lblnumberofvehicles || 'Number of Vehicles',
+          data: this.lineChartVehicleCount,
+        }],
+    };
 
-     this.chartOptions1 = {   
-        rangeSelector: {
-          selected: 0
-        }, 
-        chart: {
-          type: this.distanceChartType? 'spline' : 'column',
-        },
-        title: {
-          text: ''
-        },      
-        legend: {
-          symbolRadius: 0,
-       },
-       credits: {
+    this.chartOptions1 = {
+      rangeSelector: {
+        selected: 0
+      },
+      chart: {
+        type: this.distanceChartType ? 'spline' : 'column',
+      },
+      title: {
+        text: ''
+      },
+      legend: {
+        symbolRadius: 0,
+      },
+      credits: {
         enabled: false
-    },
-        tooltip: {
-          xDateFormat: this.highchartDateFormat,        
-          shared: true,
-        },
-        plotOptions: {
-         column: {      
-            pointWidth: (this.selectionTab == 'last3month' ?  2: (this.selectionTab == 'lastweek' ? 22:  ((this.selectionTab == 'yesterday' || this.selectionTab == 'today') ? 50: 4 ))), 
-          }             
-        },
-        yAxis: [{
+      },
+      tooltip: {
+        xDateFormat: this.highchartDateFormat,
+        shared: true,
+      },
+      plotOptions: {
+        column: {
+          pointWidth: (this.selectionTab == 'last3month' ? 2 : (this.selectionTab == 'lastweek' ? 22 : ((this.selectionTab == 'yesterday' || this.selectionTab == 'today') ? 50 : 4))),
+        }
+      },
+      yAxis: [{
         min: 0,
         title: {
-          text: this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm || 'km'})` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles ||'miles'})`
-        },      
-        opposite: true 
-        }, { //--- Secondary yAxis
-        min: 0,
-        max:  Math.max(...this.lineChartVehicleCount.map(o => o.y)),      
-        title: {
-          text: this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblkmperday || 'km/day' })` : `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblmilesperday || 'miles/day'})`
+          text: this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm || 'km'})` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles || 'miles'})`
         },
-        lineWidth:1,
+        opposite: true
+      }, { //--- Secondary yAxis
+        min: 0,
+        max: Math.max(...this.lineChartVehicleCount.map(o => o.y)),
+        title: {
+          text: this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblkmperday || 'km/day'})` : `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblmilesperday || 'miles/day'})`
+        },
+        lineWidth: 1,
       }],
-      xAxis : {
-        max :  Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone),
-        min :  Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone),          
-        type : 'datetime',       
-        tickInterval:!this.distanceChartType && (this.endDateValue.toDateString() == this.startDateValue.toDateString())? 2 * 24 * 3600000 : 1 * 24 * 3600000 ,   
-        labels: {       
-          step:(this.selectionTab == 'last3month') ? ( this.averageDistanceBarData.length > 50 && this.averageDistanceBarData.length < 60  ? Math.ceil(this.averageDistanceBarData.length/10) : (this.averageDistanceBarData.length > 60 && this.averageDistanceBarData.length < 99  ? Math.ceil(this.averageDistanceBarData.length/12):(this.averageDistanceBarData.length > 99 ? Math.ceil(this.averageDistanceBarData.length/24): (this.averageDistanceBarData.length > 20 && this.averageDistanceBarData.length < 50 ? Math.ceil(this.averageDistanceBarData.length/6): Math.ceil(this.averageDistanceBarData.length/2))))) : Math.ceil(this.averageDistanceBarData.length/5),
-          rotation: (this.selectionTab == 'last3month' || this.selectionTab == 'lastmonth') ? -45 :  0 ,
-          },
-          dateTimeLabelFormats: {
-              day:this.highchartDateFormat  
-          },
-          title: {
-            text:this.translationData.lblDates || 'Dates'
-          },
+      xAxis: {
+        max: Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone),
+        min: Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone),
+        type: 'datetime',
+        tickInterval: !this.distanceChartType && (this.endDateValue.toDateString() == this.startDateValue.toDateString()) ? 2 * 24 * 3600000 : 1 * 24 * 3600000,
+        labels: {
+          step: (this.selectionTab == 'last3month') ? (this.averageDistanceBarData.length > 50 && this.averageDistanceBarData.length < 60 ? Math.ceil(this.averageDistanceBarData.length / 10) : (this.averageDistanceBarData.length > 60 && this.averageDistanceBarData.length < 99 ? Math.ceil(this.averageDistanceBarData.length / 12) : (this.averageDistanceBarData.length > 99 ? Math.ceil(this.averageDistanceBarData.length / 24) : (this.averageDistanceBarData.length > 20 && this.averageDistanceBarData.length < 50 ? Math.ceil(this.averageDistanceBarData.length / 6) : Math.ceil(this.averageDistanceBarData.length / 2))))) : Math.ceil(this.averageDistanceBarData.length / 5),
+          rotation: (this.selectionTab == 'last3month' || this.selectionTab == 'lastmonth') ? -45 : 0,
         },
-        series: [
+        dateTimeLabelFormats: {
+          day: this.highchartDateFormat
+        },
+        title: {
+          text: this.translationData.lblDates || 'Dates'
+        },
+      },
+      series: [
         {
-        name:  this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblAveragedistancepervehicle || 'Average distance per vehicle'}(${this.translationData.lblkmperday || 'km/day' })` : `${this.translationData.lblAveragedistancepervehicle || 'Average distance per vehicle'}(${this.translationData.lblmilesperday || 'miles/day'})`,
-        data: this.averageDistanceBarData, 
-        yAxesID: "y-axis-1",
-        color: '#7BC5EC',   
-        }, 
+          name: this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblAveragedistancepervehicle || 'Average distance per vehicle'}(${this.translationData.lblkmperday || 'km/day'})` : `${this.translationData.lblAveragedistancepervehicle || 'Average distance per vehicle'}(${this.translationData.lblmilesperday || 'miles/day'})`,
+          data: this.averageDistanceBarData,
+          yAxesID: "y-axis-1",
+          color: '#7BC5EC',
+        },
         {
-        name: this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm || 'km'})` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles ||'miles'})`,
-        data: this.barVarticleData,
-        yAxesID: "y-axis-2",
-        color: '#4679CC',       
-         }],   
-       };
+          name: this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm || 'km'})` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles || 'miles'})`,
+          data: this.barVarticleData,
+          yAxesID: "y-axis-2",
+          color: '#4679CC',
+        }],
+    };
   }
 
-  calendarSelectedValues(element: any){
-      switch(this.calendarpreferenceOption){
+  calendarSelectedValues(element: any) {
+    switch (this.calendarpreferenceOption) {
       case "rp_fu_report_calendarview_averageweight": {  // avg weight
-        this.calendarOptions.events =[ {title : `${this.reportMapService.convertWeightUnits(element.averageweight, this.prefUnitFormat, true)}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}];
+        this.calendarOptions.events = [{ title: `${this.reportMapService.convertWeightUnits(element.averageweight, this.prefUnitFormat, true)}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}` }];
         break;
       }
-      case "rp_fu_report_calendarview_idleduration":{ // idle duration
-        this.calendarOptions.events =[ {title : `${this.reportMapService.getHhMmTime(element.averageidleduration)}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}];
+      case "rp_fu_report_calendarview_idleduration": { // idle duration
+        this.calendarOptions.events = [{ title: `${this.reportMapService.getHhMmTime(element.averageidleduration)}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}` }];
         break;
       }
       case "rp_fu_report_calendarview_distance": { // distance
-        this.calendarOptions.events =[ {title : `${this.reportMapService.convertDistanceUnits(element.averagedistance,  this.prefUnitFormat)}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}];
+        this.calendarOptions.events = [{ title: `${this.reportMapService.convertDistanceUnits(element.averagedistance, this.prefUnitFormat)}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}` }];
         break;
       }
       case "rp_fu_report_calendarview_activevehicles": { // active vehicles
-        this.calendarOptions.events =[ {title : `${element.vehiclecount}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}];
+        this.calendarOptions.events = [{ title: `${element.vehiclecount}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}` }];
         break;
       }
       case "rp_fu_report_calendarview_drivingtime": { // driving time
-        this.calendarOptions.events =[ {title : `${this.reportMapService.getHhMmTime(element.averagedrivingtime)}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}];
+        this.calendarOptions.events = [{ title: `${this.reportMapService.getHhMmTime(element.averagedrivingtime)}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}` }];
         break;
       }
       case "rp_fu_report_calendarview_timebasedutilization": { // time based utilisation
-        var timebasedutilisationvalue =  (this.timebasedThreshold == 0) ? 0 : (((element.averagedrivingtime*1000)/this.timebasedThreshold) * 100).toFixed(2)+' %';  //converting avgdrivingtime to milliseconds
-        this.calendarOptions.events =[ {title : `${timebasedutilisationvalue}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}];
+        var timebasedutilisationvalue = (this.timebasedThreshold == 0) ? 0 : (((element.averagedrivingtime * 1000) / this.timebasedThreshold) * 100).toFixed(2) + ' %';  //converting avgdrivingtime to milliseconds
+        this.calendarOptions.events = [{ title: `${timebasedutilisationvalue}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}` }];
         break;
       }
       case "rp_fu_report_calendarview_mileagebasedutilization": { // maleage based utilisation
-        var mileagebasedutilisationvalue = (this.mileagebasedThreshold == 0) ? 0 : ((element.averagedistance/this.mileagebasedThreshold)*100).toFixed(2)+' %';
-        this.calendarOptions.events =[ {title : `${mileagebasedutilisationvalue}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}];
+        var mileagebasedutilisationvalue = (this.mileagebasedThreshold == 0) ? 0 : ((element.averagedistance / this.mileagebasedThreshold) * 100).toFixed(2) + ' %';
+        this.calendarOptions.events = [{ title: `${mileagebasedutilisationvalue}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}` }];
         break;
       }
       case "rp_fu_report_calendarview_totaltrips": { // total trip
-        this.calendarOptions.events =[ {title : `${element.tripcount}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}];
+        this.calendarOptions.events = [{ title: `${element.tripcount}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}` }];
         break;
       }
       default: {
@@ -1194,11 +1195,11 @@ timeBasedChart: any = {};
       }
     }
     this.calendarValue.push(this.calendarOptions.events[0]);
-    this.calendarOptions.events = this.calendarValue; 
+    this.calendarOptions.events = this.calendarValue;
   }
 
-  resetTripFormControlValue(){
-    if(!this.internalSelection && this.fleetUtilizationSearchData.modifiedFrom !== ""){
+  resetTripFormControlValue() {
+    if (!this.internalSelection && this.fleetUtilizationSearchData.modifiedFrom !== "") {
       if (this._state && this._state.vehicleDropDownId != undefined && this.vehicleDD.length > 0) { // back from trip report
         let _v = this.vehicleDD.filter(i => i.vehicleId == Number(this._state.vehicleDropDownId));
         if (_v.length > 0) {
@@ -1209,13 +1210,13 @@ timeBasedChart: any = {};
         this.tripForm.get('vehicle').setValue(this.fleetUtilizationSearchData.vehicleDropDownValue);
       }
       this.tripForm.get('vehicleGroup').setValue(this.fleetUtilizationSearchData.vehicleGroupDropDownValue);
-    }else{
+    } else {
       this.tripForm.get('vehicle').setValue(0);
       this.tripForm.get('vehicleGroup').setValue(0);
     }
   }
 
-  onVehicleChange(event: any){
+  onVehicleChange(event: any) {
     this.internalSelection = true;
   }
 
@@ -1233,27 +1234,27 @@ timeBasedChart: any = {};
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
-      this.dataSource.filterPredicate = function(data, filter: any){
+      this.dataSource.filterPredicate = function (data, filter: any) {
         return data.vehicleName.toString().toLowerCase().includes(filter) ||
-            data.vin?.toString().toLowerCase().includes(filter) ||
-            data.registrationNumber?.toString().toLowerCase().includes(filter) ||
-            data.convertedDistance?.toString().toLowerCase().includes(filter) ||
-            data.numberOfTrips?.toString().toLowerCase().includes(filter)  ||
-            data.convertedTripTime?.toString().toLowerCase().includes(filter) ||
-            data.convertedDrivingTime?.toString().toLowerCase().includes(filter)  ||
-            data.convertedIdleDuration?.toString().toLowerCase().includes(filter) ||
-            data.convertedStopTime?.toString().toLowerCase().includes(filter) ||
-            data.convertedAverageDistance?.toString().toLowerCase().includes(filter) ||
-            data.convertedAverageSpeed?.toString().toLowerCase().includes(filter) ||
-            data.convertedAverageWeight?.toString().toLowerCase().includes(filter) ||
-            data.convertedOdometer?.toString().toLowerCase().includes(filter)
-   }
-      });
-      Util.applySearchFilter(this.dataSource, this.displayedColumns ,this.filterValue );
-    }
+          data.vin?.toString().toLowerCase().includes(filter) ||
+          data.registrationNumber?.toString().toLowerCase().includes(filter) ||
+          data.convertedDistance?.toString().toLowerCase().includes(filter) ||
+          data.numberOfTrips?.toString().toLowerCase().includes(filter) ||
+          data.convertedTripTime?.toString().toLowerCase().includes(filter) ||
+          data.convertedDrivingTime?.toString().toLowerCase().includes(filter) ||
+          data.convertedIdleDuration?.toString().toLowerCase().includes(filter) ||
+          data.convertedStopTime?.toString().toLowerCase().includes(filter) ||
+          data.convertedAverageDistance?.toString().toLowerCase().includes(filter) ||
+          data.convertedAverageSpeed?.toString().toLowerCase().includes(filter) ||
+          data.convertedAverageWeight?.toString().toLowerCase().includes(filter) ||
+          data.convertedOdometer?.toString().toLowerCase().includes(filter)
+      }
+    });
+    Util.applySearchFilter(this.dataSource, this.displayedColumns, this.filterValue);
+  }
 
-  idleDurationCount(){
-    let idleDuration=0;
+  idleDurationCount() {
+    let idleDuration = 0;
     this.initData.forEach(item => {
       idleDuration += parseFloat(item.idleDuration);
     });
@@ -1261,52 +1262,52 @@ timeBasedChart: any = {};
   }
 
   setVehicleGroupAndVehiclePreSelection() {
-    if(!this.internalSelection && this.fleetUtilizationSearchData.modifiedFrom !== "") {
+    if (!this.internalSelection && this.fleetUtilizationSearchData.modifiedFrom !== "") {
       this.onVehicleGroupChange(this.fleetUtilizationSearchData.vehicleGroupDropDownValue, false);
     }
   }
 
-  onVehicleGroupChange(event: any, flag?: any){
-   if(flag && (event.value || event.value == 0)){
+  onVehicleGroupChange(event: any, flag?: any) {
+    if (flag && (event.value || event.value == 0)) {
       this.internalSelection = true;
       this.tripForm.get('vehicle').setValue(0); //- reset vehicle dropdown
-      if(parseInt(event.value) == 0){ //-- all group
+      if (parseInt(event.value) == 0) { //-- all group
         let vehicleData = this.vehicleListData.slice();
         this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
-      }else{
-      let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
-        if(search.length > 0){
+      } else {
+        let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
+        if (search.length > 0) {
           this.vehicleDD = [];
           search.forEach(element => {
             this.vehicleDD.push(element);
           });
         }
       }
-    }else {
+    } else {
       if (this._state && this._state.vehicleDropDownId != undefined && this.vehicleDD.length > 0) {
         let _v = this.vehicleDD.filter(i => i.vehicleId == Number(this._state.vehicleDropDownId));
         if (_v.length > 0) {
           let id = _v[0].vehicleId;
           this.tripForm.get('vehicle').setValue(id);
         }
-      }else{
+      } else {
         this.tripForm.get('vehicle').setValue(parseInt(this.fleetUtilizationSearchData.vehicleDropDownValue));
       }
       this.tripForm.get('vehicleGroup').setValue(parseInt(this.fleetUtilizationSearchData.vehicleGroupDropDownValue));
     }
   }
 
-  setTableInfo(){
+  setTableInfo() {
     let vehName: any = '';
     let vehGrpName: any = '';
     let vin: any = '';
     let plateNo: any = '';
     let vehGrpCount = this.vehicleGrpDD.filter(i => i.vehicleGroupId == parseInt(this.tripForm.controls.vehicleGroup.value));
-    if(vehGrpCount.length > 0){
+    if (vehGrpCount.length > 0) {
       vehGrpName = vehGrpCount[0].vehicleGroupName;
     }
     let vehCount = this.vehicleDD.filter(i => i.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
-    if(vehCount.length > 0){
+    if (vehCount.length > 0) {
       vehName = vehCount[0].vehicleName;
       vin = vehCount[0].vin;
       plateNo = vehCount[0].registrationNo;
@@ -1321,13 +1322,13 @@ timeBasedChart: any = {};
     }
   }
 
-  formStartDate(date: any){
-    return this.reportMapService.formStartDate(date,this.prefTimeFormat, this.prefDateFormat);
+  formStartDate(date: any) {
+    return this.reportMapService.formStartDate(date, this.prefTimeFormat, this.prefDateFormat);
   }
 
-  selectionTimeRange(selection: any){
+  selectionTimeRange(selection: any) {
     this.internalSelection = true;
-    switch(selection){
+    switch (selection) {
       case 'today': {
         this.selectionTab = 'today';
         this.setDefaultStartEndTime();
@@ -1368,38 +1369,38 @@ timeBasedChart: any = {};
     this.filterDateData(); // extra addded as per discuss with Atul
   }
 
-  setGlobalSearchData(globalSearchFilterData:any) {
+  setGlobalSearchData(globalSearchFilterData: any) {
     this.fleetUtilizationSearchData["modifiedFrom"] = "TripReport";
     localStorage.setItem("globalSearchFilterData", JSON.stringify(globalSearchFilterData));
   }
 
-  setDefaultStartEndTime(){
-    if(!this.internalSelection && this.fleetUtilizationSearchData.modifiedFrom !== "" &&  ((this.fleetUtilizationSearchData.startTimeStamp || this.fleetUtilizationSearchData.endTimeStamp) !== "") ) {
-      if(this.prefTimeFormat == this.fleetUtilizationSearchData.filterPrefTimeFormat){ // same format
+  setDefaultStartEndTime() {
+    if (!this.internalSelection && this.fleetUtilizationSearchData.modifiedFrom !== "" && ((this.fleetUtilizationSearchData.startTimeStamp || this.fleetUtilizationSearchData.endTimeStamp) !== "")) {
+      if (this.prefTimeFormat == this.fleetUtilizationSearchData.filterPrefTimeFormat) { // same format
         this.selectedStartTime = this.fleetUtilizationSearchData.startTimeStamp;
         this.selectedEndTime = this.fleetUtilizationSearchData.endTimeStamp;
         this.startTimeDisplay = (this.prefTimeFormat == 24) ? `${this.fleetUtilizationSearchData.startTimeStamp}:00` : this.fleetUtilizationSearchData.startTimeStamp;
         this.endTimeDisplay = (this.prefTimeFormat == 24) ? `${this.fleetUtilizationSearchData.endTimeStamp}:59` : this.fleetUtilizationSearchData.endTimeStamp;
-      }else{ // different format
-        if(this.prefTimeFormat == 12){ // 12
+      } else { // different format
+        if (this.prefTimeFormat == 12) { // 12
           this.selectedStartTime = this._get12Time(this.fleetUtilizationSearchData.startTimeStamp);
           this.selectedEndTime = this._get12Time(this.fleetUtilizationSearchData.endTimeStamp);
           this.startTimeDisplay = `${this.selectedStartTime}:00 AM`;
-          this.endTimeDisplay =  `${this.selectedEndTime}:59 PM`;
-          }else{ // 24
+          this.endTimeDisplay = `${this.selectedEndTime}:59 PM`;
+        } else { // 24
           this.selectedStartTime = this.get24Time(this.fleetUtilizationSearchData.startTimeStamp);
           this.selectedEndTime = this.get24Time(this.fleetUtilizationSearchData.endTimeStamp);
           this.startTimeDisplay = `${this.selectedStartTime}:00`;
           this.endTimeDisplay = `${this.selectedEndTime}:59`;
         }
       }
-    }else {
-      if(this.prefTimeFormat == 24){
+    } else {
+      if (this.prefTimeFormat == 24) {
         this.startTimeDisplay = '00:00:00';
         this.endTimeDisplay = '23:59:59';
         this.selectedStartTime = "00:00";
         this.selectedEndTime = "23:59";
-      } else{
+      } else {
         this.startTimeDisplay = '12:00:00 AM';
         this.endTimeDisplay = '11:59:59 PM';
         this.selectedStartTime = "12:00 AM";
@@ -1408,50 +1409,50 @@ timeBasedChart: any = {};
     }
   }
 
-  setPrefFormatDate(){
-    switch(this.prefDateFormat){
+  setPrefFormatDate() {
+    switch (this.prefDateFormat) {
       case 'ddateformat_dd/mm/yyyy': {
         this.dateFormats.display.dateInput = "DD/MM/YYYY";
-        this.chartLabelDateFormat='DD/MM/YYYY';
+        this.chartLabelDateFormat = 'DD/MM/YYYY';
         this.dateFormats.parse.dateInput = "DD/MM/YYYY";
-        this.highchartDateFormat ='%d/%m/%Y';
+        this.highchartDateFormat = '%d/%m/%Y';
         break;
       }
       case 'ddateformat_mm/dd/yyyy': {
         this.dateFormats.display.dateInput = "MM/DD/YYYY";
-        this.chartLabelDateFormat='MM/DD/YYYY';
+        this.chartLabelDateFormat = 'MM/DD/YYYY';
         this.dateFormats.parse.dateInput = "MM/DD/YYYY";
-        this.highchartDateFormat ='%m/%d/%Y';
+        this.highchartDateFormat = '%m/%d/%Y';
         break;
       }
       case 'ddateformat_dd-mm-yyyy': {
         this.dateFormats.display.dateInput = "DD-MM-YYYY";
-        this.chartLabelDateFormat='DD-MM-YYYY';
+        this.chartLabelDateFormat = 'DD-MM-YYYY';
         this.dateFormats.parse.dateInput = "DD-MM-YYYY";
-        this.highchartDateFormat ='%d-%m-%Y';
+        this.highchartDateFormat = '%d-%m-%Y';
         break;
       }
       case 'ddateformat_mm-dd-yyyy': {
         this.dateFormats.display.dateInput = "MM-DD-YYYY";
-        this.chartLabelDateFormat='MM-DD-YYYY';
+        this.chartLabelDateFormat = 'MM-DD-YYYY';
         this.dateFormats.parse.dateInput = "MM-DD-YYYY";
-        this.highchartDateFormat ='%m-%d-%Y';
+        this.highchartDateFormat = '%m-%d-%Y';
         break;
       }
-      default:{
+      default: {
         this.dateFormats.display.dateInput = "MM/DD/YYYY";
-        this.chartLabelDateFormat='MM/DD/YYYY';
+        this.chartLabelDateFormat = 'MM/DD/YYYY';
         this.dateFormats.parse.dateInput = "MM/DD/YYYY";
-        this.highchartDateFormat ='%m/%d/%Y';
+        this.highchartDateFormat = '%m/%d/%Y';
       }
     }
   }
 
-  setDefaultTodayDate(){
-    if(!this.internalSelection && this.fleetUtilizationSearchData.modifiedFrom !== "") {
-      if(this.fleetUtilizationSearchData.timeRangeSelection !== ""){
+  setDefaultTodayDate() {
+    if (!this.internalSelection && this.fleetUtilizationSearchData.modifiedFrom !== "") {
+      if (this.fleetUtilizationSearchData.timeRangeSelection !== "") {
         this.selectionTab = this.fleetUtilizationSearchData.timeRangeSelection;
-      }else{
+      } else {
         this.selectionTab = 'today';
       }
       let startDateFromSearch = new Date(this.fleetUtilizationSearchData.startDateStamp);
@@ -1460,7 +1461,7 @@ timeBasedChart: any = {};
       this.endDateValue = this.setStartEndDateTime(endDateFromSearch, this.selectedEndTime, 'end');
       this.last3MonthDate = this.getLast3MonthDate();
       this.todayDate = this.getTodayDate();
-    }else{
+    } else {
       this.selectionTab = 'today';
       this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
       this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
@@ -1469,16 +1470,16 @@ timeBasedChart: any = {};
     }
   }
 
-  changeStartDateEvent(event: MatDatepickerInputEvent<any>){
+  changeStartDateEvent(event: MatDatepickerInputEvent<any>) {
     this.internalSelection = true;
     let dateTime: any = '';
-    if(event.value._d.getTime() >= this.last3MonthDate.getTime()){ // CurTime > Last3MonthTime
-      if(event.value._d.getTime() <= this.endDateValue.getTime()){ // CurTime < endDateValue
+    if (event.value._d.getTime() >= this.last3MonthDate.getTime()) { // CurTime > Last3MonthTime
+      if (event.value._d.getTime() <= this.endDateValue.getTime()) { // CurTime < endDateValue
         dateTime = event.value._d;
-      }else{
-        dateTime = this.endDateValue; 
+      } else {
+        dateTime = this.endDateValue;
       }
-    }else{ 
+    } else {
       dateTime = this.last3MonthDate;
     }
     this.startDateValue = this.setStartEndDateTime(dateTime, this.selectedStartTime, 'start');
@@ -1486,16 +1487,16 @@ timeBasedChart: any = {};
     this.filterDateData(); // extra addded as per discuss with Atul
   }
 
-  changeEndDateEvent(event: MatDatepickerInputEvent<any>){
+  changeEndDateEvent(event: MatDatepickerInputEvent<any>) {
     this.internalSelection = true;
     let dateTime: any = '';
-    if(event.value._d.getTime() <= this.todayDate.getTime()){ // EndTime > todayDate
-      if(event.value._d.getTime() >= this.startDateValue.getTime()){ // EndTime < startDateValue
+    if (event.value._d.getTime() <= this.todayDate.getTime()) { // EndTime > todayDate
+      if (event.value._d.getTime() >= this.startDateValue.getTime()) { // EndTime < startDateValue
         dateTime = event.value._d;
-      }else{
-        dateTime = this.startDateValue; 
+      } else {
+        dateTime = this.startDateValue;
       }
-    }else{ 
+    } else {
       dateTime = this.todayDate;
     }
     this.endDateValue = this.setStartEndDateTime(dateTime, this.selectedEndTime, 'end');
@@ -1503,7 +1504,7 @@ timeBasedChart: any = {};
     this.filterDateData(); // extra addded as per discuss with Atul
   }
 
-  setStartEndDateTime(date: any, timeObj: any, type: any){
+  setStartEndDateTime(date: any, timeObj: any, type: any) {
     return this.reportMapService.setStartEndDateTime(date, timeObj, type, this.prefTimeFormat);
   }
 
@@ -1514,10 +1515,10 @@ timeBasedChart: any = {};
   startTimeChanged(selectedTime: any) {
     this.internalSelection = true;
     this.selectedStartTime = selectedTime;
-    if(this.prefTimeFormat == 24){
+    if (this.prefTimeFormat == 24) {
       this.startTimeDisplay = selectedTime + ':00';
     }
-    else{
+    else {
       this.startTimeDisplay = selectedTime;
     }
     this.startDateValue = this.setStartEndDateTime(this.startDateValue, this.selectedStartTime, 'start');
@@ -1528,10 +1529,10 @@ timeBasedChart: any = {};
   endTimeChanged(selectedTime: any) {
     this.internalSelection = true;
     this.selectedEndTime = selectedTime;
-    if(this.prefTimeFormat == 24){
+    if (this.prefTimeFormat == 24) {
       this.endTimeDisplay = selectedTime + ':59';
     }
-    else{
+    else {
       this.endTimeDisplay = selectedTime;
     }
     this.endDateValue = this.setStartEndDateTime(this.endDateValue, this.selectedEndTime, 'end');
@@ -1539,7 +1540,7 @@ timeBasedChart: any = {};
     this.filterDateData();
   }
 
-  getTodayDate(){
+  getTodayDate() {
     let _todayDate: any = Util.getUTCDate(this.prefTimeZone);
     _todayDate.setHours(0);
     _todayDate.setMinutes(0);
@@ -1549,34 +1550,34 @@ timeBasedChart: any = {};
 
   getYesterdaysDate() {
     var date = Util.getUTCDate(this.prefTimeZone);
-    date.setDate(date.getDate()-1);
+    date.setDate(date.getDate() - 1);
     return date;
   }
 
   getLastWeekDate() {
     var date = Util.getUTCDate(this.prefTimeZone);
-    date.setDate(date.getDate()-7);
+    date.setDate(date.getDate() - 7);
     return date;
   }
 
-  getLastMonthDate(){
+  getLastMonthDate() {
     var date = Util.getUTCDate(this.prefTimeZone);
-    date.setDate(date.getDate()-30);
+    date.setDate(date.getDate() - 30);
     return date;
   }
 
-  getLast3MonthDate(){
+  getLast3MonthDate() {
     var date = Util.getUTCDate(this.prefTimeZone);
-    date.setDate(date.getDate()-90);
+    date.setDate(date.getDate() - 90);
     date.setHours(0);
     date.setMinutes(0);
     date.setSeconds(0);
     return date;
   }
 
-  getAllSummaryData(){
-    if(this.initData.length > 0){
-      let numberOfTrips = 0 ; let distanceDone = 0; let idleDuration = 0;
+  getAllSummaryData() {
+    if (this.initData.length > 0) {
+      let numberOfTrips = 0; let distanceDone = 0; let idleDuration = 0;
       let averageDistPerDay = 0; let numbeOfVehicles = 0;
       this.initData.forEach(item => {
         numberOfTrips += item.numberOfTrips;
@@ -1586,14 +1587,14 @@ timeBasedChart: any = {};
       numbeOfVehicles = this.initData.length;
       this.summaryObj = [
         [this.translationData.lblFleetUtilizationReport || 'Fleet Utilization Report', this.reportMapService.getStartTime(Date.now(), this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
-          this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, numbeOfVehicles, distanceDone.toFixed(2),
+        this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, numbeOfVehicles, distanceDone.toFixed(2),
           numberOfTrips, averageDistPerDay.toFixed(2), this.idleDurationSumConverted
         ]
       ];
     }
   }
 
-  getPDFExcelHeader(){
+  getPDFExcelHeader() {
     let col: any = [];
     let unitKmperday = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmperday || 'km/day') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmilesperday || 'miles/day') : (this.translationData.lblmilesperday || 'miles/day');
     let unitValTon = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton || 'ton') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblton || 'ton') : (this.translationData.lblton || 'ton');
@@ -1603,127 +1604,127 @@ timeBasedChart: any = {};
     return col;
   }
 
-  exportAsExcelFile(){
-  this.getAllSummaryData();
-  const title = this.translationData.lblTripFleetUtilisationReport || 'Trip Fleet Utilisation Report';
-  const summary = this.translationData.lblSummarySection || 'Summary Section';
-  const detail = this.translationData.lblDetailSection || 'Detail Section';
-  let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmi || 'mi') : (this.translationData.lblmi || 'mi');
-  let unitKmperday = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmperday || 'km/day') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmilesperday || 'miles/day') : (this.translationData.lblmilesperday || 'miles/day');
-  const header = this.getPDFExcelHeader();
-  const summaryHeader = [`${this.translationData.lblReportName || 'Report Name'}`, `${this.translationData.lblReportCreated || 'Report Created'}`, `${this.translationData.lblReportStartTime|| 'Report Start Time'}`, `${this.translationData.lblReportEndTime|| 'Report End Time'}`, `${this.translationData.lblVehicleGroup || 'Vehicle Group'}`, `${this.translationData.lblVehicleName || 'Vehicle Name'}`, `${this.translationData.lblNumberOfVehicles || 'Number Of Vehicles'}`, `${this.translationData.lblTotalDistance || 'Total Distance'} (${unitValkm})`, `${this.translationData.lblNumberOfTrips || 'Number Of Trips'}`, `${this.translationData.lblAverageDistanceperDay || 'Average Distance per Day'} (${unitKmperday})`, `${this.translationData.lblIdleDuration || 'Idle Duration'} (${this.translationData.lblhhmm || 'hh:mm'})`];
-  const summaryData = this.summaryObj;
-  let workbook = new Workbook();
-  let worksheet = workbook.addWorksheet('Trip Fleet Report');
-  let titleRow = worksheet.addRow([title]);
-  worksheet.addRow([]);
-  titleRow.font = { name: 'sans-serif', family: 4, size: 14, underline: 'double', bold: true }
-  worksheet.addRow([]);
-  let subTitleRow = worksheet.addRow([summary]);
-  let summaryRow = worksheet.addRow(summaryHeader);
-  summaryData.forEach(element => {
-    worksheet.addRow(element);
-  });
-  worksheet.addRow([]);
-  summaryRow.eachCell((cell, number) => {
-    cell.fill = {
-      type: 'pattern',
-      pattern: 'solid',
-      fgColor: { argb: 'FFFFFF00' },
-      bgColor: { argb: 'FF0000FF' }
-    }
-    cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
-  })
-  worksheet.addRow([]);
-  let subTitleDetailRow = worksheet.addRow([detail]);
-  let headerRow = worksheet.addRow(header);
-  headerRow.eachCell((cell, number) => {
-    cell.fill = {
-      type: 'pattern',
-      pattern: 'solid',
-      fgColor: { argb: 'FFFFFF00' },
-      bgColor: { argb: 'FF0000FF' }
-    }
-    cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
-  })
-  this.initData.forEach(item => {
-    let idleDurations = Util.getHhMmTime(parseFloat(item.idleDuration));
-  worksheet.addRow([item.vehicleName,item.vin, item.registrationNumber,item.convertedDistance,
-      item.numberOfTrips,item.convertedTripTime, item.convertedDrivingTime, idleDurations,
-      item.convertedStopTime, item.convertedAverageDistance, item.convertedAverageSpeed, item.convertedAverageWeight,
-      item.convertedOdometer]);
-  });
-  worksheet.mergeCells('A1:D2');
-  subTitleRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
-  subTitleDetailRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
-  for (var i = 0; i < header.length; i++) {
-    worksheet.columns[i].width = 20;
-  }
-  for (var j = 0; j < summaryHeader.length; j++) {
-    worksheet.columns[j].width = 20;
-  }
-  worksheet.addRow([]);
-  workbook.xlsx.writeBuffer().then((data) => {
-    let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    fs.saveAs(blob, 'Trip_Fleet_Utilisation.xlsx');
- })
-}
-
-  exportAsPDFFile(){
-  this.dontShow = true;
-  var doc = new jsPDF('p', 'mm', 'a4');
-  let pdfColumns = this.getPDFExcelHeader();
-  let transHeaderNamePdf = this.translationData.lblTripFleetUtilisationReport;
-  let prepare = [];
+  exportAsExcelFile() {
+    this.getAllSummaryData();
+    const title = this.translationData.lblTripFleetUtilisationReport || 'Trip Fleet Utilisation Report';
+    const summary = this.translationData.lblSummarySection || 'Summary Section';
+    const detail = this.translationData.lblDetailSection || 'Detail Section';
+    let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmi || 'mi') : (this.translationData.lblmi || 'mi');
+    let unitKmperday = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmperday || 'km/day') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmilesperday || 'miles/day') : (this.translationData.lblmilesperday || 'miles/day');
+    const header = this.getPDFExcelHeader();
+    const summaryHeader = [`${this.translationData.lblReportName || 'Report Name'}`, `${this.translationData.lblReportCreated || 'Report Created'}`, `${this.translationData.lblReportStartTime || 'Report Start Time'}`, `${this.translationData.lblReportEndTime || 'Report End Time'}`, `${this.translationData.lblVehicleGroup || 'Vehicle Group'}`, `${this.translationData.lblVehicleName || 'Vehicle Name'}`, `${this.translationData.lblNumberOfVehicles || 'Number Of Vehicles'}`, `${this.translationData.lblTotalDistance || 'Total Distance'} (${unitValkm})`, `${this.translationData.lblNumberOfTrips || 'Number Of Trips'}`, `${this.translationData.lblAverageDistanceperDay || 'Average Distance per Day'} (${unitKmperday})`, `${this.translationData.lblIdleDuration || 'Idle Duration'} (${this.translationData.lblhhmm || 'hh:mm'})`];
+    const summaryData = this.summaryObj;
+    let workbook = new Workbook();
+    let worksheet = workbook.addWorksheet('Trip Fleet Report');
+    let titleRow = worksheet.addRow([title]);
+    worksheet.addRow([]);
+    titleRow.font = { name: 'sans-serif', family: 4, size: 14, underline: 'double', bold: true }
+    worksheet.addRow([]);
+    let subTitleRow = worksheet.addRow([summary]);
+    let summaryRow = worksheet.addRow(summaryHeader);
+    summaryData.forEach(element => {
+      worksheet.addRow(element);
+    });
+    worksheet.addRow([]);
+    summaryRow.eachCell((cell, number) => {
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFFFFF00' },
+        bgColor: { argb: 'FF0000FF' }
+      }
+      cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+    })
+    worksheet.addRow([]);
+    let subTitleDetailRow = worksheet.addRow([detail]);
+    let headerRow = worksheet.addRow(header);
+    headerRow.eachCell((cell, number) => {
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFFFFF00' },
+        bgColor: { argb: 'FF0000FF' }
+      }
+      cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+    })
     this.initData.forEach(item => {
       let idleDurations = Util.getHhMmTime(parseFloat(item.idleDuration));
-       prepare.push([item.vehicleName,item.vin, item.registrationNumber,item.convertedDistance,
-         item.numberOfTrips,item.convertedTripTime, item.convertedDrivingTime, idleDurations,
-         item.convertedStopTime, item.convertedAverageDistance, item.convertedAverageSpeed, item.convertedAverageWeight,
-         item.convertedOdometer]);
-     });
+      worksheet.addRow([item.vehicleName, item.vin, item.registrationNumber, item.convertedDistance,
+      item.numberOfTrips, item.convertedTripTime, item.convertedDrivingTime, idleDurations,
+      item.convertedStopTime, item.convertedAverageDistance, item.convertedAverageSpeed, item.convertedAverageWeight,
+      item.convertedOdometer]);
+    });
+    worksheet.mergeCells('A1:D2');
+    subTitleRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
+    subTitleDetailRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
+    for (var i = 0; i < header.length; i++) {
+      worksheet.columns[i].width = 20;
+    }
+    for (var j = 0; j < summaryHeader.length; j++) {
+      worksheet.columns[j].width = 20;
+    }
+    worksheet.addRow([]);
+    workbook.xlsx.writeBuffer().then((data) => {
+      let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      fs.saveAs(blob, 'Trip_Fleet_Utilisation.xlsx');
+    })
+  }
+
+  exportAsPDFFile() {
+    this.dontShow = true;
+    var doc = new jsPDF('p', 'mm', 'a4');
+    let pdfColumns = this.getPDFExcelHeader();
+    let transHeaderNamePdf = this.translationData.lblTripFleetUtilisationReport;
+    let prepare = [];
+    this.initData.forEach(item => {
+      let idleDurations = Util.getHhMmTime(parseFloat(item.idleDuration));
+      prepare.push([item.vehicleName, item.vin, item.registrationNumber, item.convertedDistance,
+      item.numberOfTrips, item.convertedTripTime, item.convertedDrivingTime, idleDurations,
+      item.convertedStopTime, item.convertedAverageDistance, item.convertedAverageSpeed, item.convertedAverageWeight,
+      item.convertedOdometer]);
+    });
     let DATA = document.getElementById('hideData');
-    html2canvas( DATA)
-    .then(canvas => {
-      (doc as any).autoTable({
-        styles: {
+    html2canvas(DATA)
+      .then(canvas => {
+        (doc as any).autoTable({
+          styles: {
             cellPadding: 0.5,
             fontSize: 12
-        },
-        didDrawPage: function(data) {
+          },
+          didDrawPage: function (data) {
             doc.setFontSize(16);
             var fileTitle = transHeaderNamePdf;
             var img = "/assets/logo.png";
-            doc.addImage(img, 'JPEG',10,10,0,0);
+            doc.addImage(img, 'JPEG', 10, 10, 0, 0);
             var img = "/assets/logo_daf.png";
             doc.text(fileTitle, 14, 35);
-            doc.addImage(img, 'JPEG',150, 10, 0, 10);
-        },
-        margin: {
+            doc.addImage(img, 'JPEG', 150, 10, 0, 10);
+          },
+          margin: {
             bottom: 30,
-            top:40
-        }
-      });
+            top: 40
+          }
+        });
         let fileWidth = 170;
         let fileHeight = canvas.height * fileWidth / canvas.width;
 
         const FILEURI = canvas.toDataURL('image/png')
-        doc.addImage(FILEURI, 'PNG', 10, 40, fileWidth, fileHeight) ;
-        doc.addPage('a2','p');
-      (doc as any).autoTable({
-      head: [pdfColumns],
-      body: prepare,
-      theme: 'striped',
-      didDrawCell: data => {
-      }
-    })
-    doc.save('tripFleetUtilisation.pdf');
-    });
+        doc.addImage(FILEURI, 'PNG', 10, 40, fileWidth, fileHeight);
+        doc.addPage('a2', 'p');
+        (doc as any).autoTable({
+          head: [pdfColumns],
+          body: prepare,
+          theme: 'striped',
+          didDrawCell: data => {
+          }
+        })
+        doc.save('tripFleetUtilisation.pdf');
+      });
   }
 
   pageSizeUpdated(_event) { }
 
-  gotoTrip(vehData: any){
+  gotoTrip(vehData: any) {
     const navigationExtras: NavigationExtras = {
       state: {
         fromFleetUtilReport: true,
@@ -1734,11 +1735,11 @@ timeBasedChart: any = {};
     this.router.navigate(['report/tripreport'], navigationExtras);
   }
 
-  filterVehicleGroups(vehicleSearch){
-    if(!this.vehicleGrpDD){
+  filterVehicleGroups(vehicleSearch) {
+    if (!this.vehicleGrpDD) {
       return;
     }
-    if(!vehicleSearch){
+    if (!vehicleSearch) {
       this.resetVehicleGroupFilter();
       return;
     } else {
@@ -1749,14 +1750,14 @@ timeBasedChart: any = {};
     );
   }
 
-  filterVehicle(VehicleSearch){
-    if(!this.vehicleDD){
+  filterVehicle(VehicleSearch) {
+    if (!this.vehicleDD) {
       return;
     }
-    if(!VehicleSearch){
+    if (!VehicleSearch) {
       this.resetVehicleFilter();
       return;
-    }else{
+    } else {
       VehicleSearch = VehicleSearch.toLowerCase();
     }
     this.filteredVehicle.next(
@@ -1764,11 +1765,11 @@ timeBasedChart: any = {};
     );
   }
 
-  resetVehicleFilter(){
+  resetVehicleFilter() {
     this.filteredVehicle.next(this.vehicleDD.slice());
   }
 
-  resetVehicleGroupFilter(){
+  resetVehicleGroupFilter() {
     this.filteredVehicleGroups.next(this.vehicleGrpDD.slice());
   }
 
@@ -1783,7 +1784,7 @@ timeBasedChart: any = {};
   }
 
   compareVin(a, b) {
-    if (a.vin< b.vin) {
+    if (a.vin < b.vin) {
       return -1;
     }
     if (a.vin > b.vin) {
