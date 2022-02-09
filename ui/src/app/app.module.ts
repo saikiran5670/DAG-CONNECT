@@ -21,7 +21,7 @@ import { DriverService } from './services/driver.service';
 import { FeatureService } from './services/feature.service';
 import { PackageService } from './services/package.service';
 import { SubscriptionService } from './services/subscription.service';
-import { HttpErrorInterceptor, SessionDialogService } from './interceptor/http-error.interceptor';
+import { AppInterceptor, SessionDialogService } from './interceptor/app.interceptor';
 import { ErrorComponent } from './error/error.component';
 import { LandmarkGroupService } from './services/landmarkGroup.service';
 import { POIService } from './services/poi.service';
@@ -78,12 +78,8 @@ export function configFactory(httpClient: HttpClient): ConfigLoader {
     //RouterModule.forRoot(appRoute)
   ],
   providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: AppInterceptor, multi: true },
     { provide: LocationStrategy, useClass: HashLocationStrategy },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: HttpErrorInterceptor,
-      multi: true
-    },
     SessionDialogService,
     DataInterchangeService,
     AccountService,
