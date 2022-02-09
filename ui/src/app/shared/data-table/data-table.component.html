@@ -91,7 +91,7 @@
             <ng-container  *ngIf="column == 'isExclusive'">
                 <mat-header-cell mat-sort-header *matHeaderCellDef style="word-break: break-all;">{{ translationData['lbl'+columnLabels[i]]  }}
                 </mat-header-cell>
-                <mat-cell *matCellDef="let row">{{ row.isExclusive ? translationData.lblExclusive : translationData.lblInclusive }}</mat-cell>
+                <mat-cell *matCellDef="let row">{{ row.isExclusive }}</mat-cell>
            </ng-container>
 
             <ng-container *ngIf="column == 'select'">
