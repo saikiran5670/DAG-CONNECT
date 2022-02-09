@@ -77,12 +77,6 @@
           "configurations": {
             "production": {
               "browserTarget": "ngHereApp:build:production"
-            },
-            "development":{
-              "browserTarget": "ngHereApp:build",
-              "headers": {
-                "Content-Security-Policy": "frame-ancestors 'none'; X-Frame-Options 'DENY' "
-              }
             }
           }
         },

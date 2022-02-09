@@ -436,6 +436,7 @@ export class FuelDeviationReportComponent implements OnInit {
   fuelDecBarChartLegend = true;
   fuelDecBarChartPlugins = [];
   fuelDecBarChartData: any[] = [];
+  noRecordFound: boolean = false;
 
   public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
@@ -1151,6 +1152,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     this.summarySectionData = {};
     this.resetChartData();
     this.vehicleListData = [];
+    this.noRecordFound = false;
     this.updateDataSource(this.fuelDeviationData);
     this.resetFuelDeviationFormControlValue();
     this.filterDateData();
@@ -1182,6 +1184,11 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
       }
       this.reportService.getFuelDeviationReportDetails(reportDataObj).subscribe((_fuelDeviationData: any) => {
         ////console.log(_fuelDeviationData);
+        if(_fuelDeviationData.data.length == 0) {
+          this.noRecordFound = true;
+        } else {
+          this.noRecordFound = false;
+        }
         this.reportService.getFuelDeviationReportCharts(reportDataObj).subscribe((_fuelDeviationChartData: any) => {
           this.hideloader();
           this.resetChartData();
@@ -1201,6 +1208,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
         this.fuelDeviationData = [];
         this.tableInfoObj = {};
         this.summarySectionData = {};
+        this.noRecordFound = true;
         this.updateDataSource(this.fuelDeviationData);
       });
     }

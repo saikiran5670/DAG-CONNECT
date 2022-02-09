@@ -186,6 +186,7 @@ export class ExistingTripsComponent implements OnInit {
   endTimeDisplay: any = '23:59:59';
   prefTimeFormat: any = 12; //-- coming from pref setting
   prefDateFormat: any = ''; //-- coming from pref setting
+  noRecordFound: boolean = false;
 
   public filteredVehicleList: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
@@ -744,12 +745,17 @@ export class ExistingTripsComponent implements OnInit {
     this.poiService.getalltripdetails(_startTime, _endTime, this.vinListSelectedValue).subscribe((existingTripDetails: any) => {
       this.showLoadingIndicator = true;
       this.initData = existingTripDetails.tripData;
-
+      if(this.initData.length == 0) {
+        this.noRecordFound = true;
+      } else {
+        this.noRecordFound = false;
+      }
       this.hideloader();
       this.updatedTableData(this.initData);
     }, (error) => {
       this.initData = [];
       this.hideloader();
+      this.noRecordFound = true;
       this.updatedTableData(this.initData);
     });
 
@@ -768,6 +774,7 @@ export class ExistingTripsComponent implements OnInit {
     this.vinListSelectedValue = '';
     //this.vinList = [];
     this.initData = [];
+    this.noRecordFound = false;
     this.updatedTableData(this.initData);
     this.filterDateData();
   }

@@ -1811,6 +1811,7 @@ setDefaultTodayDate(){
     this.isChartsOpen = false;
     this.isDetailsOpen = true;
     this.graphData= [];
+    this.noRecordFound = false;
    this.updateDataSource(this.tripData);
     //this.resetTripFormControlValue();
     this.filterDateData();

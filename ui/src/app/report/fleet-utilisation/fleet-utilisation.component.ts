@@ -253,6 +253,7 @@ distanceLineChartColors: Color[] = [
     backgroundColor: 'rgba(255,255,0,0)',
   },
 ];
+noRecordFound: boolean = false;
 
 // distanceLineChartOptions = {
 //   responsive: true,
@@ -933,11 +934,17 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     this.showLoadingIndicator = true;
     this.reportService.getVINFromTripFleetUtilisation(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
       this.hideloader();
+      if(tripData.length == 0) {
+        this.noRecordFound = true;
+      } else {
+        this.noRecordFound = false;
+      }
       this.wholeTripData = tripData;
       this.filterDateData();
       this.updateDataSource(this.tripData);
     }, (error)=>{
       this.hideloader();
+      this.noRecordFound = true;
       this.wholeTripData.vinTripList = [];
       this.wholeTripData.vehicleDetailsWithAccountVisibiltyList = [];
       //this.loadUserPOI();
@@ -1073,7 +1080,11 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       }
 
       this.reportService.getFleetDetails(searchDataParam).subscribe((_fleetData: any) => {
-
+      if(_fleetData["fleetDetails"].length == 0) {
+        this.noRecordFound = true;
+      } else {
+        this.noRecordFound = false;
+      }
        this.tripData = this.reportMapService.getConvertedFleetDataBasedOnPref(_fleetData["fleetDetails"], this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
       console.log("fleet utilisation trip data:", this.tripData);
        this.setTableInfo();
@@ -1101,7 +1112,8 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
          ////console.log(error);
         this.hideloader();
         this.tripData = [];
-         this.tableInfoObj = {};
+        this.tableInfoObj = {};
+        this.noRecordFound = true;
         this.updateDataSource(this.tripData);
       });
       this.reportService.getCalendarDetails(searchDataParam).subscribe((calendarData: any) => {
@@ -1133,6 +1145,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     this.vehicleListData = [];
     // this.vehicleGroupListData = this.vehicleGroupListData;
     // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
+    this.noRecordFound = false;
     this.updateDataSource(this.tripData);
     this.tableInfoObj = {};
     this.advanceFilterOpen = false;

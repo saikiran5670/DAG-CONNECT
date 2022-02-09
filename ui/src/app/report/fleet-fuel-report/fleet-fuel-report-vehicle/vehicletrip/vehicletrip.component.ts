@@ -2374,6 +2374,7 @@ getLast3MonthDate(){
     this.vehicleListData = [];
     this.showGraph= false;
     this.graphData= [];
+    this.noRecordFound = false;
     // this.vehicleGroupListData = this.vehicleGroupListData;
     // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
     // this.updateDataSource(this.tripData);

@@ -256,6 +256,8 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       value: 'specificdetailchart'
     }
   ];
+  noRecordFound:boolean = false;
+
   public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredDriver: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
@@ -729,6 +731,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
     this.resetEcoScoreFormControlValue();
     this.filterDateData();
+    this.noRecordFound = false;
     this.initData = [];
     this.tableInfoObj = {};
     this.onSearch();
@@ -785,10 +788,16 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     this.showLoadingIndicator = true;
     this.reportService.getDefaultDriverParameterEcoScore(loadParam).subscribe((initData: any) => {   
       this.hideloader();
+      if(initData.length == 0) {
+        this.noRecordFound = true;
+      } else {
+        this.noRecordFound = false;
+      }
       this.onLoadData = initData;     
       this.filterDateData();
     }, (error)=>{
       this.hideloader();
+      this.noRecordFound = true;
     });
   }
   setGlobalSearchData(globalSearchFilterData:any) {
