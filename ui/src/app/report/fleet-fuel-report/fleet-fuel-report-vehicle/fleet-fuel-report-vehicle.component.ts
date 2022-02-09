@@ -642,6 +642,7 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
   displayData : any = [];
   showDetailedReport : boolean = false;
   state :any;
+  noRecordFound: boolean = false;
 
   public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
@@ -756,6 +757,11 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
     }
     this.reportService.getFleetFuelDetails(getFleetFuelObj).subscribe((data:any) => {
     //console.log("---getting data from getFleetFuelDetailsAPI---",data)
+    if(data["fleetFuelDetails"].length == 0) {
+      this.noRecordFound = true;
+    } else {
+      this.noRecordFound = false;
+    }
     this.displayData = data["fleetFuelDetails"];
     this.FuelData = this.reportMapService.getConvertedFleetFuelDataBasedOnPref(this.displayData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
     //this.setTableInfo();
@@ -777,6 +783,7 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
     this.idleDurationCount();
     }, (error)=>{
       this.hideloader();
+      this.noRecordFound = true;
     });
   }
 
