@@ -244,6 +244,8 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   allDriversSelected = true;
   allDriverData : any;
   graphPayload : any;
+  noRecordFound: boolean = false;
+
   public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredDriver: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
@@ -654,6 +656,11 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     if(_vehicelIds.length > 0){
       this.showLoadingIndicator = true;
       this.reportService.getDriverTimeDetails(searchDataParam).subscribe((_tripData: any) => {
+        if(_tripData.length == 0) {
+          this.noRecordFound = true;
+        } else {
+          this.noRecordFound = false;
+        }
         this.hideloader();
         let tripData = _tripData;
         // _tripData["driverActivities"]= [
@@ -740,6 +747,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
         this.driverSelected = false;
         this.allDriversSelected = true;
         this.initData = [];
+        this.noRecordFound = true;
         this.updateDataSource(this.initData);
       });
     }
@@ -812,6 +820,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     this.tableInfoObj = {};
     this.allDriversSelected = true;
     this.initData=[];
+    this.noRecordFound = false;
     this.updateDataSource(this.initData);
     this.driverSelected = false;
     //this.advanceFilterOpen = false;

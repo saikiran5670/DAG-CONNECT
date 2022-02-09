@@ -712,6 +712,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
     this.setDefaultTodayDate();
     this.tripData = [];
     this.vehicleListData = [];
+    this.noRecordFound = false;
     this.updateDataSource(this.tripData);
     this.resetTripFormControlValue();
     this.filterDateData(); // extra addded as per discuss with Atul

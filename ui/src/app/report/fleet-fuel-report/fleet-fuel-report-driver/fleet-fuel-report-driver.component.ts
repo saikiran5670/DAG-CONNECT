@@ -1877,7 +1877,7 @@ setDefaultTodayDate(){
     this.resetChartData();
     this.displayData =[];
     this.driverSelected= false;
-
+    this.noRecordFound = false;
     //this.displayedColumns =[];
     //this.fleetFuelSearchData=[];
      //this.vehicleGroupListData = this.vehicleGroupListData;
