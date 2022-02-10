@@ -319,13 +319,13 @@ export class FleetOverviewSummaryComponent implements OnInit {
     
     this.summaryData.forEach(element => {
 
+      if (element.tripDistance) {
+        tripDistance += element.tripDistance;
+      }
       if(flag){
         if (element.drivingTime)
           totalDriveTime += element.drivingTime;
 
-        if (element.tripDistance) {
-          tripDistance += element.tripDistance;
-        }
         if (element.vehicleDrivingStatusType && element.vehicleDrivingStatusType != 'N') {
           this.movedVehicle += 1;
         }
@@ -384,16 +384,13 @@ export class FleetOverviewSummaryComponent implements OnInit {
   //this.mileageDone = (this.prefUnitFormat == 'dunit_Metric' ? tripDistance : (tripDistance * 0.621371)) + ' ' + this.unitValkm;
   let milDone:any = this.getDistance(tripDistance, this.prefUnitFormat);
   
+  this.mileageDone = milDone + ' ' + this.unitValkm;
+  let totDriveTime = Util.getHhMmTimeFromMS(totalDriveTime).split(':'); //driving time is coming in ms
+  this.driveTime = totDriveTime[0] + (this.translationData.lblhh ) + ' ' +totDriveTime[1] + (this.translationData.lblmm);
 
-    if(flag){
-      this.mileageDone = milDone + ' ' + this.unitValkm;
-      let totDriveTime = Util.getHhMmTimeFromMS(totalDriveTime).split(':'); //driving time is coming in ms
-      this.driveTime = totDriveTime[0] + (this.translationData.lblhh ) + ' ' +totDriveTime[1] + (this.translationData.lblmm);
-    
-      this.barChartData = [
-        { data: [this.movedVehicle, this.totalVehicle], label: '', barThickness: 16, barPercentage: 0.5 }
-      ];
-    }
+  this.barChartData = [
+    { data: [this.movedVehicle, this.totalVehicle], label: '', barThickness: 16, barPercentage: 0.5 }
+  ];
 
   // let totDriveTime = Util.getHhMmTime(totalDriveTime).split(':');
   // this.driveTime = totDriveTime[0] + (this.translationData.lblhh ) + ' ' +totDriveTime[1] + (this.translationData.lblmm);
