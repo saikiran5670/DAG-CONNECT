@@ -6,7 +6,6 @@
             <mat-panel-title>
               <span>
                 <span>{{ translationData.lblSearchReportParameters || 'Search Report Parameters' }}</span>
-                <!-- <span> ({{ translationData.lblMaxrange3months || 'Max range 3 months' }})</span> -->
               </span>
             </mat-panel-title>
           </mat-expansion-panel-header>
@@ -121,7 +120,6 @@
         </mat-expansion-panel>
       </mat-card>
     </form>
-
     <!-- Summary Section -->
 <div id ="charts">
     <mat-card *ngIf='initData.length > 0' class='mat-elevation-z no-padding margin-bottom-xlg' id ="summary">
@@ -215,9 +213,7 @@
           </div>
         </mat-expansion-panel>
     </mat-card>
-
 <!-- Charts view -->
-
       <mat-card *ngIf='initData.length > 0' class='mat-elevation-z no-padding margin-bottom-xlg'>
         <mat-expansion-panel [(expanded)]="isChartsOpen" class="full-width" fxLayoutGap="10px" (opened)="isChartsOpen"
         (closed)="!isChartsOpen">
@@ -302,9 +298,7 @@
       </div>
       </mat-expansion-panel>
       </mat-card>
-
       <!-- Calendar view -->
-
       <mat-card *ngIf='initData.length > 0 && calenderCardView'  class='mat-elevation-z no-padding margin-bottom-xlg'>
         <mat-expansion-panel [(expanded)]="isCalendarOpen" class="full-width" fxLayoutGap="10px" (opened)="isCalendarOpen == true"
         (closed)="isCalendarOpen == false">
@@ -332,12 +326,9 @@
               <full-calendar [options]="calendarOptions"></full-calendar>
             </div>
           </div>
-          <!-- <mat-calendar>
-          </mat-calendar> -->
       </mat-expansion-panel>
       </mat-card>
     </div>
-
     <!--------------------------------------for pdf summary section------------------>
     <div id ="hideData">
       <div *ngIf="dontShow">
@@ -428,13 +419,10 @@
                       </div>
                   </div>
               </div>
-  
             </div>
           </mat-expansion-panel>
       </mat-card>
-  
   <!-- Charts view -->
-  
         <mat-card *ngIf='initData.length > 0' class='mat-elevation-z no-padding margin-bottom-xlg'>
           <mat-expansion-panel [(expanded)]="isChartsOpen" class="full-width" fxLayoutGap="10px" (opened)="isChartsOpen"
           (closed)="!isChartsOpen">
@@ -492,7 +480,6 @@
             </canvas>
         </div>
         </div>
-  
         </div>
         <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px" style='margin-top: 10px;'>
           <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left"  style="padding: 10px;border: 1px solid #ddd;">
@@ -546,9 +533,7 @@
         </div>
         </mat-expansion-panel>
         </mat-card>
-  
         <!-- Calendar view -->
-  
         <mat-card *ngIf='initData.length > 0'  class='mat-elevation-z no-padding margin-bottom-xlg'>
           <mat-expansion-panel [(expanded)]="isCalendarOpen" class="full-width" fxLayoutGap="10px" (opened)="isCalendarOpen == true"
           (closed)="isCalendarOpen == false">
@@ -583,7 +568,6 @@
       </div>
     </div>
       <!-- Fleet Table -->
-
       <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
         <mat-expansion-panel [(expanded)]="tableExpandPanel" class="full-width" fxLayoutGap="10px">
           <mat-expansion-panel-header class="full-width">
@@ -690,7 +674,6 @@
             </mat-header-cell>
             <mat-cell *matCellDef="let row">{{ row.convertedOdometer != '' ? row.convertedOdometer : '-' }}</mat-cell>
           </ng-container>
-
           <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
           <mat-row *matRowDef="let row; columns: displayedColumns;">
           </mat-row>
@@ -701,5 +684,4 @@
           <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
         </mat-expansion-panel>
       </mat-card>
-
   </div>

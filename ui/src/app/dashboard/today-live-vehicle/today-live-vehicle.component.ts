@@ -1,12 +1,11 @@
 import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
-import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
-import { BaseChartDirective, Color, Label, MultiDataSet, PluginServiceGlobalRegistrationAndOptions } from 'ng2-charts';
+import { ChartOptions, ChartType } from 'chart.js';
+import { Color, Label, MultiDataSet, PluginServiceGlobalRegistrationAndOptions } from 'ng2-charts';
 import { DashboardService } from '../../services/dashboard.service';
 import { Util } from '../../shared/util';
 import { ReportMapService } from '../../report/report-map.service';
 import { MessageService } from '../../services/message.service';
-
 
 @Component({
   selector: 'app-today-live-vehicle',
@@ -22,14 +21,12 @@ export class TodayLiveVehicleComponent implements OnInit {
   @ViewChild('chart1') chart1 : ElementRef;
   @ViewChild('chart3') chart3 : ElementRef;
 
-  
   errorMessage : any;
   dataError : boolean = false;
   distance = 0;
   drivingTime : any;
   liveVehicleData:any;
   activeVehiclePercent : Number = 0;
-  fileIcon = 'assets/dashboard/greenArrow.svg';
   totalVehicles : number = 0;
   activeVehicleTotalCount : number = 0;
   timeBasedRate : any;
@@ -42,12 +39,9 @@ export class TodayLiveVehicleComponent implements OnInit {
   accountPrefObj: any;
   distanceRate : any;
   todayLiveVehicalAPI: any;
-
-  //threshold 
   activeThreshold=0;
   timeBasedThreshold = 0;
   distanceBasedThreshold = 0;
-  //Active Vehicles Chart
   doughnutChartLabels: Label[] = [('Target'), '', ''];
   doughnutChartActiveVehicleData: MultiDataSet = [ [0, 100] ];
   doughnutChartType: ChartType = 'doughnut';
@@ -81,7 +75,6 @@ export class TodayLiveVehicleComponent implements OnInit {
         if (label) return true;
         return false;
       },
-   
     },
     title:{
       text: "15",
@@ -92,16 +85,12 @@ export class TodayLiveVehicleComponent implements OnInit {
   public doughnutChartPlugins: PluginServiceGlobalRegistrationAndOptions[] = [{
     afterDraw(chart) {
       const ctx = chart.ctx;
-
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       const centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
       const centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
-
       ctx.font = '500 14px Roboto, "Helvetica Neue", sans-serif';
       ctx.fillStyle = 'black';
-
-      var text = chart.config.options.title.text;
       // Draw text in center
       ctx.fillText("0%", centerX, centerY);
     }
@@ -110,8 +99,7 @@ export class TodayLiveVehicleComponent implements OnInit {
   //Time based chart
   doughnutChartTimeBasedLabels: Label[] = [('Target'), '', ''];
   doughnutChartTimeBasedData: MultiDataSet = [ [0, 100] ];
-  
-   doughnutChartTimeOptions: ChartOptions = {
+  doughnutChartTimeOptions: ChartOptions = {
     responsive: true,
     legend: {
       display: false
@@ -134,16 +122,12 @@ export class TodayLiveVehicleComponent implements OnInit {
   public doughnutChartTimePlugins: PluginServiceGlobalRegistrationAndOptions[] = [{
     afterDraw(chart) {
       const ctx = chart.ctx;
-
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       const centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
       const centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
-
       ctx.font = '500 14px Roboto, "Helvetica Neue", sans-serif';
       ctx.fillStyle = 'black';
-
-      var text = chart.config.options.title.text;
       // Draw text in center
       ctx.fillText("0%", centerX, centerY);
     }
@@ -170,7 +154,7 @@ export class TodayLiveVehicleComponent implements OnInit {
 doughnutChartDistanceBasedLabels: Label[] = [('Target'), '', ''];
 doughnutChartDistanceBasedData: MultiDataSet = [ [0, 100] ];
 
- doughnutChartDistanceOptions: ChartOptions = {
+doughnutChartDistanceOptions: ChartOptions = {
   responsive: true,
   legend: {
     display: false
@@ -183,7 +167,6 @@ doughnutChartDistanceBasedData: MultiDataSet = [ [0, 100] ];
       if (label) return true;
       return false;
     },
- 
   },
   title:{
     text: "15",
@@ -193,16 +176,12 @@ doughnutChartDistanceBasedData: MultiDataSet = [ [0, 100] ];
 public doughnutChartDistancePlugins: PluginServiceGlobalRegistrationAndOptions[] = [{
   afterDraw(chart) {
     const ctx = chart.ctx;
-
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     const centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
     const centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
-
     ctx.font = '500 14px Roboto, "Helvetica Neue", sans-serif';
     ctx.fillStyle = 'black';
-
-    var text = chart.config.options.title.text;
     // Draw text in center
     ctx.fillText("0%", centerX, centerY);
   }
@@ -238,27 +217,20 @@ doughnutDistanceColors: Color[] = [
 
   ngOnInit(): void {
     this.setInitialPref(this.prefData,this.preference);
-    ////console.log(this.finalVinList)
     if(this.finalVinList.length >0){
         this.getLiveVehicleData();
     }
-    //this.setChartData();
-
   }
 
   setInitialPref(prefData,preference){
     let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
     if(_search.length > 0){
-      //this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
       this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
-      //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
       this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
       this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
       this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
     }else{
-      //this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
       this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
-      //this.prefTimeZone = prefData.timezone[0].value;
       this.prefTimeZone = prefData.timezone[0].name;
       this.prefDateFormat = prefData.dateformat[0].name;
       this.prefUnitFormat = prefData.unit[0].name;
@@ -269,14 +241,9 @@ doughnutDistanceColors: Color[] = [
     this.dataError = false;
     let _vehiclePayload = {
       "viNs": this.finalVinList
-      // [ //this.finalVinList
-      //       "M4A14532","XLR0998HGFFT76657"
-        
-      // ]
     }
     if(this.finalVinList && this.finalVinList.length > 0 && !this.todayLiveVehicalAPI){
       this.todayLiveVehicalAPI = this.dashboardService.getTodayLiveVehicleData(_vehiclePayload).subscribe((vehicleData)=>{
-        ////console.log(vehicleData);
         this.dataError = false;
         if(vehicleData){
           this.liveVehicleData = vehicleData;
@@ -321,16 +288,12 @@ doughnutDistanceColors: Color[] = [
     this.updateActiveVehicle();
     this.updateTimeUtilisation();
     this.updateDistanceRate();
-
-    //let activeVehiclePercent = this.dashboardService.calculateTodayLivePercentage(this.liveVehicleData.activeVehicles,this.totalVehicles)
-    
   }
 
 
   updateActiveVehicle(){
     let activeVehicleCount = this.liveVehicleData.todayActiveVinCount;
     this.activeVehicleTotalCount = this.liveVehicleData.todayActiveVinCount;
-
     this.totalVehicles = this.finalVinList.length;
     let activeVehiclePercent = this.dashboardService.calculateTodayLivePercentage(activeVehicleCount,this.totalVehicles);
     let thresholdValue = this.getPreferenceThreshold('activevehicles')['value']; //10;
@@ -341,7 +304,6 @@ doughnutDistanceColors: Color[] = [
     let activeVehicleCaretColor = 'caretGreen';
     let caretIcon = ''
     let transTarget = this.translationData.lblTarget;
-    let transTon = this.translationData.lblton;
     let transLastChange = this.translationData.lblLastChange;
     if( activeVehicleChangePercent > 0){
       activeVehicleCaretColor = 'caretGreen';
@@ -352,28 +314,21 @@ doughnutDistanceColors: Color[] = [
       caretIcon = `<i class="fa fa-caret-down tooltipCaret caretClass ${activeVehicleCaretColor}"></i>`;
 
     }
-
     let nextPercent = 100 - activeVehiclePercent;
-
     if(activeVehiclePercent > 100){
       nextPercent = 0;
     }
 
     this.doughnutChartActiveVehicleData = [[activeVehiclePercent,(nextPercent)]]
-
     this.doughnutChartPlugins = [{
       afterDraw(chart) {
         const ctx = chart.ctx;
-    
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         const centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
         const centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
-    
         ctx.font = '500 14px Roboto, "Helvetica Neue", sans-serif';
         ctx.fillStyle = 'black';
-    
-        var text = chart.config.options.title.text;
         // Draw text in center
         ctx.fillText(activeVehiclePercent.toFixed(2) + "%", centerX, centerY);
       }
@@ -389,7 +344,6 @@ doughnutDistanceColors: Color[] = [
         enabled: false,
         custom: function(tooltip){
           let tooltipEl = document.getElementById('chartjs-tooltip');
-          let fileIcon = 'assets/dashboard/greenArrow.svg';
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
@@ -398,49 +352,40 @@ doughnutDistanceColors: Color[] = [
             `<span>${caretIcon}</span></div>`;
             this._chart.canvas.parentNode.appendChild(tooltipEl);
           }
-           // Set caret Position
         tooltipEl.classList.remove('above', 'below','no-transform');
         if (tooltip.yAlign) {
           tooltipEl.classList.add(tooltip.yAlign);
         } else {
           tooltipEl.classList.add('no-transform');
         }
-        function getBody(bodyItem) {
-          return bodyItem.lines;
-      }
-      var position = this._chart.canvas.getBoundingClientRect();
-        const positionY = this._chart.canvas.offsetTop;
-        const positionX = this._chart.canvas.offsetLeft;
-        const widthX = (this._chart.canvas.width)/8;
-        const heightY = (this._chart.canvas.height)/6;
+      const positionY = this._chart.canvas.offsetTop;
+      const positionX = this._chart.canvas.offsetLeft;
+      const widthX = (this._chart.canvas.width)/8;
+      const heightY = (this._chart.canvas.height)/6;
 
-        // Display, position, and set styles for font
-        tooltipEl.style.opacity = 1 as any;
-        tooltipEl.style.position = 'absolute';
-        tooltipEl.style.background = '#FFF';
-        tooltipEl.style.border = '1px solid blue';
-        tooltipEl.style.borderRadius = '5px';
-        tooltipEl.style.left = positionY + widthX + 'px';
-        tooltipEl.style.top = positionX - heightY + 'px';
-        tooltipEl.style.fontFamily = tooltip._bodyFontFamily;
-        tooltipEl.style.fontSize = tooltip.bodyFontSize + 'px';
-        tooltipEl.style.fontStyle = tooltip._bodyFontStyle;
-        tooltipEl.style.padding = tooltip.yPadding +
-        'px ' +
-        tooltip.xPadding +
-        'px';
+      // Display, position, and set styles for font
+      tooltipEl.style.opacity = 1 as any;
+      tooltipEl.style.position = 'absolute';
+      tooltipEl.style.background = '#FFF';
+      tooltipEl.style.border = '1px solid blue';
+      tooltipEl.style.borderRadius = '5px';
+      tooltipEl.style.left = positionY + widthX + 'px';
+      tooltipEl.style.top = positionX - heightY + 'px';
+      tooltipEl.style.fontFamily = tooltip._bodyFontFamily;
+      tooltipEl.style.fontSize = tooltip.bodyFontSize + 'px';
+      tooltipEl.style.fontStyle = tooltip._bodyFontStyle;
+      tooltipEl.style.padding = tooltip.yPadding + 'px ' +
+      tooltip.xPadding +'px';
            // Hide if no tooltip
           if (tooltip.opacity === 0) {
             tooltipEl.style.opacity = 0 as any;
             this._chart.canvas.parentNode.removeChild(tooltipEl);
-
             return;
           }
           else{
             tooltipEl.style.opacity = 1 as any;
             return;
           }
-          
         },
      },
       title:{
@@ -537,8 +482,6 @@ doughnutDistanceColors: Color[] = [
       default:
         break;
     }
-
-
   }
 
   updateTimeUtilisation(){
@@ -549,11 +492,9 @@ doughnutDistanceColors: Color[] = [
     let timeBasedCalculation = this.dashboardService.calculateKPIPercentage(todayTimeRate,this.activeVehicleTotalCount,_threshold,1);
     let timeBasedPercent = timeBasedCalculation['kpiPercent'];
     let nextPercent = 100 - timeBasedPercent;
-
     if(timeBasedPercent > 100){
       nextPercent = 0;
     }
-
     this.doughnutChartTimeBasedData = [[timeBasedPercent,(nextPercent)]]
     let timeUtilisationTarget = timeBasedCalculation['cuttOff'];
     let timeTarget = Util.getHhMmTimeFromMS(timeUtilisationTarget);
@@ -577,11 +518,9 @@ doughnutDistanceColors: Color[] = [
 
     let lastTimeRate = this.liveVehicleData.yesterDayTimeBasedUtilizationRate;
     let timeChangePercent = this.dashboardService.calculateLastChange(todayTimeRate,lastTimeRate);
-
     let activeVehicleCaretColor = 'caretGreen';
     let caretIcon = ''
     let transTarget = this.translationData.lblTarget;
-    let transTon = this.translationData.lblton;
     let transLastChange = this.translationData.lblLastChange;
     if( timeChangePercent > 0){
       activeVehicleCaretColor = 'caretGreen';
@@ -590,21 +529,16 @@ doughnutDistanceColors: Color[] = [
     else{
       activeVehicleCaretColor = 'caretRed';
       caretIcon = `<i class="fa fa-caret-down tooltipCaret caretClass ${activeVehicleCaretColor}"></i>`;
-
     }
     this.doughnutChartTimePlugins = [{
       afterDraw(chart) {
         const ctx = chart.ctx;
-    
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         const centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
         const centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
-    
         ctx.font = '500 14px Roboto, "Helvetica Neue", sans-serif';
         ctx.fillStyle = 'black';
-    
-        var text = chart.config.options.title.text;
         // Draw text in center
         ctx.fillText(timeBasedPercent.toFixed(2) + "%", centerX, centerY);
       }
@@ -620,7 +554,6 @@ doughnutDistanceColors: Color[] = [
         enabled: false,
         custom: function(tooltip){
           let tooltipEl = document.getElementById('chartjs-tooltip');
-          let fileIcon = 'assets/dashboard/greenArrow.svg';
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
@@ -636,10 +569,6 @@ doughnutDistanceColors: Color[] = [
         } else {
           tooltipEl.classList.add('no-transform');
         }
-        function getBody(bodyItem) {
-          return bodyItem.lines;
-      }
-      var position = this._chart.canvas.getBoundingClientRect();
         const positionY = this._chart.canvas.offsetTop;
         const positionX = this._chart.canvas.offsetLeft;
         const widthX = (this._chart.canvas.width)/8;
@@ -664,14 +593,12 @@ doughnutDistanceColors: Color[] = [
           if (tooltip.opacity === 0) {
             tooltipEl.style.opacity = 0 as any;
             this._chart.canvas.parentNode.removeChild(tooltipEl);
-
             return;
           }
           else{
             tooltipEl.style.opacity = 1 as any;
             return;
           }
-          
         },
      },
       title:{
@@ -682,9 +609,6 @@ doughnutDistanceColors: Color[] = [
 
     //time color
     let _timeRateLimit = this.getPreferenceThreshold('timebasedutilizationrate')['type'];
-    let _timeThreshold = this.getPreferenceThreshold('timebasedutilizationrate')['value'];
-
-     
     switch (_timeRateLimit) {
       case 'U':{
         if(timeBasedCalculation['cuttOff'] < todayTimeRate){ //red
@@ -770,13 +694,10 @@ doughnutDistanceColors: Color[] = [
       default:
         break;
     }
-
   }
 
   updateDistanceRate(){
-
     //Distance Based Chart
-    
     //let distanceBasedPercent = this.dashboardService.calculateTodayLivePercentage(this.liveVehicleData.distanceBaseUtilization,40)
     let todayDistance = this.liveVehicleData.todayDistanceBasedUtilization;
     let lastDistance = this.liveVehicleData.yesterDayDistanceBasedUtilization;
@@ -793,11 +714,9 @@ doughnutDistanceColors: Color[] = [
     this.doughnutChartDistanceBasedData = [[distanceBasedPercent,(nextPercent)]]
     let distanceTarget = this.reportMapService.getDistance(distancecutOff, this.prefUnitFormat);// this.dashboardService.calculateTargetValue(this.activeVehicleTotalCount,_threshold,1);
     let changePercent = this.dashboardService.calculateLastChange(todayDistance,lastDistance,4);
-   
     let activeVehicleCaretColor = 'caretGreen';
     let caretIcon = ''
     let transTarget = this.translationData.lblTarget;
-    let transTon = this.translationData.lblton;
     let transLastChange = this.translationData.lblLastChange;
     if( changePercent > 0){
       activeVehicleCaretColor = 'caretGreen';
@@ -806,21 +725,16 @@ doughnutDistanceColors: Color[] = [
     else{
       activeVehicleCaretColor = 'caretRed';
       caretIcon = `<i class="fa fa-caret-down tooltipCaret caretClass ${activeVehicleCaretColor}"></i>`;
-
     }
     this.doughnutChartDistancePlugins = [{
       afterDraw(chart) {
         const ctx = chart.ctx;
-    
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         const centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
         const centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
-    
         ctx.font = '500 14px Roboto, "Helvetica Neue", sans-serif';
         ctx.fillStyle = 'black';
-    
-        var text = chart.config.options.title.text;
         // Draw text in center
         ctx.fillText(distanceBasedPercent.toFixed(2) + "%", centerX, centerY);
       }
@@ -836,27 +750,20 @@ doughnutDistanceColors: Color[] = [
         enabled: false,
         custom: function(tooltip){
           let tooltipEl = document.getElementById('chartjs-tooltip');
-          let fileIcon = 'assets/dashboard/greenArrow.svg';
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
             tooltipEl.innerHTML = `<div class='dashboardTT'><div>${transTarget}: ` + distanceTarget + 
             '</div><div>'+transLastChange+': ' + changePercent.toFixed(2) + '%'+
             `<span>${caretIcon}</span></div>`;
-            //this.chart3.ElementRef.nativeElement.appendChild()
             this._chart.canvas.parentNode.appendChild(tooltipEl);
           }
-           // Set caret Position
         tooltipEl.classList.remove('above', 'below','no-transform');
         if (tooltip.yAlign) {
           tooltipEl.classList.add(tooltip.yAlign);
         } else {
           tooltipEl.classList.add('no-transform');
         }
-        function getBody(bodyItem) {
-          return bodyItem.lines;
-      }
-      var position = this._chart.canvas.getBoundingClientRect();
         const positionY = this._chart.canvas.offsetTop;
         const positionX = this._chart.canvas.offsetLeft;
         const widthX = (this._chart.canvas.width)/8;
@@ -881,7 +788,6 @@ doughnutDistanceColors: Color[] = [
           if (tooltip.opacity === 0) {
             tooltipEl.style.opacity = 0 as any;
             this._chart.canvas.parentNode.removeChild(tooltipEl);
-
             return;
           }
           else{
@@ -896,10 +802,8 @@ doughnutDistanceColors: Color[] = [
         display: false
       }
     }
-
       //distance color
       let _distanceRateLimit = this.getPreferenceThreshold('distancebasedutilizationrate')['type'];
-      let _distanceThreshold = this.getPreferenceThreshold('distancebasedutilizationrate')['value'];
        
       switch (_distanceRateLimit) {
         case 'U':{
@@ -992,7 +896,6 @@ doughnutDistanceColors: Color[] = [
   setChartData(){
     this.chart1.nativeElement.style.height = '10px';
     this.chart1.nativeElement.style.width = '10px';
-
   }
 
   navigateToReport(){
