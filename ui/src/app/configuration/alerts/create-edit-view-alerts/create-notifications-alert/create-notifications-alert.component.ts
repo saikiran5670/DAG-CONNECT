@@ -1,12 +1,10 @@
 import { ElementRef, Input, Output, ViewChild, EventEmitter } from '@angular/core';
 import { Component, OnInit, SimpleChanges,OnChanges } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { EmailValidator, FormArray, FormBuilder } from '@angular/forms';
+import { FormArray, FormBuilder } from '@angular/forms';
 import { Validators } from '@angular/forms';
 import { FormGroup } from '@angular/forms';
-import { getMatIconFailedToSanitizeUrlError } from '@angular/material/icon';
 import { SearchCountryField, CountryISO } from 'ngx-intl-tel-input';
-import { element } from 'protractor';
 import { AlertService } from 'src/app/services/alert.service';
 import { CustomValidators } from 'src/app/shared/custom.validators';
 import { NotificationAdvancedFilterComponent } from './notification-advanced-filter/notification-advanced-filter.component';
@@ -93,14 +91,6 @@ export class CreateNotificationsAlertComponent implements OnInit, OnChanges {
       id: 'H',
       value: 'Hours'
     },
-    // {
-    //   id: 'D',
-    //   value: 'Days'
-    // },
-    // {
-    //   id: 'W',
-    //   value: 'Weeks'
-    // },
   ];
   emailTimeList: any = [
     {
@@ -111,20 +101,11 @@ export class CreateNotificationsAlertComponent implements OnInit, OnChanges {
       id: 'H',
       value: "Hours"
     },
-    // {
-    //   id: 'D',
-    //   value: 'Days'
-    // },
-    // {
-    //   id: 'W',
-    //   value: 'Weeks'
-    // },
   ];
   timeUnitValue: any;
   emailtimeUnitValue: any;
   smsTimeUnitValue: any;
   SearchCountryField;
-  // TooltipLabel = TooltipLabel;
   CountryISO;
   preferredCountries: CountryISO[];
   isDuplicateRecipientLabel: boolean= false;
@@ -145,11 +126,8 @@ export class CreateNotificationsAlertComponent implements OnInit, OnChanges {
   constructor(private _formBuilder: FormBuilder, private alertService: AlertService, private el: ElementRef) { }
 
   ngOnInit(): void {
-    //console.log("action type=" + this.actionType);
-    //console.log("critical" +this.criticalLevel);
     this.getTransContactMode();
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
-    //this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
     if(localStorage.getItem('contextOrgId')){
       this.organizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
     }
@@ -164,7 +142,6 @@ export class CreateNotificationsAlertComponent implements OnInit, OnChanges {
       criticalLevel: [''],
       warningLevel: [''],
       advisoryLevel: [''],
-      // FormArrayItems : this._formBuilder.array([this.initItems()]),
       FormEmailArray: this._formBuilder.array([this.initEmailItems()]),
       FormWebArray: this._formBuilder.array([this.initWebItems()]),
       FormSMSArray: this._formBuilder.array([this.initSMSItems()])
@@ -174,12 +151,10 @@ export class CreateNotificationsAlertComponent implements OnInit, OnChanges {
           CustomValidators.specialCharValidationForName('recipientLabel'),
         ]
       });
-    //console.log(this.selectedRowData);
    this.notificationForm.addControl('criticalLevelThreshold', new FormControl(''));
    this.notificationForm.addControl('warningLevelThreshold', new FormControl(''));
    this.notificationForm.addControl('advisoryLevelThreshold', new FormControl(''));
     this.SearchCountryField = SearchCountryField;
-    // TooltipLabel = TooltipLabel;
     this.CountryISO = CountryISO;
     this.preferredCountries = [CountryISO.India];
 
@@ -217,12 +192,8 @@ export class CreateNotificationsAlertComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    // let d =this.criticalLevel;
-    // let e = this.isWarningLevelSelected;
-    // let f = this.advisoryLevel;
     for (const d in changes) {
       const chng1 = changes[d];
-      // const cur1  = JSON.stringify(chng1.currentValue);
       if (changes.criticalThreshold) {
         this.criticalThreshold = changes.criticalThreshold.currentValue;
       }
@@ -399,12 +370,9 @@ getLevelValues(){
 
   addMultipleItems(isButtonClicked: boolean, data?: any): void {  
     this.isMaxRecipientLabelsReached=  false;
-    // this.notificationForm.controls["recipientLabel"].setValidators([Validators.required]);
-    // this.notificationForm.controls["contactMode"].setValidators([Validators.required]);
     let FormEmailArrayLength= this.FormEmailArray ? this.FormEmailArray.length : 0;
     let FormWebArrayLength= this.FormWebArray ? this.FormWebArray.length : 0;
     let FormSmsArrayLength= this.FormSMSArray ? this.FormSMSArray.length : 0;
-
 
     if(FormEmailArrayLength + FormWebArrayLength + FormSmsArrayLength >= 10){
       const invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'recipientLabel' + '"]');
@@ -413,9 +381,7 @@ getLevelValues(){
     }
     else{
       if (isButtonClicked) {
-        
           this.contactModeType = this.notificationForm.get("contactMode").value;
-          //this is for email
           if (this.contactModeType == 'E') {
             this.addEmailFlag = true;
             this.emailCount = this.emailCount + 1;
@@ -496,9 +462,8 @@ getLevelValues(){
       }
       //for edit or duplicate functionality
       else {
-        // this.notificationForm.get("recipientLabel").reset();
         this.notificationForm.get("recipientLabel").setValue('');
-            this.notificationForm.get("contactMode").setValue('E');
+        this.notificationForm.get("contactMode").setValue('E');
         this.contactModeType = data.notificationModeType;
         this.weblimitButton = data.notificationLimits[0].notificationModeType;
         this.limitButton = data.notificationLimits[0].notificationModeType;
@@ -645,7 +610,6 @@ getLevelValues(){
 
   deleteWebNotificationRow(index: number) {
     this.FormWebArray.removeAt(index);
-    //console.log("deleted");
     this.wsIndex = this.wsIndex - 1;
     this.wsCount = this.wsCount - 1;
     if(this.actionType == "edit"){
@@ -655,7 +619,6 @@ getLevelValues(){
 
   deleteEmailNotificationRow(index: number) {
     this.FormEmailArray.removeAt(index);
-    //console.log("deleted");
     this.emailIndex = this.emailIndex - 1;
     this.emailCount = this.emailCount - 1;
     if(this.actionType == "edit"){
@@ -665,7 +628,6 @@ getLevelValues(){
 
   deleteSMSNotificationRow(index: number) {
     this.FormSMSArray.removeAt(index);
-    //console.log("deleted");
     this.smsIndex = this.smsIndex - 1;
     this.smsCount = this.smsCount - 1;
     if(this.actionType == "edit"){
@@ -674,7 +636,6 @@ getLevelValues(){
   }
   
   deleteSingleNotifcation(index1){
-
     if((this.FormWebArray == undefined || this.FormWebArray.controls.length ==0 )&& 
       (this.FormEmailArray == undefined || this.FormEmailArray.controls.length ==0) &&
        (this.FormSMSArray == undefined || this.FormSMSArray.controls.length ==0)){
@@ -752,7 +713,6 @@ getLevelValues(){
   }
 
   validateMobileNumber(index){
-    // //console.log(this.notificationForm.controls['FormSMSArray']['controls'][index].value.mobileNumber.number);
     if(this.notificationForm.controls['FormSMSArray']['controls'][index].value.mobileNumber != null){
       let phone= (this.notificationForm.controls['FormSMSArray']['controls'][index].value.mobileNumber.number);
       if(phone!= undefined && phone.length > 0){
@@ -782,10 +742,6 @@ getLevelValues(){
   }
 
   getNotificationDetails(): any {
-    // if (!this.notificationForm.valid) {  
-    //   this.notificationForm.markAllAsTouched();       
-    //   this.scrollToFirstInvalidControl();
-    // }
     this.isDuplicateRecipientLabel= false;
     this.notificationReceipients = [];
     let WsData;
@@ -832,7 +788,6 @@ getLevelValues(){
             }
           }
           webNotificationLimits.push(obj);
-
           webPayload = {
             id: WsData.receipientId.value ? WsData.receipientId.value : 0,
             recipientLabel: WsData.webRecipientLabel.value,
@@ -851,7 +806,6 @@ getLevelValues(){
             notificationLimits: webNotificationLimits
           }
           this.notificationReceipients.push(webPayload);
-
         });
       }
       else if (this.actionType == 'edit') {
@@ -918,7 +872,6 @@ getLevelValues(){
       else{
         this.isEmailValidate=true;
       }  
-      //console.log('notificationForm:'+ this.notificationForm.get('FormEmailArray').valid);
       if (this.actionType == 'create' || this.actionType == 'duplicate') {
         this.FormEmailArray.controls.forEach((item, index) => {
           let emailNotificationLimits = [];
@@ -1142,10 +1095,6 @@ getLevelValues(){
     if (this.openAdvancedFilter) {
       notificationAdvancedFilterObj = this.notificationAdvancedFilterComponent.getNotificationAdvancedFilter();
      if(notificationAdvancedFilterObj.validityType=='C'){
-      // let emitEmailObj = {
-      //   isValidInput: this.isValidityAlwaysCustom
-      // }  
-      // this.isNotifyEmailValid.emit(emitEmailObj); 
      }
     }
     if (this.actionType == 'create' || this.actionType == 'duplicate') {
@@ -1305,7 +1254,6 @@ getLevelValues(){
   private scrollToEmailInvalidControl() {    
     let invalidControl: HTMLElement ; 
     this.validateRecipientEmails(this.FormEmailArray.at(this.emailIndex).get("emailAddress").value);
-    //this.notificationForm.controls.FormEmailArray['emailAddress'].Invalid
     if(this.FormEmailArray.at(this.emailIndex).get("emailAddress").value =='' || this.invalidEmail != '' || this.only10Emails){
       invalidControl =  this.el.nativeElement.querySelector('[formcontrolname="' + 'emailAddress' + '"]');
      }  
@@ -1340,7 +1288,6 @@ getLevelValues(){
   }
   private scrollToSMSInvalidControl() {
     let invalidControl: HTMLElement;    
-  
     if(this.notificationForm.get('FormSMSArray').invalid || this.phoneNumber==null){      
       invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'mobileNumber' + '"]');
      }     
