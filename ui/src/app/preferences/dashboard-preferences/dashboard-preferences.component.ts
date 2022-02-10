@@ -28,7 +28,7 @@ export class DashboardPreferencesComponent implements OnInit {
   showDashboardReport: boolean = false;
   reportId: any;
   unitId: any;
-  prefUnit: any;
+  //prefUnit: any;
   prefUnitFormat: any;
   generalPreferences: any;
   initData: any = [];
@@ -546,14 +546,15 @@ export class DashboardPreferencesComponent implements OnInit {
   getUnits() {
     let unitObj = this.generalPreferences?.unit.filter(item => item.id == this.unitId);
     if (unitObj && unitObj.length != 0) {
-      this.prefUnit = unitObj[0].value;
-      if (this.prefUnit == 'Imperial') {
-        this.prefUnitFormat = 'dunit_Imperial';
-      } else {
-        this.prefUnitFormat = 'dunit_Metric';
+      this.prefUnitFormat = unitObj[0].name;
+      // this.prefUnit = unitObj[0].value;
+    //   if (this.prefUnit == 'Imperial') {
+    //     this.prefUnitFormat = 'dunit_Imperial';
+    //   } else {
+    //     this.prefUnitFormat = 'dunit_Metric';
+    //   }
       }
     }
-  }
 
 }
 
