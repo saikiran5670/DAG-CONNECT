@@ -387,7 +387,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
 
     if(flag){
       this.mileageDone = milDone + ' ' + this.unitValkm;
-      let totDriveTime = Util.getHhMmTime(totalDriveTime).split(':');
+      let totDriveTime = Util.getHhMmTimeFromMS(totalDriveTime).split(':'); //driving time is coming in ms
       this.driveTime = totDriveTime[0] + (this.translationData.lblhh ) + ' ' +totDriveTime[1] + (this.translationData.lblmm);
     
       this.barChartData = [
