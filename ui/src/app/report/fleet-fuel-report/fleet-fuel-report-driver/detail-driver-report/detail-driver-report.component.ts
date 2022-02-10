@@ -2506,6 +2506,7 @@ getLast3MonthDate(){
     this.displayedColumns =[];
     this.showGraph= false;
     this.graphData= [];
+    this.noRecordFound = false;
     //this.rankingData =[];
     //this.rankingColumns=[];
     //this.displayedColumns =[];

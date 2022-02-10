@@ -201,8 +201,10 @@
             <span>{{ translationData.lblEcoScoreReportdetails  }}</span>
           </mat-panel-title>
         </mat-expansion-panel-header>
+        <div *ngIf='noRecordFound'>
+          <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound }}</div>
+        </div>
         <div *ngIf='initData.length == 0'>
-          <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound  }}</div>
           <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblSelectionMessage }}</div>
         </div>
       </mat-expansion-panel>
@@ -387,7 +389,7 @@
             </mat-panel-title>
           </mat-expansion-panel-header>
           <div>
-            <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound  }}</div>
+            <!-- <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound  }}</div> -->
             <div *ngIf="!isSearched" fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblSelectionMessage  }}</div>
             <div *ngIf="isSearched" fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound }}</div>
           </div>
