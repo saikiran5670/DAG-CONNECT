@@ -130,16 +130,12 @@ export class EcoScoreProfileManagementComponent implements OnInit {
   proceedStep(prefData: any, preference: any){
     let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
     if(_search.length > 0){
-      //this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
       this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
-      //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
       this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
       this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
       this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
     }else{
-      //this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
       this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
-      //this.prefTimeZone = prefData.timezone[0].value;
       this.prefTimeZone = prefData.timezone[0].name;
       this.prefDateFormat = prefData.dateformat[0].name;
       this.prefUnitFormat = prefData.unit[0].name;
@@ -172,22 +168,16 @@ export class EcoScoreProfileManagementComponent implements OnInit {
 
   accessCheck(){
     if(this.userType ==="Admin#Organisation" && this.isSelected) {
-      // disable(edit delete kpis);
       this.saveButton = false;
       this.deleteButton = false;
       this.ecoScoreProfileForm.controls.profileName.disable();
-      // this.inputBox = false;
      } else if(this.userType ==="Admin#Organisation" && !this.deleteSelection) { 
-      //  disable(edit delete kpis)
       this.saveButton = false;
       this.deleteButton = false;
       this.ecoScoreProfileForm.controls.profileName.disable();
-      // this.inputBox = false;
      }else if(this.userType ==="Admin#Global" && !this.deleteSelection){
-      // disable(e,d)
       this.deleteButton = false;
       this.ecoScoreProfileForm.controls.profileName.disable();
-      // this.inputBox = false;
      }
     this.isData = true;
   }
@@ -264,7 +254,6 @@ export class EcoScoreProfileManagementComponent implements OnInit {
     this.isCreate = true;
     if(this.actionType == 'create'){
      let profileParams = {
-      // "profileId": 0,
       "name": this.ecoScoreProfileForm.controls.profileName.value,
       "description": this.ecoScoreProfileForm.controls.profileDescription.value,
       "isDAFStandard": this.isDAFStandard,
@@ -359,10 +348,8 @@ export class EcoScoreProfileManagementComponent implements OnInit {
   openSnackBar(message: string, action: string) {
     let snackBarRef = this._snackBar.open(message, action, { duration: 2000 });
     snackBarRef.afterDismissed().subscribe(() => {
-      //console.log('The snackbar is dismissed');
     });
     snackBarRef.onAction().subscribe(() => {
-      //console.log('The snackbar action was triggered!');
     });
   }
 
@@ -389,7 +376,6 @@ export class EcoScoreProfileManagementComponent implements OnInit {
     if(this.actionType === 'create'){
       this.isDAFStandard = event.checked;
     } else {
-      //console.log(event.checked);
       this.isSelected = event.checked;
     }
   }
@@ -405,10 +391,8 @@ export class EcoScoreProfileManagementComponent implements OnInit {
   }
 
   profileSelectionDropDown(filterValue: string){
-    // this.selectedElementData = [];    
     this.saveButton = true;
     this.ecoScoreProfileForm.controls.profileName.enable();
-    // this.inputBox = true;
     this.deleteButton = true;
     if(this.actionType =="create"){
       this.isKPI = false;
@@ -427,7 +411,6 @@ export class EcoScoreProfileManagementComponent implements OnInit {
     this.setDefaultValue();
     this.accessCheck();
     this.loadProfileKpis(this.selectedProfile);
-    //this.loadProfileData();
     this.isDAFStandard = false;
     this.isCreatedExistingProfile = false;
   }
@@ -448,6 +431,5 @@ export class EcoScoreProfileManagementComponent implements OnInit {
     else {
       this.changedKPIData.push(item);
  }
-  ////console.log(this.changedKPIData);
 }
 }

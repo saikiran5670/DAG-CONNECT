@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { BreakingScoreComponent } from './breaking-score.component';
 
 describe('BreakingScoreComponent', () => {

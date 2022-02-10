@@ -1,16 +1,11 @@
-import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
-import { MatTableDataSource } from '@angular/material/table';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { TranslationService } from 'src/app/services/translation.service';
 import { FileValidator } from 'ngx-material-file-input';
 import * as FileSaver from 'file-saver';
 import { Workbook } from 'exceljs';
 import * as XLSX from 'xlsx';
-import { forkJoin } from "rxjs";
-import * as JSZip from 'jszip';
 
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
 
@@ -78,12 +73,10 @@ export class DtcTranslationComponent implements OnInit {
 
   processTranslation(transData: any){
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    ////console.log("process translationData:: ", this.translationData)
   } 
 
   loadTranslationData(){ 
     this.translationService.getdtcWarningDetails().subscribe((getTransData: any) => {
-      //console.log("GetTranslatedData:: ", getTransData);
       this.loadTransData = getTransData;  
     });
   }
@@ -101,11 +94,9 @@ export class DtcTranslationComponent implements OnInit {
         var workbook = XLSX.read(bstr, {type:"binary"});    
         var first_sheet_name = workbook.SheetNames[0];    
         var worksheet = workbook.Sheets[first_sheet_name];    
-        ////console.log(XLSX.utils.sheet_to_json(worksheet,{raw:true}));    
         var arraylist = XLSX.utils.sheet_to_json(worksheet,{raw:true});     
         this.filelist = [];
         this.filelist = arraylist;
-        ////console.log("this.filelist:: ", this.filelist);
     }    
   }
 
@@ -120,7 +111,6 @@ export class DtcTranslationComponent implements OnInit {
 
     if(transUploadData.length > 0){
        this.translationService.importDTCTranslationData({ dtcWarningToImport: transUploadData }).subscribe((importedData: any) => {
-        //console.log("importedData:: ", importedData);
         this.successMsg = true;
         this.loadTranslationData();
         setTimeout(() => {  
@@ -143,7 +133,6 @@ export class DtcTranslationComponent implements OnInit {
       });
     }
     }else{
-      //console.log("Empty Excel File...");
       this.excelEmptyMsg = true;
       clearInput.clear();
     } 
@@ -207,7 +196,6 @@ export class DtcTranslationComponent implements OnInit {
     let headerRow = worksheet.addRow(header);
     // Cell Style : Fill and Border
     headerRow.eachCell((cell, number) => {
-      ////console.log(cell)
       if(number != 6){
         cell.fill = {
           type: 'pattern',
@@ -219,8 +207,6 @@ export class DtcTranslationComponent implements OnInit {
           color: { argb: 'FFFFFFFF'},
           bold: true
         }
-      }else{
-        //cell.alignment = { wrapText: true, vertical: 'justify', horizontal: 'justify' }
       }
       cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
     }); 
@@ -239,11 +225,7 @@ export class DtcTranslationComponent implements OnInit {
       name: item['FileName'],
       icon: String (item['FileSize']),
       modifiedAt: 0,
-      modifiedBy: 0    
-      // name: '671-yellow_dsym0334.svg',
-      // icon: '7278',
-      // modifiedAt: 0,
-      // modifiedBy: 0    
+      modifiedBy: 0      
     }   
     return obj;
   }
@@ -262,8 +244,7 @@ export class DtcTranslationComponent implements OnInit {
     }); 
   }  
   this.uploadIconList = []; 
-  this.uploadIconList =  this.unzipfiles;
-  //console.log(this.unzipfiles);  
+  this.uploadIconList =  this.unzipfiles;  
 }
   singleIconSvgFile(files) {     
     Object.keys(files).forEach((filename)=> { 
@@ -282,8 +263,7 @@ export class DtcTranslationComponent implements OnInit {
       this.uploadIconList.forEach(element => {
         transUploadData.push(this.getuploadIconData(element));
       });
-      this.translationService.updatedtcIconDetails({ dtcWarningUpdateIcon: transUploadData }).subscribe((uploadedData: any) => {
-        //console.log("uploadedData:: ", uploadedData);      
+      this.translationService.updatedtcIconDetails({ dtcWarningUpdateIcon: transUploadData }).subscribe((uploadedData: any) => {     
         this.successIconMsg = true;        
         setTimeout(() => {         
           this.successIconMsg = false;        
@@ -299,8 +279,6 @@ export class DtcTranslationComponent implements OnInit {
       });
     }else{
       alert(`${this.translationData.lblsvgfilenotfound || 'svg file not found.'}`);
-      //console.log("svg file not found...");
-      //this.svgEmptyMsg = true;
       clearInput.clear();
     }
   }

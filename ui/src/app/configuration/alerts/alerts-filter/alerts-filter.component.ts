@@ -103,7 +103,6 @@ export class AlertsFilterComponent implements OnInit {
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    ////console.log("process translationData:: ", this.translationData)  
    }
 
   handleCategoryChange(filter, tempEnum, event) {
@@ -142,7 +141,6 @@ export class AlertsFilterComponent implements OnInit {
     }
   // Called on Filter change
   filterChange(filter, event, status? : boolean) {   
-    //console.log("alertVehicle", this.alertVehicleGroup) 
     let event_val;      
       if(filter == "highUrgencyLevel"){          
         if(event.value == ''){          
@@ -152,9 +150,7 @@ export class AlertsFilterComponent implements OnInit {
           event_val = event.value.enum; 
         }
         }else if(filter == "vehicleGroupName"){
-          if(status){ //for all option vehicle
-            // this.alertVehicleGroup='';
-            //event_val = event.value.trim();   
+          if(status){ //for all option vehicle  
             if(this.alertVehicle == ''){
               event_val= this.alertVehicleGroup == ''? this.alertVehicleGroup :this.alertVehicleGroup.value;
             }
@@ -261,7 +257,6 @@ export class AlertsFilterComponent implements OnInit {
           delete searchTerms[col];
         }
       }
-      //console.log(searchTerms);
       let nameSearch = () => {
         let found = false;
         if (isFilterSet) {          
@@ -343,7 +338,6 @@ export class AlertsFilterComponent implements OnInit {
       }
       return nameSearch()
     }
-    // return filterFunction
   }
 
   getConvertedThresholdValues(originalThreshold,unitType){
@@ -362,6 +356,4 @@ export class AlertsFilterComponent implements OnInit {
     }
     return threshold;
   }
- 
-
 }
