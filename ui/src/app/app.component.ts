@@ -474,14 +474,20 @@ export class AppComponent {
           this.timeLeft = Number.parseInt(localStorage.getItem("liveFleetTimer"));
           // if (this.isLogedIn) {
             this.getOfflineNotifications();
+            let accinfo = JSON.parse(localStorage.getItem("accountInfo"))
+            this.loadBrandlogoForReports(accinfo);
           // }
           //this.getReportDetails();
         }, (err) => {
           //console.log(err);
         });
+       
+
       }, (error) => {
         //console.log(error);
       });
+
+      
     }
   }
 
@@ -847,6 +853,7 @@ export class AppComponent {
   }
 
   getTranslationLabels() {
+    
     let curAccId = parseInt(localStorage.getItem("accountId"));
     if (curAccId) { //- checked for refresh page
       this.accountID = curAccId;
@@ -925,6 +932,7 @@ export class AppComponent {
           this.calledTranslationLabels(preferencelanguageCode);
         });
       });
+
     }
   }
 
@@ -1003,7 +1011,6 @@ export class AppComponent {
         }  
 
       });
-     
     }
     //this.getOrgListData();
     if (this.router.url) {
@@ -1022,8 +1029,6 @@ export class AppComponent {
     //     //console.log("called")
     //     this.filterLanguages();
     //   });
-
-    
   }
 
 
@@ -1310,10 +1315,12 @@ export class AppComponent {
     this.accountService.switchOrgContext(switchObj).subscribe((data: any) => {
       this.accountService.getSessionInfo().subscribe((accountData: any) => {
         this.getMenu(data, 'orgContextSwitch', accountData);
+        let accinfo = JSON.parse(localStorage.getItem("accountInfo"))
+        this.loadBrandlogoForReports(accinfo);
       });
     }, (error) => {
       //console.log(error)
-    });
+    });    
   }
 
   sendMessage(): void {
@@ -1479,4 +1486,19 @@ notificationClicked(){
     })
   }
 }
+
+loadBrandlogoForReports(value) {
+  // console.log("*************************", value)
+  let prefId = value.accountPreference.id;
+  this.accountService.getAccountBrandLogo(prefId).subscribe((data: any) => {
+    // console.log("?????******", data)
+    let val = data.iconByte;
+    this.messageService.setBrandLogo(val);
+  }, (error) => {
+    // console.log("?????******", error)
+    this.messageService.setBrandLogo(null);
+  });
+}
+
+
 }
