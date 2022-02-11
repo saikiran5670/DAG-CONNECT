@@ -46,7 +46,7 @@
                     <mat-label class='font-helvetica-md'>{{ this.gridData[0].levelName }}</mat-label>
                 </div>
                 <!-- <div *ngIf="userLevel < 30 || (gridData && gridData.length > 0 && gridData[0].code)" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"> -->
-                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left" *ngIf = "gridData[0].organizationId != 0">
                     <mat-label class='font-16-px line-height-24px'>{{ translationData.lblCode || 'Code' }}</mat-label>
                     <mat-label class='font-helvetica-md'>{{ this.gridData[0].code }}</mat-label>
                 </div>
