@@ -50,9 +50,7 @@
                 </ng-template>
             </div> -->
             <mat-form-field appearance="outline" class="full-width">
-                <input [data]="notificationReceipients" [searchKeyword]="keyword"
-                (selected)='addMultipleItems(false, $event)' [itemTemplate]="itemTemplate"
-                 placeholder="{{ translationData.lblEnterRecipientLabel }}" matInput
+                <input  placeholder="{{ translationData.lblEnterRecipientLabel }}" matInput
                     formControlName="recipientLabel" maxlength="50">
                     <ng-template #itemTemplate let-item>
                         <a [innerHTML]="item.recipientLabel"></a>
