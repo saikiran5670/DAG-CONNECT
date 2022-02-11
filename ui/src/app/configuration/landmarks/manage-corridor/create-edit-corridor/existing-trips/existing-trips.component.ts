@@ -1437,6 +1437,7 @@ export class ExistingTripsComponent implements OnInit {
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+      this.sort.disableClear = true;
       this.dataSource.filterPredicate = function(data: any, filter: string): boolean {
         let driverName = data.driverFirstName+" "+data.driverLastName;
         let startDate = moment(data.startTimeStamp).format("DD/MM/YYYY-h:mm:ss")
@@ -1452,6 +1453,13 @@ export class ExistingTripsComponent implements OnInit {
         const isAsc = sort.direction === 'asc';
         return data.sort((a: any, b: any) => {
           let columnName = sort.active;
+          if(columnName !== 'DriverName'){
+            return this.compare(a[sort.active], b[sort.active], isAsc , columnName);
+            }else{
+            const currentName = a.driverFirstName+" "+a.driverLastName;
+            const nextName = b.driverFirstName+" "+b.driverLastName;
+            return this.compare(currentName, nextName, isAsc , columnName);
+            }
           // if(columnName === date){
           //   return this.compare(a[sort.active], b[sort.active], isAsc , date);
           // }
