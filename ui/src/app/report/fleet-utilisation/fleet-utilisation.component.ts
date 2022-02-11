@@ -32,6 +32,8 @@ import * as fs from 'file-saver';
 import { DatePipe } from '@angular/common';
 import { ReplaySubject } from 'rxjs';
 import { DataInterchangeService } from '../../services/data-interchange.service';
+import { MessageService } from '../../services/message.service';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-fleet-utilisation',
@@ -115,6 +117,7 @@ export class FleetUtilisationComponent implements OnInit, OnDestroy {
   fleetUtilReportId: any = 5;
   chartLabelDateFormat:any ='MM/DD/YYYY';
   highchartDateFormat:any ='%d-%m-%Y';
+  brandimagePath: any;
   showField: any = {
     vehicleName: true,
     vin: true,
@@ -474,7 +477,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
   filterValue: string;
   _state: any;
   highcharts = Highcharts;  
-  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private router: Router, private organizationService: OrganizationService, private datePipe: DatePipe, private dataInterchangeService: DataInterchangeService) {
+  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private router: Router, private organizationService: OrganizationService, private datePipe: DatePipe, private dataInterchangeService: DataInterchangeService, private messageService: MessageService, private _sanitizer: DomSanitizer) {
     // this.defaultTranslation();
     this.dataInterchangeService.prefSource$.subscribe((prefResp: any) => {
       if(prefResp && (prefResp.type == 'fleet utilisation report') && prefResp.prefdata){
@@ -552,6 +555,15 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
 
       });
     });
+
+    this.messageService.brandLogoSubject.subscribe(value => {
+      if (value != null) {
+        this.brandimagePath = this._sanitizer.bypassSecurityTrustResourceUrl('data:image/jpeg;base64,' + value);
+      } else {
+        this.brandimagePath = null;
+      }
+    });
+
   }
 
   distanceLineChartOptions = {
@@ -2054,7 +2066,16 @@ getAllSummaryData(){
 }
 
   exportAsPDFFile(){
-    this.dontShow = true;
+
+  this.dontShow = true;
+
+  var imgleft;
+  if (this.brandimagePath != null) {
+    imgleft = this.brandimagePath.changingThisBreaksApplicationSecurity;
+  } else {
+    imgleft = "/assets/logo.png";
+  }
+
   var doc = new jsPDF('p', 'mm', 'a4');
   let pdfColumns = this.getPDFExcelHeader();
   let transHeaderNamePdf = this.translationData.lblTripFleetUtilisationReport;
@@ -2143,12 +2164,14 @@ getAllSummaryData(){
             // Header
             doc.setFontSize(16);
             var fileTitle = transHeaderNamePdf;
-            var img = "/assets/logo.png";
-            doc.addImage(img, 'JPEG',10,10,0,0);
+            // var img = "/assets/logo.png";
+            // doc.addImage(img, 'JPEG',10,10,0,0);
+            doc.addImage(imgleft, 'JPEG', 10, 10, 0, 15);
 
             var img = "/assets/logo_daf.png";
             doc.text(fileTitle, 14, 35);
             doc.addImage(img, 'JPEG',150, 10, 0, 10);
+
         },
         margin: {
             bottom: 30,
@@ -2160,21 +2183,28 @@ getAllSummaryData(){
 
         const FILEURI = canvas.toDataURL('image/png')
         // let PDF = new jsPDF('p', 'mm', 'a4');
+        if (FILEURI == 'data:,') {
+          this.callAgainExportAsPDF();
+        }
         let position = 0;
         doc.addImage(FILEURI, 'PNG', 10, 40, fileWidth, fileHeight) ;
         doc.addPage('a2','p');
 
-      (doc as any).autoTable({
-      head: [pdfColumns],
-      body: prepare,
-      theme: 'striped',
-      didDrawCell: data => {
-        ////console.log(data.column.index)
-      }
-    })
-    doc.save('tripFleetUtilisation.pdf');
+          (doc as any).autoTable({
+          head: [pdfColumns],
+          body: prepare,
+          theme: 'striped',
+          didDrawCell: data => {
+            // console.log(data)
+          }
+        })
+        doc.save('tripFleetUtilisation.pdf');
 
     });
+  }
+
+  callAgainExportAsPDF() {
+    this.exportAsPDFFile();
   }
 
   // getPDFHeaders(){

@@ -27,6 +27,8 @@ import * as fs from 'file-saver';
 import html2canvas from 'html2canvas';
 import { ReplaySubject } from 'rxjs';
 import { DataInterchangeService } from '../../services/data-interchange.service';
+import { MessageService } from '../../services/message.service';
+import { DomSanitizer } from '@angular/platform-browser';
 
 declare var H: any;
 
@@ -186,12 +188,13 @@ export class TripReportComponent implements OnInit, OnDestroy {
   alertsChecked: any = false;
   tripPrefData: any = [];
   noRecordFound: boolean = false;
+  brandimagePath: any;
 
   public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   filterValue: string;
 
-  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private landmarkCategoryService: LandmarkCategoryService, private router: Router, private organizationService: OrganizationService, private completerService: CompleterService, private _configService: ConfigService, private hereService: HereService, private dataInterchangeService: DataInterchangeService) {
+  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private landmarkCategoryService: LandmarkCategoryService, private router: Router, private organizationService: OrganizationService, private completerService: CompleterService, private _configService: ConfigService, private hereService: HereService, private dataInterchangeService: DataInterchangeService, private messageService: MessageService, private _sanitizer: DomSanitizer) {
     // this.map_key = _configService.getSettings("hereMap").api_key;
     this.map_key = localStorage.getItem("hereMapsK");
     //Add for Search Fucntionality with Zoom
@@ -280,6 +283,14 @@ export class TripReportComponent implements OnInit, OnDestroy {
 
     });
     this.updateDataSource(this.tripData);
+
+    this.messageService.brandLogoSubject.subscribe(value => {
+      if (value != null) {
+        this.brandimagePath = this._sanitizer.bypassSecurityTrustResourceUrl('data:image/jpeg;base64,' + value);
+      } else {
+        this.brandimagePath = null;
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -940,6 +951,12 @@ export class TripReportComponent implements OnInit, OnDestroy {
   }
 
   exportAsPDFFile() {
+    var imgleft;
+    if (this.brandimagePath != null) {
+      imgleft = this.brandimagePath.changingThisBreaksApplicationSecurity;
+    } else {
+      imgleft = "/assets/logo.png";
+    }
     var doc = new jsPDF('p', 'mm', 'a2');
     let DATA = document.getElementById('charts');
     var transpdfheader = this.translationData.lblTripReportDetails;
@@ -954,8 +971,8 @@ export class TripReportComponent implements OnInit, OnDestroy {
         // Header
         doc.setFontSize(20);
         var fileTitle = transpdfheader;
-        var img = "/assets/logo.png";
-        doc.addImage(img, 'JPEG', 10, 10, 0, 0);
+        // var img = "/assets/logo.png";
+        doc.addImage(imgleft, 'JPEG', 10, 10, 0, 16.5);
 
         var img = "/assets/logo_daf.png";
         doc.text(fileTitle, 14, 40);

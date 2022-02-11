@@ -11,6 +11,9 @@ import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 import { Workbook } from 'exceljs';
 import * as fs from 'file-saver';
+import { MessageService } from '../../../services/message.service';
+import { DomSanitizer } from '@angular/platform-browser';
+
 
 export type ChartOptionsApex = {
   series: ApexAxisChartSeries;
@@ -146,7 +149,8 @@ export class EcoScoreReportDriverComponent implements OnInit {
     right: { style: 'thin' },
   };
   titleStyle: any = { name: 'sans-serif', family: 4, size: 11, bold: true };
-  constructor() {}
+  brandimagePath: any;
+  constructor(private messageService: MessageService, private _sanitizer: DomSanitizer) {}
 
   ngOnInit(): void {
     this.checkGraphprefences();
@@ -198,6 +202,15 @@ export class EcoScoreReportDriverComponent implements OnInit {
     this.vehicleSelected = 0;
     this.loadBarChartPerfomance();
     this.loadPieChartPerformance(0);
+
+    this.messageService.brandLogoSubject.subscribe(value => {
+      if (value != null) {
+        this.brandimagePath = this._sanitizer.bypassSecurityTrustResourceUrl('data:image/jpeg;base64,' + value);
+      } else {
+        this.brandimagePath = null;
+      }
+    });
+
   }
 
   hideloader() {
@@ -1927,6 +1940,14 @@ export class EcoScoreReportDriverComponent implements OnInit {
   }
 
   exportAsPDFFile() {
+
+    var imgleft;
+    if (this.brandimagePath != null) {
+      imgleft = this.brandimagePath.changingThisBreaksApplicationSecurity;
+    } else {
+      imgleft = "/assets/logo.png";
+    }
+
     var doc = new jsPDF('p', 'mm', 'a3');
     let generalBar = document.getElementById('generalChart');
     let performanceBar = document.getElementById('performanceChart');
@@ -1990,8 +2011,9 @@ export class EcoScoreReportDriverComponent implements OnInit {
           doc.setFontSize(14);
           // var fileTitle = this.translationData.lblPdfTitle;
           // var fileTitle = 'pdf';
-          var img = '/assets/logo.png';
-          doc.addImage(img, 'JPEG', 10, 10, 0, 0);
+          // var img = '/assets/logo.png';
+          // doc.addImage(img, 'JPEG', 10, 10, 0, 0);
+          doc.addImage(imgleft, 'JPEG', 10, 10, 0, 17.5);
 
           var img = '/assets/logo_daf.png';
           doc.text(fileTitle, 14, 35);
