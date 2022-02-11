@@ -20,6 +20,8 @@ import { Workbook } from 'exceljs';
 import * as fs from 'file-saver';
 import { ReplaySubject } from 'rxjs';
 import { DataInterchangeService } from '../../services/data-interchange.service';
+import { MessageService } from '../../services/message.service';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-driver-time-management',
@@ -245,13 +247,13 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   allDriverData : any;
   graphPayload : any;
   noRecordFound: boolean = false;
-
+  brandimagePath: any;
   public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredDriver: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, 
-  private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private organizationService: OrganizationService, private dataInterchangeService: DataInterchangeService) { 
+  private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private organizationService: OrganizationService, private dataInterchangeService: DataInterchangeService, private messageService: MessageService, private _sanitizer: DomSanitizer) { 
     this.dataInterchangeService.prefSource$.subscribe((prefResp: any) => {
       if(prefResp && (prefResp.type == 'drive time report') && prefResp.prefdata){
         this.displayedColumns = ['driverName', 'driverId', 'startTime', 'endTime', 'driveTime', 'workTime', 'serviceTime', 'restTime', 'availableTime'];
@@ -312,6 +314,14 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
           }
         }  
       });
+
+      this.messageService.brandLogoSubject.subscribe(value => {
+        if (value != null) {
+          this.brandimagePath = this._sanitizer.bypassSecurityTrustResourceUrl('data:image/jpeg;base64,' + value);
+        } else {
+          this.brandimagePath = null;
+        }
+      });  
     
   }
 
@@ -1148,7 +1158,15 @@ getExcelSummaryHeader(){
   return col;
 }
   exportAsPDFFile(){
-   
+
+    var imgleft;
+    if (this.brandimagePath != null) {
+      imgleft = this.brandimagePath.changingThisBreaksApplicationSecurity;
+    } else {
+      imgleft = "/assets/logo.png";
+    }
+
+
     var doc = new jsPDF('p', 'mm', 'a3');
 
     (doc as any).autoTable({
@@ -1159,9 +1177,11 @@ getExcelSummaryHeader(){
       didDrawPage: function(data) {     
           // Header
           doc.setFontSize(16);
-          var fileTitle = this.translationData.lblDriverTimeReport;
-          var img = "/assets/logo.png";
-          doc.addImage(img, 'JPEG',10,8,0,0);
+          // var fileTitle = this.translationData.lblDriverTimeReport; 
+          var fileTitle = 'Drive Time Management Report';
+          // var img = "/assets/logo.png";
+          // doc.addImage(img, 'JPEG',10,8,0,0);
+          doc.addImage(imgleft, 'JPEG', 10, 10, 0, 15.5);
  
           var img = "/assets/logo_daf.png"; 
           doc.text(fileTitle, 14, 35);

@@ -31,6 +31,8 @@ import { Workbook } from 'exceljs';
 import { DatePipe } from '@angular/common';
 import { ReplaySubject } from 'rxjs';
 import { DataInterchangeService } from '../../../services/data-interchange.service';
+import { MessageService } from '../../../services/message.service';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-fleet-fuel-report-vehicle',
@@ -643,6 +645,7 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
   showDetailedReport : boolean = false;
   state :any;
   noRecordFound: boolean = false;
+  brandimagePath: any;
 
   public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
@@ -655,7 +658,9 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
   @Inject(MAT_DATE_FORMATS) private dateFormats,
   private reportMapService: ReportMapService,
   private datePipe: DatePipe,
-  private dataInterchangeService: DataInterchangeService) {
+  private dataInterchangeService: DataInterchangeService,
+  private messageService: MessageService,
+  private _sanitizer: DomSanitizer) {
     this.dataInterchangeService.prefSource$.subscribe((prefResp: any) => {
       if(prefResp && (prefResp.type == 'fuel report') && (prefResp.tab == 'Vehicle') && prefResp.prefdata){
         this.resetPref();
@@ -711,6 +716,14 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
           }
         }
       });
+    });
+
+    this.messageService.brandLogoSubject.subscribe(value => {
+      if (value != null) {
+        this.brandimagePath = this._sanitizer.bypassSecurityTrustResourceUrl('data:image/jpeg;base64,' + value);
+      } else {
+        this.brandimagePath = null;
+      }
     });
   }
 
@@ -2294,6 +2307,13 @@ setVehicleGroupAndVehiclePreSelection() {
 
   exportAsPDFFile(){
 
+    var imgleft;
+    if (this.brandimagePath != null) {
+      imgleft = this.brandimagePath.changingThisBreaksApplicationSecurity;
+    } else {
+      imgleft = "/assets/logo.png";
+    }
+
     var doc = new jsPDF('p', 'mm', 'a4');
    //let rankingPdfColumns = [this.rankingColumns];
    let ccdOne = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance3050metric) : (this.translationData.lblCruiseControlDistance1530imperial);
@@ -2692,8 +2712,9 @@ setVehicleGroupAndVehiclePreSelection() {
             doc.setFontSize(14);
             var fileTitle = pdfName;
             if(!fileTitle) fileTitle = 'Fleet Fuel Report by Vehicle';
-            var img = "/assets/logo.png";
-            doc.addImage(img, 'JPEG',10,10,0,0);
+            // var img = "/assets/logo.png";
+            // doc.addImage(img, 'JPEG',10,10,0,0);
+            doc.addImage(imgleft, 'JPEG', 10, 10, 0, 16.5);
 
             var img = "/assets/logo_daf.png";
             doc.text(fileTitle, 14, 35);

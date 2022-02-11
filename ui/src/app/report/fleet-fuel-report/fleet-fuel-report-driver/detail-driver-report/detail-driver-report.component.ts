@@ -32,7 +32,8 @@ import * as fs from 'file-saver';
 import { Workbook } from 'exceljs';
 import { DatePipe } from '@angular/common';
 import { ReplaySubject } from 'rxjs';
-
+import { MessageService } from '../../../../services/message.service';
+import { DomSanitizer } from '@angular/platform-browser';
 
 declare var H: any;
 
@@ -846,6 +847,7 @@ tripTraceArray: any = [];
   map_key: any = '';
   platform: any = '';
   noRecordFound: boolean = false;
+  brandimagePath: any;
 
   constructor(private _formBuilder: FormBuilder,
               //private landmarkCategoryService: LandmarkCategoryService,
@@ -856,7 +858,7 @@ tripTraceArray: any = [];
               private router: Router,private datePipe: DatePipe,
               private completerService: CompleterService,
               @Inject(MAT_DATE_FORMATS) private dateFormats,
-              private reportMapService: ReportMapService, private _configService: ConfigService, private hereService: HereService) {
+              private reportMapService: ReportMapService, private _configService: ConfigService, private hereService: HereService, private messageService: MessageService, private _sanitizer: DomSanitizer) {
                 this.defaultTranslation();
                // const navigation = this.router.getCurrentNavigation();
               //  this._state = navigation.extras.state as {
@@ -944,20 +946,28 @@ tripTraceArray: any = [];
    //   this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
    //     if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
    //       this.proceedStep(prefData, this.accountPrefObj.accountPreference);
-  //      }else{ // org pref
-  //        this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
-  //          this.proceedStep(prefData, orgPref);
-  //        }, (error) => { // failed org API
- //           let pref: any = {};
- //           this.proceedStep(prefData, pref);
-  //        });
- //       }
-  //    });
-  //  });
+      //      }else{ // org pref
+      //        this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
+      //          this.proceedStep(prefData, orgPref);
+      //        }, (error) => { // failed org API
+    //           let pref: any = {};
+    //           this.proceedStep(prefData, pref);
+      //        });
+    //       }
+      //    });
+      //  });
 
- this.isChartsOpen = true;
- this.isDetailsOpen = true;
- this.isSummaryOpen = true;
+    this.isChartsOpen = true;
+    this.isDetailsOpen = true;
+    this.isSummaryOpen = true;
+
+    this.messageService.brandLogoSubject.subscribe(value => {
+      if (value != null) {
+        this.brandimagePath = this._sanitizer.bypassSecurityTrustResourceUrl('data:image/jpeg;base64,' + value);
+      } else {
+        this.brandimagePath = null;
+      }
+    });
   }
 
 
@@ -2886,6 +2896,14 @@ setVehicleGroupAndVehiclePreSelection() {
     }
 
    exportAsPDFFile(){
+
+    var imgleft;
+    if (this.brandimagePath != null) {
+      imgleft = this.brandimagePath.changingThisBreaksApplicationSecurity;
+    } else {
+      imgleft = "/assets/logo.png";
+    }
+
     var doc = new jsPDF('p', 'mm', 'a4');
     //let pdfColumns = [this.displayedColumns];
     let ccdOne = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance3050metric) : (this.translationData.lblCruiseControlDistance1530imperial);
@@ -3249,8 +3267,9 @@ setVehicleGroupAndVehiclePreSelection() {
           didDrawPage: function(data) {
               doc.setFontSize(14);
               var fileTitle = transpdfheader;
-              var img = "/assets/logo.png";
-              doc.addImage(img, 'JPEG',10,10,0,0);
+              // var img = "/assets/logo.png";
+              // doc.addImage(img, 'JPEG',10,10,0,0);
+              doc.addImage(imgleft, 'JPEG', 10, 10, 0, 16.5);
 
               var img = "/assets/logo_daf.png";
               doc.text(fileTitle, 14, 35);

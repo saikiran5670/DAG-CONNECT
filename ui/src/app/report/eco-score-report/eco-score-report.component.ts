@@ -21,6 +21,9 @@ import * as fs from 'file-saver';
 import { MAT_CHECKBOX_CONTROL_VALUE_ACCESSOR } from '@angular/material/checkbox';
 import { ReplaySubject } from 'rxjs';
 import { DataInterchangeService } from '../../services/data-interchange.service';
+import { MessageService } from '../../services/message.service';
+import { DomSanitizer } from '@angular/platform-browser';
+
 
 @Component({
   selector: 'app-eco-score-report',
@@ -134,6 +137,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   isSearched: boolean=false;
   singleVehicle: any = [];
   rowData: any = [];
+  brandimagePath: any;
   prefMapData: any = [
     {
       key: 'da_report_alldriver_general_driverscount',
@@ -263,7 +267,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   public filteredDriver: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService,
-  private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private organizationService: OrganizationService, private dataInterchangeService: DataInterchangeService) {
+  private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private organizationService: OrganizationService, private dataInterchangeService: DataInterchangeService, private messageService: MessageService, private _sanitizer: DomSanitizer) {
     this.dataInterchangeService.prefSource$.subscribe((prefResp: any) => {
       if(prefResp && (prefResp.type == 'eco score report') && prefResp.prefdata){
         this.displayedColumns = ['select', 'ranking', 'driverName', 'driverId', 'ecoScoreRanking'];
@@ -331,6 +335,15 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
 
     });
     this.isSearched=true;
+
+    this.messageService.brandLogoSubject.subscribe(value => {
+      if (value != null) {
+        this.brandimagePath = this._sanitizer.bypassSecurityTrustResourceUrl('data:image/jpeg;base64,' + value);
+      } else {
+        this.brandimagePath = null;
+      }
+    });
+
   }
 
   proceedStep(prefData: any, preference: any){
@@ -1127,6 +1140,14 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   }
 
   exportAsPDFFile(){
+
+    var imgleft;
+    if (this.brandimagePath != null) {
+      imgleft = this.brandimagePath.changingThisBreaksApplicationSecurity;
+    } else {
+      imgleft = "/assets/logo.png";
+    }
+
     var doc = new jsPDF();
     let fileTitle = this.translationData.lblEcoScoreReport;
     (doc as any).autoTable({
@@ -1138,8 +1159,9 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
           // Header
           doc.setFontSize(14);
           // var fileTitle =fileTitle;
-          var img = "/assets/logo.png";
-          doc.addImage(img, 'JPEG',10,10,0,0);
+          // var img = "/assets/logo.png";
+          // doc.addImage(img, 'JPEG',10,10,0,0);
+          doc.addImage(imgleft, 'JPEG', 10, 10, 0, 16);
 
           var img = "/assets/logo_daf.png";
           doc.text(fileTitle, 14, 35);
