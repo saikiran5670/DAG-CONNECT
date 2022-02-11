@@ -257,10 +257,11 @@ export class UserManagementComponent implements OnInit {
     this.roleService.getUserRoles(roleObj).subscribe(allRoleData => {
       this.hideloader();
       this.roleData = allRoleData;
-      let accountRoleLevel: any = this.roleData.filter(item => item.roleId == this.accountRoleId);
-      if(accountRoleLevel.length > 0){
-        this.filterRoleList = this.roleData.filter(i => i.level >= accountRoleLevel[0].level);
-        this.filterRoleList2 = this.roleData.filter(i => i.level < accountRoleLevel[0].level);
+      // let accountRoleLevel: any = this.roleData.filter(item => item.roleId == this.accountRoleId);
+      let accountRoleLevel: number = Number(localStorage.getItem("userLevel"));
+      if(accountRoleLevel){
+        this.filterRoleList = this.roleData.filter(i => i.level >= accountRoleLevel);
+        this.filterRoleList2 = this.roleData.filter(i => i.level < accountRoleLevel);
       }
       this.loadUsersData();
     }, (error) => {
