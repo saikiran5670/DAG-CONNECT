@@ -260,7 +260,7 @@ export class UserRoleManagementComponent implements OnInit {
           }
           const options = {
             title: this.translationData.lblAlert || 'Alert',
-            message: this.translationData.lblRoleCantBeDeletedmsg || 'Role cannot be deleted.',
+            message: this.translationData.lblRoleCannotBeDeleted || 'The role is used by following users, hence cannot be deleted.',
             list: errorList,
             confirmText: this.translationData.lblOk || 'OK'
           };
