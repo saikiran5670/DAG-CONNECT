@@ -20,6 +20,8 @@ import { Workbook } from 'exceljs';
 import * as fs from 'file-saver';
 import { ReplaySubject } from 'rxjs';
 import { DataInterchangeService } from '../../services/data-interchange.service';
+import { MessageService } from '../../services/message.service';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-driver-time-management',
@@ -244,12 +246,14 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   allDriversSelected = true;
   allDriverData : any;
   graphPayload : any;
+  noRecordFound: boolean = false;
+  brandimagePath: any;
   public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredDriver: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, 
-  private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private organizationService: OrganizationService, private dataInterchangeService: DataInterchangeService) { 
+  private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private organizationService: OrganizationService, private dataInterchangeService: DataInterchangeService, private messageService: MessageService, private _sanitizer: DomSanitizer) { 
     this.dataInterchangeService.prefSource$.subscribe((prefResp: any) => {
       if(prefResp && (prefResp.type == 'drive time report') && prefResp.prefdata){
         this.displayedColumns = ['driverName', 'driverId', 'startTime', 'endTime', 'driveTime', 'workTime', 'serviceTime', 'restTime', 'availableTime'];
@@ -310,6 +314,14 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
           }
         }  
       });
+
+      this.messageService.brandLogoSubject.subscribe(value => {
+        if (value != null) {
+          this.brandimagePath = this._sanitizer.bypassSecurityTrustResourceUrl('data:image/jpeg;base64,' + value);
+        } else {
+          this.brandimagePath = null;
+        }
+      });  
     
   }
 
@@ -612,6 +624,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   
     let _vehicelIds = [];
     let _driverIds =[];
+    let _hashDriverIds = [];
     if (parseInt(this.driverTimeForm.controls.vehicle.value) === 0) {
       _vehicelIds = this.vehicleListData.map(data => data.vin);
       _vehicelIds.shift();
@@ -625,15 +638,19 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
        
     }
 
+    
     if (parseInt(this.driverTimeForm.controls.driver.value) === 0) {
       this.allDriversSelected = true;
       _driverIds = this.driverListData.map(data=>data.driverID);
       _driverIds.shift();
+
+      _hashDriverIds = this.driverListData.map(data=>data.hashedDriverID); 
+      _hashDriverIds.shift();
     }
     else {
       this.allDriversSelected = false;
       _driverIds = this.driverListData.filter(item => item.driverID == (this.driverTimeForm.controls.driver.value)).map(data=>data.driverID);
-     
+      _hashDriverIds = this.driverListData.filter(item => item.driverID == (this.driverTimeForm.controls.driver.value)).map(data=>data.hashedDriverID);
     }
     
    
@@ -643,11 +660,17 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       "startDateTime":_startTime,
       "endDateTime":_endTime,
       "viNs": _vehicelIds,
-      "driverIds":_driverIds
+      "driverIds":_driverIds,
+      "HashedDriverIds":_hashDriverIds
     }
     if(_vehicelIds.length > 0){
       this.showLoadingIndicator = true;
       this.reportService.getDriverTimeDetails(searchDataParam).subscribe((_tripData: any) => {
+        if(_tripData.length == 0) {
+          this.noRecordFound = true;
+        } else {
+          this.noRecordFound = false;
+        }
         this.hideloader();
         let tripData = _tripData;
         // _tripData["driverActivities"]= [
@@ -719,7 +742,8 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
           this.graphPayload = {
             "startDateTime": _startTime,
             "endDateTime": _endTime,
-            "driverId": _driverIds[0]
+            "driverId": _driverIds[0],
+            "hashedDriverId": _hashDriverIds[0]
     
           }
         }
@@ -733,6 +757,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
         this.driverSelected = false;
         this.allDriversSelected = true;
         this.initData = [];
+        this.noRecordFound = true;
         this.updateDataSource(this.initData);
       });
     }
@@ -805,6 +830,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     this.tableInfoObj = {};
     this.allDriversSelected = true;
     this.initData=[];
+    this.noRecordFound = false;
     this.updateDataSource(this.initData);
     this.driverSelected = false;
     //this.advanceFilterOpen = false;
@@ -1132,7 +1158,15 @@ getExcelSummaryHeader(){
   return col;
 }
   exportAsPDFFile(){
-   
+
+    var imgleft;
+    if (this.brandimagePath != null) {
+      imgleft = this.brandimagePath.changingThisBreaksApplicationSecurity;
+    } else {
+      imgleft = "/assets/logo.png";
+    }
+
+
     var doc = new jsPDF('p', 'mm', 'a3');
 
     (doc as any).autoTable({
@@ -1143,9 +1177,11 @@ getExcelSummaryHeader(){
       didDrawPage: function(data) {     
           // Header
           doc.setFontSize(16);
-          var fileTitle = this.translationData.lblDriverTimeReport;
-          var img = "/assets/logo.png";
-          doc.addImage(img, 'JPEG',10,8,0,0);
+          // var fileTitle = this.translationData.lblDriverTimeReport; 
+          var fileTitle = 'Drive Time Management Report';
+          // var img = "/assets/logo.png";
+          // doc.addImage(img, 'JPEG',10,8,0,0);
+          doc.addImage(imgleft, 'JPEG', 10, 10, 0, 15.5);
  
           var img = "/assets/logo_daf.png"; 
           doc.text(fileTitle, 14, 35);
@@ -1207,6 +1243,8 @@ getExcelSummaryHeader(){
         this.setGeneralDriverDetailValue(element.cummulativeDriverList);
      }
     });
+
+    let hashedId = (this.driverListData.filter(elem=>elem.driverID === _row.driverId)[0]['hashedDriverID']);
  //   this.driverDetails = this.allDriverData.map(item=>item.driverDetailList).filter(i=>i.driverID === _row.driverId)
  
     this.detailConvertedData = this.reportMapService.getDriverDetailsTimeDataBasedOnPref(this.driverDetails, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
@@ -1214,7 +1252,8 @@ getExcelSummaryHeader(){
     this.graphPayload = {   
       "startDateTime":Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone),//this.startDateValue,
       "endDateTime":  Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone), //this.endDateValue,
-      "driverId": _row.driverId
+      "driverId": _row.driverId,
+      "hashedDriverId": hashedId
     }
     // this.driverDetails = 
     //   [

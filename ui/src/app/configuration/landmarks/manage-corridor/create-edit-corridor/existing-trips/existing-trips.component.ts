@@ -186,6 +186,7 @@ export class ExistingTripsComponent implements OnInit {
   endTimeDisplay: any = '23:59:59';
   prefTimeFormat: any = 12; //-- coming from pref setting
   prefDateFormat: any = ''; //-- coming from pref setting
+  noRecordFound: boolean = false;
 
   public filteredVehicleList: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
@@ -744,12 +745,17 @@ export class ExistingTripsComponent implements OnInit {
     this.poiService.getalltripdetails(_startTime, _endTime, this.vinListSelectedValue).subscribe((existingTripDetails: any) => {
       this.showLoadingIndicator = true;
       this.initData = existingTripDetails.tripData;
-
+      if(this.initData.length == 0) {
+        this.noRecordFound = true;
+      } else {
+        this.noRecordFound = false;
+      }
       this.hideloader();
       this.updatedTableData(this.initData);
     }, (error) => {
       this.initData = [];
       this.hideloader();
+      this.noRecordFound = true;
       this.updatedTableData(this.initData);
     });
 
@@ -768,6 +774,7 @@ export class ExistingTripsComponent implements OnInit {
     this.vinListSelectedValue = '';
     //this.vinList = [];
     this.initData = [];
+    this.noRecordFound = false;
     this.updatedTableData(this.initData);
     this.filterDateData();
   }
@@ -1430,6 +1437,7 @@ export class ExistingTripsComponent implements OnInit {
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+      this.sort.disableClear = true;
       this.dataSource.filterPredicate = function(data: any, filter: string): boolean {
         let driverName = data.driverFirstName+" "+data.driverLastName;
         let startDate = moment(data.startTimeStamp).format("DD/MM/YYYY-h:mm:ss")
@@ -1445,6 +1453,13 @@ export class ExistingTripsComponent implements OnInit {
         const isAsc = sort.direction === 'asc';
         return data.sort((a: any, b: any) => {
           let columnName = sort.active;
+          if(columnName !== 'DriverName'){
+            return this.compare(a[sort.active], b[sort.active], isAsc , columnName);
+            }else{
+            const currentName = a.driverFirstName+" "+a.driverLastName;
+            const nextName = b.driverFirstName+" "+b.driverLastName;
+            return this.compare(currentName, nextName, isAsc , columnName);
+            }
           // if(columnName === date){
           //   return this.compare(a[sort.active], b[sort.active], isAsc , date);
           // }

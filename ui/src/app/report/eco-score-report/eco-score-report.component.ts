@@ -21,6 +21,9 @@ import * as fs from 'file-saver';
 import { MAT_CHECKBOX_CONTROL_VALUE_ACCESSOR } from '@angular/material/checkbox';
 import { ReplaySubject } from 'rxjs';
 import { DataInterchangeService } from '../../services/data-interchange.service';
+import { MessageService } from '../../services/message.service';
+import { DomSanitizer } from '@angular/platform-browser';
+
 
 @Component({
   selector: 'app-eco-score-report',
@@ -118,6 +121,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   selectedDriversEcoScore = [];
   selectedDriverOption: any;
   selectedDriverId: String;
+  // selectedhashedDriverId: any;
   selectedDriverName: String;
   ecoScoreDriver: boolean = false;
   compareEcoScore: boolean = false;
@@ -133,6 +137,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   isSearched: boolean=false;
   singleVehicle: any = [];
   rowData: any = [];
+  brandimagePath: any;
   prefMapData: any = [
     {
       key: 'da_report_alldriver_general_driverscount',
@@ -255,12 +260,14 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       value: 'specificdetailchart'
     }
   ];
+  noRecordFound:boolean = false;
+
   public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredDriver: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService,
-  private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private organizationService: OrganizationService, private dataInterchangeService: DataInterchangeService) {
+  private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private organizationService: OrganizationService, private dataInterchangeService: DataInterchangeService, private messageService: MessageService, private _sanitizer: DomSanitizer) {
     this.dataInterchangeService.prefSource$.subscribe((prefResp: any) => {
       if(prefResp && (prefResp.type == 'eco score report') && prefResp.prefdata){
         this.displayedColumns = ['select', 'ranking', 'driverName', 'driverId', 'ecoScoreRanking'];
@@ -328,6 +335,15 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
 
     });
     this.isSearched=true;
+
+    this.messageService.brandLogoSubject.subscribe(value => {
+      if (value != null) {
+        this.brandimagePath = this._sanitizer.bypassSecurityTrustResourceUrl('data:image/jpeg;base64,' + value);
+      } else {
+        this.brandimagePath = null;
+      }
+    });
+
   }
 
   proceedStep(prefData: any, preference: any){
@@ -728,6 +744,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
     this.resetEcoScoreFormControlValue();
     this.filterDateData();
+    this.noRecordFound = false;
     this.initData = [];
     this.tableInfoObj = {};
     this.onSearch();
@@ -784,10 +801,16 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     this.showLoadingIndicator = true;
     this.reportService.getDefaultDriverParameterEcoScore(loadParam).subscribe((initData: any) => {   
       this.hideloader();
+      if(initData.length == 0) {
+        this.noRecordFound = true;
+      } else {
+        this.noRecordFound = false;
+      }
       this.onLoadData = initData;     
       this.filterDateData();
     }, (error)=>{
       this.hideloader();
+      this.noRecordFound = true;
     });
   }
   setGlobalSearchData(globalSearchFilterData:any) {
@@ -981,6 +1004,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     this.selectedVehicleGroup = this.vehicleGroupListData.filter(item => item.vehicleGroupId == parseInt(this.ecoScoreForm.controls.vehicleGroup.value))[0]["vehicleGroupName"];
     this.selectedVehicle = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.ecoScoreForm.controls.vehicle.value))[0]["vehicleName"];
     this.selectedDriverId = this.driverListData.filter(item => (item.driverID).toString() == (this.ecoScoreForm.controls.driver.value))[0]["driverID"];
+    // this.selectedhashedDriverId = this.driverListData.filter(item => (item.driverID).toString() == (this.ecoScoreForm.controls.driver.value))[0]["hashedDriverID"];
     let driverFirstName = this.driverListData.filter(item => (item.driverID).toString() == (this.ecoScoreForm.controls.driver.value))[0]["firstName"];
     let driverLastName = this.driverListData.filter(item => (item.driverID).toString() == (this.ecoScoreForm.controls.driver.value))[0]["lastName"];
     this.selectedDriverName = (driverFirstName !== undefined) ? driverFirstName : '' +" "+ (driverLastName !== undefined) ? driverLastName : '';
@@ -1116,6 +1140,14 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   }
 
   exportAsPDFFile(){
+
+    var imgleft;
+    if (this.brandimagePath != null) {
+      imgleft = this.brandimagePath.changingThisBreaksApplicationSecurity;
+    } else {
+      imgleft = "/assets/logo.png";
+    }
+
     var doc = new jsPDF();
     let fileTitle = this.translationData.lblEcoScoreReport;
     (doc as any).autoTable({
@@ -1127,8 +1159,9 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
           // Header
           doc.setFontSize(14);
           // var fileTitle =fileTitle;
-          var img = "/assets/logo.png";
-          doc.addImage(img, 'JPEG',10,10,0,0);
+          // var img = "/assets/logo.png";
+          // doc.addImage(img, 'JPEG',10,10,0,0);
+          doc.addImage(imgleft, 'JPEG', 10, 10, 0, 16);
 
           var img = "/assets/logo_daf.png";
           doc.text(fileTitle, 14, 35);
@@ -1179,6 +1212,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
 
   onDriverSelected(_row){
     this.selectedDriverId = _row.driverId;
+    // this.selectedhashedDriverId = _row.hashedDriverId;
     this.selectedDriverName = _row.driverName;
     this.loadSingleDriverDetails();
     this.ecoScoreForm.get('driver').setValue(this.selectedDriverId);
@@ -1186,6 +1220,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   }
 
   loadSingleDriverDetails(){
+    // let hashedDrivid;
     this.showLoadingIndicator=true;
     this.selectedDriverData = {
       startDate: this.fromDisplayDate,
@@ -1227,7 +1262,9 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       _prefUnit = 'Metric';
     else if(this.prefUnitFormat === 'dunit_Imperial')
       _prefUnit = 'Imperial';
-
+  
+  // console.log(this.selectedhashedDriverId,"********")    
+  
   let searchDataParam = {
     "startDateTime": _startTime,
     "endDateTime": _endTime,
@@ -1540,10 +1577,12 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       // let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
       let _vehicelIds = [];
       let _driverIds =[];
+      // let _hashDriverIds = [];
       var _minTripVal =0;
       let _minDriverDist=0;
 
       _driverIds = this.selectedEcoScore.selected.map(a => a.driverId);
+      // _hashDriverIds = this.selectedEcoScore.selected.map(a => a.hashedDriverId);
       //_vehicelIds = this.selectedEcoScore.selected.map(a => a.vin);
       if (parseInt(this.ecoScoreForm.controls.vehicle.value) === 0) {
         _vehicelIds = this.vehicleListData.map(data => data.vin);

@@ -34,6 +34,8 @@ import * as fs from 'file-saver';
 import { Workbook } from 'exceljs';
 import { DatePipe } from '@angular/common';
 import { ReplaySubject } from 'rxjs';
+import { MessageService } from '../../../../services/message.service';
+import { DomSanitizer } from '@angular/platform-browser';
 
 declare var H: any;
 
@@ -823,6 +825,8 @@ tripTraceArray: any = [];
   map_key: any = '';
   platform: any = '';
   rowdata = [];
+  noRecordFound: boolean = false;
+  brandimagePath: any;
 
   constructor(private _formBuilder: FormBuilder, 
               private landmarkCategoryService: LandmarkCategoryService,
@@ -833,7 +837,7 @@ tripTraceArray: any = [];
               private router: Router, private datePipe: DatePipe,
               private completerService: CompleterService,
               @Inject(MAT_DATE_FORMATS) private dateFormats,
-              private reportMapService: ReportMapService, private _configService: ConfigService, private hereService: HereService) {
+              private reportMapService: ReportMapService, private _configService: ConfigService, private hereService: HereService, private messageService: MessageService, private _sanitizer: DomSanitizer) {
                 //console.log(this._state);
                 if(this._state){
                   this.showBack = true;
@@ -911,6 +915,15 @@ tripTraceArray: any = [];
     this.isSummaryOpen = true;
     this.isChartsOpen = true;
     this.isDetailsOpen = true;
+
+    this.messageService.brandLogoSubject.subscribe(value => {
+      if (value != null) {
+        this.brandimagePath = this._sanitizer.bypassSecurityTrustResourceUrl('data:image/jpeg;base64,' + value);
+      } else {
+        this.brandimagePath = null;
+      }
+    });
+
   }
 
   detailvehiclereport(){
@@ -1228,6 +1241,11 @@ createEndMarker(){
     }
    this.reportService.getVehicleTripDetails(getFleetFuelObj).subscribe((data:any) => {
      // //console.log("---getting data from getFleetFuelvehicleDetailsAPI---",data)
+    if(data["fleetFuelDetails"].length == 0) {
+      this.noRecordFound = true;
+    } else {
+      this.noRecordFound = false;
+    }
     this.displayData = data["fleetFuelDetails"];  
     this.FuelData = this.reportMapService.getConvertedFleetFuelDataBasedOnPref(this.displayData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
     // this.setTableInfo();
@@ -1235,8 +1253,9 @@ createEndMarker(){
     this.setTableInfo();
     this.fuelConsumptionSummary = (this.prefUnitFormat == 'dunit_Metric')?((this.sumOfColumns('fuelconsumed')/this.sumOfColumns('distance')) * 100).toFixed(2) : (this.sumOfColumns('distance')/this.sumOfColumns('fuelconsumed')).toFixed(2);
     this.hideloader();
-    }, (complete)=>{
+    }, (error)=>{
       this.hideloader();
+      this.noRecordFound = true;
     });
     this.reportService.getGraphDetails(getFleetFuelObj).subscribe((graphData: any) => {
       this.chartDataSet=[];
@@ -2367,6 +2386,7 @@ getLast3MonthDate(){
     this.vehicleListData = [];
     this.showGraph= false;
     this.graphData= [];
+    this.noRecordFound = false;
     // this.vehicleGroupListData = this.vehicleGroupListData;
     // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
     // this.updateDataSource(this.tripData);
@@ -2751,7 +2771,15 @@ setVehicleGroupAndVehiclePreSelection() {
     })    
   }
 
-  exportAsPDFFile(){   
+  exportAsPDFFile(){
+  
+  var imgleft;
+  if (this.brandimagePath != null) {
+      imgleft = this.brandimagePath.changingThisBreaksApplicationSecurity;
+  } else {
+      imgleft = "/assets/logo.png";
+  }  
+    
   var doc = new jsPDF('p', 'mm', 'a4');
   // let pdfColumns = [this.displayedColumns];
   let ccdOne = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance3050metric) : (this.translationData.lblCruiseControlDistance1530imperial);
@@ -3116,8 +3144,9 @@ setVehicleGroupAndVehiclePreSelection() {
               doc.setFontSize(14);
               var fileTitle = pdfName;
               if(!fileTitle) fileTitle = 'Fleet Fuel Report by Vehicle Details';
-              var img = "/assets/logo.png";
-              doc.addImage(img, 'JPEG',10,10,0,0);
+              // var img = "/assets/logo.png";
+              // doc.addImage(img, 'JPEG',10,10,0,0);
+              doc.addImage(imgleft, 'JPEG', 10, 10, 0, 16.5);
     
               var img = "/assets/logo_daf.png"; 
               doc.text(fileTitle, 14, 35);

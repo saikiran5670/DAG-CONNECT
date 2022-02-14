@@ -32,7 +32,8 @@ import * as fs from 'file-saver';
 import { Workbook } from 'exceljs';
 import { DatePipe } from '@angular/common';
 import { ReplaySubject } from 'rxjs';
-
+import { MessageService } from '../../../../services/message.service';
+import { DomSanitizer } from '@angular/platform-browser';
 
 declare var H: any;
 
@@ -845,6 +846,8 @@ tripTraceArray: any = [];
   _state: any ;
   map_key: any = '';
   platform: any = '';
+  noRecordFound: boolean = false;
+  brandimagePath: any;
 
   constructor(private _formBuilder: FormBuilder,
               //private landmarkCategoryService: LandmarkCategoryService,
@@ -855,7 +858,7 @@ tripTraceArray: any = [];
               private router: Router,private datePipe: DatePipe,
               private completerService: CompleterService,
               @Inject(MAT_DATE_FORMATS) private dateFormats,
-              private reportMapService: ReportMapService, private _configService: ConfigService, private hereService: HereService) {
+              private reportMapService: ReportMapService, private _configService: ConfigService, private hereService: HereService, private messageService: MessageService, private _sanitizer: DomSanitizer) {
                 this.defaultTranslation();
                // const navigation = this.router.getCurrentNavigation();
               //  this._state = navigation.extras.state as {
@@ -943,20 +946,28 @@ tripTraceArray: any = [];
    //   this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
    //     if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
    //       this.proceedStep(prefData, this.accountPrefObj.accountPreference);
-  //      }else{ // org pref
-  //        this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
-  //          this.proceedStep(prefData, orgPref);
-  //        }, (error) => { // failed org API
- //           let pref: any = {};
- //           this.proceedStep(prefData, pref);
-  //        });
- //       }
-  //    });
-  //  });
+      //      }else{ // org pref
+      //        this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
+      //          this.proceedStep(prefData, orgPref);
+      //        }, (error) => { // failed org API
+    //           let pref: any = {};
+    //           this.proceedStep(prefData, pref);
+      //        });
+    //       }
+      //    });
+      //  });
 
- this.isChartsOpen = true;
- this.isDetailsOpen = true;
- this.isSummaryOpen = true;
+    this.isChartsOpen = true;
+    this.isDetailsOpen = true;
+    this.isSummaryOpen = true;
+
+    this.messageService.brandLogoSubject.subscribe(value => {
+      if (value != null) {
+        this.brandimagePath = this._sanitizer.bypassSecurityTrustResourceUrl('data:image/jpeg;base64,' + value);
+      } else {
+        this.brandimagePath = null;
+      }
+    });
   }
 
 
@@ -1277,21 +1288,42 @@ createEndMarker(){
 
   loadfleetFuelDetails(driverDetails: any){
     this.showLoadingIndicator=true;
-    let driverID = 0;
-    if(driverDetails.driverID.includes('~*')){
-      driverID = driverDetails.driverID.split('~')[0];
+    let hashedDriverId;
+    let driverID;
+    // if(driverDetails.driverID.includes('~*')){
+    //   driverID = driverDetails.driverID.split('~')[0];
+    // }
+    // else{
+    //   driverID =driverDetails.driverID;
+    // }
+    
+    if(driverDetails.hashedDriverId == null) {
+      hashedDriverId = "";
+    } else {
+      hashedDriverId = driverDetails.hashedDriverId;
     }
-    else{
-      driverID =driverDetails.driverID;
+
+    if(driverDetails.driverID == null) {
+      driverID = "";
+    } else {
+      driverID = driverDetails.driverID;
     }
+
+
     let getFleetFuelObj = {
       "startDateTime": this.dateDetails.startTime,
       "endDateTime": this.dateDetails.endTime,
       "vin": driverDetails.vin,
-      "driverId": driverID
+      "driverId": driverID,
+      "hashedDriverId":hashedDriverId
     }
     this.reportService.getDriverTripDetails(getFleetFuelObj).subscribe((data:any) => {
     ////console.log("---getting data from getFleetFueldriverDetailsAPI---",data)
+    if(data["fleetFuelDetails"].length == 0) {
+      this.noRecordFound = true;
+    } else {
+      this.noRecordFound = false;
+    }
     this.displayData = data["fleetFuelDetails"];
     this.FuelData = this.reportMapService.getConvertedFleetFuelDataBasedOnPref(this.displayData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
     // this.setTableInfo();
@@ -1300,15 +1332,17 @@ createEndMarker(){
     this.setTableInfo();
     this.fuelConsumptionSummary = (this.prefUnitFormat == 'dunit_Metric')?((this.sumOfColumns('fuelconsumed') /this.sumOfColumns('distance')) * 100).toFixed(2):(this.sumOfColumns('distance')/this.sumOfColumns('fuelconsumed')).toFixed(2);
     this.hideloader();
-    }, (complete) => {
+    }, (error) => {
       this.hideloader();
+      this.noRecordFound = true;
     });
     let searchDataParam: any = {
       "startDateTime": this.dateDetails.startTime,
       "endDateTime":this.dateDetails.endTime,
       "viNs": [driverDetails.vin],
       "LanguageCode": "EN-GB",
-      "driverId": driverID // #20102 - driverId added to get driver specific info
+      "driverId": driverID, // #20102 - driverId added to get driver specific info
+      "hashedDriverId":hashedDriverId
     }
     this.reportService.getdriverGraphDetails(searchDataParam).subscribe((graphData: any) => {
       this.chartDataSet = [];
@@ -2482,6 +2516,7 @@ getLast3MonthDate(){
     this.displayedColumns =[];
     this.showGraph= false;
     this.graphData= [];
+    this.noRecordFound = false;
     //this.rankingData =[];
     //this.rankingColumns=[];
     //this.displayedColumns =[];
@@ -2861,6 +2896,14 @@ setVehicleGroupAndVehiclePreSelection() {
     }
 
    exportAsPDFFile(){
+
+    var imgleft;
+    if (this.brandimagePath != null) {
+      imgleft = this.brandimagePath.changingThisBreaksApplicationSecurity;
+    } else {
+      imgleft = "/assets/logo.png";
+    }
+
     var doc = new jsPDF('p', 'mm', 'a4');
     //let pdfColumns = [this.displayedColumns];
     let ccdOne = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance3050metric) : (this.translationData.lblCruiseControlDistance1530imperial);
@@ -3224,8 +3267,9 @@ setVehicleGroupAndVehiclePreSelection() {
           didDrawPage: function(data) {
               doc.setFontSize(14);
               var fileTitle = transpdfheader;
-              var img = "/assets/logo.png";
-              doc.addImage(img, 'JPEG',10,10,0,0);
+              // var img = "/assets/logo.png";
+              // doc.addImage(img, 'JPEG',10,10,0,0);
+              doc.addImage(imgleft, 'JPEG', 10, 10, 0, 16.5);
 
               var img = "/assets/logo_daf.png";
               doc.text(fileTitle, 14, 35);

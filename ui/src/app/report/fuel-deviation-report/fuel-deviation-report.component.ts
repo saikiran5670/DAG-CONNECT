@@ -27,6 +27,8 @@ import * as fs from 'file-saver';
 import { DatePipe } from '@angular/common';
 import { ReplaySubject } from 'rxjs';
 import { DataInterchangeService } from '../../services/data-interchange.service';
+import { MessageService } from '../../services/message.service';
+
 
 declare var H: any;
 
@@ -110,6 +112,7 @@ export class FuelDeviationReportComponent implements OnInit {
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   internalSelection: boolean = false;
   fuelDeviationChartLabels=[];
+  brandimagePath: any;
   prefMapData: any = [
     {
       key: 'rp_fd_details_averageweight',
@@ -436,11 +439,12 @@ export class FuelDeviationReportComponent implements OnInit {
   fuelDecBarChartLegend = true;
   fuelDecBarChartPlugins = [];
   fuelDecBarChartData: any[] = [];
+  noRecordFound: boolean = false;
 
   public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
-  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private organizationService: OrganizationService, private _formBuilder: FormBuilder, private translationService: TranslationService, private reportService: ReportService, private reportMapService: ReportMapService, private completerService: CompleterService, private configService: ConfigService, private hereService: HereService, private matIconRegistry: MatIconRegistry,private domSanitizer: DomSanitizer,private datePipe: DatePipe, private dataInterchangeService: DataInterchangeService) {
+  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private organizationService: OrganizationService, private _formBuilder: FormBuilder, private translationService: TranslationService, private reportService: ReportService, private reportMapService: ReportMapService, private completerService: CompleterService, private configService: ConfigService, private hereService: HereService, private matIconRegistry: MatIconRegistry,private domSanitizer: DomSanitizer,private datePipe: DatePipe, private dataInterchangeService: DataInterchangeService,  private messageService: MessageService) {
     // this.map_key = this.configService.getSettings("hereMap").api_key;
     this.map_key = localStorage.getItem("hereMapsK");
     this.platform = new H.service.Platform({
@@ -544,6 +548,15 @@ export class FuelDeviationReportComponent implements OnInit {
         }
       });
     });
+
+    this.messageService.brandLogoSubject.subscribe(value => {
+      if (value != null) {
+        this.brandimagePath = this.domSanitizer.bypassSecurityTrustResourceUrl('data:image/jpeg;base64,' + value);
+      } else {
+        this.brandimagePath = null;
+      }
+    });
+
   }
 
    // Map Functions
@@ -1151,6 +1164,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     this.summarySectionData = {};
     this.resetChartData();
     this.vehicleListData = [];
+    this.noRecordFound = false;
     this.updateDataSource(this.fuelDeviationData);
     this.resetFuelDeviationFormControlValue();
     this.filterDateData();
@@ -1182,6 +1196,11 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
       }
       this.reportService.getFuelDeviationReportDetails(reportDataObj).subscribe((_fuelDeviationData: any) => {
         ////console.log(_fuelDeviationData);
+        if(_fuelDeviationData.data.length == 0) {
+          this.noRecordFound = true;
+        } else {
+          this.noRecordFound = false;
+        }
         this.reportService.getFuelDeviationReportCharts(reportDataObj).subscribe((_fuelDeviationChartData: any) => {
           this.hideloader();
           this.resetChartData();
@@ -1201,6 +1220,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
         this.fuelDeviationData = [];
         this.tableInfoObj = {};
         this.summarySectionData = {};
+        this.noRecordFound = true;
         this.updateDataSource(this.fuelDeviationData);
       });
     }
@@ -1617,6 +1637,14 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
 
   exportAsPDFFile(){
   //var doc = new jsPDF('p', 'mm', 'a4');
+
+  var imgleft;
+  if (this.brandimagePath != null) {
+    imgleft = this.brandimagePath.changingThisBreaksApplicationSecurity;
+  } else {
+    imgleft = "/assets/logo.png";
+  }  
+
   var doc = new jsPDF('p', 'mm', 'a4');
   let pdfColumns = this.getPDFExcelHeader(); // this.getPDFHeaders()
   let tranHeaderNamePdf = this.translationData.lblFuelDeviationDetails;
@@ -1719,8 +1747,9 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
             // Header
             doc.setFontSize(14);
             var fileTitle = tranHeaderNamePdf;
-            var img = "/assets/logo.png";
-            doc.addImage(img, 'JPEG', 10, 10, 0, 0);
+            // var img = "/assets/logo.png";
+            // doc.addImage(img, 'JPEG', 10, 10, 0, 0);
+            doc.addImage(imgleft, 'JPEG', 10, 10, 0, 16);
 
             var img = "/assets/logo_daf.png";
             doc.text(fileTitle, 14, 35);

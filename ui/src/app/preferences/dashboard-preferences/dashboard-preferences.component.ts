@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component,SimpleChanges, Input, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { ReportService } from 'src/app/services/report.service';
 import { SelectionModel } from '@angular/cdk/collections';
@@ -28,7 +28,7 @@ export class DashboardPreferencesComponent implements OnInit {
   showDashboardReport: boolean = false;
   reportId: any;
   unitId: any;
-  prefUnit: any;
+  //prefUnit: any;
   prefUnitFormat: any;
   generalPreferences: any;
   initData: any = [];
@@ -78,7 +78,13 @@ export class DashboardPreferencesComponent implements OnInit {
   constructor(private dashboardService: DashboardService, private reportService: ReportService, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportMapService: ReportMapService, private router: Router) {
     this.loadReportData();
   }
-
+  ngOnChanges(changes: SimpleChanges) {
+    if(changes && changes.translationData && changes.translationData.currentValue){
+      this.translationData = changes.translationData.currentValue;
+      this.resetColumnData();
+      this.prepareDataDashboardPref();
+    }   
+  } 
   ngOnInit() {
 
     let accountPreference = JSON.parse(localStorage.getItem('accountInfo')).accountPreference;
@@ -95,33 +101,33 @@ export class DashboardPreferencesComponent implements OnInit {
       this.lineBarDD[1].name = this.translationData.lblLineChart || 'Line Chart';
   }
 
-  translationUpdate(){
-    this.translationData = {
-      rp_db_dashboard_fleetkpi_co2emission: 'CO2 Emission',
-      rp_db_dashboard_fleetkpi_totaldistance: 'Total Distance',
-      rp_db_dashboard_fleetkpi_drivingtime: 'Driving Time',
-      rp_db_dashboard_fleetkpi_fuelconsumption: 'Fuel Consumption',
-      rp_db_dashboard_fleetkpi_fuelusedidling: 'Fuel Used Idling',
-      rp_db_dashboard_fleetkpi_idlingtime: 'Idling Time',
-      rp_db_dashboard_fleetkpi_fuelconsumed: 'Fuel Consumed',
-      rp_db_dashboard_todaylivevehicle_distance: 'Distance',
-      rp_db_dashboard_todaylivevehicle_drivingtime: 'Driving Time',
-      rp_db_dashboard_todaylivevehicle_drivers: 'Drivers',
-      rp_db_dashboard_todaylivevehicle_criticalalerts: 'Critical Alerts',
-      rp_db_dashboard_todaylivevehicle_timebasedutilizationrate: 'Time Based Utilization Rate',
-      rp_db_dashboard_todaylivevehicle_distancebasedutilizationrate: 'Distance Based Utilization Rate',
-      rp_db_dashboard_todaylivevehicle_activevehicles: 'Active Vehicles',
-      rp_db_dashboard_vehicleutilization_distancebasedutilizationrate: 'Distance Based Utilization Rate',
-      rp_db_dashboard_vehicleutilization_timebasedutilizationrate: 'Time Based Utilization Rate',
-      rp_db_dashboard_vehicleutilization_distanceperday: 'Distance Per Day',
-      rp_db_dashboard_vehicleutilization_activevehiclesperday: 'Active Vehicles Per Day',
-      rp_db_dashboard_alertlast24hours_levelalerts: 'Level Alerts',
-      rp_db_dashboard_alertlast24hours_totalalerts: 'Total Alerts',
-      rp_db_dashboard_alertlast24hours_logisticalert: 'Logistic Alert',
-      rp_db_dashboard_alertlast24hours_fueldriveralerts: 'Fuel & Driver Alerts',
-      rp_db_dashboard_alertlast24hours_repairmaintenancealerts: 'Repair & Maintenance Alerts',
-    }
-  }
+  // translationUpdate(){
+  //   this.translationData = {
+  //     rp_db_dashboard_fleetkpi_co2emission: 'CO2 Emission',
+  //     rp_db_dashboard_fleetkpi_totaldistance: 'Total Distance',
+  //     rp_db_dashboard_fleetkpi_drivingtime: 'Driving Time',
+  //     rp_db_dashboard_fleetkpi_fuelconsumption: 'Fuel Consumption',
+  //     rp_db_dashboard_fleetkpi_fuelusedidling: 'Fuel Used Idling',
+  //     rp_db_dashboard_fleetkpi_idlingtime: 'Idling Time',
+  //     rp_db_dashboard_fleetkpi_fuelconsumed: 'Fuel Consumed',
+  //     rp_db_dashboard_todaylivevehicle_distance: 'Distance',
+  //     rp_db_dashboard_todaylivevehicle_drivingtime: 'Driving Time',
+  //     rp_db_dashboard_todaylivevehicle_drivers: 'Drivers',
+  //     rp_db_dashboard_todaylivevehicle_criticalalerts: 'Critical Alerts',
+  //     rp_db_dashboard_todaylivevehicle_timebasedutilizationrate: 'Time Based Utilization Rate',
+  //     rp_db_dashboard_todaylivevehicle_distancebasedutilizationrate: 'Distance Based Utilization Rate',
+  //     rp_db_dashboard_todaylivevehicle_activevehicles: 'Active Vehicles',
+  //     rp_db_dashboard_vehicleutilization_distancebasedutilizationrate: 'Distance Based Utilization Rate',
+  //     rp_db_dashboard_vehicleutilization_timebasedutilizationrate: 'Time Based Utilization Rate',
+  //     rp_db_dashboard_vehicleutilization_distanceperday: 'Distance Per Day',
+  //     rp_db_dashboard_vehicleutilization_activevehiclesperday: 'Active Vehicles Per Day',
+  //     rp_db_dashboard_alertlast24hours_levelalerts: 'Level Alerts',
+  //     rp_db_dashboard_alertlast24hours_totalalerts: 'Total Alerts',
+  //     rp_db_dashboard_alertlast24hours_logisticalert: 'Logistic Alert',
+  //     rp_db_dashboard_alertlast24hours_fueldriveralerts: 'Fuel & Driver Alerts',
+  //     rp_db_dashboard_alertlast24hours_repairmaintenancealerts: 'Repair & Maintenance Alerts',
+  //   }
+  // }
 
 
   onClose() {
@@ -540,14 +546,15 @@ export class DashboardPreferencesComponent implements OnInit {
   getUnits() {
     let unitObj = this.generalPreferences?.unit.filter(item => item.id == this.unitId);
     if (unitObj && unitObj.length != 0) {
-      this.prefUnit = unitObj[0].value;
-      if (this.prefUnit == 'Imperial') {
-        this.prefUnitFormat = 'dunit_Imperial';
-      } else {
-        this.prefUnitFormat = 'dunit_Metric';
+      this.prefUnitFormat = unitObj[0].name;
+      // this.prefUnit = unitObj[0].value;
+    //   if (this.prefUnit == 'Imperial') {
+    //     this.prefUnitFormat = 'dunit_Imperial';
+    //   } else {
+    //     this.prefUnitFormat = 'dunit_Metric';
+    //   }
       }
     }
-  }
 
 }
 

@@ -24,6 +24,7 @@ import { element } from 'protractor';
 import { HttpClient } from '@angular/common/http';
 import { SignalRService } from './services/signalR.service';
 import { AlertService } from './services/alert.service';
+import { DashboardService } from './services/dashboard.service';
 
 @Component({
   selector: 'app-root',
@@ -310,7 +311,8 @@ export class AppComponent {
 
 
   constructor(private reportService: ReportService, private router: Router, private dataInterchangeService: DataInterchangeService, public authService: AuthService, private translationService: TranslationService, private deviceService: DeviceDetectorService, public fb: FormBuilder, @Inject(DOCUMENT) private document: any, private domSanitizer: DomSanitizer, private accountService: AccountService, private dialog: MatDialog, private organizationService: OrganizationService, private messageService: MessageService,@Inject(MAT_DATE_FORMATS) private dateFormats,
-  private http: HttpClient, public signalRService: SignalRService, private alertService: AlertService) {
+  private http: HttpClient, public signalRService: SignalRService, private alertService: AlertService,
+  private dashboardService : DashboardService) {
     this.defaultTranslation();
     this.landingPageForm = this.fb.group({
       'organization': [''],
@@ -330,9 +332,20 @@ export class AppComponent {
         localStorage.setItem("hereMapsK", data.apiKey);
       });
     });
+    this.dashboardService.getDashboardPreferences(18).subscribe((prefData: any) => {
+      let dashboardPrefData = prefData['userPreferences'];
+      if(dashboardPrefData.subReportUserPreferences && dashboardPrefData.subReportUserPreferences.length > 0) {
+        let userPref = dashboardPrefData.subReportUserPreferences.find(x => x.key == "rp_db_dashboard_vehicleutilization");
+       if(userPref && userPref.subReportUserPreferences.length > 0) {
+         let timebasedutilizationrate = userPref.subReportUserPreferences.find(x => x.key == "rp_db_dashboard_vehicleutilization_timebasedutilizationrate").thresholdValue;
+         let distancebasedutilizationrate = userPref.subReportUserPreferences.find(x => x.key == "rp_db_dashboard_vehicleutilization_distancebasedutilizationrate").thresholdValue;
+         localStorage.setItem("liveFleetMileageThreshold", timebasedutilizationrate);
+         localStorage.setItem("liveFleetUtilizationThreshold", distancebasedutilizationrate);       
+        }
+      }
+    }, (error) => {
+    });
     //ToDo: below part to be removed after preferences/dashboard part is developed
-    localStorage.setItem("liveFleetMileageThreshold", "1000");
-    localStorage.setItem("liveFleetUtilizationThreshold", "5");
     if(localStorage.getItem("liveFleetTimer")){
       this.timeLeft = Number.parseInt(localStorage.getItem("liveFleetTimer"));
     }
@@ -474,14 +487,20 @@ export class AppComponent {
           this.timeLeft = Number.parseInt(localStorage.getItem("liveFleetTimer"));
           // if (this.isLogedIn) {
             this.getOfflineNotifications();
+            let accinfo = JSON.parse(localStorage.getItem("accountInfo"))
+            this.loadBrandlogoForReports(accinfo);
           // }
           //this.getReportDetails();
         }, (err) => {
           //console.log(err);
         });
+       
+
       }, (error) => {
         //console.log(error);
       });
+
+      
     }
   }
 
@@ -847,6 +866,7 @@ export class AppComponent {
   }
 
   getTranslationLabels() {
+    
     let curAccId = parseInt(localStorage.getItem("accountId"));
     if (curAccId) { //- checked for refresh page
       this.accountID = curAccId;
@@ -925,6 +945,7 @@ export class AppComponent {
           this.calledTranslationLabels(preferencelanguageCode);
         });
       });
+
     }
   }
 
@@ -1003,7 +1024,6 @@ export class AppComponent {
         }  
 
       });
-     
     }
     //this.getOrgListData();
     if (this.router.url) {
@@ -1022,8 +1042,6 @@ export class AppComponent {
     //     //console.log("called")
     //     this.filterLanguages();
     //   });
-
-    
   }
 
 
@@ -1310,10 +1328,12 @@ export class AppComponent {
     this.accountService.switchOrgContext(switchObj).subscribe((data: any) => {
       this.accountService.getSessionInfo().subscribe((accountData: any) => {
         this.getMenu(data, 'orgContextSwitch', accountData);
+        let accinfo = JSON.parse(localStorage.getItem("accountInfo"))
+        this.loadBrandlogoForReports(accinfo);
       });
     }, (error) => {
       //console.log(error)
-    });
+    });    
   }
 
   sendMessage(): void {
@@ -1479,4 +1499,19 @@ notificationClicked(){
     })
   }
 }
+
+loadBrandlogoForReports(value) {
+  // console.log("*************************", value)
+  let prefId = value.accountPreference.id;
+  this.accountService.getAccountBrandLogo(prefId).subscribe((data: any) => {
+    // console.log("?????******", data)
+    let val = data.iconByte;
+    this.messageService.setBrandLogo(val);
+  }, (error) => {
+    // console.log("?????******", error)
+    this.messageService.setBrandLogo(null);
+  });
+}
+
+
 }
