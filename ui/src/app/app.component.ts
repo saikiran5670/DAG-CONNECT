@@ -24,6 +24,7 @@ import { element } from 'protractor';
 import { HttpClient } from '@angular/common/http';
 import { SignalRService } from './services/signalR.service';
 import { AlertService } from './services/alert.service';
+import { DashboardService } from './services/dashboard.service';
 
 @Component({
   selector: 'app-root',
@@ -310,7 +311,8 @@ export class AppComponent {
 
 
   constructor(private reportService: ReportService, private router: Router, private dataInterchangeService: DataInterchangeService, public authService: AuthService, private translationService: TranslationService, private deviceService: DeviceDetectorService, public fb: FormBuilder, @Inject(DOCUMENT) private document: any, private domSanitizer: DomSanitizer, private accountService: AccountService, private dialog: MatDialog, private organizationService: OrganizationService, private messageService: MessageService,@Inject(MAT_DATE_FORMATS) private dateFormats,
-  private http: HttpClient, public signalRService: SignalRService, private alertService: AlertService) {
+  private http: HttpClient, public signalRService: SignalRService, private alertService: AlertService,
+  private dashboardService : DashboardService) {
     this.defaultTranslation();
     this.landingPageForm = this.fb.group({
       'organization': [''],
@@ -329,6 +331,19 @@ export class AppComponent {
       this.reportService.getHEREMapsInfo().subscribe((data: any) => {
         localStorage.setItem("hereMapsK", data.apiKey);
       });
+    });
+    this.dashboardService.getDashboardPreferences(18).subscribe((prefData: any) => {
+      let dashboardPrefData = prefData['userPreferences'];
+      if(dashboardPrefData.subReportUserPreferences && dashboardPrefData.subReportUserPreferences.length > 0) {
+        let userPref = dashboardPrefData.subReportUserPreferences.find(x => x.key == "rp_db_dashboard_vehicleutilization");
+       if(userPref && userPref.subReportUserPreferences.length > 0) {
+         let timebasedutilizationrate = userPref.subReportUserPreferences.find(x => x.key == "rp_db_dashboard_vehicleutilization_timebasedutilizationrate").thresholdValue;
+         let distancebasedutilizationrate = userPref.subReportUserPreferences.find(x => x.key == "rp_db_dashboard_vehicleutilization_distancebasedutilizationrate").thresholdValue;
+         localStorage.setItem("liveFleetMileageThreshold", timebasedutilizationrate);
+         localStorage.setItem("liveFleetUtilizationThreshold", distancebasedutilizationrate);       
+        }
+      }
+    }, (error) => {
     });
     //ToDo: below part to be removed after preferences/dashboard part is developed
     if(localStorage.getItem("liveFleetTimer")){
