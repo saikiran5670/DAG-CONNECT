@@ -194,6 +194,16 @@ export class DashboardComponent implements OnInit {
       }
       this.dashboardService.getDashboardPreferences(reportId).subscribe((prefData: any) => {
         this.dashboardPrefData = prefData['userPreferences'];
+        if(this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences.length > 0) {
+          let userPref = this.dashboardPrefData.subReportUserPreferences.find(x => x.key == "rp_db_dashboard_vehicleutilization");
+         if(userPref && userPref.subReportUserPreferences.length > 0) {
+           let timebasedutilizationrate = userPref.subReportUserPreferences.find(x => x.key == "rp_db_dashboard_vehicleutilization_timebasedutilizationrate").thresholdValue;
+           let distancebasedutilizationrate = userPref.subReportUserPreferences.find(x => x.key == "rp_db_dashboard_vehicleutilization_distancebasedutilizationrate").thresholdValue;
+           localStorage.setItem("liveFleetMileageThreshold", timebasedutilizationrate);
+           localStorage.setItem("liveFleetUtilizationThreshold", distancebasedutilizationrate);         
+          }
+        }
+
         this.getVinsForDashboard();
       }, (error) => {
         this.dashboardPrefData = [];

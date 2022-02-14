@@ -331,8 +331,6 @@ export class AppComponent {
       });
     });
     //ToDo: below part to be removed after preferences/dashboard part is developed
-    localStorage.setItem("liveFleetMileageThreshold", "1000");
-    localStorage.setItem("liveFleetUtilizationThreshold", "5");
     if(localStorage.getItem("liveFleetTimer")){
       this.timeLeft = Number.parseInt(localStorage.getItem("liveFleetTimer"));
     }

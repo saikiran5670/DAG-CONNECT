@@ -258,17 +258,25 @@ export class UserRoleManagementComponent implements OnInit {
           if (errorList != '') {
             errorList = errorList.slice(0,-2);
           }
+          let msg = 'The role is used by following ' + `${errorList.split(',').length}` + ' users, hence cannot be deleted.';
+          //let msg = `${this.translationData.lblAlert}  ${errorList.split(',').length}  ${this.translationData.lblOk} `;
+          
           const options = {
             title: this.translationData.lblAlert || 'Alert',
-            message: this.translationData.lblRoleCannotBeDeleted || 'The role is used by following users, hence cannot be deleted.',
+            message: msg,
             list: errorList,
             confirmText: this.translationData.lblOk || 'OK'
           };
-
+          
           const dialogConfig = new MatDialogConfig();
           dialogConfig.disableClose = true;
           dialogConfig.autoFocus = true;
           dialogConfig.data = options;
+         // dialogConfig.data.userCount = dialogConfig.data.list.split(',').length;
+          
+          //console.log("user role dialog config",dialogConfig.data);
+          //console.log("user role dialog config userCount",dialogConfig.data.userCount);
+          
           this.dialogRef = this.dialog.open(ActiveInactiveDailogComponent, dialogConfig);
           this.dialogRef.afterClosed().subscribe((res: any) => {
           });
