@@ -141,7 +141,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
       "languagecode": localStLanguage.code
     }
     this.reportService.getFleetOverviewDetails(objData).subscribe((data: any) => {
-      this.totalVehicle = data.visibleVehiclesCount;
+     this.totalVehicle = data.visibleVinsCount;
       let filterData = this.fleetMapService.processedLiveFLeetData(data.fleetOverviewDetailList);
       this.stepForword(filterData);
       //this.summaryData = filterData;
@@ -305,8 +305,9 @@ export class FleetOverviewSummaryComponent implements OnInit {
     if(flag){
       this.movedVehicle = 0;
       let drivers = this.summaryData.filter((elem) => elem.driver1Id);
+      let driversUnknown = this.summaryData.filter((elem) => elem.driver1Id=='');
       let uniqueDrivers = [...new Set(drivers)];
-      this.drivers = uniqueDrivers.length;
+      this.drivers = uniqueDrivers.length + driversUnknown.length;
     }
     // let drivers = this.summaryData.filter((elem) => elem.driver1Id);
     // let uniqueDrivers = [...new Set(drivers)];
@@ -386,7 +387,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
   
   this.mileageDone = milDone + ' ' + this.unitValkm;
   let totDriveTime = Util.getHhMmTimeFromMS(totalDriveTime).split(':'); //driving time is coming in ms
-  this.driveTime = totDriveTime[0] + (this.translationData.lblhh ) + ' ' +totDriveTime[1] + (this.translationData.lblmm);
+  this.driveTime = flag ? totDriveTime[0] + (this.translationData.lblhh ) + ' ' +totDriveTime[1] + (this.translationData.lblmm) : this.driveTime;
 
   this.barChartData = [
     { data: [this.movedVehicle, this.totalVehicle], label: '', barThickness: 16, barPercentage: 0.5 }
