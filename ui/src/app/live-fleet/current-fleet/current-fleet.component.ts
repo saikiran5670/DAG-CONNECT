@@ -7,6 +7,7 @@ import { DataInterchangeService} from '../../services/data-interchange.service';
 import { OrganizationService } from '../../services/organization.service';
 import { Router } from '@angular/router';
 import { FleetMapService } from './fleet-map.service';
+import { DashboardService } from 'src/app/services/dashboard.service';
 
 declare var H: any;
 
@@ -45,7 +46,7 @@ export class CurrentFleetComponent implements OnInit {
   filterPOIData : any;
   showLoadingIndicator: boolean = false;
   totalVehicleCount: number;
-
+  dashboardPref: any;
   // detailsData =[
   //   {
   //     "id": 8,
@@ -152,7 +153,8 @@ export class CurrentFleetComponent implements OnInit {
     private reportService: ReportService,
     private messageService: MessageService,
     private dataInterchangeService: DataInterchangeService,
-    private organizationService: OrganizationService, private router: Router, private fleetMapService: FleetMapService) { 
+    private organizationService: OrganizationService, private router: Router, private fleetMapService: FleetMapService,
+    private dashboardService : DashboardService) { 
       this.subscription = this.messageService.getMessage().subscribe(message => {
         if (message.key.indexOf("refreshData") !== -1) {
           this.refreshData();
@@ -186,6 +188,11 @@ export class CurrentFleetComponent implements OnInit {
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
       this.getFleetOverviewPreferences();
+    });
+    let reportId = 18;
+    this.dashboardService.getDashboardPreferences(reportId).subscribe((prefData: any) => {
+      this.dashboardPref = prefData['userPreferences'];
+    }, (error) => {
     });
    }
 
@@ -274,6 +281,7 @@ export class CurrentFleetComponent implements OnInit {
       "languagecode":"cs-CZ"
     }
     this.reportService.getFleetOverviewDetails(objData).subscribe((data: any) => {
+      
       this.totalVehicleCount = data.visibleVinsCount;
       this.hideLoader();
       let processedData = this.fleetMapService.processedLiveFLeetData(data.fleetOverviewDetailList);

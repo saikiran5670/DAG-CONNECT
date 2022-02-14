@@ -19,6 +19,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
   @Input() detailsData: any = [];
   @Input() filterData: any = {};
   @Input() totalVehicleCount: number;
+  @Input() dashboardPref: any;
   criticalAlert: number = 0;
   mileageDone: string = '';
   drivers: number = 0;
@@ -45,6 +46,8 @@ export class FleetOverviewSummaryComponent implements OnInit {
   unitValkm: string = '';
   filterInvoked: boolean = false;
   showLoadingIndicator: any = false;
+  distanceThreshold: number;
+  timeThreshold: number;
 
   constructor(private messageService: MessageService, private reportService: ReportService, private fleetMapService: FleetMapService, private organizationService: OrganizationService, private translationService: TranslationService, private cdref: ChangeDetectorRef,) {
     //this.loadData();
@@ -114,6 +117,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
           });
         }
       });
+      this.setFleetThreshold();
   }
 
   proceedStep(prefData: any, preference: any){
@@ -141,7 +145,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
       "languagecode": localStLanguage.code
     }
     this.reportService.getFleetOverviewDetails(objData).subscribe((data: any) => {
-     this.totalVehicle = data.visibleVinsCount;
+      this.totalVehicle = data.visibleVehiclesCount;
       let filterData = this.fleetMapService.processedLiveFLeetData(data.fleetOverviewDetailList);
       this.stepForword(filterData);
       //this.summaryData = filterData;
@@ -185,6 +189,20 @@ export class FleetOverviewSummaryComponent implements OnInit {
   hideloader() {
     // Setting display of spinner
     this.showLoadingIndicator = false;
+  }
+
+  activeObj: number;
+  setFleetThreshold(){
+    if(this.dashboardPref && this.dashboardPref.subReportUserPreferences && this.dashboardPref.subReportUserPreferences.length > 0){
+      let filterData = this.dashboardPref.subReportUserPreferences.find(item => item.key.includes('rp_db_dashboard_todaylivevehicle'));
+      let distanceObj = filterData.subReportUserPreferences.find(item => item.key.includes('rp_db_dashboard_todaylivevehicle_distancebasedutilizationrate'))
+      let timeObj = filterData.subReportUserPreferences.find(item => item.key.includes('rp_db_dashboard_todaylivevehicle_timebasedutilizationrate'));
+      if(distanceObj)
+        this.distanceThreshold = distanceObj.thresholdValue;
+      if(timeObj)
+        this.timeThreshold = timeObj.thresholdValue;
+       this.activeObj = filterData.subReportUserPreferences.find(item => item.key.includes('rp_db_dashboard_todaylivevehicle_activevehicles'));
+    }
   }
 
   barChartOptions: ChartOptions = {
@@ -305,9 +323,8 @@ export class FleetOverviewSummaryComponent implements OnInit {
     if(flag){
       this.movedVehicle = 0;
       let drivers = this.summaryData.filter((elem) => elem.driver1Id);
-      let driversUnknown = this.summaryData.filter((elem) => elem.driver1Id=='');
       let uniqueDrivers = [...new Set(drivers)];
-      this.drivers = uniqueDrivers.length + driversUnknown.length;
+      this.drivers = uniqueDrivers.length;
     }
     // let drivers = this.summaryData.filter((elem) => elem.driver1Id);
     // let uniqueDrivers = [...new Set(drivers)];
@@ -387,7 +404,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
   
   this.mileageDone = milDone + ' ' + this.unitValkm;
   let totDriveTime = Util.getHhMmTimeFromMS(totalDriveTime).split(':'); //driving time is coming in ms
-  this.driveTime = flag ? totDriveTime[0] + (this.translationData.lblhh ) + ' ' +totDriveTime[1] + (this.translationData.lblmm) : this.driveTime;
+  this.driveTime = totDriveTime[0] + (this.translationData.lblhh ) + ' ' +totDriveTime[1] + (this.translationData.lblmm);
 
   this.barChartData = [
     { data: [this.movedVehicle, this.totalVehicle], label: '', barThickness: 16, barPercentage: 0.5 }
@@ -399,15 +416,20 @@ export class FleetOverviewSummaryComponent implements OnInit {
   //   { data: [this.movedVehicle, this.totalVehicle], label: '', barThickness: 16, barPercentage: 0.5 }
   // ];
   //Fleet Mileage rate
-  let liveFleetMileageVal:any= localStorage.getItem('liveFleetMileageThreshold');
-  let liveFleetUtilizationThresholdVal = localStorage.getItem('liveFleetUtilizationThreshold');
+  // let liveFleetMileageVal:any= localStorage.getItem('liveFleetMileageThreshold');
+  // let liveFleetUtilizationThresholdVal = localStorage.getItem('liveFleetUtilizationThreshold');
   //let milRate = (Number.parseFloat(this.mileageDone)/Number.parseInt(liveFleetMileageVal)) * 100;
-   this.mileageRate = Number.parseFloat(((Number.parseFloat(milDone)/Number.parseInt(liveFleetMileageVal)) * 100).toFixed(2));
-  this.doughnutChartDataMileage = [ [this.mileageRate, 100-this.mileageRate] ];
+  this.doughnutChartDataMileage = [ [0, 0] ];
+  if(milDone && this.distanceThreshold){
+    this.mileageRate = Number.parseFloat(((Number.parseFloat(milDone)/this.distanceThreshold) * 100).toFixed(2));
+    this.doughnutChartDataMileage = [ [this.mileageRate, 100-this.mileageRate] ];
+  }
   //Fleet Utilization rate
-  let utilRate:any = ((this.movedVehicle/Number.parseInt(liveFleetUtilizationThresholdVal)) * 100).toFixed(2);
-  this.utilizationRate = utilRate;
-  this.doughnutChartDataUtil = [ [this.utilizationRate, 100-this.utilizationRate] ];
+  this.doughnutChartDataUtil = [ [0, 0] ];
+  if(this.movedVehicle && this.timeThreshold){
+    this.utilizationRate = Number(((this.movedVehicle/this.timeThreshold) * 100).toFixed(2));
+    this.doughnutChartDataUtil = [ [this.utilizationRate, 100-this.utilizationRate] ];
+  }
  }
 
  resetSummary(){
