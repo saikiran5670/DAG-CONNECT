@@ -25,7 +25,6 @@ export class PreferencesComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountInfo = JSON.parse(localStorage.getItem("accountInfo"));  
-
     let translationObj = {
       id: 0,
       code: this.localStLanguage.code,
@@ -44,7 +43,6 @@ export class PreferencesComponent implements OnInit, AfterViewInit {
     if(this.userPreferencesFlag){
       let currentComponentUrl: String;
       currentComponentUrl = this.route.routerState.snapshot.url;   
-
       if (currentComponentUrl == "/dashboard") { this.selectedIndex = 1; }
       else if (currentComponentUrl.substr(0, 8) == "/report/") {
         this.selectedIndex = 2;
@@ -57,7 +55,6 @@ export class PreferencesComponent implements OnInit, AfterViewInit {
 
   processTranslation(transData: any){
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    ////console.log("process translationData:: ", this.translationData)
   }
 
   onTabChanged(event: any){
