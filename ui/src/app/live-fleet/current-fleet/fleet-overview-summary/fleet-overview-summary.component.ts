@@ -48,6 +48,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
   showLoadingIndicator: any = false;
   distanceThreshold: number;
   timeThreshold: number;
+  totalDriveTime: number=0;
 
   constructor(private messageService: MessageService, private reportService: ReportService, private fleetMapService: FleetMapService, private organizationService: OrganizationService, private translationService: TranslationService, private cdref: ChangeDetectorRef,) {
     //this.loadData();
@@ -309,7 +310,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
  };
 
  refreshData(flag?: boolean){
-  let totalDriveTime=0;
+  // let totalDriveTime=0;
   let tripDistance=0;
   //this.movedVehicle=0;
   this.noAction=0;
@@ -342,7 +343,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
       }
       if(flag){
         if (element.drivingTime)
-          totalDriveTime += element.drivingTime;
+          this.totalDriveTime += element.drivingTime;
 
         if (element.vehicleDrivingStatusType && element.vehicleDrivingStatusType != 'N') {
           this.movedVehicle += 1;
@@ -403,7 +404,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
   let milDone:any = this.getDistance(tripDistance, this.prefUnitFormat);
   
   this.mileageDone = milDone + ' ' + this.unitValkm;
-  let totDriveTime = Util.getHhMmTimeFromMS(totalDriveTime).split(':'); //driving time is coming in ms
+  let totDriveTime = Util.getHhMmTimeFromMS(this.totalDriveTime).split(':'); //driving time is coming in ms
   this.driveTime = totDriveTime[0] + (this.translationData.lblhh ) + ' ' +totDriveTime[1] + (this.translationData.lblmm);
 
   this.barChartData = [
@@ -426,8 +427,8 @@ export class FleetOverviewSummaryComponent implements OnInit {
   }
   //Fleet Utilization rate
   this.doughnutChartDataUtil = [ [0, 0] ];
-  if(this.movedVehicle && this.timeThreshold){
-    this.utilizationRate = Number(((this.movedVehicle/this.timeThreshold) * 100).toFixed(2));
+  if(this.totalDriveTime && this.timeThreshold){
+    this.utilizationRate = Number(((this.totalDriveTime/this.timeThreshold) * 100).toFixed(2));
     this.doughnutChartDataUtil = [ [this.utilizationRate, 100-this.utilizationRate] ];
   }
  }
