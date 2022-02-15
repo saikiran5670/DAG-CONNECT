@@ -332,19 +332,6 @@ export class AppComponent {
         localStorage.setItem("hereMapsK", data.apiKey);
       });
     });
-    this.dashboardService.getDashboardPreferences(18).subscribe((prefData: any) => {
-      let dashboardPrefData = prefData['userPreferences'];
-      if(dashboardPrefData.subReportUserPreferences && dashboardPrefData.subReportUserPreferences.length > 0) {
-        let userPref = dashboardPrefData.subReportUserPreferences.find(x => x.key == "rp_db_dashboard_vehicleutilization");
-       if(userPref && userPref.subReportUserPreferences.length > 0) {
-         let timebasedutilizationrate = userPref.subReportUserPreferences.find(x => x.key == "rp_db_dashboard_vehicleutilization_timebasedutilizationrate").thresholdValue;
-         let distancebasedutilizationrate = userPref.subReportUserPreferences.find(x => x.key == "rp_db_dashboard_vehicleutilization_distancebasedutilizationrate").thresholdValue;
-         localStorage.setItem("liveFleetMileageThreshold", timebasedutilizationrate);
-         localStorage.setItem("liveFleetUtilizationThreshold", distancebasedutilizationrate);       
-        }
-      }
-    }, (error) => {
-    });
     //ToDo: below part to be removed after preferences/dashboard part is developed
     if(localStorage.getItem("liveFleetTimer")){
       this.timeLeft = Number.parseInt(localStorage.getItem("liveFleetTimer"));

@@ -513,7 +513,7 @@ export class FleetMapService {
 		${markerSvg}
 		</svg>
     </div>` :
-      `<svg width="34" height="41" viewBox="0 0 34 41" fill="none" xmlns="http://www.w3.org/2000/svg">
+    `<svg width="34" height="41" viewBox="0 0 34 41" fill="none" xmlns="http://www.w3.org/2000/svg">
 		<style type="text/css">.st0{fill:#FFFFFF;}.st1{fill:#1D884F;}.st2{fill:#F4C914;}.st3{fill:#176BA5;}.st4{fill:#DB4F60;}.st5{fill:#7F7F7F;}.st6{fill:#808281;}.hidden{display:none;}.cls-1{isolation:isolate;}.cls-2{opacity:0.3;mix-blend-mode:multiply;}.cls-3{fill:#fff;}.cls-4{fill:none;stroke:#db4f60;stroke-width:3px;}.cls-4,.cls-6{stroke-miterlimit:10;}.cls-5,.cls-6{fill:#db4f60;}.cls-6{stroke:#fff;}</style>
 		${markerSvg}
 		</svg>`;
@@ -710,6 +710,7 @@ export class FleetMapService {
         }
         let endMarkerSize = { w: 34, h: 40 }; //selected icon
         if (vehicleDrivingStatus) {
+            this.alertFoundFlag = elem.fleetOverviewAlert.length !=0 ? true : false;
           let endMarker = this.createSVGMarker(elem.latestReceivedPositionHeading, elem.vehicleHealthStatusType, elem, false);
           const iconEnd = new H.map.Icon(endMarker, { size: endMarkerSize, anchor: { x: Math.round(endMarkerSize.w / 2), y: Math.round(endMarkerSize.h / 2) } });
           this.endMarker = new H.map.Marker({ lat: this.endAddressPositionLat, lng: this.endAddressPositionLong }, { icon: iconEnd });
@@ -1358,6 +1359,7 @@ export class FleetMapService {
       }
     }
     else { //if alert is not present then need to display warning lat long for never moved vehicle.
+      this.alertFoundFlag = false;
       if (_drivingStatus == "Never Moved") {
         this.endAddressPositionLat = element.latestWarningPositionLatitude;
         this.endAddressPositionLong = element.latestWarningPositionLongitude;
@@ -1392,10 +1394,9 @@ export class FleetMapService {
         //  if(!_currentElem && !warnElem){ //advisory
         //     _alertConfig = this.getAlertConfig(element);
         //   }
-
-        criticalCount += element.level === 'C' ? 1 : 0;
-        warningCount += element.level === 'W' ? 1 : 0;
-        advisoryCount += element.level === 'A' ? 1 : 0;
+        criticalCount += element.level === 'C' || 'Critical' ? 1 : 0;
+        warningCount += element.level === 'W' || 'Warning' ? 1 : 0;
+        advisoryCount += element.level === 'A' || 'Advisory' ? 1 : 0;
 
       });
       if (criticalCount > 0) {
@@ -1957,23 +1958,23 @@ export class FleetMapService {
               }
             }
 
-            // if(_checkValidLatLong) //16705
-            //   this.group.addObjects([this.rippleMarker, this.vehicleIconMarker]);
-            let _healthStatus = this.getHealthStatus(elem);
-            let _drivingStatus = this.getDrivingStatus(elem, '');
-            let activatedTime = Util.convertUtcToDateFormat(elem.startTimeStamp, 'DD/MM/YYYY hh:mm:ss');
-            let _driverName = elem.driverName ? elem.driverName : elem.driver1Id;
-            let _vehicleName = elem.vehicleName ? elem.vehicleName : elem.vin;
-            let _mileage = this.reportMapService.getDistance(elem.odometerVal, this.prefUnitFormat); //19040
-            let _distanceNextService = this.reportMapService.getDistance(elem.distanceUntilNextService, this.prefUnitFormat);
-            let distanceUnit = this.prefUnitFormat == 'dunit_Metric' ? 'km' : 'miles';
-            let iconBubble;
-            this.vehicleIconMarker.addEventListener('pointerenter', function (evt) {
-              // event target is the marker itself, group is a parent event target
-              // for all objects that it contains
-              iconBubble = new H.ui.InfoBubble(evt.target.getGeometry(), {
-                // read custom data
-                content: `<table style='width: 300px; font-size:12px;'>
+              // if(_checkValidLatLong) //16705
+              //   this.group.addObjects([this.rippleMarker, this.vehicleIconMarker]);
+              let _healthStatus = this.getHealthStatus(elem);
+              let _drivingStatus = this.getDrivingStatus(elem, '');
+              let activatedTime = Util.convertUtcToDateFormat(elem.startTimeStamp, 'DD/MM/YYYY hh:mm:ss');
+              let _driverName = elem.driverName ? elem.driverName : elem.driver1Id;
+              let _vehicleName = elem.vehicleName ? elem.vehicleName : elem.vin;
+              let _mileage = this.reportMapService.getDistance(elem.odometerVal, this.prefUnitFormat); //19040
+              let _distanceNextService = this.reportMapService.getDistance(elem.distanceUntilNextService, this.prefUnitFormat);
+              let distanceUnit = this.prefUnitFormat == 'dunit_Metric' ? 'km' : 'miles';
+              let iconBubble;
+              this.vehicleIconMarker.addEventListener('pointerenter', function (evt) {
+                // event target is the marker itself, group is a parent event target
+                // for all objects that it contains
+                iconBubble = new H.ui.InfoBubble(evt.target.getGeometry(), {
+                  // read custom data
+                  content: `<table style='width: 300px; font-size:12px;'>
                     <tr>
                       <td style='width: 100px;'>${translationData.lblVehicle}:</td> <td><b>${_vehicleName}</b></td>
                     </tr>

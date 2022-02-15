@@ -189,11 +189,6 @@ export class CurrentFleetComponent implements OnInit {
       this.processTranslation(data);
       this.getFleetOverviewPreferences();
     });
-    let reportId = 18;
-    this.dashboardService.getDashboardPreferences(reportId).subscribe((prefData: any) => {
-      this.dashboardPref = prefData['userPreferences'];
-    }, (error) => {
-    });
    }
 
   getFleetOverviewPreferences(){
@@ -201,11 +196,18 @@ export class CurrentFleetComponent implements OnInit {
     this.reportService.getReportDetails().subscribe((reportList: any)=>{
       reportListData = reportList.reportDetails;
       let repoId: any = reportListData.filter(i => i.name == 'Fleet Overview');
+      let repoIdDB: any= reportListData.find(i => i.name == 'Dashboard');
       if(repoId.length > 0){
         this.currentFleetReportId = repoId[0].id; 
         this.callPreferences();
       }else{
         console.error("No report id found!")
+      }
+      if(repoIdDB){
+        this.dashboardService.getDashboardPreferences(repoIdDB.id).subscribe((prefData: any) => {
+          this.dashboardPref = prefData['userPreferences'];
+        }, (error) => {
+        });
       }
     }, (error)=>{
       //console.log('Report not found...', error);
