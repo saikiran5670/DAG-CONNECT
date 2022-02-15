@@ -78,7 +78,7 @@ export class UserDetailTableComponent implements OnInit {
     }
    
 
-    if(columnName === "roleList" || columnName === "accountGroupList" ||  columnName === "roles" || columnName === "firstName") { //Condition added for roles columns
+    if(columnName === "roleList" || columnName === "accountGroupList" ||  columnName === "roles") { //Condition added for roles columns
       a=  a.toString().toUpperCase() ;
       b= b.toString().toUpperCase();
    
