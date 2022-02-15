@@ -8,6 +8,7 @@ import { Util } from 'src/app/shared/util';
 import { FleetMapService } from '../fleet-map.service';
 import { OrganizationService } from '../../../services/organization.service';
 import { TranslationService } from '../../../services/translation.service';
+import { ReportMapService } from 'src/app/report/report-map.service';
 
 @Component({
   selector: 'app-fleet-overview-summary',
@@ -50,7 +51,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
   timeThreshold: number;
   totalDriveTime: number = 0;
 
-  constructor(private messageService: MessageService, private reportService: ReportService, private fleetMapService: FleetMapService, private organizationService: OrganizationService, private translationService: TranslationService, private cdref: ChangeDetectorRef,) {
+  constructor(private messageService: MessageService, private reportService: ReportService, private fleetMapService: FleetMapService, private organizationService: OrganizationService, private translationService: TranslationService, private cdref: ChangeDetectorRef, private reportMapService: ReportMapService) {
     //this.loadData();
     this.subscription = this.messageService.getMessage().subscribe(message => {
       if (message.key.indexOf("refreshData") < 0 && message.key.indexOf("refreshTimer") < 0) {
@@ -118,7 +119,6 @@ export class FleetOverviewSummaryComponent implements OnInit {
         });
       }
     });
-    this.setFleetThreshold();
   }
 
   proceedStep(prefData: any, preference: any) {
@@ -130,6 +130,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
     }
     this.unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile);
     this.stepForword(this.detailsData, true);
+    this.setFleetThreshold();
   }
 
   loadData() {
@@ -200,7 +201,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
         let timeObj = userPref.subReportUserPreferences.find(x => x.key == "rp_db_dashboard_vehicleutilization_timebasedutilizationrate");
         let distanceObj = userPref.subReportUserPreferences.find(x => x.key == "rp_db_dashboard_vehicleutilization_distancebasedutilizationrate");
         if (distanceObj)
-          this.distanceThreshold = distanceObj.thresholdValue;
+          this.distanceThreshold = this.reportMapService.convertDistanceUnits(distanceObj.thresholdValue, this.prefUnitFormat);
         if (timeObj)
           this.timeThreshold = timeObj.thresholdValue;
       }
