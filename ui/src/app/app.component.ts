@@ -24,6 +24,7 @@ import { element } from 'protractor';
 import { HttpClient } from '@angular/common/http';
 import { SignalRService } from './services/signalR.service';
 import { AlertService } from './services/alert.service';
+import { DashboardService } from './services/dashboard.service';
 
 @Component({
   selector: 'app-root',
@@ -310,7 +311,8 @@ export class AppComponent {
 
 
   constructor(private reportService: ReportService, private router: Router, private dataInterchangeService: DataInterchangeService, public authService: AuthService, private translationService: TranslationService, private deviceService: DeviceDetectorService, public fb: FormBuilder, @Inject(DOCUMENT) private document: any, private domSanitizer: DomSanitizer, private accountService: AccountService, private dialog: MatDialog, private organizationService: OrganizationService, private messageService: MessageService,@Inject(MAT_DATE_FORMATS) private dateFormats,
-  private http: HttpClient, public signalRService: SignalRService, private alertService: AlertService) {
+  private http: HttpClient, public signalRService: SignalRService, private alertService: AlertService,
+  private dashboardService : DashboardService) {
     this.defaultTranslation();
     this.landingPageForm = this.fb.group({
       'organization': [''],
@@ -331,8 +333,6 @@ export class AppComponent {
       });
     });
     //ToDo: below part to be removed after preferences/dashboard part is developed
-    localStorage.setItem("liveFleetMileageThreshold", "1000");
-    localStorage.setItem("liveFleetUtilizationThreshold", "5");
     if(localStorage.getItem("liveFleetTimer")){
       this.timeLeft = Number.parseInt(localStorage.getItem("liveFleetTimer"));
     }

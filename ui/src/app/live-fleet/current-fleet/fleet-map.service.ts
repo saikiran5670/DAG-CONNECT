@@ -710,6 +710,7 @@ export class FleetMapService {
         }
         let endMarkerSize = { w: 34, h: 40 }; //selected icon
         if (vehicleDrivingStatus) {
+            this.alertFoundFlag = elem.fleetOverviewAlert.length !=0 ? true : false;
           let endMarker = this.createSVGMarker(elem.latestReceivedPositionHeading, elem.vehicleHealthStatusType, elem, false);
           const iconEnd = new H.map.Icon(endMarker, { size: endMarkerSize, anchor: { x: Math.round(endMarkerSize.w / 2), y: Math.round(endMarkerSize.h / 2) } });
           this.endMarker = new H.map.Marker({ lat: this.endAddressPositionLat, lng: this.endAddressPositionLong }, { icon: iconEnd });
@@ -1358,6 +1359,7 @@ export class FleetMapService {
       }
     }
     else { //if alert is not present then need to display warning lat long for never moved vehicle.
+      this.alertFoundFlag = false;
       if (_drivingStatus == "Never Moved") {
         this.endAddressPositionLat = element.latestWarningPositionLatitude;
         this.endAddressPositionLong = element.latestWarningPositionLongitude;
