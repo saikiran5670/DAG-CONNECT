@@ -76,14 +76,19 @@ export class UserDetailTableComponent implements OnInit {
         return (aA > bA ? 1 : -1) * (isAsc ? 1: -1);
       }
     }
+   
 
     if(columnName === "roleList" || columnName === "accountGroupList" ||  columnName === "roles") { //Condition added for roles columns
       a=  a.toString().toUpperCase() ;
       b= b.toString().toUpperCase();
    
     }
-      if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toUpperCase();
-      if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toUpperCase();
+
+
+      if(!(a instanceof Number)) a = a?.replace(/[^\w\s]/gi, 'z').toUpperCase();
+      if(!(b instanceof Number)) b = b?.replace(/[^\w\s]/gi, 'z').toUpperCase();
+
+     
 
       return ( a < b ? -1 : 1) * (isAsc ? 1: -1);
   }
