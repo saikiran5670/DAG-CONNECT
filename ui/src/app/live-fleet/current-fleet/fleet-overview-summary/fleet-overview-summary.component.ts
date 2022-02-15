@@ -146,7 +146,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
       "languagecode": localStLanguage.code
     }
     this.reportService.getFleetOverviewDetails(objData).subscribe((data: any) => {
-      this.totalVehicle = data.visibleVehiclesCount;
+      this.totalVehicle = data.visibleVinsCount;
       let filterData = this.fleetMapService.processedLiveFLeetData(data.fleetOverviewDetailList);
       this.stepForword(filterData);
       //this.summaryData = filterData;
@@ -195,7 +195,6 @@ export class FleetOverviewSummaryComponent implements OnInit {
   activeObj: number;
   setFleetThreshold() {
     if (this.dashboardPref && this.dashboardPref.subReportUserPreferences && this.dashboardPref.subReportUserPreferences.length > 0) {
-      let filterData = this.dashboardPref.subReportUserPreferences.find(item => item.key.includes('rp_db_dashboard_todaylivevehicle'));
       let userPref = this.dashboardPref.subReportUserPreferences.find(x => x.key == "rp_db_dashboard_vehicleutilization");
       if (userPref && userPref.subReportUserPreferences.length > 0) {
         let timeObj = userPref.subReportUserPreferences.find(x => x.key == "rp_db_dashboard_vehicleutilization_timebasedutilizationrate");
@@ -204,8 +203,6 @@ export class FleetOverviewSummaryComponent implements OnInit {
           this.distanceThreshold = distanceObj.thresholdValue;
         if (timeObj)
           this.timeThreshold = timeObj.thresholdValue;
-        debugger
-        this.activeObj = filterData.subReportUserPreferences.find(item => item.key.includes('rp_db_dashboard_todaylivevehicle_activevehicles'));
       }
     }
   }
@@ -330,8 +327,9 @@ export class FleetOverviewSummaryComponent implements OnInit {
       if (flag) {
         this.movedVehicle = 0;
         let drivers = this.summaryData.filter((elem) => elem.driver1Id);
+        let driversUnknown = this.summaryData.filter((elem) => elem.driver1Id=='');
         let uniqueDrivers = [...new Set(drivers)];
-        this.drivers = uniqueDrivers.length;
+        this.drivers = uniqueDrivers.length + driversUnknown.length;
       }
       // let drivers = this.summaryData.filter((elem) => elem.driver1Id);
       // let uniqueDrivers = [...new Set(drivers)];
@@ -411,7 +409,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
 
     this.mileageDone = milDone + ' ' + this.unitValkm;
     let totDriveTime = Util.getHhMmTimeFromMS(this.totalDriveTime).split(':'); //driving time is coming in ms
-    this.driveTime = totDriveTime[0] + (this.translationData.lblhh) + ' ' + totDriveTime[1] + (this.translationData.lblmm);
+    this.driveTime = flag ? totDriveTime[0] + (this.translationData.lblhh ) + ' ' +totDriveTime[1] + (this.translationData.lblmm) : this.driveTime;
 
     this.barChartData = [
       { data: [this.movedVehicle, this.totalVehicle], label: '', barThickness: 16, barPercentage: 0.5 }
