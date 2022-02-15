@@ -267,18 +267,33 @@ export class ReportSchedulerComponent implements OnInit {
     let recipientTxt: any = '';
     let driverTxt: any = '';
     let vehicleGroupTxt: any = '';
+    let reportDriverRef = element.driverDetail.split(',');
+    let newDriverList=[];
 
-    element.scheduledReportRecipient.forEach(resp => {
-      recipientTxt += resp.email + ', ';
-    });
-    if(element.scheduledReportDriverRef.length == 1){
-      driverTxt += element.scheduledReportDriverRef[0].driverName;
-    }
-    else{
-      element.scheduledReportDriverRef.forEach(resp => {
-        driverTxt += resp.driverName + ', ';
-      });
-    }
+     reportDriverRef.forEach(item => {
+     let drivItem  = item.split('~');
+      newDriverList.push({'driverId': drivItem[0],'driverName': drivItem[1]})
+     });
+     if(newDriverList.length == 1){
+        driverTxt += newDriverList[0].driverName;
+      }
+      else{
+        newDriverList.forEach(resp => {
+            driverTxt += resp.driverName + ', ';
+          });
+      }
+
+     element.scheduledReportRecipient.forEach(resp => {
+       recipientTxt += resp.email + ', ';
+     });
+    // if(element.scheduledReportDriverRef.length == 1){
+    //   driverTxt += element.scheduledReportDriverRef[0].driverName;
+    // }
+    // else{
+    //   element.scheduledReportDriverRef.forEach(resp => {
+    //     driverTxt += resp.driverName + ', ';
+    //   });
+    // }
 
     if(element.scheduledReportVehicleRef.length > 0){
       let vehicleGroups = element.scheduledReportVehicleRef.filter(item => item.vehicleGroupType == 'G');
