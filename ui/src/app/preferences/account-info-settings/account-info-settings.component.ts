@@ -676,6 +676,9 @@ export class AccountInfoSettingsComponent implements OnInit {
       }
       else if(this.brandLogoError != ''){
         return false;
+      } else if (this.file.type == "image/bmp") {
+        this.userSettingsForm.get('uploadBrandLogo').setErrors({'maxContentSize' : true});
+        return false;
       }
       else{
         var reader = new FileReader();

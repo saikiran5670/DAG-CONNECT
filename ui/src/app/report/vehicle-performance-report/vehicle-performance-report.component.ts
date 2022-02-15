@@ -111,14 +111,15 @@ export class VehiclePerformanceReportComponent implements OnInit {
   }
   xaxisLabels: any = {}
   yaxisLabels: any = {}
-  xaxisE: any = {}
-  yaxisE: any = {}
-  xaxisS: any = {}
-  yaxisS: any = {}
-  xaxisB: any = {}
-  yaxisB: any = {}
+  xaxisE:any = {}
+  yaxisE:any = {}
+  xaxisS:any = {}
+  yaxisS:any = {}
+  xaxisB:any = {}
+  yaxisB:any = {}
   prefDetail: any = {};
   reportDetail: any = [];
+  noRecordFound: boolean = false;
 
   constructor(private translationService: TranslationService, private reportService: ReportService) {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -292,13 +293,16 @@ export class VehiclePerformanceReportComponent implements OnInit {
         this.yaxisVaues = this.processYaxis(res[0].vehPerformanceCharts);
         this.generatePieChartData(res[1].kpiData);
         this.search = true;
+        this.noRecordFound = false;
       } else {
         this.search = false;
+        this.noRecordFound = true;
       }
       this.showLoadingIndicator = false;
     }, (err) => {
       this.showLoadingIndicator = false;
-    });
+      this.noRecordFound = true;
+    });    
   }
 
   hideSearchResult() {

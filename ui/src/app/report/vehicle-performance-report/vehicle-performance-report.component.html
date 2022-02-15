@@ -12,9 +12,11 @@
                         translationData.lblVehiclePerformanceDetails || 'Vehicle Performance Details' }}</span>
                 </mat-panel-title>
             </mat-expansion-panel-header>
-            <div *ngIf='!search'>
-                <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{
-                    translationData.lblNoRecordFound || '' }}</div>
+
+            <div *ngIf='noRecordFound'>
+                <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound }}</div>
+            </div>
+            <div *ngIf='!search && !noRecordFound'>
                 <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{
                     translationData.lblSelectionMessage || 'Please select and search required fields from top to view
                     the details' }}</div>

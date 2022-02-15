@@ -11,6 +11,7 @@ export class ActiveInactiveDailogComponent implements OnInit {
 
   public alertMsg: any = '';
   constructor(@Inject(MAT_DIALOG_DATA) public data: {
+    
                   cancelText: string,
                   confirmText: string,
                   message: string,
@@ -19,8 +20,11 @@ export class ActiveInactiveDailogComponent implements OnInit {
                   name: string,
                   list?: string
               }, private mdDialogRef: MatDialogRef<ActiveInactiveDailogComponent>) {
+               // console.log("It goes into ActiveInactiveDialogComponent");
+                //console.log("data list", this.data.list.split(',').length);
                 this.alertMsg = this.data.message.replace('#', this.data.status);
                 this.alertMsg = this.alertMsg.replace('$', this.data.name);
+                //console.log("alert msg", this.alertMsg);
   }
 
   ngOnInit() {

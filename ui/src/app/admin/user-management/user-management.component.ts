@@ -61,7 +61,8 @@ export class UserManagementComponent implements OnInit {
   editViewRoleList: any = [];
   deleteRecord: boolean = false;
   filterValue: string;
-
+  errorVisible: boolean = false;
+  displayMessage : any = '';
   constructor(
     private dialogService: ConfirmDialogService,
     private translationService: TranslationService,
@@ -237,6 +238,7 @@ export class UserManagementComponent implements OnInit {
   }
 
   deleteUser(item: any) {
+    console.log("The deleteUser function is called");
     const options = {
       title: this.translationData.lblDeleteAccount,
       message: this.translationData.lblAreyousureyouwanttodeleteuseraccount,
@@ -255,10 +257,11 @@ export class UserManagementComponent implements OnInit {
     this.roleService.getUserRoles(roleObj).subscribe(allRoleData => {
       this.hideloader();
       this.roleData = allRoleData;
-      let accountRoleLevel: any = this.roleData.filter(item => item.roleId == this.accountRoleId);
-      if(accountRoleLevel.length > 0){
-        this.filterRoleList = this.roleData.filter(i => i.level >= accountRoleLevel[0].level);
-        this.filterRoleList2 = this.roleData.filter(i => i.level < accountRoleLevel[0].level);
+      // let accountRoleLevel: any = this.roleData.filter(item => item.roleId == this.accountRoleId);
+      let accountRoleLevel: number = Number(localStorage.getItem("userLevel"));
+      if(accountRoleLevel){
+        this.filterRoleList = this.roleData.filter(i => i.level >= accountRoleLevel);
+        this.filterRoleList2 = this.roleData.filter(i => i.level < accountRoleLevel);
       }
       this.loadUsersData();
     }, (error) => {
@@ -481,22 +484,40 @@ export class UserManagementComponent implements OnInit {
   }
 
   OpenDialog(options: any, flag: any, item: any) {
+    console.log("The openDialog popup is called");
     // Model for delete
     this.filterFlag = true;
     let name = `${item.salutation} ${item.firstName} ${item.lastName}`;
     this.dialogService.DeleteModelOpen(options, name);
     this.dialogService.confirmedDel().subscribe((res) => {
+      console.log("It goes confirmDel method inside");
       if (res) {
+        console.log("It goes inside if");
+        
         this.accountService.deleteAccount(item).subscribe(d=>{
+          console.log("it goes into deleteAccount method");
           this.deleteRecord = true;
           this.successMsgBlink(this.getDeletMsg(name));
           this.loadUsersData();
+        },(error) => {
+          let errorMsg = error.error;
+          console.log("errorMsg:", errorMsg);
+          this.errorMsgBlink(errorMsg);
         });
       }
     });
   }
+  errorMsgBlink(errorMsg: any) {
+    console.log("It goes errorMsgBlink inside");
+    this.errorVisible = true;
+    this.displayMessage = errorMsg;
+    setTimeout(() => {
+      this.errorVisible = false;
+    }, 5000);
+  }
 
   getDeletMsg(userName: any){
+    console.log("getDeleteMsg is called");
     if(this.translationData.lblUseraccountwassuccessfullydeleted)
       return this.translationData.lblUseraccountwassuccessfullydeleted.replace('$', userName);
     else
@@ -543,6 +564,7 @@ export class UserManagementComponent implements OnInit {
   }
 
   successMsgBlink(msg: any){
+    console.log("It goes into successMsgBlink method");
     this.grpTitleVisible = true;
     this.userCreatedMsg = msg;
     setTimeout(() => {

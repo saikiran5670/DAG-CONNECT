@@ -1,5 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms'; 
+import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
+import { FormGroup, FormControl, Validators } from '@angular/forms'; 
 import { SelectionModel } from '@angular/cdk/collections';
 import { ReportMapService } from '../../report/report-map.service';
 import { DashboardService } from '../../services/dashboard.service';
@@ -22,7 +22,7 @@ export class DashboardPreferencesComponent implements OnInit {
   showDashboardReport: boolean = false;
   reportId: any;
   unitId: any;
-  prefUnit: any;
+  //prefUnit: any;
   prefUnitFormat: any;
   initData: any = [];
   getDashboardPreferenceResponse: any = [];
@@ -79,7 +79,13 @@ export class DashboardPreferencesComponent implements OnInit {
       this.loadDashboardPreferences();
     }
   }
-
+  ngOnChanges(changes: SimpleChanges) {
+    if(changes && changes.translationData && changes.translationData.currentValue){
+      this.translationData = changes.translationData.currentValue;
+      this.resetColumnData();
+      this.prepareDataDashboardPref();
+    }   
+  } 
   ngOnInit() {
     let accountPreference = JSON.parse(localStorage.getItem('accountInfo')).accountPreference;
     this.unitId = accountPreference.unitId;
@@ -454,13 +460,14 @@ export class DashboardPreferencesComponent implements OnInit {
   getUnits() {
     let unitObj = this.prefDetail?.unit.filter(item => item.id == this.unitId);
     if (unitObj && unitObj.length != 0) {
-      this.prefUnit = unitObj[0].value;
-      if (this.prefUnit == 'Imperial') {
-        this.prefUnitFormat = 'dunit_Imperial';
-      } else {
-        this.prefUnitFormat = 'dunit_Metric';
+      this.prefUnitFormat = unitObj[0].name;
+      // this.prefUnit = unitObj[0].value;
+    //   if (this.prefUnit == 'Imperial') {
+    //     this.prefUnitFormat = 'dunit_Imperial';
+    //   } else {
+    //     this.prefUnitFormat = 'dunit_Metric';
+    //   }
       }
     }
-  }
 
 }

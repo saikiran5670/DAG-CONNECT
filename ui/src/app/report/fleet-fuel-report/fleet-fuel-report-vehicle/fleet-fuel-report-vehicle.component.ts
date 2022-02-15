@@ -29,6 +29,8 @@ import { Workbook } from 'exceljs';
 import { DatePipe } from '@angular/common';
 import { ReplaySubject } from 'rxjs';
 import { DataInterchangeService } from '../../../services/data-interchange.service';
+import { MessageService } from '../../../services/message.service';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-fleet-fuel-report-vehicle',
@@ -646,6 +648,9 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
   displayData: any = [];
   showDetailedReport: boolean = false;
   state: any;
+  noRecordFound: boolean = false;
+  brandimagePath: any;
+
   public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   prefDetail: any = {};
@@ -655,12 +660,14 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
   dateInfo: any = {};
 
   constructor(private _formBuilder: FormBuilder,
-    private translationService: TranslationService,
-    private organizationService: OrganizationService,
-    private reportService: ReportService,
-    @Inject(MAT_DATE_FORMATS) private dateFormats,
-    private reportMapService: ReportMapService,
-    private dataInterchangeService: DataInterchangeService) {
+  private translationService: TranslationService,
+  private organizationService: OrganizationService,
+  private reportService: ReportService,
+  @Inject(MAT_DATE_FORMATS) private dateFormats,
+  private reportMapService: ReportMapService, 
+  private dataInterchangeService: DataInterchangeService,
+  private messageService: MessageService,
+  private _sanitizer: DomSanitizer) {
     this.dataInterchangeService.prefSource$.subscribe((prefResp: any) => {
       if (prefResp && (prefResp.type == 'fuel report') && (prefResp.tab == 'Vehicle') && prefResp.prefdata) {
         this.resetPref();
@@ -717,6 +724,14 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
         }
       }
     });
+
+    this.messageService.brandLogoSubject.subscribe(value => {
+      if (value != null) {
+        this.brandimagePath = this._sanitizer.bypassSecurityTrustResourceUrl('data:image/jpeg;base64,' + value);
+      } else {
+        this.brandimagePath = null;
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -758,25 +773,35 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
       "viNs": _vinData,
       "LanguageCode": "EN-GB"
     }
-    this.reportService.getFleetFuelDetails(getFleetFuelObj).subscribe((data: any) => {
-      this.displayData = data["fleetFuelDetails"];
-      this.FuelData = this.reportMapService.getConvertedFleetFuelDataBasedOnPref(this.displayData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat, this.prefTimeZone);
-      this.updateDataSource(this.FuelData);
-      this.setTableInfo();
-      if (this.prefUnitFormat == 'dunit_Metric') {
-        let rankingSortedData = this.FuelData.sort((a, b) => (Number(a.convertedFuelConsumption) > Number(b.convertedFuelConsumption)) ? 1 : ((Number(b.convertedFuelConsumption) > Number(a.convertedFuelConsumption)) ? -1 : 0))
-        this.rankingData = rankingSortedData;
-        this.updateRankingDataSource(rankingSortedData);
-      }
-      if (this.prefUnitFormat == 'dunit_Imperial') {
-        let rankingSortedData = this.FuelData.sort((a, b) => (Number(a.convertedFuelConsumption) < Number(b.convertedFuelConsumption)) ? 1 : ((Number(b.convertedFuelConsumption) < Number(a.convertedFuelConsumption)) ? -1 : 0))
-        this.rankingData = rankingSortedData;
-        this.updateRankingDataSource(rankingSortedData);
-      }
+    this.reportService.getFleetFuelDetails(getFleetFuelObj).subscribe((data:any) => {
+    //console.log("---getting data from getFleetFuelDetailsAPI---",data)
+    if(data["fleetFuelDetails"].length == 0) {
+      this.noRecordFound = true;
+    } else {
+      this.noRecordFound = false;
+    }
+    this.displayData = data["fleetFuelDetails"];
+    this.FuelData = this.reportMapService.getConvertedFleetFuelDataBasedOnPref(this.displayData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
+    //this.setTableInfo();
+    this.updateDataSource(this.FuelData);
+    this.setTableInfo();
+    if(this.prefUnitFormat == 'dunit_Metric')
+    {
+    let rankingSortedData = this.FuelData.sort((a,b) => (Number(a.convertedFuelConsumption) > Number(b.convertedFuelConsumption)) ? 1 : ((Number(b.convertedFuelConsumption) > Number(a.convertedFuelConsumption)) ? -1 : 0))
+    this.rankingData = rankingSortedData;
+    this.updateRankingDataSource(rankingSortedData);
+  }
+    if(this.prefUnitFormat == 'dunit_Imperial')
+    {
+    let rankingSortedData = this.FuelData.sort((a,b) => (Number(a.convertedFuelConsumption) < Number(b.convertedFuelConsumption)) ? 1 : ((Number(b.convertedFuelConsumption) < Number(a.convertedFuelConsumption)) ? -1 : 0))
+    this.rankingData = rankingSortedData;
+    this.updateRankingDataSource(rankingSortedData);
+  }
+    this.hideloader();
+    this.idleDurationCount();
+    }, (error)=>{
       this.hideloader();
-      this.idleDurationCount();
-    }, (error) => {
-      this.hideloader();
+      this.noRecordFound = true;
     });
   }
 
@@ -1707,7 +1732,8 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
     this.showGraph = false;
     this.isChartsOpen = false;
     this.isDetailsOpen = true;
-    this.graphData = [];
+    this.graphData= [];
+    this.noRecordFound = false;
     this.updateDataSource(this.tripData);
     this.filterDateData();
   }
@@ -2130,7 +2156,15 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
     return val;
   }
 
-  exportAsPDFFile() {
+  exportAsPDFFile(){
+
+    var imgleft;
+    if (this.brandimagePath != null) {
+      imgleft = this.brandimagePath.changingThisBreaksApplicationSecurity;
+    } else {
+      imgleft = "/assets/logo.png";
+    }
+
     var doc = new jsPDF('p', 'mm', 'a4');
     let ccdOne = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance3050metric) : (this.translationData.lblCruiseControlDistance1530imperial);
     let ccdTwo = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance5075metric) : (this.translationData.lblCruiseControlDistance3045imperial);
@@ -2496,9 +2530,11 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
           didDrawPage: function (data) {
             doc.setFontSize(14);
             var fileTitle = pdfName;
-            if (!fileTitle) fileTitle = 'Fleet Fuel Report by Vehicle';
-            var img = "/assets/logo.png";
-            doc.addImage(img, 'JPEG', 10, 10, 0, 0);
+            if(!fileTitle) fileTitle = 'Fleet Fuel Report by Vehicle';
+            // var img = "/assets/logo.png";
+            // doc.addImage(img, 'JPEG',10,10,0,0);
+            doc.addImage(imgleft, 'JPEG', 10, 10, 0, 16.5);
+
             var img = "/assets/logo_daf.png";
             doc.text(fileTitle, 14, 35);
             doc.addImage(img, 'JPEG', 150, 10, 0, 10);

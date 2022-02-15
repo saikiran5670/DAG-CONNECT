@@ -26,6 +26,8 @@ import { Workbook } from 'exceljs';
 import { DatePipe } from '@angular/common';
 import { ReplaySubject } from 'rxjs';
 import { DataInterchangeService } from '../../../services/data-interchange.service';
+import { MessageService } from '../../../services/message.service';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-fleet-fuel-report-driver',
@@ -651,6 +653,9 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
   fromTripPageBack: boolean = false;
   displayData : any = [];
   showDetailedReport : boolean = false;
+  noRecordFound: boolean = false;
+  brandimagePath: any;
+
   public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   idleDurationConverted: any;
@@ -664,7 +669,8 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
     private reportService: ReportService,
     @Inject(MAT_DATE_FORMATS) private dateFormats,
     private reportMapService: ReportMapService,
-    private dataInterchangeService: DataInterchangeService) {
+    private dataInterchangeService: DataInterchangeService,
+    private messageService: MessageService, private _sanitizer: DomSanitizer) {
       this.dataInterchangeService.prefSource$.subscribe((prefResp: any) => {
         if(prefResp && (prefResp.type == 'fuel report') && (prefResp.tab == 'Driver') && prefResp.prefdata){
           this.resetPref();
@@ -722,6 +728,15 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
           }
       }
     });
+
+    this.messageService.brandLogoSubject.subscribe(value => {
+      if (value != null) {
+        this.brandimagePath = this._sanitizer.bypassSecurityTrustResourceUrl('data:image/jpeg;base64,' + value);
+      } else {
+        this.brandimagePath = null;
+      }
+    });
+
   }
 
   ngOnDestroy() {
@@ -764,6 +779,12 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
       "LanguageCode": "EN-GB"
     }
     this.reportService.getFleetFueldriverDetails(getFleetFuelObj).subscribe((data:any) => {
+    // //console.log("---getting data from getFleetFuelDetailsAPI---",data)
+    if(data["fleetFuelDetails"].length == 0) {
+      this.noRecordFound = true;
+    } else {
+      this.noRecordFound = false;
+    }
     this.displayData = data["fleetFuelDetails"];
     this.FuelData = this.reportMapService.getConvertedFleetFuelDataBasedOnPref(this.displayData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
     this.updateDataSource(this.FuelData);
@@ -772,6 +793,7 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
     this.idleDurationCount();
     }, (error)=>{
       this.hideloader();
+      this.noRecordFound = true;
     });
   }
 
@@ -1742,7 +1764,8 @@ setDefaultTodayDate(){
     this.resetChartData();
     this.displayData =[];
     this.driverSelected= false;
-   this.updateDataSource(this.tripData);
+    this.noRecordFound = false;
+    this.updateDataSource(this.tripData);
     this.filterDateData(); 
   }
 
@@ -2108,6 +2131,14 @@ setVehicleGroupAndVehiclePreSelection() {
   }
 
   exportAsPDFFile(){
+  
+  var imgleft;
+  if (this.brandimagePath != null) {
+    imgleft = this.brandimagePath.changingThisBreaksApplicationSecurity;
+  } else {
+    imgleft = "/assets/logo.png";
+  }
+
   var doc = new jsPDF('p', 'mm', 'a4');
   let ccdOne = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance3050metric) : (this.translationData.lblCruiseControlDistance1530imperial);
   let ccdTwo = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance5075metric) : (this.translationData.lblCruiseControlDistance3045imperial);
@@ -2266,10 +2297,10 @@ setVehicleGroupAndVehiclePreSelection() {
   pdfColumns.push(pdfColumnHeads);
   let prepare = []
     this.displayData.forEach(e=>{
-      if(e.driverID.includes('~*')) {
-        e.driverName = 'Unknown';
-        e.driverID = '*';
-      }
+      // if(e.driverID.includes('~*')) {
+      //   e.driverName = 'Unknown';
+      //   e.driverID = '*';
+      // }
       var tempObj =[];
       this.displayedColumns.forEach(element => {
         switch(element){
@@ -2438,8 +2469,9 @@ setVehicleGroupAndVehiclePreSelection() {
             // Header
             doc.setFontSize(14);
             var fileTitle = transHeaderName;
-            var img = "/assets/logo.png";
-            doc.addImage(img, 'JPEG',10,10,0,0);
+            // var img = "/assets/logo.png";
+            // doc.addImage(img, 'JPEG',10,10,0,0);
+            doc.addImage(imgleft, 'JPEG', 10, 10, 0, 16.5);
 
             var img = "/assets/logo_daf.png";
             doc.text(fileTitle, 14, 35);

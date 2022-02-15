@@ -32,6 +32,9 @@ import { treeExportFormatter } from 'angular-slickgrid';
 import { ReplaySubject } from 'rxjs';
 import { DataInterchangeService } from '../../services/data-interchange.service';
 import { MessageService } from '../../services/message.service';
+import { DomSanitizer } from '@angular/platform-browser';
+
+
 declare var H: any;
 
 @Component({
@@ -109,6 +112,7 @@ prefTimeZone: any; //-- coming from pref setting
 prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
 prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
 accountPrefObj: any;
+brandimagePath: any;
 advanceFilterOpen: boolean = false;
 showField: any = {
   vehicleName: true,
@@ -178,6 +182,7 @@ _state: any ;
 map_key: any = '';
 platform: any = '';
 vehicleIconMarker : any;
+noRecordFound: boolean = false;
 
 public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
@@ -186,7 +191,7 @@ public filteredVehicleNames: ReplaySubject<String[]> = new ReplaySubject<String[
 
 
 
-constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private landmarkCategoryService: LandmarkCategoryService, private router: Router, private organizationService: OrganizationService, private _configService: ConfigService, private hereService: HereService,private completerService: CompleterService, private dataInterchangeService: DataInterchangeService, private messageService : MessageService,) {
+constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private landmarkCategoryService: LandmarkCategoryService, private router: Router, private organizationService: OrganizationService, private _configService: ConfigService, private hereService: HereService,private completerService: CompleterService, private dataInterchangeService: DataInterchangeService, private messageService : MessageService, private _sanitizer: DomSanitizer) {
   // this.map_key =  _configService.getSettings("hereMap").api_key;
   this.map_key = localStorage.getItem("hereMapsK");
   // setTimeout(() => {
@@ -356,6 +361,14 @@ ngOnDestroy(){
     //     this.onSearch();
     //   }, 0);
     // }
+
+    this.messageService.brandLogoSubject.subscribe(value => {
+      if (value != null) {
+        this.brandimagePath = this._sanitizer.bypassSecurityTrustResourceUrl('data:image/jpeg;base64,' + value);
+      } else {
+        this.brandimagePath = null;
+      }
+    });
 
   }
 
@@ -944,6 +957,11 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
           });
           this.showMap = true;
         }
+        if(logBookResult.length == 0) {
+          this.noRecordFound = true;
+        } else {
+          this.noRecordFound = false;
+        }
         this.initData = logBookResult;
         this.setTableInfo();
         this.updateDataSource(this.initData);
@@ -951,6 +969,7 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
       }, (error)=>{
           this.hideloader();
           this.initData = [];
+          this.noRecordFound = true;
           this.tableInfoObj = {};
           this.updateDataSource(this.initData);
 
@@ -1095,6 +1114,7 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
     this.setDefaultTodayDate();
     this.tripData = [];
     this.vehicleListData = [];
+    this.noRecordFound = false;
     this.updateDataSource(this.tripData);
     this.resetLogFormControlValue();
     this.filterDateData(); // extra addded as per discuss with Atul
@@ -1409,6 +1429,14 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
   }
 
 exportAsPDFFile(){
+
+  var imgleft;
+  if (this.brandimagePath != null) {
+    imgleft = this.brandimagePath.changingThisBreaksApplicationSecurity;
+  } else {
+    imgleft = "/assets/logo.png";
+  }
+
   var doc = new jsPDF('p', 'mm', 'a2');
   (doc as any).autoTable({
     styles: {
@@ -1419,12 +1447,13 @@ exportAsPDFFile(){
         // Header
         doc.setFontSize(14);
         var fileTitle = "Logbook Details";
-        var img = "/assets/logo.png";
-        doc.addImage(img, 'JPEG',10,10,0,0);
+        // var img = "/assets/logo.png";
+        // doc.addImage(img, 'JPEG',10,10,0,0);
+        doc.addImage(imgleft, 'JPEG', 10, 10, 0, 16.5);
 
         var img = "/assets/logo_daf.png";
         doc.text(fileTitle, 14, 35);
-        doc.addImage(img, 'JPEG',150, 10, 0, 10);
+        doc.addImage(img, 'JPEG',360, 10, 0, 10);
     },
     margin: {
         bottom: 20,

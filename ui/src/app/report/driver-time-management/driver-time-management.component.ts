@@ -18,6 +18,8 @@ import { Workbook } from 'exceljs';
 import * as fs from 'file-saver';
 import { ReplaySubject } from 'rxjs';
 import { DataInterchangeService } from '../../services/data-interchange.service';
+import { MessageService } from '../../services/message.service';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-driver-time-management',
@@ -244,12 +246,14 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   chartPrefData: any = [];
   vehicleDD = [];
   driverDD = [];
+  noRecordFound: boolean = false;
+  brandimagePath: any;
   public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredDriver: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
-  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService,
-    private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private organizationService: OrganizationService, private dataInterchangeService: DataInterchangeService) {
+  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, 
+  private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private organizationService: OrganizationService, private dataInterchangeService: DataInterchangeService, private messageService: MessageService, private _sanitizer: DomSanitizer) { 
     this.dataInterchangeService.prefSource$.subscribe((prefResp: any) => {
       if (prefResp && (prefResp.type == 'drive time report') && prefResp.prefdata) {
         this.displayedColumns = ['driverName', 'driverId', 'startTime', 'endTime', 'driveTime', 'workTime', 'serviceTime', 'restTime', 'availableTime'];
@@ -306,9 +310,16 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
           if (vehicledisplay.length != 0) {
             this.vehicleDisplayPreference = vehicledisplay[0].name;
           }
-        }
+        }  
       }
     });
+    this.messageService.brandLogoSubject.subscribe(value => {
+      if (value != null) {
+        this.brandimagePath = this._sanitizer.bypassSecurityTrustResourceUrl('data:image/jpeg;base64,' + value);
+      } else {
+        this.brandimagePath = null;
+      }
+    });  
   }
 
   proceedStep(preference: any) {
@@ -598,6 +609,11 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     if (_vehicelIds.length > 0) {
       this.showLoadingIndicator = true;
       this.reportService.getDriverTimeDetails(searchDataParam).subscribe((_tripData: any) => {
+        if(_tripData.length == 0) {
+          this.noRecordFound = true;
+        } else {
+          this.noRecordFound = false;
+        }
         this.hideloader();
         let tripData = _tripData;
         if (this.allDriversSelected) {
@@ -633,6 +649,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
         this.driverSelected = false;
         this.allDriversSelected = true;
         this.initData = [];
+        this.noRecordFound = true;
         this.updateDataSource(this.initData);
       });
     }
@@ -694,6 +711,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     this.tableInfoObj = {};
     this.allDriversSelected = true;
     this.initData = [];
+    this.noRecordFound = false;
     this.updateDataSource(this.initData);
     this.driverSelected = false;
   }
@@ -952,6 +970,13 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     return col;
   }
   exportAsPDFFile() {
+    var imgleft;
+    if (this.brandimagePath != null) {
+      imgleft = this.brandimagePath.changingThisBreaksApplicationSecurity;
+    } else {
+      imgleft = "/assets/logo.png";
+    }
+
     var doc = new jsPDF('p', 'mm', 'a3');
     (doc as any).autoTable({
       styles: {
@@ -959,20 +984,22 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
         fontSize: 12
       },
       didDrawPage: function (data) {
-        doc.setFontSize(16);
-        var fileTitle = this.translationData.lblDriverTimeReport;
-        var img = "/assets/logo.png";
-        doc.addImage(img, 'JPEG', 10, 8, 0, 0);
-
-        var img = "/assets/logo_daf.png";
-        doc.text(fileTitle, 14, 35);
-        doc.addImage(img, 'JPEG', 250, 10, 0, 8);
+          doc.setFontSize(16);
+          // var fileTitle = this.translationData.lblDriverTimeReport; 
+          var fileTitle = 'Drive Time Management Report';
+          // var img = "/assets/logo.png";
+          // doc.addImage(img, 'JPEG',10,8,0,0);
+          doc.addImage(imgleft, 'JPEG', 10, 10, 0, 15.5);
+          var img = "/assets/logo_daf.png"; 
+          doc.text(fileTitle, 14, 35);
+          doc.addImage(img, 'JPEG',250, 10, 0, 8);            
       },
       margin: {
-        bottom: 30,
-        top: 40
+        bottom: 30, 
+        top:40
       }
     });
+
     let pdfColumns = this.getPDFExcelHeader();
     pdfColumns = [pdfColumns];
     let prepare = []
@@ -993,8 +1020,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       head: pdfColumns,
       body: prepare,
       theme: 'striped',
-      didDrawCell: data => {
-      }
+      didDrawCell: data => { }
     })
     doc.save('DriverTimeReport.pdf');
   }
