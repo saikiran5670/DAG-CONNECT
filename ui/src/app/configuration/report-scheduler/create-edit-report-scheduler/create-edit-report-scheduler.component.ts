@@ -133,7 +133,7 @@ export class CreateEditReportSchedulerComponent implements OnInit {
     this.ReportTypeList = this.reportSchedulerParameterData["reportType"];
     this.VehicleGroupList = this.getUnique(this.reportSchedulerParameterData["associatedVehicle"], "vehicleGroupId");
     this.VehicleList = this.getUnique(this.reportSchedulerParameterData["associatedVehicle"], "vehicleId");
-    this.DriverList = this.reportSchedulerParameterData["driverDetail"];
+    this.DriverList = this.reportSchedulerParameterData["driverDetail"].replace(/[0-9~]/g, '');
     this.LanguageCodeList = JSON.parse(localStorage.getItem("languageCodeList"));
     this.RecipientList = this.reportSchedulerParameterData["receiptEmails"];
 
@@ -664,7 +664,8 @@ export class CreateEditReportSchedulerComponent implements OnInit {
       let scheduledReportDriverRef = [
         {
           "scheduleReportId": 0,
-          "driverId": this.reportSchedulerForm.controls.driver.value,
+          "driverName": this.reportSchedulerForm.controls.driverDetail.value,
+          "driverId" : this.reportSchedulerForm.controls.driver.value,
           "state": "A",
           "createdAt": 0,
           "createdBy": this.accountId,
@@ -689,6 +690,7 @@ export class CreateEditReportSchedulerComponent implements OnInit {
         "createdBy": this.accountId,
         "modifiedAt": 0,
         "modifiedBy": 0,
+        "driverName": this.reportSchedulerForm.controls.driverDetail.value.replace(/[0-9~]/g, ''),
         "mailSubject": (this.reportSchedulerForm.controls.mailSubject.value).trim(),
         "mailDescription": (this.reportSchedulerForm.controls.mailDescription.value).trim(),
         "reportDispatchTime": this.reportSchedulerForm.controls.reportDispatchTime.value,
