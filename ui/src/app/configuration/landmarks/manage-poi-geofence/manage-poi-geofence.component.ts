@@ -1,24 +1,20 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild,NgZone  } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { POIService } from 'src/app/services/poi.service';
 import { ConfirmDialogService } from '../../../shared/confirm-dialog/confirm-dialog.service';
 import * as FileSaver from 'file-saver';
-import * as XLSX from 'xlsx';
 import { MatTableExporterDirective } from 'mat-table-exporter';
 import { GeofenceService } from 'src/app/services/landmarkGeofence.service';
 import { QueryList } from '@angular/core';
 import { ViewChildren } from '@angular/core';
-import { LandmarkCategoryService } from 'src/app/services/landmarkCategory.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { isNgTemplate } from '@angular/compiler';
+import { LandmarkCategoryService } from 'src/app/services/landmarkCategory.service'; 
 import { ElementRef } from '@angular/core';
 import { Workbook } from 'exceljs';
 import * as fs from 'file-saver';
-import { ConfigService } from '@ngx-config/core';
-import { CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteData } from 'ng2-completer';
+import { CompleterItem, CompleterService } from 'ng2-completer';
 import { HereService } from '../../../services/here.service';
 import { Util } from 'src/app/shared/util';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -118,9 +114,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
     private dialogService: ConfirmDialogService,
     private poiService: POIService,
     private geofenceService: GeofenceService,
-    private landmarkCategoryService: LandmarkCategoryService,
-    private _snackBar: MatSnackBar,
-    private _configService: ConfigService,
+    private landmarkCategoryService: LandmarkCategoryService, 
     private completerService: CompleterService,
     private hereService: HereService,
     private domSanitizer: DomSanitizer

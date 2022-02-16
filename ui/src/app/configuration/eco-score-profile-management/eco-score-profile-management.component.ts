@@ -3,8 +3,7 @@ import { TranslationService } from '../../services/translation.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CustomValidators } from '../../shared/custom.validators';
 import { ReportService } from 'src/app/services/report.service';
-import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dialog.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dialog.service'; 
 import { OrganizationService } from 'src/app/services/organization.service';
 import { ReportMapService } from 'src/app/report/report-map.service';
 
@@ -77,16 +76,18 @@ export class EcoScoreProfileManagementComponent implements OnInit {
   inputBox : boolean = true;
   isData: boolean = false;
   units: any = {};
-  
+  prefDetail: any = {};
+  deleteSelection: any = false;
 
-  constructor(private _formBuilder: FormBuilder,private translationService: TranslationService, private reportMapService: ReportMapService,  private organizationService: OrganizationService,private reportService: ReportService, private dialogService: ConfirmDialogService, private _snackBar: MatSnackBar,) { }
+  constructor(private _formBuilder: FormBuilder, private translationService: TranslationService, private reportMapService: ReportMapService, private organizationService: OrganizationService, private reportService: ReportService, private dialogService: ConfirmDialogService) { }
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.userType = localStorage.getItem("userType");;
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
+    this.prefDetail = JSON.parse(localStorage.getItem('prefDetail'));
     let translationObj = {
       id: 0,
       code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
@@ -99,18 +100,17 @@ export class EcoScoreProfileManagementComponent implements OnInit {
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
       this.breadcumMsg = this.getBreadcum(this.actionType);
-      this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
-        if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
-          this.proceedStep(prefData, this.accountPrefObj.accountPreference);
-        }else{ // org pref
+      if(this.prefDetail){
+        if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ 
+          this.proceedStep(this.accountPrefObj.accountPreference);
+        }else{ 
           this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
-            this.proceedStep(prefData, orgPref);
-          }, (error) => { // failed org API
-            let pref: any = {};
-            this.proceedStep(prefData, pref);
+            this.proceedStep(orgPref);
+          }, (error) => { 
+            this.proceedStep({});
           });
         }
-      });
+      }
     });
 
     this.ecoScoreProfileForm = this._formBuilder.group({
@@ -127,33 +127,28 @@ export class EcoScoreProfileManagementComponent implements OnInit {
     });
   }
 
-  proceedStep(prefData: any, preference: any){
-    let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
+  proceedStep(preference: any){
+    let _search = this.prefDetail.timeformat.filter(i => i.id == preference.timeFormatId);
     if(_search.length > 0){
-      //this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
       this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
-      //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
-      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
-      this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
-      this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
+      this.prefTimeZone = this.prefDetail.timezone.filter(i => i.id == preference.timezoneId)[0].name;
+      this.prefDateFormat = this.prefDetail.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+      this.prefUnitFormat = this.prefDetail.unit.filter(i => i.id == preference.unitId)[0].name;  
     }else{
-      //this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
-      this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
-      //this.prefTimeZone = prefData.timezone[0].value;
-      this.prefTimeZone = prefData.timezone[0].name;
-      this.prefDateFormat = prefData.dateformat[0].name;
-      this.prefUnitFormat = prefData.unit[0].name;
+      this.prefTimeFormat = Number(this.prefDetail.timeformat[0].name.split("_")[1].substring(0,2)); 
+      this.prefTimeZone = this.prefDetail.timezone[0].name;
+      this.prefDateFormat = this.prefDetail.dateformat[0].name;
+      this.prefUnitFormat = this.prefDetail.unit[0].name;
     }
     this.units = {
-      prefTimeFormat : this.prefTimeFormat,
-      prefTimeZone : this.prefTimeZone,
-      prefDateFormat : this.prefDateFormat,
-      prefUnitFormat : this.prefUnitFormat,
+      prefTimeFormat: this.prefTimeFormat,
+      prefTimeZone: this.prefTimeZone,
+      prefDateFormat: this.prefDateFormat,
+      prefUnitFormat: this.prefUnitFormat,
     }
     this.loadProfileData();
   }
 
-  deleteSelection: any = false;
   loadProfileData(){
     this.reportService.getEcoScoreProfiles(this.profileFlag).subscribe((data: any) =>{
       this.profileList = data["profiles"];
@@ -203,7 +198,6 @@ export class EcoScoreProfileManagementComponent implements OnInit {
   SliderData(data: any){
   this.lastUpdated = data[0].lastUpdate ? this.reportMapService.getStartTime(data[0].lastUpdate, this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true ): '';
   this.updatedBy = data[0].updatedBy;
-
   data[0].profileSection.forEach((item) =>{ 
     if(item.sectionId == 1){
       this.kpiData = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 1)[0];
@@ -348,21 +342,10 @@ export class EcoScoreProfileManagementComponent implements OnInit {
     this.dialogService.confirmedDel().subscribe((res) => {
     if (res) {
       this.reportService.deleteEcoScoreProfile(profileId).subscribe((data) => {
-        this.openSnackBar('Item delete', 'dismiss');
         this.loadProfileData();
         this.successMsgBlink(this.getDeletMsg(name[0].profileName));
       }) 
       }
-    });
-  }
-
-  openSnackBar(message: string, action: string) {
-    let snackBarRef = this._snackBar.open(message, action, { duration: 2000 });
-    snackBarRef.afterDismissed().subscribe(() => {
-      //console.log('The snackbar is dismissed');
-    });
-    snackBarRef.onAction().subscribe(() => {
-      //console.log('The snackbar action was triggered!');
     });
   }
 
@@ -371,7 +354,6 @@ export class EcoScoreProfileManagementComponent implements OnInit {
       return this.translationData.lblProfilewassuccessfullydeleted.replace('$', name);
     else
       return ("Profile '$' was successfully deleted").replace('$', name);
- 
   }
   
   toBack(){
@@ -448,6 +430,6 @@ export class EcoScoreProfileManagementComponent implements OnInit {
     else {
       this.changedKPIData.push(item);
  }
-  ////console.log(this.changedKPIData);
 }
+
 }

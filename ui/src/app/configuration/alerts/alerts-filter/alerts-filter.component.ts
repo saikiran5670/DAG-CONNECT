@@ -1,5 +1,4 @@
-import { Component, OnInit, Input, ViewChild, Output, EventEmitter } from '@angular/core';
-import { TranslationService } from 'src/app/services/translation.service';
+import { Component, OnInit, Input, ViewChild, Output, EventEmitter } from '@angular/core'; 
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -25,13 +24,11 @@ export class AlertsFilterComponent implements OnInit {
   @Input() filteredVehicles: any;
   @Input() vehicleByVehGroupList: any;
   @Input() associatedVehicleData :any;
+  @Input() vehicleDisplayPreference: any;
   singleVehicle = [];
-
   isDisabledAlerts = true; 
   localData : any; 
   tempData: any; 
- 
-  vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   accountPrefObj: any;
   alertTypeEnum:any;
   dataResultTypes:any=[];
@@ -56,55 +53,25 @@ export class AlertsFilterComponent implements OnInit {
  filterListValues = {};
  dataSource = new MatTableDataSource();
 
- constructor(private translationService: TranslationService, private reportMapService : ReportMapService) { }
+ constructor(private reportMapService : ReportMapService) { }
    
-  ngOnInit(): void {
+  ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
-    //this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     if(localStorage.getItem('contextOrgId')){
       this.accountOrganizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
     }
     else{
       this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     }
-
-    let translationObj = {
-      id: 0,
-      code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
-      type: "Menu",
-      name: "",
-      value: "",
-      filter: "",
-      menuId: 17 //-- for alerts
-    }
-    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-     this.processTranslation(data);     
-     this.updatedTableData(this.initData);     
-     this.dataSource.filterPredicate = this.createFilter();  
-
-     this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
-      let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
-      if(vehicleDisplayId) {
-        let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
-        if(vehicledisplay.length != 0) {
-          this.vehicleDisplayPreference = vehicledisplay[0].name;
-        }
-      }  
-    });
+    this.updatedTableData(this.initData);     
+    this.dataSource.filterPredicate = this.createFilter();  
     this.resetVehiclesFilter();
-    });
   } 
 
   resetVehiclesFilter(){
     this.filteredVehicles.next(this.vehicleByVehGroupList.slice());
   }
-
-
-  processTranslation(transData: any) {
-    this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    ////console.log("process translationData:: ", this.translationData)  
-   }
 
   handleCategoryChange(filter, tempEnum, event) {
     if(event.value == ''){  
