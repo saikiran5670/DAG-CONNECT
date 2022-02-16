@@ -575,8 +575,10 @@
               <span>{{ translationData.lblAllDetails || 'All Details' }}</span>
             </mat-panel-title>
           </mat-expansion-panel-header>
-          <div *ngIf='initData.length == 0'>
+          <div *ngIf='noRecordFound'>
             <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound || '' }}</div>
+          </div>
+          <div *ngIf='initData.length == 0 && !noRecordFound'>
             <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblSelectionMessage || 'Please select and search required fields from top to view the details' }}</div>
           </div>
           <div *ngIf='initData.length > 0'  [ngClass]="{'reportTable': displayedColumns.length > 7}">

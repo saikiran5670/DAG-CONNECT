@@ -40,7 +40,6 @@ export class ReportSchedulerComponent implements OnInit {
   originalAlertData: any= [];
   rowsData: any;
   accountOrganizationId: any;
-  completePrefData: any;
   accountId: any;
   titleVisible : boolean = false;
   dialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
@@ -62,6 +61,7 @@ export class ReportSchedulerComponent implements OnInit {
   associatedVehicle:any;
   @ViewChild('gridComp') gridComp: DataTableComponent
   filterValue: string;
+  prefDetail: any = {};
 
   constructor(
     private translationService: TranslationService,
@@ -78,6 +78,7 @@ export class ReportSchedulerComponent implements OnInit {
       this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
       this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
       this.adminAccessType = JSON.parse(localStorage.getItem("accessType"));
+      this.prefDetail = JSON.parse(localStorage.getItem('prefDetail'));
       let translationObj = {
         id: 0,
         code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
@@ -89,53 +90,40 @@ export class ReportSchedulerComponent implements OnInit {
       }
       this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
         this.processTranslation(data);
-        this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
-          this.completePrefData = prefData;
-          if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
-            this.proceedStep(prefData, this.accountPrefObj.accountPreference);
-          }else{ // org pref
+        if(this.prefDetail){
+          if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ 
+            this.proceedStep(this.accountPrefObj.accountPreference);
+          }else{
             this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
-              this.proceedStep(prefData, orgPref);
-            }, (error) => { // failed org API
-              let pref: any = {};
-              this.proceedStep(prefData, pref);
+              this.proceedStep(orgPref);
+            }, (error) => {
+              this.proceedStep({});
             });
           }
           this.loadScheduledReports();
-        }, error => {
-          this.loadScheduledReports();
-        });
+        }
       });
-
       this.reportSchedulerService.getReportSchedulerParameter(this.accountId, this.accountOrganizationId).subscribe(parameterData => {
         this.reportSchedulerParameterData = parameterData;
         this.ReportTypeList = this.reportSchedulerParameterData["reportType"];
         this.StatusList= [{id : "Active", name : this.translationData.lblActive}, {id : "Suspended", name : this.translationData.lblSuspended}]
-      })
-
+      });
     }
 
-
   processTranslation(transData: any) {
-    this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    ////console.log("process translationData:: ", this.translationData)
+    this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {}); 
   }
 
-
-  proceedStep(prefData: any, preference: any){
-    let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
+  proceedStep(preference: any){
+    let _search = this.prefDetail.timeformat.filter(i => i.id == preference.timeFormatId);
     if(_search.length > 0){
-      //this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
       this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
-      //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
-      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
-      this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+      this.prefTimeZone = this.prefDetail.timezone.filter(i => i.id == preference.timezoneId)[0].name;
+      this.prefDateFormat = this.prefDetail.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
     }else{
-      //this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
-      this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
-      //this.prefTimeZone = prefData.timezone[0].value;
-      this.prefTimeZone = prefData.timezone[0].name;
-      this.prefDateFormat = prefData.dateformat[0].name;
+      this.prefTimeFormat = Number(this.prefDetail.timeformat[0].name.split("_")[1].substring(0,2)); 
+      this.prefTimeZone = this.prefDetail.timezone[0].name;
+      this.prefDateFormat = this.prefDetail.dateformat[0].name;
     }
     this.setPrefFormatDate();
   }
@@ -212,7 +200,6 @@ export class ReportSchedulerComponent implements OnInit {
     this.dataSource.filter = filterValue;
   }
   hideloader() {
-    // Setting display of spinner
       this.showLoadingIndicator=false;
   }
 
@@ -246,11 +233,12 @@ export class ReportSchedulerComponent implements OnInit {
              }
         });
        this.hideloader();
-         this.gridComp.updatedTableData(this.initData);      
+       if(this.gridComp){
+        this.gridComp.updatedTableData(this.initData);      
+       }
     }, (error) => {
        this.hideloader();
     })
-
  }
 
  showVehiclePopup(row: any){
@@ -267,18 +255,33 @@ export class ReportSchedulerComponent implements OnInit {
     let recipientTxt: any = '';
     let driverTxt: any = '';
     let vehicleGroupTxt: any = '';
+    let reportDriverRef = element.driverDetail.split(',');
+    let newDriverList=[];
 
-    element.scheduledReportRecipient.forEach(resp => {
-      recipientTxt += resp.email + ', ';
-    });
-    if(element.scheduledReportDriverRef.length == 1){
-      driverTxt += element.scheduledReportDriverRef[0].driverName;
-    }
-    else{
-      element.scheduledReportDriverRef.forEach(resp => {
-        driverTxt += resp.driverName + ', ';
-      });
-    }
+     reportDriverRef.forEach(item => {
+     let drivItem  = item.split('~');
+      newDriverList.push({'driverId': drivItem[0],'driverName': drivItem[1]})
+     });
+     if(newDriverList.length == 1){
+        driverTxt += newDriverList[0].driverName;
+      }
+      else{
+        newDriverList.forEach(resp => {
+            driverTxt += resp.driverName + ', ';
+          });
+      }
+
+     element.scheduledReportRecipient.forEach(resp => {
+       recipientTxt += resp.email + ', ';
+     });
+    // if(element.scheduledReportDriverRef.length == 1){
+    //   driverTxt += element.scheduledReportDriverRef[0].driverName;
+    // }
+    // else{
+    //   element.scheduledReportDriverRef.forEach(resp => {
+    //     driverTxt += resp.driverName + ', ';
+    //   });
+    // }
 
     if(element.scheduledReportVehicleRef.length > 0){
       let vehicleGroups = element.scheduledReportVehicleRef.filter(item => item.vehicleGroupType == 'G');

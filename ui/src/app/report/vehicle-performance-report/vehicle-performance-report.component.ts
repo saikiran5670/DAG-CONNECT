@@ -10,14 +10,14 @@ import { SearchCriteriaComponent } from './search-criteria/search-criteria.compo
   styleUrls: ['./vehicle-performance-report.component.less']
 })
 export class VehiclePerformanceReportComponent implements OnInit {
-  @ViewChild('searchCriteria') searchCriteria : SearchCriteriaComponent
+  @ViewChild('searchCriteria') searchCriteria: SearchCriteriaComponent
   detailsExpandPanel: boolean = true;
   chartsExpandPanel: boolean = true;
   searchResult: any = {};
   localStLanguage;
   translationData: any = {};
-  search:boolean = false;
-  showLoadingIndicator:boolean = false;
+  search: boolean = false;
+  showLoadingIndicator: boolean = false;
   xaxisVaues = [];
   yaxisVaues = [];
   pieChartLabels = [];
@@ -26,7 +26,7 @@ export class VehiclePerformanceReportComponent implements OnInit {
   piechartTitle = '';
   bubbleHeatchartTitle = '';
   vehicleDisplayPreference = 'dvehicledisplay_Name';
-  accountInfo:any = {};
+  accountInfo: any = {};
   defualtData = [
     [
       0,
@@ -80,28 +80,26 @@ export class VehiclePerformanceReportComponent implements OnInit {
     ],
   ]
   performanceTypeLst = [
-    { name: "Engine Load Collective",  value: "E" },
-    { name: "Road Speed Collective",  value: "S" },
-    { name: "Brake Behavior",  value: "B" }
+    { name: "Engine Load Collective", value: "E" },
+    { name: "Road Speed Collective", value: "S" },
+    { name: "Brake Behavior", value: "B" }
   ];
   colorToLegends = {
-    'A':'#75923C',
-    'D':'#4AB0BA',
-    'E':'#E46D0A',
-    'H':'#FF0000',
-    'M':'#FFFF00',
-    'N':'#CC0000',
-    'O':'#00B050',
-    'P':'#FFC000',
-    'S':'#EEECE1',
-    'T':'#FFC000',
-    'U':'#659FA4'
+    'A': '#75923C',
+    'D': '#4AB0BA',
+    'E': '#E46D0A',
+    'H': '#FF0000',
+    'M': '#FFFF00',
+    'N': '#CC0000',
+    'O': '#00B050',
+    'P': '#FFC000',
+    'S': '#EEECE1',
+    'T': '#FFC000',
+    'U': '#659FA4'
   };
-  
   chartXaxis;
   chartYaxis;
   legends = [];
-
   commonAxis = {
     type: 'numeric',
     tickPlacement: 'between',
@@ -111,7 +109,6 @@ export class VehiclePerformanceReportComponent implements OnInit {
       enabled: false,
     }
   }
-
   xaxisLabels: any = {}
   yaxisLabels: any = {}
   xaxisE:any = {}
@@ -120,13 +117,15 @@ export class VehiclePerformanceReportComponent implements OnInit {
   yaxisS:any = {}
   xaxisB:any = {}
   yaxisB:any = {}
-  
-
-  
+  prefDetail: any = {};
+  reportDetail: any = [];
+  noRecordFound: boolean = false;
 
   constructor(private translationService: TranslationService, private reportService: ReportService) {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountInfo = JSON.parse(localStorage.getItem("accountInfo"));
+    this.prefDetail = JSON.parse(localStorage.getItem('prefDetail'));
+    this.reportDetail = JSON.parse(localStorage.getItem('reportDetail'));
     let translationObj = {
       id: 0,
       code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
@@ -134,26 +133,23 @@ export class VehiclePerformanceReportComponent implements OnInit {
       name: "",
       value: "",
       filter: "",
-      menuId: 13 //-- for Trip Report
+      menuId: 13 //-- for Vehicle Performance Report
     }
     this.getMenuTranslations(translationObj);
-    this.getPreferences();
-    
   }
 
-  ngOnInit(): void {
-  }
+  ngOnInit(){ }
 
   getAxisLabels() {
     this.xaxisLabels = {
       offsetX: -8,
       offsetY: 0,
       formatter: (value, index) => {
-        let newIndex = (index/10)-1;
-        if(this.xaxisVaues[newIndex]) {
+        let newIndex = (index / 10) - 1;
+        if (this.xaxisVaues[newIndex]) {
           return this.xaxisVaues[newIndex];
         }
-        if(value == 0) {
+        if (value == 0) {
           return '';
         }
         return value;
@@ -162,12 +158,12 @@ export class VehiclePerformanceReportComponent implements OnInit {
         cssClass: 'apexcharts-xaxis-label',
       }
     };
-  
+
     this.yaxisLabels = {
       offsetX: 5,
       offsetY: 15,
       formatter: (value, index) => {
-        if(index !== 0) {
+        if (index !== 0) {
           let newIndex = index - 1;
           return this.yaxisVaues[newIndex];
         }
@@ -181,7 +177,7 @@ export class VehiclePerformanceReportComponent implements OnInit {
       },
       labels: this.xaxisLabels
     }
-  
+
     this.yaxisE = {
       ...this.commonAxis,
       title: {
@@ -190,7 +186,7 @@ export class VehiclePerformanceReportComponent implements OnInit {
       },
       labels: this.yaxisLabels
     }
-  
+
     this.xaxisS = {
       ...this.commonAxis,
       title: {
@@ -198,7 +194,7 @@ export class VehiclePerformanceReportComponent implements OnInit {
       },
       labels: this.xaxisLabels,
     }
-  
+
     this.yaxisS = {
       ...this.commonAxis,
       title: {
@@ -207,8 +203,8 @@ export class VehiclePerformanceReportComponent implements OnInit {
       },
       labels: this.yaxisLabels
     }
-  
-  
+
+
     this.xaxisB = {
       ...this.commonAxis,
       title: {
@@ -216,7 +212,7 @@ export class VehiclePerformanceReportComponent implements OnInit {
       },
       labels: this.xaxisLabels,
     }
-  
+
     this.yaxisB = {
       ...this.commonAxis,
       title: {
@@ -225,19 +221,6 @@ export class VehiclePerformanceReportComponent implements OnInit {
       },
       labels: this.yaxisLabels
     }
-  }
-
-  getPreferences() {
-    this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
-      let vehicleDisplayId = this.accountInfo.accountPreference.vehicleDisplayId;
-      if(vehicleDisplayId) {
-        let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
-        if(vehicledisplay.length != 0) {
-          this.vehicleDisplayPreference = vehicledisplay[0].name;
-        }
-      }
-      this.searchCriteria.getPreferences(prefData)
-    });
   }
 
   kpi() {
@@ -261,8 +244,18 @@ export class VehiclePerformanceReportComponent implements OnInit {
 
   getMenuTranslations(translationObj) {
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-      this.kpi();
       this.processTranslation(data);
+      if(this.prefDetail){
+        let vehicleDisplayId = this.accountInfo.accountPreference.vehicleDisplayId;
+        if (vehicleDisplayId) {
+          let vehicledisplay = this.prefDetail.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+          if (vehicledisplay.length != 0) {
+            this.vehicleDisplayPreference = vehicledisplay[0].name;
+          }
+        }
+        this.searchCriteria.getPreferences(this.prefDetail)
+      }
+      this.kpi();
       this.getAxisLabels();
     });
   }
@@ -274,11 +267,11 @@ export class VehiclePerformanceReportComponent implements OnInit {
   showSearchResult(data) {
     this.hideSearchResult();
     this.showLoadingIndicator = true;
-    let performaceObj = this.performanceTypeLst.filter((item)=>item.value == data.performanceType);
+    let performaceObj = this.performanceTypeLst.filter((item) => item.value == data.performanceType);
     this.searchResult = data;
     this.searchResult['performanceTypeLabel'] = this.translationData[performaceObj[0].name];
     this.searchResult['lbl'] = 'lbl' + this.translationData[performaceObj[0].name]?.replace(/ /g, '');
-    let payload =  {
+    let payload = {
       "vin": this.searchResult.vin,
       "performanceType": this.searchResult.performanceType,
       "startDateTime": this.searchResult.utcStartDateTime,
@@ -287,52 +280,54 @@ export class VehiclePerformanceReportComponent implements OnInit {
     let req1 = this.reportService.chartTemplate(payload);
     let req2 = this.reportService.chartData(payload);
     this.updateChartTitles(this.searchResult.performanceType);
-    forkJoin([req1, req2]).subscribe((res:any) => {
-      if(res[1] && res[1].matrixData.length > 0) {
-        this.searchResult = { ...this.searchResult, ...res[0].vehPerformanceSummary}
+    forkJoin([req1, req2]).subscribe((res: any) => {
+      if (res[1] && res[1].matrixData.length > 0) {
+        this.searchResult = { ...this.searchResult, ...res[0].vehPerformanceSummary }
         this.searchResult.vehPerformanceCharts = res[0].vehPerformanceCharts;
         this.searchResult.kpiData = res[1].kpiData;
         this.searchResult.matrixData = res[1].matrixData;
         this.searchResult.bubbleData = this.transformDataForBubbleChart(res[1].matrixData);
-        this.chartXaxis = this["xaxis"+ this.searchResult.performanceType];
-        this.chartYaxis = this["yaxis"+ this.searchResult.performanceType];
+        this.chartXaxis = this["xaxis" + this.searchResult.performanceType];
+        this.chartYaxis = this["yaxis" + this.searchResult.performanceType];
         this.xaxisVaues = this.processXaxis(res[0].vehPerformanceCharts);
         this.yaxisVaues = this.processYaxis(res[0].vehPerformanceCharts);
         this.generatePieChartData(res[1].kpiData);
         this.search = true;
+        this.noRecordFound = false;
       } else {
         this.search = false;
+        this.noRecordFound = true;
       }
       this.showLoadingIndicator = false;
     }, (err) => {
       this.showLoadingIndicator = false;
+      this.noRecordFound = true;
     });    
   }
-  
+
   hideSearchResult() {
     this.search = false;
   }
 
   updateChartTitles(performanceType) {
-    if(performanceType == 'E') {
+    if (performanceType == 'E') {
       this.piechartTitle = this.translationData.lblEngineOperationalPerformance || "Engine Operational Performance";
       this.bubbleHeatchartTitle = this.translationData.lblEngineLoadDistribution || "Engine Load Distribution";
-    } else if(performanceType == 'S') {
-      this.piechartTitle = this.translationData.lblRoadSpeedPerformance+" (%)";
+    } else if (performanceType == 'S') {
+      this.piechartTitle = this.translationData.lblRoadSpeedPerformance + " (%)";
       this.bubbleHeatchartTitle = this.translationData.lblRoadSpeedDistribution || "Road Speed Distribution";
     } else {
-      this.piechartTitle = this.translationData.lblBrakePerformance+" (%)";
+      this.piechartTitle = this.translationData.lblBrakePerformance + " (%)";
       this.bubbleHeatchartTitle = this.translationData.lblBrakeBehavior || "Brake Behavior Distribution";
     }
   }
 
   processXaxis(data) {
-    if(data.length > 0) {
-      let xaxisObj = data.filter((item)=>item.index == -1);
-      if(xaxisObj[0] && xaxisObj[0].axisvalues) {
+    if (data.length > 0) {
+      let xaxisObj = data.filter((item) => item.index == -1);
+      if (xaxisObj[0] && xaxisObj[0].axisvalues) {
         let tempArr = xaxisObj[0].axisvalues.split(',')
         tempArr = tempArr.map(el => el.replace(/'/g, ''));
-        //console.log(tempArr);
         return tempArr;
       }
     }
@@ -340,10 +335,10 @@ export class VehiclePerformanceReportComponent implements OnInit {
   }
 
   processYaxis(data) {
-    if(data.length > 0) {
+    if (data.length > 0) {
       let tempArr = [];
-      for(let row of data) {
-        if(row.index != -1) {
+      for (let row of data) {
+        if (row.index != -1) {
           tempArr.push(row.range);
         }
       }
@@ -355,10 +350,10 @@ export class VehiclePerformanceReportComponent implements OnInit {
   transformDataForBubbleChart(bubbleData) {
     let bubbleChartData = [];
     bubbleChartData.push(...this.defualtData);
-    for(let bubble of bubbleData) {
+    for (let bubble of bubbleData) {
       let newArr = [];
-      newArr.push((bubble.xindex*10) + 5 < 0 ? 0 : (bubble.xindex*10) + 5);
-      newArr.push((bubble.yindex*10) + 5 < 0 ? 0 : (bubble.yindex*10) + 5);
+      newArr.push((bubble.xindex * 10) + 5 < 0 ? 0 : (bubble.xindex * 10) + 5);
+      newArr.push((bubble.yindex * 10) + 5 < 0 ? 0 : (bubble.yindex * 10) + 5);
       newArr.push(Math.abs(bubble.value));
       bubbleChartData.push(newArr);
     }
@@ -381,20 +376,6 @@ export class VehiclePerformanceReportComponent implements OnInit {
         this.pieChartData.push((pie.value).toFixed(2));
         this.pieChartColors.push(this.colorToLegends[pieLabel]);
       }
-    }
-   // if(this.searchResult.performanceType != 'E') {
-   //   this.updateDataPercent(pieData);
-  //  }
-  }
-
-  updateDataPercent(pieData) {
-    let sumOfNum = this.pieChartData.reduce((a, b) => a + b);
-    let percentPerNum = 100 / sumOfNum;
-    let tempArr = [ ...this.pieChartData ];
-    this.pieChartData = [];
-    for(let tA of tempArr) {
-      let percent = tA*percentPerNum;
-      this.pieChartData.push(percent.toFixed(2));
     }
   }
 

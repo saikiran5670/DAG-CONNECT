@@ -1,4 +1,3 @@
-<!-- Table Details Tab -->
 <div *ngIf='logbookPrefData.length > 0' fxLayout="row" class='areaWidth full-width padding-10 logbookPref' fxLayoutAlign="left center"
     style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
@@ -115,13 +114,9 @@
         </div>
     </div>
 </div>
-
-<!-- error msg -->
 <div *ngIf='logbookPrefData.length > 0 && editFlag && reqField' fxLayout="row" class='areaWidth margin-top-10' fxLayoutAlign="start">
     <span style='color: red;'>{{ translationData.lblRequiredFieldMsg }}</span>
 </div>
-
-<!-- buttons -->
 <div *ngIf='logbookPrefData.length > 0 && editFlag' fxLayout="row" class='areaWidth margin-top-20' fxLayoutAlign="end">
     <button class='resetCancelBtnColor margin-right-10' (click)='onCancel()' mat-raised-button color="primary">{{
         translationData.lblCancel }}</button>

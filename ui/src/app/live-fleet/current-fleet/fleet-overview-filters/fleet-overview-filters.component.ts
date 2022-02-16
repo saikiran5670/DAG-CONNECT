@@ -104,7 +104,11 @@ constructor(private fleetMapService: FleetMapService, private messageService: Me
 
 ngAfterViewInit(){
   this.cdr.detectChanges();
-}
+   if(this.selectedIndex == 1){
+    this.updateDriverFilter();}
+  else{
+    this.updateVehicleFilter(); }
+ }
 
 ngOnChanges(changes: SimpleChanges) {
   if(changes && changes.filterData && changes.filterData.currentValue){
@@ -115,19 +119,6 @@ ngOnChanges(changes: SimpleChanges) {
   ngOnInit(): void {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
-    // let translationObj = {
-    //   id: 0,
-    //   code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
-    //   type: "Menu",
-    //   name: "",
-    //   value: "",
-    //   filter: "",
-    //   menuId: 3
-    // }
-    // this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-    //   this.processTranslation(data);
-    // });
-
     this.selection1 = ['all'];
     this.selection2 = ['all'];
     this.selection3 = ['all'];
@@ -524,17 +515,12 @@ ngOnChanges(changes: SimpleChanges) {
   }
 
   getFilterData() {
-    //this.showLoadingIndicator = true;
-    //this.reportService.getFilterDetails().subscribe((data: any) => {
-      //this.filterData = data;
       if(this.selectedIndex == 0){
         this.updateVehicleFilter();
         }
         if(this.selectedIndex == 1){
         this.updateDriverFilter();
         }
-      //this.showLoadingIndicator = false;
-    //})
     this.setDropdownValues(this.fleetData);
   }
 
@@ -586,6 +572,7 @@ removeDuplicates(originalArray, prop) {
     }​​​​​​​​);
 
     this.vehicleListData = filteredData;
+    this.filterVINonMap(); // VIN's on map
   }
 
   onChangeGroup(id: any){   
@@ -1370,7 +1357,14 @@ drawIcons(_selectedRoutes){
     this.svgIcon = this.sanitizer.bypassSecurityTrustHtml(_vehicleMarkerDetails.icon);
     elem =  Object.defineProperty(elem, "icon", {value : this.svgIcon,
     writable : true,enumerable : true, configurable : true});
-
+    if(_alertConfig && _alertConfig.level){
+      if(_alertConfig.level == 'Critical')
+        elem['alertName'] = this.translationData.enumurgencylevel_critical;
+      else if(_alertConfig.level == 'Warning')
+        elem['alertName'] = this.translationData.enumurgencylevel_warning;
+      else if(_alertConfig.level == 'Advisory')
+        elem['alertName'] = this.translationData.enumurgencylevel_advisory;
+    }
   });
 
 

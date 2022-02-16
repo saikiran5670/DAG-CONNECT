@@ -1,12 +1,7 @@
-import { Injectable, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { HereService } from '../../services/here.service';
+import { Injectable, ElementRef } from '@angular/core'; 
 import { Util } from '../../shared/util';
-import { ConfigService } from '@ngx-config/core';
-import { elementEventFullName } from '@angular/compiler/src/view_compiler/view_compiler';
 import { ReportMapService } from '../../report/report-map.service';
-import { TranslationService } from 'src/app/services/translation.service';
 import { OrganizationService } from 'src/app/services/organization.service';
-
 
 declare var H: any;
 
@@ -51,14 +46,14 @@ export class FleetMapService {
   accountPrefObj: any;
   alertMarker: any;
   vehicleIconMarker: any;
-  localStLanguage: any;
-  prefData: any;
-  preference: any;
+  localStLanguage: any; 
   orgId: any;
   vehicleDisplayPreference: any = 'dvehicledisplay_VehicleIdentificationNumber';
   translationData: any = {};
+  markerGroup = new H.map.Group();
+  prefDetail: any = {};
 
-  constructor(private organizationService: OrganizationService, private translationService: TranslationService, private hereSerive: HereService, private _configService: ConfigService, private reportMapService: ReportMapService) {
+  constructor(private organizationService: OrganizationService, private reportMapService: ReportMapService) {
     //this.map_key = _configService.getSettings("hereMap").api_key;
     this.map_key = localStorage.getItem("hereMapsK");
     this.platform = new H.service.Platform({
@@ -66,75 +61,41 @@ export class FleetMapService {
     });
     this.herePOISearch = this.platform.getPlacesService();
     this.entryPoint = H.service.PlacesService.EntryPoint;
-    let _langCode = this.localStLanguage ? this.localStLanguage.code : "EN-GB";
-    // let translationObj = {
-    //   id: 0,
-    //   code: _langCode,
-    //   type: "Menu",
-    //   name: "",
-    //   value: "",
-    //   filter: "",
-    //   menuId: 17 //-- for alerts
-    // }
-    // this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-    //   this.processTranslation(data);
-    // });
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
-    this.translationService.getPreferences(_langCode).subscribe((prefData: any) => {
-      if (this.accountPrefObj && this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != '') { // account pref
-        this.proceedStep(prefData, this.accountPrefObj.accountPreference);
-      } else { // org pref
-        this.organizationService.getOrganizationPreference(this.orgId).subscribe((orgPref: any) => {
-          this.proceedStep(prefData, orgPref);
-        }, (error) => { // failed org API
-          let pref: any = {};
-          this.proceedStep(prefData, pref);
-        });
-      }
-      if (this.prefData) {
-        this.setInitialPref(this.prefData, this.preference);
-      }
-      let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
-      if (vehicleDisplayId) {
-        let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
-        if (vehicledisplay.length != 0) {
-          this.vehicleDisplayPreference = vehicledisplay[0].name;
+    this.prefDetail = JSON.parse(localStorage.getItem('prefDetail'));
+      if(this.prefDetail){
+        if (this.accountPrefObj && this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != '') { // account pref
+          this.setInitialPref(this.accountPrefObj.accountPreference);
+        } else { 
+          this.organizationService.getOrganizationPreference(this.orgId).subscribe((orgPref: any) => {
+            this.setInitialPref(orgPref);
+          }, (error) => { 
+            this.setInitialPref({});
+          });
+        }
+        let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
+        if (vehicleDisplayId) {
+          let vehicledisplay = this.prefDetail.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+          if (vehicledisplay.length != 0) {
+            this.vehicleDisplayPreference = vehicledisplay[0].name;
+          }
         }
       }
-
-    });
-
   }
 
-  processTranslation(transData: any) {
-    this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    //console.log("process translationData:: ", this.translationData)
-  }
-
-  setInitialPref(prefData, preference) {
-    let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
+  setInitialPref(preference: any) {
+    let _search = this.prefDetail.timeformat.filter(i => i.id == preference.timeFormatId);
     if (_search.length > 0) {
-      //this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
       this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0, 2));
-      //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
-      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
-      this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
-      this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;
+      this.prefTimeZone = this.prefDetail.timezone.filter(i => i.id == preference.timezoneId)[0].name;
+      this.prefDateFormat = this.prefDetail.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+      this.prefUnitFormat = this.prefDetail.unit.filter(i => i.id == preference.unitId)[0].name;
     } else {
-      //this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
-      this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0, 2));
-      //this.prefTimeZone = prefData.timezone[0].value;
-      this.prefTimeZone = prefData.timezone[0].name;
-      this.prefDateFormat = prefData.dateformat[0].name;
-      this.prefUnitFormat = prefData.unit[0].name;
+      this.prefTimeFormat = Number(this.prefDetail.timeformat[0].name.split("_")[1].substring(0, 2)); 
+      this.prefTimeZone = this.prefDetail.timezone[0].name;
+      this.prefDateFormat = this.prefDetail.dateformat[0].name;
+      this.prefUnitFormat = this.prefDetail.unit[0].name;
     }
-  }
-
-  proceedStep(prefData: any, preference: any) {
-    this.prefData = prefData;
-    this.preference = preference;
-    // this.setPrefFormatDate();
-
   }
 
   setPrefObject(_prefObj) {
@@ -185,6 +146,9 @@ export class FleetMapService {
     this.disableGroup.removeAll();
     this.startMarker = null;
     this.endMarker = null;
+    if (this.markerGroup) {
+      this.markerGroup.removeAll();
+    }
     if (this.clusteringLayer) {
       this.clusteringLayer.dispose();
       this.hereMap.removeLayer(this.clusteringLayer);
@@ -263,10 +227,10 @@ export class FleetMapService {
           bubble = new H.ui.InfoBubble(evt.target.getGeometry(), {
             content: `<table style='width: 350px;'>
             <tr>
-              <td style='width: 100px;'>POI Name:</td> <td><b>${element.name !== undefined && element.name != ''  ? element.name : '-'}</b></td>
+              <td style='width: 100px;'>POI Name:</td> <td><b>${element.name !== undefined && element.name != '' ? element.name : '-'}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>Category:</td> <td><b>${ element.categoryName !== undefined && element.categoryName != '' ? element.categoryName : '-' }</b></td>
+              <td style='width: 100px;'>Category:</td> <td><b>${element.categoryName !== undefined && element.categoryName != '' ? element.categoryName : '-'}</b></td>
             </tr>
             <tr>
               <td style='width: 100px;'>Sub-Category:</td> <td><b>${element.subCategoryName !== undefined && element.subCategoryName != '' ? element.subCategoryName : '-'}</b></td>
@@ -508,7 +472,7 @@ export class FleetMapService {
 		<style type="text/css">.st0{fill:#FFFFFF;}.st1{fill:#1D884F;}.st2{fill:#F4C914;}.st3{fill:#176BA5;}.st4{fill:#DB4F60;}.st5{fill:#7F7F7F;}.st6{fill:#808281;}.hidden{display:none;}.cls-1{isolation:isolate;}.cls-2{opacity:0.3;mix-blend-mode:multiply;}.cls-3{fill:#fff;}.cls-4{fill:none;stroke:#db4f60;stroke-width:3px;}.cls-4,.cls-6{stroke-miterlimit:10;}.cls-5,.cls-6{fill:#db4f60;}.cls-6{stroke:#fff;}</style>
 		${markerSvg}
 		</svg>
-    </div>` : 
+    </div>` :
     `<svg width="34" height="41" viewBox="0 0 34 41" fill="none" xmlns="http://www.w3.org/2000/svg">
 		<style type="text/css">.st0{fill:#FFFFFF;}.st1{fill:#1D884F;}.st2{fill:#F4C914;}.st3{fill:#176BA5;}.st4{fill:#DB4F60;}.st5{fill:#7F7F7F;}.st6{fill:#808281;}.hidden{display:none;}.cls-1{isolation:isolate;}.cls-2{opacity:0.3;mix-blend-mode:multiply;}.cls-3{fill:#fff;}.cls-4{fill:none;stroke:#db4f60;stroke-width:3px;}.cls-4,.cls-6{stroke-miterlimit:10;}.cls-5,.cls-6{fill:#db4f60;}.cls-6{stroke:#fff;}</style>
 		${markerSvg}
@@ -648,7 +612,7 @@ export class FleetMapService {
   viewSelectedRoutes(_selectedRouteData: any, _ui: any, trackType?: any, _displayRouteView?: any, _displayPOIList?: any, _searchMarker?: any, _herePOI?: any, alertsChecked?: boolean, showIcons?: boolean, _globalPOIList?: any, translationData?: any) {
     this.clearRoutesFromMap();
     let _selectedRoutes: any = [];
-    if(_selectedRouteData && _selectedRouteData.length > 0){
+    if (_selectedRouteData && _selectedRouteData.length > 0) {
       _selectedRoutes = _selectedRouteData.slice();
       let removeValFromIndex: any = [];
       _selectedRoutes.forEach((element, index, object) => { //removing never moved type of records having no alert/warnings
@@ -675,14 +639,15 @@ export class FleetMapService {
     }
     if (showIcons && _selectedRoutes && _selectedRoutes.length > 0) { //to show initial icons on map
       //let _iconCount: any = _selectedRoutes.filter(_elem => (_elem.vehicleDrivingStatusType != 'N' || _elem.vehicleDrivingStatusType != 'Never Moved') && (_elem.latestWarningClass != 0 || _elem.fleetOverviewAlert.length > 0));
-     // this.drawIcons(_selectedRoutes, _ui, translationData); // remove & add in cluster
+      // this.drawIcons(_selectedRoutes, _ui, translationData); // remove & add in cluster
+      this.drawIconsSample(_selectedRoutes, _ui, translationData); // remove & add in cluster
       this.makeCluster(_selectedRoutes, _ui, translationData);
-      let objArr = this.group.getObjects();
+      let objArr = this.markerGroup.getObjects();
       if (objArr && objArr.length > 0) {
         //this.hereMap.addObject(this.group);
         this.hereMap.getViewModel().setLookAtData({
           zoom: (objArr.length > 1) ? 0 : 15, // 16665 - zoom added with bounds
-          bounds: this.group.getBoundingBox()
+          bounds: this.markerGroup.getBoundingBox()
         });
       }
     }
@@ -705,6 +670,7 @@ export class FleetMapService {
         }
         let endMarkerSize = { w: 34, h: 40 }; //selected icon
         if (vehicleDrivingStatus) {
+            this.alertFoundFlag = elem.fleetOverviewAlert.length !=0 ? true : false;
           let endMarker = this.createSVGMarker(elem.latestReceivedPositionHeading, elem.vehicleHealthStatusType, elem, false);
           const iconEnd = new H.map.Icon(endMarker, { size: endMarkerSize, anchor: { x: Math.round(endMarkerSize.w / 2), y: Math.round(endMarkerSize.h / 2) } });
           this.endMarker = new H.map.Marker({ lat: this.endAddressPositionLat, lng: this.endAddressPositionLong }, { icon: iconEnd });
@@ -743,7 +709,7 @@ export class FleetMapService {
           }
         }
         let _objArr = this.group.getObjects();
-        if(_objArr && _objArr.length > 0) {
+        if (_objArr && _objArr.length > 0) {
           this.hereMap.addObject(this.group);
           this.hereMap.getViewModel().setLookAtData({
             //zoom: 15,
@@ -1353,6 +1319,7 @@ export class FleetMapService {
       }
     }
     else { //if alert is not present then need to display warning lat long for never moved vehicle.
+      this.alertFoundFlag = false;
       if (_drivingStatus == "Never Moved") {
         this.endAddressPositionLat = element.latestWarningPositionLatitude;
         this.endAddressPositionLong = element.latestWarningPositionLongitude;
@@ -1387,10 +1354,9 @@ export class FleetMapService {
         //  if(!_currentElem && !warnElem){ //advisory
         //     _alertConfig = this.getAlertConfig(element);
         //   }
-
-        criticalCount += element.level === 'C' ? 1 : 0;
-        warningCount += element.level === 'W' ? 1 : 0;
-        advisoryCount += element.level === 'A' ? 1 : 0;
+        criticalCount += element.level === 'C' || 'Critical' ? 1 : 0;
+        warningCount += element.level === 'W' || 'Warning' ? 1 : 0;
+        advisoryCount += element.level === 'A' || 'Advisory' ? 1 : 0;
 
       });
       if (criticalCount > 0) {
@@ -1566,8 +1532,8 @@ export class FleetMapService {
     //   this.afterPlusClick(newRoutes, _ui);
     // }
     //if (newRoutes.length > 1) {
-      this.clusterAllPoints(newRoutes, _ui, translationData);
-   // }
+    this.clusterAllPoints(newRoutes, _ui, translationData);
+    // }
   }
 
   showClassicRoute(dataPoints: any, _trackType: any, _colorCode: any) {
@@ -1792,7 +1758,7 @@ export class FleetMapService {
             // Use min zoom from a noise point to show it correctly at certain
             // zoom levels:
             min: noisePoint.getMinZoom(),
-            max: 20
+            max: noisePoint.getMaxZoom()
           });
 
           // Bind cluster data to the marker:
@@ -1918,40 +1884,40 @@ export class FleetMapService {
         },
         getNoisePresentation: (noisePoint) => {
           let vehicleDrivingStatus = false;
-          if(noisePoint && noisePoint.a && noisePoint.a.data){
+          if (noisePoint && noisePoint.a && noisePoint.a.data) {
             let elem: any = noisePoint.a.data;
-            
+
             //newDataSet.forEach(elem => {
-              this.startAddressPositionLat = elem.startPositionLattitude;
-              this.startAddressPositionLong = elem.startPositionLongitude;
-              this.endAddressPositionLat = elem.latestReceivedPositionLattitude;
-              this.endAddressPositionLong = elem.latestReceivedPositionLongitude;
-              let _vehicleMarkerDetails = this.setIconsOnMap(elem, ui);
-              vehicleDrivingStatus = elem.vehicleDrivingStatusType == 'D' || elem.vehicleDrivingStatusType == 'Driving' ? true : false;
-              let _vehicleMarker = _vehicleMarkerDetails['icon'];
-              let _alertConfig = _vehicleMarkerDetails['alertConfig'];
-              let _type = 'No Warning';
-              if (_alertConfig) {
-                _type = _alertConfig.type;
+            this.startAddressPositionLat = elem.startPositionLattitude;
+            this.startAddressPositionLong = elem.startPositionLongitude;
+            this.endAddressPositionLat = elem.latestReceivedPositionLattitude;
+            this.endAddressPositionLong = elem.latestReceivedPositionLongitude;
+            let _vehicleMarkerDetails = this.setIconsOnMap(elem, ui);
+            vehicleDrivingStatus = elem.vehicleDrivingStatusType == 'D' || elem.vehicleDrivingStatusType == 'Driving' ? true : false;
+            let _vehicleMarker = _vehicleMarkerDetails['icon'];
+            let _alertConfig = _vehicleMarkerDetails['alertConfig'];
+            let _type = 'No Warning';
+            if (_alertConfig) {
+              _type = _alertConfig.type;
+            }
+            let _checkValidLatLong = this.validateLatLng(this.endAddressPositionLat, this.endAddressPositionLong);
+            let markerSize = { w: 34, h: 40 };
+            if (vehicleDrivingStatus) {
+              let endMarker = this.createSVGMarker(elem.latestReceivedPositionHeading, elem.vehicleHealthStatusType, elem, true);
+              const icon = new H.map.DomIcon(endMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
+              this.vehicleIconMarker = new H.map.DomMarker({ lat: elem.latestReceivedPositionLattitude, lng: elem.latestReceivedPositionLongitude }, { icon: icon, min: noisePoint.getMinZoom(), max: 20 });
+              if (_checkValidLatLong) {//16705
+                this.group.addObjects([this.vehicleIconMarker]);
               }
-              let _checkValidLatLong = this.validateLatLng(this.endAddressPositionLat, this.endAddressPositionLong);
-              let markerSize = { w: 34, h: 40 };
-              if (vehicleDrivingStatus) {
-                let endMarker = this.createSVGMarker(elem.latestReceivedPositionHeading, elem.vehicleHealthStatusType, elem, true);
-                const icon = new H.map.DomIcon(endMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
-                this.vehicleIconMarker = new H.map.DomMarker({ lat: elem.latestReceivedPositionLattitude, lng: elem.latestReceivedPositionLongitude }, { icon: icon, min: noisePoint.getMinZoom(), max: 20 });
-                if (_checkValidLatLong) {//16705
-                  this.group.addObjects([this.vehicleIconMarker]);
-                }
+            }
+            else {
+              let icon = new H.map.Icon(_vehicleMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
+              this.vehicleIconMarker = new H.map.Marker({ lat: this.endAddressPositionLat, lng: this.endAddressPositionLong }, { icon: icon, min: noisePoint.getMinZoom(), max: 20 });
+              if (_checkValidLatLong) {//16705
+                this.group.addObject(this.vehicleIconMarker);
               }
-              else {
-                let icon = new H.map.Icon(_vehicleMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
-                this.vehicleIconMarker = new H.map.Marker({ lat: this.endAddressPositionLat, lng: this.endAddressPositionLong }, { icon: icon, min: noisePoint.getMinZoom(), max: 20 });
-                if (_checkValidLatLong) {//16705
-                  this.group.addObject(this.vehicleIconMarker);
-                }
-              }
-        
+            }
+
               // if(_checkValidLatLong) //16705
               //   this.group.addObjects([this.rippleMarker, this.vehicleIconMarker]);
               let _healthStatus = this.getHealthStatus(elem);
@@ -1994,17 +1960,17 @@ export class FleetMapService {
                     <td style='width: 100px;'>${translationData.lblDriverName}:</td> <td><b>${_driverName}</b></td>
                     </tr>
                   </table>`
-                });
-                // show info bubble
-                ui.addBubble(iconBubble);
-              }, false);
-              this.vehicleIconMarker.addEventListener('pointerleave', function (evt) {
-                iconBubble.close();
-              }, false);
+              });
+              // show info bubble
+              ui.addBubble(iconBubble);
+            }, false);
+            this.vehicleIconMarker.addEventListener('pointerleave', function (evt) {
+              iconBubble.close();
+            }, false);
             //});
           }
 
-          this.vehicleIconMarker.setData(noisePoint); 
+          this.vehicleIconMarker.setData(noisePoint);
           return this.vehicleIconMarker;
         }
       }
@@ -2191,7 +2157,7 @@ export class FleetMapService {
             // Use min zoom from a noise point to show it correctly at certain
             // zoom levels:
             min: noisePoint.getMinZoom(),
-            max: 20
+            max: noisePoint.getMaxZoom()
           });
 
           // Bind cluster data to the marker:
@@ -2301,7 +2267,7 @@ export class FleetMapService {
   }
 
   processedLiveFLeetData(fleetData: any) {
-    let _arr : any = [];
+    let _arr: any = [];
     fleetData.forEach(element => {
       let flag: boolean = false;
       if (element.tripId != "" && element.liveFleetPosition.length > 0) {
@@ -2310,24 +2276,24 @@ export class FleetMapService {
         element.startPositionLongitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[0].gpsLongitude : element.startPositionLongitude;
         element.latestReceivedPositionLattitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[element.liveFleetPosition.length - 1].gpsLatitude : element.latestReceivedPositionLattitude;
         element.latestReceivedPositionLongitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[element.liveFleetPosition.length - 1].gpsLongitude : element.latestReceivedPositionLongitude;
-        if(element.latestReceivedPositionLattitude != 255 && element.latestReceivedPositionLongitude != 255){
+        if (element.latestReceivedPositionLattitude != 255 && element.latestReceivedPositionLongitude != 255) {
           flag = true;
         }
       }
       else if (element.tripId != "" && element.liveFleetPosition.length == 0 && element.latestWarningClass != 0) {
         element.latestReceivedPositionLattitude = element.latestWarningPositionLatitude;
         element.latestReceivedPositionLongitude = element.latestWarningPositionLongitude;
-        if(element.latestReceivedPositionLattitude != 255 && element.latestReceivedPositionLongitude != 255){
+        if (element.latestReceivedPositionLattitude != 255 && element.latestReceivedPositionLongitude != 255) {
           flag = true;
         }
       }
-      else if(element.latestReceivedPositionLattitude != 255 &&  element.latestReceivedPositionLongitude != 255){ // why ?
+      else if (element.latestReceivedPositionLattitude != 255 && element.latestReceivedPositionLongitude != 255) { // why ?
         element.latestReceivedPositionLattitude = element.latestReceivedPositionLattitude; // 48.8566
         element.latestReceivedPositionLongitude = element.latestReceivedPositionLongitude; // 2.3522
         flag = true;
       }
 
-      if(flag){
+      if (flag) {
         _arr.push(element); // valid record only
       }
     });
@@ -2345,5 +2311,36 @@ export class FleetMapService {
     this.hereMap.removeObjects(this.hereMap.getObjects());
     let marker = new H.map.Marker(coordinates, { icon: this.getCategoryPOIIcon() });
     this.hereMap.addObject(marker);
+  }
+
+  drawIconsSample(_selectedRoutes, _ui, translationData) {
+    let newDataSet = _selectedRoutes.slice();
+    newDataSet.forEach(elem => {
+      let _vehicleMarkerDetails = this.setIconsOnMap(elem, _ui);
+      let vehicleDrivingStatus = elem.vehicleDrivingStatusType == 'D' || elem.vehicleDrivingStatusType == 'Driving' ? true : false;
+      let _vehicleMarker = _vehicleMarkerDetails['icon'];
+      let _alertConfig = _vehicleMarkerDetails['alertConfig'];
+      let _type = 'No Warning';
+      if (_alertConfig) {
+        _type = _alertConfig.type;
+      }
+      let _checkValidLatLong = this.validateLatLng(elem.latestReceivedPositionLattitude, elem.latestReceivedPositionLongitude);
+      let markerSize = { w: 34, h: 40 };
+      if (vehicleDrivingStatus) {
+        let endMarker = this.createSVGMarker(elem.latestReceivedPositionHeading, elem.vehicleHealthStatusType, elem, false);
+        const icon = new H.map.Icon(endMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
+        let vehicleIconMarker = new H.map.Marker({ lat: elem.latestReceivedPositionLattitude, lng: elem.latestReceivedPositionLongitude }, { icon: icon });
+        if (_checkValidLatLong) {//16705
+          this.markerGroup.addObject(vehicleIconMarker);
+        }
+      }
+      else {
+        let icon = new H.map.Icon(_vehicleMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
+        let vehicleIconMarker = new H.map.Marker({ lat: elem.latestReceivedPositionLattitude, lng: elem.latestReceivedPositionLongitude }, { icon: icon });
+        if (_checkValidLatLong) {//16705
+          this.markerGroup.addObject(vehicleIconMarker);
+        }
+      }
+    });
   }
 }

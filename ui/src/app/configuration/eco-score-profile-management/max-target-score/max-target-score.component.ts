@@ -15,13 +15,10 @@ export class MaxTargetScoreComponent implements OnInit {
   @Input() selectedElementData: any;
   @Input() kpiId: any;
   @Input() translationData: any;
-  // @Input() createStatus: boolean;
-  // @Input() viewFlag: boolean;
   @Output() createKPIEmit = new EventEmitter<object>();
   kpiData: any = [];
   isKPI: any = true;
   array: any = [];
-  
   title = 'ngx-slider';  
   value: number = this.kpiData.limitValue;  
   maxvalue: number = this.kpiData.targetValue;
@@ -42,16 +39,10 @@ export class MaxTargetScoreComponent implements OnInit {
     this.maxvalue =  this.kpiData.targetValue;
     this.options.floor = this.kpiData.lowerValue;
     this.options.ceil = this.kpiData.upperValue;
-    //this.options.step = this.kpiData.upperValue > 50 ? this.kpiData.upperValue/100 : this.kpiData.upperValue/10,  
     this.options.step = 0.01,  
     this.options.showTicks= true,
     this.options.tickStep = this.kpiData.upperValue - this.kpiData.lowerValue > 10000 ? 500 : this.kpiData.upperValue - this.kpiData.lowerValue > 1000 && this.kpiData.upperValue - this.kpiData.lowerValue < 10000 ? 100 : this.kpiData.upperValue - this.kpiData.lowerValue> 100  && this.kpiData.upperValue - this.kpiData.lowerValue < 1000 ? 50 : this.kpiData.upperValue - this.kpiData.lowerValue  > 50  && this.kpiData.upperValue - this.kpiData.lowerValue <= 100 ? 10 : 1 ; 
-    // this.options.showTicks = true  
-    
     this.SliderData();
-  // if(this.isCreate){
-  //   this.sendData()
-  // }
   }
 
   SliderData(){
@@ -78,17 +69,14 @@ export class MaxTargetScoreComponent implements OnInit {
   }
 
   setDefaultValue(){
-    
     this.ecoScoreProfileKPIForm.get("lowerValue").setValue(this.options.floor);
     this.ecoScoreProfileKPIForm.get("upperValue").setValue(this.options.ceil);
     this.ecoScoreProfileKPIForm.get("limitValue").setValue(this.maxvalue);
     this.ecoScoreProfileKPIForm.get("targetValue").setValue(this.value);
-
     this.sendData();
   }
 
   sendData(){
-
     let emitObj = {
       "kpiId": this.kpiId,
       "limitType": "X",
@@ -125,10 +113,9 @@ export class MaxTargetScoreComponent implements OnInit {
   }
  
    changeLower(changedVal: any){
-     // this.options.floor = changedVal;
-     const newOptions: Options = Object.assign({}, this.options);
-     newOptions.floor = parseFloat(changedVal);
-     this.options = newOptions;
+    const newOptions: Options = Object.assign({}, this.options);
+    newOptions.floor = parseFloat(changedVal);
+    this.options = newOptions;
     this.sendData();
     this.SliderData();
    }
@@ -140,6 +127,5 @@ export class MaxTargetScoreComponent implements OnInit {
     this.sendData();
     this.SliderData();
    }
-
 }
 

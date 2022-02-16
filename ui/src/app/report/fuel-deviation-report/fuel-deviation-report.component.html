@@ -364,11 +364,11 @@
               translationData.lblFuelDeviationDetails }}</span>
           </mat-panel-title>
         </mat-expansion-panel-header>
-        <div *ngIf='initData.length == 0'>
-          <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound
-            }}</div>
-          <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{
-            translationData.lblSelectionMessage }}</div>
+        <div *ngIf='noRecordFound'>
+          <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound  }}</div>
+        </div>
+        <div *ngIf='initData.length == 0 && !noRecordFound'>
+          <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblSelectionMessage }}</div>
         </div>
         <div *ngIf='initData.length > 0' [ngClass]="{'reportTable': displayedColumns.length > 7}">
           <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm' fxLayoutGap="10px">
