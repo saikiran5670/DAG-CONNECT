@@ -428,13 +428,15 @@ export class FleetOverviewSummaryComponent implements OnInit {
     this.doughnutChartDataMileage = [[0, 0]];
     if (milDone && this.distanceThreshold) {
       this.mileageRate = Number.parseFloat(((Number.parseFloat(milDone) / this.distanceThreshold) * 100).toFixed(2));
-      this.doughnutChartDataMileage = [[this.mileageRate, 100 - this.mileageRate]];
+      let thresholdLeft = (100 - this.mileageRate > 0) ? 100 - this.mileageRate : 0;
+      this.doughnutChartDataMileage = [[this.mileageRate, thresholdLeft]];
     }
     //Fleet Utilization rate
     this.doughnutChartDataUtil = [[0, 0]];
     if (this.totalDriveTime && this.timeThreshold) {
       this.utilizationRate = Number(((this.totalDriveTime / this.timeThreshold) * 100).toFixed(2));
-      this.doughnutChartDataUtil = [[this.utilizationRate, 100 - this.utilizationRate]];
+      let thresholdLeft = (100 - this.utilizationRate > 0) ? 100 - this.utilizationRate : 0;
+      this.doughnutChartDataUtil = [[this.utilizationRate, thresholdLeft]];
     }
   }
 
