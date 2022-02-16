@@ -211,9 +211,13 @@ export class CurrentFleetComponent implements OnInit {
   }
 
   getFilterData(){
-    this.reportService.getFilterDetails().subscribe((data: any) => { 
+    this.showLoadingIndicator = true;
+    this.reportService.getFilterDetails().subscribe((data: any) => {
+      if(data) this.hideLoader();
       this.filterData = data;
-    }, (error) => { });
+    }, (error) => {
+      this.hideLoader();
+    });
   }
 
   processTranslation(transData: any) {

@@ -462,24 +462,122 @@ export class CommonImportComponent implements OnInit {
   // POI import functions
   preparePOIDataToImport(removableInput){
     let packagesToImport = [];
-    for(let i = 0; i < this.filelist.length ; i++){
+    let poiAPIData: any = [];
+    
+    this.filelist.map((item: any) => {
+      let _txt: any = {};
+      let _keys = [];
+      for (const [key, value] of Object.entries(item)) {
+        _keys.push(key);
+      }
+      let nm = _keys.filter(i=>i==this.importTranslationData.lblName);
+      if(nm.length==0) {
+        _txt.name = "";
+      }
+      let lat = _keys.filter(i=>i==this.importTranslationData.lblLatitude);
+      if(lat.length==0) {
+        _txt.latitude = "";
+      }
+      let long = _keys.filter(i=>i==this.importTranslationData.lblLongitude);
+      if(long.length==0) {
+        _txt.longitude = "";
+      }
+      let cn = _keys.filter(i=>i==this.importTranslationData.lblCategoryName);
+      if(cn.length==0) {
+        _txt.categoryName = "";
+      }
+      let scn = _keys.filter(i=>i==this.importTranslationData.lblSubCategoryName);
+      if(scn.length==0) {
+        _txt.subCategoryName = "";
+      }
+      let ad = _keys.filter(i=>i==this.importTranslationData.lblAddress);
+      if(ad.length==0) {
+        _txt.address = "";
+      }
+      let zc = _keys.filter(i=>i==this.importTranslationData.lblZipCode);
+      if(zc.length==0) {
+        _txt.zipCode = "";
+      }
+      let ct = _keys.filter(i=>i==this.importTranslationData.lblCity);
+      if(ct.length==0) {
+        _txt.city = "";
+      }
+      let cntry = _keys.filter(i=>i==this.importTranslationData.lblCountry);
+      if(cntry.length==0) {
+        _txt.country = "";
+      }
+      // let dist = _keys.filter(i=>i==this.translationData.lblDistance);
+      // if(dist.length==0) {
+      //   _txt.distance = "";
+      // }
+      // let state = _keys.filter(i=>i==this.translationData.lblState || 'State');
+      // if(state.length==0) {
+      //   _txt.state = "";
+      // }
+      // let type = _keys.filter(i=>i==this.translationData.lblType);
+      // if(type.length==0) {
+      //   _txt.type = "";
+      // }
+      for (const [key, value] of Object.entries(item)) {
+        switch(key){
+          case this.importTranslationData.lblName: 
+            _txt.name = value;
+          break;
+          case this.importTranslationData.lblLatitude: 
+            _txt.latitude = value;
+          break;
+          case this.importTranslationData.lblLongitude: 
+            _txt.longitude = value;
+          break;
+          case this.importTranslationData.lblCategoryName: 
+            _txt.categoryName = value;
+          break;
+          case this.importTranslationData.lblSubCategoryName: 
+            _txt.subCategoryName = value;
+          break;
+          case this.importTranslationData.lblAddress: 
+            _txt.address = value;
+          break;
+          case this.importTranslationData.lblZipCode: 
+            _txt.zipCode = value;
+          break;
+          case this.importTranslationData.lblCity: 
+            _txt.city = value;
+          break;
+          case this.importTranslationData.lblCountry: 
+            _txt.country = value;
+          break;
+          // case this.translationData.lblDistance: 
+          //   _txt.distance = value;
+          // break;
+          // case this.translationData.lblState || 'State': 
+          //   _txt.state = value;
+          // break;
+          // case this.translationData.lblType: 
+          //   _txt.type = value;
+          // break;
+        }
+      }
+      poiAPIData.push(_txt);
+    });
+    for(let i = 0; i < poiAPIData.length ; i++){
       packagesToImport.push(
         {
             "organizationId": this.accountOrganizationId,//this.filelist[i]["OrganizationId"],
-            "categoryId": this.getCategoryId(this.filelist[i]["CategoryName"],'C'),// this.getCategoryId(this.filelist[i]["CategoryName"],'C'),
-            "categoryName":this.filelist[i]["CategoryName"] == undefined ? '' : this.filelist[i]["CategoryName"],
-            "subCategoryId":this.getCategoryId(this.filelist[i]["SubCategoryName"],'S'),//this.getCategoryId(this.filelist[i]["SubCategoryName"],'S'),
-            "subCategoryName": this.filelist[i]["SubCategoryName"] == undefined ? '' : this.filelist[i]["SubCategoryName"],
-            "name": this.filelist[i]["POIName"] || this.filelist[i]["Name"],
-            "address": this.filelist[i]["Address"] == undefined ? '' : this.filelist[i]["Address"],
-            "city": this.filelist[i]["City"] == undefined ? '' : this.filelist[i]["City"],
-            "country": this.filelist[i]["Country"] == undefined ? '' : this.filelist[i]["Country"],
-            "zipcode":String(this.filelist[i]["Zipcode"] == undefined ? '' : this.filelist[i]["Zipcode"]),
-            "latitude": this.filelist[i]["Latitude"],
-            "longitude": this.filelist[i]["Longitude"],
-            "distance": this.filelist[i]["Distance"] == undefined ? '' : this.filelist[i]["Distance"],
-            "state": this.filelist[i]["State"] == undefined ? '' : this.filelist[i]["State"],
-            "type": this.filelist[i]["Type"]== undefined ? '' : this.filelist[i]["Type"]
+            "categoryId": this.getCategoryId(poiAPIData[i].categoryName,'C'),// this.getCategoryId(this.filelist[i]["CategoryName"],'C'),
+            "categoryName":poiAPIData[i].categoryName == undefined ? '' : poiAPIData[i].categoryName,
+            "subCategoryId":this.getCategoryId(poiAPIData[i].subCategoryName,'S'),//this.getCategoryId(this.filelist[i]["SubCategoryName"],'S'),
+            "subCategoryName": poiAPIData[i].subCategoryName == undefined ? '' : poiAPIData[i].subCategoryName,
+            "name": poiAPIData[i].name,   //this.filelist[i]["POIName"] || this.filelist[i]["Name"],
+            "address": poiAPIData[i].address == undefined ? '' : poiAPIData[i].address,
+            "city": poiAPIData[i].city == undefined ? '' : poiAPIData[i].city,
+            "country": poiAPIData[i].country == undefined ? '' : poiAPIData[i].country,
+            "zipcode":String(poiAPIData[i].zipCode == undefined ? '' : poiAPIData[i].zipCode),
+            "latitude": poiAPIData[i].latitude,
+            "longitude": poiAPIData[i].longitude,
+            "distance": poiAPIData[i].distance == undefined ? '' : poiAPIData[i].distance,
+            "state": poiAPIData[i].state == undefined ? '' : poiAPIData[i].state,
+            "type": poiAPIData[i].type== undefined ? '' : poiAPIData[i].type
         }
       )
     }
