@@ -1,12 +1,7 @@
-import { Injectable, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { HereService } from '../../services/here.service';
+import { Injectable, ElementRef } from '@angular/core'; 
 import { Util } from '../../shared/util';
-import { ConfigService } from '@ngx-config/core';
-import { elementEventFullName } from '@angular/compiler/src/view_compiler/view_compiler';
 import { ReportMapService } from '../../report/report-map.service';
-import { TranslationService } from 'src/app/services/translation.service';
 import { OrganizationService } from 'src/app/services/organization.service';
-
 
 declare var H: any;
 
@@ -51,15 +46,14 @@ export class FleetMapService {
   accountPrefObj: any;
   alertMarker: any;
   vehicleIconMarker: any;
-  localStLanguage: any;
-  prefData: any;
-  preference: any;
+  localStLanguage: any; 
   orgId: any;
   vehicleDisplayPreference: any = 'dvehicledisplay_VehicleIdentificationNumber';
   translationData: any = {};
   markerGroup = new H.map.Group();
+  prefDetail: any = {};
 
-  constructor(private organizationService: OrganizationService, private translationService: TranslationService, private hereSerive: HereService, private _configService: ConfigService, private reportMapService: ReportMapService) {
+  constructor(private organizationService: OrganizationService, private reportMapService: ReportMapService) {
     //this.map_key = _configService.getSettings("hereMap").api_key;
     this.map_key = localStorage.getItem("hereMapsK");
     this.platform = new H.service.Platform({
@@ -67,75 +61,41 @@ export class FleetMapService {
     });
     this.herePOISearch = this.platform.getPlacesService();
     this.entryPoint = H.service.PlacesService.EntryPoint;
-    let _langCode = this.localStLanguage ? this.localStLanguage.code : "EN-GB";
-    // let translationObj = {
-    //   id: 0,
-    //   code: _langCode,
-    //   type: "Menu",
-    //   name: "",
-    //   value: "",
-    //   filter: "",
-    //   menuId: 17 //-- for alerts
-    // }
-    // this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-    //   this.processTranslation(data);
-    // });
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
-    this.translationService.getPreferences(_langCode).subscribe((prefData: any) => {
-      if (this.accountPrefObj && this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != '') { // account pref
-        this.proceedStep(prefData, this.accountPrefObj.accountPreference);
-      } else { // org pref
-        this.organizationService.getOrganizationPreference(this.orgId).subscribe((orgPref: any) => {
-          this.proceedStep(prefData, orgPref);
-        }, (error) => { // failed org API
-          let pref: any = {};
-          this.proceedStep(prefData, pref);
-        });
-      }
-      if (this.prefData) {
-        this.setInitialPref(this.prefData, this.preference);
-      }
-      let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
-      if (vehicleDisplayId) {
-        let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
-        if (vehicledisplay.length != 0) {
-          this.vehicleDisplayPreference = vehicledisplay[0].name;
+    this.prefDetail = JSON.parse(localStorage.getItem('prefDetail'));
+      if(this.prefDetail){
+        if (this.accountPrefObj && this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != '') { // account pref
+          this.setInitialPref(this.accountPrefObj.accountPreference);
+        } else { 
+          this.organizationService.getOrganizationPreference(this.orgId).subscribe((orgPref: any) => {
+            this.setInitialPref(orgPref);
+          }, (error) => { 
+            this.setInitialPref({});
+          });
+        }
+        let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
+        if (vehicleDisplayId) {
+          let vehicledisplay = this.prefDetail.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+          if (vehicledisplay.length != 0) {
+            this.vehicleDisplayPreference = vehicledisplay[0].name;
+          }
         }
       }
-
-    });
-
   }
 
-  processTranslation(transData: any) {
-    this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    //console.log("process translationData:: ", this.translationData)
-  }
-
-  setInitialPref(prefData, preference) {
-    let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
+  setInitialPref(preference: any) {
+    let _search = this.prefDetail.timeformat.filter(i => i.id == preference.timeFormatId);
     if (_search.length > 0) {
-      //this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
       this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0, 2));
-      //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
-      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
-      this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
-      this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;
+      this.prefTimeZone = this.prefDetail.timezone.filter(i => i.id == preference.timezoneId)[0].name;
+      this.prefDateFormat = this.prefDetail.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+      this.prefUnitFormat = this.prefDetail.unit.filter(i => i.id == preference.unitId)[0].name;
     } else {
-      //this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
-      this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0, 2));
-      //this.prefTimeZone = prefData.timezone[0].value;
-      this.prefTimeZone = prefData.timezone[0].name;
-      this.prefDateFormat = prefData.dateformat[0].name;
-      this.prefUnitFormat = prefData.unit[0].name;
+      this.prefTimeFormat = Number(this.prefDetail.timeformat[0].name.split("_")[1].substring(0, 2)); 
+      this.prefTimeZone = this.prefDetail.timezone[0].name;
+      this.prefDateFormat = this.prefDetail.dateformat[0].name;
+      this.prefUnitFormat = this.prefDetail.unit[0].name;
     }
-  }
-
-  proceedStep(prefData: any, preference: any) {
-    this.prefData = prefData;
-    this.preference = preference;
-    // this.setPrefFormatDate();
-
   }
 
   setPrefObject(_prefObj) {
