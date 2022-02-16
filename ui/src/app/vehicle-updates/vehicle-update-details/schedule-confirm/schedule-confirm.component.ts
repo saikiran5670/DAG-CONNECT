@@ -1,7 +1,5 @@
-import { Component, OnInit, HostListener, Inject, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, Inject, ViewEncapsulation } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { TranslationService } from 'src/app/services/translation.service';
-
 
 @Component({
   selector: 'app-schedule-confirm',
@@ -28,34 +26,17 @@ export class ScheduleConfirmComponent implements OnInit {
     scheduleDateTime: any,
     scheduledDate: any,
     scheduledTime:any
-  }, private mdDialogRef: MatDialogRef<ScheduleConfirmComponent>,private translationService: TranslationService) {
+  }, private mdDialogRef: MatDialogRef<ScheduleConfirmComponent>) {
     this.organizationName = localStorage.getItem('organizationName');
     this.getSchedulerConfirmationData(data);
   }
 
   ngOnInit(): void {
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
-    this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
-    // let translationObj = {
-    //   id: 0,
-    //   code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
-    //   type: "Menu",
-    //   name: "",
-    //   value: "",
-    //   filter: "",
-    //   menuId: 17 //-- for alerts
-    // }
-    // this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-    //   this.processTranslation(data);
-    // })
+    this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0; 
   }
 
-  processTranslation(transData: any) {
-    this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-  }
-
-  getSchedulerConfirmationData(data) {
-  }
+  getSchedulerConfirmationData(data) { }
 
   public onClose(value: any) {
     this.closePopup = false;

@@ -52,24 +52,16 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   userType: any = '';
   associationTypeId: any = 1;
   wholeData: any = '';
+  prefDetail: any = {};
 
-  constructor(private translationService: TranslationService, private accountService: AccountService, private vehicleService: VehicleService, private dialogService: ConfirmDialogService, private dialog: MatDialog, private organizationService: OrganizationService) { 
-    // this.defaultTranslation();
-  }
-
-  // defaultTranslation() {
-  //   this.translationData = {
-  //     lblSearch: "Search",
-  //     lblAllAccessRelationshipDetails: "All Access Relationship Details",
-  //     lblNewAssociation: "New Association"
-  //   }
-  // }
+  constructor(private translationService: TranslationService, private accountService: AccountService, private vehicleService: VehicleService, private dialogService: ConfirmDialogService, private dialog: MatDialog, private organizationService: OrganizationService) { }
 
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
     this.adminAccessType = JSON.parse(localStorage.getItem("accessType"));
     this.userType = localStorage.getItem("userType");
+    this.prefDetail = JSON.parse(localStorage.getItem('prefDetail'));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     let translationObj = {
       id: 0,
@@ -84,29 +76,26 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
     this.translationService.getMenuTranslations(translationObj).subscribe( (data: any) => {
       this.processTranslation(data);
       this.columnNames = [this.translationData.lblVehicleGroupVehicle, this.translationData.lblAccessType, this.translationData.lblAccountGroupAccount, this.translationData.lblAction];
-      this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
-        if (this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != '') { // account pref
-          this.proceedStep(prefData, this.accountPrefObj.accountPreference);
-        } else { // org pref
+      if(this.prefDetail){
+        if (this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != '') { 
+          this.proceedStep(this.accountPrefObj.accountPreference);
+        } else { 
           this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any) => {
-            this.proceedStep(prefData, orgPref);
-          }, (error) => { // failed org API
-            let pref: any = {};
-            this.proceedStep(prefData, pref);
+            this.proceedStep(orgPref);
+          }, (error) => { 
+            this.proceedStep({});
           });
-        }
-      }, (error)=>{
-        this.hideloader();
-      });
+        } 
+      }
     }, (error)=>{
       this.hideloader();
     });
   }
 
-  proceedStep(prefData: any, preference: any){
+  proceedStep(preference: any){
     if(preference.vehicleDisplayId){
-      let _search = prefData.vehicledisplay.filter(i => i.id == preference.vehicleDisplayId);
-      if(_search.length > 0) { // present
+      let _search = this.prefDetail.vehicledisplay.filter(i => i.id == preference.vehicleDisplayId);
+      if(_search.length > 0) { 
         this.vehicleDisplayPreference = _search[0].name;
       }
     }
