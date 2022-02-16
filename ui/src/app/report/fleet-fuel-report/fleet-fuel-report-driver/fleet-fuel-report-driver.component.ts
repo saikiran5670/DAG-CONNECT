@@ -2260,7 +2260,7 @@ setVehicleGroupAndVehiclePreSelection() {
       cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
     })
     this.initData.forEach(item => {
-      if(item.driverID.includes('~*')) {
+      if(item && item.driverID && item.driverID.includes('~*')) {
         item.driverName = 'Unknown';
         item.driverID = '*';
       }
