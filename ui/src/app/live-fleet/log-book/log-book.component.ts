@@ -128,6 +128,7 @@ fromMoreAlertsFlag: boolean = false;
 logbookDataFlag: boolean = false;
 herePOIArr: any = [];
 getLogbookDetailsAPICall: any;
+vehicleDisplayPreference: any = 'dvehicledisplay_VehicleIdentificationNumber';
 prefMapData: any = [
   {
     key: 'rp_lb_logbook_details_alertlevel',
@@ -350,6 +351,13 @@ ngOnDestroy(){
           // if(this._state.fromMoreAlerts == true){
           //   this.selectionTimeRange('today');}
             }
+        let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
+        if (vehicleDisplayId) {
+          let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+          if (vehicledisplay.length != 0) {
+            this.vehicleDisplayPreference = vehicledisplay[0].name;
+          }
+        }
       });
     });
     // if(this._state.fromDashboard == true){
@@ -2137,7 +2145,7 @@ let prepare = []
   drawAlerts(_alertArray){
     if(!this.fromAlertsNotifications){
     this.clearRoutesFromMap();
-    }
+    }    
     _alertArray.forEach(elem => {
       let  markerPositionLat = elem.latitude;
       let  markerPositionLng = elem.longitude;
@@ -2154,21 +2162,27 @@ let prepare = []
 
       this.mapGroup.addObject(this.vehicleIconMarker);
       let iconBubble;
+      let vehicleDisplayPref = '';
+      let elementValue = '';
+      if (this.vehicleDisplayPreference == 'dvehicledisplay_VehicleName') {
+        vehicleDisplayPref = this.translationData.lblVehicleName;
+        elementValue = elem.vehicleName;
+      } else if (this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber') {
+        vehicleDisplayPref = this.translationData.lblVIN;
+        elementValue = elem.vin;
+      } else if (this.vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber') {
+        vehicleDisplayPref = this.translationData.lblRegistrationNumber;
+        elementValue = elem.vehicleRegNo;
+      }
       this.vehicleIconMarker.addEventListener('pointerenter', (evt)=> {
         // event target is the marker itself, group is a parent event target
         // for all objects that it contains
         iconBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
           // read custom data
           content:`<table style='width: 300px; font-size:14px; line-height: 21px; font-weight: 400;' class='font-helvetica-lt'>
-            <tr>
-              <td style='width: 100px;'>${this.translationData.lblVehicleName}:</td> <td><b>${elem.vehicleName}</b></td>
-            </tr>
-            <tr>
-              <td style='width: 100px;'>${this.translationData.lblVIN}:</td> <td><b>${elem.vin}</b></td>
-            </tr>
-            <tr>
-              <td style='width: 100px;'>${this.translationData.lblRegistrationNumber}:</td> <td><b>${elem.vehicleRegNo}</b></td>
-            </tr>
+          <tr>
+          <td style='width: 100px;'>${vehicleDisplayPref}:</td> <td><b>${elementValue}</b></td>
+          </tr>
             <tr>
               <td style='width: 100px;'>${this.translationData.lblDate}:</td> <td><b>${elem.alertGeneratedTime}</b></td>
             </tr>
