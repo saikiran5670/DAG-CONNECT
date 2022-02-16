@@ -590,6 +590,7 @@ removeDuplicates(originalArray, prop) {
     }​​​​​​​​);
 
     this.vehicleListData = filteredData;
+    this.filterVINonMap(); // VIN's on map
   }
 
   onChangeGroup(id: any){   
