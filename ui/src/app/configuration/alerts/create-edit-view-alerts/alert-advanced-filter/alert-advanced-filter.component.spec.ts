@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { AlertAdvancedFilterComponent } from './alert-advanced-filter.component';
 
 describe('AlertAdvancedFilterComponent', () => {

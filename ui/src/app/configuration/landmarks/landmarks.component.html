@@ -1,5 +1,4 @@
 <div class="bgtrans tabs">
-  <!-- <mat-tab-group [ngStyle]="{'visibility':  tabVisibilityStatus  ? 'visible' : 'hidden' }" [(selectedIndex)]="selectedIndex"> -->
   <mat-tab-group [ngClass]="[ tabVisibilityStatus ? '' : 'hideTabHeader']" [(selectedIndex)]="selectedIndex" (selectedTabChange)="onTabChanged($event);">
     <mat-tab label="{{ translationData.lblManagePOIandGeofence || 'Manage POI and Geofence' }}">
       <app-manage-poi-geofence *ngIf="selectedIndex == 0" (tabVisibility)="tabVisibilityHandler($event)" [translationData]='translationData'></app-manage-poi-geofence>

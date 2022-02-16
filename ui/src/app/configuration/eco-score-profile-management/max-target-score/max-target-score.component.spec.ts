@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { MaxTargetScoreComponent } from './max-target-score.component';
 
 describe('MaxTargetScoreComponent', () => {

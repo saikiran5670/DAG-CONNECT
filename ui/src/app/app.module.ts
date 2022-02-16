@@ -79,7 +79,7 @@ export function configFactory(httpClient: HttpClient): ConfigLoader {
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AppInterceptor, multi: true },
-    { provide: LocationStrategy, useClass: HashLocationStrategy },
+    { provide: LocationStrategy, useClass: HashLocationStrategy },  
     SessionDialogService,
     DataInterchangeService,
     AccountService,

@@ -1,6 +1,4 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { ReportService } from 'src/app/services/report.service';
-import { TranslationService } from 'src/app/services/translation.service';
 
 @Component({
   selector: 'app-fleet-overview-preferences',
@@ -12,44 +10,22 @@ export class FleetOverviewPreferencesComponent implements OnInit {
   @Input() translationData: any = {};
   updateMsgVisible: boolean = false;
   displayMessage: any = 'pref added';
-  showLoadingIndicator: any = false;
-  generalPreferences: any;
-  reportListData: any = [];
+  showLoadingIndicator: any = false; 
   editFleetOverviewFlag: boolean = false;
   showFleetOverview: boolean = false;
   editLogbookFlag: boolean = false;
   showLogbook: boolean = false;
+  prefDetail: any = {};
+  reportDetail: any = [];
 
-  constructor(private reportService: ReportService, private translationService: TranslationService) { }
+  constructor() { }
 
   ngOnInit() {
-    this.loadReportData();
-  }
-  
-  loadReportData(){
-    this.showLoadingIndicator = true;
-    this.reportService.getReportDetails().subscribe((reportList: any)=>{
-      this.hideloader();
-      this.reportListData = reportList.reportDetails;
-      this.getPreferences();
-    }, (error)=>{
-      //console.log('Report not found...', error);
-      this.hideloader();
-      this.reportListData = [];
-    });
-  }
-
-  getPreferences() {
-    let languageCode = JSON.parse(localStorage.getItem('language')).code;
-    this.translationService.getPreferences(languageCode).subscribe((res: any) => {
-      this.generalPreferences = res
-    }, (error)=>{
-      //console.log('pref not present...');
-    });
+    this.prefDetail = JSON.parse(localStorage.getItem('prefDetail'));
+    this.reportDetail = JSON.parse(localStorage.getItem('reportDetail'));
   }
 
   hideloader() {
-    // Setting display of spinner
     this.showLoadingIndicator = false;
   }
 

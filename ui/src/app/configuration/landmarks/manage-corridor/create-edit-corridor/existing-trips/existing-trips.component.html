@@ -299,8 +299,10 @@
         <span class='font-18-px line-height-27px font-helvetica-md'>{{ translationData.lblExistingTripDetails }}</span>
         <!-- <span> ({{ translationData.lblMaxrange3months || 'Max range 3 months' }})</span> -->
       </div>
-      <div *ngIf='initData.length == 0'>
+      <div *ngIf='noRecordFound'>
         <div>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
+      </div>
+      <div *ngIf='initData.length == 0 && !noRecordFound'>
         <div>{{ translationData.lblSearchdetailfromtoptoviewdetails || 'Search detail from top to view details'  }}</div>
       </div>
       <div *ngIf='initData.length > 0'>

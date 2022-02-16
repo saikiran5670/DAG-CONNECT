@@ -1,7 +1,6 @@
 import { Options,LabelType  } from '@angular-slider/ngx-slider';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { parse } from 'path';
 import { CustomValidators } from 'src/app/shared/custom.validators';
 
 @Component({
@@ -16,17 +15,13 @@ export class TimeRangeSliderComponent implements OnInit {
   @Input() selectedElementData: any;
   @Input() kpiId: any;
   @Input() translationData: any;
-  // @Input() createStatus: boolean;
-  // @Input() viewFlag: boolean;
   @Output() createKPIEmit = new EventEmitter<object>();
   kpiData: any = [];
   isKPI: any = true;
   array: any = [];
   arrayMin: any = 0;
   arrayMax: any = 0;
-  
   title = 'ngx-slider';  
-
   maxvalue: number = this.kpiData.targetValue;
   dateRange = []; 
   value: number = this.dateRange[0];  
@@ -41,7 +36,6 @@ export class TimeRangeSliderComponent implements OnInit {
     ceil: 0.01,
     showOuterSelectionBars: true,
     showTicks: true,
-    // tickStep: 0,
   };
   
 
@@ -50,20 +44,15 @@ export class TimeRangeSliderComponent implements OnInit {
   ngOnInit(): void {
     this.kpiData = this.selectedElementData;
     this.value = this.kpiData.targetValue;
-      this.maxvalue =  this.kpiData.limitValue;
-      
+    this.maxvalue =  this.kpiData.limitValue;
     this.options.tickStep = this.kpiData.upperValue - this.kpiData.lowerValue > 10000 ? 500 : this.kpiData.upperValue - this.kpiData.lowerValue > 1000 && this.kpiData.upperValue - this.kpiData.lowerValue < 10000 ? 100 : this.kpiData.upperValue - this.kpiData.lowerValue> 100  && this.kpiData.upperValue - this.kpiData.lowerValue < 1000 ? 50 : this.kpiData.upperValue - this.kpiData.lowerValue  > 50  && this.kpiData.upperValue - this.kpiData.lowerValue <= 100 ? 10 : 1 ;  
-    // this.options.step = 1,  
-  
     this.options.showOuterSelectionBars = true;
-    // this.options.tickStep = 1 ; 
     this.arrayMin = this.kpiData.lowerValue;
     this.arrayMax = this.kpiData.upperValue;
     this.setOptions();
   }
 
   setOptions(){
-  
     this.dateRange = this.createDateRange();
     this.options = {
       stepsArray: this.dateRange.map((value) => {
@@ -76,7 +65,6 @@ export class TimeRangeSliderComponent implements OnInit {
     this.options.tickStep = this.arrayMax - this.arrayMin > 10000 ? 700 : this.arrayMax - this.arrayMin > 1000 && this.arrayMax - this.arrayMin < 10000 ? 100 : this.arrayMax - this.arrayMin > 100  && this.arrayMax - this.arrayMin < 1000 ? 50 : this.arrayMax - this.arrayMin  > 50  && this.arrayMax - this.arrayMin <= 100 ? 10 : 1 ;  
     this.options.showOuterSelectionBars = true;
     this.options.showTicks= true,
-   
     this.SliderData();
   }
 
@@ -132,17 +120,14 @@ export class TimeRangeSliderComponent implements OnInit {
   }
 
   setDefaultValue(){
-    
     this.ecoScoreProfileKPIForm.get("lowerValue").setValue(this.dateRange[0]);
     this.ecoScoreProfileKPIForm.get("upperValue").setValue(this.dateRange[this.dateRange.length - 1]);
     this.ecoScoreProfileKPIForm.get("limitValue").setValue(this.timeConversion(this.maxvalue));
     this.ecoScoreProfileKPIForm.get("targetValue").setValue(this.timeConversion(this.value));
-
     this.sendData();
   }
 
   sendData(){
-
     let emitObj = {
       "kpiId": this.kpiId,
       "limitType": "X",
@@ -155,14 +140,12 @@ export class TimeRangeSliderComponent implements OnInit {
   }
 
   sliderEvent(value: any){
-    //this.ecoScoreProfileKPIForm.get("targetValue").setValue(value);
-     this.ecoScoreProfileKPIForm.get("targetValue").setValue(this.timeConversion(value));
+    this.ecoScoreProfileKPIForm.get("targetValue").setValue(this.timeConversion(value));
     this.sendData();
     this.SliderData()
   }
  
   sliderEndEvent(endValue: any){
-    //this.ecoScoreProfileKPIForm.get("limitValue").setValue(endValue);
     this.ecoScoreProfileKPIForm.get("limitValue").setValue(this.timeConversion(endValue));
     this.sendData();
     this.SliderData()
@@ -192,5 +175,4 @@ export class TimeRangeSliderComponent implements OnInit {
      this.setOptions();
     this.sendData();
    }
-
 }

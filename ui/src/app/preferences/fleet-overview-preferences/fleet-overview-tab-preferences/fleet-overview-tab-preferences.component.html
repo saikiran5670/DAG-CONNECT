@@ -1,46 +1,4 @@
 <form [formGroup]="fleetOverviewForm">
-    <!-- Timer Tab --> 
-    <!-- Time Pref added in app comp -->
-    <!-- <div *ngIf='timerPrefData.length > 0' fxLayout="row" class='areaWidth full-width padding-10' 
-        fxLayoutAlign="left center" style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
-        <div fxLayout="column" class='min-width-33-3-per ' fxLayoutGap="3px" fxLayoutAlign="left">
-            <mat-checkbox class='custom-checkbox' (change)='$event ? masterToggleForTimerColumns() : null'
-                [checked]='selectionForSetTimerColumns.hasValue() && isAllSelectedForTimerColumns()'
-                [indeterminate]='selectionForSetTimerColumns.hasValue() && !isAllSelectedForTimerColumns()'
-                [aria-label]='checkboxLabelForColumns()' [disabled]='!editFlag'>
-                <span class='headerFont'>{{ translationData.lblSetTimer || 'Set Timer' }}</span>
-            </mat-checkbox>
-        </div>
-    </div>
-    <div *ngIf='timerPrefData.length > 0' fxLayout="row"
-        class='areaWidth full-width timerPref' fxLayoutAlign="left center">
-        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth adjust-padding">
-            <span>{{ timerPrefData.length > 0 ? timerPrefData[0].translatedName : ''
-                }}</span>
-        </div>
-        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth adjust-padding">
-            <div fxLayout="row" class='areaWidth' fxLayoutAlign="left center">
-                <mat-form-field appearance="outline" style='width: 75px; margin-right: 10px;'>
-                    <input maxlength="2" [readonly]='!editFlag' matInput type="text"
-                        placeholder="{{ translationData.lblTimer || 'Timer' }}"
-                        (keypress)="keyPressNumbers($event)" formControlName="refreshTime">
-                </mat-form-field>
-                <span style="display: flex; place-content: flex-end;">({{ translationData.lbl || 'minimum 1 min or maximum 60 min' }})</span>
-            </div>
-            <mat-error [ngClass]="{'errorClass': fleetOverviewForm.get('refreshTime').hasError('required')}" *ngIf="fleetOverviewForm.get('refreshTime').hasError('required')">
-                {{ translationData.lblPleaseEnterTimerValue || 'Please Enter Timer Value' }}
-            </mat-error>
-            <mat-error [ngClass]="{'errorClass': fleetOverviewForm.get('refreshTime').hasError('cannotExceedMaxValue')}" *ngIf="fleetOverviewForm.get('refreshTime').hasError('cannotExceedMaxValue')">
-                {{ translationData.lbl || 'Timer Value cannot be greater than 60' }}
-             </mat-error>
-             <mat-error [ngClass]="{'errorClass': fleetOverviewForm.get('refreshTime').hasError('cannotExceedMinValue')}" *ngIf="fleetOverviewForm.get('refreshTime').hasError('cannotExceedMinValue')">
-                {{ translationData.lbl || 'Timer Value cannot be less than 1' }}
-             </mat-error>
-        </div>
-        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" style='height: 60px;' class="areaWidth adjust-padding"></div>
-    </div> -->
-
-    <!-- General Vehicle Info tab -->
     <div *ngIf='vehInfoPrefData.length > 0' fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left center"
         style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
@@ -78,8 +36,6 @@
             </mat-checkbox>
         </div>
     </div>
-
-    <!-- Button -->
     <div *ngIf='(timerPrefData.length > 0 || vehInfoPrefData.length > 0) && editFlag' fxLayout="row" class='areaWidth margin-top-20' fxLayoutAlign="end">
         <button class='resetCancelBtnColor margin-right-10' (click)='onCancel()' mat-raised-button color="primary">{{
             translationData.lblCancel }}</button>
@@ -89,6 +45,5 @@
             [disabled]='(selectionForVehInfoColumns.selected.length == 0 && vehInfoPrefData.length > 0)'
             class='no-margin' mat-raised-button color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm) }}</button>
     </div>
-
 </form>
 <app-spinner *ngIf="showLoadingIndicator"></app-spinner>	

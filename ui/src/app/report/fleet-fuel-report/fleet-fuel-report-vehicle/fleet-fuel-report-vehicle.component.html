@@ -167,21 +167,22 @@
 <div *ngIf='!vehicleSelected'>
   <div *ngIf='displayData.length == 0'>
   <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
-     <mat-expansion-panel [(expanded)]="isNoRecordOpen" class="full-width" fxLayoutGap="10px"
-        (opened)="isNoRecordOpen == true" (closed)="isNoRecordOpen == false">
-        <mat-expansion-panel-header class="full-width">
-          <mat-panel-title>
-            <span>{{ translationData.lblAllDetails }}</span>
-          </mat-panel-title>
-        </mat-expansion-panel-header>
-        <div>
-       <div fxLayout="row"
-      fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound}}</div>
-     <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{
-      translationData.lblSelectionMessage }}</div>
-  </div>
-  <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
-     </mat-expansion-panel>
+    <mat-expansion-panel [(expanded)]="isNoRecordOpen" class="full-width" fxLayoutGap="10px" (opened)="isNoRecordOpen == true" (closed)="isNoRecordOpen == false">
+      <mat-expansion-panel-header class="full-width">
+        <mat-panel-title>
+          <span>{{ translationData.lblAllDetails }}</span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div>
+        <div *ngIf='noRecordFound'>
+          <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound}}</div>
+        </div>
+        <div *ngIf='displayData.length == 0 && !noRecordFound'>
+          <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblSelectionMessage }}</div>
+        </div>
+      </div>
+      <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
+    </mat-expansion-panel>
   </mat-card>
  </div>
   <div *ngIf='displayData.length > 0'>

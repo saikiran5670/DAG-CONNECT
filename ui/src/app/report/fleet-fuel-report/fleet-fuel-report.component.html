@@ -1,12 +1,15 @@
 <div class='pad-bg'>
-<span style="font-size: 16px; line-height: 24px;">{{translationData.lblViewDetailsBy || 'View details by:'}}</span>
-<div class="tabs" style="margin-top: 12px;">
-     <mat-tab-group [ngClass]="[ tabVisibilityStatus ? '' : 'hideTabHeader']" [(selectedIndex)]="selectedIndex" (selectedTabChange)="onTabChanged($event);">
+  <span style="font-size: 16px; line-height: 24px;">{{translationData.lblViewDetailsBy || 'View details by:'}}</span>
+  <div class="tabs" style="margin-top: 12px;">
+    <mat-tab-group [ngClass]="[ tabVisibilityStatus ? '' : 'hideTabHeader']" [(selectedIndex)]="selectedIndex"
+      (selectedTabChange)="onTabChanged($event);">
       <mat-tab label="{{ translationData.lblVehicle || 'Vehicle' }}">
-        <app-fleet-fuel-report-vehicle *ngIf="selectedIndex == 0" (tabVisibility)="tabVisibilityHandler($event)" [translationData]='translationData'></app-fleet-fuel-report-vehicle>
+        <app-fleet-fuel-report-vehicle *ngIf="selectedIndex == 0" (tabVisibility)="tabVisibilityHandler($event)"
+          [translationData]='translationData'></app-fleet-fuel-report-vehicle>
       </mat-tab>
       <mat-tab label="{{ translationData.lblDriver || 'Driver' }}">
-        <app-fleet-fuel-report-driver *ngIf="selectedIndex == 1" (tabVisibility)="tabVisibilityHandler($event)" [translationData]='translationData'></app-fleet-fuel-report-driver>
+        <app-fleet-fuel-report-driver *ngIf="selectedIndex == 1" (tabVisibility)="tabVisibilityHandler($event)"
+          [translationData]='translationData'></app-fleet-fuel-report-driver>
       </mat-tab>
     </mat-tab-group>
   </div>

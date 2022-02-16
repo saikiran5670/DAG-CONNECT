@@ -4,30 +4,16 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { TranslationService } from '../../../services/translation.service';
-import { NgxMaterialTimepickerComponent, NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
+import { NgxMaterialTimepickerComponent } from 'ngx-material-timepicker';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
-// import { ReportMapService } from '../report-map.service';
-import { filter } from 'rxjs/operators';
-import { MatTableExporterDirective } from 'mat-table-exporter';
-import jsPDF from 'jspdf';
+import { MatTableExporterDirective } from 'mat-table-exporter'; 
 import 'jspdf-autotable';
-import { MAT_DATE_FORMATS } from '@angular/material/core';
-//var jsPDF = require('jspdf');
-import * as moment from 'moment-timezone';
+import { MAT_DATE_FORMATS } from '@angular/material/core'; 
 import { Util } from '../../../shared/util';
-import { MultiDataSet, Label, Color, SingleDataSet} from 'ng2-charts';
-import html2canvas from 'html2canvas';
-import { ChartOptions, ChartType, ChartDataSets } from 'chart.js';
-import { Router, NavigationExtras } from '@angular/router';
-import { CalendarOptions } from '@fullcalendar/angular';
-import { OrganizationService } from 'src/app/services/organization.service';
-// import { CalendarOptions } from '@fullcalendar/angular';
-import { DataInterchangeService } from 'src/app/services/data-interchange.service';
+import { OrganizationService } from 'src/app/services/organization.service'; 
 import { ReportService } from 'src/app/services/report.service';
 import { Observable } from 'rxjs';
-import { AdminComponent } from 'src/app/admin/admin.component';
-import { ConfigService } from '@ngx-config/core';
 
 declare var H: any;
 
@@ -109,31 +95,23 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
   map_key: any = '';
   getvehiclehealthstatusservicecall;
   @Output() backToPage = new EventEmitter<object>();
+  prefDetail: any = {};
 
-
-  constructor(private _configService: ConfigService, private dataInterchangeService: DataInterchangeService,@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder,private organizationService: OrganizationService, private reportService: ReportService, private changeDetectorRef: ChangeDetectorRef) { 
-    
-      
-      this.defaultTranslation();
+  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder,private organizationService: OrganizationService, private reportService: ReportService, private changeDetectorRef: ChangeDetectorRef) { 
       // this.map_key = _configService.getSettings("hereMap").api_key;
       this.map_key = localStorage.getItem("hereMapsK");
       this.platform = new H.service.Platform({
         "apikey": this.map_key
     });
   }
-  defaultTranslation(){
-    // this.translationData = {
-    //   lblSearchReportParameters: 'Search Report Parameters'
-    // }    
-  }
 
-  ngOnInit(): void {
-    // //console.log(this.healthData);
+  ngOnInit() {
     let warningType:any;
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
+    this.prefDetail = JSON.parse(localStorage.getItem('prefDetail'));
     this.getWarningData(warningType='C');
     this.vehicleHealthForm = this._formBuilder.group({
       warningType: ['AllWarnings', [Validators.required]],
@@ -142,32 +120,18 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
       startTime: ['', []],
       endTime: ['', []]
     });
-    // let translationObj = {
-    //   id: 0,
-    //   code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
-    //   type: "Menu",
-    //   name: "",
-    //   value: "",
-    //   filter: "",
-    //   menuId: 10 //-- for fleet utilisation
-    // }
-    // this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-    //   this.processTranslation(data);
-      this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
-        if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
-          this.proceedStep(prefData, this.accountPrefObj.accountPreference);
-        }else{ // org pref
-          this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
-            this.proceedStep(prefData, orgPref);
-          }, (error) => { // failed org API
-            let pref: any = {};
-            this.proceedStep(prefData, pref);
-          });
-        }
-      });
-    // });
-    // this.selectionTab = 'last3month';
-    // this.selectionTimeRange('last3month');
+
+    if(this.prefDetail){
+      if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ 
+        this.proceedStep(this.accountPrefObj.accountPreference);
+      }else{ 
+        this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
+          this.proceedStep(orgPref);
+        }, (error) => {
+          this.proceedStep({});
+        });
+      } 
+    }
   }
 
   public ngAfterViewInit() {
@@ -325,22 +289,18 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
     this.warningEvent = warning;
   }
 
-  proceedStep(prefData: any, preference: any){
-    let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
+  proceedStep(preference: any){
+    let _search = this.prefDetail.timeformat.filter(i => i.id == preference.timeFormatId);
     if(_search.length > 0){
-      //this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
       this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
-      //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
-      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
-      this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
-      this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
+      this.prefTimeZone = this.prefDetail.timezone.filter(i => i.id == preference.timezoneId)[0].name;
+      this.prefDateFormat = this.prefDetail.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+      this.prefUnitFormat = this.prefDetail.unit.filter(i => i.id == preference.unitId)[0].name;  
     }else{
-      //this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
-      this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
-      //this.prefTimeZone = prefData.timezone[0].value;
-      this.prefTimeZone = prefData.timezone[0].name;
-      this.prefDateFormat = prefData.dateformat[0].name;
-      this.prefUnitFormat = prefData.unit[0].name;
+      this.prefTimeFormat = Number(this.prefDetail.timeformat[0].name.split("_")[1].substring(0,2)); 
+      this.prefTimeZone = this.prefDetail.timezone[0].name;
+      this.prefDateFormat = this.prefDetail.dateformat[0].name;
+      this.prefUnitFormat = this.prefDetail.unit[0].name;
     }
     this.selectionTab = 'last3month';
     this.selectionTimeRange('last3month');
@@ -349,8 +309,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
     this.setDefaultTodayDate();
   }
 
-  setDefaultStartEndTime()
-  {
+  setDefaultStartEndTime() {
   if(!this.internalSelection && this.vehicleHealthSearchData.modifiedFrom !== "" &&  ((this.vehicleHealthSearchData.startTimeStamp || this.vehicleHealthSearchData.endTimeStamp) !== "") ) {
     if(this.prefTimeFormat == this.vehicleHealthSearchData.filterPrefTimeFormat){ // same format
       this.selectedStartTime = this.vehicleHealthSearchData.startTimeStamp;

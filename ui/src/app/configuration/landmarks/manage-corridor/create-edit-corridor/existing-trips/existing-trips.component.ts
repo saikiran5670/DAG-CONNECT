@@ -186,7 +186,8 @@ export class ExistingTripsComponent implements OnInit {
   endTimeDisplay: any = '23:59:59';
   prefTimeFormat: any = 12; //-- coming from pref setting
   prefDateFormat: any = ''; //-- coming from pref setting
-
+  noRecordFound: boolean = false;
+  prefDetail: any = {};
   public filteredVehicleList: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
@@ -209,8 +210,8 @@ export class ExistingTripsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // //console.log("-------selectedElementData---", this.selectedElementData);
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
+    this.prefDetail = JSON.parse(localStorage.getItem('prefDetail'));
     this.vehicleGroupList.forEach(item => {
       this.vehicleGroupIdsSet.push(item.vehicleGroupId);
       this.vehicleGroupIdsSet = [...new Set(this.vehicleGroupIdsSet)];
@@ -252,45 +253,18 @@ export class ExistingTripsComponent implements OnInit {
         validator: [
           CustomValidators.specialCharValidationForName('label')
         ]
-      });
-    // let translationObj = {
-    //   id: 0,
-    //   code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
-    //   type: "Menu",
-    //   name: "",
-    //   value: "",
-    //   filter: "",
-    //   menuId: 6 //-- for ExistingTrips
-    // }
-    // this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-      // this.processTranslation(data);
-     
-      this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
+      }); 
+      if(this.prefDetail){
         if (this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != '') { // account pref
-          this.proceedStep(prefData, this.accountPrefObj.accountPreference);
+          this.proceedStep(this.accountPrefObj.accountPreference);
         } else { // org pref
           this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any) => {
-            this.proceedStep(prefData, orgPref);
-          }, (error) => { // failed org API
-            let pref: any = {};
-            this.proceedStep(prefData, pref);
+            this.proceedStep(orgPref);
+          }, (error) => {
+            this.proceedStep({});
           });
         }
-
-        // let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
-        // if(vehicleDisplayId) {
-        //   let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
-        //   if(vehicledisplay.length != 0) {
-        //     this.vehicleDisplayPreference = vehicledisplay[0].name;
-        //   }
-        // }
-
-      });
-    // });
-    // this.existingTripForm.get('vehicleGroup');
-    // this.existingTripForm.get('vehicle');
-
-
+      }
   }
 
   resetExistingTripFormControlValue() {
@@ -304,22 +278,18 @@ export class ExistingTripsComponent implements OnInit {
     this.existingTripForm.get('vehicle').setValue('');
   }
 
-  proceedStep(prefData: any, preference: any) {
-    let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
-    if (_search.length > 0) {
-      //this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
-      this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0, 2));
-      //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
-      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
-      this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
-      this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;
-    } else {
-      //this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
-      this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0, 2));
-      //this.prefTimeZone = prefData.timezone[0].value;
-      this.prefTimeZone = prefData.timezone[0].name;
-      this.prefDateFormat = prefData.dateformat[0].name;
-      this.prefUnitFormat = prefData.unit[0].name;
+  proceedStep(preference: any) {
+    let _search = this.prefDetail.timeformat.filter(i => i.id == preference.timeFormatId);
+    if (_search.length > 0) { 
+      this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0, 2)); 
+      this.prefTimeZone = this.prefDetail.timezone.filter(i => i.id == preference.timezoneId)[0].name;
+      this.prefDateFormat = this.prefDetail.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+      this.prefUnitFormat = this.prefDetail.unit.filter(i => i.id == preference.unitId)[0].name;
+    } else { 
+      this.prefTimeFormat = Number(this.prefDetail.timeformat[0].name.split("_")[1].substring(0, 2)); 
+      this.prefTimeZone = this.prefDetail.timezone[0].name;
+      this.prefDateFormat = this.prefDetail.dateformat[0].name;
+      this.prefUnitFormat = this.prefDetail.unit[0].name;
     }
     this.setDefaultStartEndTime();
     this.setPrefFormatDate();
@@ -517,12 +487,6 @@ export class ExistingTripsComponent implements OnInit {
   }
 
   setDefaultStartEndTime() {
-    // this.selectedStartTime = "00:00";
-    // this.selectedEndTime = "23:59";
-    this.setPrefFormatTime();
-  }
-
-  setPrefFormatTime() {
     if (this.prefTimeFormat == 24) {
       this.startTimeDisplay = '00:00:00';
       this.endTimeDisplay = '23:59:59';
@@ -744,12 +708,17 @@ export class ExistingTripsComponent implements OnInit {
     this.poiService.getalltripdetails(_startTime, _endTime, this.vinListSelectedValue).subscribe((existingTripDetails: any) => {
       this.showLoadingIndicator = true;
       this.initData = existingTripDetails.tripData;
-
+      if(this.initData.length == 0) {
+        this.noRecordFound = true;
+      } else {
+        this.noRecordFound = false;
+      }
       this.hideloader();
       this.updatedTableData(this.initData);
     }, (error) => {
       this.initData = [];
       this.hideloader();
+      this.noRecordFound = true;
       this.updatedTableData(this.initData);
     });
 
@@ -768,6 +737,7 @@ export class ExistingTripsComponent implements OnInit {
     this.vinListSelectedValue = '';
     //this.vinList = [];
     this.initData = [];
+    this.noRecordFound = false;
     this.updatedTableData(this.initData);
     this.filterDateData();
   }
@@ -1430,6 +1400,7 @@ export class ExistingTripsComponent implements OnInit {
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+      this.sort.disableClear = true;
       this.dataSource.filterPredicate = function(data: any, filter: string): boolean {
         let driverName = data.driverFirstName+" "+data.driverLastName;
         let startDate = moment(data.startTimeStamp).format("DD/MM/YYYY-h:mm:ss")
@@ -1445,6 +1416,13 @@ export class ExistingTripsComponent implements OnInit {
         const isAsc = sort.direction === 'asc';
         return data.sort((a: any, b: any) => {
           let columnName = sort.active;
+          if(columnName !== 'DriverName'){
+            return this.compare(a[sort.active], b[sort.active], isAsc , columnName);
+            }else{
+            const currentName = a.driverFirstName+" "+a.driverLastName;
+            const nextName = b.driverFirstName+" "+b.driverLastName;
+            return this.compare(currentName, nextName, isAsc , columnName);
+            }
           // if(columnName === date){
           //   return this.compare(a[sort.active], b[sort.active], isAsc , date);
           // }

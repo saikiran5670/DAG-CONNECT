@@ -1,10 +1,7 @@
 <div style="display: block;">
-  <h2 style="text-align: center;" class='font-16-px line-height-24px font-helvetica-md'>{{ chartTitle || 'Engine Operational Performance' }}</h2>
+  <h2 style="text-align: center;" class='font-16-px line-height-24px font-helvetica-md'>{{ chartTitle || 'Engine
+    Operational Performance' }}</h2>
   <canvas baseChart [data]="pieChartData" [labels]="pieChartLabels" [chartType]="pieChartType"
     [options]="pieChartOptions" [plugins]="pieChartPlugins" [legend]="pieChartLegend" [colors]="pieChartColors">
   </canvas>
-
-  <!-- <ul class="legend">
-    <li *ngFor="let leg of legends"><span [ngStyle]="{'background-color': leg.color ? leg.color : 'green'}"></span> {{ leg.transName }} </li>
-  </ul> -->
 </div>
