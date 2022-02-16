@@ -25,6 +25,8 @@ import * as fs from 'file-saver';
 import html2canvas from 'html2canvas';
 import { ReplaySubject } from 'rxjs';
 import { DataInterchangeService } from '../../services/data-interchange.service';
+import { MessageService } from '../../services/message.service';
+import { DomSanitizer } from '@angular/platform-browser';
 
 declare var H: any;
 
@@ -181,12 +183,14 @@ export class TripReportComponent implements OnInit, OnDestroy {
   prefDetail: any = {};
   reportDetail: any = [];
   dataService: any;
+  noRecordFound: boolean = false;
+  brandimagePath: any;
 
   public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   filterValue: string;
 
-  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private landmarkCategoryService: LandmarkCategoryService, private router: Router, private organizationService: OrganizationService, private completerService: CompleterService, private _configService: ConfigService, private hereService: HereService, private dataInterchangeService: DataInterchangeService) {
+  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private landmarkCategoryService: LandmarkCategoryService, private router: Router, private organizationService: OrganizationService, private completerService: CompleterService, private _configService: ConfigService, private hereService: HereService, private dataInterchangeService: DataInterchangeService, private messageService: MessageService, private _sanitizer: DomSanitizer) {
     // this.map_key = _configService.getSettings("hereMap").api_key;
     this.map_key = localStorage.getItem("hereMapsK");
     this.platform = new H.service.Platform({
@@ -270,7 +274,15 @@ export class TripReportComponent implements OnInit, OnDestroy {
         }
       }
     });
-    //this.updateDataSource(this.tripData);
+    this.updateDataSource(this.tripData);
+
+    this.messageService.brandLogoSubject.subscribe(value => {
+      if (value != null) {
+        this.brandimagePath = this._sanitizer.bypassSecurityTrustResourceUrl('data:image/jpeg;base64,' + value);
+      } else {
+        this.brandimagePath = null;
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -624,11 +636,17 @@ export class TripReportComponent implements OnInit, OnDestroy {
       this.reportService.getTripDetails(_startTime, _endTime, _vinData[0].vin).subscribe((_tripData: any) => {
         this.hideloader();
         this.tripData = this.reportMapService.convertTripReportDataBasedOnPref(_tripData.tripData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat, this.prefTimeZone);
+        if(this.tripData.length == 0) {
+          this.noRecordFound = true;
+        } else {
+          this.noRecordFound = false;
+        }
         this.setTableInfo();
         this.updateDataSource(this.tripData);
       }, (error) => {
         this.hideloader();
         this.tripData = [];
+        this.noRecordFound = true;
         this.tableInfoObj = {};
         this.updateDataSource(this.tripData);
       });
@@ -671,6 +689,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
     this.setDefaultTodayDate();
     this.tripData = [];
     this.vehicleListData = [];
+    this.noRecordFound = false;
     this.updateDataSource(this.tripData);
     this.resetTripFormControlValue();
     this.filterDateData(); // extra addded as per discuss with Atul
@@ -880,63 +899,83 @@ export class TripReportComponent implements OnInit, OnDestroy {
   }
 
   exportAsPDFFile() {
+    var imgleft;
+    if (this.brandimagePath != null) {
+      imgleft = this.brandimagePath.changingThisBreaksApplicationSecurity;
+    } else {
+      imgleft = "/assets/logo.png";
+    }
     var doc = new jsPDF('p', 'mm', 'a2');
     let DATA = document.getElementById('charts');
     var transpdfheader = this.translationData.lblTripReportDetails;
-    html2canvas(DATA)
-      .then(canvas => {
-        (doc as any).autoTable({
-          styles: {
-            cellPadding: 0.5,
-            fontSize: 12
-          },
-          didDrawPage: function (data) {
-            doc.setFontSize(20);
-            var fileTitle = transpdfheader;
-            var img = "/assets/logo.png";
-            doc.addImage(img, 'JPEG', 10, 10, 0, 0);
-            var img = "/assets/logo_daf.png";
-            doc.text(fileTitle, 14, 40);
-            doc.addImage(img, 'JPEG', 370, 15, 0, 10);
-          },
-          margin: {
-            bottom: 30,
-            top: 80
-          }
-        });
-        let fileWidth = 390;
-        let fileHeight = canvas.height * fileWidth / canvas.width;
-        const FILEURI = canvas.toDataURL('image/png');
-        doc.addImage(FILEURI, 'PNG', 15, 42, fileWidth, fileHeight);
-        let pdfColumns = this.getPDFExcelHeader();
-        let prepare = []
-        this.initData.forEach(e => {
-          var tempObj = [];
-          tempObj.push(e.vin);
-          tempObj.push(e.vehicleName);
-          tempObj.push(e.registrationNo);
-          tempObj.push(e.convertedStartTime);
-          tempObj.push(e.convertedEndTime);
-          tempObj.push(e.convertedDistance);
-          tempObj.push(e.convertedIdleDuration);
-          tempObj.push(e.convertedAverageSpeed);
-          tempObj.push(e.convertedAverageWeight);
-          tempObj.push(e.convertedOdometer);
-          tempObj.push(e.startPosition);
-          tempObj.push(e.endPosition);
-          tempObj.push(e.convertedFuelConsumed);
-          tempObj.push(e.convertedDrivingTime);
-          tempObj.push(e.totalAlerts);
-          prepare.push(tempObj);
-        });
-        (doc as any).autoTable({
-          head: [pdfColumns],
-          body: prepare,
-          theme: 'striped',
-          didDrawCell: data => { }
-        })
-        doc.save('tripReport.pdf');
-      });
+    html2canvas( DATA)
+    .then(canvas => {
+    (doc as any).autoTable({
+      styles: {
+        cellPadding: 0.5,
+        fontSize: 12
+      },
+      didDrawPage: function (data) {
+        // Header
+        doc.setFontSize(20);
+        var fileTitle = transpdfheader;
+        // var img = "/assets/logo.png";
+        doc.addImage(imgleft, 'JPEG', 10, 10, 0, 16.5);
+
+        var img = "/assets/logo_daf.png";
+        doc.text(fileTitle, 14, 40);
+        doc.addImage(img, 'JPEG', 370, 15, 0, 10);
+      },
+      margin: {
+        bottom: 30,
+        top: 80
+      }
+    });
+
+    let fileWidth = 390;
+    let fileHeight = canvas.height * fileWidth / canvas.width;
+
+    const FILEURI = canvas.toDataURL('image/png');
+    let position = 0;
+    doc.addImage(FILEURI, 'PNG', 15, 42,fileWidth, fileHeight) ;
+
+
+
+    let pdfColumns = this.getPDFExcelHeader();
+    let prepare = []
+    this.initData.forEach(e => {
+      var tempObj = [];
+      tempObj.push(e.vin);
+      tempObj.push(e.vehicleName);
+      tempObj.push(e.registrationNo);
+      tempObj.push(e.convertedStartTime);
+      tempObj.push(e.convertedEndTime);
+      tempObj.push(e.convertedDistance);
+      tempObj.push(e.convertedIdleDuration);
+      tempObj.push(e.convertedAverageSpeed);
+      tempObj.push(e.convertedAverageWeight);
+      tempObj.push(e.convertedOdometer);
+      tempObj.push(e.startPosition);
+      tempObj.push(e.endPosition);
+      //tempObj.push(e.convertedFuelConsumed100Km);
+      tempObj.push(e.convertedFuelConsumed);
+      tempObj.push(e.convertedDrivingTime);
+      tempObj.push(e.totalAlerts);
+      //tempObj.push(e.events);
+
+      prepare.push(tempObj);
+    });
+    (doc as any).autoTable({
+      head: [pdfColumns],
+      body: prepare,
+      theme: 'striped',
+      didDrawCell: data => {
+        ////console.log(data.column.index)
+      }
+    })
+    // below line for Download PDF document
+    doc.save('tripReport.pdf');
+  });
   }
 
   masterToggleForTrip() {

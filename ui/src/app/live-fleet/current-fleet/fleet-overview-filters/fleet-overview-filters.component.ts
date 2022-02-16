@@ -104,7 +104,11 @@ constructor(private fleetMapService: FleetMapService, private messageService: Me
 
 ngAfterViewInit(){
   this.cdr.detectChanges();
-}
+   if(this.selectedIndex == 1){
+    this.updateDriverFilter();}
+  else{
+    this.updateVehicleFilter(); }
+ }
 
 ngOnChanges(changes: SimpleChanges) {
   if(changes && changes.filterData && changes.filterData.currentValue){
@@ -586,6 +590,7 @@ removeDuplicates(originalArray, prop) {
     }​​​​​​​​);
 
     this.vehicleListData = filteredData;
+    this.filterVINonMap(); // VIN's on map
   }
 
   onChangeGroup(id: any){   
@@ -1370,7 +1375,14 @@ drawIcons(_selectedRoutes){
     this.svgIcon = this.sanitizer.bypassSecurityTrustHtml(_vehicleMarkerDetails.icon);
     elem =  Object.defineProperty(elem, "icon", {value : this.svgIcon,
     writable : true,enumerable : true, configurable : true});
-
+    if(_alertConfig && _alertConfig.level){
+      if(_alertConfig.level == 'Critical')
+        elem['alertName'] = this.translationData.enumurgencylevel_critical;
+      else if(_alertConfig.level == 'Warning')
+        elem['alertName'] = this.translationData.enumurgencylevel_warning;
+      else if(_alertConfig.level == 'Advisory')
+        elem['alertName'] = this.translationData.enumurgencylevel_advisory;
+    }
   });
 
 

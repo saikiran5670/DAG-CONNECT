@@ -12,9 +12,10 @@ export class FleetFuelReportComponent implements OnInit {
   translationData: any = {};
   selectedIndex: number = 0;
   tabVisibilityStatus: boolean = true;
+
   constructor(private translationService: TranslationService) { }
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     let translationObj = {
@@ -31,15 +32,15 @@ export class FleetFuelReportComponent implements OnInit {
     });
   }
 
-  tabVisibilityHandler(tabVisibility: boolean){
+  tabVisibilityHandler(tabVisibility: boolean) {
     this.tabVisibilityStatus = tabVisibility;
   }
-  
+
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
   }
 
-  onTabChanged(event: any){
+  onTabChanged(event: any) {
     this.selectedIndex = event.index;
   }
 

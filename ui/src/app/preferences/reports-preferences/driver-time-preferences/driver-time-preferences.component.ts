@@ -43,32 +43,6 @@ export class DriverTimePreferencesComponent implements OnInit {
     }else{
       console.error("No report id found!")
     }
-    // this.translationUpdate();
-  }
-
-  translationUpdate(){
-    this.translationData = {
-      rp_dtm_report: 'Report',
-      rp_dtm_report_chart: 'Charts',
-      rp_dtm_report_chart_zoomchart: 'Zoom Chart',
-      rp_dtm_report_alldetails: 'All Details',
-      rp_dtm_report_alldetails_drivername: 'Driver Name',
-      rp_dtm_report_alldetails_driverid: 'Driver Id',
-      rp_dtm_report_alldetails_starttime: 'Start Time',
-      rp_dtm_report_alldetails_endtime: 'End Time',
-      rp_dtm_report_alldetails_drivetime: 'Drive Time',
-      rp_dtm_report_alldetails_worktime: 'Work Time',
-      rp_dtm_report_alldetails_availabletime: 'Available Time',
-      rp_dtm_report_alldetails_resttime: 'Rest Time',
-      rp_dtm_report_alldetails_servicetime: 'Service Time',
-      rp_dtm_report_bydriver: 'By Driver',
-      rp_dtm_report_bydriver_date: 'Date',
-      rp_dtm_report_bydriver_drivetime: 'Drive Time',
-      rp_dtm_report_bydriver_worktime: 'Work Time',
-      rp_dtm_report_bydriver_availabletime: 'Available Time',
-      rp_dtm_report_bydriver_resttime: 'Rest Time',
-      rp_dtm_report_bydriver_servicetime: 'Service Time'
-    }
   }
 
   loadDriveTimePreferences(reloadFlag?: any){

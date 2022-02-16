@@ -48,6 +48,10 @@ export class UserDetailTableComponent implements OnInit {
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+      this.dataSource.filterPredicate = function(data, filter: any){
+        let fullName = data.firstName.toLowerCase() +" "+ data.lastName.toLowerCase();
+        return  fullName.toLowerCase().includes(filter)
+      };
       this.dataSource.sortData = (data: String[], sort: MatSort) => {
         const isAsc = sort.direction === 'asc';
         let columnName = this.sort.active
@@ -76,14 +80,25 @@ export class UserDetailTableComponent implements OnInit {
         return (aA > bA ? 1 : -1) * (isAsc ? 1: -1);
       }
     }
+   
 
     if(columnName === "roleList" || columnName === "accountGroupList" ||  columnName === "roles") { //Condition added for roles columns
       a=  a.toString().toUpperCase() ;
       b= b.toString().toUpperCase();
    
     }
+
+    if(columnName === "firstName"){
       if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toUpperCase();
       if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toUpperCase();
+
+    }
+
+
+      if(!(a instanceof Number)) a = a?.replace(/[^\w\s]/gi, 'z').toUpperCase();
+      if(!(b instanceof Number)) b = b?.replace(/[^\w\s]/gi, 'z').toUpperCase();
+
+     
 
       return ( a < b ? -1 : 1) * (isAsc ? 1: -1);
   }

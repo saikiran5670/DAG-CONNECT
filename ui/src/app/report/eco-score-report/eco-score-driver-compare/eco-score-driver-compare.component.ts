@@ -1,5 +1,5 @@
 import { EventEmitter } from '@angular/core';
-import { Component, Input, OnInit, Output, ViewEncapsulation, ElementRef } from '@angular/core';
+import { Component, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import {
   AngularGridInstance,
   Column,
@@ -23,7 +23,6 @@ export class EcoScoreDriverCompareComponent implements OnInit {
   @Output() backToMainPage = new EventEmitter<any>();
   generalExpandPanel: boolean = true;
   translationDataLocal: any=[];
-  //performance table
   angularGrid!: AngularGridInstance;
   dataViewObj: any;
   gridObj: any;
@@ -32,7 +31,6 @@ export class EcoScoreDriverCompareComponent implements OnInit {
   datasetHierarchical: any[] = [];
   compareDriverCount: number = 0;
   columnPerformance: any=[];
-  //General table
   angularGridGen!: AngularGridInstance;
   dataViewObjGen: any;
   gridObjGen: any;
@@ -40,7 +38,6 @@ export class EcoScoreDriverCompareComponent implements OnInit {
   columnDefinitionsGen!: Column[];
   datasetGen: any[] = [];
   columnGeneral: any=[];
-  //common details
   driverDetails: any=[];
   driver1:string = '';
   driver2:string = '';
@@ -56,10 +53,9 @@ export class EcoScoreDriverCompareComponent implements OnInit {
   showTable: boolean;
   gridOptionsCommon: GridOption;
   
-  constructor(private elementRef:ElementRef) { }
+  constructor() { }
 
   ngOnInit() {
-    this.translationUpdate();
     this.showTable = true;
     this.checkPrefData();
     this.driverDetails = this.compareEcoScore.drivers;
@@ -135,41 +131,6 @@ export class EcoScoreDriverCompareComponent implements OnInit {
     }
   }
 
-  translationUpdate(){
-    // this.translationDataLocal = [
-    //   { key:'rp_general' , value:'General' },
-    //   { key:'rp_averagegrossweight' , value:'Average Gross Weight' },
-    //   { key:'rp_distance' , value:'Distance' },
-    //   { key:'rp_numberoftrips' , value:'Number of Trips' },
-    //   { key:'rp_numberofvehicles' , value:'Number of vehicles' },
-    //   { key:'rp_averagedistanceperday' , value:'Average distance per day' },
-    //   { key:'rp_driverperformance' , value:'Driver Performance' },
-    //   { key:'rp_ecoscore' , value:'Eco Score' },
-    //   { key:'rp_fuelconsumption' , value:'Fuel Consumption' },
-    //   { key:'rp_braking' , value:'Braking' },
-    //   { key:'rp_anticipationscore' , value:'Anticipation Score' },
-    //   { key:'rp_averagedrivingspeed' , value:'Average Driving Speed' },
-    //   { key:'rp_idleduration' , value:'Idle Duration' },
-    //   { key:'rp_idling' , value:'Idling' },
-    //   { key:'rp_heavythrottleduration' , value:'Heavy Throttle Duration' },
-    //   { key:'rp_heavythrottling' , value:'Heavy Throttling' },
-    //   { key:'rp_averagespeed' , value:'Average Speed' },
-    //   { key:'rp_ptoduration' , value:'PTO Duration' },
-    //   { key:'rp_ptousage' , value:'PTO Usage' },
-    //   { key:'rp_CruiseControlUsage30' , value:'Cruise Control Usage' },
-    //   { key:'rp_CruiseControlUsage75' , value:'Cruise Control Usage' },
-    //   { key:'rp_CruiseControlUsage50' , value:'Cruise Control Usage' },
-    //   { key:'rp_cruisecontrolusage' , value:'Cruise Control Usage' },
-    //   { key:'rp_cruisecontroldistance50' , value:'Cruise Control Usage' },
-    //   { key:'rp_cruisecontroldistance30' , value:'Cruise Control Usage' },
-    //   { key:'rp_cruisecontroldistance75' , value:'Cruise Control Usage' },
-    //   { key:'rp_harshbraking' , value:'Harsh Braking' },
-    //   { key:'rp_harshbrakeduration' , value:'Harsh Brake Duration' },
-    //   { key:'rp_brakeduration' , value:'Brake Duration' },
-    //   { key:'rp_brakingscore' , value:'Braking Score' }
-    //  ];
-  }
-
   tableColumns(){
     this.columnDefinitions = [
       {
@@ -187,7 +148,6 @@ export class EcoScoreDriverCompareComponent implements OnInit {
         type: FieldType.string, width: 150, maxWidth: 375, formatter: this.treeFormatter, excludeFromHeaderMenu: true
       }
     ];
-    
     this.columnPerformance.push({columnId: 'category'});
     this.columnPerformance.push({columnId: 'target'});
     this.columnGeneral.push({columnId: 'categoryG'})
@@ -467,6 +427,7 @@ export class EcoScoreDriverCompareComponent implements OnInit {
     }
     return val;
   }
+  
   getColor(dataContext: any, val: string){
     if(dataContext.limitType && val){
       let valTemp = Number.parseFloat(val);

@@ -3,16 +3,14 @@ import { Input } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { Component, OnInit,ElementRef } from '@angular/core';
-import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
+import { ChartDataSets, ChartType } from 'chart.js';
 import { Color, Label } from 'ng2-charts';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
-import { OrganizationService } from 'src/app/services/organization.service';
 import { TranslationService } from 'src/app/services/translation.service';
 import { Util } from 'src/app/shared/util';
 import { ReportService } from 'src/app/services/report.service';
-import { truncate } from 'fs';
 import { ReportMapService } from '../../../report-map.service';
 import {ThemePalette} from '@angular/material/core';
 import {ProgressBarMode} from '@angular/material/progress-bar';
@@ -23,17 +21,16 @@ import { ViewChild } from '@angular/core';
 import { SelectionModel } from '@angular/cdk/collections';
 import { Router, NavigationExtras } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
-import { QueryList } from '@angular/core';
-import { ViewChildren } from '@angular/core';
 import { HereService } from '../../../../services/here.service';
-import { ConfigService } from '@ngx-config/core';
 import { LandmarkCategoryService } from '../../../../services/landmarkCategory.service'; 
-import { CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteData } from 'ng2-completer';
+import { CompleterItem, CompleterService } from 'ng2-completer';
 import { MapService } from '../../../fleet-fuel-report/report-mapservice';
 import * as fs from 'file-saver';
 import { Workbook } from 'exceljs';
 import { DatePipe } from '@angular/common';
 import { ReplaySubject } from 'rxjs';
+import { MessageService } from '../../../../services/message.service';
+import { DomSanitizer } from '@angular/platform-browser';
 
 declare var H: any;
 
@@ -59,13 +56,8 @@ export class VehicletripComponent implements OnInit {
   @Input() prefDateFormat: any;
   @Input() prefUnitFormat: any = 'dunit_Metric';
   @Input() wholeTripData: any;
-  
   graphData: any;
   fuelConsumptionSummary: any;
-  // detaildisplayedColumns = ['All','vehicleName','vin','vehicleRegistrationNo','startDate','endDate','averageSpeed', 'maxSpeed',  'distance', 'startPosition', 'endPosition',
-  // 'fuelConsumed', 'fuelConsumption', 'cO2Emission',  'idleDuration','ptoDuration','cruiseControlDistance3050','cruiseControlDistance5075','cruiseControlDistance75','heavyThrottleDuration',
-  // 'harshBrakeDuration','averageGrossWeightComb', 'averageTrafficClassification',
-  // 'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore'];
   prefMapData: any = [
     {
       key: 'rp_tr_report_fleetfueldetails_startDate',
@@ -226,9 +218,6 @@ mapFilterForm: FormGroup;
 suggestionData: any;
 selectedMarker: any;
 map: any;
-lat: any = '37.7397';
-lng: any = '-121.4252';
-query: any;
 searchMarker: any = {};
 showMap: boolean = false;
 showBack: boolean = false;
@@ -280,9 +269,6 @@ tripTraceArray: any = [];
   accountPrefObj: any;
   vehicleGrpDD: any = [];
   selectionTab: any; 
-
-  //startDateValue: any = 0;
-  //endDateValue: any = 0;
   last3MonthDate: any;
   todayDate: any;
   vehicleDD: any = [];
@@ -820,45 +806,37 @@ tripTraceArray: any = [];
   displayData : any = [];
   showDetailedReport : boolean = false;
   _state: any ;
+  tripPrefData: any = [];
   map_key: any = '';
   platform: any = '';
   rowdata = [];
+  noRecordFound: boolean = false;
+  brandimagePath: any;
 
   constructor(private _formBuilder: FormBuilder, 
               private landmarkCategoryService: LandmarkCategoryService,
               private translationService: TranslationService,
-              private organizationService: OrganizationService,
               private reportService: ReportService,
               private mapService : MapService,
-              private router: Router, private datePipe: DatePipe,
+              private router: Router, 
               private completerService: CompleterService,
               @Inject(MAT_DATE_FORMATS) private dateFormats,
-              private reportMapService: ReportMapService, private _configService: ConfigService, private hereService: HereService) {
-                //console.log(this._state);
+              private reportMapService: ReportMapService, private hereService: HereService, private messageService: MessageService, private _sanitizer: DomSanitizer) {
                 if(this._state){
                   this.showBack = true;
                 }else{
                   this.showBack = false;
                 }
-                // this.map_key =  _configService.getSettings("hereMap").api_key;
                 this.map_key = localStorage.getItem("hereMapsK");
-                //Add for Search Fucntionality with Zoom
-                this.query = "starbucks";
                 this.platform = new H.service.Platform({
                 "apikey": this.map_key 
                   });                
                  this.configureAutoSuggest();
                }
-               defaultTranslation(){
-                this.translationData = {
-                  lblSearchReportParameters: 'Search Report Parameters'
-                }
-              }
           
        
-  ngOnInit(): void {
+  ngOnInit() {
     this.fleetFuelSearchData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
-    // //console.log("----globalSearchFilterData---",this.fleetUtilizationSearchData)
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
@@ -875,42 +853,26 @@ tripTraceArray: any = [];
       routeType: ['', []],
       trackType: ['', []]
     });
-    let translationObj = {
-      id: 0,
-      code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
-      type: "Menu",
-      name: "",
-      value: "",
-      filter: "",
-      menuId: 9 //-- for fleet fuel report
-    }
-    
-    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-      this.processTranslation(data);
-      this.mapFilterForm.get('trackType').setValue('snail');
+    this.mapFilterForm.get('trackType').setValue('snail');
       this.mapFilterForm.get('routeType').setValue('C');
       this.makeHerePOIList();
-      // this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
-      //   if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
-      //     this.proceedStep(prefData, this.accountPrefObj.accountPreference);
-      //   }else{ // org pref
-      //     this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
-      //       this.proceedStep(prefData, orgPref);
-      //     }, (error) => { // failed org API
-      //       let pref: any = {};
-      //       this.proceedStep(prefData, pref);
-      //     });
-      //   }
         this.loadfleetFuelDetails(this.vehicleDetails);
         this.callToNext();
         if(this.vehicleDetails){
           this.onSearch();
          }
-      // });
-    });
     this.isSummaryOpen = true;
     this.isChartsOpen = true;
     this.isDetailsOpen = true;
+
+    this.messageService.brandLogoSubject.subscribe(value => {
+      if (value != null) {
+        this.brandimagePath = this._sanitizer.bypassSecurityTrustResourceUrl('data:image/jpeg;base64,' + value);
+      } else {
+        this.brandimagePath = null;
+      }
+    });
+
   }
 
   detailvehiclereport(){
@@ -926,7 +888,6 @@ tripTraceArray: any = [];
     this.tripPrefData = [];
   }
 
-  tripPrefData: any = [];
   getTranslatedColumnName(prefData: any){
     if(prefData && prefData.subReportUserPreferences && prefData.subReportUserPreferences.length > 0){
       prefData.subReportUserPreferences.forEach(element => {
@@ -940,7 +901,6 @@ tripTraceArray: any = [];
       });
     }
   }
-
 
   setDisplayColumnBaseOnPref(){
     let filterPref = this.tripPrefData.filter(i => i.state == 'I'); // removed unchecked
@@ -971,13 +931,7 @@ tripTraceArray: any = [];
     this.selectedHerePOI.selected.forEach(item => {
       this.herePOIArr.push(item.key);
     });
-    //this.searchPlaces();
   }
-
- // searchPlaces() {
- //   let _ui = this.reportMapService.getUI();
- //   this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr); 
- // }
 
   makeHerePOIList(){
     this.herePOIList = [{
@@ -1021,7 +975,6 @@ viewselectedroutes(_selectedRoutes:any,_displayRouteView:any,trackType:any){
       this.endMarker = new H.map.Marker({ lat:this.endAddressPositionLat, lng:this.endAddressPositionLong },{ icon:iconEnd });
       this.group.addObjects([this.startMarker, this.endMarker]);
       if(elem.liveFleetPosition.length > 1){
-         // required 2 points atleast to draw polyline
         let liveFleetPoints: any = elem.liveFleetPosition;
         liveFleetPoints.sort((a, b) => parseInt(a.messageTimeStamp) - parseInt(b.messageTimeStamp)); // sorted in Asc order based on Id's 
         if(_displayRouteView == 'C' || _displayRouteView == 'F' || _displayRouteView == 'CO'){ // classic route
@@ -1031,10 +984,8 @@ viewselectedroutes(_selectedRoutes:any,_displayRouteView:any,trackType:any){
           filterDataPoints.forEach((element) => {
             this.drawPolyline(element, trackType);
           });
-        
         }
       }
-      
     })
   }
 }
@@ -1044,7 +995,6 @@ drawPolyline(finalDatapoints: any, trackType?: any){
   finalDatapoints.dataPoints.map((element) => {
     lineString.pushPoint({lat: element.gpsLatitude, lng: element.gpsLongitude});  
   });
-
   let _style: any = {
     lineWidth: 4, 
     strokeColor: finalDatapoints.color
@@ -1059,22 +1009,6 @@ drawPolyline(finalDatapoints: any, trackType?: any){
 }
 
 getFilterDataPoints(_dataPoints: any, _displayRouteView: any){
-  //-----------------------------------------------------------------//
-  // Fuel Consumption	Green	 	Orange	 	Red	 
-  // VehicleSerie	Min	Max	Min	Max	Min	Max
-  // LF	0	100	100	500	500	infinity
-  // CF	0	100	100	500	500	infinity
-  // XF	0	100	100	500	500	infinity
-  // XG	0	100	100	500	500	infinity
-  
-  // CO2	A	 	B	 	C	 	D	 	E	 	F	 
-  // VehicleSerie	Min	Max	Min	Max	Min	Max	Min	Max	Min	Max	Min	Max
-  // LF	0	270	270	540	540	810	810	1080	1080	1350	1350	infinity
-  // CF	0	270	270	540	540	810	810	1080	1080	1350	1350	infinity
-  // XF	0	270	270	540	540	810	810	1080	1080	1350	1350	infinity
-  // XG	0	270	270	540	540	810	810	1080	1080	1350	1350	infinity
-  //--------------------------------------------------------------------//
-
   let innerArray: any = [];
   let outerArray: any = [];
   let finalDataPoints: any = [];
@@ -1228,6 +1162,11 @@ createEndMarker(){
     }
    this.reportService.getVehicleTripDetails(getFleetFuelObj).subscribe((data:any) => {
      // //console.log("---getting data from getFleetFuelvehicleDetailsAPI---",data)
+    if(data["fleetFuelDetails"].length == 0) {
+      this.noRecordFound = true;
+    } else {
+      this.noRecordFound = false;
+    }
     this.displayData = data["fleetFuelDetails"];  
     this.FuelData = this.reportMapService.getConvertedFleetFuelDataBasedOnPref(this.displayData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
     // this.setTableInfo();
@@ -1235,8 +1174,9 @@ createEndMarker(){
     this.setTableInfo();
     this.fuelConsumptionSummary = (this.prefUnitFormat == 'dunit_Metric')?((this.sumOfColumns('fuelconsumed')/this.sumOfColumns('distance')) * 100).toFixed(2) : (this.sumOfColumns('distance')/this.sumOfColumns('fuelconsumed')).toFixed(2);
     this.hideloader();
-    }, (complete)=>{
+    }, (error)=>{
       this.hideloader();
+      this.noRecordFound = true;
     });
     this.reportService.getGraphDetails(getFleetFuelObj).subscribe((graphData: any) => {
       this.chartDataSet=[];
@@ -2165,13 +2105,6 @@ createEndMarker(){
     this.graphData= [];
   }
 
-  processTranslation(transData: any) {
-    this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    setTimeout(() =>{
-      // this.setPDFTranslations();
-    }, 0);
-  }
-
   proceedStep(prefData: any, preference: any){
     let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
     if(_search.length > 0){
@@ -2189,22 +2122,6 @@ createEndMarker(){
       this.prefDateFormat = prefData.dateformat[0].name;
       this.prefUnitFormat = prefData.unit[0].name;
     }
-
-    // this.tableInfoObj = {
-    //   fromDate:'05/24/2021 00:00:00',
-    //   toDate:'05/24/2021 23:59:59',
-    //   vehGroupName: 'All',
-    //   vehName: 'All'
-    // }
-
-    // this.summaryObj={
-    //   noOfTrips:15,
-    //   distance: '144.1km',
-    //   fuelconsumed:'33.5 I',
-    //   idleDuration:'01:47 hh:mm',
-    //   fuelConsumption:'23.3 Ltrs/100km',
-    //   co2emission:'0.097t'
-    // }
     this.setDefaultStartEndTime();
     this.setPrefFormatDate();
     this.setDefaultTodayDate();
@@ -2367,6 +2284,7 @@ getLast3MonthDate(){
     this.vehicleListData = [];
     this.showGraph= false;
     this.graphData= [];
+    this.noRecordFound = false;
     // this.vehicleGroupListData = this.vehicleGroupListData;
     // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
     // this.updateDataSource(this.tripData);
@@ -2751,7 +2669,15 @@ setVehicleGroupAndVehiclePreSelection() {
     })    
   }
 
-  exportAsPDFFile(){   
+  exportAsPDFFile(){
+  
+  var imgleft;
+  if (this.brandimagePath != null) {
+      imgleft = this.brandimagePath.changingThisBreaksApplicationSecurity;
+  } else {
+      imgleft = "/assets/logo.png";
+  }  
+    
   var doc = new jsPDF('p', 'mm', 'a4');
   // let pdfColumns = [this.displayedColumns];
   let ccdOne = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance3050metric) : (this.translationData.lblCruiseControlDistance1530imperial);
@@ -3116,8 +3042,9 @@ setVehicleGroupAndVehiclePreSelection() {
               doc.setFontSize(14);
               var fileTitle = pdfName;
               if(!fileTitle) fileTitle = 'Fleet Fuel Report by Vehicle Details';
-              var img = "/assets/logo.png";
-              doc.addImage(img, 'JPEG',10,10,0,0);
+              // var img = "/assets/logo.png";
+              // doc.addImage(img, 'JPEG',10,10,0,0);
+              doc.addImage(imgleft, 'JPEG', 10, 10, 0, 16.5);
     
               var img = "/assets/logo_daf.png"; 
               doc.text(fileTitle, 14, 35);

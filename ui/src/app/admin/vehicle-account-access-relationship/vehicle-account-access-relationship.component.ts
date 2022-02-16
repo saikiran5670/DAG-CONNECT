@@ -51,6 +51,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   adminAccessType: any = {};
   userType: any = '';
   associationTypeId: any = 1;
+  wholeData: any = '';
 
   constructor(private translationService: TranslationService, private accountService: AccountService, private vehicleService: VehicleService, private dialogService: ConfirmDialogService, private dialog: MatDialog, private organizationService: OrganizationService) { 
     // this.defaultTranslation();
@@ -115,6 +116,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   loadAccessRelationshipData(){
     this.showLoadingIndicator = true;
     this.accountService.getAccessRelationship(this.accountOrganizationId).subscribe((relData: any) => {
+      this.wholeData = relData;
       this.hideloader();
       this.vehicleGrpVehicleAssociationDetails = relData.vehicle;
       this.accountGrpAccountAssociationDetails = relData.account;
@@ -221,6 +223,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   makeAssociatedAccountGrpList(initdata: any){
     initdata.forEach((element: any, index: any) => {
       let list: any = '';
+      element.accessTypeName = (element.accessType=='F') ? this.translationData.lblFullAccess : this.translationData.lblViewOnly ;
       element.associatedData.forEach((resp: any) => {
         list += resp.name + ', ';
       });
@@ -235,6 +238,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   makeAssociatedVehicleGrpList(initdata: any){
     initdata.forEach((element: any, index: any) => {
       let list: any = '';
+      element.accessTypeName = (element.accessType=='F') ? this.translationData.lblFullAccess : this.translationData.lblViewOnly ;
       element.associatedData.forEach((resp: any) => {
         list += resp.name + ', ';
       });

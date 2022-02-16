@@ -1,5 +1,6 @@
 <div>
-  <h2 class='font-16-px line-height-24px font-helvetica-md' style="text-align: center;">{{ chartTitle || 'Engine Operational Performance'
+  <h2 class='font-16-px line-height-24px font-helvetica-md' style="text-align: center;">{{ chartTitle || 'Engine
+    Operational Performance'
     }}</h2>
   <div class="areaWidth min-width-15-per zoomWrapper" fxLayout="column" fxLayoutAlign="left">
     <mat-form-field appearance="outline" class="positionZoom">
@@ -10,7 +11,6 @@
       </mat-select>
     </mat-form-field>
   </div>
-
   <div id="chartContainer" [ngStyle]="{'zoom': selectedZoom}">
     <apx-chart [series]="chartOptions.series" [chart]="chartOptions.chart" [xaxis]="chartOptions.xaxis"
       [fill]="chartOptions.fill" [dataLabels]="chartOptions.dataLabels" [title]="chartOptions.title"

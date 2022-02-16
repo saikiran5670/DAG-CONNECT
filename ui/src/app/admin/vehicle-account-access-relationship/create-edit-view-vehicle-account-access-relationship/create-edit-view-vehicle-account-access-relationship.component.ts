@@ -388,6 +388,7 @@ export class CreateEditViewVehicleAccountAccessRelationshipComponent implements 
 
   applyFilter(filterValue: string) {
     filterValue = filterValue.trim(); // Remove whitespace
+    if(filterValue == '') return;
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
     this.dataSource.filter = filterValue;
   }

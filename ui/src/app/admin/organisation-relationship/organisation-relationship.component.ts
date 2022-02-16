@@ -412,11 +412,11 @@ export class OrganisationRelationshipComponent implements OnInit {
     {
     const options = {
       title: this.translationData.lblChangeChainingStatus,
-      message: (rowData.allowChain == true) ? this.translationData.lblYouwanttoDeactivate : this.translationData.lblYouwanttoActivate,
+      message: (rowData.allowChain == 'Active') ? this.translationData.lblYouwanttoDeactivate : this.translationData.lblYouwanttoActivate,
       // cancelText: this.translationData.lblNo,
       // confirmText: this.translationData.lblYes,
       cancelText: this.translationData.lblCancel,
-      confirmText: (rowData.allowChain == true) ? this.translationData.lblDeactivate  : this.translationData.lblActivate,
+      confirmText: (rowData.allowChain == 'Active') ? this.translationData.lblDeactivate  : this.translationData.lblActivate,
       status: rowData.allowChain == 'Active' ? 'Inactive' : 'Active' ,
       name: rowData.relationshipName
     };

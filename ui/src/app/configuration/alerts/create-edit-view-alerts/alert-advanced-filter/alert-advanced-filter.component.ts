@@ -1115,6 +1115,19 @@ let urgencylevelEndDate = 0;
   }
   urgencylevelStartDate = Util.convertDateToUtc(this.setStartEndDateTime(this.periodSelectedDateTime[0].startDate, this.periodSelectedDateTime[0].fromTime, "start"));
   urgencylevelEndDate = Util.convertDateToUtc(this.setStartEndDateTime(this.periodSelectedDateTime[0].endDate, this.periodSelectedDateTime[0].toTime, "end"));;
+  // urgencylevelStartDate = Util.convertDateToUtc(this.setStartEndDateTime(this.alertAdvancedFilterForm.controls.fromDate.value, this.alertAdvancedFilterForm.controls.fromTimeRange.value, "start"));
+  // urgencylevelEndDate = Util.convertDateToUtc(this.setStartEndDateTime(this.alertAdvancedFilterForm.controls.toDate.value, this.alertAdvancedFilterForm.controls.toTimeRange.value, "end"));;
+  if(this.periodSelectedDateTime && this.periodSelectedDateTime.length > 0){
+  urgencylevelStartDate = Util.convertDateToUtc(this.setStartEndDateTime(this.periodSelectedDateTime[0].startDate, this.periodSelectedDateTime[0].fromTime, "start"));
+  urgencylevelEndDate = Util.convertDateToUtc(this.setStartEndDateTime(this.periodSelectedDateTime[0].endDate, this.periodSelectedDateTime[0].toTime, "end"));;
+  }
+
+// }
+// else{
+//     this.alertTimingDetail = [];
+//     urgencylevelStartDate = 0;
+//     urgencylevelEndDate = 0;
+//   }
  
 //Fuel Increase & Fuel Loss
   if ((this.alert_category_selected == 'F') && (this.alert_type_selected == 'P' || this.alert_type_selected == 'L' || this.alert_type_selected == 'T')) {
