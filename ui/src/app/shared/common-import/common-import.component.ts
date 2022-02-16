@@ -429,7 +429,7 @@ export class CommonImportComponent implements OnInit {
                       valid = 0;
                     }
                   }
-                  else{ 
+                  else{
                     return 0;
                   }
                 }
@@ -441,13 +441,13 @@ export class CommonImportComponent implements OnInit {
                     if(name != ''){
                       if(this.poiData[i].subCategoryName == name){
                         valid = 1;
-                        return this.poiData[i].subCategoryId;                    
+                        return this.poiData[i].subCategoryId;
                       }
                       else{
                         valid = 0;
                       }
                     }
-                    else{ 
+                    else{
                       return 0;
                     }
                   }
@@ -501,16 +501,16 @@ export class CommonImportComponent implements OnInit {
             }
             break;
           }
-          case 'categoryId':{
-            let objData: any = this.basicValidation(value,'categoryId');
+          case 'categoryName':{
+            let objData: any = this.basicValidation(value,'categoryName');
             categoryFlag = objData.status;
             if(!categoryFlag){
               item.returnMessage = objData.reason;
             }
             break;
           }
-          case 'subCategoryId':{
-            let objData: any = this.basicValidation(value,'subCategoryId');
+          case 'subCategoryName':{
+            let objData: any = this.basicValidation(value,'subCategoryName');
             subcategoryFlag = objData.status;
             if(!subcategoryFlag){
               item.returnMessage = objData.reason;
