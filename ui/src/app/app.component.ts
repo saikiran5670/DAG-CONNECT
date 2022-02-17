@@ -1488,14 +1488,11 @@ notificationClicked(){
 }
 
 loadBrandlogoForReports(value) {
-  // console.log("*************************", value)
   let prefId = value.accountPreference.id;
   this.accountService.getAccountBrandLogo(prefId).subscribe((data: any) => {
-    // console.log("?????******", data)
     let val = data.iconByte;
     this.messageService.setBrandLogo(val);
   }, (error) => {
-    // console.log("?????******", error)
     this.messageService.setBrandLogo(null);
   });
 }
