@@ -1147,6 +1147,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
           ////console.log("vehicleDD 3", this.vehicleDD);
         });
       }
+      this.resetVehicleFilter();
     }
   }
 
