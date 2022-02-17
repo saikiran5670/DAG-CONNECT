@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { CreateEditViewFeaturesComponent } from './create-edit-view-features.component';
 
 describe('CreateEditViewFeaturesComponent', () => {
