@@ -50,6 +50,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
   distanceThreshold: number;
   timeThreshold: number;
   totalDriveTime: number = 0;
+  prefDetail: any = {};
 
   constructor(private messageService: MessageService, private reportService: ReportService, private fleetMapService: FleetMapService, private organizationService: OrganizationService, private translationService: TranslationService, private cdref: ChangeDetectorRef, private reportMapService: ReportMapService) {
     //this.loadData();
@@ -103,30 +104,28 @@ export class FleetOverviewSummaryComponent implements OnInit {
   }
 
   ngOnInit() {
-    let localStLanguage = JSON.parse(localStorage.getItem("language"));
     let accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
-    //let accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     let accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
-    this.translationService.getPreferences(localStLanguage.code).subscribe((prefData: any) => {
-      if (accountPrefObj.accountPreference && accountPrefObj.accountPreference != '') { // account pref
-        this.proceedStep(prefData, accountPrefObj.accountPreference);
-      } else { // org pref
+    this.prefDetail = JSON.parse(localStorage.getItem('prefDetail'));
+    if(this.prefDetail){
+      if (accountPrefObj.accountPreference && accountPrefObj.accountPreference != '') { 
+        this.proceedStep(accountPrefObj.accountPreference);
+      } else { 
         this.organizationService.getOrganizationPreference(accountOrganizationId).subscribe((orgPref: any) => {
-          this.proceedStep(prefData, orgPref);
-        }, (error) => { // failed org API
-          let pref: any = {};
-          this.proceedStep(prefData, pref);
+          this.proceedStep(orgPref);
+        }, (error) => { 
+          this.proceedStep({});
         });
       }
-    });
+    }
   }
 
-  proceedStep(prefData: any, preference: any) {
-    let _search = prefData.unit.filter(i => i.id == preference.unitId);
+  proceedStep(preference: any) {
+    let _search = this.prefDetail.unit.filter(i => i.id == preference.unitId);
     if (_search.length > 0) {
-      this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;
+      this.prefUnitFormat = this.prefDetail.unit.filter(i => i.id == preference.unitId)[0].name;
     } else {
-      this.prefUnitFormat = prefData.unit[0].name;
+      this.prefUnitFormat = this.prefDetail.unit[0].name;
     }
     this.unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile);
     this.stepForword(this.detailsData, true);

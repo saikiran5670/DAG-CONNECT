@@ -77,11 +77,12 @@ export class FeatureManagementComponent implements OnInit {
         element["select"] = element.state;
       });
       this.initData = filterTypeData;
-
+      if(this.gridComp){
+        this.gridComp.updatedTableData(this.initData);
+      }
     }, (error) => {
       this.hideloader();
     });
-    this.gridComp.updatedTableData(this.initData);
   }
 
   hideloader() {
