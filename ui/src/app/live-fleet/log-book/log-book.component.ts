@@ -2274,25 +2274,27 @@ let prepare = []
   }
 
   getAlertConfig(_currentAlert){
-    let _alertConfig = {color : '#D50017' , level :'Critical', type : ''};
+    // let _alertConfig = {color : '#D50017' , level :'Critical', type : ''};
     let _fillColor = '#D50017';
     let _level = 'Critical';
     let _type = '';
-      switch (_currentAlert.alertLevel) {
+    let _alertLevel = '';
+    if(_currentAlert.alertLevel) _alertLevel = (_currentAlert.alertLevel).toLowerCase();
+      switch (_alertLevel) {
         case 'C':
-          case 'Critical':{
+          case 'critical':{
           _fillColor = '#D50017';
           _level = 'Critical'
         }
         break;
         case 'W':
-          case 'Warning':{
+          case 'warning':{
           _fillColor = '#FC5F01';
           _level = 'Warning'
         }
         break;
         case 'A':
-          case 'Advisory':{
+          case 'advisory':{
           _fillColor = '#FFD80D';
           _level = 'Advisory'
         }
