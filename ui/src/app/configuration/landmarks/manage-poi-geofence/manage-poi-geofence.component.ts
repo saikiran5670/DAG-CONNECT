@@ -71,7 +71,8 @@ export class ManagePoiGeofenceComponent implements OnInit {
   importTranslationData: any = {};
   xmlObject : any = {};
   map: any;
-  templateTitle = ['Name', 'Latitude', 'Longitude', 'CategoryName', 'SubCategoryName', 'Address','Zipcode', 'City', 'Country'];
+  // templateTitle = ['Name', 'Latitude', 'Longitude', 'CategoryName', 'SubCategoryName', 'Address','Zipcode', 'City', 'Country'];
+  templateTitle = [];
   //templateTitle = ['OrganizationId', 'CategoryId', 'CategoryName', 'SubCategoryId', 'SubCategoryName',
   //  'POIName', 'Address', 'City', 'Country', 'Zipcode', 'Latitude', 'Longitude', 'Distance', 'State', 'Type'];
   templateValue = [
@@ -1381,6 +1382,15 @@ export class ManagePoiGeofenceComponent implements OnInit {
       this.importTranslationData.lblBack = this.translationData.lblBack || 'Back';
       this.importTranslationData.duplicatePOI = this.translationData.lblDuplicatePOI || 'Duplicate POI';
       this.importTranslationData.poiMaxLength = this.translationData.lblDataAttributeSetmaxlength || 'Max length should be 100';
+      this.importTranslationData.lblName = this.translationData.lblName || 'Name';
+      this.importTranslationData.lblLatitude = this.translationData.lblLatitude || 'Latitude';
+      this.importTranslationData.lblLongitude = this.translationData.lblLongitude || 'Longitude';
+      this.importTranslationData.lblCategoryName = this.translationData.lblCategoryName || 'Category Name';
+      this.importTranslationData.lblSubCategoryName = this.translationData.lblSubCategoryName || 'SubCategory Name';
+      this.importTranslationData.lblAddress = this.translationData.lblAddress || 'Address';
+      this.importTranslationData.lblZipCode = this.translationData.lblZipCode || 'Zipcode';
+      this.importTranslationData.lblCity = this.translationData.lblCity || 'City';
+      this.importTranslationData.lblCountry = this.translationData.lblCountry || 'Country';
       this.tableTitle = this.translationData.lblTableTitle || 'Rejected POI Details';
       this.tableColumnName = [this.translationData.lblOrganizationId || 'OrganizationId',
                               this.translationData.lblCategoryName || 'Category Name',
@@ -1389,6 +1399,15 @@ export class ManagePoiGeofenceComponent implements OnInit {
                               this.translationData.lblLatitude || 'Latitude',
                               this.translationData.lblLongitude || 'Longitude',
                               this.translationData.lblFailReason || 'Fail Reason'];
+      this.templateTitle = [this.translationData.lblName,
+                            this.translationData.lblLatitude,
+                            this.translationData.lblLongitude,
+                            this.translationData.lblCategoryName,
+                            this.translationData.lblSubCategoryName,
+                            this.translationData.lblAddress,
+                            this.translationData.lblZipCode,
+                            this.translationData.lblCity,
+                            this.translationData.lblCountry];
     }
   }
 
