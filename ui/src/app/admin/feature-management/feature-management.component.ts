@@ -83,12 +83,13 @@ export class FeatureManagementComponent implements OnInit {
       });
       // filterTypeData = this.getNewTagData(filterTypeData);
       this.initData = filterTypeData;
-
+      if(this.gridComp){
+        this.gridComp.updatedTableData(this.initData);
+      }
     }, (error) => {
       //console.log("error:: ", error);
       this.hideloader();
     });
-    this.gridComp.updatedTableData(this.initData);
   }
 
   hideloader() {

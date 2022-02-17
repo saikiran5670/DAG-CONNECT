@@ -323,13 +323,13 @@ export class CurrentFleetComponent implements OnInit {
   }
 
   getFilterData(){
-    //this.showLoadingIndicator = true;
+    this.showLoadingIndicator = true;
     this.reportService.getFilterDetails().subscribe((data: any) => {
-      //this.hideLoader();
+      if(data) this.hideLoader();
       this.filterData = data;
       //this.getFleetOverviewDetails();
     }, (error) => {
-      //this.hideLoader();
+      this.hideLoader();
       //this.getFleetOverviewDetails();
     });
   }
