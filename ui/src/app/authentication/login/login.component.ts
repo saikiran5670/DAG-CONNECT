@@ -89,7 +89,8 @@ export class LoginComponent implements OnInit {
             let loginObj = {
               id: data.body.accountInfo.id,
               organizationId: 0,
-              email: "",
+              //email: "",
+              email: (data.body.accountInfo && data.body.accountInfo.emailId) ? data.body.accountInfo.emailId : '',
               accountIds: "",
               name: "",
               accountGroupId: 0,
