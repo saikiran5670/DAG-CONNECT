@@ -690,6 +690,12 @@ export class FleetMapService {
           bounds: this.markerGroup.getBoundingBox()
         });
       }
+      if (_displayPOIList.length > 0 || _globalPOIList.length > 0 || (_searchMarker && _searchMarker.lat && _searchMarker.lng) || (_herePOI && _herePOI.length > 0)) {
+        this.hereMap.addObject(this.group);
+        this.hereMap.getViewModel().setLookAtData({
+          bounds: this.group.getBoundingBox()
+        });
+      }
     }
     else if (!showIcons && _selectedRoutes && _selectedRoutes.length > 0) { //to show trip when clicked on details
       _selectedRoutes.forEach(elem => {
