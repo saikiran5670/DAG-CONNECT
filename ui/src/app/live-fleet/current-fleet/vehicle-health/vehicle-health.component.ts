@@ -108,6 +108,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
   healthDdataSource: MatTableDataSource<any>;
   map_key: any = '';
   getvehiclehealthstatusservicecall;
+  vehicleDisplayPreference: any = '';
   @Output() backToPage = new EventEmitter<object>();
 
 
@@ -137,6 +138,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
     this.getWarningData(warningType='C');
     this.vehicleHealthForm = this._formBuilder.group({
       warningType: ['AllWarnings', [Validators.required]],
+      warningTypeSorting: ['deactivated_time', []],      
       startDate: ['', []],
       endDate: ['', []],
       startTime: ['', []],
@@ -164,7 +166,16 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
             this.proceedStep(prefData, pref);
           });
         }
+        let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
+        if (vehicleDisplayId) {
+          let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+          if (vehicledisplay.length != 0) {
+            this.vehicleDisplayPreference = vehicledisplay[0].name;
+            console.log(this.vehicleDisplayPreference, 'this.vehicleDisplayPreference');
+          }
+        }
       });
+      
     // });
     // this.selectionTab = 'last3month';
     // this.selectionTimeRange('last3month');
@@ -244,6 +255,14 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
       this.applyDatatoCardPaginator(this.filteredHistoryHealthData);
       this.setGeneralFleetValue();
     }
+   
+    if(!this.isCurrent){
+      this.vehicleHealthForm.get('warningTypeSorting').setValue('deactivated_time');
+      }else{
+        this.vehicleHealthForm.get('warningTypeSorting').setValue('activated_time');
+    }
+   this.onWarningTypeSelection(this.vehicleHealthForm.get('warningTypeSorting'));
+
   }
 
   onReset(){
@@ -252,7 +271,12 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
     this.setDefaultTodayDate();
     this.setDefaultStartEndTime();  
     this.vehicleHealthForm.get('warningType').setValue('AllWarnings');
-    this.warningTypeSelection='';
+    //this.warningTypeSelection='';
+    if(!this.isCurrent){
+      this.vehicleHealthForm.get('warningTypeSorting').setValue('deactivated_time');
+      }else{
+        this.vehicleHealthForm.get('warningTypeSorting').setValue('activated_time');
+      }
     this.isMapOpen = false;
     this.map.removeObjects(this.map.getObjects());  
     this.onSearch();
@@ -315,9 +339,18 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
     } else {
       let stopnow = filteredHistoryHealthData.filter(item => item?.warningVehicleHealthStatusType == 'T');
       let servicenow = filteredHistoryHealthData.filter(item => item?.warningVehicleHealthStatusType == 'V');
-      let noaction = filteredHistoryHealthData.filter(item => item?.warningVehicleHealthStatusType == 'N' || item?.warningVehicleHealthStatusType.trim() == '');
-      return [...stopnow, ...servicenow, ...noaction];
-    }
+      //let noaction = filteredHistoryHealthData.filter(item => item?.warningVehicleHealthStatusType == 'N' || item?.warningVehicleHealthStatusType.trim() == '');
+      let noaction = [];     
+      if (this.selectedIndex == 0) {
+         noaction = filteredHistoryHealthData.filter(item => item?.warningVehicleHealthStatusType == 'N' )
+      if(noaction.length == 0){
+        noaction = filteredHistoryHealthData.sort((a, b) =>  a.warningClass - b.warningClass  );
+      }}
+      else{
+        noaction = filteredHistoryHealthData.filter(item => item?.warningVehicleHealthStatusType == 'N' || item?.warningVehicleHealthStatusType.trim() == '');
+      }
+        return [...stopnow, ...servicenow, ...noaction];
+      }
   }
 
   onChangeWarningType(warning: any){
@@ -751,6 +784,10 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
       this.showLoadingIndicator=false;
     });
   }
+  
+  convertDateTime(val){
+    return Util.convertUtcToDateFormat(val,'DD/MM/YYYY hh:mm:ss');
+  }
 
   processDataForActivatedAndDeactivatedTime(responseData) {
     let groupedObj = {}
@@ -891,13 +928,29 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
       }
       let activatedTime = Util.convertUtcToDateFormat(elem.warningTimetamp,'DD/MM/YYYY hh:mm:ss');
       let deactivatedTime = elem.warningDeactivatedTimestamp ?  Util.convertUtcToDateFormat(elem.warningDeactivatedTimestamp,'DD/MM/YYYY hh:mm:ss'): '--';
+      if(elem.warningType && (elem.warningType).trim() == 'D'){
+        activatedTime = this.convertDateTime(elem.warningActivatedForDeactive);
+        deactivatedTime = this.convertDateTime(elem.warningTimetamp);
+      }
       // let _driverName = elem.driverName ? elem.driverName : elem.driver1Id;
       // let _vehicleName = elem.vid ? elem.vid : elem.vin;
       let iconBubble;
       let transwarningname = this.translationData.lblWarningName;
       let transactivatedtime = this.translationData.lblActivatedTime;
       let transdeactivatedtime = this.translationData.lblDeactivatedTime;
-      let transvehiclename = this.translationData.lblVehicleName;
+      // let transvehiclename = this.translationData.lblVehicleName;
+      let vehicleDisplayPref = '';
+      let elementValue = '';
+      if (this.vehicleDisplayPreference == 'dvehicledisplay_VehicleName') {
+        vehicleDisplayPref = this.translationData.lblVehicleName;
+        elementValue = elem.vehicleName;
+      } else if (this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber') {
+        vehicleDisplayPref = this.translationData.lblVIN;
+        elementValue = elem.warningVin;
+      } else if (this.vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber') {
+        vehicleDisplayPref = this.translationData.lblRegistrationNumber;
+        elementValue = elem.vehicleRegNo;
+      }
       let transposition = this.translationData.lblPosition;
       vehicleIconMarker.addEventListener('pointerenter', function (evt) {
         // event target is the marker itself, group is a parent event target
@@ -915,7 +968,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
               <td style='width: 100px;'>${transdeactivatedtime}: </td> <td><b>${deactivatedTime}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>${transvehiclename}: </td> <td><b>${elem.vehicleName} km</b></td>
+              <td style='width: 100px;'>${vehicleDisplayPref}: </td> <td><b>${elementValue}</b></td>
             </tr>
             <tr>
               <td style='width: 100px;'>${transposition}: </td> <td><b>${elem.warningAddress}</b></td>
