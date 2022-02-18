@@ -349,8 +349,10 @@ export class AppComponent {
         let userLoginStatus = localStorage.getItem("isUserLogin");
         if (val.url == "/auth/login" || val.url.includes("/auth/createpassword/") || val.url.includes("/auth/resetpassword/") || val.url.includes("/auth/resetpasswordinvalidate/") || val.url.includes("/downloadreport/") || val.url.includes("/unsubscribereport/")) {
           this.isLogedIn = false;
+          this.removeStorage();
         } else if (val.url == "/") {
           this.isLogedIn = false;
+          this.removeStorage();
         } else {
           if (!userLoginStatus) {
             this.logOut();
@@ -942,10 +944,14 @@ export class AppComponent {
   logOut() {
     this.authService.signOut().subscribe(() => {
       this.isLogedIn = false;
-      localStorage.clear(); // clear all localstorage
-      this.fileUploadedPath = '';
+      this.removeStorage();
       this.router.navigate(["/auth/login"]);
     });
+  }
+
+  removeStorage(){
+    localStorage.clear(); // clear all localstorage
+    this.fileUploadedPath = '';
   }
 
   fullScreen() {
