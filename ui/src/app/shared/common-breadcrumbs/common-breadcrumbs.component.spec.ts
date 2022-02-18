@@ -1,19 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { ConsentOptComponent } from './consent-opt.component';
 
-describe('ConsentOptComponent', () => {
-  let component: ConsentOptComponent;
-  let fixture: ComponentFixture<ConsentOptComponent>;
+import { CommonBreadcrumbsComponent } from './common-breadcrumbs.component';
+
+describe('CommonBreadcrumbsComponent', () => {
+  let component: CommonBreadcrumbsComponent;
+  let fixture: ComponentFixture<CommonBreadcrumbsComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ConsentOptComponent ]
+      declarations: [ CommonBreadcrumbsComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ConsentOptComponent);
+    fixture = TestBed.createComponent(CommonBreadcrumbsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

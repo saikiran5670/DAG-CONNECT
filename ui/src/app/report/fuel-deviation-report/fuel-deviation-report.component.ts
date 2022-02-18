@@ -1101,6 +1101,7 @@ export class FuelDeviationReportComponent implements OnInit {
           this.vehicleDD.push(element);
         });
       }
+      this.resetVehicleFilter();
     }
   }
 
