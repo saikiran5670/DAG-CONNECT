@@ -143,9 +143,13 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   }
 
   applyFilter(filterValue: string) {
-    filterValue = filterValue.trim(); // Remove whitespace
-    filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
-    this.dataSource.filter = filterValue;
+    filterValue = filterValue.trim().toLowerCase();
+    this.dataSource = new MatTableDataSource(this.dataAttributeList);
+    const filteredData = this.dataAttributeList.filter(value => {​​​​​​​​
+      return value.name.toLowerCase().toString().includes(filterValue);    
+    }​​​​​​​​);
+    this.dataSource = filteredData;
+    this.loadGridData( this.dataSource);
   }
 
   onCancel(){
