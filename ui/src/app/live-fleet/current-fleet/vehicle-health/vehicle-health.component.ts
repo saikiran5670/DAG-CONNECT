@@ -1007,7 +1007,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
 
   setIconsOnMap(element,_ui) {
     let _drivingStatus = false;
-    let healthColor = '#606060';
+    let healthColor = '#D50017';
     let _alertConfig = undefined;
     if (element.warningVehicleDrivingStatusType === 'D' || element.warningVehicleDrivingStatusType === 'Driving') {
       _drivingStatus = true
@@ -1023,7 +1023,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
         break;
       case 'N': // no action;
       case 'No Action':
-        healthColor = '#606060'; //grey
+        healthColor = '#D50017'; //grey
         if (_drivingStatus) {
           healthColor = '#00AE10'; //green
         }
