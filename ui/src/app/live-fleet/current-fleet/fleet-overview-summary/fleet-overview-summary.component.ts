@@ -78,9 +78,11 @@ export class FleetOverviewSummaryComponent implements OnInit {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes && changes.detailsData && changes.detailsData.currentValue) {
-      this.detailsData = changes.detailsData.currentValue;
+    if(changes && changes.fleetSummary){
       this.fleetSummary = changes.fleetSummary.currentValue;
+    }
+    if (changes && changes.detailsData && changes.detailsData.currentValue) {
+      this.detailsData = changes.detailsData.currentValue;     
       this.stepForword(this.detailsData, true);
     }
     if (changes && changes.totalVehicleCount) {
@@ -88,7 +90,6 @@ export class FleetOverviewSummaryComponent implements OnInit {
       this.totalVehicle = Number(changes.totalVehicleCount.currentValue);
       this.updateVehicleGraph();
     }
-
   }
   updateVehicleGraph() {
     // let distinctVIN = [];
@@ -326,28 +327,26 @@ export class FleetOverviewSummaryComponent implements OnInit {
     //this.totalVehicle=0;
     //this.criticalAlert=0;
     //this.mileageDone = this.summaryData.reduce((val, elem) => val + elem.tripDistance, 0);
-    if (this.summaryData) {
       if (flag) {
         // this.movedVehicle = 0;
         // let drivers = this.summaryData.filter((elem) => elem.driver1Id);
         // let driversUnknown = this.summaryData.filter((elem) => elem.driver1Id=='');
         // let uniqueDrivers = [...new Set(drivers)];
         // this.drivers = uniqueDrivers.length + driversUnknown.length;
-
+        if(this.fleetSummary){
         //drivers count
         this.drivers = this.fleetSummary.driverCount;
         this.criticalAlert = this.fleetSummary.criticalAlertCount;
         this.totalDriveTime = this.fleetSummary.drivingTime;
-        
-
+        }
       }
       // let drivers = this.summaryData.filter((elem) => elem.driver1Id);
       // let uniqueDrivers = [...new Set(drivers)];
       // this.drivers = uniqueDrivers.length;
-
+      tripDistance = this.fleetSummary? this.fleetSummary.drivingDistance :0;
+      if (this.summaryData) {
       let vins = this.summaryData.filter((elem) => elem.vin);
       let uniqueVin = [...new Set(vins)];
-      tripDistance = this.fleetSummary.drivingDistance;
       //this.totalVehicle = uniqueVin.length;
       let criticalCount = 0;
 
