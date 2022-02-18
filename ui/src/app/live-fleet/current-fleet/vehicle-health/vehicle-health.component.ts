@@ -751,6 +751,10 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
       this.showLoadingIndicator=false;
     });
   }
+  
+  convertDateTime(val){
+    return Util.convertUtcToDateFormat(val,'DD/MM/YYYY hh:mm:ss');
+  }
 
   processDataForActivatedAndDeactivatedTime(responseData) {
     let groupedObj = {}
@@ -891,6 +895,10 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
       }
       let activatedTime = Util.convertUtcToDateFormat(elem.warningTimetamp,'DD/MM/YYYY hh:mm:ss');
       let deactivatedTime = elem.warningDeactivatedTimestamp ?  Util.convertUtcToDateFormat(elem.warningDeactivatedTimestamp,'DD/MM/YYYY hh:mm:ss'): '--';
+      if(elem.warningType && (elem.warningType).trim() == 'D'){
+        activatedTime = this.convertDateTime(elem.warningActivatedForDeactive);
+        deactivatedTime = this.convertDateTime(elem.warningTimetamp);
+      }
       // let _driverName = elem.driverName ? elem.driverName : elem.driver1Id;
       // let _vehicleName = elem.vid ? elem.vid : elem.vin;
       let iconBubble;
