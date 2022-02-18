@@ -786,7 +786,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
   }
   
   convertDateTime(val){
-    return Util.convertUtcToDateFormat(val,'DD/MM/YYYY hh:mm:ss');
+    return Util.convertUtcToDateFormat(val,'DD/MM/YYYY hh:mm:ss A');
   }
 
   processDataForActivatedAndDeactivatedTime(responseData) {
