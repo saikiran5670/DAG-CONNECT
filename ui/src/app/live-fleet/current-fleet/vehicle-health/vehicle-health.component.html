@@ -265,13 +265,13 @@
                   </span>
                   <span *ngIf='warning.warningType=="D"'>                     
                      <span class="name_small">{{ translationData.lblActivatedTime || 'Activated Time' }}</span>                   
-                     <div class="full-width" style="font-size: 13px;padding-top: 2px;">{{ warning.warningActivatedForDeactive ? (warning.warningActivatedForDeactive | date: 'yyyy/MM/dd h:mm:ss a') : '-' }}</div>
+                     <div class="full-width" style="font-size: 13px;padding-top: 2px;">{{ warning.warningActivatedForDeactive ? convertDateTime(warning.warningActivatedForDeactive) : '-' }}</div>
                    </span>
                   </div>
                   <div class="warning_time" fxLayout="column" fxLayoutAlign="left">
                     <span *ngIf='warning.warningType=="D"'>
                     <span [ngClass]="[isCurrent ? 'name_small warning_danger' : 'name_small warning_danger']">{{ translationData.lblDeactivatedTime || 'Deactivated Time' }}</span>
-                    <div class="full-width" style="font-size: 13px;padding-top: 2px;">{{ warning.warningTimetamp | date: 'yyyy/MM/dd h:mm:ss a' }}</div>
+                    <div class="full-width" style="font-size: 13px;padding-top: 2px;">{{ convertDateTime(warning.warningTimetamp) }}</div>
                   </span>
                   </div>
                   <ng-container *ngIf="warning.warningDeactivatedTimestamp">
