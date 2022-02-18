@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { EditDriverDetailsComponent } from './edit-driver-details.component';
 
 describe('EditDriverDetailsComponent', () => {

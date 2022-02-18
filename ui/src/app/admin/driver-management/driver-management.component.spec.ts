@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { DriverManagementComponent } from './driver-management.component';
 
 describe('DriverManagementComponent', () => {
