@@ -108,6 +108,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
   healthDdataSource: MatTableDataSource<any>;
   map_key: any = '';
   getvehiclehealthstatusservicecall;
+  vehicleDisplayPreference: any = '';
   @Output() backToPage = new EventEmitter<object>();
 
 
@@ -164,7 +165,16 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
             this.proceedStep(prefData, pref);
           });
         }
+        let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
+        if (vehicleDisplayId) {
+          let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+          if (vehicledisplay.length != 0) {
+            this.vehicleDisplayPreference = vehicledisplay[0].name;
+            console.log(this.vehicleDisplayPreference, 'this.vehicleDisplayPreference');
+          }
+        }
       });
+      
     // });
     // this.selectionTab = 'last3month';
     // this.selectionTimeRange('last3month');
@@ -905,7 +915,19 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
       let transwarningname = this.translationData.lblWarningName;
       let transactivatedtime = this.translationData.lblActivatedTime;
       let transdeactivatedtime = this.translationData.lblDeactivatedTime;
-      let transvehiclename = this.translationData.lblVehicleName;
+      // let transvehiclename = this.translationData.lblVehicleName;
+      let vehicleDisplayPref = '';
+      let elementValue = '';
+      if (this.vehicleDisplayPreference == 'dvehicledisplay_VehicleName') {
+        vehicleDisplayPref = this.translationData.lblVehicleName;
+        elementValue = elem.vehicleName;
+      } else if (this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber') {
+        vehicleDisplayPref = this.translationData.lblVIN;
+        elementValue = elem.warningVin;
+      } else if (this.vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber') {
+        vehicleDisplayPref = this.translationData.lblRegistrationNumber;
+        elementValue = elem.vehicleRegNo;
+      }
       let transposition = this.translationData.lblPosition;
       vehicleIconMarker.addEventListener('pointerenter', function (evt) {
         // event target is the marker itself, group is a parent event target
@@ -923,7 +945,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
               <td style='width: 100px;'>${transdeactivatedtime}: </td> <td><b>${deactivatedTime}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>${transvehiclename}: </td> <td><b>${elem.vehicleName} km</b></td>
+              <td style='width: 100px;'>${vehicleDisplayPref}: </td> <td><b>${elementValue}</b></td>
             </tr>
             <tr>
               <td style='width: 100px;'>${transposition}: </td> <td><b>${elem.warningAddress}</b></td>
