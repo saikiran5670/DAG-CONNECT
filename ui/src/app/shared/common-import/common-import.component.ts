@@ -599,16 +599,16 @@ export class CommonImportComponent implements OnInit {
             }
             break;
           }
-          case 'categoryName':{
-            let objData: any = this.basicValidation(value,'categoryName');
+          case 'categoryId':{
+            let objData: any = this.basicValidation(value,'categoryId');
             categoryFlag = objData.status;
             if(!categoryFlag){
               item.returnMessage = objData.reason;
             }
             break;
           }
-          case 'subCategoryName':{
-            let objData: any = this.basicValidation(value,'subCategoryName');
+          case 'subCategoryId':{
+            let objData: any = this.basicValidation(value,'subCategoryId');
             subcategoryFlag = objData.status;
             if(!subcategoryFlag){
               item.returnMessage = objData.reason;
@@ -1127,6 +1127,7 @@ export class CommonImportComponent implements OnInit {
       obj.reason = this.getUpdatedMessage(type,this.importTranslationData.input1mandatoryReason);
       return obj;
     }
+    
     if(type === 'organizationId'){
       if(value === 0){
         obj.status = false;
