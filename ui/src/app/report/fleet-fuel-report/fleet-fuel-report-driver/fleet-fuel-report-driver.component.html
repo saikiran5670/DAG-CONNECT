@@ -649,6 +649,7 @@
                 <span *ngIf=" row.driverID != '' && row.hashedDriverId != '' && row.hashedDriverId != null  " class='navigatePoint' (click)='onDriverSelected(row)'>{{ row.driverID }}</span>
                 <span *ngIf=" row.driverID != '' && row.driverID != null && row.hashedDriverId == null || row.hashedDriverId == '' " class='navigatePoint' (click)='onDriverSelected(row)'>*</span>
                 <span *ngIf=" row.driverID == null || row.driverID == '' && row.hashedDriverId == null || row.hashedDriverId == '' " class='navigatePoint' (click)='onDriverSelected(row)'>Unknown</span>
+                <span *ngIf=" row.driverID == '' && row.hashedDriverId != '' && row.hashedDriverId != null " class='navigatePoint' (click)='onDriverSelected(row)'>*</span>
 
               </mat-cell>
           </ng-container>
