@@ -789,6 +789,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
     else {
       this.tripForm.get('vehicleGroup').setValue(parseInt(this.globalSearchFilterData.vehicleGroupDropDownValue));
     }
+    this.resetVehicleFilter();
   }
 
   getUniqueVINs(vinList: any){
