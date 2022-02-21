@@ -417,7 +417,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
     let milDone: any = this.getDistance(tripDistance, this.prefUnitFormat);
 
     this.mileageDone = milDone + ' ' + this.unitValkm;
-    let totDriveTime = Util.getHhMmTimeFromMS(this.totalDriveTime).split(':'); //driving time is coming in ms
+    let totDriveTime = Util.getHhMmTime(this.totalDriveTime).split(':'); //driving time is coming in seconds
     this.driveTime = flag ? totDriveTime[0] + (this.translationData.lblhh ) + ' ' +totDriveTime[1] + (this.translationData.lblmm) : this.driveTime;
 
     this.barChartData = [
