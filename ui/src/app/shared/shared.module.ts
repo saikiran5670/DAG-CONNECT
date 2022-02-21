@@ -34,7 +34,6 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { LayoutModule } from '@angular/cdk/layout';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { NgxUiLoaderModule } from 'ngx-ui-loader';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { DragDropModule } from '@angular/cdk/drag-drop';
@@ -47,14 +46,13 @@ import { CustomPaginationComponent } from './custom-pagination/custom-pagination
 import { SpinnerComponent } from './spinner/spinner.component';
 import { ActiveInactiveDailogComponent } from './active-inactive-dailog/active-inactive-dailog.component';
 import { CommonImportComponent } from './common-import/common-import.component';
-import { CommonMapComponent } from './common-map/common-map.component';
 import { DataTableComponent } from './data-table/data-table.component';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { CommonBreadcrumbsComponent } from './common-breadcrumbs/common-breadcrumbs.component';
 
 
 @NgModule({
-  declarations: [CommonFilterComponent, RemoveDuplicatesPipe, SafeStylePipe, CustomPaginationComponent, SpinnerComponent, ActiveInactiveDailogComponent,CommonImportComponent, CommonMapComponent, DataTableComponent, CommonBreadcrumbsComponent],
+  declarations: [CommonFilterComponent, RemoveDuplicatesPipe, SafeStylePipe, CustomPaginationComponent, SpinnerComponent, ActiveInactiveDailogComponent,CommonImportComponent, DataTableComponent, CommonBreadcrumbsComponent],
   imports: [
     CommonModule,
     FlexLayoutModule,
@@ -92,13 +90,13 @@ import { CommonBreadcrumbsComponent } from './common-breadcrumbs/common-breadcru
     LayoutModule,
     FormsModule,
     ReactiveFormsModule,
-    NgxUiLoaderModule,
     MatFormFieldModule,
     DragDropModule,
     MaterialFileInputModule,
     NgxDropzoneModule,
     MatTableExporterModule,
     NgxMatSelectSearchModule
+
   ],
   entryComponents:[],
   exports: [
@@ -135,7 +133,6 @@ import { CommonBreadcrumbsComponent } from './common-breadcrumbs/common-breadcru
     MatTooltipModule,
     MatStepperModule,
     LayoutModule,
-    NgxUiLoaderModule,
     MatFormFieldModule,
     DragDropModule,
     MaterialFileInputModule,
@@ -144,7 +141,6 @@ import { CommonBreadcrumbsComponent } from './common-breadcrumbs/common-breadcru
     SafeStylePipe,
     SpinnerComponent,
     CommonImportComponent,
-    CommonMapComponent,
     DataTableComponent,
     CommonBreadcrumbsComponent
   ],

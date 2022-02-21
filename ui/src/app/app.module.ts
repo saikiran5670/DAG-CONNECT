@@ -21,8 +21,7 @@ import { DriverService } from './services/driver.service';
 import { FeatureService } from './services/feature.service';
 import { PackageService } from './services/package.service';
 import { SubscriptionService } from './services/subscription.service';
-import { AppInterceptor } from './interceptor/app.interceptor';
-import { HttpErrorInterceptor, SessionDialogService } from './interceptor/http-error.interceptor';
+import { AppInterceptor, SessionDialogService } from './interceptor/app.interceptor';
 import { ErrorComponent } from './error/error.component';
 import { LandmarkGroupService } from './services/landmarkGroup.service';
 import { POIService } from './services/poi.service';
@@ -38,7 +37,7 @@ import { NgxSliderModule } from '@angular-slider/ngx-slider';
 import { PeriodSelectionFilterComponent } from './configuration/alerts/create-edit-view-alerts/period-selection-filter/period-selection-filter.component';
 import { ReportSchedulerService } from './services/report.scheduler.service';
 import { NotificationAdvancedFilterComponent } from './configuration/alerts/create-edit-view-alerts/create-notifications-alert/notification-advanced-filter/notification-advanced-filter.component';
-import {AutocompleteLibModule} from 'angular-ng-autocomplete';
+import { AutocompleteLibModule } from 'angular-ng-autocomplete';
 import { DownloadReportModule } from './download-report/download-report.module';
 import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
@@ -81,12 +80,7 @@ export function configFactory(httpClient: HttpClient): ConfigLoader {
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AppInterceptor, multi: true },
-    { provide: LocationStrategy, useClass: HashLocationStrategy },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: HttpErrorInterceptor,
-      multi: true
-    },
+    { provide: LocationStrategy, useClass: HashLocationStrategy },  
     SessionDialogService,
     DataInterchangeService,
     AccountService,

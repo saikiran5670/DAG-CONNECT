@@ -22,8 +22,9 @@ import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { Util } from '../app/shared/util';
 import { element } from 'protractor';
 import { HttpClient } from '@angular/common/http';
-import { SignalRService } from './services/sampleService/signalR.service';
+import { SignalRService } from './services/signalR.service';
 import { AlertService } from './services/alert.service';
+import { DashboardService } from './services/dashboard.service';
 
 @Component({
   selector: 'app-root',
@@ -91,6 +92,7 @@ export class AppComponent {
   vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   startTimeDisplay: any = '00:00:00';
   selectedStartTime: any = '00:00';
+  isUserLogin: boolean = false;
   // notificationDetails: any= [];
   private pageTitles = {
     dashboard: 'lblDashboard',
@@ -309,7 +311,8 @@ export class AppComponent {
 
 
   constructor(private reportService: ReportService, private router: Router, private dataInterchangeService: DataInterchangeService, public authService: AuthService, private translationService: TranslationService, private deviceService: DeviceDetectorService, public fb: FormBuilder, @Inject(DOCUMENT) private document: any, private domSanitizer: DomSanitizer, private accountService: AccountService, private dialog: MatDialog, private organizationService: OrganizationService, private messageService: MessageService,@Inject(MAT_DATE_FORMATS) private dateFormats,
-  private http: HttpClient, public signalRService: SignalRService, private alertService: AlertService) {
+  private http: HttpClient, public signalRService: SignalRService, private alertService: AlertService,
+  private dashboardService : DashboardService) {
     this.defaultTranslation();
     this.landingPageForm = this.fb.group({
       'organization': [''],
@@ -325,10 +328,11 @@ export class AppComponent {
       localStorage.setItem("globalSearchFilterData", JSON.stringify(this.globalSearchFilterData));
       //this.getAccountInfo();
       // this.getNavigationMenu();
+      this.reportService.getHEREMapsInfo().subscribe((data: any) => {
+        localStorage.setItem("hereMapsK", data.apiKey);
+      });
     });
     //ToDo: below part to be removed after preferences/dashboard part is developed
-    localStorage.setItem("liveFleetMileageThreshold", "1000");
-    localStorage.setItem("liveFleetUtilizationThreshold", "5");
     if(localStorage.getItem("liveFleetTimer")){
       this.timeLeft = Number.parseInt(localStorage.getItem("liveFleetTimer"));
     }
@@ -470,14 +474,20 @@ export class AppComponent {
           this.timeLeft = Number.parseInt(localStorage.getItem("liveFleetTimer"));
           // if (this.isLogedIn) {
             this.getOfflineNotifications();
+            let accinfo = JSON.parse(localStorage.getItem("accountInfo"))
+            this.loadBrandlogoForReports(accinfo);
           // }
           //this.getReportDetails();
         }, (err) => {
-          console.log(err);
+          //console.log(err);
         });
+       
+
       }, (error) => {
-        console.log(error);
+        //console.log(error);
       });
+
+      
     }
   }
 
@@ -486,7 +496,7 @@ export class AppComponent {
       this.reportListData = reportList.reportDetails;
       this.getFleetOverviewPreferences(this.reportListData);
     }, (error)=>{
-      console.log('Report not found...', error);
+      //console.log('Report not found...', error);
       this.reportListData = []
     });
   }
@@ -503,7 +513,7 @@ export class AppComponent {
     //   let _prefData = prefData['userPreferences'];
     //   this.getTranslatedColumnName(_prefData);
     // }, (error)=>{
-    //   console.log('Pref not found...')
+    //   //console.log('Pref not found...')
     // });
   }
 
@@ -550,7 +560,7 @@ export class AppComponent {
         }
       }
     })
-    //console.log("accountNavMenu:: ", landingPageMenus)
+    ////console.log("accountNavMenu:: ", landingPageMenus)
     localStorage.setItem("accountNavMenu", JSON.stringify(landingPageMenus));
     //localStorage.setItem("accountNavMenu", JSON.stringify(landingPageMenus));
     
@@ -601,7 +611,7 @@ export class AppComponent {
       }
       
       // https://stackoverflow.com/questions/40983055/how-to-reload-the-current-route-with-the-angular-2-router
-      // console.log(_link);
+      // //console.log(_link);
       this.router.navigateByUrl('/switchorgrole', { skipLocationChange: true }).then(() =>
       this.router.navigate([_link]));
       
@@ -773,7 +783,7 @@ export class AppComponent {
 
   public detectDevice() {
     this.deviceInfo = this.deviceService.getDeviceInfo();
-    //console.log("this.deviceInfo:: ", this.deviceInfo);
+    ////console.log("this.deviceInfo:: ", this.deviceInfo);
     if (this.deviceInfo.deviceType == 'mobile') {
       this.menuCollapsed = true;
     }
@@ -781,17 +791,17 @@ export class AppComponent {
 
   // public isMobile() {
   //   this.isMobilevar = this.deviceService.isMobile();
-  //   console.log("this.isMobilevar:: ", this.isMobilevar);
+  //   //console.log("this.isMobilevar:: ", this.isMobilevar);
   // }
 
   // public isTablet() {
   //   this.isTabletvar = this.deviceService.isTablet();
-  //   console.log("this.isTabletvar:: ", this.isTabletvar);
+  //   //console.log("this.isTabletvar:: ", this.isTabletvar);
   // }
 
   // public isDesktop() {
   //   this.isDesktopvar = this.deviceService.isDesktop();
-  //   console.log("this.isDesktopvar:: ", this.isDesktopvar);
+  //   //console.log("this.isDesktopvar:: ", this.isDesktopvar);
   // }
 
   defaultTranslation() {
@@ -843,6 +853,7 @@ export class AppComponent {
   }
 
   getTranslationLabels() {
+    
     let curAccId = parseInt(localStorage.getItem("accountId"));
     if (curAccId) { //- checked for refresh page
       this.accountID = curAccId;
@@ -891,7 +902,7 @@ export class AppComponent {
         this.appForm.get("languageSelection").setValue(this.localStLanguage.id); //-- set language dropdown
 
         this.organizationService.getAllOrganizations().subscribe((data: any) => {
-          console.log("organizationService Data", data);
+          //console.log("organizationService Data", data);
           if (data) {
             this.organizationList = data["organizationList"];
             this.filteredOrganizationList.next(this.organizationList);
@@ -921,6 +932,7 @@ export class AppComponent {
           this.calledTranslationLabels(preferencelanguageCode);
         });
       });
+
     }
   }
 
@@ -972,7 +984,9 @@ export class AppComponent {
     this.languageId = JSON.parse(localStorage.getItem("language"));
     let _langCode = this.localStLanguage ? this.localStLanguage.code  :  "EN-GB";
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
+    this.isUserLogin = JSON.parse(localStorage.getItem('isUserLogin'));
 
+    if(this.isUserLogin){
       this.translationService.getPreferences(_langCode).subscribe((prefData: any) => {
         if(this.accountPrefObj && this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
           this.proceedStep(prefData, this.accountPrefObj.accountPreference);
@@ -997,7 +1011,7 @@ export class AppComponent {
         }  
 
       });
-
+    }
     //this.getOrgListData();
     if (this.router.url) {
       //this.isLogedIn = true;
@@ -1012,11 +1026,9 @@ export class AppComponent {
 
     // this.langFilterCtrl.valueChanges
     //   .subscribe(() => {
-    //     console.log("called")
+    //     //console.log("called")
     //     this.filterLanguages();
     //   });
-
-    
   }
 
 
@@ -1045,6 +1057,7 @@ export class AppComponent {
       this.prefDateFormat = prefData.dateformat[0].name;
       this.prefUnitFormat = prefData.unit[0].name;
     }
+    localStorage.setItem("unitFormat", this.prefUnitFormat);
     // this.selectionTimeRange('lastweek');
   }
 
@@ -1076,13 +1089,56 @@ export class AppComponent {
     if(menu.externalLink) {
       if(menu.url == "information") {
         let selectedLanguage = JSON.parse(localStorage.getItem("language"));
-        if(selectedLanguage.code == "nl-NL") {
-          menu.link = menu.link.replace('/en/','/nl-nl/');
-        }
-        if(selectedLanguage.code == "de-DE") {
-          menu.link = menu.link.replace('/en/','/de-de/');
+        // if(selectedLanguage.code == "nl-NL") { //dutch(netherland)
+        //   menu.link = menu.link.replace('/en/','/nl-nl/');
+        // }
+        // if(selectedLanguage.code == "de-DE") {
+        //   menu.link = menu.link.replace('/en/','/de-de/');
+        // }
+        switch(selectedLanguage.code){
+          case 'nl-NL': { //dutch(netherland)
+            menu.link = menu.link.replace('/en/','/nl-nl/');
+            break;
+          }
+          case 'de-DE': { 
+            menu.link = menu.link.replace('/en/','/de-de/');
+            break;
+          }
+          case 'cs-CZ': { //Czech
+            menu.link = menu.link.replace('/en/','/cs-cz/');
+            break;
+          }
+          case 'fr-FR': { //French 
+            menu.link = menu.link.replace('/en/','/fr-fr/');
+            break;
+          }
+          case 'es-ES': { //Spanish
+            menu.link = menu.link.replace('/en/','/es-es/');
+            break;
+          }
+          case 'hu-HU': { //Hungarian 
+            menu.link = menu.link.replace('/en/','/hu-hu/');
+            break;
+          }
+          case 'it-IT': { //Italian 
+            menu.link = menu.link.replace('/en/','/it-it/');
+            break;
+          }
+          case 'pt-PT': { //Portugese  
+            menu.link = menu.link.replace('/en/','/pt-pt/');
+            break;
+          }
+          case 'pl-PL': { //Polish
+            menu.link = menu.link.replace('/en/','/pl-pl/');
+            break;
+          }
+          case 'Tr-tr': { //Turkish  
+            menu.link = menu.link.replace('/en/','/tr-tr/');
+            break;
+          }
         }
       }
+     
       window.open(menu.link, '_blank');
     }
     if (this.menuCollapsed) {
@@ -1205,7 +1261,7 @@ export class AppComponent {
       this.accountService.setUserSelection(sessionObject).subscribe((data) =>{
         this.getNavigationMenu();
       }, (error) => {
-        console.log(error)
+        //console.log(error)
       });
     }
   }
@@ -1259,10 +1315,12 @@ export class AppComponent {
     this.accountService.switchOrgContext(switchObj).subscribe((data: any) => {
       this.accountService.getSessionInfo().subscribe((accountData: any) => {
         this.getMenu(data, 'orgContextSwitch', accountData);
+        let accinfo = JSON.parse(localStorage.getItem("accountInfo"))
+        this.loadBrandlogoForReports(accinfo);
       });
     }, (error) => {
-      console.log(error)
-    });
+      //console.log(error)
+    });    
   }
 
   sendMessage(): void {
@@ -1324,7 +1382,7 @@ export class AppComponent {
     this.filteredOrganizationList.next(
       this.organizationList.filter(item => item.name.toLowerCase().indexOf(search) > -1)
     );
-    console.log("this.filteredOrganizationList",this.filteredOrganizationList) 
+    //console.log("this.filteredOrganizationList",this.filteredOrganizationList) 
    }
 
   filterLanguages(search) {
@@ -1340,7 +1398,7 @@ export class AppComponent {
     this.filteredLanguages.next(
       this.languages.filter(item => item.name.toLowerCase().indexOf(search) > -1)
     );
-    console.log("this.filteredLanguages",this.filteredLanguages) 
+    //console.log("this.filteredLanguages",this.filteredLanguages) 
    }
 
    //********************************** Date Time Functions *******************************************//
@@ -1375,8 +1433,8 @@ export class AppComponent {
         this.alertDateFormat='MM/DD/YYYY';
         this.dateFormats.parse.dateInput = "MM/DD/YYYY";
       }
-      localStorage.setItem("dateFormat", this.dateFormats.display.dateInput);
     }
+    localStorage.setItem("dateFormat", this.dateFormats.display.dateInput);
   }
 
   getOfflineNotifications(){
@@ -1428,4 +1486,16 @@ notificationClicked(){
     })
   }
 }
+
+loadBrandlogoForReports(value) {
+  let prefId = value.accountPreference.id;
+  this.accountService.getAccountBrandLogo(prefId).subscribe((data: any) => {
+    let val = data.iconByte;
+    this.messageService.setBrandLogo(val);
+  }, (error) => {
+    this.messageService.setBrandLogo(null);
+  });
+}
+
+
 }

@@ -10,7 +10,7 @@ export class FeatureService {
     featureServiceUrl: string = '';
 
     constructor(private httpClient: HttpClient, private config: ConfigService) {
-      this.featureServiceUrl = config.getSettings("foundationServices").featureRESTServiceURL;
+      this.featureServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/feature';
     }
 
     generateHeader(){

@@ -30,7 +30,7 @@ export class MapFunctionsService {
 
   corridorWidthKm: number = 0.1;
   additionalData = [];
-  
+
   corridorPath : any;
   polylinePath : any;
   polyLinePathArray : any = [];
@@ -48,7 +48,8 @@ export class MapFunctionsService {
   ui: any;
 
   constructor(private hereService: HereService, private corridorService: CorridorService, private _configService: ConfigService) {
-    this.map_key = _configService.getSettings("hereMap").api_key;
+    // this.map_key = _configService.getSettings("hereMap").api_key;
+    this.map_key = localStorage.getItem("hereMapsK");
     this.platform = new H.service.Platform({
       "apikey": this.map_key
     });
@@ -70,7 +71,7 @@ export class MapFunctionsService {
   vehicleLengthValue = 0
   vehicleLimitedWtValue = 0
   vehicleWtPerAxleValue = 0
-  defaultLayers : any; 
+  defaultLayers : any;
 
 
   // public ngAfterViewInit() {
@@ -91,7 +92,7 @@ export class MapFunctionsService {
     this.ui.removeControl("mapsettings");
     // create custom one
     var ms = new H.ui.MapSettingsControl({
-        baseLayers : [ { 
+        baseLayers : [ {
           label: translationData ? translationData.lblNormal || "Normal" : "Normal", layer: this.defaultLayers.raster.normal.map
         },{
           label: translationData ? translationData.lblSatellite || "Satellite" : "Satellite", layer: this.defaultLayers.raster.satellite.map
@@ -119,7 +120,7 @@ export class MapFunctionsService {
   //   this.hereMap.removeObjects(this.hereMap.getObjects())
   //   this.startMarker = null; this.endMarker = null;
   // }
-  clearRoutesFromMap() { 
+  clearRoutesFromMap() {
     this.mapGroup.removeAll();
     this.startMarker = null; this.endMarker = null;
     this.hereMap.removeLayer(this.defaultLayers.vector.normal.traffic);
@@ -136,7 +137,7 @@ export class MapFunctionsService {
   //     let filteredPolyline = this.polyLinePathArray.filter(elem => elem.id != _id);
   //     this.polyLinePathArray = filteredPolyline;
   //   }
-    
+
   // }
 
   // clearPolylines(){
@@ -161,6 +162,7 @@ export class MapFunctionsService {
     this.trafficOnceChecked = false;
     this.viaRoutePlottedPoints = [];
  // var group = new H.map.Group();
+
  this.mapGroup.removeAll();
  this.hereMap.removeObjects(this.hereMap.getObjects())
     // if(this.routeOutlineMarker){
@@ -203,7 +205,12 @@ export class MapFunctionsService {
           this.corridorWidth = 100;
           this.corridorWidthKm = this.corridorWidth / 1000;
         }
-
+        //create and add Icon
+        let locMarkup = this.getCategoryPOIIcon();
+        let markerSizeIcon = { w: 25, h: 39 };
+        const locIcon = new H.map.Icon(locMarkup, { size: markerSizeIcon, anchor: { x: Math.round(markerSizeIcon.w / 2), y: Math.round(markerSizeIcon.h / 2) } });
+        this.startMarker = new H.map.Marker({ lat: this.startAddressPositionLat, lng: this.startAddressPositionLong }, { icon: locIcon });
+        this.mapGroup.addObject(this.startMarker);
         //create and add start marker
         let houseMarker = this.createHomeMarker();
         let markerSize = { w: 26, h: 32 };
@@ -268,7 +275,7 @@ export class MapFunctionsService {
         if (accountOrganizationId) {
           if (_selectedRoutes[i].id) {
             this.corridorService.getCorridorFullList(accountOrganizationId, _selectedRoutes[i].id).subscribe((data) => {
-              //console.log(data)
+              ////console.log(data)
               if (data[0]["corridorProperties"]) {
                 this.additionalData = data[0]["corridorProperties"];
                 this.setAdditionalData();
@@ -279,7 +286,7 @@ export class MapFunctionsService {
                   if(this.transportOnceChecked){
                     this.hereMap.addLayer(this.defaultLayers.vector.normal.truck);
                   }
-                
+
                 if (data[0].viaAddressDetail.length > 0) {
                   this.viaRoutePlottedPoints = [];
                   this.viaRoutePlottedPoints = data[0].viaAddressDetail;
@@ -307,6 +314,7 @@ export class MapFunctionsService {
         }
         else {
           this.calculateTruckRoute();
+        this.plotStartPoint(this.startAddressPositionLong)
 
         }
       }
@@ -315,7 +323,7 @@ export class MapFunctionsService {
         // this.hereMap.getViewModel().setLookAtData({ bounds: group.getBoundingBox()});
         // let successRoute = this.calculateAB('view');
       }
-     
+
     }
   }
 
@@ -429,17 +437,45 @@ export class MapFunctionsService {
     this.getExclusionList["railFerriesType"] == 'A'  ? this.exclusions.push('carShuttleTrain') :'';
 
   }
-
-  plotStartPoint(_locationId) {
+  plotIconPoint(_locationId) {
     let geocodingParameters = {
       searchText: _locationId,
     };
+
+
     this.hereService.getLocationDetails(geocodingParameters).then((result) => {
       this.startAddressPositionLat = result[0]["Location"]["DisplayPosition"]["Latitude"];
       this.startAddressPositionLong = result[0]["Location"]["DisplayPosition"]["Longitude"];
       let houseMarker = this.createHomeMarker();
       let markerSize = { w: 26, h: 32 };
       const icon = new H.map.Icon(houseMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
+
+      this.startMarker = new H.map.Marker({ lat: this.startAddressPositionLat, lng: this.startAddressPositionLong }, { icon: icon });
+      var group = new H.map.Group();
+      this.hereMap.addObject(this.startMarker);
+      //this.hereMap.getViewModel().setLookAtData({zoom: 8});
+      //this.hereMap.setZoom(8);
+      this.hereMap.setCenter({ lat: this.startAddressPositionLat, lng: this.startAddressPositionLong }, 'default');
+      this.checkRoutePlot();
+
+    });
+  }
+  getUI(){
+    return this.ui;
+  }
+
+  plotStartPoint(_locationId) {
+    let geocodingParameters = {
+      searchText: _locationId,
+    };
+
+
+    this.hereService.getLocationDetails(geocodingParameters).then((result) => {
+      this.startAddressPositionLat = result[0]["Location"]["DisplayPosition"]["Latitude"];
+      this.startAddressPositionLong = result[0]["Location"]["DisplayPosition"]["Longitude"];
+      let locMarkup = this.getCategoryPOIIcon();
+      let markerSize = { w: 26, h: 32 };
+      const icon = new H.map.Icon(locMarkup, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
 
       this.startMarker = new H.map.Marker({ lat: this.startAddressPositionLat, lng: this.startAddressPositionLong }, { icon: icon });
       var group = new H.map.Group();
@@ -478,6 +514,14 @@ export class MapFunctionsService {
 
     });
 
+  }
+  getCategoryPOIIcon(){
+    let locMarkup = `<svg width="25" height="39" viewBox="0 0 25 39" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M22.9991 12.423C23.2909 20.9156 12.622 28.5702 12.622 28.5702C12.622 28.5702 1.45279 21.6661 1.16091 13.1735C1.06139 10.2776 2.11633 7.46075 4.09368 5.34265C6.07103 3.22455 8.8088 1.9787 11.7047 1.87917C14.6006 1.77965 17.4175 2.83459 19.5356 4.81194C21.6537 6.78929 22.8995 9.52706 22.9991 12.423Z" stroke="#00529C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M12.6012 37.9638C12.6012 37.9638 22.5882 18.1394 22.3924 12.444C22.1967 6.74858 17.421 2.29022 11.7255 2.48596C6.03013 2.6817 1.57177 7.45742 1.76751 13.1528C1.96325 18.8482 12.6012 37.9638 12.6012 37.9638Z" fill="#00529C"/>
+    <path d="M12.3824 21.594C17.4077 21.4213 21.3486 17.4111 21.1845 12.637C21.0204 7.86293 16.8136 4.13277 11.7882 4.30549C6.76283 4.4782 2.82198 8.48838 2.98605 13.2625C3.15013 18.0366 7.357 21.7667 12.3824 21.594Z" fill="white"/>
+    </svg>`;
+      return locMarkup;
   }
 
   createHomeMarker() {
@@ -524,14 +568,14 @@ export class MapFunctionsService {
       'apikey':this.map_key
 
     }
-    
+
     if(this.viaRoutePlottedPoints.length>0){
       let waypoints = [];
       for(var i in this.viaRoutePlottedPoints){
         waypoints.push(`${this.viaRoutePlottedPoints[i]["latitude"]},${this.viaRoutePlottedPoints[i]["longitude"]}`)
       }
       routeRequestParams['via'] = new H.service.Url.MultiValueQueryParameter( waypoints )
-      
+
     }
 
     if (this.selectedTrailerId) {
@@ -559,7 +603,7 @@ export class MapFunctionsService {
     if (this.hazardousMaterial.length > 0) {
       routeRequestParams['truck[shippedHazardousGoods]']= this.hazardousMaterial.join();
     }
-    
+
     if(this.exclusions.length>0){
       routeRequestParams['avoid[features]'] = this.exclusions.join();
 
@@ -573,9 +617,9 @@ export class MapFunctionsService {
           this.routePoints = data.routes[0];
           this.addTruckRouteShapeToMap(lineWidth);
         }
-        
+
         }
-      
+
     })
 
   }
@@ -625,7 +669,7 @@ export class MapFunctionsService {
 
         // }
         // added for 16249 till here!
-        
+
         // Add the polyline to the map
         // if (this.viaMarker) {
         //   this.mapGroup.addObject(this.viaMarker);
@@ -684,12 +728,12 @@ export class MapFunctionsService {
         strokeColor: 'rgba(181, 199, 239, 0.6)'
       });
     }
-  
 
-    
-    
+
+
+
     //this.corridorPath.setStyle( this.corridorPath.getStyle().getCopy({linewidth:_width}));
-    //console.log(geoLineString)
+    ////console.log(geoLineString)
     //this.corridorPath.setGeometry(geoLineString);
   }
 }

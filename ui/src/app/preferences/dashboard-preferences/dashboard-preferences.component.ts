@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component,SimpleChanges, Input, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { ReportService } from 'src/app/services/report.service';
 import { SelectionModel } from '@angular/cdk/collections';
@@ -28,7 +28,7 @@ export class DashboardPreferencesComponent implements OnInit {
   showDashboardReport: boolean = false;
   reportId: any;
   unitId: any;
-  prefUnit: any;
+  //prefUnit: any;
   prefUnitFormat: any;
   generalPreferences: any;
   initData: any = [];
@@ -78,7 +78,13 @@ export class DashboardPreferencesComponent implements OnInit {
   constructor(private dashboardService: DashboardService, private reportService: ReportService, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportMapService: ReportMapService, private router: Router) {
     this.loadReportData();
   }
-
+  ngOnChanges(changes: SimpleChanges) {
+    if(changes && changes.translationData && changes.translationData.currentValue){
+      this.translationData = changes.translationData.currentValue;
+      this.resetColumnData();
+      this.prepareDataDashboardPref();
+    }   
+  } 
   ngOnInit() {
 
     let accountPreference = JSON.parse(localStorage.getItem('accountInfo')).accountPreference;
@@ -95,33 +101,33 @@ export class DashboardPreferencesComponent implements OnInit {
       this.lineBarDD[1].name = this.translationData.lblLineChart || 'Line Chart';
   }
 
-  translationUpdate(){
-    this.translationData = {
-      rp_db_dashboard_fleetkpi_co2emission: 'CO2 Emission',
-      rp_db_dashboard_fleetkpi_totaldistance: 'Total Distance',
-      rp_db_dashboard_fleetkpi_drivingtime: 'Driving Time',
-      rp_db_dashboard_fleetkpi_fuelconsumption: 'Fuel Consumption',
-      rp_db_dashboard_fleetkpi_fuelusedidling: 'Fuel Used Idling',
-      rp_db_dashboard_fleetkpi_idlingtime: 'Idling Time',
-      rp_db_dashboard_fleetkpi_fuelconsumed: 'Fuel Consumed',
-      rp_db_dashboard_todaylivevehicle_distance: 'Distance',
-      rp_db_dashboard_todaylivevehicle_drivingtime: 'Driving Time',
-      rp_db_dashboard_todaylivevehicle_drivers: 'Drivers',
-      rp_db_dashboard_todaylivevehicle_criticalalerts: 'Critical Alerts',
-      rp_db_dashboard_todaylivevehicle_timebasedutilizationrate: 'Time Based Utilization Rate',
-      rp_db_dashboard_todaylivevehicle_distancebasedutilizationrate: 'Distance Based Utilization Rate',
-      rp_db_dashboard_todaylivevehicle_activevehicles: 'Active Vehicles',
-      rp_db_dashboard_vehicleutilization_distancebasedutilizationrate: 'Distance Based Utilization Rate',
-      rp_db_dashboard_vehicleutilization_timebasedutilizationrate: 'Time Based Utilization Rate',
-      rp_db_dashboard_vehicleutilization_distanceperday: 'Distance Per Day',
-      rp_db_dashboard_vehicleutilization_activevehiclesperday: 'Active Vehicles Per Day',
-      rp_db_dashboard_alertlast24hours_levelalerts: 'Level Alerts',
-      rp_db_dashboard_alertlast24hours_totalalerts: 'Total Alerts',
-      rp_db_dashboard_alertlast24hours_logisticalert: 'Logistic Alert',
-      rp_db_dashboard_alertlast24hours_fueldriveralerts: 'Fuel & Driver Alerts',
-      rp_db_dashboard_alertlast24hours_repairmaintenancealerts: 'Repair & Maintenance Alerts',
-    }
-  }
+  // translationUpdate(){
+  //   this.translationData = {
+  //     rp_db_dashboard_fleetkpi_co2emission: 'CO2 Emission',
+  //     rp_db_dashboard_fleetkpi_totaldistance: 'Total Distance',
+  //     rp_db_dashboard_fleetkpi_drivingtime: 'Driving Time',
+  //     rp_db_dashboard_fleetkpi_fuelconsumption: 'Fuel Consumption',
+  //     rp_db_dashboard_fleetkpi_fuelusedidling: 'Fuel Used Idling',
+  //     rp_db_dashboard_fleetkpi_idlingtime: 'Idling Time',
+  //     rp_db_dashboard_fleetkpi_fuelconsumed: 'Fuel Consumed',
+  //     rp_db_dashboard_todaylivevehicle_distance: 'Distance',
+  //     rp_db_dashboard_todaylivevehicle_drivingtime: 'Driving Time',
+  //     rp_db_dashboard_todaylivevehicle_drivers: 'Drivers',
+  //     rp_db_dashboard_todaylivevehicle_criticalalerts: 'Critical Alerts',
+  //     rp_db_dashboard_todaylivevehicle_timebasedutilizationrate: 'Time Based Utilization Rate',
+  //     rp_db_dashboard_todaylivevehicle_distancebasedutilizationrate: 'Distance Based Utilization Rate',
+  //     rp_db_dashboard_todaylivevehicle_activevehicles: 'Active Vehicles',
+  //     rp_db_dashboard_vehicleutilization_distancebasedutilizationrate: 'Distance Based Utilization Rate',
+  //     rp_db_dashboard_vehicleutilization_timebasedutilizationrate: 'Time Based Utilization Rate',
+  //     rp_db_dashboard_vehicleutilization_distanceperday: 'Distance Per Day',
+  //     rp_db_dashboard_vehicleutilization_activevehiclesperday: 'Active Vehicles Per Day',
+  //     rp_db_dashboard_alertlast24hours_levelalerts: 'Level Alerts',
+  //     rp_db_dashboard_alertlast24hours_totalalerts: 'Total Alerts',
+  //     rp_db_dashboard_alertlast24hours_logisticalert: 'Logistic Alert',
+  //     rp_db_dashboard_alertlast24hours_fueldriveralerts: 'Fuel & Driver Alerts',
+  //     rp_db_dashboard_alertlast24hours_repairmaintenancealerts: 'Repair & Maintenance Alerts',
+  //   }
+  // }
 
 
   onClose() {
@@ -166,7 +172,7 @@ export class DashboardPreferencesComponent implements OnInit {
 
       
     }, (error) => {
-      console.log('Report not found...', error);
+      //console.log('Report not found...', error);
       this.hideloader();
       this.reportListData = [];
     });
@@ -182,7 +188,7 @@ export class DashboardPreferencesComponent implements OnInit {
       this.hideloader();
       this.initData = prefData['userPreferences'];
       this.getDashboardPreferenceResponse = this.initData;
-      //console.log("dataaaaaaa--->", this.getDashboardPreferenceResponse);
+      ////console.log("dataaaaaaa--->", this.getDashboardPreferenceResponse);
       this.getUnits();
       this.resetColumnData();
       this.prepareDataDashboardPref();
@@ -243,10 +249,10 @@ export class DashboardPreferencesComponent implements OnInit {
           _data = element;
           if (this.translationData[element.key]) {
             _data.translatedName = this.translationData[element.key];
-            //console.log("translated name....", _data.translatedName);
+            ////console.log("translated name....", _data.translatedName);
           } else {
             _data.translatedName = this.getName(element.name);
-            //console.log("translated name1....", _data.translatedName);
+            ////console.log("translated name1....", _data.translatedName);
           }
           // _data.translatedName = this.getName(element.name);
           this.fleetKPIColumnData.push(_data);
@@ -367,8 +373,8 @@ export class DashboardPreferencesComponent implements OnInit {
     var h = Math.floor(d / 3600);
     var m = Math.floor(d % 3600 / 60);
     var s = Math.floor(d % 3600 % 60);
-    var hDisplay = h > 0 ? h + "," : "";
-    var mDisplay = m > 0 ? m + "," : "";
+    var hDisplay = h > 0 ? h + "," : ",";
+    var mDisplay = m > 0 ? m + "," : ",";
     var sDisplay = s > 0 ? s + "," : "";
     return hDisplay + mDisplay + sDisplay;
   }
@@ -379,7 +385,7 @@ export class DashboardPreferencesComponent implements OnInit {
   }
 
   masterToggle(section) {
-    console.log(!this.dashboardPreferenceForm.valid ||(this.selectionForFleetKPIColumns.selected.length == 0 && this.fleetKPIColumnData.length > 0) || (this.selectionForVehicleUtilizationColumns.selected.length == 0 && this.vehicleUtilizationColumnData.length > 0) || (this.selectionForTodayLiveVehicleColumns.selected.length == 0 && this.todayLiveVehicleColumnData.length > 0) || (this.selectionForAlertLast24HoursColumns.selected.length == 0 && this.alertLast24HoursColumnData.length > 0))
+    //console.log(!this.dashboardPreferenceForm.valid ||(this.selectionForFleetKPIColumns.selected.length == 0 && this.fleetKPIColumnData.length > 0) || (this.selectionForVehicleUtilizationColumns.selected.length == 0 && this.vehicleUtilizationColumnData.length > 0) || (this.selectionForTodayLiveVehicleColumns.selected.length == 0 && this.todayLiveVehicleColumnData.length > 0) || (this.selectionForAlertLast24HoursColumns.selected.length == 0 && this.alertLast24HoursColumnData.length > 0))
     if (this.isAllSelected(section)) {
       this["selectionFor" + section + "Columns"].clear();
     } else {
@@ -396,8 +402,8 @@ export class DashboardPreferencesComponent implements OnInit {
   }
 
   getSaveObject(columnData, selectionData) {
-    // console.log("selcted data", selectionData);
-    // console.log("coloumn dataaaa", columnData);
+    // //console.log("selcted data", selectionData);
+    // //console.log("coloumn dataaaa", columnData);
     let saveArr = [];
     this[columnData].forEach(element => {
       let sSearch = this[selectionData].selected.filter(item => item.dataAttributeId == element.dataAttributeId);
@@ -509,7 +515,7 @@ export class DashboardPreferencesComponent implements OnInit {
 
     });
 
-    //console.log("save Object", [..._fleetKPIArr, ..._vehicleUtilizationArr, ..._todayLiveVehicleArr, ..._alertLast24HoursArr])
+    ////console.log("save Object", [..._fleetKPIArr, ..._vehicleUtilizationArr, ..._todayLiveVehicleArr, ..._alertLast24HoursArr])
     // return [..._fleetKPIArr, ..._vehicleUtilizationArr, ..._todayLiveVehicleArr, ..._alertLast24HoursArr];
 
 
@@ -540,14 +546,15 @@ export class DashboardPreferencesComponent implements OnInit {
   getUnits() {
     let unitObj = this.generalPreferences?.unit.filter(item => item.id == this.unitId);
     if (unitObj && unitObj.length != 0) {
-      this.prefUnit = unitObj[0].value;
-      if (this.prefUnit == 'dunit_Imperial') {
-        this.prefUnitFormat = 'dunit_Imperial';
-      } else {
-        this.prefUnitFormat = 'dunit_Metric';
+      this.prefUnitFormat = unitObj[0].name;
+      // this.prefUnit = unitObj[0].value;
+    //   if (this.prefUnit == 'Imperial') {
+    //     this.prefUnitFormat = 'dunit_Imperial';
+    //   } else {
+    //     this.prefUnitFormat = 'dunit_Metric';
+    //   }
       }
     }
-  }
 
 }
 

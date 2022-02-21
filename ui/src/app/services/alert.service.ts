@@ -14,7 +14,7 @@ export class AlertService {
     alertServiceUrl: string = '';
 
   constructor(private httpClient: HttpClient, private config: ConfigService) {
-    this.alertServiceUrl = config.getSettings("foundationServices").alertRESTServiceURL;
+    this.alertServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/alert';
   }
 
   private handleError(errResponse: HttpErrorResponse) {
@@ -163,4 +163,17 @@ export class AlertService {
       )
       .pipe(catchError(this.handleError));
   }
+
+  getSubscribeNonSubsucribeVehicles(vehGrpIds: any): Observable<any> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj })
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.alertServiceUrl}/getsubscribenonsubsucribevehicles`, vehGrpIds, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
 }

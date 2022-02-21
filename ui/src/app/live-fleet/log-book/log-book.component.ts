@@ -30,6 +30,9 @@ import * as fs from 'file-saver';
 import { CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteData } from 'ng2-completer';
 import { treeExportFormatter } from 'angular-slickgrid';
 import { ReplaySubject } from 'rxjs';
+import { DataInterchangeService } from '../../services/data-interchange.service';
+import { MessageService } from '../../services/message.service';
+import { DomSanitizer } from '@angular/platform-browser';
 
 
 declare var H: any;
@@ -41,6 +44,7 @@ declare var H: any;
 })
 
 export class LogBookComponent implements OnInit, OnDestroy {
+logbookFilterData: any;
 searchStr: string = "";
 suggestionData: any;
 selectedMarker: any;
@@ -108,6 +112,7 @@ prefTimeZone: any; //-- coming from pref setting
 prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
 prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
 accountPrefObj: any;
+brandimagePath: any;
 advanceFilterOpen: boolean = false;
 showField: any = {
   vehicleName: true,
@@ -120,8 +125,10 @@ herePOIList: any = [];
 displayPOIList: any = [];
 internalSelection: boolean = false;
 fromMoreAlertsFlag: boolean = false;
+logbookDataFlag: boolean = false;
 herePOIArr: any = [];
 getLogbookDetailsAPICall: any;
+vehicleDisplayPreference: any = 'dvehicledisplay_VehicleIdentificationNumber';
 prefMapData: any = [
   {
     key: 'rp_lb_logbook_details_alertlevel',
@@ -176,6 +183,7 @@ _state: any ;
 map_key: any = '';
 platform: any = '';
 vehicleIconMarker : any;
+noRecordFound: boolean = false;
 
 public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
@@ -184,11 +192,22 @@ public filteredVehicleNames: ReplaySubject<String[]> = new ReplaySubject<String[
 
 
 
-constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private landmarkCategoryService: LandmarkCategoryService, private router: Router, private organizationService: OrganizationService, private _configService: ConfigService, private hereService: HereService,private completerService: CompleterService) {
-  this.map_key =  _configService.getSettings("hereMap").api_key;
+constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private landmarkCategoryService: LandmarkCategoryService, private router: Router, private organizationService: OrganizationService, private _configService: ConfigService, private hereService: HereService,private completerService: CompleterService, private dataInterchangeService: DataInterchangeService, private messageService : MessageService, private _sanitizer: DomSanitizer) {
+  // this.map_key =  _configService.getSettings("hereMap").api_key;
+  this.map_key = localStorage.getItem("hereMapsK");
   // setTimeout(() => {
   //   this.initMap();
   //   }, 10);
+  this.sendMessage();
+  this.dataInterchangeService.prefSource$.subscribe((prefResp: any) => {
+    if(prefResp && (prefResp.type == 'logbook') && prefResp.prefdata){
+      this.displayedColumns = [ 'all','alertLevel', 'alertGeneratedTime', 'vehicleRegNo', 'alertType', 'alertName', 'alertCategory', 'tripStartTime', 'tripEndTime', 'vehicleName','vin','occurrence','thresholdValue'];
+      this.resetTripPrefData();
+      this.reportPrefData = prefResp.prefdata;
+      this.getTranslatedColumnName(this.reportPrefData);
+      this.setDisplayColumnBaseOnPref();
+    }
+  });
 
   const navigation = this.router.getCurrentNavigation();
   this._state = navigation.extras.state as {
@@ -197,9 +216,9 @@ constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationSe
     fromVehicleDetails: boolean,
     data: any
   };
-  setTimeout(() => {
-  this.loadWholeTripData();
-  },5);
+  // setTimeout(() => {
+  // this.loadWholeTripData();
+  // },5);
   //Add for Search Fucntionality with Zoom
   this.query = "starbucks";
   this.platform = new H.service.Platform({
@@ -207,7 +226,7 @@ constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationSe
   });
 
   this.configureAutoSuggest();
-  this.defaultTranslation();
+  // this.defaultTranslation();
 
 
   if(this._state){
@@ -229,7 +248,9 @@ defaultTranslation(){
 }
 
 ngOnDestroy(){
-  this.getLogbookDetailsAPICall.unsubscribe();
+  if(this.getLogbookDetailsAPICall){
+    this.getLogbookDetailsAPICall.unsubscribe();
+  }
   this.globalSearchFilterData["vehicleGroupDropDownValue"] = this.logBookForm.controls.vehicleGroup.value;
   this.globalSearchFilterData["vehicleDropDownValue"] = this.logBookForm.controls.vehicle.value;
   this.globalSearchFilterData["timeRangeSelection"] = this.selectionTab;
@@ -247,7 +268,7 @@ ngOnDestroy(){
     this.globalSearchFilterData["endTimeStamp"] = this.endTimeDisplay;
   }
   this.setGlobalSearchData(this.globalSearchFilterData);
-  
+
 }
 
   ngOnInit() {
@@ -280,6 +301,13 @@ ngOnDestroy(){
       filter: "",
       menuId: 4 //-- for log-book
     }
+    if(this._state &&  (this._state.fromAlertsNotifications || this._state.fromMoreAlerts)){
+      this.showMapPanel = true;
+      setTimeout(() => {
+        this.initMap();
+        },0);
+    }
+    
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
       this.mapFilterForm.get('trackType').setValue('snail');
@@ -299,42 +327,63 @@ ngOnDestroy(){
 
         }
         if(this.showBack){
-          if(this._state.fromDashboard == true){
-          this.selectionTimeRange('today');}
+        //   if(this._state.fromDashboard == true){
+        //   this.selectionTimeRange('today');
+        // }
 
           if(this._state && this._state.fromAlertsNotifications == true){
             this.fromAlertsNotifications = true;
             this.showMapPanel = true;
-            setTimeout(() => {
-              this.initMap();
-             },0);
-            this.setDefaultTodayDate();
+            // setTimeout(() => {
+            //   this.initMap();
+            //  },0);
+            // this.setDefaultTodayDate();
           }
           if(this._state.fromMoreAlerts == true){
             this.showMapPanel = true;
             this.fromMoreAlertsFlag = true;
-            setTimeout(() => {
-              this.initMap();
-            },0);
-            this.setDefaultTodayDate();
+            // setTimeout(() => {
+            //   this.initMap();
+            // },0);
+            // this.setDefaultTodayDate();
           }
 
           // if(this._state.fromMoreAlerts == true){
           //   this.selectionTimeRange('today');}
             }
+        let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
+        if (vehicleDisplayId) {
+          let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+          if (vehicledisplay.length != 0) {
+            this.vehicleDisplayPreference = vehicledisplay[0].name;
+          }
+        }
       });
     });
     // if(this._state.fromDashboard == true){
     // this.selectionTimeRange('yesterday');
     // }
-    if(this._state &&  this._state.fromAlertsNotifications){
-      this.showMapPanel = true;
-      setTimeout(() => {
-        this.initMap();
-        },0);
-    }
+ 
+    // if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAlerts)){
+    //   setTimeout(() => {
+    //     this.onSearch();
+    //   }, 0);
+    // }
 
 
+    this.messageService.brandLogoSubject.subscribe(value => {
+      if (value != null && value != "") {
+        this.brandimagePath = this._sanitizer.bypassSecurityTrustResourceUrl('data:image/jpeg;base64,' + value);
+      } else {
+        this.brandimagePath = null;
+      }
+    });
+
+  }
+
+  sendMessage(): void {
+    // send message to subscribers via observable subject
+    this.messageService.sendMessage('refreshTimer');
   }
 
   changeHerePOISelection(event: any, hereData: any){
@@ -388,8 +437,15 @@ ngOnDestroy(){
     }
     this.setDefaultStartEndTime();
     this.setPrefFormatDate();
-    this.setDefaultTodayDate();
+    setTimeout(() => {
+      this.loadWholeTripData();
+      },5);
+    // if(!this._state){
+    //   this.selectionTimeRange('today');
+    // this.setDefaultTodayDate();
+    // }
     this.getReportPreferences();
+
   }
 
   getReportPreferences(){
@@ -404,7 +460,7 @@ ngOnDestroy(){
         console.error("No report id found!")
       }
     }, (error)=>{
-      console.log('Report not found...', error);
+      //console.log('Report not found...', error);
       reportListData = [{name: 'Logbook', id: this.logbookPrefId}];
       // this.getLogbookPref();
     });
@@ -587,8 +643,12 @@ ngOnDestroy(){
 
   setDefaultTodayDate() {
 
+    if(this._state && this._state.fromDashboard == true){
+      this.selectionTimeRange('today');
+      this.filterDateData();
+    }
     if (this._state && this._state.fromVehicleDetails) {
-      this.loadWholeTripData();
+      //this.loadWholeTripData();
       if (this._state.data.todayFlag || (this._state.data.startDate == 0 && this._state.data.endDate == 0)) {
         if(this.prefTimeFormat == 24){
           this.startTimeDisplay = '00:00:00';
@@ -630,24 +690,30 @@ ngOnDestroy(){
       this.todayDate = this.getTodayDate();
     } else {
       this.selectionTab = 'today';
+      if(this._state && !this._state.fromDashboard){
       this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
       this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
       this.last3MonthDate = this.getLast3MonthDate();
       this.todayDate = this.getTodayDate();
+      }
     }
 
-
-  this.logBookForm.get('vehicle').setValue("all");
+if(!this._state){
   this.logBookForm.get('vehicleGroup').setValue("all");
+  this.logBookForm.get('vehicle').setValue("all");
   this.logBookForm.get('alertLevel').setValue("all");
   this.logBookForm.get('alertType').setValue("all");
   this.logBookForm.get('alertCategory').setValue("all");
-
+}
 
   if(this._state && this._state.fromVehicleDetails){
+    this.filterDateData();
     this.logBookForm.get('vehicleGroup').setValue(this._state.data.vehicleGroupId);
     this.onVehicleGroupChange(this._state.data.vehicleGroupId);
     this.logBookForm.get('vehicle').setValue(this._state.data.vin);
+    this.logBookForm.get('alertLevel').setValue("all");
+    this.logBookForm.get('alertType').setValue("all");
+    this.logBookForm.get('alertCategory').setValue("all");
 
   }
 
@@ -663,7 +729,7 @@ ngOnDestroy(){
   }
 }
   //for alerts & notification individual alert click
-  if(this.fromAlertsNotifications == true && this._state.data.length > 0){
+  if(this._state && this._state.fromAlertsNotifications == true && this._state.data.length > 0){
     this.selectionTab = '';
     // let sdate = this._state.data[0].date + ' ' + '00:00:00 AM';
     // let startDate: any = new Date( sdate +'UTC');
@@ -674,6 +740,7 @@ ngOnDestroy(){
     this.endDateValue = this.setStartEndDateTime(new Date(this._state.data[0].alertGeneratedTime), this.selectedEndTime, 'end');
     this.last3MonthDate = this.getLast3MonthDate();
     this.todayDate = this.getTodayDate();
+    this.filterDateData();
     this.logBookForm.get('alertLevel').setValue(this._state.data[0].urgencyLevel);
     this.logBookForm.get('alertType').setValue(this._state.data[0].alertType);
     this.logBookForm.get('alertCategory').setValue(this._state.data[0].alertCategory);
@@ -684,30 +751,55 @@ ngOnDestroy(){
       else{
         this.logBookForm.get('vehicleGroup').setValue('all');
       }
+      if(this.logbookDataFlag){
       this.onVehicleGroupChange(this._state.data[0].vehicleGroupId);
+      }
   }
-  if(this.fromMoreAlertsFlag == true){
+  // if(this.fromMoreAlertsFlag == true){
+     if(this._state && this._state.fromMoreAlerts){
     this.selectionTab ='';
     this.startDateValue = this.setStartEndDateTime(new Date(this._state.data.startDate), this.selectedStartTime, 'start');
     this.endDateValue = this.setStartEndDateTime(new Date(this._state.data.endDate), this.selectedEndTime, 'end');
     this.last3MonthDate = this.getLast3MonthDate();
     this.todayDate = this.getTodayDate();
+    this.filterDateData();
+    this.logBookForm.get('vehicle').setValue("all");
+    this.logBookForm.get('vehicleGroup').setValue("all");
+    this.logBookForm.get('alertLevel').setValue("all");
+    this.logBookForm.get('alertType').setValue("all");
+    this.logBookForm.get('alertCategory').setValue("all");
   }
 // }
+if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAlerts || this._state.fromDashboard == true || this._state.fromVehicleDetails)){
+  this.onSearch();
+}
+
 }
 
   loadWholeTripData(){
     this.showLoadingIndicator = true;
-    this.reportService.getLogBookfilterdetails().subscribe((logBookDataData: any) => {
+
+    if(this.logbookFilterData){
+      this.logbookFilterData.unsubscribe();
+    }
+    this.logbookFilterData = this.reportService.getLogBookfilterdetails().subscribe((logBookDataData: any) => {
       this.hideloader();
+      this.logbookDataFlag = true;
       this.wholeLogBookData = logBookDataData;
-      //console.log("this.wholeLogBookData:---------------------------: ", this.wholeLogBookData);
+      ////console.log("this.wholeLogBookData:---------------------------: ", this.wholeLogBookData);
+      if(!this._state){
+        this.selectionTimeRange('today');
       this.filterDateData();
+      }
+      // else{
+        this.setDefaultTodayDate();
+      // }
       this.loadUserPOI();
       // if(this._state && this._state.fromAlertsNotifications){
       //   this.onVehicleGroupChange(this._state.data[0].vehicleGroupId);
       // }
     }, (error)=>{
+      this.logbookFilterData.unsubscribe();
       this.hideloader();
       this.wholeLogBookData.vinLogBookList = [];
       this.wholeLogBookData.vehicleDetailsWithAccountVisibiltyList = [];
@@ -789,11 +881,11 @@ ngOnDestroy(){
     this.advanceFilterOpen = false;
     this.searchMarker = {};
     //this.internalSelection = true;
-    let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
-    let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
+    let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone);
+    let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);
     //let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
-    let _vinData = this.vehicleDD.filter(item => item.vehicleId == parseInt(this.logBookForm.controls.vehicle.value));
-    console.log("vehicleDD", this.vehicleDD);
+    let _vinData = this.vehicleDD.filter(item => item.vin == parseInt(this.logBookForm.controls.vehicle.value));
+    //console.log("vehicleDD", this.vehicleDD);
     if(_vinData.length > 0){
       this.showLoadingIndicator = true;
     }
@@ -823,14 +915,12 @@ ngOnDestroy(){
           "end_time": _endTime
         }
 
-if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
-        setTimeout(() => {
-          this.initMap();
-        }, 0);
-      }
+
       this.showLoadingIndicator = true;
       this.getLogbookDetailsAPICall = this.reportService.getLogbookDetails(objData).subscribe((logbookData: any) => {
         this.hideloader();
+        let logBookResult = logbookData;
+        // let logBookResult : any = this.removeDuplicates(logbookData, "alertId");
         let newLogbookData = [];
         logbookData.forEach(element => {
           if(this._state && this._state.fromAlertsNotifications && (element.alertId == this._state.data[0].alertId)){
@@ -866,7 +956,8 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
                  }
         });
 
-        if(this._state && this._state.fromAlertsNotifications){
+        if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAlerts))
+        {
           logbookData = newLogbookData;
           logbookData.forEach(element => {
           // this.selectedTrip.select(element);
@@ -875,18 +966,30 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
           });
           this.showMap = true;
         }
-        this.initData = logbookData;
+        if(logBookResult.length == 0) {
+          this.noRecordFound = true;
+        } else {
+          this.noRecordFound = false;
+        }
+        this.initData = logBookResult;
         this.setTableInfo();
         this.updateDataSource(this.initData);
+
       }, (error)=>{
           this.hideloader();
           this.initData = [];
+          this.noRecordFound = true;
           this.tableInfoObj = {};
           this.updateDataSource(this.initData);
 
       });
 
   }
+
+  getLast24Date(todayDate){
+    let yesterdayDate = new Date(todayDate.getTime() - (24 * 60 * 60 * 1000));
+    return yesterdayDate;
+    }
 
   checkBoxSelectionForAlertNotification() {
     this.dataSource.data.forEach(element => {
@@ -902,12 +1005,12 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
     let aCtgry : any = '';
 
     let vehGrpCount = this.vehicleGrpDD.filter(i => i.vehicleGroupId == parseInt(this.logBookForm.controls.vehicleGroup.value));
-    console.log("vhicleGrpDD1", this.vehicleGrpDD);
+    //console.log("vhicleGrpDD1", this.vehicleGrpDD);
     if(vehGrpCount.length > 0){
     vehGrpName = vehGrpCount[0].vehicleGroupName;
     }
     let vehCount = this.vehicleDD.filter(i => i.vin == this.logBookForm.controls.vehicle.value);
-    console.log("vehicleDD1", this.vehicleDD);
+    //console.log("vehicleDD1", this.vehicleDD);
     if(vehCount.length > 0){
     vehName = vehCount[0].vin;
 
@@ -1020,6 +1123,7 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
     this.setDefaultTodayDate();
     this.tripData = [];
     this.vehicleListData = [];
+    this.noRecordFound = false;
     this.updateDataSource(this.tripData);
     this.resetLogFormControlValue();
     this.filterDateData(); // extra addded as per discuss with Atul
@@ -1032,6 +1136,19 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
     this.selectedHerePOI.clear();
     this.searchMarker = {};
     this.selectionTimeRange('today');
+  }
+
+
+  removeDuplicates(originalArray, prop) {
+    var newArray = [];
+    var lookupObject  = {};
+    for(var i in originalArray) {
+       lookupObject[originalArray[i][prop]] = originalArray[i];
+    }
+    for(i in lookupObject) {
+        newArray.push(lookupObject[i]);
+    }
+     return newArray;
   }
 
   resetLogFormControlValue(){
@@ -1068,55 +1185,41 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
        }
      }
 
-    if(this.showBack && this.selectionTab == 'today'){
-    if(this._state.fromDashboard == true && this._state.logisticFlag == true){
-      this.logBookForm.get('alertCategory').setValue("L");
-    }
-    if(this._state.fromDashboard == true && this._state.fuelFlag == true){
-      this.logBookForm.get('alertCategory').setValue("F");
-    }
-    if(this._state.fromDashboard == true && this._state.repairFlag == true){
-      this.logBookForm.get('alertCategory').setValue("R");
-    }
-  }
+  //   if(this.showBack && this.selectionTab == 'today'){
+  //   if(this._state.fromDashboard == true && this._state.logisticFlag == true){
+  //     this.logBookForm.get('alertCategory').setValue("L");
+  //   }
+  //   if(this._state.fromDashboard == true && this._state.fuelFlag == true){
+  //     this.logBookForm.get('alertCategory').setValue("F");
+  //   }
+  //   if(this._state.fromDashboard == true && this._state.repairFlag == true){
+  //     this.logBookForm.get('alertCategory').setValue("R");
+  //   }
+  // }
       //for alerts & notification individual alert click
-    if(this.fromAlertsNotifications == true && this._state.data.length > 0){
-      this.selectionTab = '';
-      // let sdate = this._state.data[0].date + ' ' + '00:00:00 AM';
-      // let startDate = new Date( sdate +' UTC');
-      // startDate.toString();
-      // let newDate = new Date(this._state.data[0].date + 'UTC');
-      // newDate.toString();
-      this.startDateValue = this.setStartEndDateTime(new Date(this._state.data[0].alertGeneratedTime), this.selectedStartTime, 'start');
-      this.endDateValue = this.setStartEndDateTime(new Date(this._state.data[0].alertGeneratedTime), this.selectedEndTime, 'end');
-      this.logBookForm.get('alertLevel').setValue(this._state.data[0].urgencyLevel);
-      this.logBookForm.get('alertType').setValue(this._state.data[0].alertType);
-      this.logBookForm.get('alertCategory').setValue(this._state.data[0].alertCategory);
-      if(this._state.data[0].vehicleGroupId != 0){
-      this.logBookForm.get('vehicleGroup').setValue(this._state.data[0].vehicleGroupId);
-      }
-      else{
-        this.logBookForm.get('vehicleGroup').setValue('all');
-      }
-      this.onVehicleGroupChange(this._state.data[0].vehicleGroupId);
-      this.fromAlertsNotifications = false;
-    }
+    // if(this._state && this._state.fromAlertsNotifications == true && this._state.data.length > 0){
+    //   this.selectionTab = '';
+    //   this.startDateValue = this.setStartEndDateTime(new Date(this._state.data[0].alertGeneratedTime), this.selectedStartTime, 'start');
+    //   this.endDateValue = this.setStartEndDateTime(new Date(this._state.data[0].alertGeneratedTime), this.selectedEndTime, 'end');
+    //   this.logBookForm.get('alertLevel').setValue(this._state.data[0].urgencyLevel);
+    //   this.logBookForm.get('alertType').setValue(this._state.data[0].alertType);
+    //   this.logBookForm.get('alertCategory').setValue(this._state.data[0].alertCategory);
+    //   if(this._state.data[0].vehicleGroupId != 0){
+    //   this.logBookForm.get('vehicleGroup').setValue(this._state.data[0].vehicleGroupId);
+    //   }
+    //   else{
+    //     this.logBookForm.get('vehicleGroup').setValue('all');
+    //   }
+    //   this.onVehicleGroupChange(this._state.data[0].vehicleGroupId);
+    //   this.fromAlertsNotifications = false;
+    // }
 
-    if(this.fromMoreAlertsFlag == true){
-      this.selectionTab = '';
-      // let startDate = Util.convertUtcToDateAndTimeFormat(this._state.data.startDate, this.prefTimeZone,this.dateFormats.display.dateInput);
-      // let sDate = startDate[0]+ ' ' + '00:00:00 AM';
-      // let moreStartDate = new Date( sDate +' UTC');
-      // moreStartDate.toString();
-      // let endDate = Util.convertUtcToDateAndTimeFormat(this._state.data.endDate, this.prefTimeZone,this.dateFormats.display.dateInput);
-      // let eDate = endDate[0]+ ' ' + '00:00:00 AM';
-      // let moreEndDate = new Date( eDate +' UTC');
-      // moreEndDate.toString();
-      this.startDateValue = this.setStartEndDateTime(new Date(this._state.data.startDate), this.selectedStartTime, 'start');
-      this.endDateValue = this.setStartEndDateTime(new Date(this._state.data.endDate), this.selectedEndTime, 'end');
-      // this.startDateValue = this.setStartEndDateTime(moreStartDate, this.selectedStartTime, 'start');
-      // this.endDateValue = this.setStartEndDateTime(moreEndDate, this.selectedEndTime, 'end');
-    }
+    // // if(this.fromMoreAlertsFlag == true){
+    //   if(this._state && this._state.fromMoreAlerts){
+    //   this.selectionTab = '';
+    //   this.startDateValue = this.setStartEndDateTime(new Date(this._state.data.startDate), this.selectedStartTime, 'start');
+    //   this.endDateValue = this.setStartEndDateTime(new Date(this._state.data.endDate), this.selectedEndTime, 'end');
+    // }
 
   }
 
@@ -1140,27 +1243,33 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
       this.vehicleDD=[];
       let vehicleData = this.vehicleListData.slice();
       this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
-      console.log("vehicleDD 2", this.vehicleDD);
+      //console.log("vehicleDD 2", this.vehicleDD);
 
     }
     else{
-      let vehicle_group_selected:any = parseInt(value);
-      this.vehicleGrpDD.forEach(element => {
-        console.log("vhicleGrpDD2", this.vehicleGrpDD);
 
-       let vehicle= this.wholeLogBookData.associatedVehicleRequest.filter(item => item.vehicleId == element.vehicleId && item.vehicleGroupDetails.includes(vehicle_group_selected+"~"));
-      //  let vehicle= element.filter(item => item.vehicleId == value);
-       if(vehicle.length > 0){
-        this.vehicleDD.push(vehicle[0]);
-        console.log("vehicleDD 3", this.vehicleDD);
-
+        let vehicle_group_selected: any = parseInt(value);
+        if(this._state && this._state.fromAlertsNotifications){
+          let vehicle = this.wholeLogBookData.associatedVehicleRequest.filter(item => item.vin == this._state.data[0].vin && item.vehicleGroupDetails.includes(vehicle_group_selected + "~"));
+            if(vehicle && vehicle.length > 0){
+              this.logBookForm.get('vehicle').setValue(vehicle[0].vin);
+            }
         }
-      });
-      this.vehicleDD = this.getUnique(this.vehicleDD, "vehicleName");
-      console.log("vehicleDD 4", this.vehicleDD);
-      this.vehicleDD.sort(this.compareVehName);
-      this.resetVehicleNamesFilter();
+        this.vehicleGrpDD.forEach(element => {
+          //console.log("vhicleGrpDD2", this.vehicleGrpDD);
 
+          let vehicle = this.wholeLogBookData.associatedVehicleRequest.filter(item => item.vehicleId == element.vehicleId && item.vehicleGroupDetails.includes(vehicle_group_selected + "~"));
+          //  let vehicle= element.filter(item => item.vehicleId == value);
+          if (vehicle.length > 0) {
+            this.vehicleDD.push(vehicle[0]);
+            //console.log("vehicleDD 3", this.vehicleDD);
+          }
+        });
+        this.vehicleDD = this.getUnique(this.vehicleDD, "vehicleName");
+        //console.log("vehicleDD 4", this.vehicleDD);
+        this.vehicleDD.sort(this.compareVehName);
+        this.resetVehicleNamesFilter();
+      
     }
   }
 
@@ -1329,6 +1438,19 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
   }
 
 exportAsPDFFile(){
+
+  var imgleft;
+
+  if (this.brandimagePath != null) {
+    imgleft = this.brandimagePath.changingThisBreaksApplicationSecurity;
+    
+  } else {
+    let defaultIcon: any = "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 dZTWn+gq/wcifZTYZGl3fQAAAABJRU5ErkJggg==";
+    let sanitizedData: any= this._sanitizer.bypassSecurityTrustResourceUrl('data:image/jpeg;base64,' + defaultIcon);
+    imgleft = sanitizedData.changingThisBreaksApplicationSecurity;
+
+  }
+
   var doc = new jsPDF('p', 'mm', 'a2');
   (doc as any).autoTable({
     styles: {
@@ -1339,12 +1461,13 @@ exportAsPDFFile(){
         // Header
         doc.setFontSize(14);
         var fileTitle = "Logbook Details";
-        var img = "/assets/logo.png";
-        doc.addImage(img, 'JPEG',10,10,0,0);
+        // var img = "/assets/logo.png";
+        // doc.addImage(img, 'JPEG',10,10,0,0);
+        doc.addImage(imgleft, 'JPEG', 10, 10, 0, 16.5);
 
         var img = "/assets/logo_daf.png";
         doc.text(fileTitle, 14, 35);
-        doc.addImage(img, 'JPEG',150, 10, 0, 10);
+        doc.addImage(img, 'JPEG',360, 10, 0, 10);
     },
     margin: {
         bottom: 20,
@@ -1461,7 +1584,9 @@ let prepare = []
     }
     this.startDateValue = this.setStartEndDateTime(this.startDateValue, this.selectedStartTime, 'start');
     this.resetLogFormControlValue(); // extra addded as per discuss with Atul
+    
     this.filterDateData(); // extra addded as per discuss with Atul
+ 
   }
 
   endTimeChanged(selectedTime: any) {
@@ -1475,7 +1600,9 @@ let prepare = []
     }
     this.endDateValue = this.setStartEndDateTime(this.endDateValue, this.selectedEndTime, 'end');
     this.resetLogFormControlValue(); // extra addded as per discuss with Atul
+    
     this.filterDateData(); // extra addded as per discuss with Atul
+
   }
 
   getTodayDate(){
@@ -1500,13 +1627,13 @@ let prepare = []
 
   getLastMonthDate(){
     var date = Util.getUTCDate(this.prefTimeZone);
-    date.setMonth(date.getMonth()-1);
+    date.setDate(date.getDate()-30);
     return date;
   }
 
   getLast3MonthDate(){
     var date = Util.getUTCDate(this.prefTimeZone);
-    date.setMonth(date.getMonth()-3);
+    date.setDate(date.getDate()-90);
     date.setHours(0);
     date.setMinutes(0);
     date.setSeconds(0);
@@ -1519,8 +1646,23 @@ let prepare = []
       case 'today': {
         this.selectionTab = 'today';
         this.setDefaultStartEndTime();
+        if(this._state && this._state.fromDashboard){ //start date & end date should select from last 24 hours for dashboard
+          this.endDateValue = Util.getUTCDate(this.prefTimeZone); //todaydate
+          this.startDateValue = this.getLast24Date(this.endDateValue); //last24 date 
+          // this.selectedStartTime  = Util.convertUtcToDateAndTimeFormat(this.startDateValue , this.prefTimeZone);
+          let startTime  = Util.convertUtcToDateAndTimeFormat(this.startDateValue , this.prefTimeZone);
+          this.selectedStartTime = startTime[1];
+          let endTime = Util.convertUtcToDateAndTimeFormat(this.endDateValue , this.prefTimeZone);
+          this.selectedEndTime = endTime[1];
+          this.startTimeDisplay = (this.prefTimeFormat == 24) ? `${this.selectedEndTime}:00` : this.selectedEndTime;
+          this.endTimeDisplay = (this.prefTimeFormat == 24) ? `${this.selectedEndTime}:00` : this.selectedEndTime;
+
+        }
+        else{
         this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
         this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
+        }
+        
         break;
       }
       case 'yesterday': {
@@ -1553,7 +1695,8 @@ let prepare = []
       }
     }
     this.resetLogFormControlValue(); // extra addded as per discuss with Atul
-    this.filterDateData(); // extra addded as per discuss with Atul
+     this.filterDateData(); // extra addded as per discuss with Atul
+  
   }
 
   changeStartDateEvent(event: MatDatepickerInputEvent<any>){
@@ -1563,9 +1706,9 @@ let prepare = []
       if(event.value._d.getTime() <= this.endDateValue.getTime()){ // CurTime < endDateValue
         dateTime = event.value._d;
       }else{
-        dateTime = this.endDateValue; 
+        dateTime = this.endDateValue;
       }
-    }else{ 
+    }else{
       dateTime = this.last3MonthDate;
     }
     this.startDateValue = this.setStartEndDateTime(dateTime, this.selectedStartTime, 'start');
@@ -1580,9 +1723,9 @@ let prepare = []
       if(event.value._d.getTime() >= this.startDateValue.getTime()){ // EndTime < startDateValue
         dateTime = event.value._d;
       }else{
-        dateTime = this.startDateValue; 
+        dateTime = this.startDateValue;
       }
-    }else{ 
+    }else{
       dateTime = this.todayDate;
     }
     this.endDateValue = this.setStartEndDateTime(dateTime, this.selectedEndTime, 'end');
@@ -1623,10 +1766,10 @@ let prepare = []
     let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
     let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
 
-    //console.log("this.wholeLogBookData.associatedVehicleRequest ---:: ", this.wholeLogBookData.associatedVehicleRequest);
-    //console.log("this.wholeLogBookData.alFilterResponse---::", this.wholeLogBookData.alFilterResponse);
-    //console.log("this.wholeLogBookData.alertTypeFilterRequest---::", this.wholeLogBookData.alertTypeFilterRequest);
-    //console.log("this.wholeLogBookData.acFilterResponse---::", this.wholeLogBookData.acFilterResponse);
+    ////console.log("this.wholeLogBookData.associatedVehicleRequest ---:: ", this.wholeLogBookData.associatedVehicleRequest);
+    ////console.log("this.wholeLogBookData.alFilterResponse---::", this.wholeLogBookData.alFilterResponse);
+    ////console.log("this.wholeLogBookData.alertTypeFilterRequest---::", this.wholeLogBookData.alertTypeFilterRequest);
+    ////console.log("this.wholeLogBookData.acFilterResponse---::", this.wholeLogBookData.acFilterResponse);
 
     let filterData = this.wholeLogBookData["enumTranslation"];
     filterData.forEach(element => {
@@ -1649,7 +1792,8 @@ let prepare = []
         distinctVIN = filterVIN.filter((value, index, self) => self.indexOf(value) === index);
         if(distinctVIN.length > 0){
           distinctVIN.forEach(element => {
-            let _item = this.wholeLogBookData?.associatedVehicleRequest?.filter(i => i.vin === element && i.groupType != 'S');
+            // let _item = this.wholeLogBookData?.associatedVehicleRequest?.filter(i => i.vin === element && i.groupType != 'S');
+            let _item = this.wholeLogBookData?.associatedVehicleRequest?.filter(i => i.vin === element);
             if(_item.length > 0){
               this.vehicleListData.push(_item[0]); //-- unique VIN data added
               _item.forEach(element => {
@@ -1659,7 +1803,8 @@ let prepare = []
           });
         }
       }else{
-        if(this.fromAlertsNotifications == false && this.fromMoreAlertsFlag == false){
+        // if(this.fromAlertsNotifications == false && this.fromMoreAlertsFlag == false){
+          if(this._state && this._state.fromAlertsNotifications == false && this._state.fromMoreAlerts == false){
         this.resetFilterValues();}
       }
     }
@@ -1691,11 +1836,15 @@ let prepare = []
      }
      let vehicleData = this.vehicleListData.slice();
         this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
-        console.log("vehicleDD 5", this.vehicleDD);
+        //console.log("vehicleDD 5", this.vehicleDD);
+        this.resetVehicleNamesFilter();
         if(this.vehicleDD.length > 0){
       this.resetLogFormControlValue();
      }
      this.setVehicleGroupAndVehiclePreSelection();
+  //    if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAlertsFlag || this._state.fromDashboard == true)){
+  //     this.onSearch();
+  //  }
     //  if(this.showBack){
     //    this.onSearch();
     //  }
@@ -1713,7 +1862,7 @@ let prepare = []
             "vehicleId": element.vehicleId
           }
           this.vehicleGrpDD.push(vehicleGroupObj);
-          console.log("vhicleGrpDD4", this.vehicleGrpDD);
+          //console.log("vhicleGrpDD4", this.vehicleGrpDD);
 
         } else {
           this.singleVehicle.push(element);
@@ -1721,13 +1870,13 @@ let prepare = []
       });
     });
     this.vehicleGrpDD = this.getUnique(this.vehicleGrpDD, "vehicleGroupId");
-    console.log("vhicleGrpDD5", this.vehicleGrpDD);
+    //console.log("vhicleGrpDD5", this.vehicleGrpDD);
     this.vehicleGrpDD.sort(this.compareGrpName);
     this.resetVehicleGroupFilter();
 
 
     this.vehicleGrpDD.forEach(element => {
-      console.log("vhicleGrpDD6", this.vehicleGrpDD);
+      //console.log("vhicleGrpDD6", this.vehicleGrpDD);
 
       element.vehicleGroupId = parseInt(element.vehicleGroupId);
     });
@@ -2000,7 +2149,7 @@ let prepare = []
   drawAlerts(_alertArray){
     if(!this.fromAlertsNotifications){
     this.clearRoutesFromMap();
-    }
+    }    
     _alertArray.forEach(elem => {
       let  markerPositionLat = elem.latitude;
       let  markerPositionLng = elem.longitude;
@@ -2017,21 +2166,27 @@ let prepare = []
 
       this.mapGroup.addObject(this.vehicleIconMarker);
       let iconBubble;
+      let vehicleDisplayPref = '';
+      let elementValue = '';
+      if (this.vehicleDisplayPreference == 'dvehicledisplay_VehicleName') {
+        vehicleDisplayPref = this.translationData.lblVehicleName;
+        elementValue = elem.vehicleName;
+      } else if (this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber') {
+        vehicleDisplayPref = this.translationData.lblVIN;
+        elementValue = elem.vin;
+      } else if (this.vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber') {
+        vehicleDisplayPref = this.translationData.lblRegistrationNumber;
+        elementValue = elem.vehicleRegNo;
+      }
       this.vehicleIconMarker.addEventListener('pointerenter', (evt)=> {
         // event target is the marker itself, group is a parent event target
         // for all objects that it contains
         iconBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
           // read custom data
           content:`<table style='width: 300px; font-size:14px; line-height: 21px; font-weight: 400;' class='font-helvetica-lt'>
-            <tr>
-              <td style='width: 100px;'>${this.translationData.lblVehicleName}:</td> <td><b>${elem.vehicleName}</b></td>
-            </tr>
-            <tr>
-              <td style='width: 100px;'>${this.translationData.lblVIN}:</td> <td><b>${elem.vin}</b></td>
-            </tr>
-            <tr>
-              <td style='width: 100px;'>${this.translationData.lblRegistrationNumber}:</td> <td><b>${elem.vehicleRegNo}</b></td>
-            </tr>
+          <tr>
+          <td style='width: 100px;'>${vehicleDisplayPref}:</td> <td><b>${elementValue}</b></td>
+          </tr>
             <tr>
               <td style='width: 100px;'>${this.translationData.lblDate}:</td> <td><b>${elem.alertGeneratedTime}</b></td>
             </tr>
@@ -2119,25 +2274,27 @@ let prepare = []
   }
 
   getAlertConfig(_currentAlert){
-    let _alertConfig = {color : '#D50017' , level :'Critical', type : ''};
+    // let _alertConfig = {color : '#D50017' , level :'Critical', type : ''};
     let _fillColor = '#D50017';
     let _level = 'Critical';
     let _type = '';
-      switch (_currentAlert.alertLevel) {
+    let _alertLevel = '';
+    if(_currentAlert.alertLevel) _alertLevel = (_currentAlert.alertLevel).toLowerCase();
+      switch (_alertLevel) {
         case 'C':
-          case 'Critical':{
+          case 'critical':{
           _fillColor = '#D50017';
           _level = 'Critical'
         }
         break;
         case 'W':
-          case 'Warning':{
+          case 'warning':{
           _fillColor = '#FC5F01';
           _level = 'Warning'
         }
         break;
         case 'A':
-          case 'Advisory':{
+          case 'advisory':{
           _fillColor = '#FFD80D';
           _level = 'Advisory'
         }
@@ -2179,7 +2336,7 @@ let prepare = []
     this.vehicleIconMarker = null;
    }
    filterVehicleGroups(vehicleGroupSearch){
-    console.log("filterVehicleGroups is called");
+    //console.log("filterVehicleGroups is called");
     if(!this.filteredVehicleGroups){
       return;
     }
@@ -2192,10 +2349,10 @@ let prepare = []
     this.filteredVehicleGroups.next(
        this.vehicleGrpDD.filter(item => item.vehicleGroupName.toLowerCase().indexOf(vehicleGroupSearch) > -1)
     );
-    console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
+    //console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
   }
   filterVehicleNames(vehicleNameSearch){
-    console.log("filterVehicleNames is called");
+    //console.log("filterVehicleNames is called");
     if(!this.filteredVehicleNames){
       return;
     }
@@ -2208,7 +2365,7 @@ let prepare = []
     this.filteredVehicleNames.next(
        this.vehicleDD.filter(item => item.vehicleName.toLowerCase().indexOf(vehicleNameSearch) > -1)
     );
-    console.log("this.filteredVehicleNames", this.filteredVehicleNames);
+    //console.log("this.filteredVehicleNames", this.filteredVehicleNames);
   }
 
 

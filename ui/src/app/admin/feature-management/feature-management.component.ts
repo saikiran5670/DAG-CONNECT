@@ -78,17 +78,18 @@ export class FeatureManagementComponent implements OnInit {
       this.hideloader();
       let filterTypeData = data.filter(item => item.type == "D");
       filterTypeData.forEach(element => {
-        element["isExclusive"] = element.dataAttribute.isExclusive;
+        element["isExclusive"] = (element.dataAttribute.isExclusive) ? this.translationData.lblExclusive : this.translationData.lblInclusive;
         element["select"] = element.state;
       });
       // filterTypeData = this.getNewTagData(filterTypeData);
       this.initData = filterTypeData;
-
+      if(this.gridComp){
+        this.gridComp.updatedTableData(this.initData);
+      }
     }, (error) => {
-      console.log("error:: ", error);
+      //console.log("error:: ", error);
       this.hideloader();
     });
-    this.gridComp.updatedTableData(this.initData);
   }
 
   hideloader() {
@@ -144,7 +145,7 @@ export class FeatureManagementComponent implements OnInit {
 
   processTranslation(transData: any){
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    //console.log("process translationData:: ", this.translationData)
+    ////console.log("process translationData:: ", this.translationData)
   }
 
   applyFilter(filterValue: string) {

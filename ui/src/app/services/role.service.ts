@@ -16,8 +16,8 @@ export class RoleService {
     featureServiceUrl: string = '';
 
   constructor(private httpClient: HttpClient, private config: ConfigService) {
-    this.roleServiceUrl = config.getSettings("foundationServices").roleRESTServiceURL;
-    this.featureServiceUrl = config.getSettings("foundationServices").featureRESTServiceURL;
+    this.roleServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/role';
+    this.featureServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/feature';
   }
 
   private handleError(errResponse: HttpErrorResponse) {
@@ -75,6 +75,7 @@ export class RoleService {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
+      responseType: 'text' as 'json'
     };
     return this.httpClient
       .post<any>(`${this.roleServiceUrl}/create`, data, headers)

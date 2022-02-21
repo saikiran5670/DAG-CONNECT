@@ -143,9 +143,13 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   }
 
   applyFilter(filterValue: string) {
-    filterValue = filterValue.trim(); // Remove whitespace
-    filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
-    this.dataSource.filter = filterValue;
+    filterValue = filterValue.trim().toLowerCase();
+    this.dataSource = new MatTableDataSource(this.dataAttributeList);
+    const filteredData = this.dataAttributeList.filter(value => {​​​​​​​​
+      return value.name.toLowerCase().toString().includes(filterValue);    
+    }​​​​​​​​);
+    this.dataSource = filteredData;
+    this.loadGridData( this.dataSource);
   }
 
   onCancel(){
@@ -201,7 +205,7 @@ export class CreateEditViewFeaturesComponent implements OnInit {
         });
       }, (err) => {
         this.showLoadingIndicator=false;
-        //console.log(err);
+        ////console.log(err);
         if (err.status == 409) {
           this.duplicateEmailMsg = true;
           this.createButtonClicked = false;
@@ -247,7 +251,7 @@ export class CreateEditViewFeaturesComponent implements OnInit {
         });
       }, (err) => {
         this.showLoadingIndicator=false;
-        //console.log(err);
+        ////console.log(err);
         if (err.status == 409) {
           this.duplicateEmailMsg = true;
           this.createButtonClicked = false;
@@ -335,17 +339,17 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   //       if(!(this.selectedChildrens.includes(selectedParentId))){
   //         this.selectedChildrens.push(selectedParentId);
   //       }
-  //       console.log('parent Id is:- ', selectedParentId);
-  //       console.log("---selectedChildrens---",this.selectedChildrens)
+  //       //console.log('parent Id is:- ', selectedParentId);
+  //       //console.log("---selectedChildrens---",this.selectedChildrens)
   //     }
   //     //when unchecking(OFF)child toggle
   //       else if(!isChecked) {
   //         const index = this.selectedChildrens.indexOf(row.id);
   //           if (index > -1) {
   //            let removedValue =  this.selectedChildrens.splice(index, 1);
-  //             // console.log("--removing from array--",removedValue )
+  //             // //console.log("--removing from array--",removedValue )
   //           }
-  //           console.log("---selectedChildrens---",this.selectedChildrens)
+  //           //console.log("---selectedChildrens---",this.selectedChildrens)
   //     }
   //    }
   //    else {
@@ -365,7 +369,7 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   //           }
   //         }
   //       });
-  //       console.log("--allChildrenElements Id's--",this.allChildrenIds)
+  //       //console.log("--allChildrenElements Id's--",this.allChildrenIds)
   //     }
   //   }
   //   //make button disabled

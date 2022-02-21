@@ -40,20 +40,23 @@ export class CreateEditViewAlertsComponent implements OnInit {
   @Input() actionType: any;
   @Input() translationData: any = {};
   @Input() selectedRowData: any;
+  @Input() alertCategoryTypeMasterData: any = [];
+  @Input() alertCategoryTypeFilterData: any = [];
+  @Input() associatedVehicleData: any = [];
+  @Input() finalVehicleGroupList: any = [];
+  @Input() vehicleDisplayPreference: any = '';
   alertCategoryList: any = [];
   alertTypeList: any = [];
   vehicleGroupList: any = [];
   vehicleList: any = [];
   accountInfo:any = {};
   initData: any = [];
-  vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
-  columnCodes = ['vin','vehicleName', 'vehicleGroupName', 'viewstatus'];
-  columnLabels = ['VIN','VehicleName', 'VehicleGroupName', 'Status'];
+  // columnCodes = ['vin','vehicleName', 'vehicleGroupName', 'subscriptionType'];
+  // columnLabels = ['VIN','VehicleName', 'VehicleGroupName', 'Status'];
+  columnCodes = ['vin','vehicleName', 'subscriptionType'];
+  columnLabels = ['VIN','VehicleName', 'Status'];
   @ViewChild('gridComp') gridComp: DataTableComponent;
  
-  alertCategoryTypeMasterData: any= [];
-  alertCategoryTypeFilterData: any= [];
-  associatedVehicleData: any= [];
   options: Options = {
     floor: 0,
     ceil: 100000
@@ -148,10 +151,11 @@ export class CreateEditViewAlertsComponent implements OnInit {
   advisoryThreshold: any ='';
   localStLanguage: any;
   accountPrefObj: any;
-  prefTimeFormat: any; //-- coming from pref setting
-  prefTimeZone: any; //-- coming from pref setting
-  prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
-  prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
+  vehicleGrpByVehicleList: any = [];
+  @Input() prefTimeFormat: any; //-- coming from pref setting
+  @Input() prefTimeZone: any; //-- coming from pref setting
+  @Input() prefDateFormat: any; //-- coming from pref setting
+  @Input() prefUnitFormat: any; //-- coming from pref setting
   map_key: any = '';
   singleVehicle = [];
   showLoadingIndicator: boolean = false;
@@ -206,13 +210,14 @@ export class CreateEditViewAlertsComponent implements OnInit {
               private _configService: ConfigService,
               private mapFunctions: MapFunctionsService ) 
   {
-    this.map_key = _configService.getSettings("hereMap").api_key;
+    // this.map_key = _configService.getSettings("hereMap").api_key;
+    this.map_key = localStorage.getItem("hereMapsK");
     this.platform = new H.service.Platform({
       "apikey": this.map_key
     });  
    }
 
-  ngOnInit(): void {
+  ngOnInit() {
     //this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     if(localStorage.getItem('contextOrgId')){
       this.accountOrganizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
@@ -221,7 +226,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
       this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     } 
     let today = new Date();
-    let nextWeek=  new Date(today.getFullYear(), today.getMonth(), today.getDate()+7);
+    let nextWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate()+7);
   
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.accountRoleId = localStorage.getItem('accountRoleId') ? parseInt(localStorage.getItem('accountRoleId')) : 0;
@@ -264,38 +269,57 @@ export class CreateEditViewAlertsComponent implements OnInit {
       this.breadcumMsg = this.getBreadcum();
     }
 
-    this.selectedApplyOn= 'G';
+    this.selectedApplyOn = 'G';
     this.alertForm.controls.widthInput.setValue(0.1);
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
-    let _langCode = this.localStLanguage ? this.localStLanguage.code  :  "EN-GB";
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
-    this.showLoadingIndicator=true;
-    this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
-      if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
-        this.proceedStep(prefData, this.accountPrefObj.accountPreference);
-      }else{ // org pref
-        this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
-          this.proceedStep(prefData, orgPref);
-        }, (error) => { // failed org API
-          this.showLoadingIndicator=false;
-          let pref: any = {};
-          this.proceedStep(prefData, pref);
-        });
-      }
+    //let _langCode = this.localStLanguage ? this.localStLanguage.code  :  "EN-GB";
+    
+    //this.showLoadingIndicator = true;
+    //this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
+      // if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
+      //   this.proceedStep(prefData, this.accountPrefObj.accountPreference);
+      //   this.showLoadingIndicator = false;
+      // }else{ // org pref
+      //   this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
+      //     this.proceedStep(prefData, orgPref);
+      //     this.showLoadingIndicator = false;
+      //   }, (error) => { // failed org API
+      //     this.showLoadingIndicator = false;
+      //     let pref: any = {};
+      //     this.proceedStep(prefData, pref);
+      //   });
+      // }
 
-      this.loadFilterDataBasedOnPrivileges();
-      let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
-      if(vehicleDisplayId) {
-        let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
-        if(vehicledisplay.length != 0) {
-          this.vehicleDisplayPreference = vehicledisplay[0].name;
+      //this.loadFilterDataBasedOnPrivileges();
+      // let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
+      // if(vehicleDisplayId) {
+      //   let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+      //   if(vehicledisplay.length != 0) {
+      //     this.vehicleDisplayPreference = vehicledisplay[0].name;
+      //   }
+      // }  
+      // if(this.actionType == 'create')
+      // {
+      //   this.sliderChanged();
+      // }
+    //});
+    if(this.finalVehicleGroupList && this.finalVehicleGroupList.length > 0){
+      this.showLoadingIndicator = true;
+      let _vehGrpList: any = {
+        'vehicleGroupIds': this.finalVehicleGroupList.map(i => i.vehicleGroupId)
+      } 
+      this.alertService.getSubscribeNonSubsucribeVehicles(_vehGrpList).subscribe((vehicleGrpList: any) => {
+        if(vehicleGrpList && vehicleGrpList.vehicleandGroupDetails && vehicleGrpList.vehicleandGroupDetails.length > 0){
+          this.vehicleGrpByVehicleList = vehicleGrpList.vehicleandGroupDetails.slice();
         }
-      }  
-      if(this.actionType == 'create')
-      {
-        this.sliderChanged();
-      }
-    });
+        this.stepForword();
+        this.showLoadingIndicator = false;
+      }, (error) => {
+        this.stepForword();
+        this.showLoadingIndicator = false;
+      });
+    }
 
     if (this.actionType == 'view') {
       this.openAdvancedFilter = true;
@@ -304,35 +328,42 @@ export class CreateEditViewAlertsComponent implements OnInit {
         this.sliderChanged();
       }
     }
-}
+  }
+
+  stepForword(){
+    this.loadFilterDataBasedOnPrivileges();
+    if(this.actionType == 'create'){
+      this.sliderChanged();
+    }
+  }
 
 public ngAfterViewInit() {
   
 }
   
-proceedStep(prefData: any, preference: any){
-  let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
-  if(_search.length > 0){
-    //this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
-    this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
-    //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
-    this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
-    this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
-    this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
-  }else{
-    //this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
-    this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
-    //this.prefTimeZone = prefData.timezone[0].value;
-    this.prefTimeZone = prefData.timezone[0].name;
-    this.prefDateFormat = prefData.dateformat[0].name;
-    this.prefUnitFormat = prefData.unit[0].name;
-  }
-  // this.setDefaultStartEndTime();
-  // this.setPrefFormatDate();
-  // this.setDefaultTodayDate();
-  // this.getReportPreferences();
-  // console.log(this.prefUnitFormat);
-}
+// proceedStep(prefData: any, preference: any){
+//   let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
+//   if(_search.length > 0){
+//     //this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
+//     this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
+//     //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+//     this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
+//     this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+//     this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
+//   }else{
+//     //this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
+//     this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
+//     //this.prefTimeZone = prefData.timezone[0].value;
+//     this.prefTimeZone = prefData.timezone[0].name;
+//     this.prefDateFormat = prefData.dateformat[0].name;
+//     this.prefUnitFormat = prefData.unit[0].name;
+//   }
+//   // this.setDefaultStartEndTime();
+//   // this.setPrefFormatDate();
+//   // this.setDefaultTodayDate();
+//   // this.getReportPreferences();
+//   // //console.log(this.prefUnitFormat);
+// }
 
   toBack() {
     let emitObj = {
@@ -355,20 +386,18 @@ proceedStep(prefData: any, preference: any){
     return unique;
   }
 
-  loadFilterDataBasedOnPrivileges(){
-    
-    this.alertService.getAlertFilterDataBasedOnPrivileges(this.accountId, this.accountRoleId).subscribe((data) => {
-     
-      this.alertCategoryTypeMasterData = data["enumTranslation"];
-      this.alertCategoryTypeFilterData = data["alertCategoryFilterRequest"];
-      this.associatedVehicleData = data["associatedVehicleRequest"];
+  loadFilterDataBasedOnPrivileges(){  
+    //this.alertService.getAlertFilterDataBasedOnPrivileges(this.accountId, this.accountRoleId).subscribe((data: any) => {
+      // this.alertCategoryTypeMasterData = data["enumTranslation"];
+      // this.alertCategoryTypeFilterData = data["alertCategoryFilterRequest"];
+      // this.associatedVehicleData = data["associatedVehicleRequest"];
 
       let alertTypeMap = new Map();
       this.alertCategoryTypeFilterData.forEach(element => {
         alertTypeMap.set(element.featureKey, element.featureKey);
       });
 
-           if(alertTypeMap != undefined){
+      if(alertTypeMap != undefined){
         this.alertCategoryTypeMasterData.forEach(element => {
           if(alertTypeMap.get(element.key)){
             element["value"]= this.translationData[element["key"]];
@@ -394,7 +423,7 @@ proceedStep(prefData: any, preference: any){
         this.setDefaultValue();
         if(this.selectedRowData.notifications.length != 0)
         this.panelOpenState= true;
-    }
+      }
       else if(this.actionType == 'view'){
         this.alert_category_selected = this.selectedRowData.category;
         this.selectedApplyOn = this.selectedRowData.applyOn;
@@ -402,16 +431,17 @@ proceedStep(prefData: any, preference: any){
         this.alertTypeName = this.translationData[this.alertCategoryTypeMasterData.filter(item => (item.enum == this.selectedRowData.type && item.parentEnum == this.alert_category_selected))[0].key];
         this.onChangeAlertType(this.selectedRowData.type);
         if(this.selectedRowData.alertUrgencyLevelRefs[0].periodType == 'C'){
-          this.from =this.formStartDate(new Date(this.selectedRowData.alertUrgencyLevelRefs[0].urgencylevelStartDate),  this.prefTimeFormat, this.prefDateFormat).split(" ");
+          this.from = this.formStartDate(new Date(this.selectedRowData.alertUrgencyLevelRefs[0].urgencylevelStartDate),  this.prefTimeFormat, this.prefDateFormat).split(" ");
           this.to = this.formStartDate(new Date(this.selectedRowData.alertUrgencyLevelRefs[0].urgencylevelEndDate),  this.prefTimeFormat, this.prefDateFormat).split(" ");
         }
         this.convertValuesToPrefUnit();
         if(this.selectedRowData.notifications.length != 0)
           this.panelOpenState= true;
       }
-      this.showLoadingIndicator=false;
-    })
+      //this.showLoadingIndicator = false;
+    //});
   }
+
   formStartDate(date: any, prefTimeFormat: any, prefDateFormat:any) {
     let h = (date.getHours() < 10) ? ('0' + date.getHours()) : date.getHours();
     let m = (date.getMinutes() < 10) ? ('0' + date.getMinutes()) : date.getMinutes();
@@ -455,7 +485,11 @@ proceedStep(prefData: any, preference: any){
     }
     return _date;
   }
+
   updateVehiclesDataSource(tableData: any){
+    // tableData.forEach(element =>{
+    //   element.subscriptionType = "Subscribed";
+    // });
     this.gridComp.updatedTableData(tableData);
     // this.vehiclesDataSource= new MatTableDataSource(tableData);
     // this.vehiclesDataSource.filterPredicate = function(data: any, filter: string): boolean {
@@ -480,9 +514,9 @@ proceedStep(prefData: any, preference: any){
   }
 
   onChangeAlertType(value: any, flag?: boolean){
-    this.vehicleGroupList= [];
+    this.vehicleGroupList = [];
     this.vehicleByVehGroupList= [];
-    this.vehicleListForTable= [];
+    this.vehicleListForTable = [];
     this.unitTypes= [];
     // this.alertFilterRefs = []; need to check
     this.alert_type_selected= value;
@@ -741,30 +775,36 @@ proceedStep(prefData: any, preference: any){
 
   getVehicleGroupsForAlertType(alertTypeObj: any){
      this.vehicleByVehGroupList.forEach(element => {
-       let vehicleGroupDetails= element.vehicleGroupDetails.split(",");
+       let vehicleGroupDetails = element.vehicleGroupDetails.split(",");
        vehicleGroupDetails.forEach(item => {
          let itemSplit = item.split("~");
          if(itemSplit[2] != 'S') {
-          let vehicleGroupObj= {
-            "vehicleGroupId" : parseInt(itemSplit[0]),
-            "vehicleGroupName" : itemSplit[1],
-            "vehicleId" : parseInt(element.vehicleId)
+          let vehicleGroupObj = {
+            "vehicleGroupId": parseInt(itemSplit[0]),
+            "vehicleGroupName": itemSplit[1],
+            "vehicleId": parseInt(element.vehicleId)
           }
           this.vehicleGroupList.push(vehicleGroupObj);
-          console.log("vehicleGroupList 1", this.vehicleGroupList);
+          //console.log("vehicleGroupList 1", this.vehicleGroupList);
         } else {
           this.singleVehicle.push(element);
         }
        });
      });
      this.vehicleGroupList = this.getUnique(this.vehicleGroupList, "vehicleGroupId");
-     console.log("vehicleGroupList 2", this.vehicleGroupList); 
+     this.vehicleGroupList = this.removeNaNrecords(this.vehicleGroupList); 
+     //console.log("vehicleGroupList 2", this.vehicleGroupList); 
      this.vehicleGroupList.sort(this.compareHere);
      this.resetVehicleGroupFilter();
 
-     this.vehicleGroupList.forEach(element => {
-       element.vehicleGroupId = parseInt(element.vehicleGroupId);
-     });
+    //  this.vehicleGroupList.forEach(element => {
+    //    element.vehicleGroupId = parseInt(element.vehicleGroupId);
+    //  });
+  }
+
+  removeNaNrecords(data: any){
+    let _data: any = data.filter(i => i.vehicleGroupId >= 0); // remove NaN records
+    return _data.slice();
   }
  
   resetVehicleGroupFilter(){
@@ -774,51 +814,140 @@ proceedStep(prefData: any, preference: any){
   resetVehiclesFilter(){
     this.filteredVehicles.next(this.vehicleByVehGroupList.slice());
   }
+
   getVehiclesForAlertType(alertTypeObj: any){
     this.vehicleByVehGroupList = [];
     this.vehicleListForTable = [];
-    let featuresData= this.alertCategoryTypeFilterData.filter(item => item.featureKey == alertTypeObj.key);
-    if(featuresData.length == 1 && featuresData[0].subscriptionType == 'O'){
-      this.associatedVehicleData.forEach(element => {        
-          this.vehicleByVehGroupList.push(element);
+    let vehicleConcernList: any  =  [];
+    let featuresData = this.alertCategoryTypeFilterData.filter(item => item.featureKey == alertTypeObj.key);
+    if(featuresData.length == 1 && featuresData[0].subscriptionType == 'O'){ // org based - all subscribe
+      this.associatedVehicleData.forEach(element => {    
+        element.subscriptionType = "Subscribed";    
+        this.vehicleByVehGroupList.push(element);
+      });
+      vehicleConcernList = this.filterVehiclesFromResp(); // #20710
+      vehicleConcernList.forEach(element => {
+        element.subscriptionType = "Subscribed";    
       });
     }
     else{ //if subscriptionType == 'v'
-      featuresData.forEach(element => {
-        let vehicle= this.associatedVehicleData.filter(item => item.vehicleId == element.vehicleId);
-        if(vehicle.length > 0){
-          this.vehicleByVehGroupList.push(vehicle[0]);
-          console.log("vehicleByVehGroupList 5", this.vehicleByVehGroupList);
+      //if(featuresData.length > 0){
+        // featuresData.forEach(element => {
+        //   let vehicle = this.associatedVehicleData.filter(item => item.vehicleId == element.vehicleId);
+        //   if(vehicle.length > 0){
+        //     this.vehicleByVehGroupList.push(vehicle[0]);
+        //     ////console.log("vehicleByVehGroupList 5", this.vehicleByVehGroupList);
+        //     this.vehicleByVehGroupList.sort(this.compareVehicleList);
+        //     this.resetVehiclesFilter();
+        //   }
+        // });
+
+        if(featuresData.length > 0){
+          this.vehicleByVehGroupList = this.associatedVehicleData.slice();
+          let _orgSub: any = featuresData.filter(i => i.subscriptionType == 'O'); // find org based subscription
+          if(_orgSub && _orgSub.length > 0){ // all vehicle subscribe
+            this.vehicleByVehGroupList.forEach(elem => {
+              elem.subscriptionType = "Subscribed";
+            });
+            vehicleConcernList = this.filterVehiclesFromResp(); // #20710
+            vehicleConcernList.forEach(element => {
+              element.subscriptionType = "Subscribed";    
+            });
+          }else{ // all vehicle subscribe
+            this.vehicleByVehGroupList.forEach(_el => {
+              let _find: any = featuresData.filter(j => j.vehicleId == _el.vehicleId && j.subscriptionType == 'V');
+              if(_find && _find.length > 0){ // find 'V'
+                _el.subscriptionType = "Subscribed";
+              }else{ // non-subscribe
+                _el.subscriptionType = "Non-Subscribed";
+              }
+            });
+
+            vehicleConcernList = this.filterVehiclesFromResp(); // #20710
+            vehicleConcernList.forEach(_el => {
+              let _find: any = featuresData.filter(j => j.vehicleId == _el.vehicleId && j.subscriptionType == 'V');
+              if(_find && _find.length > 0){ // find 'V'
+                _el.subscriptionType = "Subscribed";
+              }else{ // non-subscribe
+                _el.subscriptionType = "Non-Subscribed";
+              }
+            });
+          }
           this.vehicleByVehGroupList.sort(this.compareVehicleList);
           this.resetVehiclesFilter();
         }
-      });
+      //}
     }
+
+    //this.vehicleListForTable = this.vehicleByVehGroupList.slice();
+    this.vehicleListForTable = vehicleConcernList.slice();
  
     //subscribed vehicles
-    this.vehicleByVehGroupList.forEach(element => {
-      console.log("vehicleByVehGroupList 6", this.vehicleByVehGroupList);
-      element["subcriptionStatus"] = true;
-      this.vehicleListForTable.push(element);
-    });
+    // this.vehicleByVehGroupList.forEach(element => {
+    //   ////console.log("vehicleByVehGroupList 6", this.vehicleByVehGroupList);
+    //   element["subcriptionStatus"] = true;
+    //   this.vehicleListForTable.push(element);
+    // });
 
-    //non-subscribed vehicles
-    if(featuresData[0].subscriptionType != 'O'){
-      this.associatedVehicleData.forEach(element => {
-        let isDuplicateVehicle= false;
-        for(let i = 0; i< this.vehicleByVehGroupList.length; i++){
-          if(element.vehicleId == this.vehicleByVehGroupList[i].vehicleId){
-              isDuplicateVehicle= true;
-              break;
-          }
-        }
-        if(!isDuplicateVehicle){
-          element["subcriptionStatus"] = false;
-          this.vehicleListForTable.push(element);
-        }
-      });
-    }
+    // //non-subscribed vehicles
+    // if(featuresData[0].subscriptionType != 'O'){
+    //   this.associatedVehicleData.forEach(element => {
+    //     let isDuplicateVehicle = false;
+    //     for(let i = 0; i< this.vehicleByVehGroupList.length; i++){
+    //       if(element.vehicleId == this.vehicleByVehGroupList[i].vehicleId){
+    //           isDuplicateVehicle= true;
+    //           break;
+    //       }
+    //     }
+    //     if(!isDuplicateVehicle){
+    //       element["subcriptionStatus"] = false;
+    //       this.vehicleListForTable.push(element);
+    //     }
+    //   });
+    // }
     this.updateVehiclesDataSource(this.vehicleListForTable);
+  }
+
+  filterVehiclesFromResp(grpId?: any){
+    let _vehicleConcernList: any = [];
+    let grpData: any = [];
+    if(grpId){ // search by veh-grp-id
+      grpData = this.vehicleGrpByVehicleList.filter(i => parseInt(i.vehicleGroupId) == parseInt(grpId));
+    }else{ // all veh-grp
+      grpData = this.vehicleGrpByVehicleList.slice();
+    }
+
+    grpData.forEach(_elem => {
+      if(_elem.vehicleDetails && _elem.vehicleDetails != ''){
+        let _vehDetails = _elem.vehicleDetails.split(",");
+        _vehDetails.forEach(item => {
+          let itemSplit = item.split("~");
+          if(itemSplit.length > 1) {
+            let vehObj: any;
+            vehObj = {
+              "vehicleId": parseInt(itemSplit[0]),
+              "vehicleName": itemSplit[1],
+              "vin": itemSplit[2]
+            }
+            _vehicleConcernList.push(vehObj);
+          }
+        });
+      }
+    });
+    _vehicleConcernList = this.removeDuplicates(_vehicleConcernList, 'vehicleId'); // remove deplicate vehicle
+    return _vehicleConcernList.slice();
+  }
+
+  removeDuplicates(originalArray, prop) {
+    var newArray = [];
+    var lookupObject  = {};
+    for(var i in originalArray) {
+       lookupObject[originalArray[i][prop]] = originalArray[i];
+    }
+    for(i in lookupObject) {
+        newArray.push(lookupObject[i]);
+    }
+     return newArray;
   }
 
   getUniqueVINs(vinList: any){
@@ -833,11 +962,12 @@ proceedStep(prefData: any, preference: any){
   }
 
 
-  onChangeVehicleGroup(value){
-    this.vehicleListForTable= [];
-    this.vehicleByVehGroupList= [];
+  onChangeVehicleGroup(value: any){
+    this.vehicleListForTable = [];
+    this.vehicleByVehGroupList = [];
+    let vehicleConcernList: any = [];
     if(this.actionType == 'edit' || this.actionType == 'duplicate'){
-      this.onChangeAlertType(this.selectedRowData.type);
+      // this.onChangeAlertType(this.selectedRowData.type); //commenting this line as map was overriding on table for edit
       this.vehicleByVehGroupList = [];
       this.vehicleListForTable = [];
     }
@@ -849,11 +979,18 @@ proceedStep(prefData: any, preference: any){
     }
     else{
       //converted vehicle group selection into int val.
-      this.vehicle_group_selected= parseInt(value);
+      this.vehicle_group_selected = parseInt(value);
+      let featuresData = this.alertCategoryTypeFilterData.filter(item => item.featureKey == alertTypeObj.key);
+      if(featuresData.length == 1 && featuresData[0].subscriptionType == 'O'){ // org based -> all veh subscribe
+        this.vehicleByVehGroupList = this.associatedVehicleData.filter(item => item.vehicleGroupDetails.includes(this.vehicle_group_selected+"~"));
+        this.vehicleByVehGroupList.forEach(elem => {
+          elem.subscriptionType = "Subscribed";
+        });
 
-      let featuresData= this.alertCategoryTypeFilterData.filter(item => item.featureKey == alertTypeObj.key);
-      if(featuresData.length == 1 && featuresData[0].subscriptionType == 'O'){
-        this.vehicleByVehGroupList= this.associatedVehicleData.filter(item => item.vehicleGroupDetails.includes(this.vehicle_group_selected+"~"));
+        vehicleConcernList = this.filterVehiclesFromResp(this.vehicle_group_selected); // #20710
+        vehicleConcernList.forEach(element => {
+          element.subscriptionType = "Subscribed";    
+        });
       }
       else{ //if subscriptionType == 'v'
         // featuresData.forEach(element => {
@@ -863,9 +1000,48 @@ proceedStep(prefData: any, preference: any){
         //   }
         //});
         if(featuresData.length > 0){
-          let vehicle= this.associatedVehicleData.filter(item =>  item.vehicleGroupDetails.includes(this.vehicle_group_selected+"~"));
+          let vehicle = this.associatedVehicleData.filter(item => item.vehicleGroupDetails.includes(this.vehicle_group_selected+"~"));
           if(vehicle.length > 0){
-             this.vehicleByVehGroupList = vehicle.slice();
+            this.vehicleByVehGroupList = vehicle.slice();
+          }
+
+          let _orgSub: any = featuresData.filter(i => i.subscriptionType == 'O'); // find org based subscription
+          if(_orgSub && _orgSub.length > 0){ // all vehicle subscribe
+            this.vehicleByVehGroupList.forEach(elem => {
+              elem.subscriptionType = "Subscribed";
+            });
+            
+            vehicleConcernList = this.filterVehiclesFromResp(this.vehicle_group_selected); // #20710
+            vehicleConcernList.forEach(element => {
+              element.subscriptionType = "Subscribed";    
+            });
+
+          }else{ // all vehicle subscribe
+            this.vehicleByVehGroupList.forEach(_el => {
+              let _find: any = featuresData.filter(j => j.vehicleId == _el.vehicleId && j.subscriptionType == 'V');
+              if(_find && _find.length > 0){ // find 'V'
+                _el.subscriptionType = "Subscribed";
+              }else{ // non-subscribe
+                _el.subscriptionType = "Non-Subscribed";
+              }
+            });
+
+            vehicleConcernList = this.filterVehiclesFromResp(this.vehicle_group_selected); // #20710
+            vehicleConcernList.forEach(_el => {
+              let _find: any = featuresData.filter(j => j.vehicleId == _el.vehicleId && j.subscriptionType == 'V');
+              if(_find && _find.length > 0){ // find 'V'
+                _el.subscriptionType = "Subscribed";
+              }else{ // non-subscribe
+                _el.subscriptionType = "Non-Subscribed";
+              }
+            });
+
+            // featuresData.forEach(element => {
+            //   let vehicle: any = this.associatedVehicleData.filter(item => item.vehicleId == element.vehicleId && item.vehicleGroupDetails.includes(this.vehicle_group_selected+"~"));
+            //   if(vehicle.length > 0){
+            //     this.vehicleByVehGroupList.push(vehicle[0]);
+            //   }
+            // });
           }
         }
       }
@@ -876,7 +1052,8 @@ proceedStep(prefData: any, preference: any){
       //   this.vehicleListForTable.push(element);
       // });
       
-      this.vehicleListForTable = this.vehicleByVehGroupList;
+      //this.vehicleListForTable = this.vehicleByVehGroupList;
+      this.vehicleListForTable = vehicleConcernList.slice()
 
       //Commented because only vehicles from that group should be displayed.
       //non-subscribed vehicles
@@ -1333,7 +1510,7 @@ PoiCheckboxClicked(event: any, row: any) {
   }
   
   setDefaultValue(){
-     console.log(this.selectedRowData);
+     //console.log(this.selectedRowData);
     this.alertForm.get('alertName').setValue(this.selectedRowData.name);
     this.alertForm.get('alertCategory').setValue(this.selectedRowData.category);
 
@@ -1606,7 +1783,7 @@ convertToFromTime(milliseconds: any){
         }
       }
     }, (error) => {
-      //console.log(error)
+      ////console.log(error)
     });
   }
 
@@ -2018,7 +2195,7 @@ convertToFromTime(milliseconds: any){
     let urgencylevelEndDate = 0;
     if(this.panelOpenState){
       this.notifications= this.notificationComponent.getNotificationDetails();
-      //console.log(this.notifications); 
+      ////console.log(this.notifications); 
     }
     if(this.alert_category_selected == 'L' && this.alert_type_selected === 'S'){ //Hours of Service
       let alertTimingRefHoursOfService = this.periodSelectionComponent.getAlertTimingPayload();
@@ -2617,15 +2794,17 @@ convertToFromTime(milliseconds: any){
   getAlertCreatedMessage() {
     let alertName = `${this.alertForm.controls.alertName.value}`;
     if(this.actionType == 'create' || this.actionType == 'duplicate') {
-      if(this.translationData.lblAlertCreatedSuccessfully)
-        return this.translationData.lblAlertCreatedSuccessfully.replace('$', alertName);
-      else
-        return ("Alert '$' Created Successfully").replace('$', alertName);
+      // if(this.translationData.lblAlertCreatedSuccessfully)
+      //   return this.translationData.lblAlertCreatedSuccessfully.replace('$', alertName);
+      // else
+      //   return ("Alert '$' Created Successfully").replace('$', alertName);
+      return ("New Alert '$' Created Successfully").replace('$', alertName);
     }else if(this.actionType == 'edit') {
-      if (this.translationData.lblAlertUpdatedSuccessfully)
-        return this.translationData.lblAlertUpdatedSuccessfully.replace('$', alertName);
-      else
-        return ("Alert '$' Updated Successfully").replace('$', alertName);
+      // if (this.translationData.lblAlertUpdatedSuccessfully)
+      //   return this.translationData.lblAlertUpdatedSuccessfully.replace('$', alertName);
+      // else
+      //   return ("Alert '$' Updated Successfully").replace('$', alertName);
+      return ("Alert '$' Updated Successfully").replace('$', alertName);
     }
     else{
       return '';
@@ -2883,7 +3062,7 @@ keyPressNumbers(event) {
 
 onKey(event: any) { // without type info
   // let values += event.target.value + ' | ';
- //  console.log('Key Up',event);
+ //  //console.log('Key Up',event);
 }
 
 onChange($event){
@@ -2903,7 +3082,7 @@ ngOnChanges(changes: SimpleChanges) {
   }}
 
   filterVehicleGroups(vehicleSearch){
-    console.log("filterVehicleGroups called");
+    //console.log("filterVehicleGroups called");
     if(!this.vehicleGroupList){
       return;
     }
@@ -2916,11 +3095,11 @@ ngOnChanges(changes: SimpleChanges) {
      this.filteredVehicleGroups.next(
        this.vehicleGroupList.filter(item=> item.vehicleGroupName.toLowerCase().indexOf(vehicleSearch) > -1)
      );
-     console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
+     //console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
 }
 
 filterVehicles(search){
-  console.log("filterVehicles called");
+  //console.log("filterVehicles called");
   if(!this.vehicleByVehGroupList){
     return;
   }
@@ -2933,7 +3112,7 @@ filterVehicles(search){
    this.filteredVehicles.next(
      this.vehicleByVehGroupList.filter(item=> item.vin.toLowerCase().indexOf(search) > -1)
    );
-   console.log("this.filteredVehicles", this.filteredVehicles);
+   //console.log("this.filteredVehicles", this.filteredVehicles);
 }
 
 setStartEndDateTime(date: any, timeObj: any, type: any){

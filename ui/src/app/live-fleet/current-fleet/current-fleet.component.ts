@@ -7,6 +7,7 @@ import { DataInterchangeService} from '../../services/data-interchange.service';
 import { OrganizationService } from '../../services/organization.service';
 import { Router } from '@angular/router';
 import { FleetMapService } from './fleet-map.service';
+import { DashboardService } from 'src/app/services/dashboard.service';
 
 declare var H: any;
 
@@ -18,6 +19,7 @@ declare var H: any;
 export class CurrentFleetComponent implements OnInit {
 
   private platform: any;
+  fleetSummary : any ={};
   public userPreferencesFlag: boolean = false;
   localStLanguage: any;
   accountOrganizationId: any;
@@ -44,7 +46,8 @@ export class CurrentFleetComponent implements OnInit {
   filterData : any;
   filterPOIData : any;
   showLoadingIndicator: boolean = false;
-
+  totalVehicleCount: number;
+  dashboardPref: any;
   // detailsData =[
   //   {
   //     "id": 8,
@@ -151,7 +154,8 @@ export class CurrentFleetComponent implements OnInit {
     private reportService: ReportService,
     private messageService: MessageService,
     private dataInterchangeService: DataInterchangeService,
-    private organizationService: OrganizationService, private router: Router, private fleetMapService: FleetMapService) { 
+    private organizationService: OrganizationService, private router: Router, private fleetMapService: FleetMapService,
+    private dashboardService : DashboardService) { 
       this.subscription = this.messageService.getMessage().subscribe(message => {
         if (message.key.indexOf("refreshData") !== -1) {
           this.refreshData();
@@ -193,14 +197,21 @@ export class CurrentFleetComponent implements OnInit {
     this.reportService.getReportDetails().subscribe((reportList: any)=>{
       reportListData = reportList.reportDetails;
       let repoId: any = reportListData.filter(i => i.name == 'Fleet Overview');
+      let repoIdDB: any= reportListData.find(i => i.name == 'Dashboard');
       if(repoId.length > 0){
         this.currentFleetReportId = repoId[0].id; 
         this.callPreferences();
       }else{
         console.error("No report id found!")
       }
+      if(repoIdDB){
+        this.dashboardService.getDashboardPreferences(repoIdDB.id).subscribe((prefData: any) => {
+          this.dashboardPref = prefData['userPreferences'];
+        }, (error) => {
+        });
+      }
     }, (error)=>{
-      console.log('Report not found...', error);
+      //console.log('Report not found...', error);
       reportListData = [{name: 'Fleet Overview', id: this.currentFleetReportId}];
       // this.callPreferences();
     });
@@ -213,7 +224,7 @@ export class CurrentFleetComponent implements OnInit {
       this.getTranslatedColumnName(_preferencesData);
       this.getFilterPOIData();
     }, (error)=>{
-      console.log('Pref not found...');
+      //console.log('Pref not found...');
       this.hideLoader();
       this.getFilterPOIData();
     });
@@ -273,21 +284,31 @@ export class CurrentFleetComponent implements OnInit {
       "languagecode":"cs-CZ"
     }
     this.reportService.getFleetOverviewDetails(objData).subscribe((data: any) => {
+      
+      this.totalVehicleCount = data.visibleVinsCount;
       this.hideLoader();
-      let processedData = this.fleetMapService.processedLiveFLeetData(data);
+      let processedData = this.fleetMapService.processedLiveFLeetData(data.fleetOverviewDetailList);
       this.detailsData = processedData;
+      this.fleetSummary = data.fleetOverviewSummary;
+      this.getFilterData();
       let _dataObj = {
         vehicleDetailsFlag: false,
         data: this.detailsData
       }
       this.dataInterchangeService.getVehicleData(_dataObj);
-      if (this._state && this._state.data) {
-        this.userPreferencesSetting();
-        this.toBack();
-      }
+      // if (this._state && this._state.data) {
+      //   this.userPreferencesSetting();
+      //   this.toBack();
+      // }
     }, (err) => {
       this.hideLoader();
+      this.getFilterData();
+      this.detailsData = [];
     });
+    if (this._state && this._state.data) {
+      this.userPreferencesSetting();
+      this.toBack();
+    }
   }
 
   getFilterPOIData(){
@@ -306,12 +327,12 @@ export class CurrentFleetComponent implements OnInit {
   getFilterData(){
     this.showLoadingIndicator = true;
     this.reportService.getFilterDetails().subscribe((data: any) => {
-      this.hideLoader();
+      if(data) this.hideLoader();
       this.filterData = data;
-      this.getFleetOverviewDetails();
+      //this.getFleetOverviewDetails();
     }, (error) => {
       this.hideLoader();
-      this.getFleetOverviewDetails();
+      //this.getFleetOverviewDetails();
     });
   }
 

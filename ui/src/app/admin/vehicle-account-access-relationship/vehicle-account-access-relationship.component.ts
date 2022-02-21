@@ -51,6 +51,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   adminAccessType: any = {};
   userType: any = '';
   associationTypeId: any = 1;
+  wholeData: any = '';
 
   constructor(private translationService: TranslationService, private accountService: AccountService, private vehicleService: VehicleService, private dialogService: ConfirmDialogService, private dialog: MatDialog, private organizationService: OrganizationService) { 
     // this.defaultTranslation();
@@ -115,6 +116,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   loadAccessRelationshipData(){
     this.showLoadingIndicator = true;
     this.accountService.getAccessRelationship(this.accountOrganizationId).subscribe((relData: any) => {
+      this.wholeData = relData;
       this.hideloader();
       this.vehicleGrpVehicleAssociationDetails = relData.vehicle;
       this.accountGrpAccountAssociationDetails = relData.account;
@@ -138,7 +140,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
 
   processTranslation(transData: any){
     this.translationData = transData.reduce((acc: any, cur: any) => ({ ...acc, [cur.name]: cur.value }), {});
-    //console.log("process translationData:: ", this.translationData)
+    ////console.log("process translationData:: ", this.translationData)
   }
 
   applyFilter(filterValue: string) {
@@ -189,7 +191,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
       this.createVehicleAccountAccessRelation = true;
     }, (error) => {
       this.hideloader();
-      console.log("error:: ", error)
+      //console.log("error:: ", error)
     });
   }
 
@@ -221,6 +223,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   makeAssociatedAccountGrpList(initdata: any){
     initdata.forEach((element: any, index: any) => {
       let list: any = '';
+      element.accessTypeName = (element.accessType=='F') ? this.translationData.lblFullAccess : this.translationData.lblViewOnly ;
       element.associatedData.forEach((resp: any) => {
         list += resp.name + ', ';
       });
@@ -235,6 +238,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   makeAssociatedVehicleGrpList(initdata: any){
     initdata.forEach((element: any, index: any) => {
       let list: any = '';
+      element.accessTypeName = (element.accessType=='F') ? this.translationData.lblFullAccess : this.translationData.lblViewOnly ;
       element.associatedData.forEach((resp: any) => {
         list += resp.name + ', ';
       });
@@ -253,7 +257,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   }
 
   deleteAccessRelationship(element: any){
-    //console.log("delete item:: ", element);
+    ////console.log("delete item:: ", element);
     const options = {
       title: this.translationData.lblDelete,
       message: this.translationData.lblAreyousureyouwanttodeleteAssociationRelationship,
@@ -268,7 +272,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
             this.successMsgBlink(this.getDeletMsg(element.name));
             this.loadAccessRelationshipData();
           }, (error) => {
-            console.log("Error:: ", error);
+            //console.log("Error:: ", error);
           });
         }
         else{
@@ -276,7 +280,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
             this.successMsgBlink(this.getDeletMsg(element.name));
             this.loadAccessRelationshipData();
           }, (error) => {
-            console.log("Error:: ", error);
+            //console.log("Error:: ", error);
           });
         }
       }
@@ -477,7 +481,8 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
       tableData: tableData,
       colsList: colsList,
       colsName:colsName,
-      tableTitle: tableTitle
+      tableTitle: tableTitle,
+      translationData: this.translationData
     }
     this.dialogRef = this.dialog.open(UserDetailTableComponent, dialogConfig);
   }

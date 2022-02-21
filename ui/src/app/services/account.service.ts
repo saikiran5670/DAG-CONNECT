@@ -15,7 +15,7 @@ export class AccountService {
   accountServiceUrl: string = '';
 
   constructor(private httpClient: HttpClient, private config: ConfigService) {
-    this.accountServiceUrl = config.getSettings("foundationServices").accountRESTServiceURL;
+    this.accountServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/account';
   }
 
   generateHeader(){
@@ -392,6 +392,7 @@ export class AccountService {
     ).pipe(catchError(this.handleError));
   }
 
+
   getMenuFeatures(data): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {
@@ -500,6 +501,16 @@ export class AccountService {
     };
     return this.httpClient
       .get<any[]>(`${this.accountServiceUrl}/getsessioninfo`, headers)
+      .pipe(catchError(this.handleError));
+  }
+
+  getAccountBrandLogo(id: number): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .get<any[]>(`${this.accountServiceUrl}/preference/geticon?preferenceId=${id}`,headers)
       .pipe(catchError(this.handleError));
   }
 

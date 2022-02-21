@@ -136,14 +136,15 @@ export class AlertAdvancedFilterComponent implements OnInit {
               private el: ElementRef,
               private reportMapService: ReportMapService,  private _configService: ConfigService,
               private mapFunctions: MapFunctionsService) {
-   this.map_key = _configService.getSettings("hereMap").api_key;
+  //  this.map_key = _configService.getSettings("hereMap").api_key;
+    this.map_key = localStorage.getItem("hereMapsK");
     this.platform = new H.service.Platform({
       "apikey":this.map_key
     });
    }
 
   ngOnInit(): void {
-    console.log(this.prefUnitFormat);
+    //console.log(this.prefUnitFormat);
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     //this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
     if(localStorage.getItem('contextOrgId')){
@@ -338,38 +339,40 @@ export class AlertAdvancedFilterComponent implements OnInit {
     }
     else{
       let defaultLayers = this.platform.createDefaultLayers();
-      setTimeout(() => {
-        this.map = new H.Map(this.mapElement.nativeElement,
-          defaultLayers.raster.normal.map, {
-          center: { lat: 51.43175839453286, lng: 5.519981221425336 },
-          zoom: 4,
-          pixelRatio: window.devicePixelRatio || 1
-        });
-        window.addEventListener('resize', () => this.map.getViewPort().resize());
-        var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
-        this.ui = H.ui.UI.createDefault(this.map, defaultLayers);
-        
-        this.ui.removeControl("mapsettings");
-        // create custom one
-        var ms = new H.ui.MapSettingsControl({
-            baseLayers : [ { 
-              label: this.translationData.lblNormal , layer: defaultLayers.raster.normal.map
-            },{
-              label: this.translationData.lblSatellite , layer: defaultLayers.raster.satellite.map
-            }, {
-              label: this.translationData.lblTerrain , layer: defaultLayers.raster.terrain.map
-            }
-            ],
-          layers : [{
-                label: this.translationData.lblLayerTraffic , layer: defaultLayers.vector.normal.traffic
-            },
-            {
-                label: this.translationData.lblLayerIncidents , layer: defaultLayers.vector.normal.trafficincidents
-            }
-          ]
-        });
-        this.ui.addControl("customized", ms);
-      }, 1000);
+      if(this.mapElement){
+        setTimeout(() => {
+          this.map = new H.Map(this.mapElement.nativeElement,
+            defaultLayers.raster.normal.map, {
+            center: { lat: 51.43175839453286, lng: 5.519981221425336 },
+            zoom: 4,
+            pixelRatio: window.devicePixelRatio || 1
+          });
+          window.addEventListener('resize', () => this.map.getViewPort().resize());
+          var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
+          this.ui = H.ui.UI.createDefault(this.map, defaultLayers);
+          
+          this.ui.removeControl("mapsettings");
+          // create custom one
+          var ms = new H.ui.MapSettingsControl({
+              baseLayers : [ { 
+                label: this.translationData.lblNormal , layer: defaultLayers.raster.normal.map
+              },{
+                label: this.translationData.lblSatellite , layer: defaultLayers.raster.satellite.map
+              }, {
+                label: this.translationData.lblTerrain , layer: defaultLayers.raster.terrain.map
+              }
+              ],
+            layers : [{
+                  label: this.translationData.lblLayerTraffic , layer: defaultLayers.vector.normal.traffic
+              },
+              {
+                  label: this.translationData.lblLayerIncidents , layer: defaultLayers.vector.normal.trafficincidents
+              }
+            ]
+          });
+          this.ui.addControl("customized", ms);
+        }, 1000);
+      }
     }
 }
 
@@ -526,7 +529,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
           }
         }
       }, (error) => {
-        //console.log(error)
+        ////console.log(error)
       });
     }
 
@@ -1181,9 +1184,10 @@ let urgencylevelEndDate = 0;
   }
   // urgencylevelStartDate = Util.convertDateToUtc(this.setStartEndDateTime(this.alertAdvancedFilterForm.controls.fromDate.value, this.alertAdvancedFilterForm.controls.fromTimeRange.value, "start"));
   // urgencylevelEndDate = Util.convertDateToUtc(this.setStartEndDateTime(this.alertAdvancedFilterForm.controls.toDate.value, this.alertAdvancedFilterForm.controls.toTimeRange.value, "end"));;
+  if(this.periodSelectedDateTime && this.periodSelectedDateTime.length > 0){
   urgencylevelStartDate = Util.convertDateToUtc(this.setStartEndDateTime(this.periodSelectedDateTime[0].startDate, this.periodSelectedDateTime[0].fromTime, "start"));
   urgencylevelEndDate = Util.convertDateToUtc(this.setStartEndDateTime(this.periodSelectedDateTime[0].endDate, this.periodSelectedDateTime[0].toTime, "end"));;
-
+  }
 
 // }
 // else{

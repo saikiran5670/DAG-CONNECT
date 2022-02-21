@@ -24,7 +24,7 @@ import { Util } from 'src/app/shared/util';
 import { DomSanitizer } from '@angular/platform-browser';
 
 declare var H: any;
-const createGpx = require('gps-to-gpx').default;
+// const createGpx = require('gps-to-gpx').default;
 
 @Component({
   selector: 'app-manage-poi-geofence',
@@ -75,7 +75,8 @@ export class ManagePoiGeofenceComponent implements OnInit {
   importTranslationData: any = {};
   xmlObject : any = {};
   map: any;
-  templateTitle = ['Name', 'Latitude', 'Longitude', 'CategoryName', 'SubCategoryName', 'Address','Zipcode', 'City', 'Country'];
+  // templateTitle = ['Name', 'Latitude', 'Longitude', 'CategoryName', 'SubCategoryName', 'Address','Zipcode', 'City', 'Country'];
+  templateTitle = [];
   //templateTitle = ['OrganizationId', 'CategoryId', 'CategoryName', 'SubCategoryId', 'SubCategoryName',
   //  'POIName', 'Address', 'City', 'Country', 'Zipcode', 'Latitude', 'Longitude', 'Distance', 'State', 'Type'];
   templateValue = [
@@ -125,7 +126,8 @@ export class ManagePoiGeofenceComponent implements OnInit {
     private hereService: HereService,
     private domSanitizer: DomSanitizer
     ) {
-      this.map_key = _configService.getSettings("hereMap").api_key;
+      // this.map_key = _configService.getSettings("hereMap").api_key;
+      this.map_key = localStorage.getItem("hereMapsK");
       this.platform = new H.service.Platform({
         "apikey": this.map_key
       });
@@ -284,7 +286,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
       let marker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: this.getSVGIcon() });
       this.map.addObject(marker);
       var bubble;
-      console.log('t1',this.translationData);
+      //console.log('t1',this.translationData);
       let translatedPoiName = this.translationData.lblPOIName;
       let translatedCategory = this.translationData.lblCategory;
       let translatedSubCategory = this.translationData.lblSubCategory;
@@ -349,8 +351,8 @@ export class ManagePoiGeofenceComponent implements OnInit {
       else{ //-- add polygon geofence on map
         let polyPoints: any = [];
         element.nodes.forEach(item => {
-          polyPoints.push(Math.abs(item.latitude.toFixed(4)));
-          polyPoints.push(Math.abs(item.longitude.toFixed(4)));
+          polyPoints.push(Math.abs(item.latitude));
+          polyPoints.push(Math.abs(item.longitude));
           polyPoints.push(0);
         });
         this.createResizablePolygon(this.map, polyPoints, this,this.ui, element);
@@ -519,12 +521,20 @@ export class ManagePoiGeofenceComponent implements OnInit {
         const isAsc = sort.direction === 'asc';
         return data.sort((a: any, b: any) => {
             let columnName = sort.active;
-          return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
+          return this.comparePOI(a[sort.active], b[sort.active], isAsc, columnName);
         });
       }
     });
     Util.applySearchFilter(this.poidataSource, this.displayedColumnsPoi ,this.filterValue );
   }
+  comparePOI(a: any, b: any, isAsc: boolean, columnName: any) {
+    if(columnName == "name"){
+    if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toUpperCase();
+    if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toUpperCase();
+    }
+  return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+}
+
 
   loadGeofenceData() {
     this.showLoadingIndicator = true;
@@ -557,10 +567,12 @@ export class ManagePoiGeofenceComponent implements OnInit {
     }, 1000);
     Util.applySearchFilter(this.geofencedataSource, this.displayedColumnsGeo ,this.filterValue );
   }
-  compare(a: Number | String, b: Number | String, isAsc: boolean, columnName: any) {
-    if(!(a instanceof Number)) a = a.replace(/\s/g, '').replace(/[^\w\s]/gi, 'z').toUpperCase();
-    if(!(b instanceof Number)) b = b.replace(/\s/g, '').replace(/[^\w\s]/gi, 'z').toUpperCase();
 
+  compare(a: any, b: any, isAsc: boolean, columnName: any) {
+    if(columnName != "Icon" || columnName != "All" || columnName != "Actions"){
+    if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toUpperCase();
+    if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toUpperCase();
+    }
   return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
 }
 
@@ -923,7 +935,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
     if(poiList != ''){
       poiList = poiList.slice(0, -2);
     }
-    console.log(poiList);
+    //console.log(poiList);
     this.dialogService.DeleteModelOpen(options, poiList);
     this.dialogService.confirmedDel().subscribe((res) => {
     if (res) {
@@ -1019,7 +1031,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
       });
     }
     else{
-      //console.log("geofence id not found...");
+      ////console.log("geofence id not found...");
     }
   }
 
@@ -1374,6 +1386,17 @@ export class ManagePoiGeofenceComponent implements OnInit {
       this.importTranslationData.existError = this.translationData.lblNamealreadyexists || 'POI name already exists';
       this.importTranslationData.input1mandatoryReason = this.translationData.lblNameMandatoryReason || '$ is mandatory input';
       this.importTranslationData.lblBack = this.translationData.lblBack || 'Back';
+      this.importTranslationData.duplicatePOI = this.translationData.lblDuplicatePOI || 'Duplicate POI';
+      this.importTranslationData.poiMaxLength = this.translationData.lblDataAttributeSetmaxlength || 'Max length should be 100';
+      this.importTranslationData.lblName = this.translationData.lblName || 'Name';
+      this.importTranslationData.lblLatitude = this.translationData.lblLatitude || 'Latitude';
+      this.importTranslationData.lblLongitude = this.translationData.lblLongitude || 'Longitude';
+      this.importTranslationData.lblCategoryName = this.translationData.lblCategoryName || 'Category Name';
+      this.importTranslationData.lblSubCategoryName = this.translationData.lblSubCategoryName || 'SubCategory Name';
+      this.importTranslationData.lblAddress = this.translationData.lblAddress || 'Address';
+      this.importTranslationData.lblZipCode = this.translationData.lblZipCode || 'Zipcode';
+      this.importTranslationData.lblCity = this.translationData.lblCity || 'City';
+      this.importTranslationData.lblCountry = this.translationData.lblCountry || 'Country';
       this.tableTitle = this.translationData.lblTableTitle || 'Rejected POI Details';
       this.tableColumnName = [this.translationData.lblOrganizationId || 'OrganizationId',
                               this.translationData.lblCategoryName || 'Category Name',
@@ -1382,6 +1405,15 @@ export class ManagePoiGeofenceComponent implements OnInit {
                               this.translationData.lblLatitude || 'Latitude',
                               this.translationData.lblLongitude || 'Longitude',
                               this.translationData.lblFailReason || 'Fail Reason'];
+      this.templateTitle = [this.translationData.lblName,
+                            this.translationData.lblLatitude,
+                            this.translationData.lblLongitude,
+                            this.translationData.lblCategoryName,
+                            this.translationData.lblSubCategoryName,
+                            this.translationData.lblAddress,
+                            this.translationData.lblZipCode,
+                            this.translationData.lblCity,
+                            this.translationData.lblCountry];
     }
   }
 

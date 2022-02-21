@@ -65,12 +65,12 @@ export class LoginComponent implements OnInit {
     this.errorMsg= '';
     this.invalidUserMsg = false;
     if (this.loginForm.valid) { 
-      //console.log("values:: ", values)
+      ////console.log("values:: ", values)
       // if(this.loginClicks == 0){//commenting this for facing issue multiple times login ,popup is not getting displayed.
         this.loginClicks = 1;
        this.authService.signIn(this.loginForm.value).subscribe((data:any) => {
         this.hideLoader();
-         //console.log("data:: ", data)
+         ////console.log("data:: ", data)
          if(data.status === 200){
            
             if(data.body.accountInfo){
@@ -89,7 +89,8 @@ export class LoginComponent implements OnInit {
             let loginObj = {
               id: data.body.accountInfo.id,
               organizationId: 0,
-              email: "",
+              //email: "",
+              email: (data.body.accountInfo && data.body.accountInfo.emailId) ? data.body.accountInfo.emailId : '',
               accountIds: "",
               name: "",
               accountGroupId: 0,
@@ -187,7 +188,7 @@ export class LoginComponent implements OnInit {
        (error)=> {
          this.hideLoader();
          this.loginClicks = 0;
-          console.log("Error: " + error);
+          //console.log("Error: " + error);
           if(error.status === 401){
             this.invalidUserMsg = true;
           }
@@ -333,7 +334,7 @@ export class LoginComponent implements OnInit {
 
   public onResetPassword(values: object): void {
     values['emailId'] = values['emailId'].toLowerCase(); 
-    console.log("values:: ", values)
+    //console.log("values:: ", values)
     if (this.forgotPasswordForm.valid) {
       this.accountService.resetPasswordInitiate(values).subscribe(data => {
         // if(data){

@@ -71,14 +71,14 @@
                                         placeholder="{{ 'Set Target' }}">
                                     <span *ngIf="field.key =='rp_db_dashboard_fleetkpi_co2emission'" matSuffix>{{translationData.lblTon || 'Ton'}}</span>
                                     <span *ngIf="field.key =='rp_db_dashboard_fleetkpi_fuelconsumption'" matSuffix>
-                                        {{prefUnit == 'dunit_Metric' ? (translationData.lblltr100km || 'ltr/100km' ) :
+                                        {{prefUnitFormat == 'dunit_Metric' ? (translationData.lblltr100km || 'ltr/100km' ) :
                                         (translationData.lblmpg || 'mpg')}}
                                     </span>
                                     <span *ngIf="field.key =='rp_db_dashboard_fleetkpi_totaldistance'" matSuffix>
-                                        {{prefUnit == 'dunit_Metric' ? (translationData.lblkms ) : (translationData.lblmile)}} </span>
+                                        {{prefUnitFormat == 'dunit_Metric' ? (translationData.lblkms ) : (translationData.lblmile)}} </span>
                                     <span *ngIf="field.key =='rp_db_dashboard_fleetkpi_fuelusedidling' || 
                         field.key =='rp_db_dashboard_fleetkpi_fuelconsumed'" matSuffix>
-                                        {{prefUnit == 'dunit_Metric' ? (translationData.lblltr || 'ltr' ) : (translationData.lblgal || 'gal')}}
+                                        {{prefUnitFormat == 'dunit_Metric' ? (translationData.lblltr || 'ltr' ) : (translationData.lblgal || 'gal')}}
                                     </span>
                                     <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValue').hasError('min')">
                                         {{translationData.lblNoNegativeValuesAllowed || 'No negative values allowed'}}
@@ -209,7 +209,7 @@
                                     <input [readonly]='!editDashboardFlag' matInput type="number" [formControlName]="field.key+'thresholdValue'"
                                         placeholder="{{ 'Set Target' }}">
                                     <span *ngIf="field.key == 'rp_db_dashboard_todaylivevehicle_distancebasedutilizationrate'" matSuffix>
-                                        {{prefUnit == 'dunit_Metric' ? (translationData.lblkms || 'km') : (translationData.lblmile || 'mile')}}
+                                        {{prefUnitFormat == 'dunit_Metric' ? (translationData.lblkms || 'km') : (translationData.lblmile || 'mile')}}
                                     </span>
                                     <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValue').hasError('min')">
                                         No negative values allowed
@@ -312,7 +312,7 @@
                                 class="areaWidth min-width-25-per targetSpanIcon" fxLayoutGap="0px" fxLayoutAlign="left">
                                 <mat-form-field appearance="outline" style='width: 80%'>
                                     <input [readonly]='!editDashboardFlag' matInput type="number" [formControlName]="field.key+'thresholdValue'" placeholder="{{ 'Set Target' }}">
-                                      <span matSuffix> {{prefUnit == 'dunit_Metric' ? (translationData.lblkms || 'km') : (translationData.lblmile || 'mile')}}
+                                      <span matSuffix> {{prefUnitFormat == 'dunit_Metric' ? (translationData.lblkms || 'km') : (translationData.lblmile || 'mile')}}
                                     </span>
                                     <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValue').hasError('min')">
                                        {{translationData.lblNoNegativeValuesAllowed || 'No negative values allowed' }}
@@ -378,7 +378,7 @@
                                         (change)='$event ? selectionForAlertLast24HoursColumns.toggle(field) : null;'
                                         [checked]="selectionForAlertLast24HoursColumns.isSelected(field)"
                                         [disabled]='!editDashboardFlag'>
-                                        <span>{{ field.translatedName }}</span>
+                                        <span class='text-truncate' matTooltip="{{ field.translatedName }}" >{{ field.translatedName }}</span>
                                     </mat-checkbox>
                                 </div>
                             </ng-container>

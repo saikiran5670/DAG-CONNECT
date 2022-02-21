@@ -1,4 +1,4 @@
-<app-common-breadcrumbs [breadcrumb]="breadcumMsg" [topRightElements]="topRightElements">
+<app-common-breadcrumbs *ngIf= "breadcumMsg && breadcumMsg!=''" [breadcrumb]="breadcumMsg" [topRightElements]="topRightElements">
     <ng-template #topRightElements>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
             <span class='custom-font' (click)="backToCorridorList()">
@@ -46,7 +46,7 @@
     </mat-card>
     <!-- Map Div-->
     <div class='fixDiv'></div>
-    <app-route-calculating  *ngIf='selectedCorridorTypeId ==46 && exclusionList' [translationData]="translationData" (backToPage) = "backToCorridorList()" (backToCreate) = "backFromCreate($event)" (backToUpdate)="backFromUpdate()" (backToReject) = "backFromReject()" [exclusionList]="exclusionList" [actionType]='actionType'
+    <app-route-calculating  *ngIf='selectedCorridorTypeId ==46 && exclusionList' [translationData]="translationData" (backToPage) = "backToCorridorList()" (backToCreate) = "backFromCreate($event)" (backToUpdate)="backFromUpdate($event)" (backToReject) = "backFromReject()" [exclusionList]="exclusionList" [actionType]='actionType'
                             [selectedElementData]="selectedElementData" [corridorNameList]='corridorNameList'></app-route-calculating>
-    <app-existing-trips *ngIf='selectedCorridorTypeId ==45 && vehicleGroupList' [vehicleGroupList]="vehicleGroupList" [translationData]="translationData" (backToPage) = "backToCorridorList()" (backToCreate) = "backFromCreate($event)" (backToUpdate)="backFromUpdate()" (backToReject) = "backFromReject()" [exclusionList]="exclusionList" [actionType]='actionType'
+    <app-existing-trips *ngIf='selectedCorridorTypeId ==45 && vehicleGroupList' [vehicleGroupList]="vehicleGroupList" [vinTripList] = "vinTripList" [translationData]="translationData" (backToPage) = "backToCorridorList()" (backToCreate) = "backFromCreate($event)" (backToUpdate)="backFromUpdate($event)" (backToReject) = "backFromReject()" [exclusionList]="exclusionList" [actionType]='actionType'
     [selectedElementData]="selectedElementData"></app-existing-trips>

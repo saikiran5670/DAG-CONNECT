@@ -12,6 +12,7 @@ import { LanguageSelectionComponent } from './language-selection/language-select
 import { stringify } from '@angular/compiler/src/util';
 import { Util } from 'src/app/shared/util';
 import { DatePipe } from '@angular/common';
+import { OrganizationService } from 'src/app/services/organization.service';
 
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
 
@@ -27,6 +28,7 @@ export class TranslationDataUploadComponent implements OnInit {
   accountOrganizationId: any = 0;
   dataSource: any;
   initData: any = [];
+  accountPrefObj:any;
   columnCodes: string[] = ['fileName','createdAt','fileSize','description','action'];
   displayedColumns: string[] = ['fileName','createdAt','fileSize','description','action'];
   columnLabels: String[] = ['FileName', 'UploadedDate', 'FileSize', 'Description', 'Action'];
@@ -51,8 +53,20 @@ export class TranslationDataUploadComponent implements OnInit {
   updatedCount: number = 0;
   filterValue: string;
   excelFileLengthFlag: boolean = false;
+   prefTimeFormat: any;
+   prefTimeZone: any;
+   prefDateFormat: any;
+   nextScheduleDateFormat: any;
+  
 
-  constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private translationService: TranslationService, private datePipe: DatePipe) {
+
+
+ //prefTimeFormat: any; //-- coming from pref setting
+ // prefTimeZone: any; //-- coming from pref setting
+  //prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
+  prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
+
+  constructor(private _formBuilder: FormBuilder, private organizationService: OrganizationService,private dialog: MatDialog, private translationService: TranslationService, private datePipe: DatePipe) {
       this.defaultTranslation();
   }
 
@@ -66,6 +80,7 @@ export class TranslationDataUploadComponent implements OnInit {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.adminAccessType = JSON.parse(localStorage.getItem("accessType"));
     this.userType = localStorage.getItem("userType");
+    this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.uploadTranslationDataFormGroup = this._formBuilder.group({
       uploadFile: [
@@ -84,12 +99,73 @@ export class TranslationDataUploadComponent implements OnInit {
       filter: "",
       menuId: 31 //-- for Translation mgnt
     }
-
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+
       this.processTranslation(data);
+
       this.loadInitData();
-    })
-  }
+
+    });
+      this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
+        if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
+         
+           this.proceedStep(prefData, this.accountPrefObj.accountPreference);
+        }else{ // org pref
+          this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
+            this.proceedStep(prefData, orgPref);
+          }, (error) => { // failed org API
+            let pref: any = {};
+            this.proceedStep(prefData, pref);
+          });
+        }
+      });
+    }
+    proceedStep(prefData: any, preference: any){
+      let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
+      if(_search.length > 0){
+        //this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
+        this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
+        //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+        this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
+        this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+      }else{
+        //this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
+        this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
+        //this.prefTimeZone = prefData.timezone[0].value;
+        this.prefTimeZone = prefData.timezone[0].name;
+        this.prefDateFormat = prefData.dateformat[0].name;
+      }
+      this.setPrefFormatDate();
+    }
+  
+    setPrefFormatDate(){
+      switch(this.prefDateFormat){
+        case 'ddateformat_dd/mm/yyyy': {
+          this.prefDateFormat = "DD/MM/YYYY";
+          this.nextScheduleDateFormat = "dd/MM/yyyy";
+          break;
+        }
+        case 'ddateformat_mm/dd/yyyy': {
+          this.prefDateFormat = "MM/DD/YYYY";
+          this.nextScheduleDateFormat = "MM/dd/yyyy";
+          break;
+        }
+        case 'ddateformat_dd-mm-yyyy': {
+          this.prefDateFormat = "DD-MM-YYYY";
+          this.nextScheduleDateFormat = "dd-MM-yyyy";
+          break;
+        }
+        case 'ddateformat_mm-dd-yyyy': {
+          this.prefDateFormat = "MM-DD-YYYY";
+          this.nextScheduleDateFormat = "MM-dd-yyyy";
+          break;
+        }
+        default:{
+          this.prefDateFormat = "MM/DD/YYYY";
+          this.nextScheduleDateFormat = "MM/dd/yyyy";
+        }
+      }
+    }
 
   loadInitData(){
     this.showLoadingIndicator = true;
@@ -226,7 +302,7 @@ export class TranslationDataUploadComponent implements OnInit {
           let _fileName = this.uploadTranslationDataFormGroup.controls.uploadFile.value._fileNames;
           if(_fileName && _fileName != '' && _fileName.includes('.xlsx')){
             let charLength = _fileName.split('.xlsx')[0].length;
-            if(charLength > 45){ // file length error
+            if(charLength > 50){ // file length error
               this.excelFileLengthFlag = true;
             }
           }

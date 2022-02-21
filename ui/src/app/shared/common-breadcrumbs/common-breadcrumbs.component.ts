@@ -3,7 +3,7 @@ import { Component, OnInit,Input } from '@angular/core';
 @Component({
   selector: 'app-common-breadcrumbs',
   templateUrl: './common-breadcrumbs.component.html',
-  styleUrls: ['./common-breadcrumbs.component.css']
+  styleUrls: ['./common-breadcrumbs.component.less']
 })
 export class CommonBreadcrumbsComponent implements OnInit {
   @Input() breadcrumb;
@@ -11,6 +11,7 @@ export class CommonBreadcrumbsComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+    console.log(this.breadcrumb, 'breadcrumb')
   }
 
 }

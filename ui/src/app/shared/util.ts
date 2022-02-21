@@ -1,7 +1,6 @@
 import * as moment from 'moment-timezone';
 
 const countriesData = require('moment-timezone/data/meta/latest.json');
-const languageCodeData = require('../data.static/LanguageCodeAndCountryCodeMapping.json');
 
 export class Util {
     public static convertDateToUtc(date: any){
@@ -22,7 +21,7 @@ export class Util {
 
     public static getExactZone(prefTimezone: any){
         let _timezone: any = '';
-        let _splittedTz = prefTimezone.split('_');
+        let _splittedTz = prefTimezone?.split('_');
         let exactTz = [_splittedTz.shift(), _splittedTz.join('_')];
         _timezone = exactTz[1];
         return _timezone.trim();
@@ -296,11 +295,11 @@ export class Util {
         let _timezone: any;
         _timezone = this.getExactZone(prefTimezone);
         // if(moment().tz(_timezone).utcOffset() == moment().tz(moment.tz.guess()).utcOffset()) {​​​​​​
-        // console.log(moment.utc( _date ).valueOf());
+        // //console.log(moment.utc( _date ).valueOf());
         // return _dateWithoutMiliSeconds.getTime();
         // }​​​​​​
         // else{
-       // console.log(_dateWithoutMiliSeconds.getTime() )
+       // //console.log(_dateWithoutMiliSeconds.getTime() )
         let localTimeZoneOffset = moment(_dateWithoutMiliSeconds).tz(moment.tz.guess()).utcOffset();
        // let gmt = moment(_dateWithoutMiliSeconds).utcOffset(localTimeZoneOffset);
 
@@ -308,7 +307,7 @@ export class Util {
         let diff = localTimeZoneOffset + PrefTzToGMT;
         let PrefTimeAsPerSelected = moment(_dateWithoutMiliSeconds).utcOffset(diff);
         let _convertedUtc = PrefTimeAsPerSelected['_d'].getTime();
-        console.log('_convertedUtc:' +_convertedUtc );
+        //console.log('_convertedUtc:' +_convertedUtc );
         return _convertedUtc;
         //}
         // let gmt_val:any =moment.utc(_dateWithoutMiliSeconds).valueOf();
@@ -321,7 +320,7 @@ export class Util {
         // return _convertedUtc;
 
         // if(moment().tz(_timezone).utcOffset() == moment().tz(moment.tz.guess()).utcOffset()) {​​​​​​
-        //     console.log(moment.utc( _date ).valueOf());
+        //     //console.log(moment.utc( _date ).valueOf());
         //    return _dateWithoutMiliSeconds.getTime();
         //    }​​​​​​
        // let localTimeZoneOffset = moment().tz(moment.tz.guess()).utcOffset() * -1;
@@ -334,10 +333,10 @@ export class Util {
             // return gmt['_d'].getTime();
     public static getMillisecondsToUTCDate1(_date: any, prefTimezone: any) {
 
-        // //    console.log("_date", _date)
+        // //    //console.log("_date", _date)
          let _dateWithoutMiliSeconds:any = new Date(_date.setMilliseconds(0));
-        // //    console.log("_date without miliseconds", _dateWithoutMiliSeconds)
-        // //    console.log("_date", moment(_date).millisecond(0))
+        // //    //console.log("_date without miliseconds", _dateWithoutMiliSeconds)
+        // //    //console.log("_date", moment(_date).millisecond(0))
         // let _t = prefTimezone.split(') ');
         // let _timezone: any;
         // if (_t.length > 0) {
@@ -346,21 +345,21 @@ export class Util {
         let _timezone: any;
         _timezone = this.getExactZone(prefTimezone);
         let gmtTimeDiff = _dateWithoutMiliSeconds.getTimezoneOffset();// +5.30 diff
-         console.log("gmtTimeDiff", gmtTimeDiff)
+         //console.log("gmtTimeDiff", gmtTimeDiff)
         //let _gmt = moment(_dateWithoutMiliSeconds).utcOffset(gmtTimeDiff); // gmt time of selected from locale
-        // console.log(" gmt time of selected from locale", _gmt)
+        // //console.log(" gmt time of selected from locale", _gmt)
         //let localeToGmtTz:any = _date.getTimezoneOffset();
         let PrefTzToGMT: any = moment().tz(_timezone).utcOffset() * -1;// diff selected timezone pref
 
-        console.log("diff selected timezone pref ", PrefTzToGMT);
+        //console.log("diff selected timezone pref ", PrefTzToGMT);
 
         let PrefTimeAsPerSelected =  moment(_dateWithoutMiliSeconds).utcOffset(PrefTzToGMT);
 
-        console.log("PrefTimeAsPerSelected ", PrefTimeAsPerSelected);
+        //console.log("PrefTimeAsPerSelected ", PrefTimeAsPerSelected);
 
        // let UtcValToSendToAPI = moment(_gmt).utcOffset(PrefTzToGMT);
         let _convertedUtc = PrefTimeAsPerSelected['_d'].getTime();
-        console.log('_convertedUtc==' + _convertedUtc);
+        //console.log('_convertedUtc==' + _convertedUtc);
         return _convertedUtc;
 
    }

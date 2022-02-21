@@ -59,7 +59,7 @@
               class='mandatoryColor'>*</span></mat-label>
           <div *ngIf="actionType != 'view'">
             <mat-form-field appearance="outline" class="full-width">
-              <input maxlength="20" placeholder="{{ translationData.lblEnterPOIName || 'Enter POI Name' }}" matInput
+              <input maxlength="100" placeholder="{{ translationData.lblEnterPOIName || 'Enter POI Name' }}" matInput
                 formControlName="name" (keyup)="inputPoiName()">
             </mat-form-field>
             <mat-error *ngIf="duplicatePOIName">

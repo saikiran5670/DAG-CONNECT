@@ -52,6 +52,8 @@ export class OrganisationRelationshipComponent implements OnInit {
   orgFilter= new FormControl();
   typeFilter= new FormControl();
   searchFilter= new FormControl();
+  onSuccesstogglechaining = false;
+  relationshipNametogglechain: any;
   filteredValues = {
     relation: '',
     vehicleGrp: '',
@@ -146,25 +148,37 @@ export class OrganisationRelationshipComponent implements OnInit {
           this.hideloader();
           if(data)
             {
-              if(this.viewRelationshipName!=undefined)
-               {
+              if(this.viewRelationshipName!=undefined){
                   this.successMsgBlink(this.getEditSuccessMsg('Update', this.viewRelationshipName));
                   this.router.navigate(['/admin/organisationrelationshipmanagement']);
-                }
+              }
+              
+              if (this.onSuccesstogglechaining) {
+                this.successMsgBlink(this.getEditSuccessMsg('Update', this.relationshipNametogglechain));
+                this.onSuccesstogglechaining = false;
+              }
+
                 this.relationshipList = newdata["relationShipData"];
                 this.organizationList = newdata["organizationData"];
                 this.vehicleList =  newdata["vehicleGroup"];
                 this.initData = data["orgRelationshipMappingList"];
+                this.initData.forEach(element => {
+                    if(element.allowChain && element.endDate == 0){
+                      element.allowChain = 'Active';
+                    }
+                    else{
+                      element.allowChain = 'Inactive';
+                    }
+                });
                 this.initData = this.getNewTagData(this.initData);
               this.dataSource = new MatTableDataSource(this.initData);
-
               setTimeout(()=>{
                 this.dataSource = new MatTableDataSource(this.initData);
                     this.dataSource.paginator = this.paginator;
                     this.dataSource.sort = this.sort;
                     this.dataSource.filterPredicate = function(data, filter: any){
                       let val = JSON.parse(filter);
-                      let allowChain = data.allowChain == true && data.endDate == 0 ? 'true' :  'false';
+                      let allowChain = data.allowChain == 'Active' ? 'true' :  'false';
                       return (val.type === '' || allowChain.toString() === val.type.toString() ) &&
                               (val.relation === '' || data.orgRelationId.toString() === val.relation.toString() ) &&
                               (val.org === '' || data.targetOrgId.toString() === val.org.toString() ) &&
@@ -176,13 +190,13 @@ export class OrganisationRelationshipComponent implements OnInit {
                                 (getDt(data.endDate)).toString().toLowerCase().indexOf(val.search.toLowerCase()) !== -1 ||
                                 getChaining(data.allowChain).indexOf(val.search.toLowerCase())) !== -1);
                       };
-                    this.dataSource.sortData = (data: String[], sort: MatSort) => {
-                      const isAsc = sort.direction === 'asc';
-                      return data.sort((a: any, b: any) => {
-                          let columnName = sort.active;
+                      this.dataSource.sortData = (data:any, sort: MatSort) => {
+                        const isAsc = sort.direction === 'asc';
+                        let columnName = this.sort.active;
+                        return data.sort((a: any, b: any)=>{
                           return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
-                      });
-                    }
+                        });
+                      }
 
                     });
 
@@ -196,23 +210,28 @@ export class OrganisationRelationshipComponent implements OnInit {
           );
 
   }
-  compare(a: Number | String, b: Number | String, isAsc: boolean, columnName: any) {
+  compare(a: any, b: any, isAsc: boolean, columnName: any) {
       if(columnName === 'relationshipName' || columnName === 'vehicleGroupName' || columnName === 'organizationName' ){
       if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
       if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
   }
+    // if(columnName === 'allowChain'){
+    //   let a1  = a.toString().toUpperCase();
+    //   let b1  = b.toString().toUpperCase();
+    //   return (a1 > b1 ? -1 : 1) * (isAsc ? 1 : -1);
+    // }
 
-      if(!(a instanceof Number)) a = a.toString().toUpperCase();
-      if(!(b instanceof Number)) b = b.toString().toUpperCase();
+      // if(!(a instanceof Number)) a = a.toString().toUpperCase();
+      // if(!(b instanceof Number)) b = b.toString().toUpperCase();
 
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
   getEditSuccessMsg(editText: any, name: any){
     if(editText == 'Update'){
       if(this.translationData.lblRelationshipDetailsUpdatedSuccessfully)
-        return this.translationData.lblRelationshipDetailsUpdatedSuccessfully.replace('$', this.viewRelationshipName);
+        return this.translationData.lblRelationshipDetailsUpdatedSuccessfully.replace('$', name);
       else
-        return ("Relationship '$' details successfully updated").replace('$', this.viewRelationshipName);
+        return ("Relationship '$' details successfully updated").replace('$', name);
     }
   }
   setDate(date : any){​​​​​​​​
@@ -260,7 +279,7 @@ export class OrganisationRelationshipComponent implements OnInit {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
     this.defaultTranslation();
 
-    //console.log("process translationData:: ", this.translationData)
+    ////console.log("process translationData:: ", this.translationData)
   }
 
   newRelationship(){
@@ -393,12 +412,12 @@ export class OrganisationRelationshipComponent implements OnInit {
     {
     const options = {
       title: this.translationData.lblChangeChainingStatus,
-      message: (rowData.allowChain == true) ? this.translationData.lblYouwanttoDeactivate : this.translationData.lblYouwanttoActivate,
+      message: (rowData.allowChain == 'Active') ? this.translationData.lblYouwanttoDeactivate : this.translationData.lblYouwanttoActivate,
       // cancelText: this.translationData.lblNo,
       // confirmText: this.translationData.lblYes,
       cancelText: this.translationData.lblCancel,
-      confirmText: (rowData.allowChain == true) ? this.translationData.lblDeactivate  : this.translationData.lblActivate,
-      status: rowData.allowChain == true ? 'Inactive' : 'Active' ,
+      confirmText: (rowData.allowChain == 'Active') ? this.translationData.lblDeactivate  : this.translationData.lblActivate,
+      status: rowData.allowChain == 'Active' ? 'Inactive' : 'Active' ,
       name: rowData.relationshipName
     };
 
@@ -414,6 +433,8 @@ export class OrganisationRelationshipComponent implements OnInit {
           "allowChaining": !rowData.allowChain
         }
         this.organizationService.updateAllowChain(objData).subscribe((data) => {
+          this.relationshipNametogglechain = rowData.relationshipName;
+          this.onSuccesstogglechaining = true;
           this.loadInitData();
         })
       }
@@ -544,9 +565,9 @@ function getDt(date){
 }
 
 function getChaining(data: any){
-  if(((data.toString()).toLowerCase()) === 'true'){
+  if(((data.toString()).toLowerCase()) === 'active'){
     return 'true active';
-  } else if (((data.toString()).toLowerCase()) === 'false'){
+  } else if (((data.toString()).toLowerCase()) === 'inactive'){
     return 'false inactive';
   } else {
     return (data.toString()).toLowerCase();

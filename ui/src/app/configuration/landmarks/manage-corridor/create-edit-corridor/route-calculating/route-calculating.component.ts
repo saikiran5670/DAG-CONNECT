@@ -75,6 +75,10 @@ export class RouteCalculatingComponent implements OnInit {
   routeOutlineMarker : any;
   endAddressPositionLat : number = 0;
   endAddressPositionLong : number = 0;
+  unitFormat: string = localStorage.getItem("unitFormat");
+  widthUnit: string = '';
+  maxDistance: string = '';
+
   
   explosiveChecked :boolean = false;
   gasChecked :boolean = false;
@@ -165,15 +169,21 @@ export class RouteCalculatingComponent implements OnInit {
   constructor(private hereService: HereService,private formBuilder: FormBuilder, private corridorService : CorridorService,
     private completerService: CompleterService, private config: ConfigService,private landmarkCategoryService: LandmarkCategoryService) {
       this.showLoadingIndicator = true;
-      this.map_key =  config.getSettings("hereMap").api_key;
-     this.map_id =  config.getSettings("hereMap").app_id;
-     this.map_code =  config.getSettings("hereMap").app_code;
+      // //console.log(this.hereService.hereMapsdata);
+    //   this.map_key =  config.getSettings("hereMap").api_key;
+    //  this.map_id =  config.getSettings("hereMap").app_id;
+    //  this.map_code =  config.getSettings("hereMap").app_code;
+    this.map_key = localStorage.getItem("hereMapsK");
+    // this.hereService.getHEREMapsInfo().subscribe((data: any) => {
+    //   this.map_key = this.hereService.hereMapsdata.apiKey;
+    //   this.map_id = this.hereService.hereMapsdata.appId;
+    //   this.map_code =  this.hereService.hereMapsdata.appCode;
 
-
-    this.platform = new H.service.Platform({
-      "apikey": this.map_key
-    });
-    this.configureAutoSuggest();
+      this.platform = new H.service.Platform({
+        "apikey": this.map_key
+      });
+      this.configureAutoSuggest();
+    // });
     setTimeout(()=>{   
       this.hideloader();
     }); 
@@ -237,20 +247,27 @@ export class RouteCalculatingComponent implements OnInit {
     }, (error) => {
       this.userPOIList = [];
     });
-    
+    this.widthUnit = this.unitFormat == 'dunit_Metric' ? this.translationData.lblKm : this.translationData.lblmile;
+    this.maxDistance = this.unitFormat == 'dunit_Metric' ? this.translationData.lblMaxkm + ' 10 ' +this.translationData.lblKm : this.translationData.lblMaxkm + ' 6.21371 '+this.translationData.lblmile;
   }
 
   subscribeWidthValue(){
     this.corridorFormGroup.get("widthInput").valueChanges.subscribe(x => {
      
       this.corridorWidthKm = Number(x);
-      if(Number(x) > 10)
+      if(this.unitFormat == 'dunit_Imperial' && Number(x) > 6.21371){
+        this.corridorWidthKm =6.21371;
+        this.corridorFormGroup.controls.widthInput.setValue(this.corridorWidthKm);
+      } else if(this.unitFormat == 'dunit_Metric' && Number(x) > 10)
       {
         this.corridorWidthKm =10;
         this.corridorFormGroup.controls.widthInput.setValue(this.corridorWidthKm);
 
       }
-      this.corridorWidth = this.corridorWidthKm  * 1000;
+      if(this.unitFormat == 'dunit_Imperial')
+        this.corridorWidth = this.corridorWidthKm * 1.60934 * 1000;
+      else if(this.unitFormat == 'dunit_Metric')
+        this.corridorWidth = this.corridorWidthKm  * 1000;
       this.checkRoutePlot();
       this.updateWidth();
       //this.calculateAB();
@@ -280,7 +297,7 @@ export class RouteCalculatingComponent implements OnInit {
       this.corridorId = _selectedElementData.id;
       if(this.corridorId){
           this.corridorService.getCorridorFullList(this.organizationId,this.corridorId).subscribe((data)=>{
-              //console.log(data)
+              ////console.log(data)
               if(data[0]["corridorProperties"]){
                  this.additionalData =  data[0]["corridorProperties"];
                  this.setAdditionalData();
@@ -298,7 +315,7 @@ export class RouteCalculatingComponent implements OnInit {
       this.endAddressPositionLat = _selectedElementData.endLat;
       this.endAddressPositionLong = _selectedElementData.endLong;
       this.corridorWidth = _selectedElementData.width;
-      this.corridorWidthKm = this.corridorWidth / 1000;
+      this.corridorWidthKm = this.unitFormat == 'dunit_Metric' ? this.corridorWidth / 1000 : this.unitFormat == 'dunit_Imperial' ? Number((this.corridorWidth / (1.60934 * 1000)).toFixed(2)) : this.corridorWidth / 1000;
 
       this.plotStartPoint();
       this.plotEndPoint();
@@ -484,8 +501,15 @@ export class RouteCalculatingComponent implements OnInit {
   sliderChanged(){
      // this.corridorWidth = _event.value;
      this.onSearchClicked = false;
+     if(this.unitFormat == 'dunit_Imperial')
+      this.corridorWidthKm = this.corridorWidth / (1.60934*1000);
+     else if(this.unitFormat == 'dunit_Metric')
       this.corridorWidthKm = this.corridorWidth / 1000;
-      if(this.corridorWidthKm > 10)
+
+      if(this.unitFormat == 'dunit_Imperial' && (this.corridorWidth == 10000 || this.corridorWidthKm > 6.21371)){
+        this.corridorWidthKm=6.21371;
+      }
+      else if(this.unitFormat == 'dunit_Metric' && this.corridorWidthKm > 10)
       {
         this.corridorWidthKm=10;
       }
@@ -507,7 +531,7 @@ export class RouteCalculatingComponent implements OnInit {
   changeSliderInput(){
     this.onSearchClicked = false;
     this.corridorWidthKm = this.corridorFormGroup.controls.widthInput.value;
-    this.corridorWidth = this.corridorWidthKm * 1000;
+    this.corridorWidth = this.unitFormat == 'dunit_Metric' ? this.corridorWidthKm * 1000 : this.unitFormat == 'dunit_Imperial' ? this.corridorWidthKm * 1.60934 * 1000 : this.corridorWidthKm * 1000;
   }
   
   formatLabel(value:number){
@@ -705,7 +729,7 @@ export class RouteCalculatingComponent implements OnInit {
         "vehicleSizeWeightPerAxle": this.corridorFormGroup.controls.weightPerAxle.value ? this.corridorFormGroup.controls.weightPerAxle.value : 0,
       }
     }
-    console.log(corridorObj)
+    //console.log(corridorObj)
     if(this.actionType === 'create'){
       this.corridorService.createRouteCorridor(corridorObj).subscribe((responseData)=>{
         if(responseData.code === 200){
@@ -738,6 +762,7 @@ export class RouteCalculatingComponent implements OnInit {
               booleanFlag: false,
               successMsg: "update",
               fromCreate:true,
+              corridorName:this.corridorFormGroup.controls.label.value
             }  
             this.backToUpdate.emit(emitObj);
         }
@@ -864,13 +889,13 @@ export class RouteCalculatingComponent implements OnInit {
   }
 
   onKeyUp(){
-    console.log('here');
-    console.log(this.suggestionData)
-    console.log(this.poiSuggestions)
+    //console.log('here');
+    //console.log(this.suggestionData)
+    //console.log(this.poiSuggestions)
   }
 
   onSelected(selectedAddress: any){
-    //console.log(item.title)
+    ////console.log(item.title)
    
     if(this.searchStr){
        this.searchStrError = false;
@@ -1080,7 +1105,7 @@ export class RouteCalculatingComponent implements OnInit {
     if(event.target.value == "") {
       this.activeSearchList = false;
     }
-    ////console.log("----search value called--",event.target.value);
+    //////console.log("----search value called--",event.target.value);
     let inputData = event.target.value;
           // "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
       // var a = https://places.ls.hereapi.com/places/v1/autosuggest?at=40.74917,-73.98529&q=chrysler&apiKey="BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw";
@@ -1115,7 +1140,7 @@ export class RouteCalculatingComponent implements OnInit {
     if(event.target.value == "") {
       this.activeEndList = false;
     }
-    ////console.log("----search value called--",event.target.value);
+    //////console.log("----search value called--",event.target.value);
     let inputData = event.target.value;
           // "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
       // var a = https://places.ls.hereapi.com/places/v1/autosuggest?at=40.74917,-73.98529&q=chrysler&apiKey="BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw";
@@ -1305,7 +1330,7 @@ export class RouteCalculatingComponent implements OnInit {
       this.routeDistance += section.travelSummary.length;
       let linestring = H.geo.LineString.fromFlexiblePolyline(section.polyline);
      var coordinates = decode(section.polyline);
-      console.log(coordinates);
+      //console.log(coordinates);
       let polyl = coordinates.polyline;
       let counter=0;
       let sampledLineString: any =[];
@@ -1317,7 +1342,7 @@ export class RouteCalculatingComponent implements OnInit {
           sampledLineString.push(polylc[0], polylc[1], 0);
           this.appendGpsCoordinates('R', '', polylc[0], polylc[1]);
         }
-        // console.log(counter);
+        // //console.log(counter);
         if(counter > threshold){
           sampledLineString.push(polylc5[0], polylc5[1], 0);
           this.appendGpsCoordinates('R', '', polylc5[0], polylc5[1]);
@@ -1327,13 +1352,13 @@ export class RouteCalculatingComponent implements OnInit {
       if(this.viaRoutePlottedPoints && this.viaRoutePlottedPoints.length > 0 && this.viaRoutePlottedPoints[index]){
         this.appendGpsCoordinates('V', this.viaRoutePlottedPoints[index].viaRoutName, this.viaRoutePlottedPoints[index].latitude, this.viaRoutePlottedPoints[index].longitude);
       }
-      // console.log(this.distanceInKmBetweenEarthCoordinates(19.14045, 72.88235, 12.96618, 77.5869)*1000+' Meters');
-      console.log(linestring);
+      // //console.log(this.distanceInKmBetweenEarthCoordinates(19.14045, 72.88235, 12.96618, 77.5869)*1000+' Meters');
+      //console.log(linestring);
       linestring.Y = sampledLineString;
-      console.log(linestring);
+      //console.log(linestring);
       this.renderGpsCoordinatesInMap(linestring);
     });
-    console.log(this.sampledGpsCoordinates);
+    //console.log(this.sampledGpsCoordinates);
   }
   }
 

@@ -254,15 +254,16 @@ export class CreateEditReportSchedulerComponent implements OnInit {
     this.reportSchedulerForm.get('reportType').setValue(this.selectedRowData[0].reportId);
     //this.onChangeReportType(this.selectedRowData[0].reportId);
     this.showDriverList= this.selectedRowData[0].isDriver;
-    this.reportSchedulerForm.get('vehicleGroup').setValue(this.selectedRowData[0].vehicleGroupAndVehicleList != "" ? 0 : (this.selectedRowData[0].scheduledReportVehicleRef.length == 0 ? 0 : this.selectedRowData[0].scheduledReportVehicleRef[0].vehicleGroupId));
-    this.reportSchedulerForm.get('vehicle').setValue(this.selectedRowData[0].vehicleGroupAndVehicleList != "" ? 0 : (this.selectedRowData[0].scheduledReportVehicleRef.length == 0 ? 0 : this.selectedRowData[0].scheduledReportVehicleRef[0].vehicleId));
+    this.reportSchedulerForm.get('vehicleGroup').setValue(this.selectedRowData[0].scheduledReportVehicleRef.length == 0 || this.selectedRowData[0].scheduledReportVehicleRef.length > 1  ? 0 : this.selectedRowData[0].scheduledReportVehicleRef[0].vehicleGroupId);
+    this.reportSchedulerForm.get('vehicle').setValue(this.selectedRowData[0].scheduledReportVehicleRef.length == 0 || this.selectedRowData[0].scheduledReportVehicleRef.length > 1 ? 0 : this.selectedRowData[0].scheduledReportVehicleRef[0].vehicleId);
+    // this.reportSchedulerForm.get('vehicle').setValue(this.selectedRowData[0].vehicleGroupAndVehicleList != "" ? 0 : (this.selectedRowData[0].scheduledReportVehicleRef.length == 0 ? 0 : this.selectedRowData[0].scheduledReportVehicleRef[0].vehicleId));
     this.reportSchedulerForm.get('language').setValue((this.selectedRowData[0].code).trim());
     let recipientList= (this.selectedRowData[0].recipientList).replace(" ", "");
     this.reportSchedulerForm.get('recipientEmail').setValue(recipientList);
     this.reportSchedulerForm.get('driver').setValue(this.selectedRowData[0].scheduledReportDriverRef.length!= 0 ? (this.selectedRowData[0].scheduledReportDriverRef.length > 1 ? 0 : this.selectedRowData[0].scheduledReportDriverRef[0].driverId) : 0);
     this.reportSchedulerForm.get('mailSubject').setValue(this.selectedRowData[0].mailSubject);
     this.reportSchedulerForm.get('mailDescription').setValue(this.selectedRowData[0].mailDescription);
-    this.status= this.selectedRowData[0].status == 'A' ? true : false;
+    this.status= this.selectedRowData[0].status == 'Active' ? true : false;
 
   }
   
@@ -549,15 +550,15 @@ export class CreateEditReportSchedulerComponent implements OnInit {
 
           let nextDate= new Date(endDate);
           nextDate.setDate(nextDate.getDate()+1);
-          nextScheduledRunDate = Util.convertDateToUtc(this.setStartEndDateTime(nextDate, this.reportSchedulerForm.controls.reportDispatchTime.value+":00", 'start'));
+          nextScheduledRunDate = Util.getMillisecondsToUTCDate(this.setStartEndDateTime(nextDate, this.reportSchedulerForm.controls.reportDispatchTime.value+":00", 'start'),this.prefTimeZone);
         }
         else{
-          startDate = Util.convertDateToUtc(this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start'));
-          endDate = Util.convertDateToUtc(this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end'));
+          startDate = Util.getMillisecondsToUTCDate(this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start'),this.prefTimeZone);
+          endDate = Util.getMillisecondsToUTCDate(this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end'),this.prefTimeZone);
 
           let nextDate= new Date();
           nextDate.setDate(nextDate.getDate()+1);
-          nextScheduledRunDate = Util.convertDateToUtc(this.setStartEndDateTime(nextDate, this.reportSchedulerForm.controls.reportDispatchTime.value+":00", 'start'));
+          nextScheduledRunDate = Util.getMillisecondsToUTCDate(this.setStartEndDateTime(nextDate, this.reportSchedulerForm.controls.reportDispatchTime.value+":00", 'start'),this.prefTimeZone);
         }
         break;
       }
@@ -568,47 +569,47 @@ export class CreateEditReportSchedulerComponent implements OnInit {
           
           let nextDateFromDay= new Date(endDate);
           nextDateFromDay.setDate(nextDateFromDay.getDate()+1);
-          nextScheduledRunDate = Util.convertDateToUtc(this.setStartEndDateTime(nextDateFromDay, this.selectedStartTime, 'start'));
+          nextScheduledRunDate = Util.getMillisecondsToUTCDate(this.setStartEndDateTime(nextDateFromDay, this.selectedStartTime, 'start'),this.prefTimeZone);
         }
         else{
           let startDateFromDay = this.getDateFromDay(this.reportSchedulerForm.controls.weeklyStartDay.value);
-          startDate = Util.convertDateToUtc(this.setStartEndDateTime(startDateFromDay, this.selectedStartTime, 'start'));
+          startDate = Util.getMillisecondsToUTCDate(this.setStartEndDateTime(startDateFromDay, this.selectedStartTime, 'start'),this.prefTimeZone);
 
           let endDateFromDay = startDateFromDay;
           endDateFromDay.setDate(endDateFromDay.getDate()+6);
-          endDate = Util.convertDateToUtc(this.setStartEndDateTime(endDateFromDay, this.selectedEndTime, 'end'));
+          endDate = Util.getMillisecondsToUTCDate(this.setStartEndDateTime(endDateFromDay, this.selectedEndTime, 'end'),this.prefTimeZone);
 
           let nextDateFromDay= endDateFromDay;
           nextDateFromDay.setDate(nextDateFromDay.getDate()+1);
-          nextScheduledRunDate = Util.convertDateToUtc(this.setStartEndDateTime(nextDateFromDay, this.selectedStartTime, 'start'));
+          nextScheduledRunDate = Util.getMillisecondsToUTCDate(this.setStartEndDateTime(nextDateFromDay, this.selectedStartTime, 'start'),this.prefTimeZone);
         }
         break;
       }
       case 'B': {
-        startDate = Util.convertDateToUtc(this.setStartEndDateTime(this.reportSchedulerForm.controls.biweeklyStartDate.value, this.selectedStartTime, 'start'));
-        endDate = Util.convertDateToUtc(this.setStartEndDateTime(this.reportSchedulerForm.controls.biweeklyEndDate.value, this.selectedEndTime, 'end'));
+        startDate = Util.getMillisecondsToUTCDate(this.setStartEndDateTime(this.reportSchedulerForm.controls.biweeklyStartDate.value, this.selectedStartTime, 'start'),this.prefTimeZone);
+        endDate = Util.getMillisecondsToUTCDate(this.setStartEndDateTime(this.reportSchedulerForm.controls.biweeklyEndDate.value, this.selectedEndTime, 'end'),this.prefTimeZone);
 
         let nextDate= this.reportSchedulerForm.controls.biweeklyEndDate.value;
         nextDate.setDate(nextDate.getDate()+1);
-        nextScheduledRunDate = Util.convertDateToUtc(this.setStartEndDateTime(nextDate, this.reportSchedulerForm.controls.reportDispatchTime.value+":00", 'start'));
+        nextScheduledRunDate = Util.getMillisecondsToUTCDate(this.setStartEndDateTime(nextDate, this.reportSchedulerForm.controls.reportDispatchTime.value+":00", 'start'),this.prefTimeZone);
         break;
       }
       case 'M': {
-        startDate = Util.convertDateToUtc(this.setStartEndDateTime(this.reportSchedulerForm.controls.monthlyStartDate.value, this.selectedStartTime, 'start'));
-        endDate = Util.convertDateToUtc(this.setStartEndDateTime(this.reportSchedulerForm.controls.monthlyEndDate.value, this.selectedEndTime, 'end'));
+        startDate = Util.getMillisecondsToUTCDate(this.setStartEndDateTime(this.reportSchedulerForm.controls.monthlyStartDate.value, this.selectedStartTime, 'start'),this.prefTimeZone);
+        endDate = Util.getMillisecondsToUTCDate(this.setStartEndDateTime(this.reportSchedulerForm.controls.monthlyEndDate.value, this.selectedEndTime, 'end'),this.prefTimeZone);
 
         let nextDate= this.reportSchedulerForm.controls.monthlyEndDate.value;
         nextDate.setDate(nextDate.getDate()+1);
-        nextScheduledRunDate = Util.convertDateToUtc(this.setStartEndDateTime(nextDate, this.reportSchedulerForm.controls.reportDispatchTime.value+":00", 'start'));
+        nextScheduledRunDate = Util.getMillisecondsToUTCDate(this.setStartEndDateTime(nextDate, this.reportSchedulerForm.controls.reportDispatchTime.value+":00", 'start'),this.prefTimeZone);
         break;
       }
       case 'Q': {
-        startDate = Util.convertDateToUtc(this.setStartEndDateTime(this.reportSchedulerForm.controls.quarterlyStartDate.value, this.selectedStartTime, 'start'));
-        endDate = Util.convertDateToUtc(this.setStartEndDateTime(this.reportSchedulerForm.controls.quarterlyEndDate.value, this.selectedEndTime, 'end'));
+        startDate = Util.getMillisecondsToUTCDate(this.setStartEndDateTime(this.reportSchedulerForm.controls.quarterlyStartDate.value, this.selectedStartTime, 'start'),this.prefTimeZone);
+        endDate = Util.getMillisecondsToUTCDate(this.setStartEndDateTime(this.reportSchedulerForm.controls.quarterlyEndDate.value, this.selectedEndTime, 'end'),this.prefTimeZone);
 
         let nextDate= this.reportSchedulerForm.controls.quarterlyEndDate.value;
         nextDate.setDate(nextDate.getDate()+1);
-        nextScheduledRunDate = Util.convertDateToUtc(this.setStartEndDateTime(nextDate, this.reportSchedulerForm.controls.reportDispatchTime.value+":00", 'start'));
+        nextScheduledRunDate = Util.getMillisecondsToUTCDate(this.setStartEndDateTime(nextDate, this.reportSchedulerForm.controls.reportDispatchTime.value+":00", 'start'),this.prefTimeZone);
         break;
       }
 
@@ -663,7 +664,7 @@ export class CreateEditReportSchedulerComponent implements OnInit {
       let scheduledReportDriverRef = [
         {
           "scheduleReportId": 0,
-          "driverId": this.reportSchedulerForm.controls.driver.value,
+          "driverId" : this.reportSchedulerForm.controls.driver.value,
           "state": "A",
           "createdAt": 0,
           "createdBy": this.accountId,

@@ -38,7 +38,8 @@ export class ReportMapService {
   entryPoint: any = '';
 
   constructor(private hereSerive : HereService, private _configService: ConfigService) {
-    this.map_key =  _configService.getSettings("hereMap").api_key;
+    // this.map_key =  _configService.getSettings("hereMap").api_key;
+    this.map_key = localStorage.getItem("hereMapsK");
     this.platform = new H.service.Platform({
       "apikey": this.map_key 
     });
@@ -142,7 +143,7 @@ export class ReportMapService {
    // this.hereMap.addLayer(poi.raster.normal.map);
 
     // this.hereSerive.getHerePois().subscribe(data=>{
-    //   console.log(data)
+    //   //console.log(data)
     // });
    
   }
@@ -211,12 +212,12 @@ export class ReportMapService {
     if(POIArr.length > 0){
       POIArr.forEach(element => {
         this.herePOISearch.request(this.entryPoint.SEARCH, { 'at': lat + "," + lng, 'q': element }, (data) => {
-          //console.log(data);
+          ////console.log(data);
           for(let i = 0; i < data.results.items.length; i++) {
             this.dropMapPOIMarker({ "lat": data.results.items[i].position[0], "lng": data.results.items[i].position[1] }, data.results.items[i], element, _ui);
           }
         }, error => {
-          console.log('ERROR: ' + error);
+          //console.log('ERROR: ' + error);
         });
       });
       if(selectedRoutes && selectedRoutes.length == 0){
@@ -838,7 +839,7 @@ export class ReportMapService {
     this.hereMap.addLayer(this.clusteringLayer, 100); // set z-index to cluster
     clusteredDataProvider.addEventListener('tap', (event) => {
       // Log data bound to the marker that has been tapped:
-      //console.log(event.target.getData(), data)
+      ////console.log(event.target.getData(), data)
       this.afterPlusClick(data, ui);
     });
   }
@@ -1134,7 +1135,7 @@ export class ReportMapService {
 
   infoBubbleCheckBoxClick(chkBxId, _data, _checked: any){
     var checkBox: any = document.getElementById(chkBxId);
-    //console.log(_data)
+    ////console.log(_data)
     //if (_checked){
       //alert(" Enabled")
       //this.removedDisabledGroup();
@@ -1767,7 +1768,7 @@ export class ReportMapService {
     let sTime: any = 0;
     if(startTime != 0){
       sTime = this.formStartEndDate(Util.convertUtcToDate(startTime, timeZone), dateFormat, timeFormat, addTime, onlyTime);
-      //console.log("sTime", sTime);
+      ////console.log("sTime", sTime);
     }
     return sTime;
   }
@@ -1832,7 +1833,7 @@ export class ReportMapService {
 
   //Fuel Consumption in Summary Section
   getFuelConsumptionSummary(FuelConsumpt: any, dt:any, unitFormat: any){
-    //console.log("This function works well"); 
+    ////console.log("This function works well"); 
     let _fuelConsumption: any = 0;
 
     switch(unitFormat){
@@ -1842,7 +1843,7 @@ export class ReportMapService {
       }
       
       case 'dunit_Imperial':{
-        _fuelConsumption = (dt/FuelConsumpt);
+        _fuelConsumption = (FuelConsumpt/dt);
         break;
       }
       default:{
@@ -2045,7 +2046,7 @@ export class ReportMapService {
         newGraphData[graphIndex].fuelConsumtion = 0;
       }
     }    
-     //console.log(ele);
+     ////console.log(ele);
   });
   newGraphData.sort((a, b) => { // date sort asc #20102
     return a.milisec - b.milisec;
