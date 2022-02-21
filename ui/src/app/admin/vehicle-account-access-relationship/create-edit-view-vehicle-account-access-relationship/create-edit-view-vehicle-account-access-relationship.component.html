@@ -1,6 +1,6 @@
 <app-common-breadcrumbs  *ngIf= "breadcumMsg && breadcumMsg!=''" [breadcrumb]="breadcumMsg" [topRightElements]="topRightElements">
   <ng-template #topRightElements>
-    <div *ngIf="actionType == 'view'" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
       <span class='custom-font' (click)="onCancel()">
         <span><&nbsp;</span>
         <span class='backBtnCss'>{{ translationData.lblBack }}</span></span>

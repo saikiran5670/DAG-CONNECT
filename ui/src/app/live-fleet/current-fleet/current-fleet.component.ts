@@ -18,6 +18,7 @@ declare var H: any;
 export class CurrentFleetComponent implements OnInit {
 
   private platform: any;
+  fleetSummary : any ={};
   public userPreferencesFlag: boolean = false;
   localStLanguage: any;
   accountOrganizationId: any;
@@ -177,6 +178,7 @@ export class CurrentFleetComponent implements OnInit {
       this.hideLoader();
       let processedData = this.fleetMapService.processedLiveFLeetData(data.fleetOverviewDetailList);
       this.detailsData = processedData;
+      this.fleetSummary = data.fleetOverviewSummary;
       this.getFilterData();
       let _dataObj = {
         vehicleDetailsFlag: false,

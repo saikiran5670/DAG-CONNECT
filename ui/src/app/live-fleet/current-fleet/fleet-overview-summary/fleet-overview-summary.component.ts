@@ -21,6 +21,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
   @Input() filterData: any = {};
   @Input() totalVehicleCount: number;
   @Input() dashboardPref: any;
+  @Input() fleetSummary;
   criticalAlert: number = 0;
   mileageDone: string = '';
   drivers: number = 0;
@@ -78,8 +79,11 @@ export class FleetOverviewSummaryComponent implements OnInit {
   }
 
   ngOnChanges(changes: SimpleChanges) {
+    if(changes && changes.fleetSummary){
+      this.fleetSummary = changes.fleetSummary.currentValue;
+    }
     if (changes && changes.detailsData && changes.detailsData.currentValue) {
-      this.detailsData = changes.detailsData.currentValue;
+      this.detailsData = changes.detailsData.currentValue;     
       this.stepForword(this.detailsData, true);
     }
     if (changes && changes.totalVehicleCount) {
@@ -87,7 +91,6 @@ export class FleetOverviewSummaryComponent implements OnInit {
       this.totalVehicle = Number(changes.totalVehicleCount.currentValue);
       this.updateVehicleGraph();
     }
-
   }
   updateVehicleGraph() {
     // let distinctVIN = [];
@@ -323,18 +326,24 @@ export class FleetOverviewSummaryComponent implements OnInit {
     //this.totalVehicle=0;
     //this.criticalAlert=0;
     //this.mileageDone = this.summaryData.reduce((val, elem) => val + elem.tripDistance, 0);
-    if (this.summaryData) {
       if (flag) {
-        this.movedVehicle = 0;
-        let drivers = this.summaryData.filter((elem) => elem.driver1Id);
-        let driversUnknown = this.summaryData.filter((elem) => elem.driver1Id=='');
-        let uniqueDrivers = [...new Set(drivers)];
-        this.drivers = uniqueDrivers.length + driversUnknown.length;
+        // this.movedVehicle = 0;
+        // let drivers = this.summaryData.filter((elem) => elem.driver1Id);
+        // let driversUnknown = this.summaryData.filter((elem) => elem.driver1Id=='');
+        // let uniqueDrivers = [...new Set(drivers)];
+        // this.drivers = uniqueDrivers.length + driversUnknown.length;
+        if(this.fleetSummary){
+        //drivers count
+        this.drivers = this.fleetSummary.driverCount;
+        this.criticalAlert = this.fleetSummary.criticalAlertCount;
+        this.totalDriveTime = this.fleetSummary.drivingTime;
+        }
       }
       // let drivers = this.summaryData.filter((elem) => elem.driver1Id);
       // let uniqueDrivers = [...new Set(drivers)];
       // this.drivers = uniqueDrivers.length;
-
+      tripDistance = this.fleetSummary? this.fleetSummary.drivingDistance :0;
+      if (this.summaryData) {
       let vins = this.summaryData.filter((elem) => elem.vin);
       let uniqueVin = [...new Set(vins)];
       //this.totalVehicle = uniqueVin.length;
@@ -342,32 +351,32 @@ export class FleetOverviewSummaryComponent implements OnInit {
 
       this.summaryData.forEach(element => {
 
-        if (element.tripDistance) {
-          tripDistance += element.tripDistance;
-        }
+        // if (element.tripDistance) {
+        //   tripDistance += element.tripDistance;
+        // }
         if (flag) {
-          if (element.drivingTime)
-            this.totalDriveTime += element.drivingTime;
+          // if (element.drivingTime)
+          //   this.totalDriveTime += element.drivingTime;
 
           if (element.vehicleDrivingStatusType && element.vehicleDrivingStatusType != 'N') {
             this.movedVehicle += 1;
           }
 
-          if (element.fleetOverviewAlert.length > 0) {
-            let isCritical = true;
-            element.fleetOverviewAlert.forEach(ele => {
-              if (isCritical) {
-                if (ele.level === 'C') {
-                  criticalCount += ele.level === 'C' ? 1 : 0;
-                  isCritical = false;
-                  return;
-                }
-              }
-            });
-            if (criticalCount > 0) {
-              this.criticalAlert = criticalCount;
-            }
-          }
+          // if (element.fleetOverviewAlert.length > 0) {
+          //   let isCritical = true;
+          //   element.fleetOverviewAlert.forEach(ele => {
+          //     if (isCritical) {
+          //       if (ele.level === 'C') {
+          //         criticalCount += ele.level === 'C' ? 1 : 0;
+          //         isCritical = false;
+          //         return;
+          //       }
+          //     }
+          //   });
+          //   if (criticalCount > 0) {
+          //     this.criticalAlert = criticalCount;
+          //   }
+          // }
 
         }
         // if(element.drivingTime)
