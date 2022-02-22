@@ -63,7 +63,7 @@ selectedStartTime: any = '00:00';
 selectedEndTime: any = '23:59';
 logBookForm: FormGroup;
 mapFilterForm: FormGroup;
-displayedColumns = [ 'all','alertLevel', 'alertGeneratedTime', 'vehicleRegNo', 'alertType', 'alertName', 'alertCategory', 'tripStartTime', 'tripEndTime', 'vehicleName','vin','occurrence','thresholdValue'];
+displayedColumns = [ 'all','alertLevel', 'alertGeneratedTime','vehicleName','vin','vehicleRegNo','alertName','alertType','occurrence', 'alertCategory', 'tripStartTime', 'tripEndTime', 'thresholdValue'];
 translationData: any = {};
 showMap: boolean = false;
 showBack: boolean = false;
@@ -200,7 +200,7 @@ constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationSe
   this.sendMessage();
   this.dataInterchangeService.prefSource$.subscribe((prefResp: any) => {
     if(prefResp && (prefResp.type == 'logbook') && prefResp.prefdata){
-      this.displayedColumns = [ 'all','alertLevel', 'alertGeneratedTime', 'vehicleRegNo', 'alertType', 'alertName', 'alertCategory', 'tripStartTime', 'tripEndTime', 'vehicleName','vin','occurrence','thresholdValue'];
+      this.displayedColumns = [ 'all','alertLevel', 'alertGeneratedTime','vehicleName', 'vehicleRegNo', 'alertType', 'alertName', 'alertCategory', 'tripStartTime', 'tripEndTime',,'vin','occurrence','thresholdValue'];
       this.resetTripPrefData();
       this.reportPrefData = prefResp.prefdata;
       this.getTranslatedColumnName(this.reportPrefData);
