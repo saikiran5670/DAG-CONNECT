@@ -736,9 +736,6 @@ export class FleetMapService {
 
   drawAlerts(_alertDetails, _ui) {
     if (_alertDetails.length > 0) {
-      let _fillColor = '';
-      let _level = '';
-      let _type = '';
       let distinctAlerts = orderBy(cloneDeep(_alertDetails), ['time'], ['desc']);
       _alertDetails.forEach(item => {
         let alertList = _alertDetails.filter(x => x.alertId == item.alertId);
@@ -759,7 +756,6 @@ export class FleetMapService {
           }
         }
       })
-      console.log(distinctAlerts, 'distinctAlerts');
       distinctAlerts.forEach(element => {
         let finalAlertPropObj: any = {};
         finalAlertPropObj = this.setColorForAlerts(element);
