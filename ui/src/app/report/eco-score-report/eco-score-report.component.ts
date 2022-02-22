@@ -638,6 +638,9 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
          // //console.log("driverDD 2", this.driverDD);
         });
       }
+      if( this.driverDD.length > 0) {
+        this.driverDD.unshift({ driverID: 0, firstName: this.translationData.lblAll  });
+      }
     }   
     this.resetDriverFilter();
     this.searchFilterpersistData["vehicleDropDownValue"] = event.value;
