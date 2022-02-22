@@ -278,7 +278,12 @@ export class EditUserRoleDetailsComponent implements OnInit {
   applyFilter(filterValue: string) {
     filterValue = filterValue.trim(); // Remove whitespace
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
-    this.dataSource.filter = filterValue;
+    // this.dataSource.filter = filterValue;
+    const filteredData = this.roleFeaturesList.filter(value => {​​​​​​​​
+      return value.name.toLowerCase().toString().includes(filterValue);    
+    }​​​​​​​​);
+    this.dataSource = filteredData;
+    this.loadData( this.dataSource);
   }
 
   createUserRole(enteredUserRoleValue: any) {

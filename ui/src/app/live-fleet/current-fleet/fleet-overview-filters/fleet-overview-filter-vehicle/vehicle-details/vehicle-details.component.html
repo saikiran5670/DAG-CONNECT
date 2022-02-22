@@ -18,15 +18,15 @@
             &#13; {{translationData.lblAlertLevel}}: {{gridData.alertName}}"> </span>
         </div>
         <div class="vehicleList-details">
-        <div>
+        <div *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber'">
             <span class="vehicle-details-head">{{ translationData.lblVin}}: </span>
             <span class="vehicle-details-data">{{gridData.vin}}</span>
         </div>
-        <div>
+        <div *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleName'">
             <span class="vehicle-details-head">{{ translationData.lblVehicleName }}: </span>
             <span class="vehicle-details-data">{{gridData.vehicleName}}</span>
         </div>
-        <div>
+        <div *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber'">
             <span class="vehicle-details-head">{{ translationData.lblVehicleRegNo}}:</span>
             <span class="vehicle-details-data">{{gridData.registrationNo}}</span>
         </div> 

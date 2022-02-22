@@ -123,7 +123,12 @@
                                 <span class='resetText'>Reset your DAF Connect Password</span>
                             </div>
                         </div> 
-                        <div fxLayout="row" fxLayoutAlign="start" class='margin-top-10'>
+                        <div  *ngIf="resetPwdOnedayFlag" ngfxLayout="row" fxLayoutAlign="start" class='margin-top-10'>
+                            <div fxLayout="column" fxLayoutAlign="center">
+                                <span style="color: red;">{{resetPwdOnedayMsg}}</span>
+                            </div>
+                        </div>
+                        <div  *ngIf="!resetPwdOnedayFlag" fxLayout="row" fxLayoutAlign="start" class='margin-top-10'>
                             <div fxLayout="column" fxLayoutAlign="center">
                                 <span style="color: green;">We have sent password details on your email id. Please check your mail inbox and set a new password.</span>
                             </div>

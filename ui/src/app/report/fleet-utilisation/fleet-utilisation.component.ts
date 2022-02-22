@@ -476,7 +476,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
   idleDurationSumConverted: any;
   filterValue: string;
   _state: any;
-  highcharts = Highcharts;  
+  highcharts = Highcharts;
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private router: Router, private organizationService: OrganizationService, private datePipe: DatePipe, private dataInterchangeService: DataInterchangeService, private messageService: MessageService, private _sanitizer: DomSanitizer) {
     // this.defaultTranslation();
     this.dataInterchangeService.prefSource$.subscribe((prefResp: any) => {
@@ -945,7 +945,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
   loadWholeTripData(){
     this.showLoadingIndicator = true;
     this.reportService.getVINFromTripFleetUtilisation(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
-      this.hideloader();
+    this.hideloader();
       if(tripData.length == 0) {
         this.noRecordFound = true;
       } else {
@@ -1322,12 +1322,12 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     // ];
     // this.lineChartLabels = this.chartsLabelsdefined;
     // this.barChartLabels= this.chartsLabelsdefined;
-    this.chartOptions = {   
+    this.chartOptions = {
       rangeSelector: {
         selected: 0
-      }, 
+      },
       chart: {
-        type:this.activeVehicleChartType? 'line' : 'column',       
+        type:this.activeVehicleChartType? 'line' : 'column',
       },
       title: {
         text: ''
@@ -1336,9 +1336,9 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
         symbolRadius: 0
       },
       tooltip: {
-        xDateFormat: this.highchartDateFormat,        
+        xDateFormat: this.highchartDateFormat,
         shared: true,
-      }, 
+      },
       yAxis: {
       min: 0,
       max:  Math.max(...this.lineChartVehicleCount.map(o => o.y)),
@@ -1351,38 +1351,38 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     xAxis : {
       max :  Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone),
       min :  Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone),
-      type : 'datetime',       
-      tickInterval:!this.distanceChartType && (this.endDateValue.toDateString() == this.startDateValue.toDateString())? 2 * 24 * 3600000 : 1 * 24 * 3600000 ,  
-      labels: {       
+      type : 'datetime',
+      tickInterval:!this.distanceChartType && (this.endDateValue.toDateString() == this.startDateValue.toDateString())? 2 * 24 * 3600000 : 1 * 24 * 3600000 ,
+      labels: {
         //step:this.selectionTab == 'last3month' ?  Math.ceil(this.averageDistanceBarData.length/12) : Math.ceil(this.averageDistanceBarData.length/5),
         step:(this.selectionTab == 'last3month') ? ( this.averageDistanceBarData.length > 50 && this.averageDistanceBarData.length < 60  ? Math.ceil(this.averageDistanceBarData.length/10) : (this.averageDistanceBarData.length > 60 && this.averageDistanceBarData.length < 99  ? Math.ceil(this.averageDistanceBarData.length/12):(this.averageDistanceBarData.length > 99 ? Math.ceil(this.averageDistanceBarData.length/24): (this.averageDistanceBarData.length > 20 && this.averageDistanceBarData.length < 50 ? Math.ceil(this.averageDistanceBarData.length/6): Math.ceil(this.averageDistanceBarData.length/2))))) : Math.ceil(this.averageDistanceBarData.length/5),
         rotation: (this.selectionTab == 'last3month' || this.selectionTab == 'lastmonth') ? -45 :  0 ,
         },
         dateTimeLabelFormats: {
-            day:this.highchartDateFormat  
+            day:this.highchartDateFormat
         },
         title: {
           text:this.translationData.lblDates || 'Dates'
-        }           
+        }
       },
       series: [
       {
       name: this.translationData.lblnumberofvehicles || 'Number of Vehicles',
-      data: this.lineChartVehicleCount,         
-      }],   
-     }; 
+      data: this.lineChartVehicleCount,
+      }],
+     };
 
-     this.chartOptions1 = {   
+     this.chartOptions1 = {
         rangeSelector: {
           selected: 0
-        }, 
+        },
         chart: {
           // type: "column",
           type: this.distanceChartType? 'spline' : 'column',
         },
         title: {
           text: ''
-        },      
+        },
         legend: {
           symbolRadius: 0,
        },
@@ -1390,25 +1390,25 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
         enabled: false
     },
         tooltip: {
-          xDateFormat: this.highchartDateFormat,        
+          xDateFormat: this.highchartDateFormat,
           shared: true,
         },
         plotOptions: {
-         column: {      
+         column: {
             pointWidth: (this.selectionTab == 'last3month' ?  2: (this.selectionTab == 'lastweek' ? 22:  ((this.selectionTab == 'yesterday' || this.selectionTab == 'today') ? 50: 4 ))),
            // borderWidth: 0.5,
-          }             
+          }
         },
         yAxis: [{
         min: 0,
         //max:  Math.max(...this.averageDistanceBarData.map(o => o.y)),
         title: {
           text: this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm || 'km'})` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles ||'miles'})`
-        },      
-        opposite: true 
+        },
+        opposite: true
         }, { //--- Secondary yAxis
         min: 0,
-        max:  Math.max(...this.lineChartVehicleCount.map(o => o.y)),      
+        max:  Math.max(...this.lineChartVehicleCount.map(o => o.y)),
         title: {
           text: this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblkmperday || 'km/day' })` : `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblmilesperday || 'miles/day'})`
         },
@@ -1418,17 +1418,17 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
         // allowDecimals : false,
         // endOnTick : false,
         // ordinal : false,
-        // startOnTick : false,  
+        // startOnTick : false,
         max :  Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone),
-        min :  Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone),          
-        type : 'datetime',       
-        tickInterval:!this.distanceChartType && (this.endDateValue.toDateString() == this.startDateValue.toDateString())? 2 * 24 * 3600000 : 1 * 24 * 3600000 ,   
-        labels: {       
+        min :  Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone),
+        type : 'datetime',
+        tickInterval:!this.distanceChartType && (this.endDateValue.toDateString() == this.startDateValue.toDateString())? 2 * 24 * 3600000 : 1 * 24 * 3600000 ,
+        labels: {
           step:(this.selectionTab == 'last3month') ? ( this.averageDistanceBarData.length > 50 && this.averageDistanceBarData.length < 60  ? Math.ceil(this.averageDistanceBarData.length/10) : (this.averageDistanceBarData.length > 60 && this.averageDistanceBarData.length < 99  ? Math.ceil(this.averageDistanceBarData.length/12):(this.averageDistanceBarData.length > 99 ? Math.ceil(this.averageDistanceBarData.length/24): (this.averageDistanceBarData.length > 20 && this.averageDistanceBarData.length < 50 ? Math.ceil(this.averageDistanceBarData.length/6): Math.ceil(this.averageDistanceBarData.length/2))))) : Math.ceil(this.averageDistanceBarData.length/5),
           rotation: (this.selectionTab == 'last3month' || this.selectionTab == 'lastmonth') ? -45 :  0 ,
           },
           dateTimeLabelFormats: {
-              day:this.highchartDateFormat  
+              day:this.highchartDateFormat
           },
           title: {
             text:this.translationData.lblDates || 'Dates'
@@ -1437,18 +1437,18 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
         series: [
         {
         name:  this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblAveragedistancepervehicle || 'Average distance per vehicle'}(${this.translationData.lblkmperday || 'km/day' })` : `${this.translationData.lblAveragedistancepervehicle || 'Average distance per vehicle'}(${this.translationData.lblmilesperday || 'miles/day'})`,
-        data: this.averageDistanceBarData, 
+        data: this.averageDistanceBarData,
         yAxesID: "y-axis-1",
-        color: '#7BC5EC',   
-        }, 
+        color: '#7BC5EC',
+        },
         {
         name: this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm || 'km'})` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles ||'miles'})`,
         data: this.barVarticleData,
         yAxesID: "y-axis-2",
-        color: '#4679CC',       
-         }],   
+        color: '#4679CC',
+         }],
        };
-      // //console.log('1:',this.chartOptions1,'2:',this.chartOptions1)        
+      // //console.log('1:',this.chartOptions1,'2:',this.chartOptions1)
       }
 
   calendarSelectedValues(element: any){
@@ -1600,6 +1600,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
         //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
         let vehicleData = this.vehicleListData.slice();
         this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
+        this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
         ////console.log("vehicleDD 2", this.vehicleDD);
       }else{
       //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
@@ -1611,6 +1612,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
             ////console.log("vehicleDD 3", this.vehicleDD);
 
           });
+          this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
         }
       }
       // this.fleetUtilizationSearchData["vehicleGroupDropDownValue"] = event.value;
@@ -1626,9 +1628,10 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
         }
       }else{
         this.tripForm.get('vehicle').setValue(parseInt(this.fleetUtilizationSearchData.vehicleDropDownValue));
-      }
       this.tripForm.get('vehicleGroup').setValue(parseInt(this.fleetUtilizationSearchData.vehicleGroupDropDownValue));
     }
+  }
+   this.resetVehicleFilter();
   }
 
   setTableInfo(){
@@ -1841,9 +1844,9 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       if(event.value._d.getTime() <= this.endDateValue.getTime()){ // CurTime < endDateValue
         dateTime = event.value._d;
       }else{
-        dateTime = this.endDateValue; 
+        dateTime = this.endDateValue;
       }
-    }else{ 
+    }else{
       dateTime = this.last3MonthDate;
     }
     this.startDateValue = this.setStartEndDateTime(dateTime, this.selectedStartTime, 'start');
@@ -1858,9 +1861,9 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       if(event.value._d.getTime() >= this.startDateValue.getTime()){ // EndTime < startDateValue
         dateTime = event.value._d;
       }else{
-        dateTime = this.startDateValue; 
+        dateTime = this.startDateValue;
       }
-    }else{ 
+    }else{
       dateTime = this.todayDate;
     }
     this.endDateValue = this.setStartEndDateTime(dateTime, this.selectedEndTime, 'end');

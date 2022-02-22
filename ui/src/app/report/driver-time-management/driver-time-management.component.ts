@@ -734,6 +734,13 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
          // this.driverSelected = true;
           this.driverDetails = [];
           this.driverDetails = [...tripData.driverActivities];
+          this.driverDetails.forEach(element => {
+            let vehDetails = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element.vin);
+            if (vehDetails) {
+              element["vehicleGroupName"] = vehDetails[0].vehicleGroupName;
+              element["vin"] = vehDetails[0].vin;
+            }
+       });
           let updatedDriverData = this.makeDetailDriverList(tripData.driverActivities);
           this.totalDriverCount = updatedDriverData.length;
           this.detailConvertedData = [];
@@ -1246,6 +1253,14 @@ getExcelSummaryHeader(){
      }
     });
 
+    this.driverDetails.forEach(element => {
+         let vehDetails = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element.vin);
+         if(vehDetails){
+           element["vehicleGroupName"] =vehDetails[0].vehicleGroupName;
+           element["vin"] = vehDetails[0].vin;
+       }
+    });
+ 
     let hashedId = (this.driverListData.filter(elem=>elem.driverID === _row.driverId)[0]['hashedDriverID']);
  //   this.driverDetails = this.allDriverData.map(item=>item.driverDetailList).filter(i=>i.driverID === _row.driverId)
  
