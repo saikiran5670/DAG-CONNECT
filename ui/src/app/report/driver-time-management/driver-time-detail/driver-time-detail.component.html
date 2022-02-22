@@ -7,6 +7,7 @@
       </span>
   </div>
 </div>
+<div id="summaryArea">
 <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
   <mat-expansion-panel [(expanded)]="generalExpandPanel" class="full-width" fxLayoutGap="10px">
     <mat-expansion-panel-header class="full-width">
@@ -84,6 +85,8 @@
     </div>
     </mat-expansion-panel>
 </mat-card>
+</div>
+<div id="chartArea">
 <mat-card *ngIf='showField.specificdetailchart' class='mat-elevation-z no-padding margin-bottom-xlg'>
   <mat-expansion-panel [(expanded)]="chartExpandPanel" class="full-width" fxLayoutGap="10px">
     <mat-expansion-panel-header class="full-width">
@@ -144,6 +147,7 @@
     </div>
     </mat-expansion-panel>
 </mat-card>
+</div>
 <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
   <mat-expansion-panel [(expanded)]="tableExpandPanel" class="full-width" fxLayoutGap="10px">
     <mat-expansion-panel-header class="full-width">
