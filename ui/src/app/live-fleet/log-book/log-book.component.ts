@@ -1038,19 +1038,16 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
     fromDate: this.formStartDate(this.startDateValue),
     endDate: this.formStartDate(this.endDateValue),
     vehGroupName: vehGrpName,
-    vehicleName: this.vehicleDisplayPreference == 'dvehicledisplay_VehicleName' ? vehCount[0].vehicleName : this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber' ?  vehCount[0].vin : vehCount[0].registrationNo ? vehCount[0].registrationNo : vehCount[0].vehicleName,
-
+    vehicleName: (this.logBookForm.controls.vehicle.value == 'all') ? this.logBookForm.controls.vehicle.value : this.vehicleDisplayPreference == 'dvehicledisplay_VehicleName' ? vehCount[0].vehicleName : this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber' ?  vehCount[0].vin : vehCount[0].registrationNo ? vehCount[0].registrationNo : vehCount[0].vehicleName,
     alertLevel : this.logBookForm.controls.alertLevel.value,
     alertType : this.logBookForm.controls.alertType.value,
     alertCategory : this.logBookForm.controls.alertCategory.value
     }
-    if(this.tableInfoObj.vehGroupName=='')
-    {
-      this.tableInfoObj.vehGroupName='All';
+    if(this.tableInfoObj.vehGroupName == '') {
+      this.tableInfoObj.vehGroupName = 'All';
     }
-    if(this.tableInfoObj.vehicleName=='')
-    {
-      this.tableInfoObj.vehicleName='All';
+    if(this.tableInfoObj.vehicleName == '' || this.tableInfoObj.vehicleName == 'all') {
+      this.tableInfoObj.vehicleName = 'All';
     }
 
     let newLevel = this.alertLvl.filter(item => item.value == this.tableInfoObj.alertLevel);
