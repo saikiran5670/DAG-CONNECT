@@ -41,6 +41,8 @@ export class LoginComponent implements OnInit {
   dialogRefTerms: MatDialogRef<TermsConditionsPopupComponent>;
   translationData: any = {};
   showLoadingIndicator: any = false;
+  resetPwdOnedayFlag : boolean = false;
+  resetPwdOnedayMsg : string = '';
 
   constructor(private cookieService: CookieService, public fb: FormBuilder, public router: Router, public authService: AuthService, private dialogService: ConfirmDialogService, private dialog: MatDialog, private accountService: AccountService, private dataInterchangeService: DataInterchangeService, private translationService: TranslationService) {
     this.loginForm = this.fb.group({
@@ -89,7 +91,8 @@ export class LoginComponent implements OnInit {
             let loginObj = {
               id: data.body.accountInfo.id,
               organizationId: 0,
-              email: "",
+              //email: "",
+              email: (data.body.accountInfo && data.body.accountInfo.emailId) ? data.body.accountInfo.emailId : '',
               accountIds: "",
               name: "",
               accountGroupId: 0,
@@ -333,13 +336,16 @@ export class LoginComponent implements OnInit {
 
   public onResetPassword(values: object): void {
     values['emailId'] = values['emailId'].toLowerCase(); 
+    this.resetPwdOnedayFlag = false;
     //console.log("values:: ", values)
     if (this.forgotPasswordForm.valid) {
-      this.accountService.resetPasswordInitiate(values).subscribe(data => {
-        // if(data){
-          this.forgotPwdFlag = false;
-          this.resetPwdFlag = true;
-        // }
+      this.accountService.resetPasswordInitiate(values).subscribe((data:any) => {
+        this.forgotPwdFlag = false;
+        this.resetPwdFlag = true;
+        if(data.code === 409){
+          this.resetPwdOnedayFlag = true;
+          this.resetPwdOnedayMsg = data.message;
+        }
       },(error)=> {
 
       })

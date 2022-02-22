@@ -664,7 +664,7 @@ export class CreateEditReportSchedulerComponent implements OnInit {
       let scheduledReportDriverRef = [
         {
           "scheduleReportId": 0,
-          "driverId": this.reportSchedulerForm.controls.driver.value,
+          "driverId" : this.reportSchedulerForm.controls.driver.value,
           "state": "A",
           "createdAt": 0,
           "createdBy": this.accountId,

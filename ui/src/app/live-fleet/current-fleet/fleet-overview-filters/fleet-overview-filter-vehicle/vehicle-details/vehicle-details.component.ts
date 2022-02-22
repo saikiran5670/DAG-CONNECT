@@ -137,11 +137,13 @@ export class VehicleDetailsComponent implements OnInit {
     this.gridData = this.selectedElementData;
     this.alertLength = this.gridData.fleetOverviewAlert ? this.gridData.fleetOverviewAlert.length : 0;
     this.gridData.fleetOverviewAlert.forEach(element => {
-      this.filterData.alertLevel.forEach(item => {
+      if (this.filterData && this.filterData.alertLevel && this.filterData.alertLevel.length > 0) {
+        this.filterData.alertLevel.forEach(item => {
         if(item.value == element.level){        
-          element.originLevel = this.translationData[item.name]; 
+          element.originLevel = this.translationData[item.name];
         }
       });
+    }
     });
     this.mileagewithUnit = this.reportMapService.getDistance(this.selectedElementData.odometerVal,this.prefUnitFormat);
     this.nextservicing = this.reportMapService.getDistance(this.selectedElementData.distanceUntilNextService,this.prefUnitFormat)

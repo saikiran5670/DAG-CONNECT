@@ -513,7 +513,7 @@ export class FleetMapService {
 		${markerSvg}
 		</svg>
     </div>` :
-      `<svg width="34" height="41" viewBox="0 0 34 41" fill="none" xmlns="http://www.w3.org/2000/svg">
+    `<svg width="34" height="41" viewBox="0 0 34 41" fill="none" xmlns="http://www.w3.org/2000/svg">
 		<style type="text/css">.st0{fill:#FFFFFF;}.st1{fill:#1D884F;}.st2{fill:#F4C914;}.st3{fill:#176BA5;}.st4{fill:#DB4F60;}.st5{fill:#7F7F7F;}.st6{fill:#808281;}.hidden{display:none;}.cls-1{isolation:isolate;}.cls-2{opacity:0.3;mix-blend-mode:multiply;}.cls-3{fill:#fff;}.cls-4{fill:none;stroke:#db4f60;stroke-width:3px;}.cls-4,.cls-6{stroke-miterlimit:10;}.cls-5,.cls-6{fill:#db4f60;}.cls-6{stroke:#fff;}</style>
 		${markerSvg}
 		</svg>`;
@@ -690,6 +690,12 @@ export class FleetMapService {
           bounds: this.markerGroup.getBoundingBox()
         });
       }
+      if (_displayPOIList.length > 0 || _globalPOIList.length > 0 || (_searchMarker && _searchMarker.lat && _searchMarker.lng) || (_herePOI && _herePOI.length > 0)) {
+        this.hereMap.addObject(this.group);
+        this.hereMap.getViewModel().setLookAtData({
+          bounds: this.group.getBoundingBox()
+        });
+      }
     }
     else if (!showIcons && _selectedRoutes && _selectedRoutes.length > 0) { //to show trip when clicked on details
       _selectedRoutes.forEach(elem => {
@@ -710,6 +716,7 @@ export class FleetMapService {
         }
         let endMarkerSize = { w: 34, h: 40 }; //selected icon
         if (vehicleDrivingStatus) {
+            this.alertFoundFlag = elem.fleetOverviewAlert.length !=0 ? true : false;
           let endMarker = this.createSVGMarker(elem.latestReceivedPositionHeading, elem.vehicleHealthStatusType, elem, false);
           const iconEnd = new H.map.Icon(endMarker, { size: endMarkerSize, anchor: { x: Math.round(endMarkerSize.w / 2), y: Math.round(endMarkerSize.h / 2) } });
           this.endMarker = new H.map.Marker({ lat: this.endAddressPositionLat, lng: this.endAddressPositionLong }, { icon: iconEnd });
@@ -768,23 +775,55 @@ export class FleetMapService {
 
   drawAlerts(_alertDetails, _ui) {
     if (_alertDetails.length > 0) {
-      let _fillColor = '#D50017';
-      let _level = 'Critical';
-      let _type = 'Logistics Alerts';
+      let _fillColor = '';
+      let _level = '';
+      let _type = '';
       let alertList = _alertDetails.map(data => data.alertId);
       let distinctAlert = alertList.filter((value, index, self) => self.indexOf(value) === index);
       let finalAlerts = [];
       distinctAlert.forEach(element => {
         let _currentElem = _alertDetails.find(item => item.level === 'C' && item.alertId === element);
+        if(_currentElem != undefined) {
+          _fillColor = '#D50017';
+          _level = 'Critical';
+        }
+        if (_currentElem == undefined) {
+          _currentElem = _alertDetails.find(item => item.level === 'W' && item.alertId === element);
+          _fillColor = '#FC5F01';
+          _level = 'Warning'
+        }
+        if (_currentElem == undefined) {
+          _currentElem = _alertDetails.find(item => item.level === 'A' && item.alertId === element);
+          _fillColor = '#FFD80D';
+          _level = 'Advisory'
+        }
         if (_currentElem == undefined) {
           _currentElem = _alertDetails.find(item => item.alertId === element);
-
         }
         finalAlerts.push(_currentElem);
 
       });
       finalAlerts.forEach(element => {
-
+        switch (element.categoryType) {
+          case 'L':
+          case 'Logistics Alerts': {
+            _type = 'Logistics Alerts'
+          }
+            break;
+          case 'F':
+          case 'Fuel and Driver Performance': {
+            _type = 'Fuel and Driver Performance'
+          }
+            break;
+          case 'R':
+          case 'Repair and Maintenance': {
+            _type = 'Repair and Maintenance'
+    
+          }
+            break;
+          default:
+            break;
+        }
         this.setColorForAlerts(element, _fillColor, _level);
 
         let _alertMarker = `<svg width="23" height="20" viewBox="0 0 23 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -792,8 +831,8 @@ export class FleetMapService {
         <rect fill="white" x="0.416748" y="0.666748" width="23" height="19"/>
         <path d="M11.7501 4.66675L4.41675 17.3334H19.0834L11.7501 4.66675Z"/>
         </mask>
-        <path d="M11.7501 4.66675L4.41675 17.3334H19.0834L11.7501 4.66675Z" fill="${_fillColor}"/>
-        <path d="M11.7501 4.66675L13.4809 3.66468L11.7501 0.675021L10.0192 3.66468L11.7501 4.66675ZM4.41675 17.3334L2.6859 16.3313L0.947853 19.3334H4.41675V17.3334ZM19.0834 17.3334V19.3334H22.5523L20.8143 16.3313L19.0834 17.3334ZM10.0192 3.66468L2.6859 16.3313L6.1476 18.3355L13.4809 5.66882L10.0192 3.66468ZM4.41675 19.3334H19.0834V15.3334H4.41675V19.3334ZM20.8143 16.3313L13.4809 3.66468L10.0192 5.66882L17.3526 18.3355L20.8143 16.3313Z" fill="white" mask="url(#path-1-outside-1)"/>
+          <path d="M11.7501 4.66675L4.41675 17.3334H19.0834L11.7501 4.66675Z" fill="${_fillColor}"/>
+          <path d="M11.7501 4.66675L13.4809 3.66468L11.7501 0.675021L10.0192 3.66468L11.7501 4.66675ZM4.41675 17.3334L2.6859 16.3313L0.947853 19.3334H4.41675V17.3334ZM19.0834 17.3334V19.3334H22.5523L20.8143 16.3313L19.0834 17.3334ZM10.0192 3.66468L2.6859 16.3313L6.1476 18.3355L13.4809 5.66882L10.0192 3.66468ZM4.41675 19.3334H19.0834V15.3334H4.41675V19.3334ZM20.8143 16.3313L13.4809 3.66468L10.0192 5.66882L17.3526 18.3355L20.8143 16.3313Z" fill="white" mask="url(#path-1-outside-1)"/>
         <path d="M12.4166 14H11.0833V15.3333H12.4166V14Z" fill="white"/>
         <path d="M12.4166 10H11.0833V12.6667H12.4166V10Z" fill="white"/>
         </svg>
@@ -1358,6 +1397,7 @@ export class FleetMapService {
       }
     }
     else { //if alert is not present then need to display warning lat long for never moved vehicle.
+      this.alertFoundFlag = false;
       if (_drivingStatus == "Never Moved") {
         this.endAddressPositionLat = element.latestWarningPositionLatitude;
         this.endAddressPositionLong = element.latestWarningPositionLongitude;
@@ -1392,20 +1432,19 @@ export class FleetMapService {
         //  if(!_currentElem && !warnElem){ //advisory
         //     _alertConfig = this.getAlertConfig(element);
         //   }
-
-        criticalCount += element.level === 'C' ? 1 : 0;
-        warningCount += element.level === 'W' ? 1 : 0;
-        advisoryCount += element.level === 'A' ? 1 : 0;
+        criticalCount += (element.level === 'C') || (element.level === 'Critical') ? 1 : 0;
+        warningCount += (element.level === 'W') || (element.level === 'Warning') ? 1 : 0;
+        advisoryCount += (element.level === 'A') || (element.level === 'Advisory') ? 1 : 0;
 
       });
       if (criticalCount > 0) {
-        _alertConfig = this.getAlertConfig(alertsData[0].filter(item => item.level === 'C')[0]);
+        _alertConfig = this.getAlertConfig(alertsData[0].filter(item => item.level === 'C' || item.level === 'Critical')[0]);
       }
       else if (warningCount > 0) {
-        _alertConfig = this.getAlertConfig(alertsData[0].filter(item => item.level === 'W')[0]);
+        _alertConfig = this.getAlertConfig(alertsData[0].filter(item => item.level === 'W' || item.level === 'Warning')[0]);
       }
       else if (advisoryCount > 0) {
-        _alertConfig = this.getAlertConfig(alertsData[0].filter(item => item.level === 'A')[0]);
+        _alertConfig = this.getAlertConfig(alertsData[0].filter(item => item.level === 'A' || item.level === 'Advisory')[0]);
       }
     }
     else if (_alertFound && alertsData[0].length == 1) {
@@ -1957,23 +1996,23 @@ export class FleetMapService {
               }
             }
 
-            // if(_checkValidLatLong) //16705
-            //   this.group.addObjects([this.rippleMarker, this.vehicleIconMarker]);
-            let _healthStatus = this.getHealthStatus(elem);
-            let _drivingStatus = this.getDrivingStatus(elem, '');
-            let activatedTime = Util.convertUtcToDateFormat(elem.startTimeStamp, 'DD/MM/YYYY hh:mm:ss');
-            let _driverName = elem.driverName ? elem.driverName : elem.driver1Id;
-            let _vehicleName = elem.vehicleName ? elem.vehicleName : elem.vin;
-            let _mileage = this.reportMapService.getDistance(elem.odometerVal, this.prefUnitFormat); //19040
-            let _distanceNextService = this.reportMapService.getDistance(elem.distanceUntilNextService, this.prefUnitFormat);
-            let distanceUnit = this.prefUnitFormat == 'dunit_Metric' ? 'km' : 'miles';
-            let iconBubble;
-            this.vehicleIconMarker.addEventListener('pointerenter', function (evt) {
-              // event target is the marker itself, group is a parent event target
-              // for all objects that it contains
-              iconBubble = new H.ui.InfoBubble(evt.target.getGeometry(), {
-                // read custom data
-                content: `<table style='width: 300px; font-size:12px;'>
+              // if(_checkValidLatLong) //16705
+              //   this.group.addObjects([this.rippleMarker, this.vehicleIconMarker]);
+              let _healthStatus = this.getHealthStatus(elem);
+              let _drivingStatus = this.getDrivingStatus(elem, '');
+              let activatedTime = Util.convertUtcToDateFormat(elem.startTimeStamp, 'DD/MM/YYYY hh:mm:ss');
+              let _driverName = elem.driverName ? elem.driverName : elem.driver1Id;
+              let _vehicleName = elem.vehicleName ? elem.vehicleName : elem.vin;
+              let _mileage = this.reportMapService.getDistance(elem.odometerVal, this.prefUnitFormat); //19040
+              let _distanceNextService = this.reportMapService.getDistance(elem.distanceUntilNextService, this.prefUnitFormat);
+              let distanceUnit = this.prefUnitFormat == 'dunit_Metric' ? 'km' : 'miles';
+              let iconBubble;
+              this.vehicleIconMarker.addEventListener('pointerenter', function (evt) {
+                // event target is the marker itself, group is a parent event target
+                // for all objects that it contains
+                iconBubble = new H.ui.InfoBubble(evt.target.getGeometry(), {
+                  // read custom data
+                  content: `<table style='width: 300px; font-size:12px;'>
                     <tr>
                       <td style='width: 100px;'>${translationData.lblVehicle}:</td> <td><b>${_vehicleName}</b></td>
                     </tr>

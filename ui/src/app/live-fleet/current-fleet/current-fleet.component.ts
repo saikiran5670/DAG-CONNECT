@@ -19,6 +19,7 @@ declare var H: any;
 export class CurrentFleetComponent implements OnInit {
 
   private platform: any;
+  fleetSummary : any ={};
   public userPreferencesFlag: boolean = false;
   localStLanguage: any;
   accountOrganizationId: any;
@@ -189,11 +190,6 @@ export class CurrentFleetComponent implements OnInit {
       this.processTranslation(data);
       this.getFleetOverviewPreferences();
     });
-    let reportId = 18;
-    this.dashboardService.getDashboardPreferences(reportId).subscribe((prefData: any) => {
-      this.dashboardPref = prefData['userPreferences'];
-    }, (error) => {
-    });
    }
 
   getFleetOverviewPreferences(){
@@ -201,11 +197,18 @@ export class CurrentFleetComponent implements OnInit {
     this.reportService.getReportDetails().subscribe((reportList: any)=>{
       reportListData = reportList.reportDetails;
       let repoId: any = reportListData.filter(i => i.name == 'Fleet Overview');
+      let repoIdDB: any= reportListData.find(i => i.name == 'Dashboard');
       if(repoId.length > 0){
         this.currentFleetReportId = repoId[0].id; 
         this.callPreferences();
       }else{
         console.error("No report id found!")
+      }
+      if(repoIdDB){
+        this.dashboardService.getDashboardPreferences(repoIdDB.id).subscribe((prefData: any) => {
+          this.dashboardPref = prefData['userPreferences'];
+        }, (error) => {
+        });
       }
     }, (error)=>{
       //console.log('Report not found...', error);
@@ -286,6 +289,7 @@ export class CurrentFleetComponent implements OnInit {
       this.hideLoader();
       let processedData = this.fleetMapService.processedLiveFLeetData(data.fleetOverviewDetailList);
       this.detailsData = processedData;
+      this.fleetSummary = data.fleetOverviewSummary;
       this.getFilterData();
       let _dataObj = {
         vehicleDetailsFlag: false,
@@ -321,13 +325,13 @@ export class CurrentFleetComponent implements OnInit {
   }
 
   getFilterData(){
-    //this.showLoadingIndicator = true;
+    this.showLoadingIndicator = true;
     this.reportService.getFilterDetails().subscribe((data: any) => {
-      //this.hideLoader();
+      if(data) this.hideLoader();
       this.filterData = data;
       //this.getFleetOverviewDetails();
     }, (error) => {
-      //this.hideLoader();
+      this.hideLoader();
       //this.getFleetOverviewDetails();
     });
   }
