@@ -63,7 +63,7 @@ selectedStartTime: any = '00:00';
 selectedEndTime: any = '23:59';
 logBookForm: FormGroup;
 mapFilterForm: FormGroup;
-displayedColumns = [ 'all','alertLevel', 'alertGeneratedTime', 'vehicleRegNo', 'alertType', 'alertName', 'alertCategory', 'tripStartTime', 'tripEndTime', 'vehicleName','vin','occurrence','thresholdValue'];
+displayedColumns = [ 'all','alertLevel', 'alertGeneratedTime','vehicleName','vin','vehicleRegNo','alertName','alertType','occurrence', 'alertCategory', 'tripStartTime', 'tripEndTime', 'thresholdValue'];
 translationData: any = {};
 showMap: boolean = false;
 showBack: boolean = false;
@@ -128,7 +128,7 @@ fromMoreAlertsFlag: boolean = false;
 logbookDataFlag: boolean = false;
 herePOIArr: any = [];
 getLogbookDetailsAPICall: any;
-vehicleDisplayPreference: any = 'dvehicledisplay_VehicleIdentificationNumber';
+vehicleDisplayPreference: any = 'dvehicledisplay_VehicleName';
 prefMapData: any = [
   {
     key: 'rp_lb_logbook_details_alertlevel',
@@ -201,7 +201,7 @@ constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationSe
   this.sendMessage();
   this.dataInterchangeService.prefSource$.subscribe((prefResp: any) => {
     if(prefResp && (prefResp.type == 'logbook') && prefResp.prefdata){
-      this.displayedColumns = [ 'all','alertLevel', 'alertGeneratedTime', 'vehicleRegNo', 'alertType', 'alertName', 'alertCategory', 'tripStartTime', 'tripEndTime', 'vehicleName','vin','occurrence','thresholdValue'];
+      this.displayedColumns = [ 'all','alertLevel', 'alertGeneratedTime','vehicleName', 'vehicleRegNo', 'alertType', 'alertName', 'alertCategory', 'tripStartTime', 'tripEndTime',,'vin','occurrence','thresholdValue'];
       this.resetTripPrefData();
       this.reportPrefData = prefResp.prefdata;
       this.getTranslatedColumnName(this.reportPrefData);
@@ -1038,7 +1038,7 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
     fromDate: this.formStartDate(this.startDateValue),
     endDate: this.formStartDate(this.endDateValue),
     vehGroupName: vehGrpName,
-    vehicleName: vehName,
+    vehicleName: this.vehicleDisplayPreference == 'dvehicledisplay_VehicleName' ? vehCount[0].vehicleName : this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber' ?  vehCount[0].vin : vehCount[0].registrationNo ? vehCount[0].registrationNo : vehCount[0].vehicleName,
 
     alertLevel : this.logBookForm.controls.alertLevel.value,
     alertType : this.logBookForm.controls.alertType.value,
