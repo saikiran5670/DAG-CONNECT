@@ -1093,7 +1093,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
     let _fillColor = '#D50017';
     let _level = 'Critical';
     let _type = '';
-      switch (_currentAlert.warningType) {
+      switch (_currentAlert) {
         case 'C':
           case 'Critical':{
           _fillColor = '#D50017';

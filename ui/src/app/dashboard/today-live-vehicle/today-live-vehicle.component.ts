@@ -42,7 +42,8 @@ export class TodayLiveVehicleComponent implements OnInit {
   accountPrefObj: any;
   distanceRate : any;
   todayLiveVehicalAPI: any;
-
+  startDateValue: any;
+  endDateValue: any;
   //threshold 
   activeThreshold=0;
   timeBasedThreshold = 0;
@@ -267,8 +268,23 @@ doughnutDistanceColors: Color[] = [
 
   getLiveVehicleData(){
     this.dataError = false;
+    let selectedStartTime = '';
+    let selectedEndTime = '';
+    if(this.prefTimeFormat == 24){
+      selectedStartTime = "00:00";
+      selectedEndTime = "23:59";
+    } else{      
+      selectedStartTime = "12:00 AM";
+      selectedEndTime = "11:59 PM";
+    }
+    this.startDateValue = this.setStartEndDateTime(Util.getUTCDate(this.prefTimeZone), selectedStartTime, 'start');
+    this.endDateValue = this.setStartEndDateTime(Util.getUTCDate(this.prefTimeZone), selectedEndTime, 'end');
+    let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone);
+    let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);
     let _vehiclePayload = {
-      "viNs": this.finalVinList
+      "viNs": this.finalVinList,
+      "startDateTime": _startTime,
+      "endDateTime": _endTime 
       // [ //this.finalVinList
       //       "M4A14532","XLR0998HGFFT76657"
         
@@ -301,7 +317,9 @@ doughnutDistanceColors: Color[] = [
     this.distance = this.reportMapService.getDistance(this.liveVehicleData.distance, this.prefUnitFormat);
     this.drivingTime = this.getTimeDisplay(this.liveVehicleData.drivingTime);
   }
-
+  setStartEndDateTime(date: any, timeObj: any, type: any){   
+    return this.reportMapService.setStartEndDateTime(date, timeObj, type, this.prefTimeFormat);
+  }
   getTimeDisplay(_timeValue: any){
     // let convertedTime =  Util.getHhMmTime(_timeValue); // Util.getHhMmTimeFromMS(_timeValue);
     let convertedTime =  Util.getHhMmTime(_timeValue);  // drivingtime is in seconds

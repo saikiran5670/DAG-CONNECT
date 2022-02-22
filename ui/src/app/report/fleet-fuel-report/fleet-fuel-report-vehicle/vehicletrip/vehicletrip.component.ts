@@ -2529,6 +2529,7 @@ setVehicleGroupAndVehiclePreSelection() {
       if(parseInt(event.value) == 0){ //-- all group
         let vehicleData = this.vehicleListData.slice();
         this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
+        this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });  
       }else{
       let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
         if(search.length > 0){
@@ -2536,12 +2537,14 @@ setVehicleGroupAndVehiclePreSelection() {
           search.forEach(element => {
             this.vehicleDD.push(element);  
           });
+          this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });  
         }
       }
     }else {
       this.tripForm.get('vehicleGroup').setValue(parseInt(this.fleetFuelSearchData.vehicleGroupDropDownValue));
       this.tripForm.get('vehicle').setValue(parseInt(this.fleetFuelSearchData.vehicleDropDownValue));
     }
+    this.resetVehicleFilter();
   }
 
   onVehicleChange(event: any){
