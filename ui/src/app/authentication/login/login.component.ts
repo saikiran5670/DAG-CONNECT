@@ -342,12 +342,13 @@ export class LoginComponent implements OnInit {
       this.accountService.resetPasswordInitiate(values).subscribe((data:any) => {
         this.forgotPwdFlag = false;
         this.resetPwdFlag = true;
-        if(data.code === 409){
-          this.resetPwdOnedayFlag = true;
-          this.resetPwdOnedayMsg = data.message;
-        }
       },(error)=> {
-
+        this.forgotPwdFlag = false;
+        this.resetPwdFlag = true;
+        if(error.status === 409){
+          this.resetPwdOnedayFlag = true;
+          this.resetPwdOnedayMsg = error.error;
+        }
       })
     }
   }
