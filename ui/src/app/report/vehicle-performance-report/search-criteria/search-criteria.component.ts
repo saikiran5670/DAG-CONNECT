@@ -49,7 +49,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   vehicleGrpDD: any = [];
   vehicleGroupListData: any = [];
   vehicleListData: any = [];
-  
+
 
   public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
@@ -82,7 +82,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
         if(vehicledisplay.length != 0) {
           this.vehicleDisplayPreference = vehicledisplay[0].name;
         }
-      }  
+      }
     });
   }
 
@@ -240,7 +240,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
 
   proceedStep(prefData: any, preference: any) {
     let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
-    if (_search.length > 0) { 
+    if (_search.length > 0) {
       //this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
       this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
       //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
@@ -263,7 +263,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
 
   loadWholeTripData() {
     this.reportService.getVINFromTripVehicleperformance(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
-      this.wholeTripData = tripData;
+    this.wholeTripData = tripData;
       this.filterDateData();
     }, (error) => {
       this.wholeTripData.vinTripList = [];
@@ -276,9 +276,9 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
     let finalVINDataList: any = [];
     this.vehicleListData = [];
     this.vehicleGrpDD = [];
-     
-    let currentStartTime = Util.getMillisecondsToUTCDate(this.searchForm.get('startDate').value, this.prefTimeZone); 
-    let currentEndTime = Util.getMillisecondsToUTCDate(this.searchForm.get('endDate').value, this.prefTimeZone); 
+
+    let currentStartTime = Util.getMillisecondsToUTCDate(this.searchForm.get('startDate').value, this.prefTimeZone);
+    let currentEndTime = Util.getMillisecondsToUTCDate(this.searchForm.get('endDate').value, this.prefTimeZone);
     // let currentStartTime = Util.convertDateToUtc(this.searchForm.get('startDate').value);  // extra addded as per discuss with Atul
     // let currentEndTime = Util.convertDateToUtc(this.searchForm.get('endDate').value); // extra addded as per discuss with Atul
     if (this.wholeTripData && this.wholeTripData.vinTripList && this.wholeTripData.vinTripList.length > 0) {
@@ -298,7 +298,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
           distinctVIN.forEach(element => {
             let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element && i.groupType != 'S');
             if (_item.length > 0) {
-              this.vehicleListData.push(_item[0]); //-- unique VIN data added 
+              this.vehicleListData.push(_item[0]); //-- unique VIN data added
               _item.forEach(element => {
                 finalVINDataList.push(element)
               });
@@ -442,6 +442,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
         let vehicleData = this.vehicleListData.slice();
         this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
         //console.log("vehicleDD 2", this.vehicleDD);
+        this.vehicleGrpDD.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
       } else {
         let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
         if (search.length > 0) {
@@ -450,6 +451,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
             this.vehicleDD.push(element);
             //console.log("vehicleDD 3", this.vehicleDD);
           });
+          this.vehicleGrpDD.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
         }
       }
       this.searchForm.get('vehicleName').setValue('');
@@ -458,6 +460,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
     else {
       this.searchForm.get('vehicleGroup').setValue(parseInt(this.globalSearchFilterData.vehicleGroupDropDownValue));
     }
+    this.resetVehicleFilter();
   }
 
   changeStartDateEvent(event: MatDatepickerInputEvent<any>) {
@@ -467,9 +470,9 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
       if(event.value._d.getTime() <= this.searchForm.get("endDate").value.getTime()){ // CurTime < endDateValue
         dateTime = event.value._d;
       }else{
-        dateTime = this.searchForm.get("endDate").value; 
+        dateTime = this.searchForm.get("endDate").value;
       }
-    }else{ 
+    }else{
       dateTime = this.last3MonthDate;
     }
     this.searchForm.get('startDate').setValue(this.setStartEndDateTime(dateTime, this.searchForm.get('startTime').value, 'start'));
@@ -484,9 +487,9 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
       if(event.value._d.getTime() >= this.searchForm.get("startDate").value.getTime()){ // EndTime < startDateValue
         dateTime = event.value._d;
       }else{
-        dateTime = this.searchForm.get("startDate").value; 
+        dateTime = this.searchForm.get("startDate").value;
       }
-    }else{ 
+    }else{
       dateTime = this.todayDate;
     }
     this.searchForm.get("endDate").setValue(this.setStartEndDateTime(dateTime, this.searchForm.get('endTime').value, 'end'));
@@ -550,7 +553,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
     this.filterDateData(); // extra addded as per discuss with Atul
   }
 
-  formStartDate(date: any) {    
+  formStartDate(date: any) {
     return this.reportMapService.formStartDate(date, this.prefTimeFormat, this.prefDateFormat);
   }
 
@@ -580,13 +583,13 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
         vin = vehCount[0].vin;
         registrationNo = vehCount[0].registrationNo;
       }
-      
+
       // let utcStartDateTime = Util.convertDateToUtc(this.searchForm.get('startDate').value);
       // let utcEndDateTime = Util.convertDateToUtc(this.searchForm.get('endDate').value);
-     
-      let utcStartDateTime = Util.getMillisecondsToUTCDate(this.searchForm.get('startDate').value, this.prefTimeZone); 
-      let utcEndDateTime = Util.getMillisecondsToUTCDate(this.searchForm.get('endDate').value, this.prefTimeZone); 
-    
+
+      let utcStartDateTime = Util.getMillisecondsToUTCDate(this.searchForm.get('startDate').value, this.prefTimeZone);
+      let utcEndDateTime = Util.getMillisecondsToUTCDate(this.searchForm.get('endDate').value, this.prefTimeZone);
+
       let searchData = {
         utcStartDateTime: utcStartDateTime,
         utcEndDateTime: utcEndDateTime,
@@ -623,7 +626,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
     }
     return 0;
   }
-   
+
     filterVehicleGroups(vehicleSearch){
     //console.log("filterVehicleGroups called");
     if(!this.vehicleGrpDD){
@@ -658,11 +661,11 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
     );
     //console.log("filtered vehicles", this.filteredVehicle);
   }
-  
+
   resetVehicleFilter(){
     this.filteredVehicle.next(this.vehicleDD.slice());
   }
-  
+
    resetVehicleGroupFilter(){
     this.filteredVehicleGroups.next(this.vehicleGrpDD.slice());
   }

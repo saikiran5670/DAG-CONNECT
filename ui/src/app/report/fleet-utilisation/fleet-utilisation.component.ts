@@ -945,7 +945,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
   loadWholeTripData(){
     this.showLoadingIndicator = true;
     this.reportService.getVINFromTripFleetUtilisation(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
-      this.hideloader();
+    this.hideloader();
       if(tripData.length == 0) {
         this.noRecordFound = true;
       } else {
@@ -1600,6 +1600,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
         //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
         let vehicleData = this.vehicleListData.slice();
         this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
+        this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
         ////console.log("vehicleDD 2", this.vehicleDD);
       }else{
       //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
@@ -1609,9 +1610,9 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
           search.forEach(element => {
             this.vehicleDD.push(element);
             ////console.log("vehicleDD 3", this.vehicleDD);
-            this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
 
           });
+          this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
         }
       }
       // this.fleetUtilizationSearchData["vehicleGroupDropDownValue"] = event.value;
@@ -1627,9 +1628,10 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
         }
       }else{
         this.tripForm.get('vehicle').setValue(parseInt(this.fleetUtilizationSearchData.vehicleDropDownValue));
-      }
       this.tripForm.get('vehicleGroup').setValue(parseInt(this.fleetUtilizationSearchData.vehicleGroupDropDownValue));
     }
+  }
+   this.resetVehicleFilter();
   }
 
   setTableInfo(){
