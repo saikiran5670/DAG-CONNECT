@@ -128,7 +128,7 @@ fromMoreAlertsFlag: boolean = false;
 logbookDataFlag: boolean = false;
 herePOIArr: any = [];
 getLogbookDetailsAPICall: any;
-vehicleDisplayPreference: any = 'dvehicledisplay_VehicleIdentificationNumber';
+vehicleDisplayPreference: any = 'dvehicledisplay_VehicleName';
 prefMapData: any = [
   {
     key: 'rp_lb_logbook_details_alertlevel',
@@ -1038,7 +1038,7 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
     fromDate: this.formStartDate(this.startDateValue),
     endDate: this.formStartDate(this.endDateValue),
     vehGroupName: vehGrpName,
-    vehicleName: vehName,
+    vehicleName: this.vehicleDisplayPreference == 'dvehicledisplay_VehicleName' ? vehCount[0].vehicleName : this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber' ?  vehCount[0].vin : vehCount[0].registrationNo ? vehCount[0].registrationNo : vehCount[0].vehicleName,
 
     alertLevel : this.logBookForm.controls.alertLevel.value,
     alertType : this.logBookForm.controls.alertType.value,
