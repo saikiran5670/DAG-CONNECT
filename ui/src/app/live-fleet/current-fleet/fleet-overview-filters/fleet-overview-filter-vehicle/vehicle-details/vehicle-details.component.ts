@@ -35,6 +35,7 @@ export class VehicleDetailsComponent implements OnInit {
   mileagewithUnit: any;
   nextservicing: any;
   alertLength : any;
+  vehicleDisplayPreference: any= 'dvehicledisplay_VehicleIdentificationNumber';
   
   constructor(private router: Router, private dataInterchangeService: DataInterchangeService,@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService,  private reportMapService: ReportMapService,  private organizationService: OrganizationService) { }
   
@@ -109,6 +110,13 @@ export class VehicleDetailsComponent implements OnInit {
       this.prefTimeZone = prefData.timezone[0].name;
       this.prefDateFormat = prefData.dateformat[0].name;
       this.prefUnitFormat = prefData.unit[0].name;
+    }
+    let vehicleDisplayId = preference.vehicleDisplayId;
+    if(vehicleDisplayId) {
+      let vehicledisplay = prefData?.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+      if(vehicledisplay.length != 0) {
+        this.vehicleDisplayPreference = vehicledisplay[0].name;
+      }
     }
     this.selectedElementData.fleetOverviewAlert.forEach(item => {
       this.levelList.forEach(element => {
