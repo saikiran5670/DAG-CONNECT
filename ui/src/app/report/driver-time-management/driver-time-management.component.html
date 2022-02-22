@@ -368,11 +368,10 @@
       <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
     </div>
     <div *ngIf="(!allDriversSelected && detailConvertedData) || driverSelected">
-      <app-driver-time-detail [translationData]='translationData' [driverDetails]='tableDetailsInfoObj'
-        [detailConvertedData]='detailConvertedData' [displayedColumns]='detaildisplayedColumns'
-        [graphPayload]='graphPayload' [showField]='showDetailsField' (backToMainPage)="backToMainPage()"
-        [driverSelected]='driverSelected' [prefTimeZone]='prefTimeZone' [prefTimeFormat]='prefTimeFormat'
-        [prefDateFormat]='prefDateFormat'></app-driver-time-detail>
+      <app-driver-time-detail [translationData]='translationData' [driverTableInfoObj]='tableDetailsInfoObj' [detailConvertedData]='detailConvertedData'
+        [displayedColumns]='detaildisplayedColumns' [graphPayload]='graphPayload' [showField]='showDetailsField' (backToMainPage)="backToMainPage()" [driverSelected]='driverSelected'
+        [prefTimeZone] ='prefTimeZone' [prefTimeFormat]='prefTimeFormat' [prefDateFormat]='prefDateFormat'[driverDetails] = "driverDetails[0]"
+      ></app-driver-time-detail>
     </div>
   </form>
 </div>
