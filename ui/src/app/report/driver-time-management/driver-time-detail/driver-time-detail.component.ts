@@ -42,6 +42,7 @@ export class DriverTimeDetailComponent implements OnInit {
   @Input() prefTimeZone : any;
   @Input() prefDateFormat : any;
   @Input() prefTimeFormat : any;
+  @Input() driverTableInfoObj : any;
   initData = [];
   chartData = [];
   searchExpandPanel: boolean = true;
@@ -497,9 +498,9 @@ export class DriverTimeDetailComponent implements OnInit {
   const header = this.getPDFExcelHeader();
   const summaryHeader = this.getExcelSummaryHeader();
   this.summaryObj=[
-    [this.translationData.lblDriverTimeReportDetails, new Date(), this.driverDetails.fromDisplayDate, this.driverDetails.toDisplayDate,
-    this.driverDetails.selectedDriverName, this.driverDetails.selectedDriverId, this.driverDetails.driveTime, this.driverDetails.workTime, 
-    this.driverDetails.availableTime, this.driverDetails.restTime, this.driverDetails.serviceTime
+    [this.translationData.lblDriverTimeReportDetails, new Date(), this.driverTableInfoObj.fromDisplayDate, this.driverTableInfoObj.toDisplayDate,
+    this.driverDetails.vehicleGroupName, this.driverDetails.vin, this.driverTableInfoObj.driveTime, this.driverTableInfoObj.workTime, 
+    this.driverTableInfoObj.availableTime, this.driverTableInfoObj.restTime, this.driverTableInfoObj.serviceTime
     ]
   ];
   const summaryData= this.summaryObj;
