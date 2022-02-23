@@ -926,8 +926,8 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
         default:
           break;
       }
-      let activatedTime = Util.convertUtcToDateFormat(elem.warningTimetamp,'DD/MM/YYYY hh:mm:ss');
-      let deactivatedTime = elem.warningDeactivatedTimestamp ?  Util.convertUtcToDateFormat(elem.warningDeactivatedTimestamp,'DD/MM/YYYY hh:mm:ss'): '--';
+      let activatedTime = Util.convertUtcToDateFormat(elem.warningTimetamp,'DD/MM/YYYY hh:mm:ss a');
+      let deactivatedTime = elem.warningDeactivatedTimestamp ?  Util.convertUtcToDateFormat(elem.warningDeactivatedTimestamp,'DD/MM/YYYY hh:mm:ss a'): '--';
       if(elem.warningType && (elem.warningType).trim() == 'D'){
         activatedTime = this.convertDateTime(elem.warningActivatedForDeactive);
         deactivatedTime = this.convertDateTime(elem.warningTimetamp);
@@ -1093,7 +1093,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
     let _fillColor = '#D50017';
     let _level = 'Critical';
     let _type = '';
-      switch (_currentAlert.warningType) {
+      switch (_currentAlert) {
         case 'C':
           case 'Critical':{
           _fillColor = '#D50017';

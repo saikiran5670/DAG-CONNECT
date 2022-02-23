@@ -1920,6 +1920,7 @@ setDefaultTodayDate(){
     if(!this.internalSelection && this.fleetFuelSearchData.modifiedFrom !== ""){
       this.tripForm.get('vehicle').setValue(this.fleetFuelSearchData.vehicleDropDownValue);
       this.tripForm.get('vehicleGroup').setValue(this.fleetFuelSearchData.vehicleGroupDropDownValue);
+      this.onVehicleGroupChange({'value': this.fleetFuelSearchData.vehicleGroupDropDownValue});
     }else{
       this.tripForm.get('vehicle').setValue(0);
       this.tripForm.get('vehicleGroup').setValue(0);
@@ -2030,6 +2031,7 @@ setVehicleGroupAndVehiclePreSelection() {
       if(parseInt(event.value) == 0){ //-- all group
         let vehicleData = this.vehicleListData.slice();
         this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
+        this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });    
         //console.log("vehicleDD 3", this.vehicleDD);
       }else{
       let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
@@ -2039,12 +2041,14 @@ setVehicleGroupAndVehiclePreSelection() {
             this.vehicleDD.push(element);
             //console.log("vehicleDD 4", this.vehicleDD);
           });
+          this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });    
         }
       }
     }else {
       this.tripForm.get('vehicleGroup').setValue(parseInt(this.fleetFuelSearchData.vehicleGroupDropDownValue));
       this.tripForm.get('vehicle').setValue(parseInt(this.fleetFuelSearchData.vehicleDropDownValue));
     }
+    this.resetVehicleFilter();
   }
 
   onVehicleChange(event: any){

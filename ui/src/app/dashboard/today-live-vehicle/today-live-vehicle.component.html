@@ -68,7 +68,7 @@
             <div [hidden]="!checkForPreference('timebasedutilizationrate')" class="chartTile col-md-4 flex-css">
             <div class="textDiv">
               <div class='section-txt-font'>{{ translationData.lblTimeBased || 'Time Based Utilisation Rate' }} </div>
-              <div class='font-helvetica-md'>{{ timeBasedRate }}</div>
+              <div class='font-helvetica-md'>{{ drivingTime }}</div>
             </div>
             <div class="col-md-8 chart-wrapper chartDimension" *ngIf='!(timeBasedThreshold==0)'>
                 <canvas #chart2 baseChart

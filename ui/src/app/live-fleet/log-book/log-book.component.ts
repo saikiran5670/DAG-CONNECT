@@ -63,7 +63,7 @@ selectedStartTime: any = '00:00';
 selectedEndTime: any = '23:59';
 logBookForm: FormGroup;
 mapFilterForm: FormGroup;
-displayedColumns = [ 'all','alertLevel', 'alertGeneratedTime', 'vehicleRegNo', 'alertType', 'alertName', 'alertCategory', 'tripStartTime', 'tripEndTime', 'vehicleName','vin','occurrence','thresholdValue'];
+displayedColumns = [ 'all','alertLevel', 'alertGeneratedTime','vehicleName','vin','vehicleRegNo','alertName','alertType','occurrence', 'alertCategory', 'tripStartTime', 'tripEndTime', 'thresholdValue'];
 translationData: any = {};
 showMap: boolean = false;
 showBack: boolean = false;
@@ -128,7 +128,7 @@ fromMoreAlertsFlag: boolean = false;
 logbookDataFlag: boolean = false;
 herePOIArr: any = [];
 getLogbookDetailsAPICall: any;
-vehicleDisplayPreference: any = 'dvehicledisplay_VehicleIdentificationNumber';
+vehicleDisplayPreference: any = 'dvehicledisplay_VehicleName';
 prefMapData: any = [
   {
     key: 'rp_lb_logbook_details_alertlevel',
@@ -201,7 +201,7 @@ constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationSe
   this.sendMessage();
   this.dataInterchangeService.prefSource$.subscribe((prefResp: any) => {
     if(prefResp && (prefResp.type == 'logbook') && prefResp.prefdata){
-      this.displayedColumns = [ 'all','alertLevel', 'alertGeneratedTime', 'vehicleRegNo', 'alertType', 'alertName', 'alertCategory', 'tripStartTime', 'tripEndTime', 'vehicleName','vin','occurrence','thresholdValue'];
+      this.displayedColumns = [ 'all','alertLevel', 'alertGeneratedTime','vehicleName', 'vehicleRegNo', 'alertType', 'alertName', 'alertCategory', 'tripStartTime', 'tripEndTime',,'vin','occurrence','thresholdValue'];
       this.resetTripPrefData();
       this.reportPrefData = prefResp.prefdata;
       this.getTranslatedColumnName(this.reportPrefData);
@@ -440,6 +440,7 @@ ngOnDestroy(){
     setTimeout(() => {
       this.loadWholeTripData();
       },5);
+      // this.setDefaultTodayDate();
     // if(!this._state){
     //   this.selectionTimeRange('today');
     // this.setDefaultTodayDate();
@@ -1038,19 +1039,16 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
     fromDate: this.formStartDate(this.startDateValue),
     endDate: this.formStartDate(this.endDateValue),
     vehGroupName: vehGrpName,
-    vehicleName: vehName,
-
+    vehicleName: (this.logBookForm.controls.vehicle.value == 'all') ? this.logBookForm.controls.vehicle.value : this.vehicleDisplayPreference == 'dvehicledisplay_VehicleName' ? vehCount[0].vehicleName : this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber' ?  vehCount[0].vin : vehCount[0].registrationNo ? vehCount[0].registrationNo : vehCount[0].vehicleName,
     alertLevel : this.logBookForm.controls.alertLevel.value,
     alertType : this.logBookForm.controls.alertType.value,
     alertCategory : this.logBookForm.controls.alertCategory.value
     }
-    if(this.tableInfoObj.vehGroupName=='')
-    {
-      this.tableInfoObj.vehGroupName='All';
+    if(this.tableInfoObj.vehGroupName == '') {
+      this.tableInfoObj.vehGroupName = 'All';
     }
-    if(this.tableInfoObj.vehicleName=='')
-    {
-      this.tableInfoObj.vehicleName='All';
+    if(this.tableInfoObj.vehicleName == '' || this.tableInfoObj.vehicleName == 'all') {
+      this.tableInfoObj.vehicleName = 'All';
     }
 
     let newLevel = this.alertLvl.filter(item => item.value == this.tableInfoObj.alertLevel);
@@ -1700,6 +1698,11 @@ let prepare = []
   }
 
   changeStartDateEvent(event: MatDatepickerInputEvent<any>){
+    if(this.last3MonthDate == undefined || this.endDateValue == undefined){
+      this.internalSelection = false;
+       this.setDefaultTodayDate(); 
+    }
+
     this.internalSelection = true;
     let dateTime: any = '';
     if(event.value._d.getTime() >= this.last3MonthDate.getTime()){ // CurTime > Last3MonthTime

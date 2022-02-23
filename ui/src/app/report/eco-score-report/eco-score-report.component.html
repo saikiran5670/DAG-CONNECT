@@ -269,7 +269,8 @@
                 <span class='font-helvetica-md'>{{ selectedVehicleGroup }}</span>
               </div>
               <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
-                <span class='font-helvetica-md'>{{ selectedDriverId }}</span>
+                <span class='font-helvetica-md' *ngIf="selectedDriverId == '0'">All</span>
+                <span class='font-helvetica-md' *ngIf="selectedDriverId != '0'">{{ selectedDriverId }}</span>
               </div>
               <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
                 <span class='font-helvetica-md'>{{ selectedDriverName }}</span>
