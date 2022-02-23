@@ -597,7 +597,10 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
           this.driverDD.push(element);
         });
       }
-    }
+      if( this.driverDD.length > 0) {
+        this.driverDD.unshift({ driverID: 0, firstName: this.translationData.lblAll  });
+      }
+    }   
     this.resetDriverFilter();
     this.searchFilterpersistData["vehicleDropDownValue"] = event.value;
     this.setGlobalSearchData(this.searchFilterpersistData)
@@ -739,7 +742,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
 
   getOnLoadData() {
     let defaultStartValue = this.setStartEndDateTime(this.getLast3MonthDate(), this.selectedStartTime, 'start');
-    let defaultEndValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
+    let defaultEndValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
     let loadParam = {
       "reportId": 10,
       "accountId": this.accountId,
