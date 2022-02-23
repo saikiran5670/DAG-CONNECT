@@ -62,6 +62,7 @@ export class FleetUtilisationComponent implements OnInit, OnDestroy {
   public mapElement: ElementRef;
   dontShow: boolean = false;
   showMap: boolean = false;
+  isPDFCalendarOpen: boolean = true;
   showMapPanel: boolean = false;
   searchExpandPanel: boolean = true;
   tableExpandPanel: boolean = true;
@@ -1098,7 +1099,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
         this.noRecordFound = false;
       }
        this.tripData = this.reportMapService.getConvertedFleetDataBasedOnPref(_fleetData["fleetDetails"], this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
-      console.log("fleet utilisation trip data:", this.tripData);
+      //console.log("fleet utilisation trip data:", this.tripData);
        this.setTableInfo();
       this.updateDataSource(this.tripData);
       this.hideloader();
@@ -2069,9 +2070,7 @@ getAllSummaryData(){
 }
 
   exportAsPDFFile(){
-
   this.dontShow = true;
-
   var imgleft;
   if (this.brandimagePath != null) {
     imgleft = this.brandimagePath.changingThisBreaksApplicationSecurity;
@@ -2085,72 +2084,10 @@ getAllSummaryData(){
   var doc = new jsPDF('p', 'mm', 'a4');
   let pdfColumns = this.getPDFExcelHeader();
   let transHeaderNamePdf = this.translationData.lblTripFleetUtilisationReport;
-  let prepare = []
-    // this.initData.forEach(e => {
-    //   var tempObj = [];
-    //   this.displayedColumns.forEach(element => {
-    //     switch(element){
-    //       case 'vehiclename' :{
-    //         tempObj.push(e.vehicleName);
-    //         break;
-    //       }
-    //       case 'vin' :{
-    //         tempObj.push(e.vin);
-    //         break;
-    //       }
-    //       case 'registrationnumber' :{
-    //         tempObj.push(e.registrationNumber);
-    //         break;
-    //       }
-    //       case 'distance' :{
-    //         tempObj.push(e.convertedDistance);
-    //         break;
-    //       }
-    //       case 'numberOfTrips' :{
-    //         tempObj.push(e.numberOfTrips);
-    //         break;
-    //       }
-    //       case 'tripTime' :{
-    //         tempObj.push(e.convertedTripTime);
-    //         break;
-    //       }
-    //       case 'drivingTime' :{
-    //         tempObj.push(e.convertedDrivingTime);
-    //         break;
-    //       }
-    //       case 'idleDuration' :{
-    //         tempObj.push(e.convertedIdleDuration);
-    //         break;
-    //       }
-    //       case 'stopTime' :{
-    //         tempObj.push(e.convertedStopTime);
-    //         break;
-    //       }
-    //       case 'averageDistancePerDay' :{
-    //         tempObj.push(e.convertedAverageDistance);
-    //         break;
-    //       }
-    //       case 'averageSpeed' :{
-    //         tempObj.push(e.convertedAverageSpeed);
-    //         break;
-    //       }
-    //       case 'averageWeight' :{
-    //         tempObj.push(e.convertedAverageWeight);
-    //         break;
-    //       }
-    //       case 'odometer' :{
-    //         tempObj.push(e.convertedOdometer);
-    //         break;
-    //       }
-    //     }
-    //   })
-
-    //   prepare.push(tempObj);
-    // });
+  let prepare = [];
 
     this.initData.forEach(item => {
-      let idleDurations = Util.getHhMmTime(parseFloat(item.idleDuration));
-            // //console.log("initData", this.initData);
+      let idleDurations = Util.getHhMmTime(parseFloat(item.idleDuration)); 
        prepare.push([item.vehicleName,item.vin, item.registrationNumber,item.convertedDistance,
          item.numberOfTrips,item.convertedTripTime, item.convertedDrivingTime, idleDurations,
          item.convertedStopTime, item.convertedAverageDistance, item.convertedAverageSpeed, item.convertedAverageWeight,
@@ -2204,7 +2141,7 @@ getAllSummaryData(){
           }
         })
         doc.save('tripFleetUtilisation.pdf');
-
+        this.dontShow = false;
     });
   }
 
