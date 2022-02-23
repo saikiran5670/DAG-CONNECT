@@ -742,7 +742,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
 
   getOnLoadData() {
     let defaultStartValue = this.setStartEndDateTime(this.getLast3MonthDate(), this.selectedStartTime, 'start');
-    let defaultEndValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
+    let defaultEndValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
     let loadParam = {
       "reportId": 10,
       "accountId": this.accountId,
