@@ -43,6 +43,8 @@ export class FleetOverviewSummaryComponent implements OnInit {
   totalVehicle: number = 0;
   mileageRate: number = 0;
   utilizationRate: number = 0;
+  prefTimeZone:any;
+  prefTimeFormat:any;
   //preferemces value
   prefUnitFormat: any = 'dunit_Metric';
   unitValkm: string = '';
@@ -128,8 +130,12 @@ export class FleetOverviewSummaryComponent implements OnInit {
     let _search = prefData.unit.filter(i => i.id == preference.unitId);
     if (_search.length > 0) {
       this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;
+      this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
+      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
     } else {
       this.prefUnitFormat = prefData.unit[0].name;
+      this.prefTimeZone = prefData.timezone[0].name;
+      this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));    
     }
     this.unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile);
     this.stepForword(this.detailsData, true);
@@ -139,6 +145,19 @@ export class FleetOverviewSummaryComponent implements OnInit {
   loadData() {
     let localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.showLoadingIndicator = true;
+    let selectedStartTime = '';
+    let selectedEndTime = '';
+    if(this.prefTimeFormat == 24){
+      selectedStartTime = "00:00";
+      selectedEndTime = "23:59";
+    } else{      
+      selectedStartTime = "12:00 AM";
+      selectedEndTime = "11:59 PM";
+    }
+    let startDateValue = this.setStartEndDateTime(Util.getUTCDate(this.prefTimeZone), selectedStartTime, 'start');
+    let endDateValue = this.setStartEndDateTime(Util.getUTCDate(this.prefTimeZone), selectedEndTime, 'end');
+    let _startTime = Util.getMillisecondsToUTCDate(startDateValue, this.prefTimeZone);
+    let _endTime = Util.getMillisecondsToUTCDate(endDateValue, this.prefTimeZone);
     let objData = {
       "groupId": ['all'],
       "alertLevel": ['all'],
@@ -147,7 +166,9 @@ export class FleetOverviewSummaryComponent implements OnInit {
       "otherFilter": ['all'],
       "driverId": ['all'],
       "days": 0,
-      "languagecode": localStLanguage.code
+      "languagecode": localStLanguage.code,
+      "StartDateTime":_startTime,
+      "EndDateTime":_endTime
     }
     this.reportService.getFleetOverviewDetails(objData).subscribe((data: any) => {
       this.totalVehicle = data.visibleVinsCount;
@@ -164,6 +185,9 @@ export class FleetOverviewSummaryComponent implements OnInit {
       this.resetSummary();
       this.hideloader();
     });
+  }
+  setStartEndDateTime(date: any, timeObj: any, type: any){   
+    return this.reportMapService.setStartEndDateTime(date, timeObj, type, this.prefTimeFormat);
   }
 
   stepForword(filterData: any, flag?: boolean) {

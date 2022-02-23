@@ -18,6 +18,8 @@ import { ReplaySubject } from 'rxjs';
 import { MatOption } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
 import { isNgTemplate } from '@angular/compiler';
+import { Util } from 'src/app/shared/util';
+import { ReportMapService } from 'src/app/report/report-map.service';
 
 @Component({
   selector: 'app-fleet-overview-filters',
@@ -30,6 +32,7 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges {
 @Input() fromVehicleHealth: any;
 @Input() vehInfoPrefData: any;
 @Input() filterData: any;
+@Input() preferenceObject:any;
 fleetData: any;
 getFleetOverviewDetails : any;
 tabVisibilityStatus: boolean = true;
@@ -94,7 +97,7 @@ public filteredSelectGroups: ReplaySubject<String[]> = new ReplaySubject<String[
 public filteredDrivers: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
 constructor(private fleetMapService: FleetMapService, private messageService: MessageService, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private sanitizer: DomSanitizer,
-    private dataInterchangeService: DataInterchangeService, private cdr: ChangeDetectorRef) {
+    private dataInterchangeService: DataInterchangeService, private cdr: ChangeDetectorRef,private reportMapService: ReportMapService) {
       this.subscription = this.messageService.getMessage().subscribe(message => {
         if (message.key.indexOf("refreshData") !== -1) {
           this.loadVehicleData();
@@ -260,27 +263,54 @@ ngOnChanges(changes: SimpleChanges) {
     this.driversListfilterGet = [];
     let selectedDriverId:any;
     let selectedDriverDays:any;
+ 
+    let selectedStartTime = '';
+    let selectedEndTime = '';
+    if(this.preferenceObject.prefTimeFormat == 24){
+      selectedStartTime = "00:00";
+      selectedEndTime = "23:59";
+    } else{      
+      selectedStartTime = "12:00 AM";
+      selectedEndTime = "11:59 PM";
+    }
+    let startDateValue = this.setStartEndDateTime(Util.getUTCDate(this.preferenceObject.prefTimeZone), selectedStartTime, 'start');
+    let endDateValue = this.setStartEndDateTime(Util.getUTCDate(this.preferenceObject.prefTimeZone), selectedEndTime, 'end');
+    let _startTime = Util.getMillisecondsToUTCDate(startDateValue, this.preferenceObject.prefTimeZone);
+    let _endTime = Util.getMillisecondsToUTCDate(endDateValue, this.preferenceObject.prefTimeZone);
     if(this.selectedIndex == 1){
       if(!this.todayFlagClicked)
       {
         selectedDriverId=this.driverVehicleForm.controls.driver.value.toString();
         selectedDriverDays=90;
+        this.objData = {
+          "groupId": ['all'],
+          "alertLevel": ['all'],
+          "alertCategory": ['all'],
+          "healthStatus": ['all'],
+          "otherFilter": ['all'],
+          "driverId": [selectedDriverId],
+          "days": selectedDriverDays,
+          "languagecode":this.localStLanguage ? this.localStLanguage.code : "EN-GB"     
+        }
       }
       else{
         selectedDriverId=this.driverVehicleForm.controls.driver.value.toString();
         selectedDriverDays=0;
+        this.objData = {
+          "groupId": ['all'],
+          "alertLevel": ['all'],
+          "alertCategory": ['all'],
+          "healthStatus": ['all'],
+          "otherFilter": ['all'],
+          "driverId": [selectedDriverId],
+          "days": selectedDriverDays,
+          "languagecode":this.localStLanguage ? this.localStLanguage.code : "EN-GB",
+          "StartDateTime": _startTime,
+          "EndDateTime": _endTime
+        }
       }
     }
-    this.objData = {
-      "groupId": ['all'],
-      "alertLevel": ['all'],
-      "alertCategory": ['all'],
-      "healthStatus": ['all'],
-      "otherFilter": ['all'],
-      "driverId": [selectedDriverId],
-      "days": selectedDriverDays,
-      "languagecode":this.localStLanguage ? this.localStLanguage.code : "EN-GB"
-    }
+    
 
     let driverSelected = this.driverList.filter((elem)=> elem.driverId === this.driverVehicleForm.get("driver").value);
     this.reportService.getFleetOverviewDetails(this.objData).subscribe((fleetdata:any) => {
@@ -382,7 +412,9 @@ ngOnChanges(changes: SimpleChanges) {
     });
     //this.noRecordFlag = false;
  }
-
+ setStartEndDateTime(date: any, timeObj: any, type: any){   
+  return this.reportMapService.setStartEndDateTime(date, timeObj, type, this.preferenceObject.prefTimeFormat);
+}
   updateVehicleFilter() {
 
     this.groupList = [];
@@ -1149,6 +1181,19 @@ removeDuplicates(originalArray, prop) {
     }}
     if(this.todayFlagClicked  && this.selectedIndex == 0)
     {
+      let selectedStartTime = '';
+      let selectedEndTime = '';
+      if(this.preferenceObject.prefTimeFormat == 24){
+        selectedStartTime = "00:00";
+        selectedEndTime = "23:59";
+      } else{      
+        selectedStartTime = "12:00 AM";
+        selectedEndTime = "11:59 PM";
+      }
+      let startDateValue = this.setStartEndDateTime(Util.getUTCDate(this.preferenceObject.prefTimeZone), selectedStartTime, 'start');
+      let endDateValue = this.setStartEndDateTime(Util.getUTCDate(this.preferenceObject.prefTimeZone), selectedEndTime, 'end');
+      let _startTime = Util.getMillisecondsToUTCDate(startDateValue, this.preferenceObject.prefTimeZone);
+      let _endTime = Util.getMillisecondsToUTCDate(endDateValue, this.preferenceObject.prefTimeZone);
       this.objData = {
         "groupId": [this.filterVehicleForm.controls.group.value.toString()],
         "alertLevel": levelList,
@@ -1157,7 +1202,9 @@ removeDuplicates(originalArray, prop) {
         "otherFilter": otherList,
         "driverId": ["all"],
         "days": 0,
-        "languagecode":this.localStLanguage ? this.localStLanguage.code : "EN-GB"
+        "languagecode":this.localStLanguage ? this.localStLanguage.code : "EN-GB",
+        "StartDateTime":_startTime,
+        "EndDateTime":_endTime
       }
     }
     let vehicleGroupSel = this.groupList.filter((elem)=> elem.vehicleId === this.filterVehicleForm.get("group").value);
