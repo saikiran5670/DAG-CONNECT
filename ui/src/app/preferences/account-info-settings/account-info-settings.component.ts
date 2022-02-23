@@ -451,7 +451,7 @@ export class AccountInfoSettingsComponent implements OnInit {
       }
       if(objData['iconByte'] == undefined || objData['iconByte'] == 'undefined')
         objData['iconByte'] = ''
-      if(!('iconId' in objData))
+      if(!('iconId' in objData) || objData['iconId'] == undefined)
         objData['iconId'] = 0;
       if(this.accountInfo[0]["preferenceId"] > 0){ //-- account pref available
         this.showLoadingIndicator=true;
