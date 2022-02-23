@@ -632,6 +632,13 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
         else {
           this.driverDetails = [];
           this.driverDetails = [...tripData.driverActivities];
+          this.driverDetails.forEach(element => {
+            let vehDetails = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element.vin);
+            if (vehDetails) {
+              element["vehicleGroupName"] = vehDetails[0].vehicleGroupName;
+              element["vin"] = vehDetails[0].vin;
+            }
+       });
           let updatedDriverData = this.makeDetailDriverList(tripData.driverActivities);
           this.totalDriverCount = updatedDriverData.length;
           this.detailConvertedData = [];
@@ -736,7 +743,9 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
 
   getOnLoadData() {
     let defaultStartValue = this.setStartEndDateTime(this.getLast3MonthDate(), this.selectedStartTime, 'start');
-    let defaultEndValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
+    let defaultEndValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
+    // this.startDateValue = defaultStartValue;
+    // this.endDateValue = defaultEndValue;
     let loadParam = {
       "reportId": 10,
       "accountId": this.accountId,
@@ -1042,7 +1051,19 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
         this.setGeneralDriverDetailValue(element.cummulativeDriverList);
       }
     });
-    let hashedId = (this.driverListData.filter(elem => elem.driverID === _row.driverId)[0]['hashedDriverID']); this.detailConvertedData = this.reportMapService.getDriverDetailsTimeDataBasedOnPref(this.driverDetails, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat, this.prefTimeZone);
+
+    this.driverDetails.forEach(element => {
+         let vehDetails = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element.vin);
+         if(vehDetails){
+           element["vehicleGroupName"] =vehDetails[0].vehicleGroupName;
+           element["vin"] = vehDetails[0].vin;
+       }
+    });
+ 
+    let hashedId = (this.driverListData.filter(elem=>elem.driverID === _row.driverId)[0]['hashedDriverID']);
+ //   this.driverDetails = this.allDriverData.map(item=>item.driverDetailList).filter(i=>i.driverID === _row.driverId)
+ 
+    this.detailConvertedData = this.reportMapService.getDriverDetailsTimeDataBasedOnPref(this.driverDetails, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
     this.driverSelected = true;
     this.graphPayload = {
       "startDateTime": Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone),//this.startDateValue,

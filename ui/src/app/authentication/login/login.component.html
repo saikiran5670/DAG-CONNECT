@@ -10,7 +10,7 @@
     <div fxLayout="column" fxLayoutAlign="stretch" class='full-width loginPageBg'>
         <div fxLayout="row" fxLayoutAlign="end end" class='logo-icon'>
             <div fxLayout="column" fxLayoutAlign="stretch">
-                <img src="../../../assets/logo_daf.png" alt="" srcset="">
+                <!--<img src="../../../assets/logo_daf.png" alt="" srcset="">-->
             </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="end end" class='txtContainer'>
@@ -116,7 +116,12 @@
                                 <span class='resetText'>Reset your DAF Connect Password</span>
                             </div>
                         </div> 
-                        <div fxLayout="row" fxLayoutAlign="start" class='margin-top-10'>
+                        <div  *ngIf="resetPwdOnedayFlag" ngfxLayout="row" fxLayoutAlign="start" class='margin-top-10'>
+                            <div fxLayout="column" fxLayoutAlign="center">
+                                <span style="color: red;">{{resetPwdOnedayMsg}}</span>
+                            </div>
+                        </div>
+                        <div  *ngIf="!resetPwdOnedayFlag" fxLayout="row" fxLayoutAlign="start" class='margin-top-10'>
                             <div fxLayout="column" fxLayoutAlign="center">
                                 <span style="color: green;">We have sent password details on your email id. Please check your mail inbox and set a new password.</span>
                             </div>

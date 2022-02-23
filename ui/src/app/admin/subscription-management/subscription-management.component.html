@@ -93,11 +93,11 @@
               </ng-container>
               <ng-container matColumnDef="subscriptionStartDate">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStartDate }}</mat-header-cell>
-                <mat-cell *matCellDef="let row">{{ setDate(row.subscriptionStartDate) }}</mat-cell>
+                <mat-cell *matCellDef="let row">{{ row.subscriptionStartDate }}</mat-cell>
               </ng-container>
               <ng-container matColumnDef="subscriptionEndDate">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEndDate }}</mat-header-cell>
-                <mat-cell *matCellDef="let row">{{ setDate(row.subscriptionEndDate) }}</mat-cell>
+                <mat-cell *matCellDef="let row">{{ row.subscriptionEndDate }}</mat-cell>
               </ng-container>
               <ng-container matColumnDef="state">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStatus }}</mat-header-cell>

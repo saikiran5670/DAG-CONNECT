@@ -248,7 +248,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
 
   loadWholeTripData() {
     this.reportService.getVINFromTripVehicleperformance(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
-      this.wholeTripData = tripData;
+    this.wholeTripData = tripData;
       this.filterDateData();
     }, (error) => {
       this.wholeTripData.vinTripList = [];
@@ -281,7 +281,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
           distinctVIN.forEach(element => {
             let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element && i.groupType != 'S');
             if (_item.length > 0) {
-              this.vehicleListData.push(_item[0]); //-- unique VIN data added 
+              this.vehicleListData.push(_item[0]); //-- unique VIN data added
               _item.forEach(element => {
                 finalVINDataList.push(element)
               });
@@ -421,6 +421,8 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
       if (parseInt(event.value) == 0) { //-- all group
         let vehicleData = this.vehicleListData.slice();
         this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
+        //console.log("vehicleDD 2", this.vehicleDD);
+        this.vehicleGrpDD.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
       } else {
         let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
         if (search.length > 0) {
@@ -428,6 +430,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
           search.forEach(element => {
             this.vehicleDD.push(element);
           });
+          this.vehicleGrpDD.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
         }
       }
       this.searchForm.get('vehicleName').setValue('');
@@ -436,6 +439,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
     else {
       this.searchForm.get('vehicleGroup').setValue(parseInt(this.globalSearchFilterData.vehicleGroupDropDownValue));
     }
+    this.resetVehicleFilter();
   }
 
   changeStartDateEvent(event: MatDatepickerInputEvent<any>) {

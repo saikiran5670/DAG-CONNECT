@@ -31,11 +31,13 @@ export class VehicleDetailsComponent implements OnInit {
   prefTimeFormat: any; //-- coming from pref setting
   prefTimeZone: any; //-- coming from pref setting
   prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
-  prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
+  prefUnitFormat: any = 'dunit_Metric'; //-- coming xfrom pref setting
   mileagewithUnit: any;
   nextservicing: any;
   alertLength : any;
   prefDetail: any = {};
+  vehicleDisplayPreference: any= 'dvehicledisplay_VehicleIdentificationNumber';
+
   constructor(private router: Router, private dataInterchangeService: DataInterchangeService, @Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService,  private reportMapService: ReportMapService,  private organizationService: OrganizationService) { }
   
   ngOnInit() {
@@ -84,6 +86,13 @@ export class VehicleDetailsComponent implements OnInit {
       this.prefTimeZone = this.prefDetail.timezone[0].name;
       this.prefDateFormat = this.prefDetail.dateformat[0].name;
       this.prefUnitFormat = this.prefDetail.unit[0].name;
+    }
+    let vehicleDisplayId = preference.vehicleDisplayId;
+    if(vehicleDisplayId) {
+      let vehicledisplay = this.prefDetail?.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+      if(vehicledisplay.length != 0) {
+        this.vehicleDisplayPreference = vehicledisplay[0].name;
+      }
     }
     this.selectedElementData.fleetOverviewAlert.forEach(item => {
       this.levelList.forEach(element => {

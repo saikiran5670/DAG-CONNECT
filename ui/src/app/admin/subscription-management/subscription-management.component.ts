@@ -149,18 +149,6 @@ export class SubscriptionManagementComponent implements OnInit {
     });
   }
 
-  setDate(date : any){
-    if (date === 0) {
-      return "-";
-    } else {
-      var newdate = new Date(date);
-      var day = newdate.getDate();
-      var month = newdate.getMonth();
-      var year = newdate.getFullYear();
-      return (`${day}/${month + 1}/${year}`);
-    }
-  }
-
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
@@ -267,6 +255,10 @@ export class SubscriptionManagementComponent implements OnInit {
     ];
     this.subscriptionService.getSubscriptions(this.organizationId).subscribe((data : any) => {
       this.initData = data["subscriptionList"];
+      this.initData.forEach(ele => {
+        ele.subscriptionStartDate =  getDt(ele.subscriptionStartDate).toString().toLowerCase();
+        ele.subscriptionEndDate = getDt(ele.subscriptionEndDate).toString().toLowerCase();
+      });
       this.filterData = this.initData;
       this.hideloader();
       this.getOrgListData();
@@ -344,7 +336,7 @@ export class SubscriptionManagementComponent implements OnInit {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
 
-        this.dataSource.filterPredicate = function(data, filter: any){
+        this.dataSource.filterPredicate = function(data, filter: any){  
           let val = JSON.parse(filter);
           return (val.org === '' || data.subscriptionId.toString() === val.org.toString() ) &&
                   (val.type === '' || data.typeOfOrg.toString() === val.type.toString() ) &&
@@ -353,8 +345,8 @@ export class SubscriptionManagementComponent implements OnInit {
                     data.packageCode.toLowerCase().indexOf(val.search.toLowerCase()) !== -1 ||
                     data.name.toLowerCase().indexOf(val.search.toLowerCase()) !== -1 ||
                     data.typeOfOrg.toLowerCase().indexOf(val.search.toLowerCase()) !== -1 ||
-                    (getDt(data.startDate)).toString().toLowerCase().indexOf(val.search.toLowerCase()) !== -1 ||
-                    (getDt(data.endDate)).toString().toLowerCase().indexOf(val.search.toLowerCase()) !== -1
+                    (data.subscriptionStartDate).toString().toLowerCase().indexOf(val.search.toLowerCase()) !== -1 ||
+                    (data.subscriptionEndDate).toString().toLowerCase().indexOf(val.search.toLowerCase()) !== -1
                   )
           };
       this.dataSource.sortData = (data:String[], sort: MatSort) => {
