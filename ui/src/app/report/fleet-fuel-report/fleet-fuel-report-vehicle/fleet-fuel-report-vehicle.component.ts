@@ -1848,6 +1848,7 @@ setDefaultTodayDate(){
     if(!this.internalSelection && this.fleetFuelSearchData.modifiedFrom !== ""){
       this.tripForm.get('vehicle').setValue(this.fleetFuelSearchData.vehicleDropDownValue);
       this.tripForm.get('vehicleGroup').setValue(this.fleetFuelSearchData.vehicleGroupDropDownValue);
+      this.onVehicleGroupChange({'value': this.fleetFuelSearchData.vehicleGroupDropDownValue});
     }else{
       this.tripForm.get('vehicle').setValue(0);
       this.tripForm.get('vehicleGroup').setValue(0);
