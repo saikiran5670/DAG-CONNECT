@@ -113,6 +113,7 @@ ngAfterViewInit(){
 ngOnChanges(changes: SimpleChanges) {
   if(changes && changes.filterData && changes.filterData.currentValue){
     this.filterData = changes.filterData.currentValue;
+    this.filterData.vehicleGroups = this.filterData.vehicleGroups.filter(v=> v.vehicleGroupType !== "S");
   }
 }
 
