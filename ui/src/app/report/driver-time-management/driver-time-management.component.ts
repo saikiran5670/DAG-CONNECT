@@ -870,7 +870,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
 
   getOnLoadData(){
     let defaultStartValue = this.setStartEndDateTime(this.getLast3MonthDate(), this.selectedStartTime, 'start');
-    let defaultEndValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
+    let defaultEndValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
     // this.startDateValue = defaultStartValue;
     // this.endDateValue = defaultEndValue;
     let loadParam = {

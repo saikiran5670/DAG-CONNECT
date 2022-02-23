@@ -8,7 +8,8 @@ import { OrganizationService } from '../../services/organization.service';
 import { Router } from '@angular/router';
 import { FleetMapService } from './fleet-map.service';
 import { DashboardService } from 'src/app/services/dashboard.service';
-
+import { Util } from 'src/app/shared/util';
+import { ReportMapService } from 'src/app/report/report-map.service';
 declare var H: any;
 
 @Component({
@@ -151,7 +152,7 @@ export class CurrentFleetComponent implements OnInit {
   // ];
   
   constructor(private translationService: TranslationService,
-    private reportService: ReportService,
+    private reportService: ReportService, private reportMapService: ReportMapService,
     private messageService: MessageService,
     private dataInterchangeService: DataInterchangeService,
     private organizationService: OrganizationService, private router: Router, private fleetMapService: FleetMapService,
@@ -189,6 +190,19 @@ export class CurrentFleetComponent implements OnInit {
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
       this.getFleetOverviewPreferences();
+    });
+    let accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
+    this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
+      if (accountPrefObj.accountPreference && accountPrefObj.accountPreference != '') { // account pref
+        this.proceedStep(prefData, accountPrefObj.accountPreference);
+      } else { // org pref
+        this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any) => {
+          this.proceedStep(prefData, orgPref);
+        }, (error) => { // failed org API
+          let pref: any = {};
+          this.proceedStep(prefData, pref);
+        });
+      }
     });
    }
 
@@ -273,6 +287,19 @@ export class CurrentFleetComponent implements OnInit {
     // this.clickOpenClose='Click to Open';
     this.clickOpenClose = this.translationData.lblClickToOpen || 'Click to Open';
     this.showLoadingIndicator = true;
+    let selectedStartTime = '';
+    let selectedEndTime = '';
+    if(this.prefTimeFormat == 24){
+      selectedStartTime = "00:00";
+      selectedEndTime = "23:59";
+    } else{      
+      selectedStartTime = "12:00 AM";
+      selectedEndTime = "11:59 PM";
+    }
+    let startDateValue = this.setStartEndDateTime(Util.getUTCDate(this.prefTimeZone), selectedStartTime, 'start');
+    let endDateValue = this.setStartEndDateTime(Util.getUTCDate(this.prefTimeZone), selectedEndTime, 'end');
+    let _startTime = Util.getMillisecondsToUTCDate(startDateValue, this.prefTimeZone);
+    let _endTime = Util.getMillisecondsToUTCDate(endDateValue, this.prefTimeZone);
     let objData = {
       "groupId": ["all"],
       "alertLevel": ["all"],
@@ -281,7 +308,9 @@ export class CurrentFleetComponent implements OnInit {
       "otherFilter": ["all"],
       "driverId": ["all"],
       "days": 0,
-      "languagecode":"cs-CZ"
+      "languagecode":"cs-CZ",
+      "StartDateTime":_startTime,
+      "EndDateTime":_endTime
     }
     this.reportService.getFleetOverviewDetails(objData).subscribe((data: any) => {
       
@@ -310,7 +339,9 @@ export class CurrentFleetComponent implements OnInit {
       this.toBack();
     }
   }
-
+  setStartEndDateTime(date: any, timeObj: any, type: any){   
+    return this.reportMapService.setStartEndDateTime(date, timeObj, type, this.prefTimeFormat);
+  }
   getFilterPOIData(){
     this.showLoadingIndicator = true;
     this.reportService.getFilterPOIDetails().subscribe((data: any) => {
@@ -359,26 +390,26 @@ export class CurrentFleetComponent implements OnInit {
   } 
 
   
-  // proceedStep(prefData: any, preference: any){
-  //   let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
-  //   if(_search.length > 0){
-  //     this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
-  //     this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
-  //     this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
-  //     this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
-  //   }else{
-  //     this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
-  //     this.prefTimeZone = prefData.timezone[0].value;
-  //     this.prefDateFormat = prefData.dateformat[0].name;
-  //     this.prefUnitFormat = prefData.unit[0].name;
-  //   }
-  //   this.preferenceObject = {
-  //     prefTimeFormat : this.prefTimeFormat,
-  //     prefTimeZone : this.prefTimeZone,
-  //     prefDateFormat : this.prefDateFormat,
-  //     prefUnitFormat : this.prefUnitFormat
-  //   }
-  // }
+  proceedStep(prefData: any, preference: any){
+    let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
+    if(_search.length > 0){
+      this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
+      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
+      this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+      this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
+    }else{
+      this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));   
+      this.prefTimeZone = prefData.timezone[0].name;
+      this.prefDateFormat = prefData.dateformat[0].name;
+      this.prefUnitFormat = prefData.unit[0].name;
+    }
+    this.preferenceObject = {
+      prefTimeFormat : this.prefTimeFormat,
+      prefTimeZone : this.prefTimeZone,
+      prefDateFormat : this.prefDateFormat,
+      prefUnitFormat : this.prefUnitFormat
+    }
+  }
 
   sendMessage(): void {
     // send message to subscribers via observable subject

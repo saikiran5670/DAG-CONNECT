@@ -267,49 +267,51 @@ doughnutDistanceColors: Color[] = [
   }
 
   getLiveVehicleData(){
-    this.dataError = false;
-    let selectedStartTime = '';
-    let selectedEndTime = '';
-    if(this.prefTimeFormat == 24){
-      selectedStartTime = "00:00";
-      selectedEndTime = "23:59";
-    } else{      
-      selectedStartTime = "12:00 AM";
-      selectedEndTime = "11:59 PM";
-    }
-    this.startDateValue = this.setStartEndDateTime(Util.getUTCDate(this.prefTimeZone), selectedStartTime, 'start');
-    this.endDateValue = this.setStartEndDateTime(Util.getUTCDate(this.prefTimeZone), selectedEndTime, 'end');
-    let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone);
-    let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);
-    let _vehiclePayload = {
-      "viNs": this.finalVinList,
-      "startDateTime": _startTime,
-      "endDateTime": _endTime 
-      // [ //this.finalVinList
-      //       "M4A14532","XLR0998HGFFT76657"
-        
-      // ]
-    }
-    if(this.finalVinList && this.finalVinList.length > 0 && !this.todayLiveVehicalAPI){
-      this.todayLiveVehicalAPI = this.dashboardService.getTodayLiveVehicleData(_vehiclePayload).subscribe((vehicleData)=>{
-        ////console.log(vehicleData);
-        this.dataError = false;
-        if(vehicleData){
-          this.liveVehicleData = vehicleData;
-          this.totalVehicles =  this.finalVinList.length;
-          this.setValues();
-          this.updateCharts();
-        }
-     },(error)=>{
-       if(error.status === 400){
-         this.dataError = true;
-         this.errorMessage = error.error.message;
-       }
-       else if(error.status === 404){
-         this.dataError = true;
-         this.errorMessage = this.translationData.lblTodaysLiveVehicleError || 'No data found for Today live vehicle details'
-       }
-     });
+    if(this.prefTimeZone){
+      this.dataError = false;
+      let selectedStartTime = '';
+      let selectedEndTime = '';
+      if(this.prefTimeFormat == 24){
+        selectedStartTime = "00:00";
+        selectedEndTime = "23:59";
+      } else{      
+        selectedStartTime = "12:00 AM";
+        selectedEndTime = "11:59 PM";
+      }
+      this.startDateValue = this.setStartEndDateTime(Util.getUTCDate(this.prefTimeZone), selectedStartTime, 'start');
+      this.endDateValue = this.setStartEndDateTime(Util.getUTCDate(this.prefTimeZone), selectedEndTime, 'end');
+      let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone);
+      let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);
+      let _vehiclePayload = {
+        "viNs": this.finalVinList,
+        "startDateTime": _startTime,
+        "endDateTime": _endTime 
+        // [ //this.finalVinList
+        //       "M4A14532","XLR0998HGFFT76657"
+          
+        // ]
+      }
+      if(this.finalVinList && this.finalVinList.length > 0 && !this.todayLiveVehicalAPI){
+        this.todayLiveVehicalAPI = this.dashboardService.getTodayLiveVehicleData(_vehiclePayload).subscribe((vehicleData)=>{
+          ////console.log(vehicleData);
+          this.dataError = false;
+          if(vehicleData){
+            this.liveVehicleData = vehicleData;
+            this.totalVehicles =  this.finalVinList.length;
+            this.setValues();
+            this.updateCharts();
+          }
+       },(error)=>{
+         if(error.status === 400){
+           this.dataError = true;
+           this.errorMessage = error.error.message;
+         }
+         else if(error.status === 404){
+           this.dataError = true;
+           this.errorMessage = this.translationData.lblTodaysLiveVehicleError || 'No data found for Today live vehicle details'
+         }
+       });
+      }
     } 
   }
 
