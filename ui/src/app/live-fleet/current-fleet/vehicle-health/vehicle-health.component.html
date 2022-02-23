@@ -257,11 +257,11 @@
                   <div class="warning_time" fxLayout="column" fxLayoutAlign="left">
                   <span *ngIf='warning.warningType=="A"'>
                   <span [ngClass]="[isCurrent ? 'name_small warning_danger' : 'name_small']">{{ translationData.lblActivatedTime || 'Activated Time' }}</span>
-                    <div class="full-width" style="font-size: 13px;padding-top: 2px;">{{ warning.warningTimetamp | date: 'yyyy/MM/dd h:mm:ss a' }}</div>
+                    <div class="full-width" style="font-size: 13px;padding-top: 2px;">{{ warning.warningTimetamp ? convertDateTime(warning.warningTimetamp) : '-' }}</div>
                   </span>
                   <span *ngIf='isCurrent'>
                     <span [ngClass]="[isCurrent ? 'name_small warning_danger' : 'name_small']">{{ translationData.lblActivatedTime || 'Activated Time' }}</span>
-                    <div class="full-width" style="font-size: 13px;padding-top: 2px;">{{ warning.warningTimetamp | date: 'yyyy/MM/dd h:mm:ss a' }}</div>
+                    <div class="full-width" style="font-size: 13px;padding-top: 2px;">{{ warning.warningTimetamp ? convertDateTime(warning.warningTimetamp) : '-' }}</div>
                   </span>
                   <span *ngIf='warning.warningType=="D"'>                     
                      <span class="name_small">{{ translationData.lblActivatedTime || 'Activated Time' }}</span>                   
