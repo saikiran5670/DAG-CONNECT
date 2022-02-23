@@ -449,6 +449,10 @@ export class AccountInfoSettingsComponent implements OnInit {
         createdBy: this.accountId
         //driverId: ""
       }
+      if(objData['iconByte'] == 'undefined')
+        objData['iconByte'] = ''
+      if(!('iconId' in objData))
+        objData['iconId'] = 0;
       if(this.accountInfo[0]["preferenceId"] > 0){ //-- account pref available
         this.showLoadingIndicator=true;
         this.accountService.updateAccountPreference(objData).subscribe((data: any) => {
