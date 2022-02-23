@@ -1095,6 +1095,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     if(!this.internalSelection && this.globalSearchFilterData.modifiedFrom !== ""){
       this.fuelDeviationForm.get('vehicle').setValue(this.globalSearchFilterData.vehicleDropDownValue);
       this.fuelDeviationForm.get('vehicleGroup').setValue(this.globalSearchFilterData.vehicleGroupDropDownValue);
+      this.onVehicleGroupChange({'value': this.globalSearchFilterData.vehicleGroupDropDownValue}, true);
     }else{
       this.fuelDeviationForm.get('vehicle').setValue(0);
       this.fuelDeviationForm.get('vehicleGroup').setValue(0);
@@ -1146,6 +1147,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
           this.vehicleDD.push(element);
           ////console.log("vehicleDD 3", this.vehicleDD);
         });
+        this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll , registrationNo: this.translationData.lblAll , vin: this.translationData.lblAll  });
       }
       this.resetVehicleFilter();
     }
