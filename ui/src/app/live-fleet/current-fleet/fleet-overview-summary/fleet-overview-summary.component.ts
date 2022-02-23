@@ -126,7 +126,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
   }
 
   proceedStep(preference: any) {
-    let _search = this.prefDetail.unit.filter(i => i.id == preference.unitId);
+    let _search = this.prefDetail.timeformat.filter(i => i.id == preference.timeFormatId);
     if (_search.length > 0) {
       this.prefUnitFormat = this.prefDetail.unit.filter(i => i.id == preference.unitId)[0].name;
       this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
