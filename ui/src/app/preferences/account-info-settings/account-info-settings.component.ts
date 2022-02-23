@@ -449,7 +449,7 @@ export class AccountInfoSettingsComponent implements OnInit {
         createdBy: this.accountId
         //driverId: ""
       }
-      if(objData['iconByte'] == 'undefined')
+      if(objData['iconByte'] == undefined || objData['iconByte'] == 'undefined')
         objData['iconByte'] = ''
       if(!('iconId' in objData))
         objData['iconId'] = 0;
