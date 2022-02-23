@@ -440,6 +440,7 @@ ngOnDestroy(){
     setTimeout(() => {
       this.loadWholeTripData();
       },5);
+      // this.setDefaultTodayDate();
     // if(!this._state){
     //   this.selectionTimeRange('today');
     // this.setDefaultTodayDate();
@@ -1697,6 +1698,11 @@ let prepare = []
   }
 
   changeStartDateEvent(event: MatDatepickerInputEvent<any>){
+    if(this.last3MonthDate == undefined || this.endDateValue == undefined){
+      this.internalSelection = false;
+       this.setDefaultTodayDate(); 
+    }
+
     this.internalSelection = true;
     let dateTime: any = '';
     if(event.value._d.getTime() >= this.last3MonthDate.getTime()){ // CurTime > Last3MonthTime
