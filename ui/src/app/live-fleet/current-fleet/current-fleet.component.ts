@@ -7,7 +7,9 @@ import { DataInterchangeService} from '../../services/data-interchange.service';
 import { Router } from '@angular/router';
 import { FleetMapService } from './fleet-map.service';
 import { DashboardService } from 'src/app/services/dashboard.service';
-
+import { Util } from 'src/app/shared/util';
+import { ReportMapService } from 'src/app/report/report-map.service';
+import { OrganizationService } from '../../services/organization.service';
 declare var H: any;
 
 @Component({
@@ -40,7 +42,7 @@ export class CurrentFleetComponent implements OnInit {
   prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   accountPrefObj: any;
-  preferenceObject : any;
+  preferenceObject : any = {};
   _state: any;
   filterData : any;
   filterPOIData : any;
@@ -48,13 +50,15 @@ export class CurrentFleetComponent implements OnInit {
   totalVehicleCount: number;
   dashboardPref: any;
   reportDetail: any = [];
+  prefDetail: any = {};
   
   constructor(private translationService: TranslationService,
-    private reportService: ReportService,
+    private reportService: ReportService, private reportMapService: ReportMapService,
     private messageService: MessageService,
     private dataInterchangeService: DataInterchangeService,
     private router: Router, private fleetMapService: FleetMapService,
-    private dashboardService : DashboardService) { 
+    private dashboardService : DashboardService,
+    private organizationService: OrganizationService) { 
       this.subscription = this.messageService.getMessage().subscribe(message => {
         if (message.key.indexOf("refreshData") !== -1) {
           this.refreshData();
@@ -75,7 +79,9 @@ export class CurrentFleetComponent implements OnInit {
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.reportDetail = JSON.parse(localStorage.getItem('reportDetail'));  
+    this.prefDetail = JSON.parse(localStorage.getItem('prefDetail'));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    let accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
     let translationObj = {
       id: 0,
       code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
@@ -90,7 +96,19 @@ export class CurrentFleetComponent implements OnInit {
       this.processTranslation(data);
       this.getFleetOverviewPreferences();
     });
-   }
+    
+    if(this.prefDetail){
+      if (accountPrefObj.accountPreference && accountPrefObj.accountPreference != '') {
+        this.proceedStep(accountPrefObj.accountPreference);
+      } else {
+        this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any) => {
+          this.proceedStep(orgPref);
+        }, (error) => { 
+          this.proceedStep({});
+        });
+      }
+    }
+  }
 
   getFleetOverviewPreferences(){
     if(this.reportDetail){
@@ -163,6 +181,19 @@ export class CurrentFleetComponent implements OnInit {
     // this.clickOpenClose='Click to Open';
     this.clickOpenClose = this.translationData.lblClickToOpen || 'Click to Open';
     this.showLoadingIndicator = true;
+    let selectedStartTime = '';
+    let selectedEndTime = '';
+    if(this.prefTimeFormat == 24){
+      selectedStartTime = "00:00";
+      selectedEndTime = "23:59";
+    } else{      
+      selectedStartTime = "12:00 AM";
+      selectedEndTime = "11:59 PM";
+    }
+    let startDateValue = this.setStartEndDateTime(Util.getUTCDate(this.prefTimeZone), selectedStartTime, 'start');
+    let endDateValue = this.setStartEndDateTime(Util.getUTCDate(this.prefTimeZone), selectedEndTime, 'end');
+    let _startTime = Util.getMillisecondsToUTCDate(startDateValue, this.prefTimeZone);
+    let _endTime = Util.getMillisecondsToUTCDate(endDateValue, this.prefTimeZone);
     let objData = {
       "groupId": ["all"],
       "alertLevel": ["all"],
@@ -171,7 +202,9 @@ export class CurrentFleetComponent implements OnInit {
       "otherFilter": ["all"],
       "driverId": ["all"],
       "days": 0,
-      "languagecode":"cs-CZ"
+      "languagecode":"cs-CZ",
+      "StartDateTime":_startTime,
+      "EndDateTime":_endTime
     }
     this.reportService.getFleetOverviewDetails(objData).subscribe((data: any) => {
       this.totalVehicleCount = data.visibleVinsCount;
@@ -199,7 +232,9 @@ export class CurrentFleetComponent implements OnInit {
       this.toBack();
     }
   }
-
+  setStartEndDateTime(date: any, timeObj: any, type: any){   
+    return this.reportMapService.setStartEndDateTime(date, timeObj, type, this.prefTimeFormat);
+  }
   getFilterPOIData(){
     this.showLoadingIndicator = true;
     this.reportService.getFilterPOIDetails().subscribe((data: any) => {
@@ -241,6 +276,28 @@ export class CurrentFleetComponent implements OnInit {
       this.clickOpenClose=this.translationData.lblClickToOpen ? this.translationData.lblClickToOpen :'Click To Open';
     }
   } 
+
+  
+  proceedStep(preference: any){
+    let _search = this.prefDetail.timeformat.filter(i => i.id == preference.timeFormatId);
+    if(_search.length > 0){
+      this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
+      this.prefTimeZone = this.prefDetail.timezone.filter(i => i.id == preference.timezoneId)[0].name;
+      this.prefDateFormat = this.prefDetail.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+      this.prefUnitFormat = this.prefDetail.unit.filter(i => i.id == preference.unitId)[0].name;  
+    }else{
+      this.prefTimeFormat = Number(this.prefDetail.timeformat[0].name.split("_")[1].substring(0,2));   
+      this.prefTimeZone = this.prefDetail.timezone[0].name;
+      this.prefDateFormat = this.prefDetail.dateformat[0].name;
+      this.prefUnitFormat = this.prefDetail.unit[0].name;
+    }
+    this.preferenceObject = {
+      prefTimeFormat : this.prefTimeFormat,
+      prefTimeZone : this.prefTimeZone,
+      prefDateFormat : this.prefDateFormat,
+      prefUnitFormat : this.prefUnitFormat
+    }
+  }
 
   sendMessage(): void {
     this.messageService.sendMessage('refreshTimer');

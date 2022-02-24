@@ -11,8 +11,16 @@
             <button class='font-helvetica-md' type="button" mat-button (click)='userPreferencesSetting($event)'>
                 {{ clickOpenClose }} </button>
         </div>
-        <div>
-            <app-fleet-overview-filters *ngIf="userPreferencesFlag" [filterData]='filterData' [fromVehicleHealth]="obj" [translationData]='translationData' [detailsData] ="detailsData" [vehInfoPrefData]='vehInfoPrefData'></app-fleet-overview-filters>
+        
+        <div id="sidenav">
+            <div class="example-sidenav-content"
+            [ngClass]="userPreferencesFlag ? 'pref-expand' : 'pref-collapse' " >
+                <button class='font-helvetica-md' type="button" mat-button (click)='userPreferencesSetting($event)'>
+                    {{ clickOpenClose }} </button>
+            </div>
+            <div>
+                <app-fleet-overview-filters *ngIf="userPreferencesFlag" [filterData]='filterData' [fromVehicleHealth]="obj" [translationData]='translationData' [detailsData] ="detailsData" [vehInfoPrefData]='vehInfoPrefData' [preferenceObject]='preferenceObject'></app-fleet-overview-filters>
+            </div>
         </div>
     </div>
     <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
