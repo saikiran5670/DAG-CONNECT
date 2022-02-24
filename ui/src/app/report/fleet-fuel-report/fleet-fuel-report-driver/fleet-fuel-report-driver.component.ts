@@ -658,6 +658,7 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
   showDetailedReport : boolean = false;
   noRecordFound: boolean = false;
   brandimagePath: any;
+  dontShow: boolean = false;
 
   public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
@@ -2296,7 +2297,7 @@ setVehicleGroupAndVehiclePreSelection() {
   }
 
   exportAsPDFFile(){
-  
+  this.dontShow = true;
   var imgleft;
   if (this.brandimagePath != null) {
     imgleft = this.brandimagePath.changingThisBreaksApplicationSecurity;
@@ -2631,7 +2632,7 @@ setVehicleGroupAndVehiclePreSelection() {
       displayHeader.style.display = "none";
     }
 
-    let DATA = document.getElementById('charts');
+    let DATA = document.getElementById('hideData');
     let transHeaderName = this.translationData.lblFleetFuelDriverReport;
     html2canvas((DATA),
     {scale:2})
@@ -2664,6 +2665,9 @@ setVehicleGroupAndVehiclePreSelection() {
 
         const FILEURI = canvas.toDataURL('image/png')
         // let PDF = new jsPDF('p', 'mm', 'a4');
+        if (FILEURI == 'data:,') {
+          this.callAgainExportAsPDF();
+        }
         let position = 0;
         doc.addImage(FILEURI, 'PNG', 10, 40, fileWidth, fileHeight) ;
         doc.addPage('a0','p');
@@ -2677,8 +2681,13 @@ setVehicleGroupAndVehiclePreSelection() {
       }
     })
     doc.save('fleetFuelByDriver.pdf');
+    this.dontShow = false;
     });
     displayHeader.style.display ="block";
+  }
+
+  callAgainExportAsPDF() {
+    this.exportAsPDFFile();
   }
 
   convertZeros(val){

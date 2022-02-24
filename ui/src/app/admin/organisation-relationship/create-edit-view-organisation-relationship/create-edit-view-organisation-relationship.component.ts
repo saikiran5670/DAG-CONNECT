@@ -334,14 +334,14 @@ if(vehicleList != '' && orgList != ''){
     let attrName: any = `${this.OrganisationRelationshipFormGroup.controls.relationship.value}`;
     if (this.actionType == 'create') {
       if (this.translationData.lblNewOrganisationRelationshipCreatedSuccessfully)
-        return this.translationData.lblNewOrganisationRelationshipCreatedSuccessfully.replace('$', attrName);
+        return this.translationData.lblNewOrganisationRelationshipCreatedSuccessfully.replace('$', name1);
       else
-        return ("New Organisation Relationship '$' Created Successfully").replace('$', attrName);
+        return ("New Organisation Relationship '$' Created Successfully").replace('$', name1);
     } else {
-      if (this.translationData.lblOrganisationRelationshipUpdatedSuccessfully)
-        return this.translationData.lblOrganisationRelationshipUpdatedSuccessfully.replace('$', attrName);
+      if (this.translationData.lblNewOrganisationRelationshipCreatedSuccessfully)
+        return this.translationData.lblNewOrganisationRelationshipCreatedSuccessfully.replace('$', name1);
       else
-        return ("Organisation Relationship '$' Updated Successfully").replace('$', name1);
+        return ("Organisation Relationship '$' created Successfully").replace('$', name1);
     }
   }
   
