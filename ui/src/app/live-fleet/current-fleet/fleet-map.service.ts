@@ -419,6 +419,29 @@ export class FleetMapService {
     return _healthStatus;
   }
 
+  getUserSelectedVehicle(element) {
+    let _vehicleName = '';
+    switch (this.vehicleDisplayPreference) {
+      case 'dvehicledisplay_VehicleIdentificationNumber':
+        _vehicleName = element.vin;
+        break;
+      case 'dvehicledisplay_VehicleName': // service now;
+      _vehicleName = element.vehicleName;
+      break;
+      case 'dvehicledisplay_VehicleRegistrationNumber':
+        if(element.registrationNo == ''){ // service now;
+      _vehicleName = element.vehicleName;
+        }else{
+        _vehicleName = element.registrationNo;
+        }
+      break;
+        break
+      default:
+        break;
+    }
+    return _vehicleName;
+  }
+
   getDrivingStatus(element, _drivingStatus) {
     switch (element.vehicleDrivingStatusType) {
       case 'N':
@@ -1248,7 +1271,8 @@ export class FleetMapService {
       let _drivingStatus = this.getDrivingStatus(elem, '');
       let activatedTime = Util.convertUtcToDateFormat(elem.startTimeStamp, 'DD/MM/YYYY hh:mm:ss');
       let _driverName = elem.driverName ? elem.driverName : elem.driver1Id;
-      let _vehicleName = this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber' ? elem.vin : elem.vehicleName;
+      // let _vehicleName = this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber' ? elem.vin : (this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber' ? elem.vehicleName : (this.vehicleDisplayPreference == ('dvehicledisplay_VehicleRegistrationNumber' && elem.registrationNo !== '') ? elem.registrationNo: elem.vehicleName));
+      let _vehicleName = this.getUserSelectedVehicle(elem);
       let _mileage = this.reportMapService.getDistance(elem.odometerVal, this.prefUnitFormat); //19040
       let _distanceNextService = this.reportMapService.getDistance(elem.distanceUntilNextService, this.prefUnitFormat);
       let distanceUnit = this.prefUnitFormat == 'dunit_Metric' ? 'km' : 'miles';
@@ -1975,7 +1999,8 @@ export class FleetMapService {
               let _drivingStatus = this.getDrivingStatus(elem, '');
               let activatedTime = Util.convertUtcToDateFormat(elem.startTimeStamp, 'DD/MM/YYYY hh:mm:ss');
               let _driverName = elem.driverName ? elem.driverName : elem.driver1Id;
-              let _vehicleName = this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber' ? elem.vin : elem.vehicleName;
+              let _vehicleName = this.getUserSelectedVehicle(elem);
+              // let _vehicleName = this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber' ? elem.vin : (this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber' ? elem.vehicleName : (this.vehicleDisplayPreference == ('dvehicledisplay_VehicleRegistrationNumber' && elem.registrationNo !== '') ? elem.registrationNo: elem.vehicleName));
               let _mileage = this.reportMapService.getDistance(elem.odometerVal, this.prefUnitFormat); //19040
               let _distanceNextService = this.reportMapService.getDistance(elem.distanceUntilNextService, this.prefUnitFormat);
               let distanceUnit = this.prefUnitFormat == 'dunit_Metric' ? 'km' : 'miles';
