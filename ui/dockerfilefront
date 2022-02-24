@@ -10,9 +10,9 @@ RUN npm run build --prod
 
 # Stage 2
 FROM nginxinc/nginx-unprivileged:1.18-alpine
-# USER root
+USER root
 # RUN rm -rf /usr/share/nginx/html/*.html
 COPY --from=build-step /app/dist/ngHereApp /usr/share/nginx/html
-# COPY --from=build-step /app/nginx.conf /etc/nginx/
+COPY --from=build-step /app/nginx.conf /etc/nginx/
 # RUN chown -R nginx /usr/share/nginx
-# USER nginx
+USER nginx
