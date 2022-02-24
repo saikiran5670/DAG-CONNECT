@@ -1936,7 +1936,20 @@ let prepare = []
   }
 
   onAlertCategoryChange(event: any){
-
+    let alertsTypes = this.wholeLogBookData["enumTranslation"].filter(item => item.type == 'T');
+    if(event.value == 'all') {
+      this.alertTyp = alertsTypes; 
+    } else {
+      let types = this.wholeLogBookData?.logbookTripAlertDetailsRequest?.filter(item => item.alertCategoryType == event.value).map(item => item.alertType);
+      let uniqueAlertEnums = [...new Set(types)];
+      let filteredTypes = [];
+      alertsTypes.forEach(element => {
+        if(uniqueAlertEnums.includes(element.enum)){
+          filteredTypes.push(element);
+        }
+      });
+      this.alertTyp = filteredTypes;
+    }
   }
 
 
