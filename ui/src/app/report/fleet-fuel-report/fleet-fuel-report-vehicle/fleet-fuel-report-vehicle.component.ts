@@ -650,6 +650,7 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
   state: any;
   noRecordFound: boolean = false;
   brandimagePath: any;
+  dontShow: boolean = false;
 
   public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
@@ -2162,7 +2163,7 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
   }
 
   exportAsPDFFile(){
-
+    this.dontShow = true;
     var imgleft;
     if (this.brandimagePath != null) {
       imgleft = this.brandimagePath.changingThisBreaksApplicationSecurity;
@@ -2174,368 +2175,400 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
     }
 
     var doc = new jsPDF('p', 'mm', 'a4');
-    let ccdOne = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance3050metric) : (this.translationData.lblCruiseControlDistance1530imperial);
-    let ccdTwo = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance5075metric) : (this.translationData.lblCruiseControlDistance3045imperial);
-    let ccdThree = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance75metric) : (this.translationData.lblCruiseControlDistance45imperial);
-    let distance = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile) : (this.translationData.lblmile);
-    let speed = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmileh) : (this.translationData.lblmileh);
-    let ton = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lbltons) : (this.translationData.lbltons);
-    let fuel = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblgal) : (this.translationData.lblgal);
-    let fuelCons = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmpg) : (this.translationData.lblmpg);
-    let rankingPdfColumns = [];
-    let rankingColumnHeads = [];
-    this.rankingColumns.forEach(element => {
-      switch (element) {
-        case 'ranking': {
-          rankingColumnHeads.push(this.translationData.lblRanking);
-          break;
-        }
-        case 'vehicleName': {
-          rankingColumnHeads.push(this.translationData.lblVehicleName);
-          break;
-        }
-        case 'vin': {
-          rankingColumnHeads.push(this.translationData.lblVIN);
-          break;
-        }
-        case 'vehicleRegistrationNo': {
-          rankingColumnHeads.push(this.translationData.lblPlateNo);
-          break;
-        }
-        case 'fuelConsumption': {
-          rankingColumnHeads.push(this.translationData.lblFuelConsumption + '(' + fuelCons + ')');
-          break;
-        }
+   //let rankingPdfColumns = [this.rankingColumns];
+   let ccdOne = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance3050metric) : (this.translationData.lblCruiseControlDistance1530imperial);
+   let ccdTwo = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance5075metric) : (this.translationData.lblCruiseControlDistance3045imperial);
+   let ccdThree = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblCruiseControlDistance75metric) : (this.translationData.lblCruiseControlDistance45imperial);
+   let distance = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm ) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile ) : (this.translationData.lblmile );
+   let speed =(this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh ) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmileh ) : (this.translationData.lblmileh );
+   let ton= (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton ) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lbltons ) : (this.translationData.lbltons );
+   let fuel =(this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr ) : (this.prefUnitFormat =='dunit_Imperial') ? (this.translationData.lblgal ) : (this.translationData.lblgal );
+   let fuelCons=  (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km ) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmpg ) : (this.translationData.lblmpg );
+   let idlingPTO= (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg ) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblpound ) : (this.translationData.lblpound );
+
+   let rankingPdfColumns = [];
+   let rankingColumnHeads = [];
+   this.rankingColumns.forEach(element => {
+    switch(element){
+      case 'ranking' :{
+        rankingColumnHeads.push(this.translationData.lblRanking);
+        break;
       }
-    })
-    rankingPdfColumns.push(rankingColumnHeads);
-    let prepareRanking = [];
-    this.rankingData.forEach(e => {
-      var dataObj = [];
-      this.rankingColumns.forEach(element => {
-        switch (element) {
-          case 'ranking': {
-            dataObj.push(e.ranking);
-            break;
-          }
-          case 'vehicleName': {
-            dataObj.push(e.vehicleName);
-            break;
-          }
-          case 'vin': {
-            dataObj.push(e.vin);
-            break;
-          }
-          case 'vehicleRegistrationNo': {
-            dataObj.push(e.vehicleRegistrationNo);
-            break;
-          }
-          case 'fuelConsumption': {
-            dataObj.push(e.convertedFuelConsumption);
-            break;
-          }
-        }
-      })
+      case 'vehicleName' :{
+        rankingColumnHeads.push(this.translationData.lblVehicleName);
+        break;
+      }
+      case 'vin' :{
+        rankingColumnHeads.push(this.translationData.lblVIN);
+        break;
+      }
+      case 'vehicleRegistrationNo' :{
+        rankingColumnHeads.push(this.translationData.lblPlateNo);
+        break;
+      }
+      case 'fuelConsumption' :{
+        rankingColumnHeads.push(this.translationData.lblFuelConsumption+'('+fuelCons+')');
+        break;
+      }
+    }
+  })
+  rankingPdfColumns.push(rankingColumnHeads);
+   let prepareRanking = [];
+
+   this.rankingData.forEach(e => {
+
+    var dataObj =[];
+     this.rankingColumns.forEach(element => {
+    switch(element){
+      case 'ranking' :{
+        dataObj.push(e.ranking);
+        break;
+      }
+      case 'vehicleName' :{
+        dataObj.push(e.vehicleName);
+        break;
+      }
+      case 'vin' :{
+        dataObj.push(e.vin);
+        break;
+      }
+      case 'vehicleRegistrationNo' :{
+        dataObj.push(e.vehicleRegistrationNo);
+        break;
+      }
+      case 'fuelConsumption' :{
+        dataObj.push(e.convertedFuelConsumption);
+        break;
+      }
+    }
+  })
       prepareRanking.push(dataObj);
     });
-    let pdfColumns = [];
-    let pdfColumnHeads = [];
-    this.displayedColumns.forEach(element => {
-      switch (element) {
-        case 'vehicleName': {
-          pdfColumnHeads.push(this.translationData.lblVehicleName);
-          break;
-        }
-        case 'vin': {
-          pdfColumnHeads.push(this.translationData.lblVIN);
-          break;
-        }
-        case 'vehicleRegistrationNo': {
-          pdfColumnHeads.push(this.translationData.lblPlateNo);
-          break;
-        }
-        case 'distance': {
-          pdfColumnHeads.push(this.translationData.lblDistance + '(' + distance + ')');
-          break;
-        }
-        case 'averageDistancePerDay': {
-          pdfColumnHeads.push(this.translationData.lblAverageDistancePerDay + '(' + distance + ')');
-          break;
-        }
-        case 'averageSpeed': {
-          pdfColumnHeads.push(this.translationData.lblAverageSpeed + '(' + speed + ')');
-          break;
-        }
-        case 'maxSpeed': {
-          pdfColumnHeads.push(this.translationData.lblMaxSpeed + '(' + speed + ')');
-          break;
-        }
-        case 'numberOfTrips': {
-          pdfColumnHeads.push(this.translationData.lblNoOfTrips);
-          break;
-        }
-        case 'averageGrossWeightComb': {
-          pdfColumnHeads.push(this.translationData.lblAverageGrossWeightComb + '(' + ton + ')');
-          break;
-        }
-        case 'fuelConsumed': {
-          pdfColumnHeads.push(this.translationData.lblFuelConsumed + '(' + fuel + ')');
-          break;
-        }
-        case 'fuelConsumption': {
-          pdfColumnHeads.push(this.translationData.lblFuelConsumption + '(' + fuelCons + ')');
-          break;
-        }
-        case 'cO2Emission': {
-          pdfColumnHeads.push(this.translationData.lblCO2Emission + '(' + ton + ')');
-          break;
-        }
-        case 'idleDuration': {
-          pdfColumnHeads.push(this.translationData.lblIdleDuration);
-          break;
-        }
-        case 'ptoDuration': {
-          pdfColumnHeads.push(this.translationData.lblPTODuration + '%');
-          break;
-        }
-        case 'harshBrakeDuration': {
-          pdfColumnHeads.push(this.translationData.lblHarshBrakeDuration + '%');
-          break;
-        }
-        case 'heavyThrottleDuration': {
-          pdfColumnHeads.push(this.translationData.lblHeavyThrottleDuration + '%');
-          break;
-        }
-        case 'cruiseControlDistance3050': {
-          pdfColumnHeads.push(this.translationData.lblCruiseControlDistance + ccdOne + '(' + speed + ')(%)');
-          break;
-        }
-        case 'cruiseControlDistance5075': {
-          pdfColumnHeads.push(this.translationData.lblCruiseControlDistance + ccdTwo + '(' + speed + ')(%)');
-          break;
-        }
-        case 'cruiseControlDistance75': {
-          pdfColumnHeads.push(this.translationData.lblCruiseControlDistance + ccdThree + '(' + speed + ')(%)');
-          break;
-        }
-        case 'averageTrafficClassification': {
-          pdfColumnHeads.push(this.translationData.lblAverageTrafficClassification);
-          break;
-        }
-        case 'ccFuelConsumption': {
-          pdfColumnHeads.push(this.translationData.lblCCFuelConsumption + '(' + fuelCons + ')');
-          break;
-        }
-        case 'fuelconsumptionCCnonactive': {
-          pdfColumnHeads.push(this.translationData.lblFuelconsumptionCCnonactive + '(' + fuelCons + ')');
-          break;
-        }
-        case 'idlingConsumption': {
-          pdfColumnHeads.push(this.translationData.lblIdlingConsumption);
-          break;
-        }
-        case 'dpaScore': {
-          pdfColumnHeads.push(this.translationData.lblDPAScore);
-          break;
-        }
-        case 'dpaAnticipationScore': {
-          pdfColumnHeads.push(this.translationData.lbldpaAnticipationScore + '%');
-          break;
-        }
-        case 'dpaBrakingScore': {
-          pdfColumnHeads.push(this.translationData.lbldpaBrakingScore + '%');
-          break;
-        }
-        case 'idlingPTOScore': {
-          pdfColumnHeads.push(this.translationData.lblIdlingwithPTO + ' (hh:mm:ss)');
-          break;
-        }
-        case 'idlingPTO': {
-          pdfColumnHeads.push(this.translationData.lblIdlingwithPTO + ' %');
-          break;
-        }
-        case 'idlingWithoutPTO': {
-          pdfColumnHeads.push(this.translationData.lblIdlingwithoutPTO + ' (hh:mm:ss)');
-          break;
-        }
-        case 'idlingWithoutPTOpercent': {
-          pdfColumnHeads.push(this.translationData.lblIdlingwithoutPTO + ' %');
-          break;
-        }
-        case 'footBrake': {
-          pdfColumnHeads.push(this.translationData.lblFootBrake);
-          break;
-        }
-        case 'cO2Emmision': {
-          pdfColumnHeads.push(this.translationData.lblCO2Emission + ' (' + this.translationData.lblgmpkm + ')');
-          break;
-        }
-        case 'idlingConsumptionWithPTO': {
-          pdfColumnHeads.push(this.translationData.lblidlingConsumptionValue + '(' + fuelCons + ')');
-          break;
-        }
+
+
+    //  (doc as any).autoTable({
+    //    head: rankingPdfColumns,
+    //    body: prepareRanking,
+    //    theme: 'striped',
+    //    didDrawCell: data => {
+    //      ////console.log(data.column.index)
+    //    }
+    //  })
+
+
+  //let pdfColumns = [this.displayedColumns];
+  let pdfColumns = [];
+  let pdfColumnHeads=[];
+  this.displayedColumns.forEach(element => {
+    switch(element){
+      case 'vehicleName' :{
+        pdfColumnHeads.push(this.translationData.lblVehicleName);
+        break;
       }
-    })
-    pdfColumns.push(pdfColumnHeads);
-    let prepare = []
-    this.displayData.forEach(e => {
-      var tempObj = [];
+      case 'vin' :{
+        pdfColumnHeads.push(this.translationData.lblVIN);
+        break;
+      }
+      case 'vehicleRegistrationNo' :{
+        pdfColumnHeads.push(this.translationData.lblPlateNo);
+        break;
+      }
+      case 'distance' :{
+        pdfColumnHeads.push(this.translationData.lblDistance+'('+distance+')');
+        break;
+      }
+      case 'averageDistancePerDay' :{
+        pdfColumnHeads.push(this.translationData.lblAverageDistancePerDay+'('+distance+')');
+        break;
+      }
+      case 'averageSpeed' :{
+        pdfColumnHeads.push(this.translationData.lblAverageSpeed+'('+speed+')');
+        break;
+      }
+      case 'maxSpeed' :{
+        pdfColumnHeads.push(this.translationData.lblMaxSpeed+'('+speed+')');
+        break;
+      }
+      case 'numberOfTrips' :{
+        pdfColumnHeads.push(this.translationData.lblNoOfTrips);
+        break;
+      }
+      case 'averageGrossWeightComb' :{
+        pdfColumnHeads.push(this.translationData.lblAverageGrossWeightComb+'('+ton+')');
+        break;
+      }
+      case 'fuelConsumed' :{
+        pdfColumnHeads.push(this.translationData.lblFuelConsumed+'('+fuel+')');
+        break;
+      }
+      case 'fuelConsumption' :{
+        pdfColumnHeads.push(this.translationData.lblFuelConsumption+'('+fuelCons+')');
+        break;
+      }
+      case 'cO2Emission' :{
+        pdfColumnHeads.push(this.translationData.lblCO2Emission+'('+ton+')');
+        break;
+      }
+      case 'idleDuration' :{
+        pdfColumnHeads.push(this.translationData.lblIdleDuration);
+        break;
+      }
+      case 'ptoDuration' :{
+        pdfColumnHeads.push(this.translationData.lblPTODuration+'%');
+        break;
+      }
+      case 'harshBrakeDuration' :{
+        pdfColumnHeads.push(this.translationData.lblHarshBrakeDuration+'%');
+        break;
+      }
+      case 'heavyThrottleDuration' :{
+        pdfColumnHeads.push(this.translationData.lblHeavyThrottleDuration+'%');
+        break;
+      }
+      case 'cruiseControlDistance3050' :{
+        pdfColumnHeads.push(this.translationData.lblCruiseControlDistance+ccdOne+'('+speed+')(%)');
+        break;
+      }
+      case 'cruiseControlDistance5075' :{
+        pdfColumnHeads.push(this.translationData.lblCruiseControlDistance+ccdTwo+'('+speed+')(%)');
+        break;
+      }
+      case 'cruiseControlDistance75' :{
+        pdfColumnHeads.push(this.translationData.lblCruiseControlDistance+ccdThree+'('+speed+')(%)');
+        break;
+      }
+      case 'averageTrafficClassification' :{
+        pdfColumnHeads.push(this.translationData.lblAverageTrafficClassification);
+        break;
+      }
+      case 'ccFuelConsumption' :{
+        pdfColumnHeads.push(this.translationData.lblCCFuelConsumption+'('+fuelCons+')');
+        break;
+      }
+      case 'fuelconsumptionCCnonactive' :{
+        pdfColumnHeads.push(this.translationData.lblFuelconsumptionCCnonactive+'('+fuelCons+')' );
+        break;
+      }
+      case 'idlingConsumption' :{
+        pdfColumnHeads.push(this.translationData.lblIdlingConsumption);
+        break;
+      }
+      case 'dpaScore' :{
+        pdfColumnHeads.push(this.translationData.lblDPAScore);
+        break;
+      }
+      case 'dpaAnticipationScore' :{
+        pdfColumnHeads.push(this.translationData.lbldpaAnticipationScore+'%');
+        break;
+      }
+      case 'dpaBrakingScore' :{
+        pdfColumnHeads.push(this.translationData.lbldpaBrakingScore+'%');
+        break;
+      }
+      case 'idlingPTOScore' :{
+        pdfColumnHeads.push(this.translationData.lblIdlingwithPTO+' (hh:mm:ss)');
+        break;
+      }
+      case 'idlingPTO' :{
+        pdfColumnHeads.push(this.translationData.lblIdlingwithPTO+' %');
+        break;
+      }
+      case 'idlingWithoutPTO' :{
+        pdfColumnHeads.push(this.translationData.lblIdlingwithoutPTO+' (hh:mm:ss)');
+        break;
+      }
+      case 'idlingWithoutPTOpercent' :{
+        pdfColumnHeads.push(this.translationData.lblIdlingwithoutPTO+' %');
+        break;
+      }
+      case 'footBrake' :{
+        pdfColumnHeads.push(this.translationData.lblFootBrake);
+        break;
+      }
+      case 'cO2Emmision' :{
+        pdfColumnHeads.push(this.translationData.lblCO2Emission+' ('+this.translationData.lblgmpkm+')');
+        break;
+      }
+      case 'idlingConsumptionWithPTO' :{
+        pdfColumnHeads.push(this.translationData.lblidlingConsumptionValue+'('+fuelCons+')');
+        break;
+      }
+    }
+  })
+  pdfColumns.push(pdfColumnHeads);
+  let prepare = []
+    this.displayData.forEach(e=>{
+      var tempObj =[];
       this.displayedColumns.forEach(element => {
-        switch (element) {
-          case 'vehicleName': {
+        switch(element){
+          case 'vehicleName' :{
             tempObj.push(e.vehicleName);
             break;
           }
-          case 'vin': {
+          case 'vin' :{
             tempObj.push(e.vin);
             break;
           }
-          case 'vehicleRegistrationNo': {
+          case 'vehicleRegistrationNo' :{
             tempObj.push(e.vehicleRegistrationNo);
             break;
           }
-          case 'distance': {
+          case 'distance' :{
             tempObj.push(this.convertZeros(e.convertedDistance));
             break;
           }
-          case 'averageDistancePerDay': {
+          case 'averageDistancePerDay' :{
             tempObj.push(e.convertedAverageDistance);
             break;
           }
-          case 'averageSpeed': {
+          case 'averageSpeed' :{
             tempObj.push(e.convertedAverageSpeed);
             break;
           }
-          case 'maxSpeed': {
+          case 'maxSpeed' :{
             tempObj.push(e.convertedMaxSpeed);
             break;
           }
-          case 'numberOfTrips': {
+          case 'numberOfTrips' :{
             tempObj.push(e.numberOfTrips);
             break;
           }
-          case 'averageGrossWeightComb': {
+          case 'averageGrossWeightComb' :{
             tempObj.push(e.convertedAverageGrossWeightComb);
             break;
           }
-          case 'fuelConsumed': {
+          case 'fuelConsumed' :{
             tempObj.push(e.convertedFuelConsumed100Km);
             break;
           }
-          case 'fuelConsumption': {
+          case 'fuelConsumption' :{
             tempObj.push(e.convertedFuelConsumption);
             break;
           }
-          case 'cO2Emission': {
+          case 'cO2Emission' :{
             tempObj.push(e.cO2Emission);
             break;
           }
-          case 'idleDuration': {
+          case 'idleDuration' :{
+            // let idleDurations = Util.getHhMmTime(parseFloat(e.idleDuration));
             tempObj.push(e.idleDurationPercentage);
             break;
           }
-          case 'ptoDuration': {
+          case 'ptoDuration' :{
             tempObj.push(e.ptoDuration.toFixed(2));
             break;
           }
-          case 'harshBrakeDuration': {
+          case 'harshBrakeDuration' :{
             tempObj.push(e.harshBrakeDuration);
             break;
           }
-          case 'heavyThrottleDuration': {
+          case 'heavyThrottleDuration' :{
             tempObj.push(e.heavyThrottleDuration);
             break;
           }
-          case 'cruiseControlDistance3050': {
+          case 'cruiseControlDistance3050' :{
             tempObj.push(e.cruiseControlDistance3050);
             break;
           }
-          case 'cruiseControlDistance5075': {
+          case 'cruiseControlDistance5075' :{
             tempObj.push(e.cruiseControlDistance5075);
             break;
           }
-          case 'cruiseControlDistance75': {
+          case 'cruiseControlDistance75' :{
             tempObj.push(e.cruiseControlDistance75);
             break;
           }
-          case 'averageTrafficClassification': {
-            tempObj.push(this.convertZeros(e.convertedDistance) == '*' ? '' : e.averageTrafficClassificationValue);
+          case 'averageTrafficClassification' :{
+            tempObj.push(this.convertZeros(e.convertedDistance)=='*'?'':e.averageTrafficClassificationValue);
             break;
           }
-          case 'ccFuelConsumption': {
+          case 'ccFuelConsumption' :{
             tempObj.push(e.convetedCCFuelConsumption);
             break;
           }
-          case 'fuelconsumptionCCnonactive': {
+          case 'fuelconsumptionCCnonactive' :{
             tempObj.push(e.convertedFuelConsumptionCCNonActive);
             break;
           }
-          case 'idlingConsumption': {
+          case 'idlingConsumption' :{
             tempObj.push(e.idlingConsumptionValue);
             break;
           }
-          case 'dpaScore': {
+          case 'dpaScore' :{
             tempObj.push(e.dpaScore);
             break;
           }
-          case 'dpaAnticipationScore': {
+          case 'dpaAnticipationScore' :{
             tempObj.push(e.dpaAnticipationScore);
             break;
           }
-          case 'dpaBrakingScore': {
+          case 'dpaBrakingScore' :{
             tempObj.push(e.dpaBrakingScore);
             break;
           }
-          case 'idlingPTOScore': {
+          case 'idlingPTOScore' :{
             tempObj.push(e.convertedIdlingPTOScore);
             break;
           }
-          case 'idlingPTO': {
+          case 'idlingPTO' :{
             tempObj.push(e.idlingPTO);
             break;
           }
-          case 'idlingWithoutPTO': {
+          case 'idlingWithoutPTO' :{
             tempObj.push(e.convertedIdlingWithoutPTO);
             break;
           }
-          case 'idlingWithoutPTOpercent': {
+          case 'idlingWithoutPTOpercent' :{
             tempObj.push(e.idlingWithoutPTOpercent);
             break;
           }
-          case 'footBrake': {
+          case 'footBrake' :{
             tempObj.push(e.footBrake);
             break;
           }
-          case 'cO2Emmision': {
+          case 'cO2Emmision' :{
             tempObj.push(e.cO2Emmision);
             break;
           }
-          case 'idlingConsumptionWithPTO': {
+          // case 'averageTrafficClassificationValue' :{
+          //   tempObj.push(e.averageTrafficClassificationValue);
+          //   break;
+          // }
+          // case 'idlingConsumptionValue' :{
+          //   tempObj.push(e.idlingConsumptionValue);
+          //   break;
+          // }
+          case 'idlingConsumptionWithPTO' :{
             tempObj.push(e.convertedidlingconsumptionwithpto);
             break;
           }
         }
       })
+
       prepare.push(tempObj);
     });
+
     let displayHeader = document.getElementById("chartHeader");
-    if (this.isChartsOpen) {
-      displayHeader.style.display = "block";
+    if(this.isChartsOpen){
+    displayHeader.style.display ="block";
     }
-    else {
+    else{
       displayHeader.style.display = "none";
     }
-    let DATA = document.getElementById('charts');
+
+
+    let DATA = document.getElementById('hideData');
     var pdfName = this.translationData.lblFleetFuelReportByVehicle;
-    html2canvas((DATA),
-      { scale: 2 })
-      .then(canvas => {
-        (doc as any).autoTable({
-          styles: {
+    html2canvas( (DATA),
+    {scale:2})
+    .then(canvas => {
+      (doc as any).autoTable({
+        styles: {
             cellPadding: 0.5,
             fontSize: 12
-          },
-          didDrawPage: function (data) {
+        },
+        didDrawPage: function(data) {
+            // Header
             doc.setFontSize(14);
             var fileTitle = pdfName;
             if(!fileTitle) fileTitle = 'Fleet Fuel Report by Vehicle';
@@ -2545,34 +2578,52 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
 
             var img = "/assets/logo_daf.png";
             doc.text(fileTitle, 14, 35);
-            doc.addImage(img, 'JPEG', 150, 10, 0, 10);
-          },
-          margin: {
-            bottom: 30,
-            top: 40
-          }
-        });
-        (doc as any).autoTable({
-          head: rankingPdfColumns,
-          body: prepareRanking,
-          theme: 'striped',
-          didDrawCell: data => { }
-        })
+            doc.addImage(img, 'JPEG',150, 10, 0, 10);
+        },
+        margin: {
+          bottom: 30,
+          top:40
+         }
+      });
+
+       (doc as any).autoTable({
+         head: rankingPdfColumns,
+         body: prepareRanking,
+         theme: 'striped',
+         didDrawCell: data => {
+           ////console.log(data.column.index)
+         }
+       })
         doc.addPage();
         let fileWidth = 170;
         let fileHeight = canvas.height * fileWidth / canvas.width;
+
         const FILEURI = canvas.toDataURL('image/png')
-        doc.addImage(FILEURI, 'PNG', 10, 40, fileWidth, fileHeight);
-        doc.addPage('a0', 'p');
-        (doc as any).autoTable({
-          head: pdfColumns,
-          body: prepare,
-          theme: 'striped',
-          didDrawCell: data => { }
-        })
-        doc.save('fleetFuelByVehicle' + '.pdf');
-      });
-    displayHeader.style.display = "block";
+        // let PDF = new jsPDF('p', 'mm', 'a4');
+        if (FILEURI == 'data:,') {
+          this.callAgainExportAsPDF();
+        }
+        let position = 0;
+        doc.addImage(FILEURI, 'PNG', 10, 40, fileWidth, fileHeight) ;
+        doc.addPage('a0','p');
+
+      (doc as any).autoTable({
+      head: pdfColumns,
+      body: prepare,
+      theme: 'striped',
+      didDrawCell: data => {
+        ////console.log(data.column.index)
+      }
+    })
+
+      doc.save('fleetFuelByVehicle'+'.pdf');
+      this.dontShow = false;
+    });
+    displayHeader.style.display ="block";
+  }
+
+  callAgainExportAsPDF() {
+    this.exportAsPDFFile();
   }
 
   backToMainPage() { }

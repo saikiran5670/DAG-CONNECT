@@ -622,16 +622,18 @@ ngOnDestroy(){
     if (this._state && this._state.fromVehicleDetails) {
       //this.loadWholeTripData();
       if (this._state.data.todayFlag || (this._state.data.startDate == 0 && this._state.data.endDate == 0)) {
-        if(this.prefTimeFormat == 24){
-          this.startTimeDisplay = '00:00:00';
-          this.endTimeDisplay = '23:59:59';
-          this.selectedStartTime = "00:00";
-          this.selectedEndTime = "23:59";
-        } else{
-          this.startTimeDisplay = '12:00 AM';
-          this.endTimeDisplay = '11:59 PM';
-          this.selectedStartTime = "12:00 AM";
-          this.selectedEndTime = "11:59 PM";
+        if(this.startTimeDisplay == '' && this.endTimeDisplay == ''){
+          if(this.prefTimeFormat == 24){
+            this.startTimeDisplay = '00:00:00';
+            this.endTimeDisplay = '23:59:59';
+            this.selectedStartTime = "00:00";
+            this.selectedEndTime = "23:59";
+          } else{
+            this.startTimeDisplay = '12:00 AM';
+            this.endTimeDisplay = '11:59 PM';
+            this.selectedStartTime = "12:00 AM";
+            this.selectedEndTime = "11:59 PM";
+          }
         }
         // this.selectionTimeRange('today');
         this.selectionTab = 'today';
@@ -1907,7 +1909,20 @@ let prepare = []
   }
 
   onAlertCategoryChange(event: any){
-
+    let alertsTypes = this.wholeLogBookData["enumTranslation"].filter(item => item.type == 'T');
+    if(event.value == 'all') {
+      this.alertTyp = alertsTypes; 
+    } else {
+      let types = this.wholeLogBookData?.logbookTripAlertDetailsRequest?.filter(item => item.alertCategoryType == event.value).map(item => item.alertType);
+      let uniqueAlertEnums = [...new Set(types)];
+      let filteredTypes = [];
+      alertsTypes.forEach(element => {
+        if(uniqueAlertEnums.includes(element.enum)){
+          filteredTypes.push(element);
+        }
+      });
+      this.alertTyp = filteredTypes;
+    }
   }
 
 
