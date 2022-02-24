@@ -123,7 +123,7 @@
     </form>
 
     <!-- Summary Section -->
-<div id ="charts">
+    <div id ="charts">
     <mat-card *ngIf='initData.length > 0' class='mat-elevation-z no-padding margin-bottom-xlg' id ="summary">
         <mat-expansion-panel [(expanded)]="isSummaryOpen" class="full-width" fxLayoutGap="10px" (opened)="isSummaryOpen == true"
         (closed)="isSummaryOpen == false">
@@ -338,7 +338,7 @@
       </mat-card>
     </div>
 
-    <!--------------------------------------for pdf summary section------------------>
+    <!--------------------------------------For export pdf section------------------>
     <div id ="hideData">
       <div *ngIf="dontShow">
       <mat-card *ngIf='initData.length > 0' class='mat-elevation-z no-padding margin-bottom-xlg' id ="summary">
@@ -386,56 +386,52 @@
                   </div>
                 </div>
               </div>
-              <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="40px">
-                  <div  style='padding: 30px 20px; margin-bottom: 10px; background: #bee3f8;'>
-                      <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
-                          <span>{{ translationData.lblNumberOfVehicles || 'Number of vehicles' }} </span>
-                      </div>
-                      <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
-                          <span class='font-helvetica-md'>{{sumOfColumns('NumberOfVehicles')}}</span>
-                      </div>
-                  </div>
-                  <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
-                      <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
-                          <span>{{ translationData.lblTotalDistance || 'Total distance' }} </span>
-                      </div>
-                      <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
-                          <span class='font-helvetica-md'>{{sumOfColumns('distance').toFixed(2)}} {{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblmile || 'mile')  }}</span>
-                      </div>
-                  </div>
-                  <div  style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
-                      <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
-                          <span>{{ translationData.lblNumberOfTrips || 'Number of trips' }} </span>
-                      </div>
-                      <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
-                          <span class='font-helvetica-md'>{{sumOfColumns('NumberOfTrips')}}</span>
-                      </div>
-                  </div>
-                  <div  style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
-                      <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="right">
-                          <span>{{ translationData.lblAverageDistancePerDay || 'Average distance per day' }} </span>
-                      </div>
-                      <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="right">
-                          <span class='font-helvetica-md'>{{sumOfColumns('AverageDistancePerDay').toFixed(2)}} {{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmperday || 'km/day') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmilesperday || 'miles/day') : (translationData.lblmilesperday || 'miles/day')  }}</span>
-                      </div>
-                  </div>
-                  <div  style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
-                      <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="right">
-                          <span>{{ translationData.lblIdleDuration || 'Idle duration' }} </span>
-                      </div>
-                      <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="right">
-                          <span class='font-helvetica-md'>{{ idleDurationSumConverted}} {{translationData.lblhhmm}}</span>
-                      </div>
-                  </div>
+              <div fxLayout="row" fxLayoutAlign="center space-between " class="full-width" fxLayoutGap="10px">
+                <div class="areaWidth min-width-19-per padding-20px summary-bg-color" fxLayout="column" fxLayoutAlign="center center">
+                    <div>
+                        <span>{{ translationData.lblNumberOfVehicles || 'Number of vehicles' }} </span>
+                    </div>
+                    <div>
+                        <span class='font-helvetica-md'>{{sumOfColumns('NumberOfVehicles')}}</span>
+                    </div>
+                </div>
+                <div class="areaWidth min-width-19-per padding-20px summary-bg-color" fxLayout="column" fxLayoutAlign="center center">
+                    <div>
+                        <span>{{ translationData.lblTotalDistance || 'Total distance' }} </span>
+                    </div>
+                    <div>
+                        <span class='font-helvetica-md'>{{sumOfColumns('distance').toFixed(2)}} {{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblmile || 'mile')  }}</span>
+                    </div>
+                </div>
+                <div class="areaWidth min-width-19-per padding-20px summary-bg-color" fxLayout="column" fxLayoutAlign="center center">
+                    <div>
+                        <span>{{ translationData.lblNumberOfTrips || 'Number of trips' }} </span>
+                    </div>
+                    <div>
+                        <span class='font-helvetica-md'>{{sumOfColumns('NumberOfTrips')}}</span>
+                    </div>
+                </div>
+                <div class="areaWidth min-width-19-per padding-20px summary-bg-color" fxLayout="column" fxLayoutAlign="center center">
+                    <div>
+                        <span>{{ translationData.lblAverageDistancePerDay || 'Average distance per day' }} </span>
+                    </div>
+                    <div>
+                        <span class='font-helvetica-md'>{{sumOfColumns('AverageDistancePerDay').toFixed(2)}} {{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmperday || 'km/day') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmilesperday || 'miles/day') : (translationData.lblmilesperday || 'miles/day')  }}</span>
+                    </div>
+                </div>
+                <div class="areaWidth min-width-19-per padding-20px summary-bg-color" fxLayout="column" fxLayoutAlign="center center">
+                    <div>
+                        <span>{{ translationData.lblIdleDuration || 'Idle duration' }} </span>
+                    </div>
+                    <div>
+                        <span class='font-helvetica-md'>{{idleDurationSumConverted}} {{translationData.lblhhmm}}</span>
+                    </div>
+                </div>
               </div>
-
             </div>
           </mat-expansion-panel>
       </mat-card>
-
-  <!-- Charts view -->
-
-        <mat-card *ngIf='initData.length > 0' class='mat-elevation-z no-padding margin-bottom-xlg'>
+      <mat-card *ngIf='initData.length > 0' class='mat-elevation-z no-padding margin-bottom-xlg'>
           <mat-expansion-panel [(expanded)]="isChartsOpen" class="full-width" fxLayoutGap="10px" (opened)="isChartsOpen"
           (closed)="!isChartsOpen">
             <mat-expansion-panel-header class="full-width">
@@ -445,59 +441,32 @@
             </mat-expansion-panel-header>
             <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px" style='margin-top: 10px;'>
             <div class="areaWidth areaWidth half-width" fxLayout="column" fxLayoutAlign="left"  style="padding: 10px;border: 1px solid #ddd;">
-              <span style='text-align: center; margin-bottom: 10px;' class='font-16-px line-height-24px'>{{ translationData.lblDistancePerDay || 'Distance per day' }}</span>
-              <div *ngIf = "!distanceChartType" class="chart-wrapper">
-                <canvas baseChart
-                [datasets]="barChartData"
-                [labels]="barChartLabels"
-                [options]="barChartOptions"
-                [plugins]="barChartPlugins"
-                [legend]="barChartLegend"
-                [chartType]="barChartType">
-              </canvas>
+              <span style='text-align: center; margin-bottom: 10px;' class='font-16-px line-height-24px font-helvetica-md'>{{ translationData.lblDistancePerDay || 'Distance per day' }}</span>
+              <div class="chart-wrapper">
+              <highcharts-chart
+              [Highcharts] = "highcharts"
+              [options] = "chartOptions1"
+              style = "width:100%;height:300px;display: block;">
+             </highcharts-chart>
+             <div class="hidelbleblank"></div>
             </div>
-            <div  *ngIf = "distanceChartType" class="chart-wrapper">
-              <canvas baseChart
-                  [datasets]="distanceLineChartData"
-                  [labels]="barChartLabels"
-                  [options]="distanceLineChartOptions"
-                  [colors]="distanceLineChartColors"
-                  [legend]="lineChartLegend"
-                  [chartType]="lineChartType"
-                  [plugins]="lineChartPlugins">
-              </canvas>
-          </div>
           </div>
           <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right"  style="padding:10px 20px;border: 1px solid #ddd;">
-            <span style='text-align: center; margin-bottom: 10px;' class='font-16-px line-height-24px'>{{ translationData.lblActiveVehiclesPerDay || 'Active vehicles per day' }}</span>
-            <div *ngIf = "activeVehicleChartType" class="chart-wrapper">
-              <canvas baseChart
-                  [datasets]="lineChartData"
-                  [labels]="lineChartLabels"
-                  [options]="lineChartOptions"
-                  [colors]="lineChartColors"
-                  [legend]="lineChartLegend"
-                  [chartType]="lineChartType"
-                  [plugins]="lineChartPlugins">
-              </canvas>
-          </div>
-          <div  *ngIf = "!activeVehicleChartType" class="chart-wrapper">
-            <canvas baseChart
-                [datasets]="VehicleBarChartData"
-                [labels]="lineChartLabels"
-                [options]="VehicleBarChartOptions"
-                [legend]="lineChartLegend"
-                [chartType]="barChartType"
-                [plugins]="barChartPlugins">
-            </canvas>
+            <span style='text-align: center; margin-bottom: 10px;' class='font-16-px line-height-24px font-helvetica-md'>{{ translationData.lblActiveVehiclesPerDay || 'Active vehicles per day' }}</span>
+            <div class="chart-wrapper">
+            <highcharts-chart
+            [Highcharts] = "highcharts"
+            [options] = "chartOptions"
+            style = "width:100%;height:300px;display: block;">
+          </highcharts-chart>
+          <div class="hidelbleblank"></div>
         </div>
         </div>
-
-        </div>
+       </div>
         <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px" style='margin-top: 10px;'>
           <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left"  style="padding: 10px;border: 1px solid #ddd;">
-            <span style='text-align: center; margin-bottom: 10px;' class='font-16-px line-height-24px'>{{ translationData.lblMileageBasedUtilisation || 'Mileage based utilisation' }}</span>
-            <div *ngIf = "mileageDChartType" class="chart-wrapper">
+            <span style='text-align: center; margin-bottom: 10px;' class='font-16-px line-height-24px font-helvetica-md'>{{ translationData.lblMileageBasedUtilisation || 'Mileage based utilisation' }}</span>
+            <div *ngIf="mileageDChartType" class="chart-wrapper">
               <canvas baseChart
               [data]="doughnutChartData"
               [chartType]="doughnutChartType"
@@ -507,7 +476,7 @@
               [legend]="barChartLegend">
             </canvas>
           </div>
-          <div *ngIf = "!mileageDChartType" class="chart-wrapper">
+          <div *ngIf="!mileageDChartType" class="chart-wrapper">
             <canvas baseChart
             [data]="mileagePieChartData"
             [labels]="mileagePieChartLabels"
@@ -519,8 +488,8 @@
           </canvas>
         </div>
           </div>
-          <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right" style="padding: 10px;border: 1px solid #ddd;">
-            <span style='text-align: center; margin-bottom: 10px;' class='font-16-px line-height-24px'>{{ translationData.lblTimeBasedUtilisation || 'Time based utilisation' }}</span>
+          <div *ngIf='timeBasedChart && timeBasedChart.state' class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right" style="padding: 10px;border: 1px solid #ddd;">
+            <span style='text-align: center; margin-bottom: 10px;' class='font-16-px line-height-24px font-helvetica-md'>{{ translationData.lblTimeBasedUtilisation || 'Time based utilisation' }}</span>
             <div *ngIf="timeDChartType" class="chart-wrapper">
               <canvas baseChart
               [data]="doughnutChartDataForTime"
@@ -531,7 +500,7 @@
               [legend]="barChartLegend">
             </canvas>
           </div>
-          <div *ngIf = "!timeDChartType" class="chart-wrapper">
+          <div *ngIf="!timeDChartType" class="chart-wrapper">
             <canvas baseChart
             [data]="timePieChartData"
             [labels]="timePieChartLabels"
@@ -545,13 +514,10 @@
           </div>
         </div>
         </mat-expansion-panel>
-        </mat-card>
-
-        <!-- Calendar view -->
-
-        <mat-card *ngIf='initData.length > 0'  class='mat-elevation-z no-padding margin-bottom-xlg'>
-          <mat-expansion-panel [(expanded)]="isCalendarOpen" class="full-width" fxLayoutGap="10px" (opened)="isCalendarOpen == true"
-          (closed)="isCalendarOpen == false">
+        </mat-card> 
+        <mat-card *ngIf='initData.length > 0' class='mat-elevation-z no-padding margin-bottom-xlg'>
+          <mat-expansion-panel [(expanded)]="isPDFCalendarOpen" class="full-width" fxLayoutGap="10px" (opened)="isPDFCalendarOpen == true"
+          (closed)="isPDFCalendarOpen == false">
             <mat-expansion-panel-header class="full-width">
               <mat-panel-title>
                 <span>{{ translationData.lblCalendar || 'Calendar' }}</span>
@@ -576,14 +542,13 @@
                 <full-calendar [options]="calendarOptions"></full-calendar>
               </div>
             </div>
-            <!-- <mat-calendar>
-            </mat-calendar> -->
         </mat-expansion-panel>
         </mat-card>
-      </div>
     </div>
-      <!-- Fleet Table -->
+  </div>
+    <!-- export PDF finish -->
 
+      <!-- Fleet Table -->
       <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
         <mat-expansion-panel [(expanded)]="tableExpandPanel" class="full-width" fxLayoutGap="10px">
           <mat-expansion-panel-header class="full-width">
