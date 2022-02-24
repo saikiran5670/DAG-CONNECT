@@ -1367,10 +1367,10 @@ export class CreateEditViewAlertsComponent implements OnInit {
       // "PolygonGeofence"
       else {
         this.polyPoints = [];
-        element.nodes.forEach((item) => {
-          this.polyPoints.push(Math.abs(item.latitude.toFixed(4)));
-          this.polyPoints.push(Math.abs(item.longitude.toFixed(4)));
-          this.polyPoints.push(0);
+        element.nodes.forEach(item => {
+        this.polyPoints.push(Math.abs(item.latitude));
+        this.polyPoints.push(Math.abs(item.longitude));
+        this.polyPoints.push(0);
         });
         this.createResizablePolygon(
           this.map,

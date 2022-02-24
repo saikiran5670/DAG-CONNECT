@@ -837,6 +837,7 @@ tripTraceArray: any = [];
   platform: any = '';
   noRecordFound: boolean = false;
   brandimagePath: any;
+  dontShow: boolean = false;
 
   constructor(private _formBuilder: FormBuilder,
               private reportService: ReportService,
@@ -2720,7 +2721,7 @@ setVehicleGroupAndVehiclePreSelection() {
     }
 
    exportAsPDFFile(){
-
+    this.dontShow = true;
     var imgleft;
     if (this.brandimagePath != null) {
       imgleft = this.brandimagePath.changingThisBreaksApplicationSecurity;
@@ -3082,7 +3083,7 @@ setVehicleGroupAndVehiclePreSelection() {
         displayHeader.style.display = "none";
       }
 
-      let DATA = document.getElementById('charts');
+      let DATA = document.getElementById('hideData');
       let transpdfheader = this.translationData.lblFleetFuelDriverTripReport;
       html2canvas( DATA)
       .then(canvas => {
@@ -3113,6 +3114,9 @@ setVehicleGroupAndVehiclePreSelection() {
 
           const FILEURI = canvas.toDataURL('image/png')
            let PDF = new jsPDF('p', 'mm', 'a4');
+          if (FILEURI == 'data:,') {
+            this.callAgainExportAsPDF();
+          }
           let position = 0;
           doc.addImage(FILEURI, 'PNG', 10, 40, fileWidth, fileHeight) ;
           doc.addPage('a0','p');
@@ -3127,11 +3131,15 @@ setVehicleGroupAndVehiclePreSelection() {
       })
 
       doc.save('fleetFuelByDriverDetails.pdf');
-
+      this.dontShow = false;
       });
 
       displayHeader.style.display ="block";
    }
+
+  callAgainExportAsPDF() {
+    this.exportAsPDFFile();
+  }
 
    convertZeros(val){
     if( !isNaN(val) && (val == 0 || val == 0.0 || val == 0.00))
