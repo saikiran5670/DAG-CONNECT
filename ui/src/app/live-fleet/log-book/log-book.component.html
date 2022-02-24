@@ -146,21 +146,6 @@
               </mat-form-field>
             </div>
             <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
-              <mat-label class='font-16-px'>{{ translationData.lblAlertType }}</mat-label>
-              <mat-form-field appearance="outline">
-                <mat-select [disabled]="vehicleGrpDD.length == 0 && fromAlertsNotifications == false" (selectionChange)="onAlertTypeChange($event)" placeholder="{{ translationData.lblSelectVehicle }}" formControlName="alertType">
-                  <mat-option value="all">{{translationData.lblAll }}</mat-option>
-                  <mat-option *ngFor="let rer of alertTyp" [value]="rer.enum">
-                      {{ rer.value }}
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div> 
-          </div>
-          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
-            <div class="areaWidth min-width-65-per" fxLayout="column" fxLayoutAlign="left">
-            </div>
-            <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
               <mat-label class='font-16-px'>{{ translationData.lblAlertCategory }} </mat-label>
                 <mat-form-field appearance="outline">
                   <mat-select [disabled]="vehicleGrpDD.length == 0 && fromAlertsNotifications == false" (selectionChange)="onAlertCategoryChange($event)" placeholder="{{ translationData.lblSelectVehicle  }}" formControlName="alertCategory">
@@ -170,6 +155,21 @@
                     </mat-option>
                   </mat-select>
                 </mat-form-field>
+            </div> 
+          </div>
+          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
+            <div class="areaWidth min-width-65-per" fxLayout="column" fxLayoutAlign="left">
+            </div>
+            <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label class='font-16-px'>{{ translationData.lblAlertType }}</mat-label>
+              <mat-form-field appearance="outline">
+                <mat-select [disabled]="vehicleGrpDD.length == 0 && fromAlertsNotifications == false" (selectionChange)="onAlertTypeChange($event)" placeholder="{{ translationData.lblSelectVehicle }}" formControlName="alertType">
+                  <mat-option value="all">{{translationData.lblAll }}</mat-option>
+                  <mat-option *ngFor="let rer of alertTyp" [value]="rer.enum">
+                      {{ rer.value }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
             </div>
             <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
             </div>   
