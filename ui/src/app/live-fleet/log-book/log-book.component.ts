@@ -1699,11 +1699,7 @@ let prepare = []
   }
 
   changeStartDateEvent(event: MatDatepickerInputEvent<any>){
-    if(this.last3MonthDate == undefined || this.endDateValue == undefined){
-      this.internalSelection = false;
-       this.setDefaultTodayDate(); 
-    }
-
+    this.setDefaultDates();
     this.internalSelection = true;
     let dateTime: any = '';
     if(event.value._d.getTime() >= this.last3MonthDate.getTime()){ // CurTime > Last3MonthTime
@@ -1721,6 +1717,7 @@ let prepare = []
   }
 
   changeEndDateEvent(event: MatDatepickerInputEvent<any>){
+    this.setDefaultDates();
     this.internalSelection = true;
     let dateTime: any = '';
     if(event.value._d.getTime() <= this.todayDate.getTime()){ // EndTime > todayDate
@@ -1737,6 +1734,13 @@ let prepare = []
     this.filterDateData(); // extra addded as per discuss with Atul
   }
 
+  setDefaultDates(){
+    this.startDateValue = this.setStartEndDateTime(new Date(this.startDateValue), this.selectedStartTime, 'start');
+    this.endDateValue = this.setStartEndDateTime(new Date(this.endDateValue), this.selectedEndTime, 'end');
+    this.last3MonthDate = this.getLast3MonthDate();
+    this.todayDate = this.getTodayDate();
+  }
+  
   setStartEndDateTime(date: any, timeObj: any, type: any){
     // let _x = timeObj.split(":")[0];
     // let _y = timeObj.split(":")[1];
