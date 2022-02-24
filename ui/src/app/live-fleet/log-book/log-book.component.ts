@@ -651,16 +651,18 @@ ngOnDestroy(){
     if (this._state && this._state.fromVehicleDetails) {
       //this.loadWholeTripData();
       if (this._state.data.todayFlag || (this._state.data.startDate == 0 && this._state.data.endDate == 0)) {
-        if(this.prefTimeFormat == 24){
-          this.startTimeDisplay = '00:00:00';
-          this.endTimeDisplay = '23:59:59';
-          this.selectedStartTime = "00:00";
-          this.selectedEndTime = "23:59";
-        } else{
-          this.startTimeDisplay = '12:00 AM';
-          this.endTimeDisplay = '11:59 PM';
-          this.selectedStartTime = "12:00 AM";
-          this.selectedEndTime = "11:59 PM";
+        if(this.startTimeDisplay == '' && this.endTimeDisplay == ''){
+          if(this.prefTimeFormat == 24){
+            this.startTimeDisplay = '00:00:00';
+            this.endTimeDisplay = '23:59:59';
+            this.selectedStartTime = "00:00";
+            this.selectedEndTime = "23:59";
+          } else{
+            this.startTimeDisplay = '12:00 AM';
+            this.endTimeDisplay = '11:59 PM';
+            this.selectedStartTime = "12:00 AM";
+            this.selectedEndTime = "11:59 PM";
+          }
         }
         // this.selectionTimeRange('today');
         this.selectionTab = 'today';
@@ -1699,11 +1701,7 @@ let prepare = []
   }
 
   changeStartDateEvent(event: MatDatepickerInputEvent<any>){
-    if(this.last3MonthDate == undefined || this.endDateValue == undefined){
-      this.internalSelection = false;
-       this.setDefaultTodayDate(); 
-    }
-
+    this.setDefaultDates();
     this.internalSelection = true;
     let dateTime: any = '';
     if(event.value._d.getTime() >= this.last3MonthDate.getTime()){ // CurTime > Last3MonthTime
@@ -1721,6 +1719,7 @@ let prepare = []
   }
 
   changeEndDateEvent(event: MatDatepickerInputEvent<any>){
+    this.setDefaultDates();
     this.internalSelection = true;
     let dateTime: any = '';
     if(event.value._d.getTime() <= this.todayDate.getTime()){ // EndTime > todayDate
@@ -1737,6 +1736,13 @@ let prepare = []
     this.filterDateData(); // extra addded as per discuss with Atul
   }
 
+  setDefaultDates(){
+    this.startDateValue = this.setStartEndDateTime(new Date(this.startDateValue), this.selectedStartTime, 'start');
+    this.endDateValue = this.setStartEndDateTime(new Date(this.endDateValue), this.selectedEndTime, 'end');
+    this.last3MonthDate = this.getLast3MonthDate();
+    this.todayDate = this.getTodayDate();
+  }
+  
   setStartEndDateTime(date: any, timeObj: any, type: any){
     // let _x = timeObj.split(":")[0];
     // let _y = timeObj.split(":")[1];
@@ -1932,7 +1938,20 @@ let prepare = []
   }
 
   onAlertCategoryChange(event: any){
-
+    let alertsTypes = this.wholeLogBookData["enumTranslation"].filter(item => item.type == 'T');
+    if(event.value == 'all') {
+      this.alertTyp = alertsTypes; 
+    } else {
+      let types = this.wholeLogBookData?.logbookTripAlertDetailsRequest?.filter(item => item.alertCategoryType == event.value).map(item => item.alertType);
+      let uniqueAlertEnums = [...new Set(types)];
+      let filteredTypes = [];
+      alertsTypes.forEach(element => {
+        if(uniqueAlertEnums.includes(element.enum)){
+          filteredTypes.push(element);
+        }
+      });
+      this.alertTyp = filteredTypes;
+    }
   }
 
 
