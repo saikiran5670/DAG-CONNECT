@@ -2042,6 +2042,8 @@ getAllSummaryData(){
 }
 
   exportAsPDFFile(){
+  this.showLoadingIndicator = true;
+  this.isPDFCalendarOpen = this.calenderCardView ? this.isCalendarOpen : this.isPDFCalendarOpen;
   this.dontShow = true;
   var imgleft;
   if (this.brandimagePath != null) {
@@ -2114,6 +2116,7 @@ getAllSummaryData(){
         })
         doc.save('tripFleetUtilisation.pdf');
         this.dontShow = false;
+        this.hideloader();
     });
   }
 
