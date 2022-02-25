@@ -338,7 +338,7 @@ export class SubscriptionManagementComponent implements OnInit {
 
         this.dataSource.filterPredicate = function(data, filter: any){  
           let val = JSON.parse(filter);
-          return (val.org === '' || data.subscriptionId.toString() === val.org.toString() ) &&
+          return (val.org === '' || data.orgName.toString() === val.org.toString() ) &&
                   (val.type === '' || data.typeOfOrg.toString() === val.type.toString() ) &&
                   (val.status === '' || data.status.toString() === val.status.toString() ) &&
                   (data.subscriptionId.toLowerCase().indexOf(val.search.toLowerCase()) !== -1 ||
