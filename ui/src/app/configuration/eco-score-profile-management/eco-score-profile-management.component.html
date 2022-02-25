@@ -119,7 +119,7 @@
                 (click)='onDelete()'>{{ (translationData.lblDelete || 'Delete') }}</button>
                 <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" 
                     (click)='onReset()'>{{ translationData.lblReset || 'Reset' }}</button>
-                <button class='no-margin' [disabled]="!ecoScoreProfileForm.valid || !saveButton" mat-raised-button color="primary"
+                <button [ngStyle]="{'opacity': (!ecoScoreProfileForm.valid || !saveButton) ? '0.2' : '1' }" class='no-margin' [disabled]="!ecoScoreProfileForm.valid || !saveButton" mat-raised-button color="primary"
                     (click)='onCreate()'>{{ actionType == 'create' ? (translationData.lblCreate || 'Create') :
                     (translationData.lblSave || 'Save') }}</button>
             </div>
