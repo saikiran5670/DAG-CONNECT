@@ -635,7 +635,7 @@ export class AlertsComponent implements OnInit {
     if(data && data.length > 0){
       this.initData = this.getNewTagData(data);
     }
-    this.initData = data;
+    // this.initData = data;
     this.dataSource = new MatTableDataSource(this.initData);
     this.initData.forEach((ele,index) => {
       if(ele.state == 'A'){
