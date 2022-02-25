@@ -23,7 +23,7 @@
             <!-- <mat-select [(value)]="accountOrganizationId" (selectionChange)="applyFilterOnOrganization($event.value)" [disabled] = "organisationData.length == 1" > -->
             <mat-select placeholder="{{ translationData.lblOrganisation || 'Organisation' }}" [formControl]="orgTypeSelection" [disabled]="contextOrgId == 0">
               <mat-option value="allOrg">{{ translationData.lblAll || 'All' }}</mat-option>
-              <mat-option *ngFor="let options of organisationData" [value]="options.id" >
+              <mat-option *ngFor="let options of organisationData" [value]="options.name" >
                 {{ options.name }}
               </mat-option>
             </mat-select>
