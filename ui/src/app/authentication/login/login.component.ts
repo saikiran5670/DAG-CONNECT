@@ -192,7 +192,8 @@ export class LoginComponent implements OnInit {
          this.loginClicks = 0;
           //console.log("Error: " + error);
           if(error.status === 401){
-            this.invalidUserMsg = true;
+            this.errorMsg = error.error;
+            // this.invalidUserMsg = true;
           }
           else if(error.status == 404  || error.status == 403 || error.status == 500){
             this.errorMsg = error.error;
