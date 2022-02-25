@@ -1234,8 +1234,8 @@ PoiCheckboxClicked(event: any, row: any) {
       else{
         this.polyPoints = [];
         element.nodes.forEach(item => {
-        this.polyPoints.push(Math.abs(item.latitude.toFixed(4)));
-        this.polyPoints.push(Math.abs(item.longitude.toFixed(4)));
+        this.polyPoints.push(Math.abs(item.latitude));
+        this.polyPoints.push(Math.abs(item.longitude));
         this.polyPoints.push(0);
         });
         this.createResizablePolygon(this.map,this.polyPoints,this,this.ui, element);
