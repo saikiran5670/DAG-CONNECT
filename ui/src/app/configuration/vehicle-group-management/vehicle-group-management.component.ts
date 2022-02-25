@@ -193,6 +193,14 @@ export class VehicleGroupManagementComponent implements OnInit {
       }
     }, (error) => {
       this.showLoadingIndicator=false;
+      if(error.status == 404){
+        if(this.actionType != 'create'){
+          this.selectedRowData = rowData;
+          this.createViewEditStatus = true;
+        } else {
+          this.createViewEditStatus = true;
+        }
+      }
     });
   }
 
