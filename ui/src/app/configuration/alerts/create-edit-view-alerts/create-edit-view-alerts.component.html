@@ -441,10 +441,12 @@
 </div>
 </div>
         <!-- Map -->
-        <div *ngIf="(alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X')) ||
+        <!-- <div *ngIf="(alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X')) ||
                     (alert_category_selected === 'L' && alert_type_selected === 'C')" #map id="map" style="width: 100%; height: 450px; margin-bottom: 25px" > 
-        </div>
-                            
+        </div> -->
+        <div *ngIf="(alert_category_selected === 'L' && alert_type_selected === 'C')" #map id="map" style="width: 100%; height: 450px; margin-bottom: 25px" ></div>        
+        <div *ngIf="(alert_category_selected === 'L' && alert_type_selected === 'X')" #map id="map" style="width: 100%; height: 450px; margin-bottom: 25px" ></div>        
+        <div *ngIf="(alert_category_selected === 'L' && alert_type_selected === 'N')" #map id="map" style="width: 100%; height: 450px; margin-bottom: 25px" ></div>        
         <!-- POI table -->
         <div *ngIf="alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X') && ((actionType == 'view' && selectedPOIList.length > 0) || actionType=='edit' || actionType == 'create' || actionType == 'duplicate')">
             <div style='padding: 20px; position: relative;'>
