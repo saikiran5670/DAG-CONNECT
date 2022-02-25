@@ -1,6 +1,6 @@
 <app-common-breadcrumbs *ngIf= "breadcumMsg && breadcumMsg!=''" [breadcrumb]="breadcumMsg" [topRightElements]="topRightElements">
     <ng-template #topRightElements>
-        <div *ngIf="actionType == 'view'" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+        <div *ngIf="actionType == 'view' || actionType == 'create' || actionType == 'edit'" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
             <span class='custom-font' (click)="toBack()">
                 <span>
                     <&nbsp;</span>

@@ -828,10 +828,12 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
           this.mileageBasedChart.chartType = element.chartType;
           this.mileageBasedChart.thresholdValue = element.thresholdValue;
           this.mileageBasedChart.thresholdType = element.thresholdType;
-          this.mileagebasedThreshold = parseInt(element.thresholdValue);
+         // this.mileagebasedThreshold = parseInt(element.thresholdValue);        
+           this.mileagebasedThreshold = this.reportMapService.convertDistanceUnits(element.thresholdValue, this.prefUnitFormat);
+
           this.mileageDChartType = element.chartType == "D" ? true : false;
-          this.doughnutChartLabels = [`${this.translationData.lblPercentageofvehicleswithdistancedoneabove || 'Percentage of vehicles with distance done above'} ${this.reportMapService.convertDistanceUnits(this.mileagebasedThreshold, this.prefUnitFormat)} `+ prefUnit, `${this.translationData.lblPercentageofvehicleswithdistancedoneunder || 'Percentage of vehicles with distance done under'} ${this.reportMapService.convertDistanceUnits(this.mileagebasedThreshold, this.prefUnitFormat)} `+ prefUnit]
-          this.mileagePieChartLabels = [`${this.translationData.lblPercentageofvehicleswithdistancedoneabove || 'Percentage of vehicles with distance done above'} ${this.reportMapService.convertDistanceUnits(this.mileagebasedThreshold, this.prefUnitFormat)} `+ prefUnit, `${this.translationData.lblPercentageofvehicleswithdistancedoneunder || 'Percentage of vehicles with distance done under'} ${this.reportMapService.convertDistanceUnits(this.mileagebasedThreshold, this.prefUnitFormat)} `+ prefUnit]
+          this.doughnutChartLabels = [`${this.translationData.lblPercentageofvehicleswithdistancedoneabove || 'Percentage of vehicles with distance done above'} ${this.mileagebasedThreshold} `+ prefUnit, `${this.translationData.lblPercentageofvehicleswithdistancedoneunder || 'Percentage of vehicles with distance done under'} ${this.mileagebasedThreshold} `+ prefUnit]
+          this.mileagePieChartLabels = [`${this.translationData.lblPercentageofvehicleswithdistancedoneabove || 'Percentage of vehicles with distance done above'} ${this.mileagebasedThreshold} `+ prefUnit, `${this.translationData.lblPercentageofvehicleswithdistancedoneunder || 'Percentage of vehicles with distance done under'} ${this.mileagebasedThreshold} `+ prefUnit]
         }else if(element.key == "rp_fu_report_chart_timebased"){
           this.timeBasedChart.state = element.state == "A" ? true : false;
           this.timeBasedChart.chartType = element.chartType;
@@ -1086,6 +1088,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       this.isChartsOpen = true;
       //this.isCalendarOpen = true;
       this.isSummaryOpen = true;
+      let totalDistance=0; let totalDrivingTime=0;
       this.tripData.forEach(element => {
         if(element.distance > this.mileagebasedThreshold){
           this.greaterMileageCount = this.greaterMileageCount + 1;
@@ -1093,13 +1096,33 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
         if(element.drivingTime > this.timebasedThreshold){
           this.greaterTimeCount = this.greaterTimeCount + 1;
         }
+        totalDistance += Number.parseFloat(element.distance);
+        totalDrivingTime += Number.parseFloat(element.drivingTime);
       });
-      let percentage1 = (this.greaterMileageCount/this.tripData.length)*100 ;
-      this.doughnutChartData = [percentage1, 100- percentage1];
-      this.mileagePieChartData = [percentage1,  100- percentage1]
-      let percentage2 = (this.greaterTimeCount/this.tripData.length)* 100;
-      this.doughnutChartDataForTime = [percentage2, 100- percentage2];
-      this.timePieChartData = [percentage2, 100- percentage2];
+
+      let totalConvDistance : any = this.reportMapService.getDistance(totalDistance, this.prefUnitFormat);
+      if (totalConvDistance && this.mileagebasedThreshold){
+      let percentage1 = Number.parseFloat(((Number.parseFloat(totalConvDistance) / this.mileagebasedThreshold) * 100).toFixed(2));
+      let thresholdLeft = (100 - percentage1 > 0) ? 100 - percentage1 : 0;
+      this.doughnutChartData = [[percentage1, thresholdLeft]];
+      this.mileagePieChartData = [[percentage1, thresholdLeft]];
+       // let percentage1 = (this.greaterMileageCount/this.tripData.length)*100 ;
+      // this.doughnutChartData = [percentage1, 100- percentage1];
+      //this.mileagePieChartData = [percentage1,  100- percentage1];
+      }
+
+    //  let totalDriveTime = Util.getHhMmTime(totalDrivingTime).split(':'); //driving time is coming in seconds
+      // let driveTime =  totalDriveTime[0] + (this.translationData.lblhh ) + ' ' +totalDriveTime[1] + (this.translationData.lblmm);
+      if (totalDrivingTime && this.timebasedThreshold){
+        let percentage2 = Number(((totalDrivingTime / this.timebasedThreshold) * 100).toFixed(2));;
+        let thresholdLeft = (100 - percentage2 > 0) ? 100 - percentage2 : 0;
+        this.doughnutChartDataForTime = [[percentage2, thresholdLeft]];
+        this.timePieChartData = [[percentage2, thresholdLeft]];
+      // let percentage2 = (this.greaterTimeCount/this.tripData.length)* 100;
+      // this.doughnutChartDataForTime = [percentage2, 100- percentage2];
+      // this.timePieChartData = [percentage2, 100- percentage2];
+      }
+     
       this.idleDurationCount();
       }, (error)=>{
          ////console.log(error);

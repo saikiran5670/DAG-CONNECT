@@ -35,24 +35,15 @@
             </mat-error>
             <mat-label>{{ translationData.lblRecipientLabel }} <span
                     class='mandatoryColor'  >*</span></mat-label>
-            <!-- <div class="ng-autocomplete">
-                    <ng-autocomplete [data]="notificationReceipients" [searchKeyword]="keyword"
-                        placeholder="{{ translationData.lblEnterRecipientLabel }}"  maxlength="50"
-                        (selected)='addMultipleItems(false, $event)' [itemTemplate]="itemTemplate"
-                        formControlName="recipientLabel">
-                    </ng-autocomplete>
+            <div class="ng-autocomplete">
+                <ng-autocomplete [data]="notificationReceipients" [searchKeyword]="keyword"
+                    placeholder="{{ translationData.lblEnterRecipientLabel }}" (selected)='addMultipleItems(false, $event)'
+                    [itemTemplate]="itemTemplate" formControlName="recipientLabel">
+                </ng-autocomplete>
                 <ng-template #itemTemplate let-item>
                     <a [innerHTML]="item.recipientLabel"></a>
                 </ng-template>
             </div>
-            </div> -->
-            <mat-form-field appearance="outline" class="full-width">
-                <input  placeholder="{{ translationData.lblEnterRecipientLabel }}" matInput
-                    formControlName="recipientLabel" maxlength="50">
-                    <ng-template #itemTemplate let-item>
-                        <a [innerHTML]="item.recipientLabel"></a>
-                    </ng-template>
-            </mat-form-field>
             <mat-hint>{{translationData.lblEnterMaxRecipientLabelForCategorization }}</mat-hint>
             <mat-error
                 *ngIf="notificationForm.get('recipientLabel').hasError('required') && notificationForm.get('recipientLabel').touched">
@@ -60,6 +51,9 @@
             </mat-error>
             <mat-error *ngIf="notificationForm.get('recipientLabel').hasError('specialCharsNotAllowed')">
                 {{ translationData.lblSpecialcharactersnotallowed }}
+            </mat-error>
+            <mat-error *ngIf="notificationForm.get('recipientLabel').hasError('maxlength')">
+               {{ translationData.lbl50CharMax }}
             </mat-error>
             <mat-error *ngIf="isDuplicateRecipientLabel">
                 {{ translationData.lblDuplicateRecipientLabel }}
