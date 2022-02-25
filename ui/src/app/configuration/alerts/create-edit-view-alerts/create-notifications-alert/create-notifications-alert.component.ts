@@ -159,7 +159,7 @@ export class CreateNotificationsAlertComponent implements OnInit, OnChanges {
     
     this.accountId = parseInt(localStorage.getItem("accountId"));
     this.notificationForm = this._formBuilder.group({
-      recipientLabel: ['', [Validators.required]],
+      recipientLabel: ['', [Validators.required,Validators.maxLength(50)]],
       contactMode: ['E', [Validators.required]],
       criticalLevel: [''],
       warningLevel: [''],
