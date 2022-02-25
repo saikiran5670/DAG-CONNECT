@@ -1902,29 +1902,24 @@ export class CreateEditViewAlertsComponent implements OnInit {
   }
 
   loadPOIData() {
-    this.poiService
-      .getPois(this.accountOrganizationId)
-      .subscribe((poilist: any) => {
-        if (poilist.length > 0) {
-          poilist.forEach((element) => {
-            if (element.icon && element.icon != '' && element.icon.length > 0) {
-              element.icon = this.domSanitizer.bypassSecurityTrustUrl(
-                'data:image/jpg;base64,' + element.icon
-              );
-            } else {
-              element.icon = '';
-            }
-          });
-          this.poiGridData = poilist;
-          this.updatePOIDataSource(this.poiGridData);
-          if (
-            this.actionType == 'view' ||
-            this.actionType == 'edit' ||
-            this.actionType == 'duplicate'
-          )
-            this.loadPOISelectedData(this.poiGridData);
-        }
-      });
+    this.showLoadingIndicator = true;
+    this.poiService.getPois(this.accountOrganizationId).subscribe((poilist: any) => {
+      if(poilist.length > 0){
+        poilist.forEach(element => {
+          if(element.icon && element.icon != '' && element.icon.length > 0){
+            element.icon = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + element.icon);
+          }else{
+            element.icon = '';
+          }
+        });
+        this.poiGridData = poilist;
+        this.updatePOIDataSource(this.poiGridData);
+        if(this.actionType == 'view' || this.actionType == 'edit' || this.actionType == 'duplicate')
+        this.loadPOISelectedData(this.poiGridData);
+      }
+      
+    });
+    this.showLoadingIndicator = false;
   }
 
   loadPOISelectedData(tableData: any) {
@@ -1983,23 +1978,17 @@ export class CreateEditViewAlertsComponent implements OnInit {
   }
 
   loadGeofenceData() {
+    this.showLoadingIndicator = true;
     // this.geofenceService.getAllGeofences(this.accountOrganizationId).subscribe((geofencelist: any) => {
-    this.geofenceService
-      .getGeofenceDetails(this.accountOrganizationId)
-      .subscribe((geofencelist: any) => {
-        // this.geofenceGridData = geofencelist.geofenceList;
-        this.geofenceGridData = geofencelist;
-        this.geofenceGridData = this.geofenceGridData.filter(
-          (item) => item.type == 'C' || item.type == 'O'
-        );
-        this.updateGeofenceDataSource(this.geofenceGridData);
-        if (
-          this.actionType == 'view' ||
-          this.actionType == 'edit' ||
-          this.actionType == 'duplicate'
-        )
-          this.loadGeofenceSelectedData(this.geofenceGridData);
-      });
+    this.geofenceService.getGeofenceDetails(this.accountOrganizationId).subscribe((geofencelist: any) => {
+      // this.geofenceGridData = geofencelist.geofenceList;
+      this.geofenceGridData = geofencelist;
+     this.geofenceGridData = this.geofenceGridData.filter(item => item.type == "C" || item.type == "O");
+      this.updateGeofenceDataSource(this.geofenceGridData);
+      if(this.actionType == 'view' || this.actionType == 'edit' || this.actionType == 'duplicate')
+        this.loadGeofenceSelectedData(this.geofenceGridData);
+    });
+    this.showLoadingIndicator = false;
   }
 
   loadGeofenceSelectedData(tableData: any) {
@@ -2061,29 +2050,25 @@ export class CreateEditViewAlertsComponent implements OnInit {
     }
   }
 
-  loadGroupData() {
-    let objData = {
-      organizationid: this.accountOrganizationId,
-    };
+  loadGroupData(){
+    this.showLoadingIndicator = true;
+    let objData = { 
+      organizationid : this.accountOrganizationId,
+   };
 
-    this.landmarkGroupService.getLandmarkGroups(objData).subscribe(
-      (data: any) => {
-        if (data) {
-          this.groupGridData = data['groups'];
-          this.updateGroupDatasource(this.groupGridData);
-          if (
-            this.actionType == 'view' ||
-            this.actionType == 'edit' ||
-            this.actionType == 'duplicate'
-          ) {
-            this.loadGroupSelectedData(this.groupGridData);
-          }
+    this.landmarkGroupService.getLandmarkGroups(objData).subscribe((data: any) => {
+      if(data){
+        this.groupGridData = data["groups"];
+        this.updateGroupDatasource(this.groupGridData);
+        if(this.actionType == 'view' || this.actionType == 'edit' || this.actionType == 'duplicate'){
+          this.loadGroupSelectedData(this.groupGridData);
         }
-      },
-      (error) => {
-        ////console.log(error)
       }
-    );
+      this.showLoadingIndicator = false;
+    }, (error) => {
+      ////console.log(error)
+      this.showLoadingIndicator = false;
+    });
   }
 
   loadGroupSelectedData(tableData: any) {
@@ -2116,21 +2101,18 @@ export class CreateEditViewAlertsComponent implements OnInit {
     });
   }
 
-  loadCorridorData() {
-    this.corridorService.getCorridorList(this.accountOrganizationId).subscribe(
-      (data: any) => {
-        this.corridorGridData = data;
-        this.updateCorridorDatasource(this.corridorGridData);
-        if (
-          this.actionType == 'view' ||
-          this.actionType == 'edit' ||
-          this.actionType == 'duplicate'
-        ) {
-          this.loadCorridorSelectedData(this.corridorGridData);
-        }
-      },
-      (error) => {}
-    );
+  loadCorridorData(){
+    this.showLoadingIndicator = true;
+    this.corridorService.getCorridorList(this.accountOrganizationId).subscribe((data : any) => {
+      this.corridorGridData = data;
+      this.updateCorridorDatasource(this.corridorGridData);
+      if(this.actionType == 'view' || this.actionType == 'edit' || this.actionType == 'duplicate'){
+        this.loadCorridorSelectedData(this.corridorGridData);
+      }
+      this.showLoadingIndicator = false;
+    }, (error) => {
+      this.showLoadingIndicator = false;
+    });
   }
 
   loadCorridorSelectedData(tableData: any) {
