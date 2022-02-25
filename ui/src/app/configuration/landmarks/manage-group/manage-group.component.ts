@@ -224,7 +224,7 @@ export class ManageGroupComponent implements OnInit {
           if(error.status === 500 || error.status === 409){
             const options = {
               title: this.translationData.lblDelete || "Delete",
-              message: this.translationData.lblCorridorwasnotdeleted.replace('$', name) || ("Corridor '$' cannot be deleted, it is associated with alert").replace('$', name),
+              message: this.translationData.lblCorridorUsedInAlert.replace('$', name) || ("Corridor '$' cannot be deleted, it is used in alert.").replace('$', name),
               cancelText: this.translationData.lblCancel || "Cancel",
               confirmText: 'hide-btn'
             };
