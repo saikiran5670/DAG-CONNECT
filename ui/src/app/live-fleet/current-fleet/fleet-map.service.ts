@@ -352,7 +352,11 @@ export class FleetMapService {
       case 'No Action':
         _healthStatus = 'No Action';
         healthColor = '#00AE10'; //green for no action
-        break
+        break;
+      case '':
+        _healthStatus = '';
+        healthColor = 'grey';
+
       default:
         break;
     }
@@ -425,7 +429,8 @@ export class FleetMapService {
       case 'Stopped':
         _drivingStatus = 'Stopped';
         break
-
+      case '':
+        _drivingStatus = '';
       default:
         break;
     }
@@ -482,7 +487,7 @@ export class FleetMapService {
     return homeMarker;
   }
 
-  private createSVGMarker(_value, _health, elem, isGroup?) {
+  public createSVGMarker(_value, _health, elem, isGroup?) {
     let healthColor = this.getHealthUpdateForDriving(_health);
     let direction = this.getDirectionIconByBearings(_value);
     let markerSvg = this.createDrivingMarkerSVG(direction, healthColor, elem);
@@ -502,7 +507,8 @@ export class FleetMapService {
 		${markerSvg}
 		</svg>`;
   }
-  private getDirectionIconByBearings = function (brng) {
+
+  public getDirectionIconByBearings = function (brng) {
     //var brng= 317.888;
     brng = 315;
     let iconWd = 34;
@@ -581,12 +587,12 @@ export class FleetMapService {
     return { outer: outerRotation, inner: innerRotation, rippleX: rippleX, rippleY: rippleY };
   }
 
-  private createRippleMarker(direction?) {
+  public createRippleMarker(direction?) {
     let rippleIcon = `<div class='rippleSVG' style='left:${direction.rippleX}px;top:${direction.rippleY}px; pointer-events: none;'></div>`
 
     return rippleIcon;
   }
-  private createDrivingMarkerSVG(direction: any, healthColor: any, elem): string {
+  public createDrivingMarkerSVG(direction: any, healthColor: any, elem): string {
 
     if (!this.alertFoundFlag) {
       return `
