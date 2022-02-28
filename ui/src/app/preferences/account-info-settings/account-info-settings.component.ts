@@ -163,17 +163,10 @@ export class AccountInfoSettingsComponent implements OnInit {
   }
 
   loadAccountData(){
-    let userObjData = {
-      "id": this.accountId,
-      "organizationId": this.organizationId,
-      "email": "",
-      "accountIds": "",
-      "name": "",
-      "accountGroupId": 0
-    }
-    this.showLoadingIndicator=true;
-    this.accountService.getAccount(userObjData).subscribe((_data: any)=>{
-      this.accountInfo = _data;
+    this.accountInfo = [];  
+    let _accountInfo = JSON.parse(localStorage.getItem("accountInfo"));
+    if(_accountInfo && _accountInfo.accountDetail){
+      this.accountInfo.push(_accountInfo.accountDetail);
       this.editAccountSettingsFlag = false;
       this.isSelectPictureConfirm = true;
       this.setDefaultAccountInfo();
@@ -181,7 +174,6 @@ export class AccountInfoSettingsComponent implements OnInit {
       if(this.accountInfo.length != 0){
         this.blobId = this.accountInfo[0]["blobId"];
       }
-      this.showLoadingIndicator=false;
       if(this.blobId != 0){
         this.showLoadingIndicator=true;
         this.changePictureFlag= true;
@@ -200,9 +192,7 @@ export class AccountInfoSettingsComponent implements OnInit {
         this.changePictureFlag= false;
         this.isSelectPictureConfirm= false;
       }
-    }, (error) => {
-      this.showLoadingIndicator=false;
-    });
+    }
   }
 
   loadGeneralSettingData(){
@@ -216,7 +206,26 @@ export class AccountInfoSettingsComponent implements OnInit {
         element.transName = this.translationService.applicationTranslationData[element.menuLabelKey];
       }
     });
-    this.translationService.getPreferences(languageCode).subscribe((data: any) => {
+    let _prefData: any = JSON.parse(localStorage.getItem('prefDetail'));
+    if(languageCode.toUpperCase() == 'EN-GB'){
+      this.callToProceed(preferenceId, accountNavMenu, _prefData);
+    }else{
+      if(_prefData && _prefData.isUpdate){
+        this.callToProceed(preferenceId, accountNavMenu, _prefData);
+      }else {
+        this.translationService.getPreferences(languageCode).subscribe((_data: any) => { 
+          if(_data){
+            _data.isUpdate = true; // lang updated
+            localStorage.setItem("prefDetail", JSON.stringify(_data)); // update LS
+            this.callToProceed(preferenceId, accountNavMenu, _data); 
+          }
+        }, (error) => {  });
+      }
+    }
+    
+  }
+
+  callToProceed(preferenceId: any, accountNavMenu: any, data: any){
       let dropDownData = data;
       this.languageDropdownData = dropDownData.language;
       this.languageDropdownData.sort(this.compare);    
@@ -256,7 +265,6 @@ export class AccountInfoSettingsComponent implements OnInit {
           this.goForword(this.orgDefaultPreference);
         });
       }
-    }, (error) => {  });
   }
 
   updateBrandIcon(){
@@ -364,20 +372,22 @@ export class AccountInfoSettingsComponent implements OnInit {
     }
     if(this.imageError == ''){
       let objData: any = {
-          id: this.accountId,
-          emailId: this.accountSettingsForm.controls.loginEmail.value,
-          salutation: this.accountSettingsForm.controls.salutation.value,
-          firstName: this.accountSettingsForm.controls.firstName.value,
-          lastName: this.accountSettingsForm.controls.lastName.value,
-          organizationId: this.organizationId,
-          driverId: this.accountSettingsForm.controls.driverId.value,
-          type: this.accountInfo.type ? this.accountInfo.type : 'P'
+        id: this.accountId,
+        emailId: this.accountSettingsForm.controls.loginEmail.value,
+        salutation: this.accountSettingsForm.controls.salutation.value,
+        firstName: this.accountSettingsForm.controls.firstName.value,
+        lastName: this.accountSettingsForm.controls.lastName.value,
+        organizationId: this.organizationId,
+        driverId: this.accountSettingsForm.controls.driverId.value,
+        type: this.accountInfo.type ? this.accountInfo.type : 'P',
+        blobId: this.blobId ? this.blobId : 0
       }
       this.showLoadingIndicator=true;
       this.accountService.updateAccount(objData).subscribe((data)=>{
         this.accountInfo = [data];
         this.editAccountSettingsFlag = false;
         this.isSelectPictureConfirm = true;
+        this.croppedImage= this.profilePicture;
         this.setDefaultAccountInfo();
         this.updateLocalStorageAccountInfo("accountsettings", data);
         let editText = 'AccountSettings';
@@ -439,8 +449,10 @@ export class AccountInfoSettingsComponent implements OnInit {
       if(this.accountInfo[0]["preferenceId"] > 0){ //-- account pref available
         this.showLoadingIndicator=true;
         this.accountService.updateAccountPreference(objData).subscribe((data: any) => {
-        this.savePrefSetting(data);
-        this.showLoadingIndicator=false;
+          if(data){
+            this.savePrefSetting(data);
+            this.showLoadingIndicator=false;
+          }
         }, (error) => {
           this.showLoadingIndicator=false;
         });
@@ -532,16 +544,22 @@ export class AccountInfoSettingsComponent implements OnInit {
         "imageType": "P",
         "image": this.croppedImage.split(",")[1]
       }
-      this.accountService.saveAccountPicture(objData).subscribe(data => {
+      this.accountService.saveAccountPicture(objData).subscribe((data: any) => {
         if(data){
           let msg = '';
+          this.blobId = data.blobId ? data.blobId : this.blobId;
+          let accountInfo = JSON.parse(localStorage.getItem("accountInfo"));
+          if(accountInfo && accountInfo.accountDetail){
+            accountInfo.accountDetail.blobId = this.blobId;
+            localStorage.setItem("accountInfo", JSON.stringify(accountInfo));
+          }
           if(this.translationData.lblAccountPictureSuccessfullyUpdated)
-            msg= this.translationData.lblAccountPictureSuccessfullyUpdated;
+            msg = this.translationData.lblAccountPictureSuccessfullyUpdated;
           else
-            msg= "Account picture successfully updated";
+            msg = "Account picture successfully updated";
 
           this.successMsgBlink(msg);  
-          this.profilePicture= this.croppedImage;
+          this.profilePicture = this.croppedImage;
           this.dataInterchangeService.getProfilePicture(this.croppedImage);
         }
       }, (error) => {
