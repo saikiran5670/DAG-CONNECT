@@ -1645,6 +1645,7 @@ convertToFromTime(milliseconds: any){
   }
 
   loadPOIData() {
+    this.showLoadingIndicator = true;
     this.poiService.getPois(this.accountOrganizationId).subscribe((poilist: any) => {
       if(poilist.length > 0){
         poilist.forEach(element => {
@@ -1661,6 +1662,7 @@ convertToFromTime(milliseconds: any){
       }
       
     });
+    this.showLoadingIndicator = false;
   }
 
   loadPOISelectedData(tableData: any){
@@ -1711,6 +1713,7 @@ convertToFromTime(milliseconds: any){
   }
 
   loadGeofenceData() {
+    this.showLoadingIndicator = true;
     // this.geofenceService.getAllGeofences(this.accountOrganizationId).subscribe((geofencelist: any) => {
     this.geofenceService.getGeofenceDetails(this.accountOrganizationId).subscribe((geofencelist: any) => {
       // this.geofenceGridData = geofencelist.geofenceList;
@@ -1720,6 +1723,7 @@ convertToFromTime(milliseconds: any){
       if(this.actionType == 'view' || this.actionType == 'edit' || this.actionType == 'duplicate')
         this.loadGeofenceSelectedData(this.geofenceGridData);
     });
+    this.showLoadingIndicator = false;
   }
 
   loadGeofenceSelectedData(tableData: any){
@@ -1770,6 +1774,7 @@ convertToFromTime(milliseconds: any){
   }
 
   loadGroupData(){
+    this.showLoadingIndicator = true;
     let objData = { 
       organizationid : this.accountOrganizationId,
    };
@@ -1782,8 +1787,10 @@ convertToFromTime(milliseconds: any){
           this.loadGroupSelectedData(this.groupGridData);
         }
       }
+      this.showLoadingIndicator = false;
     }, (error) => {
       ////console.log(error)
+      this.showLoadingIndicator = false;
     });
   }
 
@@ -1815,14 +1822,16 @@ convertToFromTime(milliseconds: any){
   }
 
   loadCorridorData(){
+    this.showLoadingIndicator = true;
     this.corridorService.getCorridorList(this.accountOrganizationId).subscribe((data : any) => {
       this.corridorGridData = data;
       this.updateCorridorDatasource(this.corridorGridData);
       if(this.actionType == 'view' || this.actionType == 'edit' || this.actionType == 'duplicate'){
         this.loadCorridorSelectedData(this.corridorGridData);
       }
+      this.showLoadingIndicator = false;
     }, (error) => {
-      
+      this.showLoadingIndicator = false;
     });
   }
 
