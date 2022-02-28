@@ -501,20 +501,17 @@ this.map.setZoom(14);
   }
 
   onCreatePoi() {
-
     let subcatId = this.poiFormGroup.controls.subcategory.value;
-    if(subcatId == "")
-    {
+    if(subcatId == "") {
       subcatId = 0;
     }
     let zip = this.poiFormGroup.controls.zip.value;
-    if(zip == null)
-    {
+    if(zip == null) {
       zip = "";
     }
     
     let orgId: any = this.organizationId;
-    if(this.poiFormGroup.controls.type.value && this.poiFormGroup.controls.type.value == 'Global'){
+    if(this.poiFormGroup.controls.type.value && this.poiFormGroup.controls.type.value == 'Global') {
       orgId = 0;
     }
 
@@ -556,8 +553,7 @@ this.map.setZoom(14);
           this.getDuplicateCategoryMsg(this.poiFormGroup.controls.name.value.trim());
         }
       });
-    }
-    else { //-- update
+    } else { //-- update
       let objData = {
         id: this.selectedElementData.id,
         icon: this.selectedElementData.icon,
@@ -588,14 +584,12 @@ this.map.setZoom(14);
 
         });
       }, (error) => {
-        if(error.status == 409){
+        if(error.status == 409) {
           this.duplicatePOIName = true;
           this.getDuplicateCategoryMsg(this.poiFormGroup.controls.name.value.trim());
         }
       });
-
     }
-
   }
 
   onTypeChange(typeValue: any) {
@@ -607,7 +601,7 @@ this.map.setZoom(14);
     // }
   }
 
-  onReset(){
+  onReset() {
     //-- reset POI here
     this.setDefaultValue();
     this.removeMapObjects();
