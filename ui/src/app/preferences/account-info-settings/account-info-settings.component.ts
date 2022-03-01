@@ -175,24 +175,34 @@ export class AccountInfoSettingsComponent implements OnInit {
         this.blobId = this.accountInfo[0]["blobId"];
       }
       if(this.blobId != 0){
-        this.showLoadingIndicator=true;
-        this.changePictureFlag= true;
-        this.isSelectPictureConfirm= true;
-        this.accountService.getAccountPicture(this.blobId).subscribe(data => {
-          if(data){
-            this.profilePicture = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + data["image"]);
-            this.croppedImage = this.profilePicture;
-          }
-          this.showLoadingIndicator=false;
-        }, (error) => {
-          this.showLoadingIndicator=false;
-        })
+        this.changePictureFlag = true;
+        this.isSelectPictureConfirm = true;
+        if(_accountInfo && _accountInfo.accountDetail && _accountInfo.accountDetail.imagePath){
+          this.setProfilePic(_accountInfo.accountDetail.imagePath);
+        }else{
+          this.showLoadingIndicator = true;
+          this.accountService.getAccountPicture(this.blobId).subscribe((data: any) => {
+            if(data){
+              this.showLoadingIndicator = false;
+              this.setProfilePic(data["image"]);
+              _accountInfo.accountDetail.imagePath = data["image"]; // profile pic updated
+              localStorage.setItem("accountInfo", JSON.stringify(_accountInfo));
+            }
+          }, (error) => {
+            this.showLoadingIndicator = false;
+          });
+        }
       }
       else{
         this.changePictureFlag= false;
         this.isSelectPictureConfirm= false;
       }
     }
+  }
+
+  setProfilePic(path: any){
+    this.profilePicture = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + path);
+    this.croppedImage = this.profilePicture;
   }
 
   loadGeneralSettingData(_accountInfo: any){
@@ -551,6 +561,7 @@ export class AccountInfoSettingsComponent implements OnInit {
           let accountInfo = JSON.parse(localStorage.getItem("accountInfo"));
           if(accountInfo && accountInfo.accountDetail){
             accountInfo.accountDetail.blobId = this.blobId;
+            accountInfo.accountDetail.imagePath = objData.image; // profile pic updated
             localStorage.setItem("accountInfo", JSON.stringify(accountInfo));
           }
           if(this.translationData.lblAccountPictureSuccessfullyUpdated)
