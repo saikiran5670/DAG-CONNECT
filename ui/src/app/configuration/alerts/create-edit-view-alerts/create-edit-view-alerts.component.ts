@@ -736,7 +736,9 @@ public ngAfterViewInit() {
           break;
         }
       }
-    } 
+    }
+    
+
   }
 
   updateVehiclesList(alertTypeObj: any){
@@ -1881,6 +1883,13 @@ convertToFromTime(milliseconds: any){
     setTimeout(()=>{
       this.poiDataSource.paginator = this.paginator.toArray()[0];
       this.poiDataSource.sort = this.sort.toArray()[0];
+      this.poiDataSource.sortData = (data: String[], sort: MatSort) => {
+        const isAsc = sort.direction === 'asc';
+        return data.sort((a: any, b: any): any => {
+          let columnName = sort.active;
+          return this.compareOnalerteditview(a[sort.active], b[sort.active], isAsc, columnName);
+        });
+       }
     });
   }
 
@@ -1902,8 +1911,22 @@ convertToFromTime(milliseconds: any){
       //     return this.compare(a[sort.active], b[sort.active], isAsc);
       //   });
       //  }
+      this.geofenceDataSource.sortData = (data: String[], sort: MatSort) => {
+        const isAsc = sort.direction === 'asc';
+        return data.sort((a: any, b: any): any => {
+          let columnName = sort.active;
+          return this.compareOnalerteditview(a[sort.active], b[sort.active], isAsc, columnName);
+        });
+       }
     }, 2000);
   }
+
+  compareOnalerteditview(a: any, b: any, isAsc: boolean, columnName:any) {
+    if(!(a instanceof Number)) a = a.replace(/\s/g, '').replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
+    if(!(b instanceof Number)) b = b.replace(/\s/g, '').replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  }
+
 
   compareVehicleGroupList(a: any | String, b: any | String, isAsc: boolean) {
     a = parseInt(a.vehicleGroupId);
@@ -1945,6 +1968,19 @@ convertToFromTime(milliseconds: any){
     setTimeout(()=>{
       this.groupDataSource.paginator = this.paginator.toArray()[2];
       this.groupDataSource.sort = this.sort.toArray()[2];
+      this.groupDataSource.sortData = (data: String[], sort: MatSort) => {
+         
+        const isAsc = sort.direction === 'asc';
+        return data.sort((a: any, b: any): any => {
+        let columnName = sort.active;
+        if ( columnName == 'name') {
+          return this.compareOnalerteditview(a[sort.active], b[sort.active], isAsc, columnName);
+        } else {
+
+          return this.comparenumber(a[sort.active], b[sort.active], isAsc);
+        }
+        });  
+     }
     });
   }
 
@@ -1962,9 +1998,33 @@ convertToFromTime(milliseconds: any){
     setTimeout(()=>{
       this.corridorDataSource.paginator = this.paginator.toArray()[0];
       this.corridorDataSource.sort = this.sort.toArray()[0];
+      this.corridorDataSource.sortData = (data: String[], sort: MatSort) => {
+        const isAsc = sort.direction === 'asc';
+        return data.sort((a: any, b: any): any => {
+          let columnName = sort.active;
+          if (columnName == 'corridoreName' ||  columnName == 'startPoint' || columnName == 'endPoint') {
+            return this.compareCorridor(a[sort.active], b[sort.active], isAsc, columnName);
+          } else {
+            return this.comparenumber(a[sort.active], b[sort.active], isAsc);
+          }
+          
+          
+        });
+       }
     });
   }
 
+  compareCorridor(a: any, b: any, isAsc: boolean, columnName:any) {
+    if(!(a instanceof Number)) a = a.replace(/\s/g, '').replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
+    if(!(b instanceof Number)) b = b.replace(/\s/g, '').replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  }
+
+  comparenumber(a: Number | String, b: Number | String, isAsc: boolean) {
+    if(!(a instanceof Number)) a = a;
+    if(!(b instanceof Number)) b = b;
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  }
 
   onPOIClick(row: any){
     const colsList = ['icon', 'landmarkname', 'categoryname', 'subcategoryname', 'address'];

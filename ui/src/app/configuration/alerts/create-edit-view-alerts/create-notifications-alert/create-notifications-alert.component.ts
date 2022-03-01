@@ -201,10 +201,11 @@ export class CreateNotificationsAlertComponent implements OnInit, OnChanges {
 
   getTransContactMode() {
     this.contactModes = [
-      {
-        id: 'W',
-        value: this.translationData.lblWebservice
-      },
+      // Commenting this option as there is not Webservice Integration as of now.
+      // {
+      //   id: 'W',
+      //   value: this.translationData.lblWebservice
+      // },
       {
         id: "E",
         value: this.translationData.lblEmail 
