@@ -170,7 +170,7 @@ export class AccountInfoSettingsComponent implements OnInit {
       this.editAccountSettingsFlag = false;
       this.isSelectPictureConfirm = true;
       this.setDefaultAccountInfo();
-      this.loadGeneralSettingData(); 
+      this.loadGeneralSettingData(_accountInfo); 
       if(this.accountInfo.length != 0){
         this.blobId = this.accountInfo[0]["blobId"];
       }
@@ -195,7 +195,7 @@ export class AccountInfoSettingsComponent implements OnInit {
     }
   }
 
-  loadGeneralSettingData(){
+  loadGeneralSettingData(_accountInfo: any){
     let languageCode = this.localStLanguage.code;
     let preferenceId = this.accountInfo[0]["preferenceId"];
     let accountNavMenu = localStorage.getItem("accountNavMenu") ? JSON.parse(localStorage.getItem("accountNavMenu")) : [];
@@ -208,16 +208,16 @@ export class AccountInfoSettingsComponent implements OnInit {
     });
     let _prefData: any = JSON.parse(localStorage.getItem('prefDetail'));
     if(languageCode.toUpperCase() == 'EN-GB'){
-      this.callToProceed(preferenceId, accountNavMenu, _prefData);
+      this.callToProceed(preferenceId, accountNavMenu, _prefData, _accountInfo);
     }else{
       if(_prefData && _prefData.isUpdate){
-        this.callToProceed(preferenceId, accountNavMenu, _prefData);
+        this.callToProceed(preferenceId, accountNavMenu, _prefData, _accountInfo);
       }else {
         this.translationService.getPreferences(languageCode).subscribe((_data: any) => { 
           if(_data){
             _data.isUpdate = true; // lang updated
             localStorage.setItem("prefDetail", JSON.stringify(_data)); // update LS
-            this.callToProceed(preferenceId, accountNavMenu, _data); 
+            this.callToProceed(preferenceId, accountNavMenu, _data, _accountInfo); 
           }
         }, (error) => {  });
       }
@@ -225,7 +225,7 @@ export class AccountInfoSettingsComponent implements OnInit {
     
   }
 
-  callToProceed(preferenceId: any, accountNavMenu: any, data: any){
+  callToProceed(preferenceId: any, accountNavMenu: any, data: any, _accountInfo: any){
       let dropDownData = data;
       this.languageDropdownData = dropDownData.language;
       this.languageDropdownData.sort(this.compare);    
@@ -242,12 +242,12 @@ export class AccountInfoSettingsComponent implements OnInit {
       this.landingPageDisplayDropdownData.sort(this.compare);
       this.resetLandingPageFilter();
       if(preferenceId > 0){ //-- account pref
-        this.accountService.getAccountPreference(preferenceId).subscribe(resp => {
-          this.accountPreferenceData = resp;
+        if(_accountInfo && _accountInfo.accountPreference){
+          this.accountPreferenceData = _accountInfo.accountPreference;
           this.pageRefreshTimeData = this.accountPreferenceData.pageRefreshTime;
           this.updateBrandIcon();
           this.goForword(this.accountPreferenceData);
-        }, (error) => {  });
+        }
       }
       else{ //--- default org pref
         this.organizationService.getOrganizationPreference(this.organizationId).subscribe((data: any) => {
