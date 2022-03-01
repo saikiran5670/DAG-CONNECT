@@ -15,6 +15,8 @@ export class PreferencesComponent implements OnInit, AfterViewInit {
   public selectedIndex: number = 0;
   localStLanguage: any;
   accountInfo: any;
+  showPrefTabs: boolean = false;
+  showLoadingIndicator: boolean = false;
 
   constructor(private translationService: TranslationService, private route: Router, private dataInterchangeService: DataInterchangeService, private cdr: ChangeDetectorRef) {
     this.dataInterchangeService.settingInterface$.subscribe(data => {
@@ -34,7 +36,9 @@ export class PreferencesComponent implements OnInit, AfterViewInit {
       filter: "",
       menuId: 0 //-- for common & user preference
     }
+    this.showLoadingIndicator = true;
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
+      this.showLoadingIndicator = false;
       this.processTranslation(data);
     });
   }
@@ -49,6 +53,8 @@ export class PreferencesComponent implements OnInit, AfterViewInit {
       }
       else if (currentComponentUrl.substr(0, 15) == "/fleetoverview/") { this.selectedIndex = 3; }
       else { this.selectedIndex = 0; }
+
+      this.showPrefTabs = true;
     }
     this.cdr.detectChanges();
   }
