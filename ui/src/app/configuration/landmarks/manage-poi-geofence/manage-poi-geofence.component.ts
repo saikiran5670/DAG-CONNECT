@@ -561,7 +561,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
   }
 
   compare(a: any, b: any, isAsc: boolean, columnName: any) {
-    if(columnName != "Icon" || columnName != "All" || columnName != "Actions") {
+    if(columnName == "name" || columnName == "categoryName" || columnName == "subCategoryName" || columnName == "address") {
       if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toUpperCase();
       if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toUpperCase();
     }

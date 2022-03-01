@@ -399,7 +399,7 @@
     <app-eco-score-report-driver (backToMainPage)='backToMainPage()' [driverPerformanceGraphColumnData]='driverPerformanceGraphColumnData' [generalGraphColumnData]="generalGraphColumnData" [ecoScoreDriverInfo]="selectedDriverData" [ecoScoreDriverDetails]="ecoScoreDriverDetails"
     [ecoScoreDriverDetailsTrendLine]="ecoScoreDriverDetailsTrendLine"  [generalColumnData]='generalColumnData' [driverPerformanceColumnData]='driverPerformanceColumnData'
     [translationData]="translationData" [prefUnitFormat]='prefUnitFormat' [prefObj]='prefObj' [selectionTab]='selectionTab' [trendLineSearchDataParam]='trendLineSearchDataParam'
-     (vehicleLimitExceeds)='vehicleLimitExceeds($event)' *ngIf="!noSingleDriverData"></app-eco-score-report-driver>
+     (vehicleLimitExceeds)='vehicleLimitExceeds($event)' [vehicleDisplayPreference]='vehicleDisplayPreference' *ngIf="!noSingleDriverData"></app-eco-score-report-driver>
   </div>
   <div *ngIf="compareEcoScore">
     <app-eco-score-driver-compare (backToMainPage)='backToMainPage()' [compareEcoScore]="compareDriverEcoScoreSearchParam" [generalColumnData]='generalColumnData' [driverPerformanceColumnData]='driverPerformanceColumnData' [prefUnitFormat]='prefUnitFormat' [translationData]="translationData"></app-eco-score-driver-compare>
