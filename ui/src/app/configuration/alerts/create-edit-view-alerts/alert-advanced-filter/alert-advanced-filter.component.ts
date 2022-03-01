@@ -512,6 +512,14 @@ export class AlertAdvancedFilterComponent implements OnInit {
       setTimeout(()=>{
         this.geofenceDataSource.paginator = this.paginator.toArray()[1];
         this.geofenceDataSource.sort = this.sort.toArray()[1];
+        this.geofenceDataSource.sortData = (data: String[], sort: MatSort) => {
+          const isAsc = sort.direction === 'asc';
+          return data.sort((a: any, b: any): any => {
+            let columnName = sort.active;
+            return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
+          });
+         }
+        
       },2000);
     }
 
@@ -545,7 +553,26 @@ export class AlertAdvancedFilterComponent implements OnInit {
       setTimeout(()=>{
         this.groupDataSource.paginator = this.paginator.toArray()[2];
         this.groupDataSource.sort = this.sort.toArray()[2];
+        this.groupDataSource.sortData = (data: String[], sort: MatSort) => {
+         
+            const isAsc = sort.direction === 'asc';
+            return data.sort((a: any, b: any): any => {
+            let columnName = sort.active;
+            if ( columnName == 'name') {
+              return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
+            } else {
+
+              return this.comparenumber(a[sort.active], b[sort.active], isAsc);
+            }
+            });  
+         }
       },2000);
+    }
+
+    comparenumber(a: Number | String, b: Number | String, isAsc: boolean) {
+      if(!(a instanceof Number)) a = a;
+      if(!(b instanceof Number)) b = b;
+      return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
     }
 
     loadGroupSelectedData(tableData: any){
@@ -700,9 +727,23 @@ export class AlertAdvancedFilterComponent implements OnInit {
       setTimeout(()=>{
         this.poiDataSource.paginator = this.paginator.toArray()[0];
         this.poiDataSource.sort = this.sort.toArray()[0];
+        this.poiDataSource.sortData = (data: String[], sort: MatSort) => {
+        const isAsc = sort.direction === 'asc';
+        return data.sort((a: any, b: any): any => {
+          let columnName = sort.active;
+          return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
+        });
+       }
+
       },2000);
     }
 
+    compare(a: any, b: any, isAsc: boolean, columnName:any) {
+      if(!(a instanceof Number)) a = a.replace(/\s/g, '').replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
+      if(!(b instanceof Number)) b = b.replace(/\s/g, '').replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
+      return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+    }
+   
     selectPOITableRows(rowData: any, event?:any){
       if(event){
         this.poiDataSource.data.forEach((row: any) => {
