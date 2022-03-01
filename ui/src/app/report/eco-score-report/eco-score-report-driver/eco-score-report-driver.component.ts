@@ -57,6 +57,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
   @Input() prefObj: any = {};
   @Input() selectionTab: string;
   @Input() trendLineSearchDataParam: any;
+  @Input() vehicleDisplayPreference: any;
   @Output() vehicleLimitExceeds = new EventEmitter<object>();
   @Output() backToMainPage = new EventEmitter<any>();
   @ViewChild('trendLineChart') trendLineChart: ChartComponent;
@@ -1006,12 +1007,20 @@ export class EcoScoreReportDriverComponent implements OnInit {
       });
       this.driverDetailsGen.forEach((element, index) => {
         let vin = this.driverDetailsGen[index].vin;
-        if (
-          vin == '' &&
-          this.driverDetailsGen[index].headerType.indexOf('Overall') !== -1
-        )
+        let vehDisplay = '';
+        if ( vin == '' && this.driverDetailsGen[index].headerType.indexOf('Overall') !== -1 ){
           vin = this.translationData.lblOverall;
-        let driverG = '<span style="font-weight:700">' + vin + '</span>';
+          vehDisplay = this.translationData.lblOverall;
+        } else {
+          if(this.vehicleDisplayPreference == 'dvehicledisplay_VehicleName' || this.vehicleDisplayPreference == 'dvehicledisplay_Name')
+            vehDisplay = this.driverDetailsGen[index].vehicleName;
+          else if(this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber')
+            vehDisplay = vin;
+          else if(this.vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber')
+            vehDisplay = this.driverDetailsGen[index].registrationNo;
+          }
+
+        let driverG = '<span style="font-weight:700">' + vehDisplay + '</span>';
         this.columnGeneral.push({ columnId: vin });
         this.columnDefinitionsGen.push({
           id: vin,
@@ -1024,6 +1033,14 @@ export class EcoScoreReportDriverComponent implements OnInit {
       });
       this.driverDetails.forEach((element, index) => {
         let driver;
+        let vehDisplay = '';
+        if(this.vehicleDisplayPreference == 'dvehicledisplay_VehicleName' || this.vehicleDisplayPreference == 'dvehicledisplay_Name')
+          vehDisplay = this.driverDetails[index].vehicleName;
+        else if(this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber')
+          vehDisplay = this.driverDetails[index].vin;
+        else if(this.vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber')
+          vehDisplay = this.driverDetails[index].registrationNo;
+
         if (element.headerType.indexOf('Driver') !== -1)
           driver =
             '<span style="font-weight:700">' +
@@ -1050,7 +1067,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
             id: 'driver_' + index,
             name: driver,
             field: 'score',
-            columnGroup: this.driverDetails[index].vin,
+            columnGroup: vehDisplay,
             type: FieldType.number,
             formatter: this.getScore,
             width: 275,
