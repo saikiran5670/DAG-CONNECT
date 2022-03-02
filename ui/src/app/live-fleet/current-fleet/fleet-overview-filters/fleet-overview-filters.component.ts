@@ -132,10 +132,12 @@ ngOnChanges(changes: SimpleChanges) {
       level: ['all'],
       category: ['all'],
       status: ['all'],
-      otherFilter: ['all']
+      otherFilter: ['all'],
+      vehicleSearch: ['']
     })
     this.driverVehicleForm = this._formBuilder.group({
       driver: ['all'],
+      driverSearch:['']
     })
     this.getFilterData();
     this.drawIcons(this.detailsData);
@@ -380,7 +382,7 @@ ngOnChanges(changes: SimpleChanges) {
       }
 
       this.noRecordFlag = false;
-
+      this.applyFilterDriver(this.driverVehicleForm.controls.driverSearch.value);
     }, (error) => {
       let val = [{vehicleGroup : driverSelected[0]?.driverId, data : error}];
       this.messageService.sendMessage(val);
@@ -633,7 +635,7 @@ removeDuplicates(originalArray, prop) {
   
      }
      this.filterVINonMap();
-    
+     this.filterVehicleForm.get("vehicleSearch").setValue('');
   }
 
   toggleAllSelectionAlertLevel() {
@@ -694,6 +696,7 @@ removeDuplicates(originalArray, prop) {
       });
     }
     this.filterVINonMap();
+    this.filterVehicleForm.get("vehicleSearch").setValue('');
   }
   // onChangeLevel(id: any){
   //   this.filterVehicleForm.get("level").setValue(id);
@@ -760,6 +763,7 @@ removeDuplicates(originalArray, prop) {
     });
     }
     this.filterVINonMap();
+    this.filterVehicleForm.get("vehicleSearch").setValue('');
   }
 
   // onChangHealthStatus(all, id: any) {
@@ -848,7 +852,7 @@ removeDuplicates(originalArray, prop) {
     }
 
     this.filterVINonMap();
-
+    this.filterVehicleForm.get("vehicleSearch").setValue('');
   }
 
   toggleAllSelectionHealth() {
@@ -987,6 +991,7 @@ removeDuplicates(originalArray, prop) {
     }
 
     this.filterVINonMap();
+    this.filterVehicleForm.get("vehicleSearch").setValue('');
   }
 
   filterVINonMap(){ // VIN on map
@@ -1041,6 +1046,7 @@ removeDuplicates(originalArray, prop) {
     });
 
     this.getprocessedLiveFLeetFilterData(this.vehicleListData, value);
+    this.driverVehicleForm.get("driverSearch").setValue('');
   }
 
   getprocessedLiveFLeetFilterData(vehicalDataVal, val) {
@@ -1229,7 +1235,7 @@ removeDuplicates(originalArray, prop) {
     this.dataInterchangeService.getVehicleData(_dataObj);//change as per filter data
     this.noRecordFlag = false;
     this.showLoadingIndicator = false;
-
+    this.applyFilter(this.filterVehicleForm.controls.vehicleSearch.value)
     }, (error) => {
       this.getFleetOverviewDetails.unsubscribe();
       this.vehicleListData = [];
