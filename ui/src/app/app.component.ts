@@ -627,14 +627,24 @@ export class AppComponent {
       this.organizationDropdown = this.accountInfo.organization;
       this.roleDropdown = this.accountInfo.role;     
       this.setDropdownValues();
-      if (this.accountInfo.accountDetail.blobId != 0) {
-        this.accountService.getAccountPicture(this.accountInfo.accountDetail.blobId).subscribe(data => {
-          if (data) {
-            this.fileUploadedPath = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + data["image"]);
-          }
-        })
+      if (this.accountInfo.accountDetail && this.accountInfo.accountDetail.blobId && this.accountInfo.accountDetail.blobId != 0) {
+        if(this.accountInfo.accountDetail.imagePath){ // profile pic already there
+          this.setProfilePic(this.accountInfo.accountDetail.imagePath);
+        }else{ // get profile pic
+          this.accountService.getAccountPicture(this.accountInfo.accountDetail.blobId).subscribe((data: any) => {
+            if (data) {
+              this.setProfilePic(data["image"]);
+              this.accountInfo.accountDetail.imagePath = data["image"];
+              localStorage.setItem("accountInfo", JSON.stringify(this.accountInfo));
+            }
+          }, (error)=>{ });
+        }
       }
     }
+  }
+
+  setProfilePic(path: any){
+    this.fileUploadedPath = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + path);
   }
 
   setDropdownValues() {

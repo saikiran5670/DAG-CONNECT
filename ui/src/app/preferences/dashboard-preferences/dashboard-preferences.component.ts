@@ -23,7 +23,7 @@ export class DashboardPreferencesComponent implements OnInit {
   reportId: any;
   unitId: any;
   //prefUnit: any;
-  prefUnitFormat: any;
+  prefUnitFormat: any = 'dunit_Metric'; 
   initData: any = [];
   getDashboardPreferenceResponse: any = {};
   selectionForFleetKPIColumns = new SelectionModel(true, []);
@@ -133,6 +133,7 @@ export class DashboardPreferencesComponent implements OnInit {
     this.dashboardService.getDashboardPreferences(this.reportId).subscribe((prefData: any) => {
       this.hideloader();
       this.initData = prefData['userPreferences'];
+      this.editDashboardFlag = false;
       this.getDashboardPreferenceResponse = this.initData;
       this.getUnits();
       this.resetColumnData();
@@ -289,8 +290,8 @@ export class DashboardPreferencesComponent implements OnInit {
           }
         });
       });
+      this.setColumnCheckbox();
     }
-    this.setColumnCheckbox();
   }
 
   secondsToHms(d) {

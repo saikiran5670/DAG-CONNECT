@@ -5,7 +5,7 @@
                 <span class='font-helvetica-md font-14-px line-height-21px'>{{ translationData.lblPreferences }} <span class='font-14-px line-height-21px'>({{ translationData.lblPersonaliseyourowndisplaysettings || 'Personalise your own display settings' }})</span></span>
             </div>
         </div>
-        <div style="background: rgb(241, 242, 243); padding: 0px 25px;">
+        <div *ngIf="showPrefTabs" style="background: rgb(241, 242, 243); padding: 0px 25px;">
             <mat-tab-group [(selectedIndex)]="selectedIndex" (selectedTabChange)="onTabChanged($event);">
                 <mat-tab label="{{ translationData.lblAccountInfoSettings }}"> 
                     <app-account-info-settings *ngIf="selectedIndex == 0" [translationData]='translationData'></app-account-info-settings>
@@ -21,5 +21,6 @@
                 </mat-tab>
             </mat-tab-group>
         </div>
+        <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
     </div> 
 </div>
