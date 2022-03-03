@@ -189,7 +189,7 @@ export class DashboardPreferencesComponent implements OnInit {
       this.initData = prefData['userPreferences'];
       this.editDashboardFlag = false;
       this.getDashboardPreferenceResponse = this.initData;
-      ////console.log("dataaaaaaa--->", this.getDashboardPreferenceResponse);
+      // console.log("dataaaaaaa--->", this.getDashboardPreferenceResponse);
       this.getUnits();
       this.resetColumnData();
       this.prepareDataDashboardPref();
@@ -530,7 +530,9 @@ export class DashboardPreferencesComponent implements OnInit {
     {
     this.responseFlag=true;
     this.dashboardService.createDashboardPreferences(objData).subscribe((prefData: any) => {
-      this.loadDashboardPreferences();
+      if(prefData) {
+        this.loadDashboardPreferences();
+      }
       this.successMsgBlink('Dashboard Preferences Updated Successfully');
       //this.setDashboardFlag.emit({ flag: false, msg: this.getSuccessMsg() });
       //this.reloadCurrentComponent();

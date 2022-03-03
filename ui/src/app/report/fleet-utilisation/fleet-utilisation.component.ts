@@ -52,7 +52,7 @@ export class FleetUtilisationComponent implements OnInit, OnDestroy {
   selectedStartTime: any = '00:00';
   selectedEndTime: any = '23:59';
   tripForm: FormGroup;
-  displayedColumns = ['vehiclename', 'vin', 'registrationnumber', 'distance', 'numberOfTrips', 'tripTime', 'drivingTime', 'idleDuration', 'stopTime', 'averageDistancePerDay', 'averageSpeed', 'averageWeight', 'odometer'];
+  displayedColumns = ['vehicleName', 'vin', 'registrationNumber', 'distance', 'numberOfTrips', 'tripTime', 'drivingTime', 'idleDuration', 'stopTime', 'averageDistancePerDay', 'averageSpeed', 'averageWeight', 'odometer'];
   translationData: any = {};
   fleetUtilizationSearchData: any = {};
   // hereMap: any;
@@ -1631,15 +1631,25 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
             data.convertedAverageWeight?.toString().toLowerCase().includes(filter) ||
             data.convertedOdometer?.toString().toLowerCase().includes(filter)
    }
-      // this.dataSource.sortData = (data: String[], sort: MatSort) => {
-      //   const isAsc = sort.direction === 'asc';
-      //   return data.sort((a: any, b: any) => {
-      //       let columnName = sort.active;
-      //       return this.compareData(a[sort.active], b[sort.active], isAsc, columnName);
-      //   });
-      // }
+      this.dataSource.sortData = (data: String[], sort: MatSort) => {
+        const isAsc = sort.direction === 'asc';
+        return data.sort((a: any, b: any) => {
+            let columnName = sort.active;
+          return this.comparevehicle(a[sort.active], b[sort.active], isAsc, columnName);
+        });
+
+      }
       });
       Util.applySearchFilter(this.dataSource, this.displayedColumns ,this.filterValue );
+    }
+
+    comparevehicle(a: any, b: any, isAsc: boolean, columnName:any) {
+      if(columnName === "vehicleName" || columnName == "registrationNumber" || columnName == "vin"){
+        if(!(a instanceof Number)) a = a?a.replace(/[^\w\s]/gi, 'z').toUpperCase(): "";
+        if(!(b instanceof Number)) b = b?b.replace(/[^\w\s]/gi, 'z').toUpperCase(): "";
+      }
+  
+        return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
     }
 
     // compareData(a: Number | String, b: Number | String, isAsc: boolean, columnName: any) {
