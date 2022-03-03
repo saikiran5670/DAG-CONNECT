@@ -269,7 +269,7 @@ export class LoginComponent implements OnInit {
         OrganizationId: data.accountOrganization[0].id
       }  
       this.translationService.checkUserAcceptedTaC(objData).subscribe(response => {
-        // if(!response){ //commenting this line for terms & condition popup not getting displayed
+        if(!response){ 
           let langCode;
           if(accountPreference && accountPreference !== ''){
             let filterLang = languageCodes.filter(item => item.id == accountPreference["languageId"]);
@@ -288,19 +288,17 @@ export class LoginComponent implements OnInit {
             }
           this.translationService.getMenuTranslations(translationObj).subscribe( (resp) => {
             this.processTranslation(resp);
-            if(this.result){
              this.openTermsConditionsPopup(data, accountDetails, accountPreference);
-             }
             });
-        // }
-        // else{
+        }
+        else{
           if(this.result){
           this.gotoDashBoard();
           }
           else{
             this.dialogRefLogin.close();
           }
-        // }
+        }
       }, (error) => {
         this.gotoDashBoard();
       })  
