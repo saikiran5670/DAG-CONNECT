@@ -247,7 +247,7 @@ ngOnChanges(changes: SimpleChanges) {
 
   loadDriverData(){
     this.noRecordFlag = true;
-    // let newAlertCat=[];
+      // let newAlertCat=[];
     this.driversListGet = [];
     this.driversListfilterGet = [];
     let selectedDriverId:any;
@@ -304,10 +304,8 @@ ngOnChanges(changes: SimpleChanges) {
     let driverSelected = this.driverList.filter((elem)=> elem.driverId === this.driverVehicleForm.get("driver").value);
     this.reportService.getFleetOverviewDetails(this.objData).subscribe((fleetdata:any) => {
     let data =fleetdata.fleetOverviewDetailList; //this.fleetMapService.processedLiveFLeetData(fleetdata.fleetOverviewDetailList);
-    this.fleetData =[];
-    this.fleetData = data;
-    let val:any;
-    if(data.length>0){
+     let val:any;
+    if(data.length > 0){    
      if(driverSelected.length>0){
       val = [{driver : driverSelected[0].driverId, data : data}];
       }
@@ -315,12 +313,10 @@ ngOnChanges(changes: SimpleChanges) {
         val = [{driver : 'all', data : data}];
       }
       this.messageService.sendMessage(val);
-      // this.messageService.sendMessage("refreshTimer");
       this.drawIcons(data);
-    }
-    else{
-      this.drawIcons('');
-    }
+      }
+      // this.messageService.sendMessage("refreshTimer");
+
       data.forEach(item => {
         if(this.filterData && this.filterData.healthStatus){
           this.filterData["healthStatus"].forEach(e => {
@@ -343,7 +339,7 @@ ngOnChanges(changes: SimpleChanges) {
     //  ////console.log(newAlertCat);
       this.vehicleListData = data;
       this.forFilterVehicleListData = data;
-
+      this.detailsData = data;
       // get Drivers's List from fleetOverview - Start
         this.driversListGet = [];
         this.driversListfilterGet = [];
