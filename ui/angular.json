@@ -112,8 +112,27 @@
               "core-js/modules/es.array.index-of.js",
               "core-js/modules/es.string.includes.js",
               "core-js/modules/es.array.reverse.js",
-              "core-js/modules/es.regexp.to-string.js"
-            ]
+              "core-js/modules/es.regexp.to-string.js",
+              "core-js-pure/features/array/from",
+              "core-js-pure/features/array/is-array",
+              "core-js-pure/features/instance/slice",
+              "core-js-pure/features/object/create",
+              "core-js-pure/features/object/define-property",
+              "core-js-pure/features/object/get-own-property-descriptor",
+              "core-js-pure/features/object/get-prototype-of",
+              "core-js-pure/features/object/set-prototype-of",
+              "core-js-pure/features/promise",
+              "core-js-pure/features/reflect/get",
+              "core-js-pure/features/symbol",
+              "core-js-pure/features/symbol/iterator",
+              "exceljs"
+            ],
+            "vendorChunk": true,
+            "extractLicenses": false,
+            "buildOptimizer": false,
+            "sourceMap": true,
+            "optimization": false,
+            "namedChunks": true
           },
           "configurations": {
             "production": {
@@ -128,7 +147,6 @@
               "sourceMap": false,
               "namedChunks": false,
               "extractLicenses": true,
-              "vendorChunk": true,
               "buildOptimizer": true,
               "budgets": [
                 {
@@ -143,7 +161,8 @@
                 }
               ]
             }
-          }        
+          },
+          "defaultConfiguration": ""        
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",

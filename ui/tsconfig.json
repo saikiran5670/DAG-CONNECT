@@ -12,11 +12,16 @@
     "importHelpers": true,
     "target": "es2015",
     "resolveJsonModule": true,
+    "strictPropertyInitialization": false,
     "lib": [
       "es2018",
       "dom"
     ],
     "paths": {
+      "@angular/*": ["node_modules/@angular/*"],
+      "jszip": [
+        "node_modules/jszip/dist/jszip.min.js"
+      ],
       "exceljs": [
         "node_modules/exceljs/dist/exceljs.min"
       ]
@@ -24,6 +29,7 @@
   },
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,
-    "strictInjectionParameters": true
+    "strictInjectionParameters": true,
+    "allowSyntheticDefaultImports": true 
   }
 }
