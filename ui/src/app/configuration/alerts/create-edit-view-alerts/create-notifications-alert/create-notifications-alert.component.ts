@@ -159,7 +159,7 @@ export class CreateNotificationsAlertComponent implements OnInit, OnChanges {
     
     this.accountId = parseInt(localStorage.getItem("accountId"));
     this.notificationForm = this._formBuilder.group({
-      recipientLabel: ['', [Validators.required]],
+      recipientLabel: ['', [Validators.required,Validators.maxLength(50)]],
       contactMode: ['E', [Validators.required]],
       criticalLevel: [''],
       warningLevel: [''],
@@ -201,10 +201,11 @@ export class CreateNotificationsAlertComponent implements OnInit, OnChanges {
 
   getTransContactMode() {
     this.contactModes = [
-      {
-        id: 'W',
-        value: this.translationData.lblWebservice
-      },
+      // Commenting this option as there is not Webservice Integration as of now.
+      // {
+      //   id: 'W',
+      //   value: this.translationData.lblWebservice
+      // },
       {
         id: "E",
         value: this.translationData.lblEmail 

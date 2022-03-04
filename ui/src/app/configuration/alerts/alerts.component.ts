@@ -415,7 +415,7 @@ export class AlertsComponent implements OnInit {
 
       this.originalAlertData= JSON.parse(JSON.stringify(data)); //Clone array of objects
       this.initData.forEach(item => {
-        this.setUnitOfThreshold(item);
+      this.setUnitOfThreshold(item);
 
       let catVal = this.alertCategoryList.filter(cat => cat.enum == item.category);
       catVal.forEach(obj => {
@@ -461,7 +461,7 @@ export class AlertsComponent implements OnInit {
       item =  Object.defineProperty(item, "highThresholdValue", {value : obj.thresholdValue,
       writable : true,enumerable : true, configurable : true});
       if(obj.unitType !='N') {
-      item.highThresholdValue = this.getConvertedThresholdValues(item.highThresholdValue, obj.unitType);
+      item.highThresholdValue = this.getConvertedThresholdValues(item.highThresholdValue, item.unitTypeEnum);
       }
       });
       }
@@ -472,7 +472,7 @@ export class AlertsComponent implements OnInit {
       item =  Object.defineProperty(item, "highThresholdValue", {value : obj.thresholdValue,
       writable : true,enumerable : true, configurable : true});
       if(obj.unitType !='N') {
-      item.highThresholdValue = this.getConvertedThresholdValues(item.highThresholdValue, obj.unitType);
+      item.highThresholdValue = this.getConvertedThresholdValues(item.highThresholdValue, item.unitTypeEnum);
       }
     });
       }
@@ -483,7 +483,7 @@ export class AlertsComponent implements OnInit {
       item =  Object.defineProperty(item, "highThresholdValue", {value : obj.thresholdValue,
       writable : true,enumerable : true, configurable : true});
       if(obj.unitType !='N') {
-      item.highThresholdValue = this.getConvertedThresholdValues(item.highThresholdValue, obj.unitType);
+      item.highThresholdValue = this.getConvertedThresholdValues(item.highThresholdValue, item.unitTypeEnum);
       }
     });
       }
@@ -525,6 +525,7 @@ export class AlertsComponent implements OnInit {
    let threshold;
    if(unitType == 'H' || unitType == 'T' ||unitType == 'S'){
     threshold =this.reportMapService.getConvertedTime(originalThreshold,unitType);
+    threshold = unitType == 'H'? threshold.toFixed(2):threshold;
    }
    else if(unitType == 'K' || unitType == 'L'){
     threshold =this.reportMapService.getConvertedDistance(originalThreshold,unitType);
@@ -541,59 +542,62 @@ export class AlertsComponent implements OnInit {
 
  setUnitOfThreshold(item){
   let unitTypeEnum, unitType;
-  switch(item.category +item.type){
-    case 'LH': unitTypeEnum= "H";
+  switch(item.category+item.type){
+    case 'LH': item.unitTypeEnum= "H";
     item.UnitTypeVal =  this.translationData.lblHours;
     break;
 
     case 'LD':
     if(this.prefUnitFormat == 'dunit_Metric'){
-      unitTypeEnum= "K";
+      item.unitTypeEnum= "K";
       item.UnitTypeVal = this.translationData.lblkm;
      }
       else{
-      unitTypeEnum= "L";
+      item.unitTypeEnum= "L";
       item.UnitTypeVal = this.translationData.lblmile;
       }
       break;
 
-    case 'LU': unitTypeEnum= "H";
+    case 'LU':
     // item.UnitTypeVal =  this.translationData.lblHours;
      unitType = item.alertUrgencyLevelRefs? item.alertUrgencyLevelRefs[0].unitType : 'S';
     if(unitType == 'H'){
+      item.unitTypeEnum= "H";
       item.UnitTypeVal = this.translationData.lblHours;
     }
     else if(unitType == 'T'){
+      item.unitTypeEnum= "T";
       item.UnitTypeVal = this.translationData.lblMinutes;
     }
     else{
+      item.unitTypeEnum= "S";
       item.UnitTypeVal = this.translationData.lblSeconds;
     }
      break;
 
     case 'LG':
     if(this.prefUnitFormat == 'dunit_Metric'){
-      unitTypeEnum= "K";
+      item.unitTypeEnum= "K";
       item.UnitTypeVal = this.translationData.lblkm;}
       else{
-      unitTypeEnum= "L";
+        item.unitTypeEnum= "L";
       item.UnitTypeVal = this.translationData.lblmile;
       }
      break;
 
-    case 'FP': unitTypeEnum= "P";
+    case 'FP': item.unitTypeEnum= "P";
     item.UnitTypeVal =  "%"
     break;
 
-    case 'FL': unitTypeEnum= "P";
+    case 'FL': item.unitTypeEnum= "P";
     item.UnitTypeVal =  "%"
     break;
 
-    case 'FT': unitTypeEnum= "P";
+    case 'FT': item.unitTypeEnum= "P";
     item.UnitTypeVal =  "%"
     break;
 
-    case 'FI': unitTypeEnum= "S";
+    case 'FI': item.unitTypeEnum= "S";
     // item.UnitTypeVal = this.translationData.lblSeconds;
     unitType = item.alertUrgencyLevelRefs? item.alertUrgencyLevelRefs[0].unitType : 'S';
     if(unitType == 'H'){
@@ -609,20 +613,20 @@ export class AlertsComponent implements OnInit {
 
     case 'FA':
     if(this.prefUnitFormat == 'dunit_Metric'){
-      unitTypeEnum= "A";
+      item.unitTypeEnum= "A";
       item.UnitTypeVal = this.translationData.lblkilometerperhour;
     }
       else{
-        unitTypeEnum= "B";
+        item.unitTypeEnum= "B";
         item.UnitTypeVal = this.translationData.lblMilesPerHour
       }
       break;
 
-    case 'FF': unitTypeEnum= "P";
+    case 'FF': item.unitTypeEnum= "P";
     item.UnitTypeVal =  "%"
     break;
 
-    return item.UnitTypeVal;
+    return item.UnitTypeVal,item.unitTypeEnum ;
   }
  }
 
@@ -635,7 +639,7 @@ export class AlertsComponent implements OnInit {
     if(data && data.length > 0){
       this.initData = this.getNewTagData(data);
     }
-    this.initData = data;
+    // this.initData = data;
     this.dataSource = new MatTableDataSource(this.initData);
     this.initData.forEach((ele,index) => {
       if(ele.state == 'A'){

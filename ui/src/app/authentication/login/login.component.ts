@@ -192,7 +192,8 @@ export class LoginComponent implements OnInit {
          this.loginClicks = 0;
           //console.log("Error: " + error);
           if(error.status === 401){
-            this.invalidUserMsg = true;
+            this.errorMsg = error.error;
+            // this.invalidUserMsg = true;
           }
           else if(error.status == 404  || error.status == 403 || error.status == 500){
             this.errorMsg = error.error;
@@ -268,7 +269,7 @@ export class LoginComponent implements OnInit {
         OrganizationId: data.accountOrganization[0].id
       }  
       this.translationService.checkUserAcceptedTaC(objData).subscribe(response => {
-        if(!response){
+        if(!response){ 
           let langCode;
           if(accountPreference && accountPreference !== ''){
             let filterLang = languageCodes.filter(item => item.id == accountPreference["languageId"]);
@@ -287,8 +288,8 @@ export class LoginComponent implements OnInit {
             }
           this.translationService.getMenuTranslations(translationObj).subscribe( (resp) => {
             this.processTranslation(resp);
-            this.openTermsConditionsPopup(data, accountDetails, accountPreference);
-          });
+             this.openTermsConditionsPopup(data, accountDetails, accountPreference);
+            });
         }
         else{
           if(this.result){

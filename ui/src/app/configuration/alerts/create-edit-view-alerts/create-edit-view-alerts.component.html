@@ -516,10 +516,12 @@
 </div>
 </div>
         <!-- Map -->
-        <div *ngIf="(alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X')) ||
+        <!-- <div *ngIf="(alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X')) ||
                     (alert_category_selected === 'L' && alert_type_selected === 'C')" #map id="map" style="width: 100%; height: 450px; margin-bottom: 25px" > 
-        </div>
-                            
+        </div> -->
+        <div *ngIf="(alert_category_selected === 'L' && alert_type_selected === 'C')" #map id="map" style="width: 100%; height: 450px; margin-bottom: 25px" ></div>        
+        <div *ngIf="(alert_category_selected === 'L' && alert_type_selected === 'X')" #map id="map" style="width: 100%; height: 450px; margin-bottom: 25px" ></div>        
+        <div *ngIf="(alert_category_selected === 'L' && alert_type_selected === 'N')" #map id="map" style="width: 100%; height: 450px; margin-bottom: 25px" ></div>        
         <!-- POI table -->
         <div *ngIf="alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X') && ((actionType == 'view' && selectedPOIList.length > 0) || actionType=='edit' || actionType == 'create' || actionType == 'duplicate')">
             <div style='padding: 20px; position: relative;'>
@@ -557,7 +559,7 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="icon">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{translationData.lblicon || 'Icon' }}</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef>{{translationData.lblicon || 'Icon' }}</mat-header-cell>
                     <mat-cell *matCellDef="let row">
                       <mat-icon *ngIf="row.icon && row.icon == ''">place</mat-icon>
                       <img *ngIf="row.icon && row.icon != ''" [src]='row.icon' alt='' width='20px' height='20px'>
@@ -713,7 +715,7 @@
           </div>
 
         <!-- Corridor table -->
-          <div *ngIf="alert_category_selected === 'L' && alert_type_selected === 'C'">
+          <div *ngIf="alert_category_selected === 'L' && alert_type_selected === 'C'">  
             <div style='padding: 20px; position: relative;'>
               <mat-divider></mat-divider>
             </div>

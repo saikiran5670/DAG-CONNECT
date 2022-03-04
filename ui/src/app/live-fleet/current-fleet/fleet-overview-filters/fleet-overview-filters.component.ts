@@ -145,10 +145,12 @@ ngOnChanges(changes: SimpleChanges) {
       level: ['all'],
       category: ['all'],
       status: ['all'],
-      otherFilter: ['all']
+      otherFilter: ['all'],
+      vehicleSearch: ['']
     })
     this.driverVehicleForm = this._formBuilder.group({
       driver: ['all'],
+      driverSearch:['']
     })
     this.getFilterData();
     this.drawIcons(this.detailsData);
@@ -258,7 +260,7 @@ ngOnChanges(changes: SimpleChanges) {
 
   loadDriverData(){
     this.noRecordFlag = true;
-    // let newAlertCat=[];
+      // let newAlertCat=[];
     this.driversListGet = [];
     this.driversListfilterGet = [];
     let selectedDriverId:any;
@@ -314,9 +316,9 @@ ngOnChanges(changes: SimpleChanges) {
 
     let driverSelected = this.driverList.filter((elem)=> elem.driverId === this.driverVehicleForm.get("driver").value);
     this.reportService.getFleetOverviewDetails(this.objData).subscribe((fleetdata:any) => {
-    let data = this.fleetMapService.processedLiveFLeetData(fleetdata.fleetOverviewDetailList);
-
-    let val:any;
+    let data =fleetdata.fleetOverviewDetailList; //this.fleetMapService.processedLiveFLeetData(fleetdata.fleetOverviewDetailList);
+     let val:any;
+    if(data.length > 0){    
      if(driverSelected.length>0){
       val = [{driver : driverSelected[0].driverId, data : data}];
       }
@@ -324,8 +326,10 @@ ngOnChanges(changes: SimpleChanges) {
         val = [{driver : 'all', data : data}];
       }
       this.messageService.sendMessage(val);
-      // this.messageService.sendMessage("refreshTimer");
       this.drawIcons(data);
+      }
+      // this.messageService.sendMessage("refreshTimer");
+
       data.forEach(item => {
         if(this.filterData && this.filterData.healthStatus){
           this.filterData["healthStatus"].forEach(e => {
@@ -348,7 +352,7 @@ ngOnChanges(changes: SimpleChanges) {
     //  ////console.log(newAlertCat);
       this.vehicleListData = data;
       this.forFilterVehicleListData = data;
-
+      this.detailsData = data;
       // get Drivers's List from fleetOverview - Start
         this.driversListGet = [];
         this.driversListfilterGet = [];
@@ -391,9 +395,10 @@ ngOnChanges(changes: SimpleChanges) {
         this.driverVehicleForm.get("driver").setValue(this.getDropDataDriverList);
         this.onChangeDriver(this.getDropDataDriverList);
       }
-
-      this.noRecordFlag = false;
-
+      if(data.length>0){
+        this.noRecordFlag = false;
+      }   
+      this.applyFilterDriver(this.driverVehicleForm.controls.driverSearch.value);
     }, (error) => {
       let val = [{vehicleGroup : driverSelected[0]?.driverId, data : error}];
       this.messageService.sendMessage(val);
@@ -651,7 +656,7 @@ removeDuplicates(originalArray, prop) {
   
      }
      this.filterVINonMap();
-    
+     this.filterVehicleForm.get("vehicleSearch").setValue('');
   }
 
   toggleAllSelectionAlertLevel() {
@@ -712,6 +717,7 @@ removeDuplicates(originalArray, prop) {
       });
     }
     this.filterVINonMap();
+    this.filterVehicleForm.get("vehicleSearch").setValue('');
   }
   // onChangeLevel(id: any){
   //   this.filterVehicleForm.get("level").setValue(id);
@@ -778,6 +784,7 @@ removeDuplicates(originalArray, prop) {
     });
     }
     this.filterVINonMap();
+    this.filterVehicleForm.get("vehicleSearch").setValue('');
   }
 
   // onChangHealthStatus(all, id: any) {
@@ -866,7 +873,7 @@ removeDuplicates(originalArray, prop) {
     }
 
     this.filterVINonMap();
-
+    this.filterVehicleForm.get("vehicleSearch").setValue('');
   }
 
   toggleAllSelectionHealth() {
@@ -1005,6 +1012,7 @@ removeDuplicates(originalArray, prop) {
     }
 
     this.filterVINonMap();
+    this.filterVehicleForm.get("vehicleSearch").setValue('');
   }
 
   filterVINonMap(){ // VIN on map
@@ -1059,10 +1067,11 @@ removeDuplicates(originalArray, prop) {
     });
 
     this.getprocessedLiveFLeetFilterData(this.vehicleListData, value);
+    this.driverVehicleForm.get("driverSearch").setValue('');
   }
 
   getprocessedLiveFLeetFilterData(vehicalDataVal, val) {
-      let data = this.fleetMapService.processedLiveFLeetData(vehicalDataVal);
+      let data = vehicalDataVal;//this.fleetMapService.processedLiveFLeetData(vehicalDataVal);
 
       // this.messageService.sendMessage(val);
       // this.messageService.sendMessage("refreshTimer");
@@ -1214,7 +1223,7 @@ removeDuplicates(originalArray, prop) {
     //   this.getFleetOverviewDetails.unsubscribe();
     // }
     this.getFleetOverviewDetails = this.reportService.getFleetOverviewDetails(this.objData).subscribe((fleetdata:any) => {
-      let data = this.fleetMapService.processedLiveFLeetData(fleetdata.fleetOverviewDetailList);
+     let data = fleetdata.fleetOverviewDetailList;//this.fleetMapService.processedLiveFLeetData(fleetdata.fleetOverviewDetailList);
     this.fleetData = data;
 
     let val = [{vehicleGroup : vehicleGroupSel.vehicleGroupName, data : data}];
@@ -1245,9 +1254,11 @@ removeDuplicates(originalArray, prop) {
       }
     }
     this.dataInterchangeService.getVehicleData(_dataObj);//change as per filter data
-    this.noRecordFlag = false;
+    if(data.length>0){
+      this.noRecordFlag = false;
+    }   
     this.showLoadingIndicator = false;
-
+    this.applyFilter(this.filterVehicleForm.controls.vehicleSearch.value)
     }, (error) => {
       this.getFleetOverviewDetails.unsubscribe();
       this.vehicleListData = [];

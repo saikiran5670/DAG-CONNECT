@@ -1,5 +1,5 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { Component, EventEmitter, Input, OnInit, Output, QueryList, ViewChildren, ViewChild, ElementRef } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, QueryList, ViewChildren, ViewChild, ElementRef, Inject } from '@angular/core';
 import { FormBuilder, FormGroup,FormControl, Validators } from '@angular/forms';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
@@ -28,6 +28,7 @@ import { ReplaySubject } from 'rxjs';
 import { Util } from 'src/app/shared/util';
 import * as moment from 'moment';
 import { MapFunctionsService } from '../../landmarks/manage-corridor/map-functions.service';
+import { MAT_DATE_FORMATS } from '@angular/material/core';
 declare var H: any;
 
 @Component({
@@ -152,6 +153,18 @@ export class CreateEditViewAlertsComponent implements OnInit {
   localStLanguage: any;
   accountPrefObj: any;
   vehicleGrpByVehicleList: any = [];
+  internalSelection: boolean = false;
+  globalSearchFilterData: any = JSON.parse(localStorage.getItem("globalSearchFilterData"));
+  selectedStartTime: any = '00:00';
+  selectedEndTime: any = '23:59';
+  startTimeDisplay: any = '00:00:00';
+  endTimeDisplay: any = '23:59:59';
+  selectionTab: any;
+  startDateValue: any;
+  endDateValue: any;
+  //last3MonthDate: any;
+  todayDate: any;
+
   @Input() prefTimeFormat: any; //-- coming from pref setting
   @Input() prefTimeZone: any; //-- coming from pref setting
   @Input() prefDateFormat: any; //-- coming from pref setting
@@ -194,7 +207,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
   public filteredVehicles: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   
   
-  constructor(private _formBuilder: FormBuilder,
+  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private _formBuilder: FormBuilder,
               private poiService: POIService,
               private geofenceService: GeofenceService, 
               private landmarkGroupService: LandmarkGroupService, 
@@ -273,37 +286,37 @@ export class CreateEditViewAlertsComponent implements OnInit {
     this.alertForm.controls.widthInput.setValue(0.1);
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
-    //let _langCode = this.localStLanguage ? this.localStLanguage.code  :  "EN-GB";
+    let _langCode = this.localStLanguage ? this.localStLanguage.code  :  "EN-GB";
     
-    //this.showLoadingIndicator = true;
-    //this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
-      // if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
-      //   this.proceedStep(prefData, this.accountPrefObj.accountPreference);
-      //   this.showLoadingIndicator = false;
-      // }else{ // org pref
-      //   this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
-      //     this.proceedStep(prefData, orgPref);
-      //     this.showLoadingIndicator = false;
-      //   }, (error) => { // failed org API
-      //     this.showLoadingIndicator = false;
-      //     let pref: any = {};
-      //     this.proceedStep(prefData, pref);
-      //   });
-      // }
+    this.showLoadingIndicator = true;
+    this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
+      if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
+        this.proceedStep(prefData, this.accountPrefObj.accountPreference);
+        this.showLoadingIndicator = false;
+      }else{ // org pref
+        this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
+          this.proceedStep(prefData, orgPref);
+          this.showLoadingIndicator = false;
+        }, (error) => { // failed org API
+          this.showLoadingIndicator = false;
+          let pref: any = {};
+          this.proceedStep(prefData, pref);
+        });
+      }
 
-      //this.loadFilterDataBasedOnPrivileges();
-      // let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
-      // if(vehicleDisplayId) {
-      //   let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
-      //   if(vehicledisplay.length != 0) {
-      //     this.vehicleDisplayPreference = vehicledisplay[0].name;
-      //   }
-      // }  
-      // if(this.actionType == 'create')
-      // {
-      //   this.sliderChanged();
-      // }
-    //});
+      this.loadFilterDataBasedOnPrivileges();
+      let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
+      if(vehicleDisplayId) {
+        let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+        if(vehicledisplay.length != 0) {
+          this.vehicleDisplayPreference = vehicledisplay[0].name;
+        }
+      }  
+      if(this.actionType == 'create')
+      {
+        this.sliderChanged();
+      }
+    });
     if(this.finalVehicleGroupList && this.finalVehicleGroupList.length > 0){
       this.showLoadingIndicator = true;
       let _vehGrpList: any = {
@@ -341,29 +354,153 @@ public ngAfterViewInit() {
   
 }
   
-// proceedStep(prefData: any, preference: any){
-//   let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
-//   if(_search.length > 0){
-//     //this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
-//     this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
-//     //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
-//     this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
-//     this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
-//     this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
-//   }else{
-//     //this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
-//     this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
-//     //this.prefTimeZone = prefData.timezone[0].value;
-//     this.prefTimeZone = prefData.timezone[0].name;
-//     this.prefDateFormat = prefData.dateformat[0].name;
-//     this.prefUnitFormat = prefData.unit[0].name;
-//   }
-//   // this.setDefaultStartEndTime();
-//   // this.setPrefFormatDate();
-//   // this.setDefaultTodayDate();
-//   // this.getReportPreferences();
-//   // //console.log(this.prefUnitFormat);
-// }
+proceedStep(prefData: any, preference: any){
+  let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
+  if(_search.length > 0){
+    //this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
+    this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
+    //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+    this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
+    this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+    this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
+  }else{
+    //this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
+    this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
+    //this.prefTimeZone = prefData.timezone[0].value;
+    this.prefTimeZone = prefData.timezone[0].name;
+    this.prefDateFormat = prefData.dateformat[0].name;
+    this.prefUnitFormat = prefData.unit[0].name;
+  }
+  this.setDefaultStartEndTime();
+  this.setPrefFormatDate();
+  this.setDefaultTodayDate();
+
+  //console.log(this.prefUnitFormat);
+}
+setDefaultStartEndTime() {
+  this.setPrefFormatTime();
+}
+setPrefFormatTime() {
+  if (!this.internalSelection && this.globalSearchFilterData.modifiedFrom !== "" && ((this.globalSearchFilterData.startTimeStamp || this.globalSearchFilterData.endTimeStamp) !== "")) {
+    if (this.prefTimeFormat == this.globalSearchFilterData.filterPrefTimeFormat) { // same format
+      this.selectedStartTime = this.globalSearchFilterData.startTimeStamp;
+      this.selectedEndTime = this.globalSearchFilterData.endTimeStamp;
+      this.startTimeDisplay = (this.prefTimeFormat == 24) ? `${this.globalSearchFilterData.startTimeStamp}:00` : this.globalSearchFilterData.startTimeStamp;
+      this.endTimeDisplay = (this.prefTimeFormat == 24) ? `${this.globalSearchFilterData.endTimeStamp}:59` : this.globalSearchFilterData.endTimeStamp;
+    } else { // different format
+      if (this.prefTimeFormat == 12) { // 12
+        this.selectedStartTime = this._get12Time(this.globalSearchFilterData.startTimeStamp);
+        this.selectedEndTime = this._get12Time(this.globalSearchFilterData.endTimeStamp);
+        this.startTimeDisplay = `${this.selectedStartTime}:00 AM`;
+        this.endTimeDisplay =  `${this.selectedEndTime}:59 PM`;
+      } else { // 24
+        this.selectedStartTime = this.get24Time(this.globalSearchFilterData.startTimeStamp);
+        this.selectedEndTime = this.get24Time(this.globalSearchFilterData.endTimeStamp);
+        this.startTimeDisplay = `${this.selectedStartTime}:00`;
+        this.endTimeDisplay = `${this.selectedEndTime}:59`;
+      }
+    }
+  } else {
+    if (this.prefTimeFormat == 24) {
+      this.startTimeDisplay = '00:00:00';
+      this.endTimeDisplay = '23:59:59';
+      this.selectedStartTime = "00:00";
+      this.selectedEndTime = "23:59";
+    } else {
+      this.startTimeDisplay = '12:00:00 AM';
+      this.endTimeDisplay = '11:59:59 PM';
+      this.selectedStartTime = "12:00 AM";
+      this.selectedEndTime = "11:59 PM";
+    }
+  }
+
+}
+
+_get12Time(_sTime: any) {
+  let _x = _sTime.split(':');
+  let _yy: any = '';
+  if (_x[0] >= 12) { // 12 or > 12
+    if (_x[0] == 12) { // exact 12
+      _yy = `${_x[0]}:${_x[1]} PM`;
+    } else { // > 12
+      let _xx = (_x[0] - 12);
+      _yy = `${_xx}:${_x[1]} PM`;
+    }
+  } else { // < 12
+    _yy = `${_x[0]}:${_x[1]} AM`;
+  }
+  return _yy;
+}
+
+get24Time(_time: any) {
+  let _x = _time.split(':');
+  let _y = _x[1].split(' ');
+  let res: any = '';
+  if (_y[1] == 'PM') { // PM
+    let _z: any = parseInt(_x[0]) + 12;
+    res = `${(_x[0] == 12) ? _x[0] : _z}:${_y[0]}`;
+  } else { // AM
+    res = `${_x[0]}:${_y[0]}`;
+  }
+  return res;
+}
+
+setPrefFormatDate() {
+  switch (this.prefDateFormat) {
+    case 'ddateformat_dd/mm/yyyy': {
+      this.dateFormats.display.dateInput = "DD/MM/YYYY";
+      this.dateFormats.parse.dateInput = "DD/MM/YYYY";
+      break;
+    }
+    case 'ddateformat_mm/dd/yyyy': {
+      this.dateFormats.display.dateInput = "MM/DD/YYYY";
+      this.dateFormats.parse.dateInput = "MM/DD/YYYY";
+      break;
+    }
+    case 'ddateformat_dd-mm-yyyy': {
+      this.dateFormats.display.dateInput = "DD-MM-YYYY";
+      this.dateFormats.parse.dateInput = "DD-MM-YYYY";
+      break;
+    }
+    case 'ddateformat_mm-dd-yyyy': {
+      this.dateFormats.display.dateInput = "MM-DD-YYYY";
+      this.dateFormats.parse.dateInput = "MM-DD-YYYY";
+      break;
+    }
+    default: {
+      this.dateFormats.display.dateInput = "MM/DD/YYYY";
+      this.dateFormats.parse.dateInput = "MM/DD/YYYY";
+    }
+  }
+}
+setDefaultTodayDate() {
+  if (!this.internalSelection && this.globalSearchFilterData.modifiedFrom !== "") {
+    if (this.globalSearchFilterData.timeRangeSelection !== "") {
+      this.selectionTab = this.globalSearchFilterData.timeRangeSelection;
+    } else {
+      this.selectionTab = 'today';
+    }
+    let startDateFromSearch = new Date(this.globalSearchFilterData.startDateStamp);
+    let endDateFromSearch = new Date(this.globalSearchFilterData.endDateStamp);
+    this.startDateValue = this.setStartEndDateTime(startDateFromSearch, this.selectedStartTime, 'start');
+    this.endDateValue = this.setStartEndDateTime(endDateFromSearch, this.selectedEndTime, 'end');
+    //this.last3MonthDate = this.getLast3MonthDate();
+    this.todayDate = this.getTodayDate();
+  } else {
+    this.selectionTab = 'today';
+    this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
+    this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
+   // this.last3MonthDate = this.getLast3MonthDate();
+    this.todayDate = this.getTodayDate();
+  }
+}
+getTodayDate() {
+  let _todayDate: any = Util.getUTCDate(this.prefTimeZone);
+  _todayDate.setHours(0);
+  _todayDate.setMinutes(0);
+  _todayDate.setSeconds(0);
+  return _todayDate;
+}
 
   toBack() {
     let emitObj = {
@@ -736,7 +873,9 @@ public ngAfterViewInit() {
           break;
         }
       }
-    } 
+    }
+    
+
   }
 
   updateVehiclesList(alertTypeObj: any){
@@ -1234,8 +1373,8 @@ PoiCheckboxClicked(event: any, row: any) {
       else{
         this.polyPoints = [];
         element.nodes.forEach(item => {
-        this.polyPoints.push(Math.abs(item.latitude.toFixed(4)));
-        this.polyPoints.push(Math.abs(item.longitude.toFixed(4)));
+        this.polyPoints.push(Math.abs(item.latitude));
+        this.polyPoints.push(Math.abs(item.longitude));
         this.polyPoints.push(0);
         });
         this.createResizablePolygon(this.map,this.polyPoints,this,this.ui, element);
@@ -1645,6 +1784,7 @@ convertToFromTime(milliseconds: any){
   }
 
   loadPOIData() {
+    this.showLoadingIndicator = true;
     this.poiService.getPois(this.accountOrganizationId).subscribe((poilist: any) => {
       if(poilist.length > 0){
         poilist.forEach(element => {
@@ -1661,6 +1801,7 @@ convertToFromTime(milliseconds: any){
       }
       
     });
+    this.showLoadingIndicator = false;
   }
 
   loadPOISelectedData(tableData: any){
@@ -1711,6 +1852,7 @@ convertToFromTime(milliseconds: any){
   }
 
   loadGeofenceData() {
+    this.showLoadingIndicator = true;
     // this.geofenceService.getAllGeofences(this.accountOrganizationId).subscribe((geofencelist: any) => {
     this.geofenceService.getGeofenceDetails(this.accountOrganizationId).subscribe((geofencelist: any) => {
       // this.geofenceGridData = geofencelist.geofenceList;
@@ -1720,6 +1862,7 @@ convertToFromTime(milliseconds: any){
       if(this.actionType == 'view' || this.actionType == 'edit' || this.actionType == 'duplicate')
         this.loadGeofenceSelectedData(this.geofenceGridData);
     });
+    this.showLoadingIndicator = false;
   }
 
   loadGeofenceSelectedData(tableData: any){
@@ -1770,6 +1913,7 @@ convertToFromTime(milliseconds: any){
   }
 
   loadGroupData(){
+    this.showLoadingIndicator = true;
     let objData = { 
       organizationid : this.accountOrganizationId,
    };
@@ -1782,8 +1926,10 @@ convertToFromTime(milliseconds: any){
           this.loadGroupSelectedData(this.groupGridData);
         }
       }
+      this.showLoadingIndicator = false;
     }, (error) => {
       ////console.log(error)
+      this.showLoadingIndicator = false;
     });
   }
 
@@ -1815,14 +1961,16 @@ convertToFromTime(milliseconds: any){
   }
 
   loadCorridorData(){
+    this.showLoadingIndicator = true;
     this.corridorService.getCorridorList(this.accountOrganizationId).subscribe((data : any) => {
       this.corridorGridData = data;
       this.updateCorridorDatasource(this.corridorGridData);
       if(this.actionType == 'view' || this.actionType == 'edit' || this.actionType == 'duplicate'){
         this.loadCorridorSelectedData(this.corridorGridData);
       }
+      this.showLoadingIndicator = false;
     }, (error) => {
-      
+      this.showLoadingIndicator = false;
     });
   }
 
@@ -1872,6 +2020,13 @@ convertToFromTime(milliseconds: any){
     setTimeout(()=>{
       this.poiDataSource.paginator = this.paginator.toArray()[0];
       this.poiDataSource.sort = this.sort.toArray()[0];
+      this.poiDataSource.sortData = (data: String[], sort: MatSort) => {
+        const isAsc = sort.direction === 'asc';
+        return data.sort((a: any, b: any): any => {
+          let columnName = sort.active;
+          return this.compareOnalerteditview(a[sort.active], b[sort.active], isAsc, columnName);
+        });
+       }
     });
   }
 
@@ -1893,8 +2048,22 @@ convertToFromTime(milliseconds: any){
       //     return this.compare(a[sort.active], b[sort.active], isAsc);
       //   });
       //  }
+      this.geofenceDataSource.sortData = (data: String[], sort: MatSort) => {
+        const isAsc = sort.direction === 'asc';
+        return data.sort((a: any, b: any): any => {
+          let columnName = sort.active;
+          return this.compareOnalerteditview(a[sort.active], b[sort.active], isAsc, columnName);
+        });
+       }
     }, 2000);
   }
+
+  compareOnalerteditview(a: any, b: any, isAsc: boolean, columnName:any) {
+    if(!(a instanceof Number)) a = a.replace(/\s/g, '').replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
+    if(!(b instanceof Number)) b = b.replace(/\s/g, '').replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  }
+
 
   compareVehicleGroupList(a: any | String, b: any | String, isAsc: boolean) {
     a = parseInt(a.vehicleGroupId);
@@ -1936,6 +2105,19 @@ convertToFromTime(milliseconds: any){
     setTimeout(()=>{
       this.groupDataSource.paginator = this.paginator.toArray()[2];
       this.groupDataSource.sort = this.sort.toArray()[2];
+      this.groupDataSource.sortData = (data: String[], sort: MatSort) => {
+         
+        const isAsc = sort.direction === 'asc';
+        return data.sort((a: any, b: any): any => {
+        let columnName = sort.active;
+        if ( columnName == 'name') {
+          return this.compareOnalerteditview(a[sort.active], b[sort.active], isAsc, columnName);
+        } else {
+
+          return this.comparenumber(a[sort.active], b[sort.active], isAsc);
+        }
+        });  
+     }
     });
   }
 
@@ -1953,9 +2135,33 @@ convertToFromTime(milliseconds: any){
     setTimeout(()=>{
       this.corridorDataSource.paginator = this.paginator.toArray()[0];
       this.corridorDataSource.sort = this.sort.toArray()[0];
+      this.corridorDataSource.sortData = (data: String[], sort: MatSort) => {
+        const isAsc = sort.direction === 'asc';
+        return data.sort((a: any, b: any): any => {
+          let columnName = sort.active;
+          if (columnName == 'corridoreName' ||  columnName == 'startPoint' || columnName == 'endPoint') {
+            return this.compareCorridor(a[sort.active], b[sort.active], isAsc, columnName);
+          } else {
+            return this.comparenumber(a[sort.active], b[sort.active], isAsc);
+          }
+          
+          
+        });
+       }
     });
   }
 
+  compareCorridor(a: any, b: any, isAsc: boolean, columnName:any) {
+    if(!(a instanceof Number)) a = a.replace(/\s/g, '').replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
+    if(!(b instanceof Number)) b = b.replace(/\s/g, '').replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  }
+
+  comparenumber(a: Number | String, b: Number | String, isAsc: boolean) {
+    if(!(a instanceof Number)) a = a;
+    if(!(b instanceof Number)) b = b;
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  }
 
   onPOIClick(row: any){
     const colsList = ['icon', 'landmarkname', 'categoryname', 'subcategoryname', 'address'];

@@ -391,7 +391,11 @@ export class FleetMapService {
       case 'No Action':
         _healthStatus = 'No Action';
         healthColor = '#00AE10'; //green for no action
-        break
+        break;
+      case '':
+        _healthStatus = '';
+        healthColor = 'grey';
+
       default:
         break;
     }
@@ -419,6 +423,29 @@ export class FleetMapService {
     return _healthStatus;
   }
 
+  getUserSelectedVehicle(element) {
+    let _vehicleName = '';
+    switch (this.vehicleDisplayPreference) {
+      case 'dvehicledisplay_VehicleIdentificationNumber':
+        _vehicleName = element.vin;
+        break;
+      case 'dvehicledisplay_VehicleName': // service now;
+      _vehicleName = element.vehicleName;
+      break;
+      case 'dvehicledisplay_VehicleRegistrationNumber':
+        if(element.registrationNo == ''){ // service now;
+      _vehicleName = element.vehicleName;
+        }else{
+        _vehicleName = element.registrationNo;
+        }
+      break;
+        break
+      default:
+        break;
+    }
+    return _vehicleName;
+  }
+
   getDrivingStatus(element, _drivingStatus) {
     switch (element.vehicleDrivingStatusType) {
       case 'N':
@@ -441,7 +468,8 @@ export class FleetMapService {
       case 'Stopped':
         _drivingStatus = 'Stopped';
         break
-
+      case '':
+        _drivingStatus = '';
       default:
         break;
     }
@@ -498,7 +526,7 @@ export class FleetMapService {
     return homeMarker;
   }
 
-  private createSVGMarker(_value, _health, elem, isGroup?) {
+  public createSVGMarker(_value, _health, elem, isGroup?) {
     let healthColor = this.getHealthUpdateForDriving(_health);
     let direction = this.getDirectionIconByBearings(_value);
     let markerSvg = this.createDrivingMarkerSVG(direction, healthColor, elem);
@@ -518,7 +546,8 @@ export class FleetMapService {
 		${markerSvg}
 		</svg>`;
   }
-  private getDirectionIconByBearings = function (brng) {
+
+  public getDirectionIconByBearings = function (brng) {
     //var brng= 317.888;
     brng = 315;
     let iconWd = 34;
@@ -597,12 +626,12 @@ export class FleetMapService {
     return { outer: outerRotation, inner: innerRotation, rippleX: rippleX, rippleY: rippleY };
   }
 
-  private createRippleMarker(direction?) {
-    let rippleIcon = `<div class='rippleSVG' style='left:${direction.rippleX}px;top:${direction.rippleY}px'></div>`
+  public createRippleMarker(direction?) {
+    let rippleIcon = `<div class='rippleSVG' style='left:${direction.rippleX}px;top:${direction.rippleY}px; pointer-events: none;'></div>`
 
     return rippleIcon;
   }
-  private createDrivingMarkerSVG(direction: any, healthColor: any, elem): string {
+  public createDrivingMarkerSVG(direction: any, healthColor: any, elem): string {
 
     if (!this.alertFoundFlag) {
       return `
@@ -1248,7 +1277,8 @@ export class FleetMapService {
       let _drivingStatus = this.getDrivingStatus(elem, '');
       let activatedTime = Util.convertUtcToDateFormat(elem.startTimeStamp, 'DD/MM/YYYY hh:mm:ss');
       let _driverName = elem.driverName ? elem.driverName : elem.driver1Id;
-      let _vehicleName = this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber' ? elem.vin : elem.vehicleName;
+      // let _vehicleName = this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber' ? elem.vin : (this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber' ? elem.vehicleName : (this.vehicleDisplayPreference == ('dvehicledisplay_VehicleRegistrationNumber' && elem.registrationNo !== '') ? elem.registrationNo: elem.vehicleName));
+      let _vehicleName = this.getUserSelectedVehicle(elem);
       let _mileage = this.reportMapService.getDistance(elem.odometerVal, this.prefUnitFormat); //19040
       let _distanceNextService = this.reportMapService.getDistance(elem.distanceUntilNextService, this.prefUnitFormat);
       let distanceUnit = this.prefUnitFormat == 'dunit_Metric' ? 'km' : 'miles';
@@ -1463,7 +1493,7 @@ export class FleetMapService {
   }
 
   setAlertFoundIcon(healthColor, _alertConfig) {
-    let _vehicleIcon = `<svg width="40" height="49" viewBox="0 0 40 49" fill="none" xmlns="http://www.w3.org/2000/svg">
+    let _vehicleIcon = `<svg width="40" height="41" viewBox="0 0 40 49" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M32.5 24.75C32.5 37 16.75 47.5 16.75 47.5C16.75 47.5 1 37 1 24.75C1 20.5728 2.65937 16.5668 5.61307 13.6131C8.56677 10.6594 12.5728 9 16.75 9C20.9272 9 24.9332 10.6594 27.8869 13.6131C30.8406 16.5668 32.5 20.5728 32.5 24.75Z" stroke="${healthColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
     <path d="M16.75 46.625C24.1875 40.5 31.625 32.9652 31.625 24.75C31.625 16.5348 24.9652 9.875 16.75 9.875C8.53477 9.875 1.875 16.5348 1.875 24.75C1.875 32.9652 9.75 40.9375 16.75 46.625Z" fill="${healthColor}"/>
     <path d="M16.75 37.4375C23.9987 37.4375 29.875 31.8551 29.875 24.9688C29.875 18.0824 23.9987 12.5 16.75 12.5C9.50126 12.5 3.625 18.0824 3.625 24.9688C3.625 31.8551 9.50126 37.4375 16.75 37.4375Z" fill="white"/>
@@ -1975,7 +2005,8 @@ export class FleetMapService {
               let _drivingStatus = this.getDrivingStatus(elem, '');
               let activatedTime = Util.convertUtcToDateFormat(elem.startTimeStamp, 'DD/MM/YYYY hh:mm:ss');
               let _driverName = elem.driverName ? elem.driverName : elem.driver1Id;
-              let _vehicleName = this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber' ? elem.vin : elem.vehicleName;
+              let _vehicleName = this.getUserSelectedVehicle(elem);
+              // let _vehicleName = this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber' ? elem.vin : (this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber' ? elem.vehicleName : (this.vehicleDisplayPreference == ('dvehicledisplay_VehicleRegistrationNumber' && elem.registrationNo !== '') ? elem.registrationNo: elem.vehicleName));
               let _mileage = this.reportMapService.getDistance(elem.odometerVal, this.prefUnitFormat); //19040
               let _distanceNextService = this.reportMapService.getDistance(elem.distanceUntilNextService, this.prefUnitFormat);
               let distanceUnit = this.prefUnitFormat == 'dunit_Metric' ? 'km' : 'miles';

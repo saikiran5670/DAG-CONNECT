@@ -270,7 +270,7 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="icon">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{translationData.lblicon || 'Icon'}}</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef>{{translationData.lblicon || 'Icon'}}</mat-header-cell>
                   <mat-cell *matCellDef="let row">
                     <mat-icon *ngIf="row.icon && row.icon == ''">place</mat-icon>
                     <img *ngIf="row.icon && row.icon != ''" [src]='row.icon' alt='' width='20px' height='20px'>
