@@ -575,7 +575,7 @@
           <div id="fleetDetailBlock">
           <mat-table matTableExporter [dataSource]="dataSource" class="table-items"
           matSort #exporter="matTableExporter">
-          <ng-container matColumnDef="vehiclename">
+          <ng-container matColumnDef="vehicleName">
             <mat-header-cell [ngClass]="{'text-truncate': displayedColumns.length > 7}" *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleName || 'Vehicle Name' }}
             </mat-header-cell>
             <mat-cell [ngClass]="{'text-truncate': displayedColumns.length > 7}" matTooltip='{{ row.vehicleName }}' *matCellDef="let row">
@@ -589,7 +589,7 @@
               <span class='navigatePoint' matTooltip='{{ translationData.lbltooltipMsg || "Click to view details"}}' (click)='gotoTrip(row)'>{{ row.vin != '' ? row.vin : '-' }}</span>
             </mat-cell>
           </ng-container>
-          <ng-container matColumnDef="registrationnumber">
+          <ng-container matColumnDef="registrationNumber">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRegistrationNumber || 'Registration Number' }}
             </mat-header-cell>
             <mat-cell *matCellDef="let row">

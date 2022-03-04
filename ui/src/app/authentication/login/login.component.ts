@@ -203,7 +203,7 @@ export class LoginComponent implements OnInit {
         OrganizationId: data.accountOrganization[0].id
       }  
       this.translationService.checkUserAcceptedTaC(objData).subscribe(response => {
-        if(!response){
+        if(!response){ 
           let langCode;
           if(accountPreference && accountPreference !== ''){
             let filterLang = languageCodes.filter(item => item.id == accountPreference["languageId"]);
@@ -222,8 +222,8 @@ export class LoginComponent implements OnInit {
             }
           this.translationService.getMenuTranslations(translationObj).subscribe( (resp) => {
             this.processTranslation(resp);
-            this.openTermsConditionsPopup(data, accountDetails, accountPreference);
-          });
+             this.openTermsConditionsPopup(data, accountDetails, accountPreference);
+            });
         }
         else{
           if(this.result){

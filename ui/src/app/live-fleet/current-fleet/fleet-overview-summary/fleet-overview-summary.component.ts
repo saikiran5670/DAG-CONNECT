@@ -137,7 +137,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
       this.prefTimeFormat = Number(this.prefDetail.timeformat[0].name.split("_")[1].substring(0,2));    
     }
     this.unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile);
-    this.stepForword(this.detailsData, true);
+    // this.stepForword(this.detailsData, true);
     this.setFleetThreshold();
   }
 
@@ -378,11 +378,11 @@ export class FleetOverviewSummaryComponent implements OnInit {
         // if (element.tripDistance) {
         //   tripDistance += element.tripDistance;
         // }
-        if (flag) {
+        // if (flag) {
           // if (element.drivingTime)
           //   this.totalDriveTime += element.drivingTime;
 
-          if (element.vehicleDrivingStatusType && element.vehicleDrivingStatusType != 'N') {
+          if (flag && (element.vehicleDrivingStatusType && element.vehicleDrivingStatusType != 'N')) {
             this.movedVehicle += 1;
           }
 
@@ -402,7 +402,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
           //   }
           // }
 
-        }
+        // }
         // if(element.drivingTime)
         //   totalDriveTime += element.drivingTime;
         // if(element.tripDistance){
