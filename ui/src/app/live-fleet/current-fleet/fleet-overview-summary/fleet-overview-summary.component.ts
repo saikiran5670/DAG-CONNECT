@@ -171,8 +171,8 @@ export class FleetOverviewSummaryComponent implements OnInit {
     }
     this.reportService.getFleetOverviewDetails(objData).subscribe((data: any) => {
       this.totalVehicle = data.visibleVinsCount;
-      let filterData = this.fleetMapService.processedLiveFLeetData(data.fleetOverviewDetailList);
-      this.stepForword(filterData);
+      //let filterData = this.fleetMapService.processedLiveFLeetData(data.fleetOverviewDetailList);
+      this.stepForword(data.fleetOverviewDetailList);
       //this.summaryData = filterData;
       // this.unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm ) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile) : (this.translationData.lblmile);
       // this.refreshData();

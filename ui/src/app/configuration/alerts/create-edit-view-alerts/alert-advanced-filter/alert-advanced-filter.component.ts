@@ -267,15 +267,15 @@ export class AlertAdvancedFilterComponent implements OnInit {
   setUnitsAsPrefData(){
     if(this.prefUnitFormat == 'dunit_Metric'){
       this.distanceEnum = 'M';
-      this.distanceUnit = this.translationData.lblMeter;
+      this.distanceUnit = this.translationData.lblmtr;
       this.POIEnum = 'K';
-      this.poiUnit = this.translationData.lblKilometer;
+      this.poiUnit = this.translationData.lblkm;
   }
     else{
       this.distanceEnum = 'F';
       this.distanceUnit = this.translationData.lblFeet;
       this.POIEnum = 'L';
-      this.poiUnit = this.translationData.lblMiles;
+      this.poiUnit = this.translationData.lblmile;
     }
   }
 
