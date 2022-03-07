@@ -188,6 +188,7 @@ map_key: any = '';
 platform: any = '';
 vehicleIconMarker : any;
 noRecordFound: boolean = false;
+logbookPrefData: any = [];
 
 public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
@@ -205,7 +206,7 @@ constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private fleetMapServi
   this.sendMessage();
   this.dataInterchangeService.prefSource$.subscribe((prefResp: any) => {
     if(prefResp && (prefResp.type == 'logbook') && prefResp.prefdata){
-      this.displayedColumns = [ 'all','alertLevel', 'alertGeneratedTime','vehicleName', 'vehicleRegNo', 'alertType', 'alertName', 'alertCategory', 'tripStartTime', 'tripEndTime',,'vin','occurrence','thresholdValue'];
+      this.displayedColumns = [ 'all','alertLevel', 'alertGeneratedTime','vehicleName', 'vehicleRegNo', 'alertType', 'alertName', 'alertCategory', 'tripStartTime', 'tripEndTime','vin','occurrence','thresholdValue'];
       this.resetTripPrefData();
       this.reportPrefData = prefResp.prefdata;
       this.getTranslatedColumnName(this.reportPrefData);
@@ -490,7 +491,7 @@ ngOnDestroy(){
     this.logbookPrefData = [];
   }
 
-  logbookPrefData: any = [];
+  
   getTranslatedColumnName(prefData: any){
     if(prefData && prefData.subReportUserPreferences && prefData.subReportUserPreferences.length > 0){
       prefData.subReportUserPreferences.forEach(element => {
