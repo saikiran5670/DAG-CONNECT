@@ -570,6 +570,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     // this.driverTimeForm.get('vehicle').setValue(parseInt(this.searchFilterpersistData.vehicleDropDownValue));
     // this.driverTimeForm.get('driver').setValue(this.searchFilterpersistData.driverDropDownValue);
  // }
+  this.resetVehicleFilter();
   }
 
   getUniqueVINs(vinList: any){
