@@ -142,6 +142,12 @@ export class LiveFleetMapComponent implements OnInit {
   alertsChecked : boolean = false;
   mapIconData(){
     let _ui = this.fleetMapService.getUI();
+   // this.fleetMapService.setIconsOnMap(this.detailsData);
+
+    if(this.tripTraceArray && this.tripTraceArray.length>0){
+      this.tripTraceArray= this.fleetMapService.processedLiveFLeetData(this.tripTraceArray);
+    }
+
     this.fleetMapService.clearRoutesFromMap();
     this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons, this.displayGlobalPOIList,this.translationData);
   }

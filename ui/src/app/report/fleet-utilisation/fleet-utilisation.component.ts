@@ -52,7 +52,7 @@ export class FleetUtilisationComponent implements OnInit, OnDestroy {
   selectedStartTime: any = '00:00';
   selectedEndTime: any = '23:59';
   tripForm: FormGroup;
-  displayedColumns = ['vehiclename', 'vin', 'registrationnumber', 'distance', 'numberOfTrips', 'tripTime', 'drivingTime', 'idleDuration', 'stopTime', 'averageDistancePerDay', 'averageSpeed', 'averageWeight', 'odometer'];
+  displayedColumns = ['vehicleName', 'vin', 'registrationNumber', 'distance', 'numberOfTrips', 'tripTime', 'drivingTime', 'idleDuration', 'stopTime', 'averageDistancePerDay', 'averageSpeed', 'averageWeight', 'odometer'];
   translationData: any = {};
   fleetUtilizationSearchData: any = {};
   // hereMap: any;
@@ -1102,10 +1102,10 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
 
       let totalConvDistance : any = this.reportMapService.getDistance(totalDistance, this.prefUnitFormat);
       if (totalConvDistance && this.mileagebasedThreshold){
-      let percentage1 = Number.parseFloat(((Number.parseFloat(totalConvDistance) / this.mileagebasedThreshold) * 100).toFixed(2));
-      let thresholdLeft = (100 - percentage1 > 0) ? 100 - percentage1 : 0;
-      this.doughnutChartData = [[percentage1, thresholdLeft]];
-      this.mileagePieChartData = [[percentage1, thresholdLeft]];
+      let percentDistance = Number.parseFloat(((Number.parseFloat(totalConvDistance) / this.mileagebasedThreshold) * 100).toFixed(2));
+      let thresholdLeft = (100 - percentDistance > 0) ? 100 - percentDistance : 0;
+      this.doughnutChartData = [[percentDistance, thresholdLeft]];
+      this.mileagePieChartData = [[percentDistance, thresholdLeft]];
        // let percentage1 = (this.greaterMileageCount/this.tripData.length)*100 ;
       // this.doughnutChartData = [percentage1, 100- percentage1];
       //this.mileagePieChartData = [percentage1,  100- percentage1];
@@ -1114,10 +1114,10 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     //  let totalDriveTime = Util.getHhMmTime(totalDrivingTime).split(':'); //driving time is coming in seconds
       // let driveTime =  totalDriveTime[0] + (this.translationData.lblhh ) + ' ' +totalDriveTime[1] + (this.translationData.lblmm);
       if (totalDrivingTime && this.timebasedThreshold){
-        let percentage2 = Number(((totalDrivingTime / this.timebasedThreshold) * 100).toFixed(2));;
-        let thresholdLeft = (100 - percentage2 > 0) ? 100 - percentage2 : 0;
-        this.doughnutChartDataForTime = [[percentage2, thresholdLeft]];
-        this.timePieChartData = [[percentage2, thresholdLeft]];
+        let percentDrivingTime = Number(((totalDrivingTime / this.timebasedThreshold) * 100).toFixed(2));;
+        let thresholdLeft = (100 - percentDrivingTime > 0) ? 100 - percentDrivingTime : 0;
+        this.doughnutChartDataForTime = [[percentDrivingTime, thresholdLeft]];
+        this.timePieChartData = [[percentDrivingTime, thresholdLeft]];
       // let percentage2 = (this.greaterTimeCount/this.tripData.length)* 100;
       // this.doughnutChartDataForTime = [percentage2, 100- percentage2];
       // this.timePieChartData = [percentage2, 100- percentage2];
@@ -1358,8 +1358,8 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       type : 'datetime',
       tickInterval:!this.distanceChartType && (this.endDateValue.toDateString() == this.startDateValue.toDateString())? 2 * 24 * 3600000 : 1 * 24 * 3600000 ,
       labels: {
-        //step:this.selectionTab == 'last3month' ?  Math.ceil(this.averageDistanceBarData.length/12) : Math.ceil(this.averageDistanceBarData.length/5),
-        step:(this.selectionTab == 'last3month') ? ( this.averageDistanceBarData.length > 50 && this.averageDistanceBarData.length < 60  ? Math.ceil(this.averageDistanceBarData.length/10) : (this.averageDistanceBarData.length > 60 && this.averageDistanceBarData.length < 99  ? Math.ceil(this.averageDistanceBarData.length/12):(this.averageDistanceBarData.length > 99 ? Math.ceil(this.averageDistanceBarData.length/24): (this.averageDistanceBarData.length > 20 && this.averageDistanceBarData.length < 50 ? Math.ceil(this.averageDistanceBarData.length/6): Math.ceil(this.averageDistanceBarData.length/2))))) : Math.ceil(this.averageDistanceBarData.length/5),
+        step:this.selectionTab == 'last3month' ?  Math.ceil(this.averageDistanceBarData.length/12) : Math.ceil(this.averageDistanceBarData.length/5),
+        // step:(this.selectionTab == 'last3month') ? ( this.averageDistanceBarData.length > 50 && this.averageDistanceBarData.length < 60  ? Math.ceil(this.averageDistanceBarData.length/10) : (this.averageDistanceBarData.length > 60 && this.averageDistanceBarData.length < 99  ? Math.ceil(this.averageDistanceBarData.length/12):(this.averageDistanceBarData.length > 99 ? Math.ceil(this.averageDistanceBarData.length/24): (this.averageDistanceBarData.length > 20 && this.averageDistanceBarData.length < 50 ? Math.ceil(this.averageDistanceBarData.length/6): Math.ceil(this.averageDistanceBarData.length/2))))) : Math.ceil(this.averageDistanceBarData.length/5),
         rotation: (this.selectionTab == 'last3month' || this.selectionTab == 'lastmonth') ? -45 :  0 ,
         },
         dateTimeLabelFormats: {
@@ -1428,7 +1428,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
         // },
         
         yAxis: [{
-        min: 0,
+        //min: 0,
         //max:  Math.max(...this.averageDistanceBarData.map(o => o.y)),
         title: {
           text: this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm || 'km'})` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles ||'miles'})`
@@ -1453,7 +1453,8 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
         //showInLegend: false,      
         tickInterval:!this.distanceChartType && (this.endDateValue.toDateString() == this.startDateValue.toDateString())? 2 * 24 * 3600000 : 1 * 24 * 3600000 ,
         labels: {
-          step:(this.selectionTab == 'last3month') ? ( this.averageDistanceBarData.length > 50 && this.averageDistanceBarData.length < 60  ? Math.ceil(this.averageDistanceBarData.length/10) : (this.averageDistanceBarData.length > 60 && this.averageDistanceBarData.length < 99  ? Math.ceil(this.averageDistanceBarData.length/12):(this.averageDistanceBarData.length > 99 ? Math.ceil(this.averageDistanceBarData.length/24): (this.averageDistanceBarData.length > 20 && this.averageDistanceBarData.length < 50 ? Math.ceil(this.averageDistanceBarData.length/6): Math.ceil(this.averageDistanceBarData.length/2))))) : Math.ceil(this.averageDistanceBarData.length/5),
+          step:this.selectionTab == 'last3month' ?  Math.ceil(this.averageDistanceBarData.length/12) : Math.ceil(this.averageDistanceBarData.length/5),
+          //step:(this.selectionTab == 'last3month') ? ( this.averageDistanceBarData.length > 50 && this.averageDistanceBarData.length < 60  ? Math.ceil(this.averageDistanceBarData.length/10) : (this.averageDistanceBarData.length > 60 && this.averageDistanceBarData.length < 99  ? Math.ceil(this.averageDistanceBarData.length/12):(this.averageDistanceBarData.length > 99 ? Math.ceil(this.averageDistanceBarData.length/24): (this.averageDistanceBarData.length > 20 && this.averageDistanceBarData.length < 50 ? Math.ceil(this.averageDistanceBarData.length/6): Math.ceil(this.averageDistanceBarData.length/2))))) : Math.ceil(this.averageDistanceBarData.length/5),
           rotation: (this.selectionTab == 'last3month' || this.selectionTab == 'lastmonth') ? -45 :  0 ,
           },
           dateTimeLabelFormats: {
@@ -1611,15 +1612,25 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
             data.convertedAverageWeight?.toString().toLowerCase().includes(filter) ||
             data.convertedOdometer?.toString().toLowerCase().includes(filter)
    }
-      // this.dataSource.sortData = (data: String[], sort: MatSort) => {
-      //   const isAsc = sort.direction === 'asc';
-      //   return data.sort((a: any, b: any) => {
-      //       let columnName = sort.active;
-      //       return this.compareData(a[sort.active], b[sort.active], isAsc, columnName);
-      //   });
-      // }
+      this.dataSource.sortData = (data: String[], sort: MatSort) => {
+        const isAsc = sort.direction === 'asc';
+        return data.sort((a: any, b: any) => {
+            let columnName = sort.active;
+          return this.comparevehicle(a[sort.active], b[sort.active], isAsc, columnName);
+        });
+
+      }
       });
       Util.applySearchFilter(this.dataSource, this.displayedColumns ,this.filterValue );
+    }
+
+    comparevehicle(a: any, b: any, isAsc: boolean, columnName:any) {
+      if(columnName === "vehicleName" || columnName == "registrationNumber" || columnName == "vin"){
+        if(!(a instanceof Number)) a = a?a.replace(/[^\w\s]/gi, 'z').toUpperCase(): "";
+        if(!(b instanceof Number)) b = b?b.replace(/[^\w\s]/gi, 'z').toUpperCase(): "";
+      }
+  
+        return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
     }
 
     // compareData(a: Number | String, b: Number | String, isAsc: boolean, columnName: any) {

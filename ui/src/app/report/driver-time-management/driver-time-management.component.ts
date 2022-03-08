@@ -533,6 +533,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
         });
       }
     }
+    this.resetVehicleFilter();
   }
 
   getUniqueVINs(vinList: any) {

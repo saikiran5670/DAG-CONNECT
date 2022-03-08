@@ -209,8 +209,8 @@ export class CurrentFleetComponent implements OnInit {
     this.reportService.getFleetOverviewDetails(objData).subscribe((data: any) => {
       this.totalVehicleCount = data.visibleVinsCount;
       this.hideLoader();
-      let processedData = this.fleetMapService.processedLiveFLeetData(data.fleetOverviewDetailList);
-      this.detailsData = processedData;
+      //let processedData = this.fleetMapService.processedLiveFLeetData(data.fleetOverviewDetailList);
+      this.detailsData = data.fleetOverviewDetailList;
       this.fleetSummary = data.fleetOverviewSummary;
       this.getFilterData();
       let _dataObj = {

@@ -446,8 +446,12 @@ export class DashboardPreferencesComponent implements OnInit {
     if(!this.responseFlag) {
     this.responseFlag=true;
     this.dashboardService.createDashboardPreferences(objData).subscribe((prefData: any) => {
-      this.loadDashboardPreferences();
-      this.successMsgBlink('Dashboard Preferences Updated Successfully'); 
+      if(prefData) {
+        this.loadDashboardPreferences();
+      }
+      this.successMsgBlink('Dashboard Preferences Updated Successfully');
+      //this.setDashboardFlag.emit({ flag: false, msg: this.getSuccessMsg() });
+      //this.reloadCurrentComponent();
       this.responseFlag=false;
       if((this.router.url).includes("dashboard")){
        this.reloadCurrentComponent();
