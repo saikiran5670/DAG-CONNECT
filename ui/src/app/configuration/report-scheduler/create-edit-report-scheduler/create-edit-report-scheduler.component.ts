@@ -2,12 +2,9 @@ import { Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { OrganizationService } from 'src/app/services/organization.service';
-import { ReportSchedulerService } from 'src/app/services/report.scheduler.service';
-import { TranslationService } from 'src/app/services/translation.service';
+import { ReportSchedulerService } from 'src/app/services/report.scheduler.service'; 
 import { CustomValidators } from 'src/app/shared/custom.validators';
 import { Util } from '../../../shared/util';
-import * as moment from 'moment-timezone';
-import { start } from 'repl';
 
 @Component({
   selector: 'app-create-edit-report-scheduler',
@@ -15,13 +12,11 @@ import { start } from 'repl';
   styleUrls: ['./create-edit-report-scheduler.component.less']
 })
 export class CreateEditReportSchedulerComponent implements OnInit {
-
   @Input() translationData: any = {};
   @Input() selectedRowData: any;
   @Input() actionType: any;
   @Input() reportSchedulerParameterData: any;
   @Output() backToPage = new EventEmitter<any>();
-  
   vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   breadcumMsg: any = '';
   reportSchedulerForm: FormGroup;
@@ -71,10 +66,10 @@ export class CreateEditReportSchedulerComponent implements OnInit {
   recipientEmailList: any= [];
   status: boolean= true;
   showLoadingIndicator: boolean = false;
+  prefDetail: any = {};
 
   constructor(private _formBuilder: FormBuilder, 
-              private reportSchedulerService: ReportSchedulerService,
-              private translationService: TranslationService,
+              private reportSchedulerService: ReportSchedulerService, 
               private organizationService: OrganizationService,
               @Inject(MAT_DATE_FORMATS) private dateFormats) { }
 
@@ -84,6 +79,7 @@ export class CreateEditReportSchedulerComponent implements OnInit {
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.userType= localStorage.getItem("userType");
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
+    this.prefDetail = JSON.parse(localStorage.getItem('prefDetail'));
     this.reportSchedulerForm = this._formBuilder.group({
       reportType : ['', [Validators.required]],
       vehicleGroup : [0, [Validators.required]],
@@ -136,33 +132,28 @@ export class CreateEditReportSchedulerComponent implements OnInit {
     this.DriverList = this.reportSchedulerParameterData["driverDetail"];
     this.LanguageCodeList = JSON.parse(localStorage.getItem("languageCodeList"));
     this.RecipientList = this.reportSchedulerParameterData["receiptEmails"];
-
     this.breadcumMsg = this.getBreadcum();
-    
-
-    this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
+    if(this.prefDetail){
       if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
-        this.proceedStep(prefData, this.accountPrefObj.accountPreference);
-      }else{ // org pref
+        this.proceedStep(this.accountPrefObj.accountPreference);
+      }else{ 
         this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
-          this.proceedStep(prefData, orgPref);
-        }, (error) => { // failed org API
-          let pref: any = {};
-          this.proceedStep(prefData, pref);
+          this.proceedStep(orgPref);
+        }, (error) => { 
+          this.proceedStep({});
         });
       }
       if(this.actionType == 'edit'){
         this.setDefaultValues();
       }
-
       let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
-        if(vehicleDisplayId) {
-          let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
-          if(vehicledisplay.length != 0) {
-            this.vehicleDisplayPreference = vehicledisplay[0].name;
-          }
-        }  
-    });
+      if(vehicleDisplayId) {
+        let vehicledisplay = this.prefDetail.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+        if(vehicledisplay.length != 0) {
+          this.vehicleDisplayPreference = vehicledisplay[0].name;
+        }
+      }  
+    }
   }
 
   getUnique(arr, comp) {
@@ -179,24 +170,19 @@ export class CreateEditReportSchedulerComponent implements OnInit {
     return unique;
   }
 
-  proceedStep(prefData: any, preference: any){
-    let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
+  proceedStep(preference: any){
+    let _search = this.prefDetail.timeformat.filter(i => i.id == preference.timeFormatId);
     if(_search.length > 0){
-      //this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
       this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
-      //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
-      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
-      this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+      this.prefTimeZone = this.prefDetail.timezone.filter(i => i.id == preference.timezoneId)[0].name;
+      this.prefDateFormat = this.prefDetail.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
     }else{
-      //this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
-      this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
-      //this.prefTimeZone = prefData.timezone[0].value;
-      this.prefTimeZone = prefData.timezone[0].name;
-      this.prefDateFormat = prefData.dateformat[0].name;
+      this.prefTimeFormat = Number(this.prefDetail.timeformat[0].name.split("_")[1].substring(0,2)); 
+      this.prefTimeZone = this.prefDetail.timezone[0].name;
+      this.prefDateFormat = this.prefDetail.dateformat[0].name;
     }
     this.setPrefFormatTime();
     this.setPrefFormatDate();
-    // this.setDefaultTodayDate();
   }
 
   setPrefFormatTime(){

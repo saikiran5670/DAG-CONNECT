@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { DtcTranslationComponent } from './dtc-translation.component';
 
 describe('DtcTranslationComponent', () => {

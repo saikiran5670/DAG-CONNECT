@@ -98,13 +98,6 @@
                                     <mat-error *ngIf="dtcTranslationFormGroup.get('uploadFile').hasError('required')" >
                                         {{ translationData.lblPleaseselectaiconfile }}
                                     </mat-error>
-                                    <!-- <mat-error *ngIf="dtcTranslationIconGroup.get('uploadFile').hasError('maxContentSize')">
-                                        The total size must not exceed {{dtcTranslationIconGroup.get('uploadFile')?.getError('maxContentSize').maxSize | byteFormat}} ({{dtcTranslationIconGroup.get('uploadFile')?.getError('maxContentSize').actualSize
-                                        | byteFormat}}).
-                                    </mat-error> -->
-                                    <!-- <mat-error *ngIf="!dtcTranslationFormGroup.get('uploadFile').hasError('required') && svgEmptyMsg">
-                                        {{ translationData.lblEmptyFile || 'svg file not found' }}
-                                    </mat-error> -->
                                     <mat-error *ngIf="!dtcTranslationFormGroup.get('uploadFile').hasError('required') && serverIconError">
                                         {{ errorIconMsg }} 
                                     </mat-error>

@@ -2,7 +2,7 @@
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { Component, ElementRef, Inject, Input, OnInit, ViewChild, Output,EventEmitter } from '@angular/core';
-import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
+import { ChartDataSets, ChartType } from 'chart.js';
 import { Color, Label } from 'ng2-charts';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
@@ -10,8 +10,7 @@ import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { OrganizationService } from 'src/app/services/organization.service';
 import { TranslationService } from 'src/app/services/translation.service';
 import { Util } from 'src/app/shared/util';
-import { ReportService } from 'src/app/services/report.service';
-import { truncate } from 'fs';
+import { ReportService } from 'src/app/services/report.service'; 
 import { ReportMapService } from '../../../report-map.service';
 import {ThemePalette} from '@angular/material/core';
 import {ProgressBarMode} from '@angular/material/progress-bar';
@@ -21,12 +20,9 @@ import { MatTableExporterDirective } from 'mat-table-exporter';
 import { SelectionModel } from '@angular/cdk/collections';
 import { Router, NavigationExtras } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
-import { QueryList } from '@angular/core';
-import { ViewChildren } from '@angular/core';
 import { HereService } from '../../../../services/here.service';
 import { ConfigService } from '@ngx-config/core';
-//import { LandmarkCategoryService } from '../../../../services/landmarkCategory.service';
-import { CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteData } from 'ng2-completer';
+import { CompleterItem, CompleterService } from 'ng2-completer';
 import { MapService } from '../../report-mapservice';
 import * as fs from 'file-saver';
 import { Workbook } from 'exceljs';
@@ -68,13 +64,6 @@ export class DetailDriverReportComponent implements OnInit {
   graphData: any;
   idleDuration: any =[];
   fuelConsumptionSummary: any;
-  //  displayedColumns = ['All','startDate','endDate','driverName','driverID','vehicleName', 'vin', 'vehicleRegistrationNo', 'distance', 'averageDistancePerDay', 'averageSpeed',
-  //  'maxSpeed', 'numberOfTrips', 'averageGrossWeightComb', 'fuelConsumed', 'fuelConsumption', 'cO2Emission',
-  //  'idleDuration','ptoDuration','harshBrakeDuration','heavyThrottleDuration','cruiseControlDistance3050',
-  //  'cruiseControlDistance5075','cruiseControlDistance75', 'averageTrafficClassification',
-  //  'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore','dpaAnticipationScore',
-  //  'dpaBrakingScore','idlingPTOScore','idlingPTO','idlingWithoutPTOpercent','footBrake',
-  //  'cO2Emmision', 'averageTrafficClassificationValue','idlingConsumptionValue'];
    prefMapData: any = [
      {
        key: 'rp_tr_report_fleetfueldetails_startDate',
@@ -851,26 +840,12 @@ tripTraceArray: any = [];
   dontShow: boolean = false;
 
   constructor(private _formBuilder: FormBuilder,
-              //private landmarkCategoryService: LandmarkCategoryService,
-              private translationService: TranslationService,
-              private organizationService: OrganizationService,
               private reportService: ReportService,
               private mapService : MapService,
-              private router: Router,private datePipe: DatePipe,
+              private router: Router,
               private completerService: CompleterService,
               @Inject(MAT_DATE_FORMATS) private dateFormats,
-              private reportMapService: ReportMapService, private _configService: ConfigService, private hereService: HereService, private messageService: MessageService, private _sanitizer: DomSanitizer) {
-                this.defaultTranslation();
-               // const navigation = this.router.getCurrentNavigation();
-              //  this._state = navigation.extras.state as {
-              //    fromFleetfuelReport: boolean,
-              //    vehicleData: any
-             //   };
-             //   if(this._state){
-             //     this.showBack = true;
-             //   }else{
-             //     this.showBack = false;
-             //   }
+              private reportMapService: ReportMapService, private hereService: HereService, private messageService: MessageService, private _sanitizer: DomSanitizer) {
                 // this.map_key =  _configService.getSettings("hereMap").api_key;
                 this.map_key = localStorage.getItem("hereMapsK");
                 //Add for Search Fucntionality with Zoom
@@ -881,14 +856,8 @@ tripTraceArray: any = [];
                this.configureAutoSuggest();
                }
 
-               defaultTranslation(){
-                this.translationData = { }
-              }
-
   ngOnInit(): void {
-    this.fleetFuelSearchData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
-    ////console.log("translationData for driver" +this.translationData);
-    // //console.log("----globalSearchFilterData---",this.fleetUtilizationSearchData)
+    this.fleetFuelSearchData = JSON.parse(localStorage.getItem("globalSearchFilterData")); 
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
@@ -905,59 +874,13 @@ tripTraceArray: any = [];
       routeType: ['', []],
       trackType: ['', []]
     });
-    let translationObj = {
-      id: 0,
-      code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
-      type: "Menu",
-      name: "",
-      value: "",
-      filter: "",
-      menuId: 9 //-- for fleet fuel report
-    }
 
-    // this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
-    //   if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
-    //     this.proceedStep(prefData, this.accountPrefObj.accountPreference);
-    //   }else{ // org pref
-    //     this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
-    //       this.proceedStep(prefData, orgPref);
-    //     }, (error) => { // failed org API
-    //       let pref: any = {};
-    //       this.proceedStep(prefData, pref);
-    //     });
-    //   }
       this.callToNext();
       this.loadfleetFuelDetails(this.driverDetails);
       if(this.driverDetails){
         this.onSearch();
       }
-    // });
-
-    // let prefData: any ={};
-    // let pref: any = {};
-    // this.proceedStep(prefData,pref);
-
-    //this.getFleetPreferences();
-
-    //this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-    //  this.processTranslation(data);
-    //  this.mapFilterForm.get('trackType').setValue('snail');
-    //  this.mapFilterForm.get('routeType').setValue('C');
-   //   this.makeHerePOIList();
-   //   this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
-   //     if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
-   //       this.proceedStep(prefData, this.accountPrefObj.accountPreference);
-      //      }else{ // org pref
-      //        this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
-      //          this.proceedStep(prefData, orgPref);
-      //        }, (error) => { // failed org API
-    //           let pref: any = {};
-    //           this.proceedStep(prefData, pref);
-      //        });
-    //       }
-      //    });
-      //  });
-
+    
     this.isChartsOpen = true;
     this.isDetailsOpen = true;
     this.isSummaryOpen = true;
@@ -970,10 +893,6 @@ tripTraceArray: any = [];
       }
     });
   }
-
-
-
-
 
   resetTripPrefData(){
     this.tripPrefData = [];
@@ -993,7 +912,6 @@ tripTraceArray: any = [];
       });
     }
   }
-
 
   detaildriverreport(){
     const navigationExtras: NavigationExtras = {
@@ -1032,39 +950,7 @@ tripTraceArray: any = [];
     this.selectedHerePOI.selected.forEach(item => {
       this.herePOIArr.push(item.key);
     });
-    //this.searchPlaces();
   }
-
- // searchPlaces() {
- //   let _ui = this.reportMapService.getUI();
- //   this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
- // }
-
-  // makeHerePOIList(){
-  //   this.herePOIList = [{
-  //     key: 'Hotel',
-  //     translatedName: this.translationData.lblHotel || 'Hotel'
-  //   },
-  //   {
-  //     key: 'Parking',
-  //     translatedName: this.translationData.lblParking || 'Parking'
-  //   },
-  //   {
-  //     key: 'Petrol Station',
-  //     translatedName: this.translationData.lblPetrolStation || 'Petrol Station'
-  //   },
-  //   {
-  //     key: 'Railway Station',
-  //     translatedName: this.translationData.lblRailwayStation || 'Railway Station'
-  //   }];
-  // }
-  // loadUserPOI(){
-  //   this.landmarkCategoryService.getCategoryWisePOI(this.accountOrganizationId).subscribe((poiData: any) => {
-  //     this.userPOIList = this.makeUserCategoryPOIList(poiData);
-  //   }, (error) => {
-  //     this.userPOIList = [];
-  //   });
-  // }
 
   selectionPolylineRoute(dataPoints: any, _index: any, checkStatus?: any){
     let lineString: any = new H.geo.LineString();
@@ -1137,22 +1023,6 @@ drawPolyline(finalDatapoints: any, trackType?: any){
 }
 
 getFilterDataPoints(_dataPoints: any, _displayRouteView: any){
-  //-----------------------------------------------------------------//
-  // Fuel Consumption	Green	 	Orange	 	Red
-  // VehicleSerie	Min	Max	Min	Max	Min	Max
-  // LF	0	100	100	500	500	infinity
-  // CF	0	100	100	500	500	infinity
-  // XF	0	100	100	500	500	infinity
-  // XG	0	100	100	500	500	infinity
-
-  // CO2	A	 	B	 	C	 	D	 	E	 	F
-  // VehicleSerie	Min	Max	Min	Max	Min	Max	Min	Max	Min	Max	Min	Max
-  // LF	0	270	270	540	540	810	810	1080	1080	1350	1350	infinity
-  // CF	0	270	270	540	540	810	810	1080	1080	1350	1350	infinity
-  // XF	0	270	270	540	540	810	810	1080	1080	1350	1350	infinity
-  // XG	0	270	270	540	540	810	810	1080	1080	1350	1350	infinity
-  //--------------------------------------------------------------------//
-
   let innerArray: any = [];
   let outerArray: any = [];
   let finalDataPoints: any = [];
@@ -1738,43 +1608,7 @@ createEndMarker(){
     });
   }
 
-
-
   setTableInfo(){
-    //let vehName: any = '';
-    //let vehGrpName: any = '';
-    //let driverName : any ='';
-    //let driverID : any ='';
-    //let vin: any = '';
-    //let plateNo: any = '';
-    // this.vehicleGroupListData.forEach(element => {
-    //   if(element.vehicleId == parseInt(this.tripForm.controls.vehicle.value)){
-    //     vehName = element.vehicleName;
-    //     vin = element.vin;
-    //     plateNo = element.registrationNo;
-    //   }
-    //   if(parseInt(this.tripForm.controls.vehicleGroup.value) != 0){
-    //     if(element.vehicleGroupId == parseInt(this.tripForm.controls.vehicleGroup.value)){
-    //       vehGrpName = element.vehicleGroupName;
-    //     }
-    //   }
-    // });
-
-    //let vehGrpCount = this.vehicleGrpDD.filter(i => i.vehicleGroupId == parseInt(this.tripForm.controls.vehicleGroup.value));
-    //if(vehGrpCount.length > 0){
-    //  vehGrpName = vehGrpCount[0].vehicleGroupName;
-   // }
-   // let vehCount = this.vehicleDD.filter(i => i.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
-    //if(vehCount.length > 0){
-    //  vehName = vehCount[0].vehicleName;
-    //  vin = vehCount[0].vin;
-    //  plateNo = vehCount[0].registrationNo;
-    //}
-
-    // if(parseInt(this.tripForm.controls.vehicleGroup.value) == 0){
-    //   vehGrpName = this.translationData.lblAll || 'All';
-    // }
-
      this.tableInfoObj = {
        fromDate:this.dateDetails.fromDate,
        endDate: this.dateDetails.endDate,
@@ -1804,21 +1638,8 @@ createEndMarker(){
   setChartData(graphData: any){
     this.resetValue();
     graphData.forEach(e => {
-      // var date = new Date(e.date);
-      // let resultDate= Util.getMillisecondsToUTCDate(date, this.prefTimeZone); //Util.convertDateToUtc(date);
-      // resultDate =  this.datePipe.transform(resultDate,'MM/dd/yyyy');
       let resultDate = e.date;
-     // this.barChartLabels.push(resultDate);
       this.barData.push({ x:resultDate , y:e.numberofTrips});
-      // let convertedFuelConsumed = e.fuelConsumed / 1000;
-      // this.fuelConsumedChart.push(convertedFuelConsumed);
-      // this.co2Chart.push(e.co2Emission);
-      // this.distanceChart.push(e.distance);
-      // this.fuelConsumptionChart.push(e.fuelConsumtion);
-      // let minutes = this.convertTimeToMinutes(e.idleDuration);
-      // // this.idleDuration.push(e.idleDuration);
-      // this.idleDuration.push(minutes);
-
       let convertedFuelConsumed = this.reportMapService.getFuelConsumptionUnits(e.fuelConsumed, this.prefUnitFormat);
       this.fuelConsumedChart.push({ x:resultDate , y:convertedFuelConsumed});
       this.co2Chart.push({ x:resultDate , y:e.co2Emission.toFixed(4)});

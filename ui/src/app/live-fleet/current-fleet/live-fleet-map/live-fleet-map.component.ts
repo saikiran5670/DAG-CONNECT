@@ -1,25 +1,14 @@
-import { Component, ElementRef, Inject, Input, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { TranslationService } from '../../../services/translation.service';
-import { NgxMaterialTimepickerComponent, NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
-import { ReportService } from '../../../services/report.service';
-import { MatDatepickerInputEvent } from '@angular/material/datepicker';
-import { ReportMapService } from '../../../report/report-map.service';
-import { MatTableExporterDirective } from 'mat-table-exporter';
-import jsPDF from 'jspdf';
-import { ConfigService } from '@ngx-config/core';
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import 'jspdf-autotable';
-import { MAT_DATE_FORMATS } from '@angular/material/core';
-import { LandmarkCategoryService } from '../../../services/landmarkCategory.service';
-import { HereService } from '../../../services/here.service';
-import * as moment from 'moment-timezone';
-import { Router, NavigationExtras } from '@angular/router';
+import { HereService } from '../../../services/here.service'; 
+import { Router } from '@angular/router';
 import { OrganizationService } from '../../../services/organization.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { FleetMapService } from '../fleet-map.service'
 import { DataInterchangeService } from '../../../services/data-interchange.service';
-import { CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteData } from 'ng2-completer';
+import { CompleterItem, CompleterService } from 'ng2-completer';
 
 declare var H: any;
 
@@ -70,44 +59,34 @@ export class LiveFleetMapComponent implements OnInit {
   prefTimeZone: any; //-- coming from pref setting
   prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
+  prefDetail: any = {};
 
   constructor(
-    private translationService: TranslationService,
     private _formBuilder: FormBuilder,
-    private reportService: ReportService,
-    private reportMapService: ReportMapService,
-    private landmarkCategoryService: LandmarkCategoryService,
     private router: Router,
-    private organizationService: OrganizationService,
-    private _configService: ConfigService,
+    private organizationService: OrganizationService, 
     private hereService: HereService,
     private fleetMapService:FleetMapService,
     private dataInterchangeService:DataInterchangeService,
     private completerService: CompleterService) {
     // this.map_key = _configService.getSettings("hereMap").api_key;
-    this.map_key = localStorage.getItem("hereMapsK");
-    //Add for Search Fucntionality with Zoom
-    ///this.query = "starbucks";
+    this.map_key = localStorage.getItem("hereMapsK"); 
     this.platform = new H.service.Platform({
       "apikey": this.map_key
     });
     this.configureAutoSuggest();
-    //this.defaultTranslation();
     const navigation = this.router.getCurrentNavigation();
     this.dataInterchangeService.detailDataInterface$.subscribe(vehicleResponse => {
     this.tripTraceArray = [];
     this.fleetMapService.clearRoutesFromMap();
-
     if (vehicleResponse) {
       if(!vehicleResponse.vehicleDetailsFlag){
         this.tripTraceArray = [];
         this.tripTraceArray = vehicleResponse.data;
         this.showIcons = true;
-
       }
       else{
         this.tripTraceArray = [];
-
         if(vehicleResponse.data.length === undefined){ // 16665 - changes added to convert data to array
           this.tripTraceArray.push(vehicleResponse.data);
         }
@@ -115,43 +94,32 @@ export class LiveFleetMapComponent implements OnInit {
           this.tripTraceArray = vehicleResponse.data; //1665 - data wasn't mapped correctly
         }
         this.showIcons = false;
-
       }
     }
     else {
       this.showIcons = true;
     }
-
-      this.mapIconData();
+    this.mapIconData();
     })
   }
 
-  ngOnInit(): void {
-    // let translationObj = {
-    //   id: 0,
-    //   code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
-    //   type: "Menu",
-    //   name: "",
-    //   value: "",
-    //   filter: "",
-    //   menuId: 10 //-- for fleet utilisation
-    // }
+  ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
-      this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
-        if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
-          this.proceedStep(prefData, this.accountPrefObj.accountPreference);
-        }else{ // org pref
-          this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
-            this.proceedStep(prefData, orgPref);
-          }, (error) => { // failed org API
-            let pref: any = {};
-            this.proceedStep(prefData, pref);
-          });
-        }
-      });
+    this.prefDetail = JSON.parse(localStorage.getItem('prefDetail'));
+    if(this.prefDetail){
+      if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){
+        this.proceedStep(this.accountPrefObj.accountPreference);
+      }else{ 
+        this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
+          this.proceedStep(orgPref);
+        }, (error) => { 
+          this.proceedStep({});
+        });
+      }
+    }
     this.mapFilterForm = this._formBuilder.group({
       routeType: ['', []],
       trackType: ['', []]
@@ -173,8 +141,6 @@ export class LiveFleetMapComponent implements OnInit {
   showIcons = true;
   alertsChecked : boolean = false;
   mapIconData(){
-   // //console.log(this.detailsData)
-    //this.tripTraceArray = this.detailsData;
     let _ui = this.fleetMapService.getUI();
    // this.fleetMapService.setIconsOnMap(this.detailsData);
 
@@ -184,29 +150,20 @@ export class LiveFleetMapComponent implements OnInit {
 
     this.fleetMapService.clearRoutesFromMap();
     this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons, this.displayGlobalPOIList,this.translationData);
-
-    //this.fleetMapService.setIconsOnMap();
-    //this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
-
-
   }
 
-  proceedStep(prefData: any, preference: any){
-    let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
+  proceedStep(preference: any){
+    let _search = this.prefDetail.timeformat.filter(i => i.id == preference.timeFormatId);
     if(_search.length > 0){
-      //this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
       this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
-      //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
-      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
-      this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
-      this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;
+      this.prefTimeZone = this.prefDetail.timezone.filter(i => i.id == preference.timezoneId)[0].name;
+      this.prefDateFormat = this.prefDetail.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+      this.prefUnitFormat = this.prefDetail.unit.filter(i => i.id == preference.unitId)[0].name;
     }else{
-      //this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
-      this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
-      //this.prefTimeZone = prefData.timezone[0].value;
-      this.prefTimeZone = prefData.timezone[0].name;
-      this.prefDateFormat = prefData.dateformat[0].name;
-      this.prefUnitFormat = prefData.unit[0].name;
+      this.prefTimeFormat = Number(this.prefDetail.timeformat[0].name.split("_")[1].substring(0,2)); 
+      this.prefTimeZone = this.prefDetail.timezone[0].name;
+      this.prefDateFormat = this.prefDetail.dateformat[0].name;
+      this.prefUnitFormat = this.prefDetail.unit[0].name;
     }
     this.preferenceObject = {
           prefTimeFormat : this.prefTimeFormat,
@@ -215,13 +172,11 @@ export class LiveFleetMapComponent implements OnInit {
           prefUnitFormat : this.prefUnitFormat
         }
     this.fleetMapService.setPrefObject(this.preferenceObject);
-
   }
 
   private configureAutoSuggest(){
     let searchParam = this.searchStr != null ? this.searchStr : '';
-    let URL = 'https://autocomplete.search.hereapi.com/v1/autocomplete?'+'apiKey='+this.map_key +'&limit=5'+'&q='+searchParam ;
-  // let URL = 'https://autocomplete.geocoder.ls.hereapi.com/6.2/suggest.json'+'?'+ '&apiKey='+this.map_key+'&limit=5'+'&query='+searchParam ;
+    let URL = 'https://autocomplete.search.hereapi.com/v1/autocomplete?'+'apiKey='+this.map_key +'&limit=5'+'&q='+searchParam;
     this.suggestionData = this.completerService.remote(
     URL,'title','title');
     this.suggestionData.dataField("items");
@@ -246,8 +201,6 @@ export class LiveFleetMapComponent implements OnInit {
           }
           this.fleetMapService.setMapToLocation(searchMarker);
           this.fleetMapService.dropMarker({ "lat": data.position.lat, "lng": data.position.lng }, data);
-          //let _ui = this.fleetMapService.getUI();
-          //this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
         }
       });
     }
@@ -286,11 +239,6 @@ export class LiveFleetMapComponent implements OnInit {
         this.userPOIList = [];
       }
     }
-    // this.landmarkCategoryService.getCategoryWisePOI(this.accountOrganizationId).subscribe((poiData: any) => {
-    //   this.userPOIList = this.makeUserCategoryPOIList(poiData);
-    // }, (error) => {
-    //   this.userPOIList = [];
-    // });
   }
 
   loadGlobalPOI(){

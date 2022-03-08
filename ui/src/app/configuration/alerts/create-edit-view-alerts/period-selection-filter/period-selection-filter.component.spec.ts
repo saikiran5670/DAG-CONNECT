@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { PeriodSelectionFilterComponent } from './period-selection-filter.component';
 
 describe('PeriodSelectionFilterComponent', () => {

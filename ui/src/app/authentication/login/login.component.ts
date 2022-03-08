@@ -87,88 +87,22 @@ export class LoginComponent implements OnInit {
             if(data.body.accountRole.length > 0){
               localStorage.setItem('accountRoleId', data.body.accountRole[0].id);
             }
-
-            let loginObj = {
-              id: data.body.accountInfo.id,
-              organizationId: 0,
-              //email: "",
-              email: (data.body.accountInfo && data.body.accountInfo.emailId) ? data.body.accountInfo.emailId : '',
-              accountIds: "",
-              name: "",
-              accountGroupId: 0,
-              dataBody: data.body
-            }
             
-              this.accountService.getAccount(loginObj).subscribe(getAccresp => {
-                if(getAccresp[0].preferenceId != 0){
-                  this.accountService.getAccountPreference(getAccresp[0].preferenceId).subscribe(accPref => {
-                    localStorage.setItem("liveFleetTimer", (accPref['pageRefreshTime']*60).toString());  // default set
-                    this.showOrganizationRolePopup(data.body, getAccresp[0], accPref);
-                      // this.translationService.getLanguageCodes().subscribe(languageCodes => {
-                      // let objData = {
-                      //   AccountId: data.body.accountInfo.id,
-                      //   OrganizationId: data.body.accountOrganization[0].id
-                      // }  
-                      // this.translationService.checkUserAcceptedTaC(objData).subscribe(response => {
-                      //   if(!response){
-                      //     let filterLang = languageCodes.filter(item => item.id == accPref["languageId"]);
-                      //     let translationObj = {
-                      //       id: 0,
-                      //       code: filterLang[0].code, //-- TODO: Lang code based on account 
-                      //       type: "Menu",
-                      //       name: "",
-                      //       value: "",
-                      //       filter: "",
-                      //       menuId: 0 //-- for common & user preference
-                      //     }
-                      //     this.translationService.getMenuTranslations(translationObj).subscribe( (resp) => {
-                      //       this.processTranslation(resp);
-                      //       this.openTermsConditionsPopup(data.body, getAccresp[0], accPref);
-                      //     });
-                        // }
-                        // else{
-                          // this.showOrganizationRolePopup(data.body, getAccresp[0], accPref);
-                        // }
-                      // }, (error) => {
-                      //   this.showOrganizationRolePopup(data.body, getAccresp[0], accPref);
-                      // })  
-                    // });
-                  })
-                }
-                else{
-                  localStorage.setItem("liveFleetTimer", (1*60).toString()); // default timer set 
-                  // let objData = {
-                  //   AccountId: data.body.accountInfo.id,
-                  //   OrganizationId: data.body.accountOrganization[0].id
-                  // }  
-                  this.showOrganizationRolePopup(data.body, getAccresp[0], "");
-                  // this.translationService.checkUserAcceptedTaC(objData).subscribe(response => {
-                  //   if(!response){
-                  //     let translationObj = {
-                  //       id: 0,
-                  //       code: "EN-GB", //-- TODO: Lang code based on account 
-                  //       type: "Menu",
-                  //       name: "",
-                  //       value: "",
-                  //       filter: "",
-                  //       menuId: 0 //-- for common & user preference
-                  //     }
-                  //     this.translationService.getMenuTranslations(translationObj).subscribe( (resp) => {
-                  //       this.processTranslation(resp);
-                  //       this.openTermsConditionsPopup(data.body, getAccresp[0], "");
-                  //     });
-                  //   }
-                  //   else{
-                  //     this.showOrganizationRolePopup(data.body, getAccresp[0], "");
-                  //   }
-                  // }, (error) => {
-                  //   this.showOrganizationRolePopup(data.body, getAccresp[0], "");
-                  // })  
-                } 
-              }, (error) => {
-                this.loginClicks = 0;
-                this.invalidUserMsg= true;
-              });
+            if(data.body && data.body.accountInfo && data.body.accountInfo.id) {
+              if(data.body.accountInfo.preferenceId && data.body.accountInfo.preferenceId != 0){
+                this.accountService.getAccountPreference(data.body.accountInfo.preferenceId).subscribe(accPref => {
+                  localStorage.setItem("liveFleetTimer", (accPref['pageRefreshTime']*60).toString());  // default set
+                  this.showOrganizationRolePopup(data.body, data.body.accountInfo, accPref); 
+                })
+              }
+              else{
+                localStorage.setItem("liveFleetTimer", (1*60).toString()); // default timer set 
+                this.showOrganizationRolePopup(data.body, data.body.accountInfo, ""); 
+              } 
+            }else{
+              this.loginClicks = 0;
+              this.invalidUserMsg= true;
+            }
 
                //this.cookiesFlag = true;
             let sessionObject: any = {
@@ -366,23 +300,6 @@ export class LoginComponent implements OnInit {
     else{
       data.accountId = 0;
     }
-
-  //---Test scenario -----//
-  //  org  role  action
-  //  0     0    popup skip - dashboard with no data
-  //  1     0    popup skip - dashboard with org data only
-  //  1     1    popup skip - dashboard with both role & org data
-  //  2     0    popup show w/o role - dashboard with org data only
-  //  2	    1    popup show with both data - dashboard with both role & org data
-  //  1     2    popup show with both data - dashboard with both role & org data
-
-  //--- Test data-------------
-    //data.accountOrganization.push({id: 1, name: 'Org01'});
-    //data.accountRole.push({id: 1, name: 'Role01'});
-    //data.accountOrganization = [];
-    //data.accountRole = [];
-  //----------------------
-
     let organization: Organization[] = data.accountOrganization;
     if(data.accountRole == null){
       data.accountRole = [];
