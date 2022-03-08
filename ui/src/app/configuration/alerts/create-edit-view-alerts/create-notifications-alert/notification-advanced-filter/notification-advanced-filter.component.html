@@ -26,7 +26,6 @@
                 <div *ngIf="actionType == 'view'">
                   {{translationData.lblFrequency}} : <span style='font-weight: 500!important;'>{{ this.selectedRowData.notifications[0].frequencyType == 'O' ? (translationData.lblOnce) : (this.selectedRowData.notifications[0].frequencyType == 'T' ? (translationData.lblEachTime) : (translationData.lblEachNumberOfOccurences)) }}</span>
                 </div>
-                <!-- <p *ngIf="alert_category_selected != 'R' && actionType != 'view'" style="color: darkgray;">Choose appropriate frequency for this alert</p> -->
             </div>
           </div>
       </mat-expansion-panel>
@@ -60,7 +59,6 @@
               </div>
             </div>
 
-            <!-- <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px"> -->
                 <div *ngIf="actionType != 'view'" fxLayout="column" fxLayoutAlign="left" fxLayoutAlign="space-between">
                     <mat-label style="font-size: 17px; font-weight: bold;" class="margin-bottom-sm">{{ translationData.lblSelectPeriod }}
                     </mat-label>
@@ -94,9 +92,6 @@
                             <div  fxLayout="row" class="full-width margin-bottom-sm" *ngIf="item['controls']['fulldayCustom'].value ==  'C'">
                               <div fxLayout="column" class="full-width"  fxLayoutAlign="left">
                                 <div  fxLayout="row" formArrayName="FormArrayCustomItems" class="margin-bottom-sm">
-                                <!-- <div formArrayName="FormArrayCustomItems">
-                                 <div *ngFor="let customItem of customPeriods(periodIndex).controls; let customIndex = index">
-                                  <div [formGroupName]="customIndex"> -->
                                     <div *ngFor="let customItem of customPeriods(periodIndex).controls; let customIndex = index" style="background: #dedddd;border-radius: 7px;margin-right: 5px;"  class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                                       <div [formGroupName]="customIndex"  fxLayout="row" class="full-width margin-bottom-sm"  fxLayoutGap="5px">
                                         <div class="max-width-42-per" fxLayout="column">
@@ -112,16 +107,10 @@
                                           </mat-form-field>
                                         </div>
                                         <div class="max-width-5-per" fxLayout="column">
-                                          <!-- <button class='actionBtn' mat-flat-button (click)="onDeleteCustomPeriod(periodIndex, customIndex)" matTooltip="{{ translationData.lblDelete || 'Delete' }}"> -->
                                             <mat-icon class="deleteIcon" (click)="onDeleteCustomPeriod(periodIndex, customIndex)" matTooltip="{{ translationData.lblDelete}}">delete_outline</mat-icon>
-                                          <!-- </button> -->
                                         </div>
-                
                                       </div>
                                     </div>
-                                  <!-- </div>
-                                 </div>
-                                </div>  -->
                               </div>
                               <div fxLayout="row">
                                 <div  fxLayout="column"  fxLayoutAlign="left" fxLayoutGap="10px">
@@ -131,10 +120,6 @@
                               </div>
 
                               </div>   
-                              <!-- <div  fxLayout="column" class="max-width-3-per"  fxLayoutAlign="left" fxLayoutGap="10px">
-                                <button mat-raised-button color="primary" (click)='addCustomPeriod(periodIndex, [], true)'>
-                                  {{ translationData.lblAdd || 'Add' }}</button>
-                              </div> -->
                             </div>
                           </mat-card>
                         </div>
@@ -161,7 +146,6 @@
                       <div *ngIf="days.Type == 'C'" fxLayout="row" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="5px">
                         <div *ngFor="let item of days.data" class="areaWidth min-width-20-per " fxLayout="column" fxLayoutAlign="left">
                           <div class="areaWidth min-width-30-per" fxLayout="row" fxLayoutAlign="left">
-                  
                             <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
                               <mat-label>{{ translationData.lblFrom}}</mat-label>
                               <span style='font-weight: 500!important;'>{{ item.startDate }}</span>
@@ -177,11 +161,7 @@
                         <mat-divider></mat-divider>
                       </div>
                     </div>
-                  
                   </div>
-                  
-
-                <!-- </div> -->
             </mat-expansion-panel>
       </mat-card>
 </form>

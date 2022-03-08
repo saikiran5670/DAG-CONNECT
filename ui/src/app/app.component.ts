@@ -1,7 +1,5 @@
 import { Component, HostListener, Inject } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
-// import * as data from './shared/menuData.json';
-// import * as data from './shared/navigationMenuData.json';
 import { DataInterchangeService } from './services/data-interchange.service';
 import { TranslationService } from './services/translation.service';
 import { DeviceDetectorService } from 'ngx-device-detector';
@@ -9,22 +7,14 @@ import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { DOCUMENT } from '@angular/common';
 import { AccountService } from './services/account.service';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { Variable } from '@angular/compiler/src/render3/r3_ast';
-import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { OrganizationService } from './services/organization.service';
 import { AuthService } from './services/auth.service';
 import { MessageService } from './services/message.service';
 import { timer, Subscription, ReplaySubject, Subject } from 'rxjs';
 import { ReportService } from './services/report.service';
-import { takeUntil } from 'rxjs/operators';
-import { NavigationExtras } from '@angular/router';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
-import { Util } from '../app/shared/util';
-import { element } from 'protractor';
-import { HttpClient } from '@angular/common/http';
 import { SignalRService } from './services/signalR.service';
 import { AlertService } from './services/alert.service';
-import { DashboardService } from './services/dashboard.service';
 
 @Component({
   selector: 'app-root',
@@ -37,9 +27,6 @@ export class AppComponent {
   appUrlLink: any = '';
   public deviceInfo = null;
   menu : any;
-  // public isMobilevar = false;
-  // public isTabletvar = false;
-  // public isDesktopvar = false;
   notificationList: any;
   loggedInUser: string = 'admin';
   translationData: any = {};
@@ -88,12 +75,10 @@ export class AppComponent {
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   alertDateFormat: any;
   startDateValue: any;
-  reportListData: any = [];
   vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   startTimeDisplay: any = '00:00:00';
   selectedStartTime: any = '00:00';
   isUserLogin: boolean = false;
-  // notificationDetails: any= [];
   private pageTitles = {
     dashboard: 'lblDashboard',
     fleetoverview: 'lblfleetoverview',
@@ -137,7 +122,6 @@ export class AppComponent {
     termsAndconditionhistory: 'lblTermsAndConditionHistory',
     dtctranslation: 'lblDTCTranslation'
   }
-
 
   public menuStatus = {
     dashboard: {
@@ -292,33 +276,16 @@ export class AppComponent {
   messages: any[] = [];
   subscription: Subscription;
   showTimer: boolean = false;
-
-    /** list of banks */
-   // protected banks: Bank[] = BANKS;
-
-    /** control for the selected bank */
-    //public bankCtrl: FormControl = new FormControl();
-  
-    /** control for the MatSelect filter keyword */
-    public langFilterCtrl: FormControl = new FormControl();
-  
-     /** list of banks filtered by search keyword */
+  public langFilterCtrl: FormControl = new FormControl();
   public filteredLanguages: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredOrganizationList: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  protected _onDestroy = new Subject<void>();
 
-    /** Subject that emits when the component has been destroyed. */
-    protected _onDestroy = new Subject<void>();
-
-
-  constructor(private reportService: ReportService, private router: Router, private dataInterchangeService: DataInterchangeService, public authService: AuthService, private translationService: TranslationService, private deviceService: DeviceDetectorService, public fb: FormBuilder, @Inject(DOCUMENT) private document: any, private domSanitizer: DomSanitizer, private accountService: AccountService, private dialog: MatDialog, private organizationService: OrganizationService, private messageService: MessageService,@Inject(MAT_DATE_FORMATS) private dateFormats,
-  private http: HttpClient, public signalRService: SignalRService, private alertService: AlertService,
-  private dashboardService : DashboardService) {
-    this.defaultTranslation();
+  constructor(private reportService: ReportService, private router: Router, private dataInterchangeService: DataInterchangeService, public authService: AuthService, private translationService: TranslationService, private deviceService: DeviceDetectorService, public fb: FormBuilder, @Inject(DOCUMENT) private document: any, private domSanitizer: DomSanitizer, private accountService: AccountService, private organizationService: OrganizationService, private messageService: MessageService,@Inject(MAT_DATE_FORMATS) private dateFormats, public signalRService: SignalRService, private alertService: AlertService) {
     this.landingPageForm = this.fb.group({
       'organization': [''],
       'role': ['']
     });
-
     this.dataInterchangeService.dataInterface$.subscribe(data => {
       this.isLogedIn = data;
       this.router.navigate(['/switchorgrole']);
@@ -326,10 +293,16 @@ export class AppComponent {
       this.getTranslationLabels();
       //Global Search FIlter Persist Data
       localStorage.setItem("globalSearchFilterData", JSON.stringify(this.globalSearchFilterData));
-      //this.getAccountInfo();
-      // this.getNavigationMenu();
       this.reportService.getHEREMapsInfo().subscribe((data: any) => {
         localStorage.setItem("hereMapsK", data.apiKey);
+      });
+      //- store prefereces -//
+      this.translationService.getPreferences('EN-GB').subscribe((_prefData: any) => {
+        localStorage.setItem("prefDetail", JSON.stringify(_prefData));
+      });
+      //- store report details  -//
+      this.reportService.getReportDetails().subscribe((reportList: any)=>{
+        localStorage.setItem("reportDetail", JSON.stringify(reportList.reportDetails));
       });
     });
     //ToDo: below part to be removed after preferences/dashboard part is developed
@@ -344,12 +317,8 @@ export class AppComponent {
 
     this.dataInterchangeService.generalSettingInterface$.subscribe(data => {
       if (data) {
-        // this.localStLanguage.id = JSON.parse(localStorage.getItem("language")).id;
-        // this.accountInfo = JSON.parse(localStorage.getItem("accountInfo"));
-        // if(this.localStLanguage.id == this.accountInfo.accountPreference.languageId){
         this.onLanguageChange(data.languageId);
         this.appForm.get('languageSelection').setValue(data.languageId);
-        // }
       }
     })
 
@@ -361,8 +330,6 @@ export class AppComponent {
 
     if (!this.isLogedIn) {
       this.getTranslationLabels();
-      //this.getAccountInfo();
-      // this.getNavigationMenu();
     }
 
     this.appForm = this.fb.group({
@@ -382,8 +349,10 @@ export class AppComponent {
         let userLoginStatus = localStorage.getItem("isUserLogin");
         if (val.url == "/auth/login" || val.url.includes("/auth/createpassword/") || val.url.includes("/auth/resetpassword/") || val.url.includes("/auth/resetpasswordinvalidate/") || val.url.includes("/downloadreport/") || val.url.includes("/unsubscribereport/")) {
           this.isLogedIn = false;
+          this.removeStorage();
         } else if (val.url == "/") {
           this.isLogedIn = false;
+          this.removeStorage();
         } else {
           if (!userLoginStatus) {
             this.logOut();
@@ -412,10 +381,6 @@ export class AppComponent {
     // this.isMobile();
     // this.isTablet();
     // this.isDesktop();
-
-    //this.accountService.getAccountPreference(63).subscribe((result: any) => {
-      
-   // })
     this.subscription = this.messageService.getMessage().subscribe(message => {
       if (message.key.indexOf("refreshTimer") !== -1) {
         this.refreshTimer();
@@ -453,11 +418,6 @@ export class AppComponent {
   getNavigationMenu() {
     let parseLanguageCode = JSON.parse(localStorage.getItem("language"));
     let refresh = localStorage.getItem('pageRefreshed') == 'true';
-    //let _orgContextStatus = localStorage.getItem("orgContextStatus");
-    // if(refresh) {
-    //     if(_orgContextStatus){
-    //       this.orgContextType = true;
-    //     }
     this.orgContextType = localStorage.getItem("orgContextStatus") == 'true';
     if(refresh && this.orgContextType) {
      this.applyFilterOnOrganization(localStorage.getItem("contextOrgId"));
@@ -472,7 +432,6 @@ export class AppComponent {
         this.accountService.getSessionInfo().subscribe((accountData: any) => {
           this.getMenu(result, 'orgRoleChange', accountData);
           this.timeLeft = Number.parseInt(localStorage.getItem("liveFleetTimer"));
-          // if (this.isLogedIn) {
             this.getOfflineNotifications();
             let accinfo = JSON.parse(localStorage.getItem("accountInfo"))
             this.loadBrandlogoForReports(accinfo);
@@ -489,55 +448,6 @@ export class AppComponent {
 
       
     }
-  }
-
-  getReportDetails(){
-    this.reportService.getReportDetails().subscribe((reportList: any)=>{
-      this.reportListData = reportList.reportDetails;
-      this.getFleetOverviewPreferences(this.reportListData);
-    }, (error)=>{
-      //console.log('Report not found...', error);
-      this.reportListData = []
-    });
-  }
-
-  reportId: any;
-  getFleetOverviewPreferences(reportList: any){
-    let repoId: any = this.reportListData.filter(i => i.name == 'Fleet Overview');
-    if(repoId.length > 0){
-      this.reportId = repoId[0].id; 
-    }else{
-      this.reportId = 17; //- hard coded for Fleet Overview
-    }
-    // this.reportService.getReportUserPreference(this.reportId).subscribe((prefData : any) => {
-    //   let _prefData = prefData['userPreferences'];
-    //   this.getTranslatedColumnName(_prefData);
-    // }, (error)=>{
-    //   //console.log('Pref not found...')
-    // });
-  }
-
-  timerPrefData: any = [];
-  getTranslatedColumnName(prefData: any){
-    if(prefData && prefData.subReportUserPreferences && prefData.subReportUserPreferences.length > 0){
-      prefData.subReportUserPreferences.forEach(element => {
-        if(element.subReportUserPreferences && element.subReportUserPreferences.length > 0){
-          element.subReportUserPreferences.forEach(item => {
-            if(item.key.includes('rp_fo_fleetoverview_settimer_')){
-              this.timerPrefData.push(item);
-            }
-          });
-        }
-      });
-    }
-    //commented call from fleet overview -not needed
-    // if(this.timerPrefData && this.timerPrefData.length > 0){
-    //   let _timeval = this.timerPrefData[0] ? this.timerPrefData[0].thresholdValue : 2; //-- default 2 Mins
-    //   if(_timeval){
-    //     localStorage.setItem("liveFleetTimer", (_timeval*60).toString());  // default set
-    //     this.timeLeft = Number.parseInt(localStorage.getItem("liveFleetTimer"));
-    //   }
-    // }
   }
 
   getMenu(data: any, from?: any, accountData?: any) {
@@ -562,8 +472,6 @@ export class AppComponent {
     })
     ////console.log("accountNavMenu:: ", landingPageMenus)
     localStorage.setItem("accountNavMenu", JSON.stringify(landingPageMenus));
-    //localStorage.setItem("accountNavMenu", JSON.stringify(landingPageMenus));
-    
     let refreshPage = localStorage.getItem('pageRefreshed') == 'true';
     if(refreshPage || from == 'orgContextSwitch'){
       let _feature: any = JSON.parse(localStorage.getItem("accountFeatures"));
@@ -577,7 +485,6 @@ export class AppComponent {
     }
     //-- For checking Access of the User --//
     let accessNameList = [];
-    
     if(from && from == 'orgRoleChange'){
       let _link = '/menunotfound';
       let landingPageFound : boolean = false;
@@ -611,7 +518,6 @@ export class AppComponent {
       }
       
       // https://stackoverflow.com/questions/40983055/how-to-reload-the-current-route-with-the-angular-2-router
-      // //console.log(_link);
       this.router.navigateByUrl('/switchorgrole', { skipLocationChange: true }).then(() =>
       this.router.navigate([_link]));
       
@@ -629,16 +535,6 @@ export class AppComponent {
       this.globalPOIAccess = false;
       this.systemAccountAccess = false;
       this.globalCategoryAccess = false;
-
-      // if(accountData && accountData.roleLevel){ // access based on role level
-      //   if(Number(accountData.roleLevel) == 10 || Number(accountData.roleLevel) == 20){
-      //     this.adminFullAccess = true;
-      //   }else if(Number(accountData.roleLevel) == 10){
-      //     this.adminContributorAccess = true;
-      //   }else{
-      //     this.adminReadOnlyAccess = true;
-      //   }
-      // }
 
       if (accessNameList.includes("Admin#Admin")) {
         this.adminFullAccess = true;
@@ -667,53 +563,19 @@ export class AppComponent {
         globalCategoryAccess: this.globalCategoryAccess
       }
       localStorage.setItem("accessType", JSON.stringify(this.accessType));
-      // For checking Type of the User auth hierarchy
-      
-      // Platform Admin            
-      // Global Admin              
-      // DAF User    
-      // Admin          
-      // Office Staff
-      // Viewer
       
       if (accessNameList.includes("Admin#Platform")) {
         this.userType = "Admin#Platform";
-        //this.userLevel = 10;
       } else if (accessNameList.includes("Admin#Global")) {
         this.userType = "Admin#Global";
-        //this.userLevel = 20;
       } else if (accessNameList.includes("Admin#Organisation")) {
         this.userType = "Admin#Organisation";
-        //this.userLevel = 30;
       } else if (accessNameList.includes("Admin#Account")) {
         this.userType = "Admin#Account";
-        //this.userLevel = 40;
       }
 
       if(accountData && accountData.roleLevel){ // added logIn user level. Bug- #19027
         this.userLevel = Number(accountData.roleLevel);
-        // switch(Number(accountData.roleLevel)){
-        //   case 10:{
-        //     this.userType = "Admin#Platform";
-        //     break;
-        //   }
-        //   case 20:{
-        //     this.userType = "Admin#Global";
-        //     break;
-        //   }
-        //   case 30:{
-        //     this.userType = "Admin#Organisation";
-        //     break;
-        //   }
-        //   case 40:{
-        //     this.userType = "Admin#Account";
-        //     break;
-        //   }
-        //   default:{
-        //     this.userType = "Admin#Account";
-        //     break;
-        //   }
-        // }
       }
 
       if (accessNameList.includes("Admin#TranslationManagement#Inspect")){
@@ -765,14 +627,24 @@ export class AppComponent {
       this.organizationDropdown = this.accountInfo.organization;
       this.roleDropdown = this.accountInfo.role;     
       this.setDropdownValues();
-      if (this.accountInfo.accountDetail.blobId != 0) {
-        this.accountService.getAccountPicture(this.accountInfo.accountDetail.blobId).subscribe(data => {
-          if (data) {
-            this.fileUploadedPath = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + data["image"]);
-          }
-        })
+      if (this.accountInfo.accountDetail && this.accountInfo.accountDetail.blobId && this.accountInfo.accountDetail.blobId != 0) {
+        if(this.accountInfo.accountDetail.imagePath){ // profile pic already there
+          this.setProfilePic(this.accountInfo.accountDetail.imagePath);
+        }else{ // get profile pic
+          this.accountService.getAccountPicture(this.accountInfo.accountDetail.blobId).subscribe((data: any) => {
+            if (data) {
+              this.setProfilePic(data["image"]);
+              this.accountInfo.accountDetail.imagePath = data["image"];
+              localStorage.setItem("accountInfo", JSON.stringify(this.accountInfo));
+            }
+          }, (error)=>{ });
+        }
       }
     }
+  }
+
+  setProfilePic(path: any){
+    this.fileUploadedPath = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + path);
   }
 
   setDropdownValues() {
@@ -803,54 +675,6 @@ export class AppComponent {
   //   this.isDesktopvar = this.deviceService.isDesktop();
   //   //console.log("this.isDesktopvar:: ", this.isDesktopvar);
   // }
-
-  defaultTranslation() {
-    // this.translationData = {
-    //   lblDashboard: "Dashboard",
-    //   lblLiveFleet: "Live Fleet",
-    //   lblLogBook: "Log Book",
-    //   lblVehicleUpdates: "Vehicle Updates",
-    //   lblReports: "Reports",
-    //   lblTripReport: 'Trip Report',
-    //   lblTripTracing: 'Trip Tracing',
-    //   lblAdvancedFleetFuelReport: 'Advanced Fleet Fuel Report',
-    //   lblFleetFuelReport: 'Fleet Fuel Report',
-    //   lblFleetUtilisation: 'Fleet Utilisation',
-    //   lblFuelBenchmarking: 'Fuel Benchmarking',
-    //   lblFuelDeviationReport: 'Fuel Deviation Report',
-    //   lblvehiclePerformanceReport: 'Vehicle Performance Report',
-    //   lblDriveTimeManagement: 'Drive Time Management',
-    //   lblEcoscoreReport: 'Eco Score Report',
-    //   lblConfiguration: "Configuration",
-    //   lblAlerts: 'Alerts',
-    //   lblLandmarks: 'Landmarks',
-    //   lblReportScheduler: 'Report Scheduler',
-    //   lblDriverManagement: 'Driver Management',
-    //   lblVehicleManagement: 'Vehicle Management',
-    //   lblAdmin: "Admin",
-    //   lblOrganisationDetails: 'Organisation Details',
-    //   lblAccountGroupManagement: 'Account Group Management',
-    //   lblAccountManagement: 'Account Management',
-    //   lblAccountRoleManagement: 'Account Role Management',
-    //   lblVehicleGroupManagement: 'Vehicle Group Management',
-    //   lblTermsAndCondition: 'Terms & Conditions',
-    //   lblFeatureManagement: 'Feature Management',
-    //   lblOrganisationRelationshipManagement: 'Organisation Relationship Management',
-    //   lblRelationshipManagement: 'Relationship Management',
-    //   lblTranslationManagement: 'Translation Management',
-    //   lblConfigurationManagemnt: 'Configuration Managemnt',
-    //   lblPackageManagement: 'Package Management',
-    //   lblAccessRelationshipManagement: 'Access Relationship Management',
-    //   lblSubscriptionManagement: 'Subscription Management',
-    //   lblTachograph: 'Tachograph',
-    //   lblMobilePortal: 'Mobile Portal',
-    //   lblShop: 'Shop',
-    //   lblInformation: 'Information',
-    //   lblLegalNotices: 'Legal Notices',
-    //   lblTermsAndConditionHistory: 'Terms And Condition History',
-    //   lblDTCTranslation: "DTC Translation"
-    // }
-  }
 
   getTranslationLabels() {
     
@@ -902,7 +726,6 @@ export class AppComponent {
         this.appForm.get("languageSelection").setValue(this.localStLanguage.id); //-- set language dropdown
 
         this.organizationService.getAllOrganizations().subscribe((data: any) => {
-          //console.log("organizationService Data", data);
           if (data) {
             this.organizationList = data["organizationList"];
             this.filteredOrganizationList.next(this.organizationList);
@@ -982,83 +805,57 @@ export class AppComponent {
     this.accountID = parseInt(localStorage.getItem("accountId"));
     this.roleId = localStorage.getItem('accountRoleId');
     this.languageId = JSON.parse(localStorage.getItem("language"));
-    let _langCode = this.localStLanguage ? this.localStLanguage.code  :  "EN-GB";
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
     this.isUserLogin = JSON.parse(localStorage.getItem('isUserLogin'));
 
     if(this.isUserLogin){
-      this.translationService.getPreferences(_langCode).subscribe((prefData: any) => {
-        if(this.accountPrefObj && this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
-          this.proceedStep(prefData, this.accountPrefObj.accountPreference);
-        }else{ // org pref
+      let prefDetail: any = JSON.parse(localStorage.getItem("prefDetail"));
+      if(prefDetail){
+        if(this.accountPrefObj && this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){
+          this.proceedStep(this.accountPrefObj.accountPreference);
+        }else{ 
           this.organizationService.getOrganizationPreference(this.orgId).subscribe((orgPref: any)=>{
-            this.proceedStep(prefData, orgPref);
-          }, (error) => { // failed org API
-            let pref: any = {};
-            this.proceedStep(prefData, pref);
+            this.proceedStep(orgPref);
+          }, (error) => {
+            this.proceedStep({});
           });
         }
-        if(this.prefData) {
-          this.setInitialPref(this.prefData,this.preference);
+        if(prefDetail) {
+          this.setInitialPref(prefDetail, this.preference);
         }
-        // this.getDateAndTime();
         let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
         if(vehicleDisplayId) {
-          let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+          let vehicledisplay = prefDetail.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
           if(vehicledisplay.length != 0) {
             this.vehicleDisplayPreference = vehicledisplay[0].name;
           }
-        }  
-
-      });
+        }
+      }
     }
-    //this.getOrgListData();
     if (this.router.url) {
       //this.isLogedIn = true;
     }
-
-        // set initial selection
-       //this.languageSelection.setValue(this.languages[30]);
-
-        // load the initial bank list
-        
-    
-
-    // this.langFilterCtrl.valueChanges
-    //   .subscribe(() => {
-    //     //console.log("called")
-    //     this.filterLanguages();
-    //   });
   }
 
-
-  proceedStep(prefData: any, preference: any){
-    this.prefData = prefData;
+  proceedStep(preference: any){
     this.preference = preference;
-    // this.loadReportData();
     this.setPrefFormatDate();
-
   }
 
-  setInitialPref(prefData,preference){
+  setInitialPref(prefData, preference){
     let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
     if(_search.length > 0){
-      //this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
       this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
-      //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
       this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
       this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
       this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
     }else{
-      //this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
       this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
-      //this.prefTimeZone = prefData.timezone[0].value;
       this.prefTimeZone = prefData.timezone[0].name;
       this.prefDateFormat = prefData.dateformat[0].name;
       this.prefUnitFormat = prefData.unit[0].name;
     }
     localStorage.setItem("unitFormat", this.prefUnitFormat);
-    // this.selectionTimeRange('lastweek');
   }
 
   private setPageTitle() {
@@ -1085,16 +882,9 @@ export class AppComponent {
   }
 
   navigateToPage(menu) {
-    //this.currentTitle = this.pageTitles[pageName];
     if(menu.externalLink) {
       if(menu.url == "information") {
         let selectedLanguage = JSON.parse(localStorage.getItem("language"));
-        // if(selectedLanguage.code == "nl-NL") { //dutch(netherland)
-        //   menu.link = menu.link.replace('/en/','/nl-nl/');
-        // }
-        // if(selectedLanguage.code == "de-DE") {
-        //   menu.link = menu.link.replace('/en/','/de-de/');
-        // }
         switch(selectedLanguage.code){
           case 'nl-NL': { //dutch(netherland)
             menu.link = menu.link.replace('/en/','/nl-nl/');
@@ -1157,8 +947,6 @@ export class AppComponent {
     setTimeout(() => {
       this.menuCollapsed = !this.menuCollapsed;
     }, 500);
-
-
     if (this.openUserRoleDialog)
       this.openUserRoleDialog = !this.openUserRoleDialog;
   }
@@ -1166,10 +954,14 @@ export class AppComponent {
   logOut() {
     this.authService.signOut().subscribe(() => {
       this.isLogedIn = false;
-      localStorage.clear(); // clear all localstorage
-      this.fileUploadedPath = '';
+      this.removeStorage();
       this.router.navigate(["/auth/login"]);
     });
+  }
+
+  removeStorage(){
+    localStorage.clear(); // clear all localstorage
+    this.fileUploadedPath = '';
   }
 
   fullScreen() {
@@ -1228,7 +1020,6 @@ export class AppComponent {
     this.userRole = rolename[0].name;
     this.setLocalContext(localStorage.getItem("accountOrganizationId"));
     this.filterOrgBasedRoles(localStorage.getItem("accountOrganizationId"), true);
-    //this.router.navigate(['/dashboard']);
   }
 
   filterOrgBasedRoles(orgId: any, defaultType: boolean) {
@@ -1289,11 +1080,6 @@ export class AppComponent {
   }
 
   reloadCurrentComponent() {
-    // save current route 
-    // const currentRoute = this.router.url;
-    // this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-    //     this.router.navigate([currentRoute]); // navigate to same route
-    // }); 
     window.location.reload();
   }
 

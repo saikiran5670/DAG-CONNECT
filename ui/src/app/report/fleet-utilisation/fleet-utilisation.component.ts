@@ -477,9 +477,11 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
   idleDurationSumConverted: any;
   filterValue: string;
   _state: any;
-  highcharts = Highcharts;
+  highcharts = Highcharts;  
+  prefDetail: any = {};
+  reportDetail: any = [];
+
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private router: Router, private organizationService: OrganizationService, private datePipe: DatePipe, private dataInterchangeService: DataInterchangeService, private messageService: MessageService, private _sanitizer: DomSanitizer) {
-    // this.defaultTranslation();
     this.dataInterchangeService.prefSource$.subscribe((prefResp: any) => {
       if(prefResp && (prefResp.type == 'fleet utilisation report') && prefResp.prefdata){
         this.displayedColumns = ['vehiclename', 'vin', 'registrationnumber', 'distance', 'numberOfTrips', 'tripTime', 'drivingTime', 'idleDuration', 'stopTime', 'averageDistancePerDay', 'averageSpeed', 'averageWeight', 'odometer'];
@@ -502,19 +504,14 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     }
    }
 
-  defaultTranslation(){
-    this.translationData = {
-      lblSearchReportParameters: 'Search Report Parameters'
-    }
-  }
-
   ngOnInit(): void {
-    this.fleetUtilizationSearchData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
-    // //console.log("----globalSearchFilterData---",this.fleetUtilizationSearchData)
+    this.fleetUtilizationSearchData = JSON.parse(localStorage.getItem("globalSearchFilterData")); 
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
+    this.prefDetail = JSON.parse(localStorage.getItem('prefDetail'));
+    this.reportDetail = JSON.parse(localStorage.getItem('reportDetail'));
     this.tripForm = this._formBuilder.group({
       vehicleGroup: ['', [Validators.required]],
       vehicle: ['', [Validators.required]],
@@ -534,29 +531,25 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
-      this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
+      if(this.prefDetail){
         if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
-          this.proceedStep(prefData, this.accountPrefObj.accountPreference);
+          this.proceedStep(this.accountPrefObj.accountPreference);
         }else{ // org pref
           this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
-            this.proceedStep(prefData, orgPref);
-          }, (error) => { // failed org API
-            let pref: any = {};
-            this.proceedStep(prefData, pref);
+            this.proceedStep(orgPref);
+          }, (error) => { 
+            this.proceedStep({});
           });
         }
-
         let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
         if(vehicleDisplayId) {
-          let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+          let vehicledisplay = this.prefDetail.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
           if(vehicledisplay.length != 0) {
             this.vehicleDisplayPreference = vehicledisplay[0].name;
           }
         }
-
-      });
+      }
     });
-
     this.messageService.brandLogoSubject.subscribe(value => {
       if (value != null && value != "") {
         this.brandimagePath = this._sanitizer.bypassSecurityTrustResourceUrl('data:image/jpeg;base64,' + value);
@@ -564,7 +557,6 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
         this.brandimagePath = null;
       }
     });
-
   }
 
   distanceLineChartOptions = {
@@ -617,22 +609,18 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     }
   };
 
-  proceedStep(prefData: any, preference: any){
-    let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
+  proceedStep(preference: any){
+    let _search = this.prefDetail.timeformat.filter(i => i.id == preference.timeFormatId);
     if(_search.length > 0){
-      //this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
       this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
-      //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
-      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
-      this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
-      this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;
+      this.prefTimeZone = this.prefDetail.timezone.filter(i => i.id == preference.timezoneId)[0].name;
+      this.prefDateFormat = this.prefDetail.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+      this.prefUnitFormat = this.prefDetail.unit.filter(i => i.id == preference.unitId)[0].name;
     }else{
-      //this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
-      this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
-      //this.prefTimeZone = prefData.timezone[0].value;
-      this.prefTimeZone = prefData.timezone[0].name;
-      this.prefDateFormat = prefData.dateformat[0].name;
-      this.prefUnitFormat = prefData.unit[0].name;
+      this.prefTimeFormat = Number(this.prefDetail.timeformat[0].name.split("_")[1].substring(0,2)); 
+      this.prefTimeZone = this.prefDetail.timezone[0].name;
+      this.prefDateFormat = this.prefDetail.dateformat[0].name;
+      this.prefUnitFormat = this.prefDetail.unit[0].name;
     }
     this.setDefaultStartEndTime();
     this.setPrefFormatDate();
@@ -641,21 +629,13 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
   }
 
   getReportPreferences(){
-    let reportListData: any = [];
-    this.reportService.getReportDetails().subscribe((reportList: any)=>{
-      reportListData = reportList.reportDetails;
-      let repoId: any = reportListData.filter(i => i.name == 'Fleet Utilisation Report');
+    if(this.reportDetail){
+      let repoId: any = this.reportDetail.filter(i => i.name == 'Fleet Utilisation Report');
       if(repoId.length > 0){
         this.tripReportId = repoId[0].id;
         this.getFleetUtilPreferences();
-      }else{
-        //console.error("No report id found!")
       }
-    }, (error)=>{
-      ////console.log('Report not found...', error);
-      reportListData = [{name: 'Fleet Utilisation Report', id: this.tripReportId}];
-      // this.getFleetUtilPreferences();
-    });
+    }
   }
 
   ngOnDestroy(){
@@ -1817,7 +1797,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     localStorage.setItem("globalSearchFilterData", JSON.stringify(globalSearchFilterData));
   }
 
-  setPrefFormatTime(){
+  setDefaultStartEndTime(){
     if(!this.internalSelection && this.fleetUtilizationSearchData.modifiedFrom !== "" &&  ((this.fleetUtilizationSearchData.startTimeStamp || this.fleetUtilizationSearchData.endTimeStamp) !== "") ) {
       if(this.prefTimeFormat == this.fleetUtilizationSearchData.filterPrefTimeFormat){ // same format
         this.selectedStartTime = this.fleetUtilizationSearchData.startTimeStamp;
@@ -1890,14 +1870,6 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
         this.highchartDateFormat ='%m/%d/%Y';
       }
     }
-  }
-
-  setDefaultStartEndTime(){
-    this.setPrefFormatTime();
-    // if(this.internalSelection && this.fleetUtilizationSearchData.modifiedFrom == ""){
-    //   this.selectedStartTime = "00:00";
-    //   this.selectedEndTime = "23:59";
-    // }
   }
 
   setDefaultTodayDate(){

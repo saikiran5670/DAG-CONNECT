@@ -47,7 +47,7 @@ import { SignalrAlertNotificationComponent } from './signalr-alert-notification/
 
 
 export function configFactory(httpClient: HttpClient): ConfigLoader {
-   return new ConfigHttpLoader(httpClient, 'assets/config/default.json');
+  return new ConfigHttpLoader(httpClient, 'assets/config/default.json');
 // return new ConfigHttpLoader(httpClient, 'assets/config/dev-default.json');
 }
 
@@ -57,7 +57,6 @@ export function configFactory(httpClient: HttpClient): ConfigLoader {
   imports: [
     BrowserModule,
     HttpClientModule,
-    FormsModule,
     BrowserAnimationsModule,
     AppRoutingModule,
     SharedModule,

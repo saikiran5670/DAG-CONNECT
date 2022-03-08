@@ -18,15 +18,11 @@
        <!-- Charts  -->
     <div  *ngIf="!dataError" style='margin-bottom: 10px;'>
       <div fxLayout="row" class="full-width margin-bottom-20m" fxLayoutGap="10px">
-        <!-- <div [hidden]="!checkForPreference('co2emission')" class="chartTile col-md-2" [ngClass]="{'warningClass':(co2Threshold==0)}"> -->
           <div [hidden]="!checkForPreference('co2emission')" class="chartTile col-md-2 flex-css">
           <div class="textDiv">
             <div class='section-txt-font'>{{ translationData.lblCO2Emission }}</div>
             <div class='font-helvetica-md'>{{currentC02Value}} {{translationData.lblton}} <br>
             {{translationData.lblOutOf}} {{cutOffC02Value}} {{translationData.lblton}} </div>
-            <!-- <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'></div>
-            <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>out of {{cutOffC02Value}} T</div>
-             -->
           </div>
           
           <div class="col-md-8 chart-wrapper chartDimension" *ngIf='!(co2Threshold==0)'>
@@ -45,7 +41,6 @@
         </div>
 
         <!-- Idling Time -->
-        <!-- <div [hidden]="!checkForPreference('idlingtime')" class="chartTile col-md-2" [ngClass]="{'warningClass':(idlingThreshold==0)}"> -->
           <div [hidden]="!checkForPreference('idlingtime')" class="chartTile col-md-2 flex-css">
           <div class="textDiv">
             <div class='section-txt-font'>{{ translationData.lblIdlingTime }}</div>
@@ -70,7 +65,6 @@
         </div>
 
          <!-- Driving Time -->
-         <!-- <div [hidden]="!checkForPreference('drivingtime')" class="chartTile col-md-2"  [ngClass]="{'warningClass':(drivingThreshold==0)}"> -->
           <div [hidden]="!checkForPreference('drivingtime')" class="chartTile col-md-2 flex-css">
           <div class="textDiv">
             <div class='section-txt-font'>{{ translationData.lblDrivingTime }}</div>
@@ -100,7 +94,6 @@
         <!-- row2 -->
         <div fxLayout="row" class="full-width margin-bottom-20m" fxLayoutGap="10px">
           <!-- Distance Chart -->
-          <!-- <div  [hidden]="!checkForPreference('totaldistance')" class="chartTile col-md-2"  [ngClass]="{'warningClass':(distanceThreshold==0)}"> -->
             <div  [hidden]="!checkForPreference('totaldistance')" class="chartTile col-md-2 flex-css">
             <div class="textDiv">
               <div class='section-txt-font'>{{ translationData.lblDistance || 'Distance' }}</div>
@@ -125,7 +118,6 @@
           </div>
 
           <!-- Fuel Consumed -->
-          <!-- <div  [hidden]="!checkForPreference('fuelconsumed')" class="chartTile col-md-2"  [ngClass]="{'warningClass':(fuelConsumedThreshold==0)}"> -->
             <div  [hidden]="!checkForPreference('fuelconsumed')" class="chartTile col-md-2 flex-css">
             <div class="textDiv">
               <div class='section-txt-font'>{{ translationData.lblFuelConsumed || 'Fuel Consumed' }}</div>
@@ -150,7 +142,6 @@
           </div>
 
           <!-- Fuel Used Idling-->
-          <!-- <div  [hidden]="!checkForPreference('fuelusedidling')"  class="chartTile col-md-2"  [ngClass]="{'warningClass':(fuelUsedThreshold==0)}"> -->
             <div  [hidden]="!checkForPreference('fuelusedidling')"  class="chartTile col-md-2 flex-css">
             <div class="textDiv">
               <div class='section-txt-font'>{{ translationData.lblFuelUsedByIdling || 'Fuel Used By Idling' }}</div>
@@ -179,7 +170,6 @@
 
         <div fxLayout="row" class="full-width" fxLayoutGap="10px">
            <!-- Fuel Consumption -->
-           <!-- <div [hidden]="!checkForPreference('fuelconsumption')"  class="chartTile col-md-2"  [ngClass]="{'warningClass':(fuelConsumptionThreshold==0)}"> -->
             <div [hidden]="!checkForPreference('fuelconsumption')"  class="chartTile col-md-2 flex-css">
             <div class="textDiv">
               <div class='section-txt-font'>{{ translationData.lblFuelConsumption || 'Fuel Consumption' }}</div>

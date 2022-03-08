@@ -62,6 +62,8 @@ export class VehicleUpdatesComponent implements OnInit {
   prefTimeFormat: any; //-- coming from pref setting
   prefTimeZone: any; //-- coming from pref setting
   prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting  
+  prefDetail: any = {};
+
   constructor(private translationService: TranslationService, private otaSoftwareUpdateService: OtaSoftwareUpdateService, private _formBuilder: FormBuilder,  private organizationService: OrganizationService) { }
 
   ngOnInit(): void {
@@ -70,6 +72,7 @@ export class VehicleUpdatesComponent implements OnInit {
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.accountRoleId = localStorage.getItem('accountRoleId') ? parseInt(localStorage.getItem('accountRoleId')) : 0;
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
+    this.prefDetail = JSON.parse(localStorage.getItem('prefDetail'));
     let translationObj = {
       id: 0,
       code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
@@ -86,18 +89,17 @@ export class VehicleUpdatesComponent implements OnInit {
     });
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
-      this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
-       if (this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != '') { // account pref
-          this.proceedStep(prefData, this.accountPrefObj.accountPreference);
-        } else { // org pref
-          this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any) => {
-            this.proceedStep(prefData, orgPref);
-          }, (error) => { // failed org API
-            let pref: any = {};
-            this.proceedStep(prefData, pref);
-          });
-        }  
-      });
+      if(this.prefDetail){
+          if (this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != '') { 
+             this.proceedStep(this.accountPrefObj.accountPreference);
+           } else { 
+             this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any) => {
+               this.proceedStep(orgPref);
+             }, (error) => {
+               this.proceedStep({});
+             });
+           }
+      }
       this.loadVehicleStatusData();
     });
   }
@@ -517,17 +519,17 @@ export class VehicleUpdatesComponent implements OnInit {
     return filterFunction
   }
   
-  proceedStep(prefData: any, preference: any) {
-    let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
+  proceedStep(preference: any) {
+    let _search = this.prefDetail.timeformat.filter(i => i.id == preference.timeFormatId);
     if (_search.length > 0) {
       this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
-      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
-      this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+      this.prefTimeZone = this.prefDetail.timezone.filter(i => i.id == preference.timezoneId)[0].name;
+      this.prefDateFormat = this.prefDetail.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
     } else {
-       this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
-      this.prefTimeZone = prefData.timezone[0].name;
-      this.prefDateFormat = prefData.dateformat[0].name;
+       this.prefTimeFormat = Number(this.prefDetail.timeformat[0].name.split("_")[1].substring(0,2));
+      this.prefTimeZone = this.prefDetail.timezone[0].name;
+      this.prefDateFormat = this.prefDetail.dateformat[0].name;
     }
-   
   }
+
 }

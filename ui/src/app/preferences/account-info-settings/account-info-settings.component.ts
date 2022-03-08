@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, Input } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { ImageCroppedEvent } from 'ngx-image-cropper';
@@ -10,7 +10,6 @@ import { DataInterchangeService } from 'src/app/services/data-interchange.servic
 import { DomSanitizer } from '@angular/platform-browser';
 import { OrganizationService } from '../../services/organization.service';
 import { FileValidator } from 'ngx-material-file-input';
-import { DriverService } from '../../services/driver.service';
 import { MessageService } from '../../services/message.service';
 import { ReplaySubject } from 'rxjs';
 
@@ -101,13 +100,11 @@ export class AccountInfoSettingsComponent implements OnInit {
   }
 
   public filteredLanguages: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
-  
-  public filteredTimezones: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
-  
+  public filteredTimezones: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);  
   public filteredLandingPageDisplay: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
   constructor(private dialog: MatDialog, private _formBuilder: FormBuilder, private accountService: AccountService, private translationService: TranslationService, private dataInterchangeService: DataInterchangeService,
-              private domSanitizer: DomSanitizer, private organizationService: OrganizationService, private driverService: DriverService,
+              private domSanitizer: DomSanitizer, private organizationService: OrganizationService,
               private messageService : MessageService) { }
 
   ngOnInit() {
@@ -126,7 +123,6 @@ export class AccountInfoSettingsComponent implements OnInit {
         CustomValidators.specialCharValidationForName('lastName'), 
         CustomValidators.numberValidationForName('lastName')]
     });
-
     this.userSettingsForm = this._formBuilder.group({
       language: ['', []],
       timeZone: ['', []],
@@ -147,8 +143,6 @@ export class AccountInfoSettingsComponent implements OnInit {
         CustomValidators.numberMinFieldValidation('pageRefreshTime', 1)
       ]
     });
-    // this.changePictureFlag = true;
-    // this.isSelectPictureConfirm = true;
     this.orgName = localStorage.getItem("organizationName");
     this.accountId = parseInt(localStorage.getItem('accountId'));
     this.organizationId = parseInt(localStorage.getItem('accountOrganizationId'));
@@ -169,49 +163,49 @@ export class AccountInfoSettingsComponent implements OnInit {
   }
 
   loadAccountData(){
-    let userObjData = {
-      "id": this.accountId,
-      "organizationId": this.organizationId,
-      "email": "",
-      "accountIds": "",
-      "name": "",
-      "accountGroupId": 0
-    }
-    this.showLoadingIndicator=true;
-    this.accountService.getAccount(userObjData).subscribe((_data: any)=>{
-      this.accountInfo = _data;
+    this.accountInfo = [];  
+    let _accountInfo = JSON.parse(localStorage.getItem("accountInfo"));
+    if(_accountInfo && _accountInfo.accountDetail){
+      this.accountInfo.push(_accountInfo.accountDetail);
       this.editAccountSettingsFlag = false;
       this.isSelectPictureConfirm = true;
       this.setDefaultAccountInfo();
-      this.loadGeneralSettingData(); 
+      this.loadGeneralSettingData(_accountInfo); 
       if(this.accountInfo.length != 0){
         this.blobId = this.accountInfo[0]["blobId"];
       }
-      this.showLoadingIndicator=false;
       if(this.blobId != 0){
-        this.showLoadingIndicator=true;
-        this.changePictureFlag= true;
-        this.isSelectPictureConfirm= true;
-        this.accountService.getAccountPicture(this.blobId).subscribe(data => {
-          if(data){
-            this.profilePicture = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + data["image"]);
-            this.croppedImage = this.profilePicture;
-          }
-          this.showLoadingIndicator=false;
-        }, (error) => {
-          this.showLoadingIndicator=false;
-        })
+        this.changePictureFlag = true;
+        this.isSelectPictureConfirm = true;
+        if(_accountInfo && _accountInfo.accountDetail && _accountInfo.accountDetail.imagePath){
+          this.setProfilePic(_accountInfo.accountDetail.imagePath);
+        }else{
+          this.showLoadingIndicator = true;
+          this.accountService.getAccountPicture(this.blobId).subscribe((data: any) => {
+            if(data){
+              this.showLoadingIndicator = false;
+              this.setProfilePic(data["image"]);
+              _accountInfo.accountDetail.imagePath = data["image"]; // profile pic updated
+              localStorage.setItem("accountInfo", JSON.stringify(_accountInfo));
+            }
+          }, (error) => {
+            this.showLoadingIndicator = false;
+          });
+        }
       }
       else{
         this.changePictureFlag= false;
         this.isSelectPictureConfirm= false;
       }
-    }, (error) => {
-      this.showLoadingIndicator=false;
-    });
+    }
   }
 
-  loadGeneralSettingData(){
+  setProfilePic(path: any){
+    this.profilePicture = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + path);
+    this.croppedImage = this.profilePicture;
+  }
+
+  loadGeneralSettingData(_accountInfo: any){
     let languageCode = this.localStLanguage.code;
     let preferenceId = this.accountInfo[0]["preferenceId"];
     let accountNavMenu = localStorage.getItem("accountNavMenu") ? JSON.parse(localStorage.getItem("accountNavMenu")) : [];
@@ -222,14 +216,31 @@ export class AccountInfoSettingsComponent implements OnInit {
         element.transName = this.translationService.applicationTranslationData[element.menuLabelKey];
       }
     });
-    this.translationService.getPreferences(languageCode).subscribe((data: any) => {
+    let _prefData: any = JSON.parse(localStorage.getItem('prefDetail'));
+    if(languageCode.toUpperCase() == 'EN-GB'){
+      this.callToProceed(preferenceId, accountNavMenu, _prefData, _accountInfo);
+    }else{
+      if(_prefData && _prefData.isUpdate){
+        this.callToProceed(preferenceId, accountNavMenu, _prefData, _accountInfo);
+      }else {
+        this.translationService.getPreferences(languageCode).subscribe((_data: any) => { 
+          if(_data){
+            _data.isUpdate = true; // lang updated
+            localStorage.setItem("prefDetail", JSON.stringify(_data)); // update LS
+            this.callToProceed(preferenceId, accountNavMenu, _data, _accountInfo); 
+          }
+        }, (error) => {  });
+      }
+    }
+    
+  }
+
+  callToProceed(preferenceId: any, accountNavMenu: any, data: any, _accountInfo: any){
       let dropDownData = data;
       this.languageDropdownData = dropDownData.language;
-      //console.log("languageDropdownData=>", this.languageDropdownData);
       this.languageDropdownData.sort(this.compare);    
       this.resetLanguageFilter();
       this.timezoneDropdownData = dropDownData.timezone;
-      //console.log("timezoneDropdownData=>", this.timezoneDropdownData);
       this.timezoneDropdownData.sort(this.compare);
       this.resetTimezoneFilter();
       this.unitDropdownData = dropDownData.unit;
@@ -238,18 +249,15 @@ export class AccountInfoSettingsComponent implements OnInit {
       this.timeFormatDropdownData = dropDownData.timeformat;
       this.vehicleDisplayDropdownData = dropDownData.vehicledisplay;
       this.landingPageDisplayDropdownData = accountNavMenu;
-      //console.log("landingPageDisplayDropDownData=>", this.landingPageDisplayDropdownData);
       this.landingPageDisplayDropdownData.sort(this.compare);
       this.resetLandingPageFilter();
-      //this.landingPageDisplayDropdownData = dropDownData.landingpagedisplay;
-     // preferenceId = 0;
       if(preferenceId > 0){ //-- account pref
-        this.accountService.getAccountPreference(preferenceId).subscribe(resp => {
-          this.accountPreferenceData = resp;
+        if(_accountInfo && _accountInfo.accountPreference){
+          this.accountPreferenceData = _accountInfo.accountPreference;
           this.pageRefreshTimeData = this.accountPreferenceData.pageRefreshTime;
           this.updateBrandIcon();
           this.goForword(this.accountPreferenceData);
-        }, (error) => {  });
+        }
       }
       else{ //--- default org pref
         this.organizationService.getOrganizationPreference(this.organizationId).subscribe((data: any) => {
@@ -262,14 +270,11 @@ export class AccountInfoSettingsComponent implements OnInit {
             unitId: data.unit,
             vehicleDisplayId: data.vehicleDisplay,
             pageRefreshTime : 2,
-            landingPageDisplayId: this.landingPageDisplayDropdownData[0].id //-- set default landing page for org
-            //landingPageDisplayId: data.landingPageDisplay
+            landingPageDisplayId: this.landingPageDisplayDropdownData[0].id //-- set default landing page for org 
           };
-          
           this.goForword(this.orgDefaultPreference);
         });
       }
-    }, (error) => {  });
   }
 
   updateBrandIcon(){
@@ -291,8 +296,7 @@ export class AccountInfoSettingsComponent implements OnInit {
   resetLandingPageFilter(){
     this.filteredLandingPageDisplay.next(this.landingPageDisplayDropdownData.slice());
   }
- 
-  
+   
   compare(a, b) {
     if (a.value < b.value) {
       return -1;
@@ -302,9 +306,6 @@ export class AccountInfoSettingsComponent implements OnInit {
     }
     return 0;
   }
-
-  
-  
 
   goForword(prefInfo: any){
     this.filterDefaultGeneralSetting(prefInfo);
@@ -380,22 +381,23 @@ export class AccountInfoSettingsComponent implements OnInit {
       //TODO : Check if email id already exists in DB(API call).
     }
     if(this.imageError == ''){
-
       let objData: any = {
-          id: this.accountId,
-          emailId: this.accountSettingsForm.controls.loginEmail.value,
-          salutation: this.accountSettingsForm.controls.salutation.value,
-          firstName: this.accountSettingsForm.controls.firstName.value,
-          lastName: this.accountSettingsForm.controls.lastName.value,
-          organizationId: this.organizationId,
-          driverId: this.accountSettingsForm.controls.driverId.value,
-          type: this.accountInfo.type ? this.accountInfo.type : 'P'
+        id: this.accountId,
+        emailId: this.accountSettingsForm.controls.loginEmail.value,
+        salutation: this.accountSettingsForm.controls.salutation.value,
+        firstName: this.accountSettingsForm.controls.firstName.value,
+        lastName: this.accountSettingsForm.controls.lastName.value,
+        organizationId: this.organizationId,
+        driverId: this.accountSettingsForm.controls.driverId.value,
+        type: this.accountInfo.type ? this.accountInfo.type : 'P',
+        blobId: this.blobId ? this.blobId : 0
       }
       this.showLoadingIndicator=true;
       this.accountService.updateAccount(objData).subscribe((data)=>{
         this.accountInfo = [data];
         this.editAccountSettingsFlag = false;
         this.isSelectPictureConfirm = true;
+        this.croppedImage= this.profilePicture;
         this.setDefaultAccountInfo();
         this.updateLocalStorageAccountInfo("accountsettings", data);
         let editText = 'AccountSettings';
@@ -457,8 +459,10 @@ export class AccountInfoSettingsComponent implements OnInit {
       if(this.accountInfo[0]["preferenceId"] > 0){ //-- account pref available
         this.showLoadingIndicator=true;
         this.accountService.updateAccountPreference(objData).subscribe((data: any) => {
-        this.savePrefSetting(data);
-        this.showLoadingIndicator=false;
+          if(data){
+            this.savePrefSetting(data);
+            this.showLoadingIndicator=false;
+          }
         }, (error) => {
           this.showLoadingIndicator=false;
         });
@@ -544,24 +548,29 @@ export class AccountInfoSettingsComponent implements OnInit {
       this.isSelectPictureConfirm = true;
       this.isAccountPictureSelected = false;
       this.croppedImageTemp= '';
-
       let objData = {
         "blobId": this.blobId,
         "accountId": this.accountId,
         "imageType": "P",
         "image": this.croppedImage.split(",")[1]
       }
-
-      this.accountService.saveAccountPicture(objData).subscribe(data => {
+      this.accountService.saveAccountPicture(objData).subscribe((data: any) => {
         if(data){
           let msg = '';
+          this.blobId = data.blobId ? data.blobId : this.blobId;
+          let accountInfo = JSON.parse(localStorage.getItem("accountInfo"));
+          if(accountInfo && accountInfo.accountDetail){
+            accountInfo.accountDetail.blobId = this.blobId;
+            accountInfo.accountDetail.imagePath = objData.image; // profile pic updated
+            localStorage.setItem("accountInfo", JSON.stringify(accountInfo));
+          }
           if(this.translationData.lblAccountPictureSuccessfullyUpdated)
-            msg= this.translationData.lblAccountPictureSuccessfullyUpdated;
+            msg = this.translationData.lblAccountPictureSuccessfullyUpdated;
           else
-            msg= "Account picture successfully updated";
+            msg = "Account picture successfully updated";
 
           this.successMsgBlink(msg);  
-          this.profilePicture= this.croppedImage;
+          this.profilePicture = this.croppedImage;
           this.dataInterchangeService.getProfilePicture(this.croppedImage);
         }
       }, (error) => {
@@ -585,26 +594,17 @@ export class AccountInfoSettingsComponent implements OnInit {
       }
   }
 
-  imageLoaded() {
-      // show cropper
-  }
+  imageLoaded() { }
   
-  cropperReady() {
-      // cropper ready
-  }
+  cropperReady() { }
   
-  loadImageFailed() {
-      // show message
-  }
+  loadImageFailed() { }
 
   brandLogoLoaded() {
     this.brandLogoFileValidated = true;
-    // show cropper
   }
 
-  brandLogoCropperReady() {
-      // cropper ready
-  }
+  brandLogoCropperReady() { }
 
   filesDroppedMethod(event : any): boolean {
     this.imageError= CustomValidators.validateImageFile(event);
@@ -621,8 +621,6 @@ export class AccountInfoSettingsComponent implements OnInit {
     };
     reader.readAsDataURL(file);
   }
-
-  
 
   getEditMsg(editText){
     if(editText == 'AccountSettings'){
@@ -671,10 +669,6 @@ export class AccountInfoSettingsComponent implements OnInit {
         this.orgDefaultFlag.unit = false;
         break;
       }
-      // case "currency":{
-      //   this.orgDefaultFlag.currency = false;
-      //   break;
-      // }
       case "dateFormat":{
         this.orgDefaultFlag.dateFormat = false;
         break;
@@ -721,7 +715,6 @@ export class AccountInfoSettingsComponent implements OnInit {
         return false;
       }
       else{
-        //this.uploadIconName = this.file.name.substring(0, this.file.name.length - 4);
         var reader = new FileReader();
         reader.onload = this._handleReaderLoaded.bind(this);
         reader.readAsBinaryString(this.file);
@@ -753,13 +746,9 @@ export class AccountInfoSettingsComponent implements OnInit {
      this.filteredLanguages.next(
        this.languageDropdownData.filter(item=> item.value.toLowerCase().indexOf(search) > -1)
      );
-     //console.log("this.filteredLanguages", this.filteredLanguages);
-
-
    }
 
    filterTimezones(timesearch){
-     //console.log("filterTimezones called");
      if(!this.timezoneDropdownData){
        return;
      }
@@ -772,11 +761,9 @@ export class AccountInfoSettingsComponent implements OnInit {
       this.filteredTimezones.next(
         this.timezoneDropdownData.filter(item=> item.value.toLowerCase().indexOf(timesearch) > -1)
       );
-      //console.log("this.filteredTimezones", this.filteredTimezones);
    }
 
    filterLandingPageDisplay(landingpagesearch){
-    //console.log("LandingPageDisplay called");
     if(!this.landingPageDisplayDropdownData){
       return;
     }
@@ -789,10 +776,8 @@ export class AccountInfoSettingsComponent implements OnInit {
     this.filteredLandingPageDisplay.next(
        this.landingPageDisplayDropdownData.filter(item=> item.value.toLowerCase().indexOf(landingpagesearch) > -1)
     );
-     //console.log("this.filteredLandingPageDisplay", this.filteredLandingPageDisplay);
   }
   
-
    keyPressNumbers(event: any){
     var charCode = (event.which) ? event.which : event.keyCode;
     // Only Numbers 0-9

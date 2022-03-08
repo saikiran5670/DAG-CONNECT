@@ -30,35 +30,7 @@ export class LogbookTabPreferencesComponent implements OnInit {
     if(repoId.length > 0){
       this.reportId = repoId[0].id; 
       this.loadLogbookPreferences();
-    }else{
-      console.error("No report id found!")
     }
-    // this.translationUpdate();
-    this.loadLogbookPreferences();
-  }
-
-  translationUpdate(){
-    this.translationData = {
-      lblTablecolumnviewsettings: 'Table column view settings',
-      lblDetails: 'Details',
-      lblCancel: 'Cancel',
-      lblReset: 'Reset',
-      lblConfirm: 'Confirm',
-      rp_lb_logbook: 'Logbook',
-      rp_lb_logbook_details: 'Details',
-      rp_lb_logbook_details_alertlevel: 'Alert Level',
-      rp_lb_logbook_details_date: 'Date',
-      rp_lb_logbook_details_vehiclename: 'Vehicle Name',
-      rp_lb_logbook_details_vin: 'VIN',
-      rp_lb_logbook_details_registrationplatenumber: 'Registration Plate Number',
-      rp_lb_logbook_details_alertname: 'Alert Name',
-      rp_lb_logbook_details_tripstart: 'Trip Start',
-      rp_lb_logbook_details_alerttype: 'Alert Type',
-      rp_lb_logbook_details_alertcategory: 'Alert Category',
-      rp_lb_logbook_details_occurance: 'Occurance',
-      rp_lb_logbook_details_tripend: 'Trip End',
-      rp_lb_logbook_details_threshold: 'Threshold'
-    };
   }
 
   loadLogbookPreferences(reloadFlag?: any){
@@ -200,20 +172,15 @@ export class LogbookTabPreferencesComponent implements OnInit {
       this.showLoadingIndicator=true;
       this.reportService.updateReportUserPreference(objData).subscribe((_tripPrefData: any) => {
         this.showLoadingIndicator = false;
-
         let _reloadFlag = false;
         if ((this.router.url).includes("fleetoverview/logbook")) {
           _reloadFlag = true;
         }
         this.loadLogbookPreferences(_reloadFlag);
         this.setLogbookFlag.emit({ flag: false, msg: this.getSuccessMsg() });
-        // if ((this.router.url).includes("fleetoverview/logbook")) {
-        //   this.reloadCurrentComponent();
-        // }
         this.requestSent = false;
       }, (error) => {
-        this.showLoadingIndicator=false;
-        //console.log(error);
+        this.showLoadingIndicator = false;
       });
     }
   }
@@ -223,9 +190,5 @@ export class LogbookTabPreferencesComponent implements OnInit {
       return this.translationData.lblDetailssavesuccessfully;
     else
       return ("Details save successfully");
-  }
-
-  reloadCurrentComponent(){
-    window.location.reload(); //-- reload screen
   }
 }

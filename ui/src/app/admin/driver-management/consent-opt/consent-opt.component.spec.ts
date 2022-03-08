@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { ConsentOptComponent } from './consent-opt.component';
 
 describe('ConsentOptComponent', () => {

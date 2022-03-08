@@ -115,15 +115,12 @@ export class EditDriverDetailsComponent implements OnInit {
     }
     this.showLoadingIndicator=true;
     this.driverService.updateDriver(objData).subscribe((drv: any) => {
-      let drvId: any = 0;
-      // this.driverService.getDrivers(this.accountOrganizationId, drvId).subscribe((drvList: any) => {
-        let returnObj: any = {
-          stepFlag: false,
-          msg: this.getDriverUpdateMsg(drv),
-          tableData: []
-        }; 
-        this.backToPage.emit(returnObj);
-      // });
+      let returnObj: any = {
+        stepFlag: false,
+        msg: this.getDriverUpdateMsg(drv),
+        tableData: []
+      }; 
+      this.backToPage.emit(returnObj);
       this.showLoadingIndicator=false;
     }, (error) => {
       this.showLoadingIndicator=false;

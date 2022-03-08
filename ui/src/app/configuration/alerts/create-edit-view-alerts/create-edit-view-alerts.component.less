@@ -1,63 +1,51 @@
 @import "../../../../styles.less";
 
-.backBtnCss{
-    text-decoration: underline;
-    color: #29539c;
-    cursor: pointer;
+.backBtnCss {
+  text-decoration: underline;
+  color: #29539c;
+  cursor: pointer;
 }
-
-.filter-direction{
-    @media @mobile {
-        flex-direction: column !important;
-    }
-}
-
-.linkBtn{  
-    a{
-        text-decoration: underline;
-        cursor: pointer;
-       
-    }
-    .mat-icon{
-        position: absolute;
-        margin-top: 2px;
-    }
-}
-
-.row-hover {
-    color: black;
-    text-decoration: underline !important;
-    cursor: pointer !important;
-}
-
-::ng-deep.H_ib_body {
-    width: 350px;
-    height: auto;
-    padding: 10px;
-
-    // position: fixed;
-  
-    .H_ib_close {
-      display: none;
-    }
-  
-    .H_ib_content {
-      margin: 5px;
-    }
-  
+.filter-direction {
+  @media @mobile {
+    flex-direction: column !important;
   }
- .alertsMainDiv .mat-elevation-z
- {
-     padding: 0px !important;
-     margin-bottom: 14px;
- }
- .mandatorySpan{
-    color: red;
+}
+.linkBtn {
+  a {
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  .mat-icon {
     position: absolute;
-    right: 60px;
-    top: 18px;
- }
-
- .alert{
-width:57%;
- }
+    margin-top: 2px;
+  }
+}
+.row-hover {
+  color: black;
+  text-decoration: underline !important;
+  cursor: pointer !important;
+}
+::ng-deep.H_ib_body {
+  width: 350px;
+  height: auto;
+  padding: 10px;
+  .H_ib_close {
+    display: none;
+  }
+  .H_ib_content {
+    margin: 5px;
+  }
+}
+.alertsMainDiv .mat-elevation-z {
+  padding: 0px !important;
+  margin-bottom: 14px;
+}
+.mandatorySpan {
+  color: red;
+  position: absolute;
+  right: 60px;
+  top: 18px;
+}
+.alert {
+  width: 57%;
+}

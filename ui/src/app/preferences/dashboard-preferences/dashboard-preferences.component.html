@@ -18,7 +18,6 @@
                         </span>
                     </mat-panel-title>
                 </mat-expansion-panel-header>
-
                 <div *ngIf='updateMsgVisible' fxLayout="row" fxLayoutAlign="center center"
                     style='padding:10px; color:#fff; background: #5dc24e;' class='margin-bottom-sm'>
                     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center" style='width:95%;'>
@@ -28,7 +27,6 @@
                         <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
                     </div>
                 </div>
-                <!-- *********Fleet KPI ********** -->
                 <div *ngIf='fleetKPIColumnData && fleetKPIColumnData.length > 0' fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left center"
                     style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;' fxLayoutGap="10px">
                     <div fxLayout="column" fxLayoutGap="3px" class='min-width-45-per'>
@@ -40,11 +38,9 @@
                                 translationData.lblFleetKPI }} <span class='font-14-px'>({{ translationData.lblComponentviewsettings }})</span></span>
                         </mat-checkbox>
                     </div>
-
                     <div fxLayout="column" fxLayoutGap="3px" class='min-width-25-per headerFont'>
                         {{ translationData.lblTargetPerDayPerVehicle || 'Target Per Day Per Vehicle' }}
                     </div>
-
                     <div fxLayout="column" fxLayoutGap="3px" class='min-width-25-per headerFont'>
                         {{translationData.lblTheresholdType ||'Thereshold Type'}}
                     </div>
@@ -62,7 +58,6 @@
                                     <span>{{ field.translatedName }}</span>
                                 </mat-checkbox>
                             </div>
-
                             <div *ngIf="field.key !=='rp_db_dashboard_fleetkpi_drivingtime' && field.key !=='rp_db_dashboard_fleetkpi_idlingtime'"
                                 fxLayout="column" class="areaWidth min-width-25-per targetSpanIcon" fxLayoutGap="0px"
                                 fxLayoutAlign="left">
@@ -91,7 +86,6 @@
                                        </mat-error>
                                 </mat-form-field>
                             </div>
-
                             <div *ngIf="field.key =='rp_db_dashboard_fleetkpi_drivingtime' || field.key =='rp_db_dashboard_fleetkpi_idlingtime'"
                                 style="display: inline-block" fxLayout="column"
                                 class="areaWidth min-width-25-per targetSpanIcon" fxLayoutGap="0px" fxLayoutAlign="left">
@@ -120,7 +114,6 @@
                                     </mat-form-field>
                                 </div>
                             </div>
-
                             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left"
                                 class="areaWidth min-width-25-per">
                                 <mat-form-field appearance="outline" style='width: 80%'>
@@ -135,10 +128,6 @@
                         </div>
                     </ng-container>
                 </div>
-
-
-                <!-- ********* today live vehicles ********** -->
-
                 <div *ngIf='todayLiveVehicleColumnData && todayLiveVehicleColumnData.length > 0' fxLayout="row" class='areaWidth full-width padding-10 margin-top-20' fxLayoutAlign="left center"
                     style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;' fxLayoutGap="10px">
                     <div fxLayout="column" fxLayoutGap="3px" class='min-width-45-per'>
@@ -151,11 +140,9 @@
                                 translationData.lblTodayLiveVehicle }} <span class='font-14-px'>({{ translationData.lblComponentviewsettings }})</span></span>
                         </mat-checkbox>
                     </div>
-
                     <div fxLayout="column" fxLayoutGap="3px" class='min-width-25-per headerFont'>
                         {{translationData.lblTargetPerDayPerVehicle || 'Target Per Day Per Vehicle'}}
                     </div>
-
                     <div fxLayout="column" fxLayoutGap="3px" class='min-width-25-per headerFont'>
                         {{translationData.lblTheresholdType || 'Thereshold Type'}}
                     </div>
@@ -171,7 +158,6 @@
                                     <span>{{ field.translatedName }}</span>
                                 </mat-checkbox>
                             </div>
-
                             <div *ngIf="field.key == 'rp_db_dashboard_todaylivevehicle_timebasedutilizationrate'" style="display:inline-block"
                                 fxLayout="column" class="areaWidth min-width-25-per targetSpanIcon" fxLayoutGap="0px"
                                 fxLayoutAlign="left">
@@ -185,8 +171,7 @@
                                            </mat-error>
                                            <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValue').hasError('max')">
                                             23:60 max allowed
-                                           </mat-error>
-                                          
+                                           </mat-error>         
                                     </mat-form-field>
                                     <mat-form-field appearance="outline" style='width: 38%; margin-left: 4%;'>
                                         <input [readonly]='!editDashboardFlag' matInput type="number" [formControlName]="field.key+'thresholdValuemin'"
@@ -201,7 +186,6 @@
                                     </mat-form-field>
                                 </div>
                             </div>
-
                             <div *ngIf="field.key == 'rp_db_dashboard_todaylivevehicle_distancebasedutilizationrate' || field.key =='rp_db_dashboard_todaylivevehicle_activevehicles'"
                                 fxLayout="column" class="areaWidth min-width-25-per targetSpanIcon" fxLayoutGap="0px"
                                 fxLayoutAlign="left">
@@ -222,7 +206,6 @@
                                        </mat-error>
                                 </mat-form-field>
                             </div>
-
                             <div *ngIf="field.key == 'rp_db_dashboard_todaylivevehicle_timebasedutilizationrate' || field.key == 'rp_db_dashboard_todaylivevehicle_distancebasedutilizationrate' || field.key == 'rp_db_dashboard_todaylivevehicle_activevehicles'"
                                 fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left"
                                 class="areaWidth min-width-25-per">
@@ -235,14 +218,9 @@
                                     </mat-select>
                                 </mat-form-field>
                             </div>
-
                         </div>
                     </ng-container>
                 </div>
-
-
-                <!-- ********* Vehicle Utilization ********** -->
-
                 <div *ngIf='vehicleUtilizationColumnData && vehicleUtilizationColumnData.length > 0' fxLayout="row" class='areaWidth full-width padding-10 margin-top-20' fxLayoutAlign="left center"
                     style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;' fxLayoutGap="10px">
                     <div fxLayout="column" fxLayoutGap="3px" class='min-width-45-per'>
@@ -258,7 +236,6 @@
                     <div fxLayout="column" fxLayoutGap="3px"  class='min-width-25-per headerFont'>
                         {{translationData.lblTargetPerDayPerVehicle || 'Target Per Day Per Vehicle'}}
                     </div>
-
                     <div fxLayout="column" fxLayoutGap="3px"  class='min-width-25-per headerFont'>
                         {{translationData.lblChartType || 'Chart Type'}}
                     </div>
@@ -274,12 +251,10 @@
                                     <span>{{ field.translatedName }}</span>
                                 </mat-checkbox>
                             </div>
-
                             <div *ngIf="field.key!== 'rp_db_dashboard_vehicleutilization_timebasedutilizationrate' && field.key!== 'rp_db_dashboard_vehicleutilization_distancebasedutilizationrate'"
                                 fxLayout="column" class="areaWidth min-width-25-per" fxLayoutGap="0px"
                                 fxLayoutAlign="left">
                             </div>
-
                             <div *ngIf="field.key== 'rp_db_dashboard_vehicleutilization_timebasedutilizationrate'" fxLayout="column"
                                 class="areaWidth min-width-25-per targetSpanIcon" fxLayoutGap="0px" fxLayoutAlign="left">
                                 <div style="display:inline-block">
@@ -307,7 +282,6 @@
                                     </mat-form-field>
                                 </div>
                             </div>
-
                           <div *ngIf="field.key== 'rp_db_dashboard_vehicleutilization_distancebasedutilizationrate'" fxLayout="column" 
                                 class="areaWidth min-width-25-per targetSpanIcon" fxLayoutGap="0px" fxLayoutAlign="left">
                                 <mat-form-field appearance="outline" style='width: 80%'>
@@ -325,7 +299,6 @@
                                        </mat-error>
                                 </mat-form-field>
                             </div>
-
                             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left"
                                 class="areaWidth min-width-25-per">                                
                                 <mat-form-field appearance="outline" style='width: 80%'  *ngIf="field.key== 'rp_db_dashboard_vehicleutilization_distancebasedutilizationrate' || field.key== 'rp_db_dashboard_vehicleutilization_timebasedutilizationrate'" >
@@ -348,11 +321,6 @@
                         </div>
                     </ng-container>
                 </div>
-
-
-                <!-- ********* Alert Last 24 Hours ********** -->
-
-
                 <div *ngIf='vehicleUtilizationColumnData && vehicleUtilizationColumnData.length > 0' fxLayout="row" class='areaWidth full-width padding-10 margin-top-20' fxLayoutAlign="left center"
                     style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
                     <div class='min-width-45-per'>
@@ -366,7 +334,6 @@
                         </mat-checkbox>
                     </div>
                 </div>
-
                 <div *ngIf='vehicleUtilizationColumnData && vehicleUtilizationColumnData.length > 0'>
                     <ng-container *ngIf='alertLast24HoursColumnData.length > 0'>
                         <div fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left center"
@@ -382,11 +349,9 @@
                                     </mat-checkbox>
                                 </div>
                             </ng-container>
-
                         </div>
                     </ng-container>
                 </div>
-
                 <div *ngIf='editDashboardFlag && (fleetKPIColumnData.length > 0 || todayLiveVehicleColumnData.length > 0 || vehicleUtilizationColumnData.length > 0 || alertLast24HoursColumnData.length > 0)' fxLayout="row" class='areaWidth margin-top-20' fxLayoutAlign="end">
                     <button class='resetCancelBtnColor margin-right-10' (click)='onCancel()' mat-raised-button
                         color="primary">{{
@@ -397,7 +362,6 @@
                     <button [disabled]='!dashboardPreferenceForm.valid ||(selectionForFleetKPIColumns.selected.length == 0 && fleetKPIColumnData.length > 0) || (selectionForVehicleUtilizationColumns.selected.length == 0 && vehicleUtilizationColumnData.length > 0) || (selectionForTodayLiveVehicleColumns.selected.length == 0 && todayLiveVehicleColumnData.length > 0) || (selectionForAlertLast24HoursColumns.selected.length == 0 && alertLast24HoursColumnData.length > 0)' class='no-margin' (click)='onConfirm()' mat-raised-button color="primary">{{
                         (translationData.lblConfirm) }}</button>
                 </div>
-
             </mat-expansion-panel>
         </div>
     </form>

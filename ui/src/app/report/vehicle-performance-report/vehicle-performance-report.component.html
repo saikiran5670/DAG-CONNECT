@@ -1,8 +1,7 @@
 <div class="bgtrans">
-    <app-search-criteria [translationData]='translationData' [performanceTypeLst]="performanceTypeLst" (showSearchResult)="showSearchResult($event)" (hideSearchResult)="hideSearchResult()" #searchCriteria>
+    <app-search-criteria [translationData]='translationData' [performanceTypeLst]="performanceTypeLst"
+        (showSearchResult)="showSearchResult($event)" (hideSearchResult)="hideSearchResult()" #searchCriteria>
     </app-search-criteria>
-
-    <!-- Details Panel -->
     <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
         <mat-expansion-panel [(expanded)]="detailsExpandPanel" class="full-width" fxLayoutGap="10px">
             <mat-expansion-panel-header class="full-width">
@@ -22,27 +21,29 @@
                     translationData.lblSelectionMessage || 'Please select and search required fields from top to view
                     the details' }}</div>
             </div>
-
             <div *ngIf="search">
                 <div style='padding: 20px; margin-bottom: 10px; background: #bee3f8;'>
                     <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
                         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                             <span>
-                                <span class='font-16-px line-height-24px'>{{ translationData.lblFrom || 'From' }}: </span>
+                                <span class='font-16-px line-height-24px'>{{ translationData.lblFrom || 'From' }}:
+                                </span>
                                 <span class='font-helvetica-md'>{{
-                                    searchResult.startDate  }}</span>
+                                    searchResult.startDate }}</span>
                             </span>
                         </div>
                         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                             <span>
-                                <span class='font-16-px line-height-24px'>{{ translationData.lblVehicleGroup || 'Vehicle Group' }}: </span>
+                                <span class='font-16-px line-height-24px'>{{ translationData.lblVehicleGroup || 'Vehicle
+                                    Group' }}: </span>
                                 <span class='font-helvetica-md'>{{
                                     searchResult.vehicleGroup }}</span>
                             </span>
                         </div>
                         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                             <span>
-                                <span class='font-16-px line-height-24px'>{{ translationData.lblVehicleVIN || 'Model Type' }}: </span>
+                                <span class='font-16-px line-height-24px'>{{ translationData.lblVehicleVIN || 'Model
+                                    Type' }}: </span>
                                 <span class='font-helvetica-md'>{{
                                     searchResult.modelType }}</span>
                             </span>
@@ -58,7 +59,8 @@
                         </div>
                         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                             <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleName'">
-                                <span class='font-16-px line-height-24px'>{{ translationData.lblVehicleName || 'Vehicle Name' }}: </span>
+                                <span class='font-16-px line-height-24px'>{{ translationData.lblVehicleName || 'Vehicle
+                                    Name' }}: </span>
                                 <span class='font-helvetica-md'>{{
                                     searchResult.vehicleName }}</span>
                             </span>
@@ -68,14 +70,16 @@
                                     searchResult.vin }}</span>
                             </span>
                             <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber'">
-                                <span class='font-16-px line-height-24px'>{{ translationData.lblRegistrationNumber || 'Vehicle Registration Number' }}: </span>
+                                <span class='font-16-px line-height-24px'>{{ translationData.lblRegistrationNumber ||
+                                    'Vehicle Registration Number' }}: </span>
                                 <span class='font-helvetica-md'>{{
                                     searchResult.registrationNo }}</span>
                             </span>
                         </div>
                         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                             <span>
-                                <span class='font-16-px line-height-24px'>{{ translationData.lblRegPlateNumber || 'Engine Type' }}: </span>
+                                <span class='font-16-px line-height-24px'>{{ translationData.lblRegPlateNumber ||
+                                    'Engine Type' }}: </span>
                                 <span class='font-helvetica-md'>{{
                                     searchResult.engineType }}</span>
                             </span>
@@ -83,10 +87,8 @@
                     </div>
                 </div>
             </div>
-
         </mat-expansion-panel>
     </mat-card>
-
     <!-- Charts Panel -->
     <mat-card *ngIf="search" class='mat-elevation-z no-padding margin-bottom-xlg'>
         <mat-expansion-panel [(expanded)]="chartsExpandPanel" class="full-width" fxLayoutGap="10px">
@@ -96,19 +98,19 @@
                         translationData.lblCharts || 'Charts' }}</span>
                 </mat-panel-title>
             </mat-expansion-panel-header>
-
             <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
                 <div class="areaWidth chart-box min-width-50-per" fxLayout="column" fxLayoutAlign="left">
-                    <app-heat-bubble-chart [searchData]="searchResult" [xaxis]="chartXaxis" [yaxis]="chartYaxis" [chartTitle]="bubbleHeatchartTitle" [legends]="legends" [colorToLegends]="colorToLegends" [translationData]="translationData"></app-heat-bubble-chart>
+                    <app-heat-bubble-chart [searchData]="searchResult" [xaxis]="chartXaxis" [yaxis]="chartYaxis"
+                        [chartTitle]="bubbleHeatchartTitle" [legends]="legends" [colorToLegends]="colorToLegends"
+                        [translationData]="translationData"></app-heat-bubble-chart>
                 </div>
                 <div class="areaWidth chart-box min-width-50-per" fxLayout="column" fxLayoutAlign="left">
-                    <app-pie-chart [chartLabels]="pieChartLabels" [chartData]="pieChartData" [pieChartColor]="pieChartColors" [legends]="legends" [chartTitle]="piechartTitle"></app-pie-chart>
+                    <app-pie-chart [chartLabels]="pieChartLabels" [chartData]="pieChartData"
+                        [pieChartColor]="pieChartColors" [legends]="legends" [chartTitle]="piechartTitle">
+                    </app-pie-chart>
                 </div>
             </div>
-
         </mat-expansion-panel>
     </mat-card>
-
     <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
-
 </div>

@@ -198,7 +198,7 @@ export class UserManagementComponent implements OnInit {
   }
 
   getUserSettingsDropdownValues(){
-    this.showLoadingIndicator = true;
+    //this.showLoadingIndicator = true;
     let languageCode = this.localStLanguage.code;
     let accountNavMenu = localStorage.getItem("accountNavMenu") ? JSON.parse(localStorage.getItem("accountNavMenu")) : [];
     accountNavMenu.forEach(element => {
@@ -208,20 +208,37 @@ export class UserManagementComponent implements OnInit {
         element.transName = this.translationService.applicationTranslationData[element.menuLabelKey];
       }
     });
-    this.translationService.getPreferences(languageCode).subscribe(data => {
-      this.hideloader();
-      this.defaultSetting = {
-        languageDropdownData: data.language,
-        timezoneDropdownData: data.timezone,
-        unitDropdownData: data.unit,
-        currencyDropdownData: data.currency,
-        dateFormatDropdownData: data.dateformat,
-        timeFormatDropdownData: data.timeformat,
-        vehicleDisplayDropdownData: data.vehicledisplay,
-        landingPageDisplayDropdownData: accountNavMenu
+
+    let _prefData: any = JSON.parse(localStorage.getItem('prefDetail'));
+    if(languageCode.toUpperCase() == 'EN-GB'){
+      this.callToProceed(_prefData, accountNavMenu);
+    }else{
+      if(_prefData && _prefData.isUpdate){
+        this.callToProceed(_prefData, accountNavMenu);
+      }else {
+        this.translationService.getPreferences(languageCode).subscribe((_data: any) => { 
+          if(_data){
+            _data.isUpdate = true; // lang updated
+            localStorage.setItem("prefDetail", JSON.stringify(_data)); // update LS
+            this.callToProceed(_data, accountNavMenu);
+          }
+        }, (error) => {  });
       }
-      this.loadRoles();
-    });
+    }
+  }
+
+  callToProceed(data: any, accountNavMenu: any){
+    this.defaultSetting = {
+      languageDropdownData: data.language,
+      timezoneDropdownData: data.timezone,
+      unitDropdownData: data.unit,
+      currencyDropdownData: data.currency,
+      dateFormatDropdownData: data.dateformat,
+      timeFormatDropdownData: data.timeformat,
+      vehicleDisplayDropdownData: data.vehicledisplay,
+      landingPageDisplayDropdownData: accountNavMenu
+    }
+    this.loadRoles();
   }
 
   processTranslation(transData: any){

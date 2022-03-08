@@ -123,19 +123,6 @@ ngOnChanges(changes: SimpleChanges) {
   ngOnInit(): void {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
-    // let translationObj = {
-    //   id: 0,
-    //   code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
-    //   type: "Menu",
-    //   name: "",
-    //   value: "",
-    //   filter: "",
-    //   menuId: 3
-    // }
-    // this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-    //   this.processTranslation(data);
-    // });
-
     this.selection1 = ['all'];
     this.selection2 = ['all'];
     this.selection3 = ['all'];
@@ -566,17 +553,12 @@ ngOnChanges(changes: SimpleChanges) {
   }
 
   getFilterData() {
-    //this.showLoadingIndicator = true;
-    //this.reportService.getFilterDetails().subscribe((data: any) => {
-      //this.filterData = data;
       if(this.selectedIndex == 0){
         this.updateVehicleFilter();
         }
         if(this.selectedIndex == 1){
         this.updateDriverFilter();
         }
-      //this.showLoadingIndicator = false;
-    //})
     this.setDropdownValues(this.fleetData);
   }
 

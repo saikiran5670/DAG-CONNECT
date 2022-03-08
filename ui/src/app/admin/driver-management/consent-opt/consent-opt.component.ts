@@ -123,7 +123,6 @@ export class ConsentOptComponent implements OnInit {
         optoutoptinstatus: this.data.consentType
       };
       this.driverService.updateOptInOptOutDriver(objData).subscribe((drv: any) => {
-        //this.getDriverList();
         this.onClose({ tableData: this.data.driverData, consentMsg: this.getConsentUpdatedMsg() });
       });
     }
@@ -139,7 +138,6 @@ export class ConsentOptComponent implements OnInit {
         modifiedBy: this.accountId //0
       }
       this.driverService.updateDriver(objData).subscribe((drv: any) => {
-        // this.getDriverList();
         this.onClose({ tableData: [drv], consentMsg: this.getConsentUpdatedMsg() });
       });
     }
@@ -240,18 +238,7 @@ export class ConsentOptComponent implements OnInit {
     }
   }
 
-  onUpdateStatusOk(event){
-    let objData: any = {
-      id: this.data.driverData.id,
-      organizationId: this.data.driverData.organizationId,
-      driverIdExt: this.data.driverData.driverIdExt,
-      email: this.data.driverData.email,
-      firstName: this.data.driverData.firstName,
-      lastName: this.data.driverData.lastName,
-      optIn: this.data.consentType,
-      modifiedBy: this.accountId //0
-    }
-    ////console.log(objData);    
+  onUpdateStatusOk(event){ 
     this.closePopup = false;
     this.mdDialogRef.close(event);
   }  
