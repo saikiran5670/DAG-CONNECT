@@ -435,7 +435,7 @@ export class AlertsComponent implements OnInit {
       item =  Object.defineProperty(item, "highThresholdValue", {value : obj.thresholdValue,
       writable : true,enumerable : true, configurable : true});
       if(obj.unitType !='N') {
-      item.highThresholdValue = this.getConvertedThresholdValues(item.highThresholdValue, item.unitTypeEnum);
+      item.highThresholdValue = this.getConvertedThresholdValues(item.highThresholdValue, obj.unitType);
       }
       });
       }
@@ -446,7 +446,7 @@ export class AlertsComponent implements OnInit {
       item =  Object.defineProperty(item, "highThresholdValue", {value : obj.thresholdValue,
       writable : true,enumerable : true, configurable : true});
       if(obj.unitType !='N') {
-      item.highThresholdValue = this.getConvertedThresholdValues(item.highThresholdValue, item.unitTypeEnum);
+      item.highThresholdValue = this.getConvertedThresholdValues(item.highThresholdValue, obj.unitType);
       }
     });
       }
@@ -457,7 +457,7 @@ export class AlertsComponent implements OnInit {
       item =  Object.defineProperty(item, "highThresholdValue", {value : obj.thresholdValue,
       writable : true,enumerable : true, configurable : true});
       if(obj.unitType !='N') {
-      item.highThresholdValue = this.getConvertedThresholdValues(item.highThresholdValue, item.unitTypeEnum);
+      item.highThresholdValue = this.getConvertedThresholdValues(item.highThresholdValue, obj.unitType);
       }
     });
       }
