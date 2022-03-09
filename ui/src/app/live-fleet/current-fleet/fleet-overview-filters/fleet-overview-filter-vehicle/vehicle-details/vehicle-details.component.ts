@@ -94,6 +94,9 @@ export class VehicleDetailsComponent implements OnInit {
         this.vehicleDisplayPreference = vehicledisplay[0].name;
       }
     }
+    if(this.selectedElementData.todayFlag){
+      this.todayFlagClicked= true;
+    }
     this.selectedElementData.fleetOverviewAlert.forEach(item => {
       this.levelList.forEach(element => {
         if(item.level ==element.value)
