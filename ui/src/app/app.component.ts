@@ -440,13 +440,9 @@ export class AppComponent {
         }, (err) => {
           //console.log(err);
         });
-       
-
       }, (error) => {
         //console.log(error);
       });
-
-      
     }
   }
 
@@ -1044,16 +1040,20 @@ export class AppComponent {
     }
 
     if (this.selectedRoles.length > 0) { //-- When role available
-      let sessionObject: any = {
-        accountId: parseInt(localStorage.getItem('accountId')),
-        orgId: parseInt(localStorage.getItem('accountOrganizationId')),
-        roleId: parseInt(localStorage.getItem('accountRoleId')),
-      }
-      this.accountService.setUserSelection(sessionObject).subscribe((data) =>{
+      let refreshPage = localStorage.getItem('pageRefreshed') == 'true';
+      this.orgContextType = localStorage.getItem("orgContextStatus") == 'true';
+      if(refreshPage && this.orgContextType){ // page refresh
         this.getNavigationMenu();
-      }, (error) => {
-        //console.log(error)
-      });
+      }else{ // login & org/role change 
+        let sessionObject: any = {
+          accountId: parseInt(localStorage.getItem('accountId')),
+          orgId: parseInt(localStorage.getItem('accountOrganizationId')),
+          roleId: parseInt(localStorage.getItem('accountRoleId')),
+        }
+        this.accountService.setUserSelection(sessionObject).subscribe((data) =>{
+          this.getNavigationMenu();
+        }, (error) => { });
+      }
     }
   }
 
