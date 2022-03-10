@@ -172,6 +172,9 @@ export class VehicleDetailsComponent implements OnInit {
         this.vehicleGroupId = this.vehicleGroups[i].vehicleGroupId;
       }
     }   
+    if(this.vehicleGroupId == undefined){
+      this.vehicleGroupId = 0;
+    }
    this.selectedElementData.vehicleGroupId = this.vehicleGroupId; 
   //  if(this.selectedElementData.startTimeStamp != 0 && this.selectedElementData.endTimeStamp != 0) {
     // this.selectedElementData.endDate = this.selectedElementData.endTimeStamp;

@@ -688,7 +688,12 @@ if(!this._state){
 
   if(this._state && this._state.fromVehicleDetails){
     this.filterDateData();
-    this.logBookForm.get('vehicleGroup').setValue(this._state.data.vehicleGroupId);
+    if(this._state.data.vehicleGroupId == 0){
+      this.logBookForm.get('vehicleGroup').setValue('all');
+    }
+    else{
+      this.logBookForm.get('vehicleGroup').setValue(this._state.data.vehicleGroupId);
+    }  
     this.onVehicleGroupChange(this._state.data.vehicleGroupId);
     this.logBookForm.get('vehicle').setValue(this._state.data.vin);
     this.logBookForm.get('alertLevel').setValue("all");
