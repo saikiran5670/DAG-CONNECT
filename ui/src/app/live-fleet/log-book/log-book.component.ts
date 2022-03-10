@@ -537,13 +537,13 @@ ngOnDestroy(){
 
   setDefaultStartEndTime(){
     if (this._state && this._state.fromVehicleDetails && !this._state.data.todayFlag) {
-      let startHours = new Date(this._state.data.startDate).getHours();
-      let startMinutes = String(new Date(this._state.data.startDate).getMinutes());
+      let startHours = new Date(Util.convertUtcToDate(this._state.data.startDate, this.prefTimeZone)).getHours();
+      let startMinutes = String(new Date(Util.convertUtcToDate(this._state.data.startDate, this.prefTimeZone)).getMinutes());
       startMinutes = startMinutes.length == 2 ? startMinutes : '0'+startMinutes;
-      // let startampm = startHours >= 12 ? 'PM' : 'AM';
+        // let startampm = startHours >= 12 ? 'PM' : 'AM';
       let startTimeStamp = startHours +':'+ startMinutes;
-      let endHours = new Date(this._state.data.endDate).getHours();
-      let endMinutes = String(new Date(this._state.data.endDate).getMinutes());
+      let endHours = new Date(Util.convertUtcToDate(this._state.data.endDate, this.prefTimeZone)).getHours();
+      let endMinutes = String(new Date(Util.convertUtcToDate(this._state.data.endDate, this.prefTimeZone)).getMinutes());
       endMinutes = endMinutes.length == 2 ? endMinutes : '0'+endMinutes;
       // let endampm = endHours >= 12 ? 'PM' : 'AM';
       let endTimeStamp = endHours +':'+ endMinutes;
