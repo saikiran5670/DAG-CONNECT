@@ -942,6 +942,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     const detail = this.translationData.lblDetailSection;
     const header = this.getPDFExcelHeader();
     const summaryHeader = this.getExcelSummaryHeader();
+    this.selectedDriverId = (this.selectedDriverId == '0') ? this.translationData.lblAll : this.selectedDriverId;
     let summaryObj = [
       [this.translationData.lblEcoScoreReport, this.reportMapService.getStartTime(Date.now(), this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true), this.fromDisplayDate, this.toDisplayDate, this.selectedVehicleGroup,
       this.selectedVehicle, this.selectedDriverId, this.selectedDriverName, this.selectedDriverOption
