@@ -517,7 +517,7 @@ doughnutDistanceColors: Color[] = [
     let _threshold = this.getPreferenceThreshold('timebasedutilizationrate')['value'];
     this.timeBasedThreshold = _threshold;
     let timeBasedCalculation = this.dashboardService.calculateKPIPercentage(todayTimeRate,this.activeVehicleTotalCount,_threshold,1);
-    let timeBasedPercent = timeBasedCalculation['kpiPercent'];
+    let timeBasedPercent = timeBasedCalculation['kpiPercent']*1000;       //Since the calculation is done secs / ms, hence multiplying by 1000
     let nextPercent = 100 - timeBasedPercent;
     if(timeBasedPercent > 100){
       nextPercent = 0;
