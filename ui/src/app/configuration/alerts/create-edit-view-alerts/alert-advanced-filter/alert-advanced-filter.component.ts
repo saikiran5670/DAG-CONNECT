@@ -567,9 +567,13 @@ export class AlertAdvancedFilterComponent implements OnInit {
     }
   
     applyFilterForGeofence(filterValue: string) {
-      filterValue = filterValue.trim(); // Remove whitespace
-      filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
-      this.geofenceDataSource.filter = filterValue;
+      filterValue = filterValue.trim().toLowerCase();
+      this.geofenceDataSource = new MatTableDataSource(this.geofenceGridData);
+      const filteredData = this.geofenceGridData.filter(value => {​​​​​​​​
+        return value.name.toLowerCase().toString().includes(filterValue) || value.categoryName.toLowerCase().toString().includes(filterValue) || value.subCategoryName.toLowerCase().toString().includes(filterValue) || value.address.toLowerCase().toString().includes(filterValue) || value.city.toLowerCase().toString().includes(filterValue) || value.country.toLowerCase().toString().includes(filterValue);    
+      }​​​​​​​​);
+      this.geofenceDataSource = filteredData;
+      this.updateGeofenceDataSource( this.geofenceDataSource);
     }
   
     applyFilterForGroup(filterValue: string) {
