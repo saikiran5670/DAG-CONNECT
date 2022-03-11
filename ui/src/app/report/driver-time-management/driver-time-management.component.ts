@@ -523,7 +523,8 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       this.driverTimeForm.get('vehicle').setValue(0);
       this.driverTimeForm.get('driver').setValue(0);
       let vehicleData = this.vehicleListData.slice();
-      this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
+      //this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
+      this.vehicleDD = this.getUniqueVINs([...vehicleData]);
     } else {
       let search = this.vehicleListData.filter(i => i.vehicleGroupId == parseInt(event.value));
       if (search.length > 0) {
@@ -843,7 +844,8 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
         this.resetDriverFilter();
       }
       let vehicleData = this.vehicleListData.slice();
-      this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
+      //this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
+      this.vehicleDD = this.getUniqueVINs([...vehicleData]);
       this.vehicleDD.sort(this.compareVin);
       this.resetVehicleFilter();
       this.driverDD = this.driverListData;

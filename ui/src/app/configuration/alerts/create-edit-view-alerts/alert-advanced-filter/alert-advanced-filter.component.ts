@@ -557,9 +557,13 @@ export class AlertAdvancedFilterComponent implements OnInit {
     }
 
     applyFilterForPOI(filterValue: string) {
-      filterValue = filterValue.trim(); // Remove whitespace
-      filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
-      this.poiDataSource.filter = filterValue;
+      filterValue = filterValue.trim().toLowerCase();
+      this.poiDataSource = new MatTableDataSource(this.poiGridData);
+      const filteredData = this.poiGridData.filter(value => {​​​​​​​​
+        return value.name.toLowerCase().toString().includes(filterValue) || value.categoryName.toLowerCase().toString().includes(filterValue) || value.subCategoryName.toLowerCase().toString().includes(filterValue) || value.address.toLowerCase().toString().includes(filterValue) || value.city.toLowerCase().toString().includes(filterValue) || value.country.toLowerCase().toString().includes(filterValue);    
+      }​​​​​​​​);
+      this.poiDataSource = filteredData;
+      this.updatePOIDataSource( this.poiDataSource);
     }
   
     applyFilterForGeofence(filterValue: string) {

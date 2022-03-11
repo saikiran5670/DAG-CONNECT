@@ -150,7 +150,9 @@ export class TranslationDataUploadComponent implements OnInit {
     this.translationService.getTranslationUploadDetails().subscribe((data: any) => {
       this.hideloader();
       if(data){
-        var dateFormat = ((localStorage.getItem("dateFormat")).toLowerCase()).replace(/mm/g, 'MM');
+        if(localStorage.getItem("dateFormat")) {
+          var dateFormat = ((localStorage.getItem("dateFormat")).toLowerCase()).replace(/mm/g, 'MM');
+        }
         data.forEach(element => {
           element.createdAt = this.datePipe.transform(element.createdAt, dateFormat); 
           // var date = new Date(element.createdAt);
