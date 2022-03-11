@@ -304,7 +304,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
         });
       }
 
-      this.loadFilterDataBasedOnPrivileges();
+      // this.loadFilterDataBasedOnPrivileges();
       let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
       if(vehicleDisplayId) {
         let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);

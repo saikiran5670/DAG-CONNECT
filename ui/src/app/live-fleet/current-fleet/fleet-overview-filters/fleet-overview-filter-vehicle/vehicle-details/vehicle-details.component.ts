@@ -94,6 +94,9 @@ export class VehicleDetailsComponent implements OnInit {
         this.vehicleDisplayPreference = vehicledisplay[0].name;
       }
     }
+    if(this.selectedElementData.todayFlag){
+      this.todayFlagClicked= true;
+    }
     this.selectedElementData.fleetOverviewAlert.forEach(item => {
       this.levelList.forEach(element => {
         if(item.level ==element.value)
@@ -169,6 +172,9 @@ export class VehicleDetailsComponent implements OnInit {
         this.vehicleGroupId = this.vehicleGroups[i].vehicleGroupId;
       }
     }   
+    if(this.vehicleGroupId == undefined){
+      this.vehicleGroupId = 0;
+    }
    this.selectedElementData.vehicleGroupId = this.vehicleGroupId; 
   //  if(this.selectedElementData.startTimeStamp != 0 && this.selectedElementData.endTimeStamp != 0) {
     // this.selectedElementData.endDate = this.selectedElementData.endTimeStamp;

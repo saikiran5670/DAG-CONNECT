@@ -695,8 +695,8 @@ export class ExistingTripsComponent implements OnInit {
     //_endTime = 1604337449000
     // StartDateTime=1078724200000&EndDateTime=2078724200000&VIN=XLR0998HGFFT76657
 
-    let _startTime = this.startDateValue.getTime();
-    let _endTime = this.endDateValue.getTime();
+    let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone);
+    let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);
     //For testing data
     // _startTime = 1604336137000;
     // _endTime = 1604337449000;
