@@ -756,6 +756,10 @@ if(!this._state){
   }
 // }
 if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAlerts || this._state.fromDashboard == true || this._state.fromVehicleDetails)){
+  if(this._state.fromVehicleDetails){
+    this.startDateValue = this.setStartEndDateTime(new Date(this._state.data.startTimeStamp), this.selectedStartTime, 'start');
+    this.endDateValue = this.setStartEndDateTime(new Date(this._state.data.endTimeStamp), this.selectedEndTime, 'end');
+  }
   this.onSearch();
 }
 
@@ -1854,8 +1858,6 @@ let prepare = []
             "vehicleId": element.vehicleId
           }
           this.vehicleGrpDD.push(vehicleGroupObj);
-          //console.log("vhicleGrpDD4", this.vehicleGrpDD);
-
         } else {
           this.singleVehicle.push(element);
         }
