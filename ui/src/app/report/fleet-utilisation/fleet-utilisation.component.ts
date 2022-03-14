@@ -1102,10 +1102,10 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
 
       let totalConvDistance : any = this.reportMapService.getDistance(totalDistance, this.prefUnitFormat);
       if (totalConvDistance && this.mileagebasedThreshold){
-      let percentDistance = Number.parseFloat(((Number.parseFloat(totalConvDistance) / this.mileagebasedThreshold) * 100).toFixed(2));
+      let percentDistance = Number(((Number(totalConvDistance) / this.mileagebasedThreshold) * 100).toFixed(2));
       let thresholdLeft = (100 - percentDistance > 0) ? 100 - percentDistance : 0;
-      this.doughnutChartData = [[percentDistance, thresholdLeft]];
-      this.mileagePieChartData = [[percentDistance, thresholdLeft]];
+      this.doughnutChartData = [[(percentDistance > 100) ? 100 : percentDistance, thresholdLeft]];
+      this.mileagePieChartData = [[(percentDistance > 100) ? 100 : percentDistance, thresholdLeft]];
        // let percentage1 = (this.greaterMileageCount/this.tripData.length)*100 ;
       // this.doughnutChartData = [percentage1, 100- percentage1];
       //this.mileagePieChartData = [percentage1,  100- percentage1];
@@ -1116,8 +1116,8 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       if (totalDrivingTime && this.timebasedThreshold){
         let percentDrivingTime = Number(((totalDrivingTime / this.timebasedThreshold) * 100).toFixed(2));;
         let thresholdLeft = (100 - percentDrivingTime > 0) ? 100 - percentDrivingTime : 0;
-        this.doughnutChartDataForTime = [[percentDrivingTime, thresholdLeft]];
-        this.timePieChartData = [[percentDrivingTime, thresholdLeft]];
+        this.doughnutChartDataForTime = [[(percentDrivingTime > 100) ? 100 : percentDrivingTime, thresholdLeft]];
+        this.timePieChartData = [[(percentDrivingTime > 100) ? 100 : percentDrivingTime, thresholdLeft]];
       // let percentage2 = (this.greaterTimeCount/this.tripData.length)* 100;
       // this.doughnutChartDataForTime = [percentage2, 100- percentage2];
       // this.timePieChartData = [percentage2, 100- percentage2];
@@ -1612,6 +1612,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
             data.convertedAverageWeight?.toString().toLowerCase().includes(filter) ||
             data.convertedOdometer?.toString().toLowerCase().includes(filter)
    }
+
       this.dataSource.sortData = (data: String[], sort: MatSort) => {
         const isAsc = sort.direction === 'asc';
         return data.sort((a: any, b: any) => {
@@ -1620,6 +1621,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
         });
 
       }
+      
       });
       Util.applySearchFilter(this.dataSource, this.displayedColumns ,this.filterValue );
     }
