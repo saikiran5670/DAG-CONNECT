@@ -1612,6 +1612,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
             data.convertedAverageWeight?.toString().toLowerCase().includes(filter) ||
             data.convertedOdometer?.toString().toLowerCase().includes(filter)
    }
+
       this.dataSource.sortData = (data: String[], sort: MatSort) => {
         const isAsc = sort.direction === 'asc';
         return data.sort((a: any, b: any) => {
@@ -1620,6 +1621,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
         });
 
       }
+      
       });
       Util.applySearchFilter(this.dataSource, this.displayedColumns ,this.filterValue );
     }
