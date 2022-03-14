@@ -453,7 +453,7 @@ export class ReportMapService {
                 <td style='width: 100px;'>${translationData.lblAlertName || 'Alert Name'}:</td> <td class='font-helvetica-md'>${element.alertName ? element.alertName : '-' }</td>
               </tr>
               <tr>
-                <td style='width: 100px;'>${translationData.lblAlertType || 'Alert Type'}:</td> <td class='font-helvetica-md'>${_obj.type}</td>
+                <td style='width: 100px;'>${translationData.lblAlertType || 'Alert Type'}:</td> <td class='font-helvetica-md'>${_obj.alertType}</td>
               </tr>
               <tr>
                 <td style='width: 100px;'>${translationData.lblAlertLevel || 'Alert Level'}:</td> <td class='font-helvetica-md'>${_obj.level}</td>
@@ -476,6 +476,7 @@ export class ReportMapService {
 
   setColorForAlerts(element: any, _fillColor: any, _level: any){
     let _type: any = '';
+    let _alertType: any = '';
       switch (element.urgencyLevelType) {
         case 'C':
           case 'Critical':{
@@ -519,7 +520,87 @@ export class ReportMapService {
         default:
           break;
       }
-      return {color: _fillColor, level: _level, type: _type};
+      switch (element.alertType) {
+        case 'N':
+          case 'Entering Zone':{
+          _alertType = 'Entering Zone'
+        }
+        break;
+        case 'X':
+          case 'Existing Zone':{
+          _alertType = 'Existing Zone'
+        }
+        break;
+        case 'C':
+          case 'Existing Corridor':{
+          _alertType = 'Existing Corridor'
+
+        }
+        break;
+        case 'D':
+          case 'Excessive Distance Done(Trip)':{
+          _alertType = 'Excessive Distance Done(Trip)'
+        }
+        break;
+        case 'U':
+          case 'Excessive Driving Duration(Trip)':{
+          _alertType = 'Excessive Driving Duration(Trip)'
+        }
+        break;
+        case 'G':
+          case 'Excessive Global Mileage(Trip)':{
+          _alertType = 'Excessive Global Mileage(Trip)'
+        }
+        break;
+        case 'S':
+          case 'Hours of Service(Realtime)':{
+          _alertType = 'Hours of service(Realtime)'
+        }
+        break;
+        case 'A':
+          case 'Excessive Average Speed':{
+          _alertType = 'Excessive Average Speed(Realtime)'
+        }
+        break;
+        case 'H':
+          case 'Excessive Under Utilization in Hours':{
+          _alertType = 'Excessive Under Utilization in Hours'
+        }
+        break;
+        case 'Y':
+          case 'Excessive Under Utilization in Days':{
+          _alertType = 'Excessive Under Utilization in Days (Batch)'
+        }
+        break;
+        case 'I':
+          case 'Excessive Idling(Realtime)':{
+          _alertType = 'Excessive Idling(Realtime)'
+        }
+        break;
+        case 'F':
+          case 'Fuel Consumed':{
+          _alertType = 'Fuel Consumed'
+        }
+        break;
+        case 'P':
+          case 'Fuel Increase During Stop(Realtime)':{
+          _alertType = 'Fuel Increase During Stop(Realtime)'
+        }
+        break;
+        case 'L':
+          case 'Fuel Loss During Stop(Realtime)':{
+          _alertType = 'Fuel Loss During Stop(Realtime)'
+        }
+        break;
+        case 'T':
+          case 'Fuel Loss During Trip(Realtime)':{
+          _alertType = 'Fuel Loss During Trip(Realtime)'
+        }
+        break;
+        default:
+          break;
+      }
+      return {color: _fillColor, level: _level, type: _type, alertType: _alertType};
   }
 
    makeCluster(_selectedRoutes: any, _ui: any){
