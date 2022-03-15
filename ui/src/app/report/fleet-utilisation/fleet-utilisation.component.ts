@@ -1619,10 +1619,10 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
             let columnName = sort.active;
           return this.comparevehicle(a[sort.active], b[sort.active], isAsc, columnName);
         });
-
       }
       
       });
+
       Util.applySearchFilter(this.dataSource, this.displayedColumns ,this.filterValue );
     }
 
@@ -1635,13 +1635,15 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
         return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
     }
 
-    // compareData(a: Number | String, b: Number | String, isAsc: boolean, columnName: any) {
-
-    //     if(!(a instanceof Number)) a = a.toString().toUpperCase();
-    //     if(!(b instanceof Number)) b = b.toString().toUpperCase();
-
-    //   return ( a < b ? -1 : 1) * (isAsc ? 1: -1);
+    // comparevehicleSort(a: any, b: any, isAsc: boolean, columnName:any) {
+    //   if(columnName === "vehicleName" || columnName == "registrationNumber" || columnName == "vin"){
+    //     if(!(a instanceof Number)) a = a?a.replace(/[^\w\s]/gi, 'z').toUpperCase(): "";
+    //     if(!(b instanceof Number)) b = b?b.replace(/[^\w\s]/gi, 'z').toUpperCase(): "";
+    //   }
+  
+    //     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
     // }
+
   idleDurationCount(){
     let idleDuration=0;
     this.initData.forEach(item => {
