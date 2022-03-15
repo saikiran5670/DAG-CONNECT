@@ -1106,7 +1106,9 @@ export class AppComponent {
       });
     }, (error) => {
       //console.log(error)
-    });    
+    });  
+    this.signalRService.ngOnDestroy();
+    this.getOfflineNotifications();  
   }
 
   sendMessage(): void {
@@ -1233,6 +1235,8 @@ export class AppComponent {
       this.connectWithSignalR();
     },
     error => {
+      this.signalRService.notificationCount =0;
+      this.signalRService.notificationData=[];
       this.connectWithSignalR();
     })
   }
