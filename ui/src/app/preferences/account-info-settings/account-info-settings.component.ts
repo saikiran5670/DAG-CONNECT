@@ -733,6 +733,7 @@ export class AccountInfoSettingsComponent implements OnInit {
 
    deleteBrandLogo(){
      this.uploadLogo = "";
+     this.brandLogoFileValidated = true;
      this.userSettingsForm.get('uploadBrandLogo').setValue('');
    }
 
