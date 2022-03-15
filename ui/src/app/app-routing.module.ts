@@ -1,6 +1,7 @@
 import { NgModule, Component } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { ErrorComponent } from './error/error.component';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 
 const routes: Routes = [
   { path:'', redirectTo:'auth/login', pathMatch: 'full'},
@@ -20,7 +21,8 @@ const routes: Routes = [
   { path: 'termsAndconditionhistory', loadChildren: () => import('./terms-conditions-content/terms-conditions.module').then(m => m.TermsConditionsModule) },
   { path: "errorPage", component: ErrorComponent },
   { path: 'menunotfound', loadChildren: () => import('./menu-not-found/menu-not-found-routing.module').then(m => m.MenuNotFoundRoutingModule) },
-  { path: 'switchorgrole', loadChildren: () => import('./org-role-navigation/org-role-navigation.module').then(m => m.OrgRoleNavigationModule) }
+  { path: 'switchorgrole', loadChildren: () => import('./org-role-navigation/org-role-navigation.module').then(m => m.OrgRoleNavigationModule) },
+  { path: '**', component: PageNotFoundComponent } // wild card route added
 ];
 
 @NgModule({
