@@ -158,7 +158,7 @@
                                     <span>{{ field.translatedName }}</span>
                                 </mat-checkbox>
                             </div>
-                            <div *ngIf="field.key == 'rp_db_dashboard_todaylivevehicle_timebasedutilizationrate'" style="display:inline-block"
+                            <div *ngIf="field.key == 'rp_db_dashboard_todaylivevehicle_timebasedutilization'" style="display:inline-block"
                                 fxLayout="column" class="areaWidth min-width-25-per targetSpanIcon" fxLayoutGap="0px"
                                 fxLayoutAlign="left">
                                 <div style="display:inline-block">
@@ -186,13 +186,13 @@
                                     </mat-form-field>
                                 </div>
                             </div>
-                            <div *ngIf="field.key == 'rp_db_dashboard_todaylivevehicle_distancebasedutilizationrate' || field.key =='rp_db_dashboard_todaylivevehicle_activevehicles'"
+                            <div *ngIf="field.key == 'rp_db_dashboard_todaylivevehicle_distancebasedutilization' || field.key =='rp_db_dashboard_todaylivevehicle_activevehicles'"
                                 fxLayout="column" class="areaWidth min-width-25-per targetSpanIcon" fxLayoutGap="0px"
                                 fxLayoutAlign="left">
                                 <mat-form-field appearance="outline" style='width: 80%'>
                                     <input [readonly]='!editDashboardFlag' matInput type="number" [formControlName]="field.key+'thresholdValue'"
                                         placeholder="{{ 'Set Target' }}">
-                                    <span *ngIf="field.key == 'rp_db_dashboard_todaylivevehicle_distancebasedutilizationrate'" matSuffix>
+                                    <span *ngIf="field.key == 'rp_db_dashboard_todaylivevehicle_distancebasedutilization'" matSuffix>
                                         {{prefUnitFormat == 'dunit_Metric' ? (translationData.lblkms || 'km') : (translationData.lblmile || 'mile')}}
                                     </span>
                                     <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValue').hasError('min')">
@@ -206,7 +206,7 @@
                                        </mat-error>
                                 </mat-form-field>
                             </div>
-                            <div *ngIf="field.key == 'rp_db_dashboard_todaylivevehicle_timebasedutilizationrate' || field.key == 'rp_db_dashboard_todaylivevehicle_distancebasedutilizationrate' || field.key == 'rp_db_dashboard_todaylivevehicle_activevehicles'"
+                            <div *ngIf="field.key == 'rp_db_dashboard_todaylivevehicle_timebasedutilization' || field.key == 'rp_db_dashboard_todaylivevehicle_distancebasedutilization' || field.key == 'rp_db_dashboard_todaylivevehicle_activevehicles'"
                                 fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left"
                                 class="areaWidth min-width-25-per">
                                 <mat-form-field appearance="outline" style='width: 80%'>
