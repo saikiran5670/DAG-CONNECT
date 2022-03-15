@@ -87,9 +87,6 @@
             <mat-error *ngIf="!driverFormGroup.get('firstName').hasError('required') && driverFormGroup.get('firstName').hasError('whitespace')">
               {{ translationData.lblFirstNamecannotcontainonlywhitespace }}
             </mat-error>
-            <!-- <mat-error *ngIf="driverFormGroup.get('firstName').hasError('whitespace')">
-              {{ translationData.lblFirstNamecannotcontainonlywhitespace || 'First Name cannot contain only whitespace' }}
-             </mat-error> -->
           </div>
           <div *ngIf="actionType == 'view'">
             <span class='font-helvetica-md'>{{ driverData.firstName != '' ? driverData.firstName : '--' }}</span>
@@ -113,9 +110,6 @@
             <mat-error *ngIf="driverFormGroup.get('lastName').hasError('numberNotAllowed')">
               {{ translationData.lblNumbersNotAllowed }}
             </mat-error>
-            <!-- <mat-error *ngIf="driverFormGroup.get('lastName').hasError('whitespace')">
-              {{ translationData.lblLastNamecannotcontainonlywhitespace || 'Last Name cannot contain only whitespace' }}
-             </mat-error> -->
           </div>
           <div *ngIf="actionType == 'view'">
             <span class='font-helvetica-md'>{{ driverData.lastName != '' ? driverData.lastName : '--' }}</span>

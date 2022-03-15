@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import * as XLSX from 'xlsx';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -8,8 +8,7 @@ import { TranslationService } from 'src/app/services/translation.service';
 import { FileValidator } from 'ngx-material-file-input';
 import { MatTableDataSource } from '@angular/material/table';
 import * as FileSaver from 'file-saver';
-import { LanguageSelectionComponent } from './language-selection/language-selection.component';
-import { stringify } from '@angular/compiler/src/util';
+import { LanguageSelectionComponent } from './language-selection/language-selection.component'; 
 import { Util } from 'src/app/shared/util';
 import { DatePipe } from '@angular/common';
 import { OrganizationService } from 'src/app/services/organization.service';
@@ -57,29 +56,16 @@ export class TranslationDataUploadComponent implements OnInit {
    prefTimeZone: any;
    prefDateFormat: any;
    nextScheduleDateFormat: any;
-  
-
-
-
- //prefTimeFormat: any; //-- coming from pref setting
- // prefTimeZone: any; //-- coming from pref setting
-  //prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
+  prefDetail: any = {};
 
-  constructor(private _formBuilder: FormBuilder, private organizationService: OrganizationService,private dialog: MatDialog, private translationService: TranslationService, private datePipe: DatePipe) {
-      this.defaultTranslation();
-  }
-
-  defaultTranslation(){
-    this.translationData = {
-
-    }
-  }
+  constructor(private _formBuilder: FormBuilder, private organizationService: OrganizationService,private dialog: MatDialog, private translationService: TranslationService, private datePipe: DatePipe) { }
 
   ngOnInit(){
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.adminAccessType = JSON.parse(localStorage.getItem("accessType"));
     this.userType = localStorage.getItem("userType");
+    this.prefDetail = JSON.parse(localStorage.getItem('prefDetail'));
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.uploadTranslationDataFormGroup = this._formBuilder.group({
@@ -100,40 +86,32 @@ export class TranslationDataUploadComponent implements OnInit {
       menuId: 31 //-- for Translation mgnt
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-
       this.processTranslation(data);
-
       this.loadInitData();
-
     });
-      this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
-        if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
-         
-           this.proceedStep(prefData, this.accountPrefObj.accountPreference);
-        }else{ // org pref
+      if(this.prefDetail){
+        if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){
+          this.proceedStep(this.accountPrefObj.accountPreference);
+        }else{ 
           this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
-            this.proceedStep(prefData, orgPref);
-          }, (error) => { // failed org API
-            let pref: any = {};
-            this.proceedStep(prefData, pref);
+            this.proceedStep(orgPref);
+          }, (error) => { 
+            this.proceedStep({});
           });
         }
-      });
+      } 
     }
-    proceedStep(prefData: any, preference: any){
-      let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
+
+    proceedStep(preference: any){
+      let _search = this.prefDetail.timeformat.filter(i => i.id == preference.timeFormatId);
       if(_search.length > 0){
-        //this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
         this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
-        //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
-        this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
-        this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+        this.prefTimeZone = this.prefDetail.timezone.filter(i => i.id == preference.timezoneId)[0].name;
+        this.prefDateFormat = this.prefDetail.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
       }else{
-        //this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
-        this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
-        //this.prefTimeZone = prefData.timezone[0].value;
-        this.prefTimeZone = prefData.timezone[0].name;
-        this.prefDateFormat = prefData.dateformat[0].name;
+        this.prefTimeFormat = Number(this.prefDetail.timeformat[0].name.split("_")[1].substring(0,2)); 
+        this.prefTimeZone = this.prefDetail.timezone[0].name;
+        this.prefDateFormat = this.prefDetail.dateformat[0].name;
       }
       this.setPrefFormatDate();
     }
@@ -172,7 +150,9 @@ export class TranslationDataUploadComponent implements OnInit {
     this.translationService.getTranslationUploadDetails().subscribe((data: any) => {
       this.hideloader();
       if(data){
-        var dateFormat = ((localStorage.getItem("dateFormat")).toLowerCase()).replace(/mm/g, 'MM');
+        if(localStorage.getItem("dateFormat")) {
+          var dateFormat = ((localStorage.getItem("dateFormat")).toLowerCase()).replace(/mm/g, 'MM');
+        }
         data.forEach(element => {
           element.createdAt = this.datePipe.transform(element.createdAt, dateFormat); 
           // var date = new Date(element.createdAt);

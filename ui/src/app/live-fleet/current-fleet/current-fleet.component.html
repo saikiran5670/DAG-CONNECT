@@ -1,9 +1,15 @@
 <div *ngIf = '!isOpen' fxLayout="row" class="full-width margin-bottom-sm">
-        <div id="summary" class="full-width">
-            <mat-card style='background: transparent !important;' class='mat-elevation-z no-padding margin-bottom-xlg'>
-            <app-fleet-overview-summary *ngIf='filterPOIData' [filterData]='filterData' [detailsData]='detailsData' [fleetSummary]="fleetSummary" [translationData]='translationData' [totalVehicleCount]='totalVehicleCount' [dashboardPref]='dashboardPref'></app-fleet-overview-summary>
-            <app-live-fleet-map *ngIf='filterPOIData' [translationData]='translationData' [detailsData]='detailsData' [filterPOIData]='filterPOIData'></app-live-fleet-map>
-            </mat-card>
+    <div id="summary" class="full-width">
+        <mat-card style='background: transparent !important;' class='mat-elevation-z no-padding margin-bottom-xlg'>
+        <app-fleet-overview-summary *ngIf='filterPOIData' [filterData]='filterData' [detailsData]='detailsData' [fleetSummary]="fleetSummary" [translationData]='translationData' [totalVehicleCount]='totalVehicleCount' [dashboardPref]='dashboardPref'></app-fleet-overview-summary>
+        <app-live-fleet-map *ngIf='filterPOIData' [translationData]='translationData' [detailsData]='detailsData' [filterPOIData]='filterPOIData'></app-live-fleet-map>
+        </mat-card>
+    </div>
+    <div id="sidenav">
+        <div class="example-sidenav-content"
+        [ngClass]="userPreferencesFlag ? 'pref-expand' : 'pref-collapse' " >
+            <button class='font-helvetica-md' type="button" mat-button (click)='userPreferencesSetting($event)'>
+                {{ clickOpenClose }} </button>
         </div>
         
         <div id="sidenav">
@@ -16,24 +22,9 @@
                 <app-fleet-overview-filters *ngIf="userPreferencesFlag" [filterData]='filterData' [fromVehicleHealth]="obj" [translationData]='translationData' [detailsData] ="detailsData" [vehInfoPrefData]='vehInfoPrefData' [preferenceObject]='preferenceObject'></app-fleet-overview-filters>
             </div>
         </div>
-        <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
-        </div>
-        <div *ngIf='isOpen' class="pad-bg">
-            <!-- <div fxLayout="row" fxLayoutAlign="end" class='full-width margin-right-xxlg'>
-                <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
-                    <span class='custom-font' (click)="toBack()">
-                        <span>
-                            <&nbsp;</span>
-                                <span class='backBtnCss'>{{ translationData.lblBack }}</span>
-                    </span>
-                </div>
-            </div>  -->
-            <app-vehicle-health [healthData]='healthData' [translationData]='translationData' (backToPage)='toBack($event)'></app-vehicle-health>
-        </div>
-            <!-- <mat-drawer-container class="example-container" autosize>
-                <mat-drawer #filters class="example-sidenav" mode="side" position="end">
-                    <app-fleet-overview-filters></app-fleet-overview-filters>
-                </mat-drawer>
-            </mat-drawer-container> -->
-    
-    
+    </div>
+    <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
+</div>
+<div *ngIf='isOpen' class="pad-bg"> 
+    <app-vehicle-health [healthData]='healthData' [translationData]='translationData' (backToPage)='toBack($event)'></app-vehicle-health>
+</div>

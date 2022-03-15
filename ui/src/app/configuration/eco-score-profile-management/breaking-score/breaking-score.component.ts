@@ -15,8 +15,7 @@ export class BreakingScoreComponent implements OnInit {
   @Input() selectedElementData: any;
   @Input() kpiId: any;
   @Input() translationData: any;
-  // @Input() createStatus: boolean;
-  // @Input() viewFlag: boolean;
+  @Input() otherWtKpiVal: any;
   @Output() createKPIEmit = new EventEmitter<object>();
   kpiData: any = [];
   isKPI: any = true;
@@ -42,16 +41,10 @@ export class BreakingScoreComponent implements OnInit {
     this.maxvalue =  this.kpiData.targetValue;
     this.options.floor = this.kpiData.lowerValue;
     this.options.ceil = this.kpiData.upperValue;
-    //this.options.step = this.kpiData.upperValue > 50 ? this.kpiData.upperValue/100 : this.kpiData.upperValue/10,
     this.options.step = 0.01,  
     this.options.showTicks= true,
-    this.options.tickStep = this.kpiData.upperValue - this.kpiData.lowerValue > 1000 ? 100 : this.kpiData.upperValue - this.kpiData.lowerValue> 100  && this.kpiData.upperValue - this.kpiData.lowerValue < 1000 ? 50 : this.kpiData.upperValue - this.kpiData.lowerValue  > 50  && this.kpiData.upperValue - this.kpiData.lowerValue <= 100 ? 10 : 1 ; 
-    // this.options.showTicks = true  
-   
-  this.SliderData();
-  // if(this.isCreate){
-  //   this.sendData()
-  // }
+    this.options.tickStep = this.kpiData.upperValue - this.kpiData.lowerValue > 1000 ? 100 : this.kpiData.upperValue - this.kpiData.lowerValue> 100  && this.kpiData.upperValue - this.kpiData.lowerValue < 1000 ? 50 : this.kpiData.upperValue - this.kpiData.lowerValue  > 50  && this.kpiData.upperValue - this.kpiData.lowerValue <= 100 ? 10 : 1 ;  
+    this.SliderData();
   }
 
   SliderData(){
@@ -74,7 +67,6 @@ export class BreakingScoreComponent implements OnInit {
   });
     this.isKPI = true;
     this.setDefaultValue();
-
   }
 
   setDefaultValue(){
@@ -86,7 +78,6 @@ export class BreakingScoreComponent implements OnInit {
   }
 
   sendData(){
-
     let emitObj = {
       "kpiId": this.kpiId,
       "limitType": "N",
@@ -123,7 +114,6 @@ export class BreakingScoreComponent implements OnInit {
    }
  
    changeLower(changedVal: any){
-     // this.options.floor = changedVal;
      const newOptions: Options = Object.assign({}, this.options);
      newOptions.floor = parseFloat(changedVal);
      this.options = newOptions;

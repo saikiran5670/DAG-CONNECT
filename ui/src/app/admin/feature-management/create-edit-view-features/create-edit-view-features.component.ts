@@ -166,7 +166,6 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   onCreate(){
     this.createButtonClicked = true;
     this.duplicateEmailMsg = false;
-   // let selectedId = this.selectionIDs();
     let selectedId = this.selectionForDataAttribute.selected.map(item => item.id)
     let createFeatureParams = {
       id: 0,
@@ -205,7 +204,6 @@ export class CreateEditViewFeaturesComponent implements OnInit {
         });
       }, (err) => {
         this.showLoadingIndicator=false;
-        ////console.log(err);
         if (err.status == 409) {
           this.duplicateEmailMsg = true;
           this.createButtonClicked = false;
@@ -213,7 +211,6 @@ export class CreateEditViewFeaturesComponent implements OnInit {
       });
     }
     else if(this.actionType == 'edit'){
-      //let selectedId = this.selectionIDs();
       let selectedId =  this.selectionForDataAttribute.selected.map(item => item.id)
       let updatedFeatureParams = {
         id: this.selectedElementData.id,
@@ -251,7 +248,6 @@ export class CreateEditViewFeaturesComponent implements OnInit {
         });
       }, (err) => {
         this.showLoadingIndicator=false;
-        ////console.log(err);
         if (err.status == 409) {
           this.duplicateEmailMsg = true;
           this.createButtonClicked = false;
@@ -312,72 +308,6 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   onStatusChange(event: any){
     this.selectedStatus = event.value;
   }
-
-  // onCheckboxChange(event: any, row: any) {
-  //   var selectedName = row.name;
-  //   let selectedParentId = row.id;
-  //   const isChecked = this.selectionForDataAttribute.isSelected(row) ? true : false;
-  //   if (selectedName.includes('.')) {
-  //     //*****when the selected element is a child****
-  //     var splitString = selectedName.split('.');
-  //     let selectedElementParent = splitString[0];
-  //     this.selectedChildrens = [...this.preSelectedValues];
-  //     if (isChecked) {
-  //       if(!(this.selectedChildrens.includes(row.id))){
-  //         this.selectedChildrens.push(row.id);
-  //         // AllSelectedChilds = [...selectedChildrens, row.id]
-  //       }
-  //       this.dataSource.data.forEach((row) => {
-  //         if (selectedElementParent) {
-  //           if (selectedElementParent == row.name) {
-  //             selectedParentId = row.id;
-  //             this.selectionForDataAttribute.select(row);
-  //           }
-  //         }
-  //       });
-  //       //adding parent ID's in selectedList
-  //       if(!(this.selectedChildrens.includes(selectedParentId))){
-  //         this.selectedChildrens.push(selectedParentId);
-  //       }
-  //       //console.log('parent Id is:- ', selectedParentId);
-  //       //console.log("---selectedChildrens---",this.selectedChildrens)
-  //     }
-  //     //when unchecking(OFF)child toggle
-  //       else if(!isChecked) {
-  //         const index = this.selectedChildrens.indexOf(row.id);
-  //           if (index > -1) {
-  //            let removedValue =  this.selectedChildrens.splice(index, 1);
-  //             // //console.log("--removing from array--",removedValue )
-  //           }
-  //           //console.log("---selectedChildrens---",this.selectedChildrens)
-  //     }
-  //    }
-  //    else {
-  //     //***when the selected element is a parent****
-  //     let childOfSelectedElement = [];
-  //     this.featuresData.map((getData) => {
-  //       if (getData.name.startsWith(selectedName)) {
-  //         childOfSelectedElement.push(getData);
-  //       }
-  //     });
-  //     if (isChecked) {
-  //       this.dataSource.data.forEach((row) => {
-  //         if (childOfSelectedElement.length > 0) {
-  //           if (childOfSelectedElement.find((x) => x.id == row.id)) {
-  //             this.allChildrenIds.push(row.id);
-  //             this.selectionForDataAttribute.select(row);
-  //           }
-  //         }
-  //       });
-  //       //console.log("--allChildrenElements Id's--",this.allChildrenIds)
-  //     }
-  //   }
-  //   //make button disabled
-  //   if(this.selectedChildrens.length==0){
-  //     this.featureFormGroup.invalid;
-  //   }
-  //   this.featureFormGroup.valid;
-  // }
 
   onChange(event: any, row: any){
     var selectName = row.name;

@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { TodayLiveVehicleComponent } from './today-live-vehicle.component';
 
 describe('TodayLiveVehicleComponent', () => {

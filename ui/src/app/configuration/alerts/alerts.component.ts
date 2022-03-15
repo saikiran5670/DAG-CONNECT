@@ -1,6 +1,5 @@
-import { Component, Input, OnInit,ViewChild } from '@angular/core';
+import { Component, OnInit,ViewChild } from '@angular/core';
 import { TranslationService } from 'src/app/services/translation.service';
-import { AccountService } from '../../services/account.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { ActiveInactiveDailogComponent } from '../../shared/active-inactive-dailog/active-inactive-dailog.component';
@@ -8,11 +7,9 @@ import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dial
 import { UserDetailTableComponent } from '../../admin/user-management/new-user-step/user-detail-table/user-detail-table.component';
 import { MatSort } from '@angular/material/sort';
 import { VehicleService } from '../../services/vehicle.service';
-import { PackageService } from 'src/app/services/package.service';
 import { AlertService } from 'src/app/services/alert.service';
 import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dialog.service';
 import { ReportMapService } from '../../report/report-map.service';
-import { Util } from 'src/app/shared/util';
 import { ReplaySubject } from 'rxjs';
 import { OrganizationService } from '../../services/organization.service';
 
@@ -80,16 +77,13 @@ export class AlertsComponent implements OnInit {
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   filterValue: any;
   accountPrefObj: any;
-  prefData: any;
   vehicleDisplayPreference: any= 'dvehicledisplay_VehicleIdentificationNumber';
   finalVehicleGroupList: any = [];
-
+  prefDetail: any = {};
   public filteredVehicles: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
   constructor(
-    private translationService: TranslationService,
-    private accountService: AccountService,
-    private packageService: PackageService,
+    private translationService: TranslationService, 
     private dialog: MatDialog,
     private vehicleService: VehicleService,
     private alertService: AlertService,
@@ -100,6 +94,7 @@ export class AlertsComponent implements OnInit {
     ngOnInit() {
       this.localStLanguage = JSON.parse(localStorage.getItem("language"));
       this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
+      this.prefDetail = JSON.parse(localStorage.getItem('prefDetail'));
       //this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
       if(localStorage.getItem('contextOrgId')){
         this.accountOrganizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
@@ -124,56 +119,36 @@ export class AlertsComponent implements OnInit {
       this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
         this.processTranslation(data);
         this.hideloader();
-        // this.loadFiltersData();
         this.loadDataBasedOnPrivileges();
       });
-      this.translationService.getPreferences(this.localStLanguage).subscribe((res: any) => {
-        if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
-          this.proceedStep(res, this.accountPrefObj.accountPreference);
-          //this.showLoadingIndicator = false;
-        }else{ //-- org pref
+
+      if(this.prefDetail){
+        if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){
+          this.proceedStep(this.accountPrefObj.accountPreference); 
+        }else{ 
           this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
-            this.proceedStep(res, orgPref);
-            //this.showLoadingIndicator = false;
-          }, (error) => { // failed org API
-            //this.showLoadingIndicator = false;
-            let pref: any = {};
-            this.proceedStep(res, pref);
+            this.proceedStep(orgPref);
+          }, (error) => {
+            this.proceedStep({});
           });
         }
-
-      });
+      }
     }
 
-    proceedStep(_prefData: any, preference: any){
-      //this.generalPreferences = _prefData; 
-      //this.getUnits();
-      this.prefData = _prefData;
-      let _search = _prefData?.timeformat.filter(i => i.id == preference.timeFormatId);
+    proceedStep(preference: any){ 
+      let _search = this.prefDetail?.timeformat.filter(i => i.id == preference.timeFormatId);
       this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
-      this.prefTimeZone = _prefData?.timezone.filter(i => i.id == preference.timezoneId)[0].name;
-      this.prefDateFormat = _prefData?.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
-      this.prefUnitFormat = _prefData?.unit.filter(i => i.id == preference.unitId)[0].name; 
+      this.prefTimeZone = this.prefDetail?.timezone.filter(i => i.id == preference.timezoneId)[0].name;
+      this.prefDateFormat = this.prefDetail?.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+      this.prefUnitFormat = this.prefDetail?.unit.filter(i => i.id == preference.unitId)[0].name; 
       let vehicleDisplayId = preference.vehicleDisplayId;
       if(vehicleDisplayId) {
-        let vehicledisplay = _prefData?.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+        let vehicledisplay = this.prefDetail?.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
         if(vehicledisplay.length != 0) {
           this.vehicleDisplayPreference = vehicledisplay[0].name;
         }
       } 
     }
-
-    // getUnits() {
-    //   let unitObj = this.generalPreferences?.unit.filter(item => item.id == this.unitId);
-    //   if (unitObj && unitObj.length != 0) {
-    //     this.prefUnit = unitObj[0].value;
-    //     if (this.prefUnit == 'Imperial') {
-    //       this.prefUnitFormat = 'dunit_Imperial';
-    //     } else {
-    //       this.prefUnitFormat = 'dunit_Metric';
-    //     }
-    //   }
-    // }
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
@@ -215,15 +190,14 @@ export class AlertsComponent implements OnInit {
   loadDataBasedOnPrivileges(){
     this.showLoadingIndicator = true;
     this.alertService.getAlertFilterDataBasedOnPrivileges(this.accountId, this.accountRoleId).subscribe((data) => {
+      this.hideloader();
       this.alertCategoryTypeMasterData = data["enumTranslation"];
       this.alertCategoryTypeFilterData = data["alertCategoryFilterRequest"];
       this.associatedVehicleData = data["associatedVehicleRequest"];
-
       let alertTypeMap = new Map();
       this.alertCategoryTypeFilterData.forEach(element => {
         alertTypeMap.set(element.featureKey, element.featureKey);
       });
-
       this.alertCriticalityList= this.alertCategoryTypeMasterData.filter(item => item.type == 'U');
       this.alertCriticalityList.forEach(element => {
         element["value"]= this.translationData[element["key"]];
@@ -461,7 +435,7 @@ export class AlertsComponent implements OnInit {
       item =  Object.defineProperty(item, "highThresholdValue", {value : obj.thresholdValue,
       writable : true,enumerable : true, configurable : true});
       if(obj.unitType !='N') {
-      item.highThresholdValue = this.getConvertedThresholdValues(item.highThresholdValue, item.unitTypeEnum);
+      item.highThresholdValue = this.getConvertedThresholdValues(item.highThresholdValue, obj.unitType);
       }
       });
       }
@@ -472,7 +446,7 @@ export class AlertsComponent implements OnInit {
       item =  Object.defineProperty(item, "highThresholdValue", {value : obj.thresholdValue,
       writable : true,enumerable : true, configurable : true});
       if(obj.unitType !='N') {
-      item.highThresholdValue = this.getConvertedThresholdValues(item.highThresholdValue, item.unitTypeEnum);
+      item.highThresholdValue = this.getConvertedThresholdValues(item.highThresholdValue, obj.unitType);
       }
     });
       }
@@ -483,7 +457,7 @@ export class AlertsComponent implements OnInit {
       item =  Object.defineProperty(item, "highThresholdValue", {value : obj.thresholdValue,
       writable : true,enumerable : true, configurable : true});
       if(obj.unitType !='N') {
-      item.highThresholdValue = this.getConvertedThresholdValues(item.highThresholdValue, item.unitTypeEnum);
+      item.highThresholdValue = this.getConvertedThresholdValues(item.highThresholdValue, obj.unitType);
       }
     });
       }
@@ -497,7 +471,7 @@ export class AlertsComponent implements OnInit {
       } else {//according to pref
         let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
         if(vehicleDisplayId) {
-          let vehicledisplay = this.prefData?.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+          let vehicledisplay = this.prefDetail?.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
           if(vehicledisplay.length != 0) {
             this.vehicleDisplayPreference = vehicledisplay[0].name;
           }

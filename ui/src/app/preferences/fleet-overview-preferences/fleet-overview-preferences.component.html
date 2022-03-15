@@ -27,7 +27,7 @@
             </mat-expansion-panel-header>
             <div>
                 <app-fleet-overview-tab-preferences *ngIf='showFleetOverview' [editFlag]='editFleetOverviewFlag'
-                    [reportListData]='reportListData' [translationData]='translationData'
+                    [reportListData]='reportDetail' [translationData]='translationData'
                     (setFleetOverviewFlag)="updateEditFleetOverviewFlag($event)">
                 </app-fleet-overview-tab-preferences>
             </div>
@@ -50,7 +50,7 @@
             </mat-expansion-panel-header>
             <div>
                 <app-logbook-tab-preferences *ngIf='showLogbook'
-                    [editFlag]='editLogbookFlag' [reportListData]='reportListData'
+                    [editFlag]='editLogbookFlag' [reportListData]='reportDetail'
                     [translationData]='translationData' (setLogbookFlag)="updateEditLogbookFlag($event)">
                 </app-logbook-tab-preferences>
             </div>

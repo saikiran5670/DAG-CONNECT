@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { TimeRangeSliderComponent } from './time-range-slider.component';
 
 describe('TimeRangeSliderComponent', () => {

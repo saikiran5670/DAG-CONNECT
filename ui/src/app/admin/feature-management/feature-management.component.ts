@@ -1,7 +1,6 @@
-import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
 import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog.service';
 import { TranslationService } from '../../services/translation.service';
 import { ActiveInactiveDailogComponent } from '../../shared/active-inactive-dailog/active-inactive-dailog.component';
@@ -10,7 +9,6 @@ import { FeatureService } from '../../services/feature.service';
 import { MatTableExporterDirective } from 'mat-table-exporter';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import { Util } from 'src/app/shared/util';
 import { DataTableComponent } from 'src/app/shared/data-table/data-table.component';
 
 @Component({
@@ -22,7 +20,6 @@ import { DataTableComponent } from 'src/app/shared/data-table/data-table.compone
 export class FeatureManagementComponent implements OnInit {
   featureRestData: any = [];
   dataAttributeList: any = [];
-  // displayedColumns = ['name','isExclusive','state', 'action'];
   columnCodes = ['name','isExclusive','select', 'action'];
   columnLabels = ['DataAttributeSetName', 'DataAttributeSetType', 'Status', 'Action'];
   selectedElementData: any;
@@ -50,9 +47,7 @@ export class FeatureManagementComponent implements OnInit {
     private featureService: FeatureService,
     private dialogService: ConfirmDialogService,
     private dialog: MatDialog) {
-    // this.defaultTranslation();
   }
-
 
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -81,40 +76,18 @@ export class FeatureManagementComponent implements OnInit {
         element["isExclusive"] = (element.dataAttribute.isExclusive) ? this.translationData.lblExclusive : this.translationData.lblInclusive;
         element["select"] = element.state;
       });
-      // filterTypeData = this.getNewTagData(filterTypeData);
       this.initData = filterTypeData;
       if(this.gridComp){
         this.gridComp.updatedTableData(this.initData);
       }
     }, (error) => {
-      //console.log("error:: ", error);
       this.hideloader();
     });
   }
 
   hideloader() {
-    // Setting display of spinner
     this.showLoadingIndicator = false;
   }
-
-  // getNewTagData(data: any){
-  //   let currentDate = new Date().getTime();
-  //   data.forEach(row => {
-  //     let createdDate = parseInt(row.createdAt);
-  //     let nextDate = createdDate + 86400000;
-  //     if(currentDate > createdDate && currentDate < nextDate){
-  //       row.newTag = true;
-  //     }
-  //     else{
-  //       row.newTag = false;
-  //     }
-  //   });
-  //   let newTrueData = data.filter(item => item.newTag == true);
-  //   newTrueData.sort((userobj1, userobj2) => parseInt(userobj2.createdAt) - parseInt(userobj1.createdAt));
-  //   let newFalseData = data.filter(item => item.newTag == false);
-  //   Array.prototype.push.apply(newTrueData, newFalseData);
-  //   return newTrueData;
-  // }
 
   exportAsCSV(){
     this.matTableExporter.exportTable('csv', {fileName:'Feature_Data', sheet: 'sheet_name'});
@@ -145,24 +118,16 @@ export class FeatureManagementComponent implements OnInit {
 
   processTranslation(transData: any){
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    ////console.log("process translationData:: ", this.translationData)
   }
 
   applyFilter(filterValue: string) {
-
     filterValue = filterValue.trim(); // Remove whitespace
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
     this.dataSource.filter = filterValue;
-
   }
 
   updatedDataSource(tableData: any){
     this.gridComp.updatedTableData(tableData);
-    // this.dataSource = new MatTableDataSource(tableData);
-    //   setTimeout(()=>{
-    //     this.dataSource.paginator = this.paginator;
-    //     this.dataSource.sort = this.sort;
-    //   });
   }
 
   createNewFeature(){
@@ -195,8 +160,6 @@ export class FeatureManagementComponent implements OnInit {
     const options = {
       title: this.translationData.lblAlert ,
       message: this.translationData.lblYouwanttoDetails,
-      // cancelText: this.translationData.lblNo,
-      // confirmText: this.translationData.lblYes,
       cancelText: this.translationData.lblCancel,
       confirmText: (rowData.state == 'ACTIVE') ? this.translationData.lblDeactivate : this.translationData.lblActivate,
       status: rowData.state == 'ACTIVE' ? 'Inactive' : 'Active' ,
@@ -210,45 +173,18 @@ export class FeatureManagementComponent implements OnInit {
     this.dialogRef = this.dialog.open(ActiveInactiveDailogComponent, dialogConfig);
     this.dialogRef.afterClosed().subscribe((res: any) => {
       if(res){
-              // TODO: change status with latest grid data
-              // let updatedFeatureParams = {
-              //       id: rowData.id,
-              //       name: rowData.name,
-              //       description: "",
-              //       type: "D",
-              //       IsFeatureActive: true,
-              //       dataattributeSet: {
-              //         id: rowData.dataAttribute.dataAttributeSetId,
-              //         name: "",
-              //         isActive: true,
-              //         is_Exclusive: rowData.isExclusive,
-              //         description: "",
-              //         status: 0
-              //       },
-              //       key: "",
-              //       dataAttributeIds: rowData.dataAttribute.dataAttributeIDs,
-              //       level: 0,
-              //       featureState: parseInt(rowData.state) == 1 ? 0 : 1
-              //     }
-
-              // this.featureService.updateFeature(updatedFeatureParams).subscribe((dataUpdated: any) => {
-              //   let successMsg = "Status updated successfully."
-              //   this.successMsgBlink(successMsg);
-              //   this.loadFeatureData();
-              // });
-              let objData ={
-                    id: rowData.id,
-                    state: rowData.state === 'INACTIVE' ? 'ACTIVE' : 'INACTIVE'
-              }
-              this.featureService.updateFeatureState(objData).subscribe((data) => {
-                let successMsg = "Status updated successfully."
-                this.successMsgBlink(successMsg);
-                this.loadFeatureData();
-              })
+        let objData ={
+              id: rowData.id,
+              state: rowData.state === 'INACTIVE' ? 'ACTIVE' : 'INACTIVE'
+        }
+        this.featureService.updateFeatureState(objData).subscribe((data) => {
+          let successMsg = "Status updated successfully."
+          this.successMsgBlink(successMsg);
+          this.loadFeatureData();
+        })
       }
       else {
         this.loadFeatureData();
-        // this.updatedTableData(this.initData);
       }
     });
   }
@@ -288,7 +224,6 @@ export class FeatureManagementComponent implements OnInit {
   }
 
   checkCreationForFeature(item: any){
-    //this.createEditViewFeatureFlag = !this.createEditViewFeatureFlag;
     this.createEditViewFeatureFlag = item.stepFlag;
     if(item.successMsg) {
       this.successMsgBlink(item.successMsg);
@@ -297,32 +232,5 @@ export class FeatureManagementComponent implements OnInit {
       this.initData = item.tableData;
     }
     this.loadFeatureData();
-    // this.updatedTableData(this.initData);
   }
-
-  // updatedTableData(tableData : any) {
-  //   this.initData = tableData;
-  //   this.initData.map(obj =>{   //temporary
-  //     obj.statusVal = obj.state === 'ACTIVE'? 'active': obj.state === 'INACTIVE' ? 'inactive': '';
-  //     obj.isExclusiveVal = obj.isExclusive === true ? 'exclusive' : obj.isExclusive === false ? 'inclusive': '';
-  //   })
-  //   // this.initData = this.getNewTagData(this.initData);
-  //   this.dataSource = new MatTableDataSource(this.initData);
-  //   setTimeout(()=>{
-  //     this.dataSource.paginator = this.paginator;
-  //     this.dataSource.sort = this.sort;
-  //     this.dataSource.sortData = (data: String[], sort: MatSort) => {
-  //       const isAsc = sort.direction === 'asc';
-  //       return data.sort((a: any, b: any) => {
-  //         return this.compare(a[sort.active], b[sort.active], isAsc);
-  //       });
-  //      }
-  //   });
-  // }
-  //     compare(a: Number | String, b: Number | String, isAsc: boolean) {
-  //     if(!(a instanceof Number)) a = a.toString().toUpperCase();
-  //     if(!(b instanceof Number)) b = b.toString().toUpperCase();
-  //     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
-  //     }
-
 }

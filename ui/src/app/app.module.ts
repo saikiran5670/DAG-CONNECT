@@ -43,21 +43,21 @@ import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { SignalrAlertNotificationComponent } from './signalr-alert-notification/signalr-alert-notification.component';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 
 
 
 export function configFactory(httpClient: HttpClient): ConfigLoader {
-   return new ConfigHttpLoader(httpClient, 'assets/config/default.json');
+  return new ConfigHttpLoader(httpClient, 'assets/config/default.json');
 // return new ConfigHttpLoader(httpClient, 'assets/config/dev-default.json');
 }
 
 @NgModule({
     declarations: [AppComponent, AlertsComponent, PreferencesComponent, ErrorComponent, CreateEditViewAlertsComponent, AlertsFilterComponent, CreateNotificationsAlertComponent, 
-      AlertAdvancedFilterComponent, PeriodSelectionFilterComponent, NotificationAdvancedFilterComponent, SignalrAlertNotificationComponent],
+      AlertAdvancedFilterComponent, PeriodSelectionFilterComponent, NotificationAdvancedFilterComponent, SignalrAlertNotificationComponent, PageNotFoundComponent],
   imports: [
     BrowserModule,
     HttpClientModule,
-    FormsModule,
     BrowserAnimationsModule,
     AppRoutingModule,
     SharedModule,

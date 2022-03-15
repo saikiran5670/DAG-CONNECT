@@ -477,12 +477,14 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
   idleDurationSumConverted: any;
   filterValue: string;
   _state: any;
-  highcharts = Highcharts;
+  highcharts = Highcharts;  
+  prefDetail: any = {};
+  reportDetail: any = [];
+
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private router: Router, private organizationService: OrganizationService, private datePipe: DatePipe, private dataInterchangeService: DataInterchangeService, private messageService: MessageService, private _sanitizer: DomSanitizer) {
-    // this.defaultTranslation();
     this.dataInterchangeService.prefSource$.subscribe((prefResp: any) => {
       if(prefResp && (prefResp.type == 'fleet utilisation report') && prefResp.prefdata){
-        this.displayedColumns = ['vehiclename', 'vin', 'registrationnumber', 'distance', 'numberOfTrips', 'tripTime', 'drivingTime', 'idleDuration', 'stopTime', 'averageDistancePerDay', 'averageSpeed', 'averageWeight', 'odometer'];
+        this.displayedColumns = ['vehicleName', 'vin', 'registrationNumber', 'distance', 'numberOfTrips', 'tripTime', 'drivingTime', 'idleDuration', 'stopTime', 'averageDistancePerDay', 'averageSpeed', 'averageWeight', 'odometer'];
         this.reportPrefData = prefResp.prefdata;
         this.resetPref();
         this.preparePrefData(this.reportPrefData);
@@ -502,19 +504,14 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     }
    }
 
-  defaultTranslation(){
-    this.translationData = {
-      lblSearchReportParameters: 'Search Report Parameters'
-    }
-  }
-
   ngOnInit(): void {
-    this.fleetUtilizationSearchData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
-    // //console.log("----globalSearchFilterData---",this.fleetUtilizationSearchData)
+    this.fleetUtilizationSearchData = JSON.parse(localStorage.getItem("globalSearchFilterData")); 
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
+    this.prefDetail = JSON.parse(localStorage.getItem('prefDetail'));
+    this.reportDetail = JSON.parse(localStorage.getItem('reportDetail'));
     this.tripForm = this._formBuilder.group({
       vehicleGroup: ['', [Validators.required]],
       vehicle: ['', [Validators.required]],
@@ -534,29 +531,25 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
-      this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
+      if(this.prefDetail){
         if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
-          this.proceedStep(prefData, this.accountPrefObj.accountPreference);
+          this.proceedStep(this.accountPrefObj.accountPreference);
         }else{ // org pref
           this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
-            this.proceedStep(prefData, orgPref);
-          }, (error) => { // failed org API
-            let pref: any = {};
-            this.proceedStep(prefData, pref);
+            this.proceedStep(orgPref);
+          }, (error) => { 
+            this.proceedStep({});
           });
         }
-
         let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
         if(vehicleDisplayId) {
-          let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+          let vehicledisplay = this.prefDetail.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
           if(vehicledisplay.length != 0) {
             this.vehicleDisplayPreference = vehicledisplay[0].name;
           }
         }
-
-      });
+      }
     });
-
     this.messageService.brandLogoSubject.subscribe(value => {
       if (value != null && value != "") {
         this.brandimagePath = this._sanitizer.bypassSecurityTrustResourceUrl('data:image/jpeg;base64,' + value);
@@ -564,7 +557,6 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
         this.brandimagePath = null;
       }
     });
-
   }
 
   distanceLineChartOptions = {
@@ -617,22 +609,18 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     }
   };
 
-  proceedStep(prefData: any, preference: any){
-    let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
+  proceedStep(preference: any){
+    let _search = this.prefDetail.timeformat.filter(i => i.id == preference.timeFormatId);
     if(_search.length > 0){
-      //this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
       this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
-      //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
-      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
-      this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
-      this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;
+      this.prefTimeZone = this.prefDetail.timezone.filter(i => i.id == preference.timezoneId)[0].name;
+      this.prefDateFormat = this.prefDetail.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+      this.prefUnitFormat = this.prefDetail.unit.filter(i => i.id == preference.unitId)[0].name;
     }else{
-      //this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
-      this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
-      //this.prefTimeZone = prefData.timezone[0].value;
-      this.prefTimeZone = prefData.timezone[0].name;
-      this.prefDateFormat = prefData.dateformat[0].name;
-      this.prefUnitFormat = prefData.unit[0].name;
+      this.prefTimeFormat = Number(this.prefDetail.timeformat[0].name.split("_")[1].substring(0,2)); 
+      this.prefTimeZone = this.prefDetail.timezone[0].name;
+      this.prefDateFormat = this.prefDetail.dateformat[0].name;
+      this.prefUnitFormat = this.prefDetail.unit[0].name;
     }
     this.setDefaultStartEndTime();
     this.setPrefFormatDate();
@@ -641,21 +629,13 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
   }
 
   getReportPreferences(){
-    let reportListData: any = [];
-    this.reportService.getReportDetails().subscribe((reportList: any)=>{
-      reportListData = reportList.reportDetails;
-      let repoId: any = reportListData.filter(i => i.name == 'Fleet Utilisation Report');
+    if(this.reportDetail){
+      let repoId: any = this.reportDetail.filter(i => i.name == 'Fleet Utilisation Report');
       if(repoId.length > 0){
         this.tripReportId = repoId[0].id;
         this.getFleetUtilPreferences();
-      }else{
-        //console.error("No report id found!")
       }
-    }, (error)=>{
-      ////console.log('Report not found...', error);
-      reportListData = [{name: 'Fleet Utilisation Report', id: this.tripReportId}];
-      // this.getFleetUtilPreferences();
-    });
+    }
   }
 
   ngOnDestroy(){
@@ -1122,10 +1102,10 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
 
       let totalConvDistance : any = this.reportMapService.getDistance(totalDistance, this.prefUnitFormat);
       if (totalConvDistance && this.mileagebasedThreshold){
-      let percentage1 = Number.parseFloat(((Number.parseFloat(totalConvDistance) / this.mileagebasedThreshold) * 100).toFixed(2));
-      let thresholdLeft = (100 - percentage1 > 0) ? 100 - percentage1 : 0;
-      this.doughnutChartData = [[percentage1, thresholdLeft]];
-      this.mileagePieChartData = [[percentage1, thresholdLeft]];
+      let percentDistance = Number(((Number(totalConvDistance) / this.mileagebasedThreshold) * 100).toFixed(2));
+      let thresholdLeft = (100 - percentDistance > 0) ? 100 - percentDistance : 0;
+      this.doughnutChartData = [[(percentDistance > 100) ? 100 : percentDistance, thresholdLeft]];
+      this.mileagePieChartData = [[(percentDistance > 100) ? 100 : percentDistance, thresholdLeft]];
        // let percentage1 = (this.greaterMileageCount/this.tripData.length)*100 ;
       // this.doughnutChartData = [percentage1, 100- percentage1];
       //this.mileagePieChartData = [percentage1,  100- percentage1];
@@ -1134,10 +1114,10 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     //  let totalDriveTime = Util.getHhMmTime(totalDrivingTime).split(':'); //driving time is coming in seconds
       // let driveTime =  totalDriveTime[0] + (this.translationData.lblhh ) + ' ' +totalDriveTime[1] + (this.translationData.lblmm);
       if (totalDrivingTime && this.timebasedThreshold){
-        let percentage2 = Number(((totalDrivingTime / this.timebasedThreshold) * 100).toFixed(2));;
-        let thresholdLeft = (100 - percentage2 > 0) ? 100 - percentage2 : 0;
-        this.doughnutChartDataForTime = [[percentage2, thresholdLeft]];
-        this.timePieChartData = [[percentage2, thresholdLeft]];
+        let percentDrivingTime = Number(((totalDrivingTime / this.timebasedThreshold) * 100).toFixed(2));;
+        let thresholdLeft = (100 - percentDrivingTime > 0) ? 100 - percentDrivingTime : 0;
+        this.doughnutChartDataForTime = [[(percentDrivingTime > 100) ? 100 : percentDrivingTime, thresholdLeft]];
+        this.timePieChartData = [[(percentDrivingTime > 100) ? 100 : percentDrivingTime, thresholdLeft]];
       // let percentage2 = (this.greaterTimeCount/this.tripData.length)* 100;
       // this.doughnutChartDataForTime = [percentage2, 100- percentage2];
       // this.timePieChartData = [percentage2, 100- percentage2];
@@ -1378,8 +1358,8 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       type : 'datetime',
       tickInterval:!this.distanceChartType && (this.endDateValue.toDateString() == this.startDateValue.toDateString())? 2 * 24 * 3600000 : 1 * 24 * 3600000 ,
       labels: {
-        //step:this.selectionTab == 'last3month' ?  Math.ceil(this.averageDistanceBarData.length/12) : Math.ceil(this.averageDistanceBarData.length/5),
-        step:(this.selectionTab == 'last3month') ? ( this.averageDistanceBarData.length > 50 && this.averageDistanceBarData.length < 60  ? Math.ceil(this.averageDistanceBarData.length/10) : (this.averageDistanceBarData.length > 60 && this.averageDistanceBarData.length < 99  ? Math.ceil(this.averageDistanceBarData.length/12):(this.averageDistanceBarData.length > 99 ? Math.ceil(this.averageDistanceBarData.length/24): (this.averageDistanceBarData.length > 20 && this.averageDistanceBarData.length < 50 ? Math.ceil(this.averageDistanceBarData.length/6): Math.ceil(this.averageDistanceBarData.length/2))))) : Math.ceil(this.averageDistanceBarData.length/5),
+        step:this.selectionTab == 'last3month' ?  Math.ceil(this.averageDistanceBarData.length/12) : Math.ceil(this.averageDistanceBarData.length/5),
+        // step:(this.selectionTab == 'last3month') ? ( this.averageDistanceBarData.length > 50 && this.averageDistanceBarData.length < 60  ? Math.ceil(this.averageDistanceBarData.length/10) : (this.averageDistanceBarData.length > 60 && this.averageDistanceBarData.length < 99  ? Math.ceil(this.averageDistanceBarData.length/12):(this.averageDistanceBarData.length > 99 ? Math.ceil(this.averageDistanceBarData.length/24): (this.averageDistanceBarData.length > 20 && this.averageDistanceBarData.length < 50 ? Math.ceil(this.averageDistanceBarData.length/6): Math.ceil(this.averageDistanceBarData.length/2))))) : Math.ceil(this.averageDistanceBarData.length/5),
         rotation: (this.selectionTab == 'last3month' || this.selectionTab == 'lastmonth') ? -45 :  0 ,
         },
         dateTimeLabelFormats: {
@@ -1448,7 +1428,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
         // },
         
         yAxis: [{
-        min: 0,
+        //min: 0,
         //max:  Math.max(...this.averageDistanceBarData.map(o => o.y)),
         title: {
           text: this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm || 'km'})` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles ||'miles'})`
@@ -1473,7 +1453,8 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
         //showInLegend: false,      
         tickInterval:!this.distanceChartType && (this.endDateValue.toDateString() == this.startDateValue.toDateString())? 2 * 24 * 3600000 : 1 * 24 * 3600000 ,
         labels: {
-          step:(this.selectionTab == 'last3month') ? ( this.averageDistanceBarData.length > 50 && this.averageDistanceBarData.length < 60  ? Math.ceil(this.averageDistanceBarData.length/10) : (this.averageDistanceBarData.length > 60 && this.averageDistanceBarData.length < 99  ? Math.ceil(this.averageDistanceBarData.length/12):(this.averageDistanceBarData.length > 99 ? Math.ceil(this.averageDistanceBarData.length/24): (this.averageDistanceBarData.length > 20 && this.averageDistanceBarData.length < 50 ? Math.ceil(this.averageDistanceBarData.length/6): Math.ceil(this.averageDistanceBarData.length/2))))) : Math.ceil(this.averageDistanceBarData.length/5),
+          step:this.selectionTab == 'last3month' ?  Math.ceil(this.averageDistanceBarData.length/12) : Math.ceil(this.averageDistanceBarData.length/5),
+          //step:(this.selectionTab == 'last3month') ? ( this.averageDistanceBarData.length > 50 && this.averageDistanceBarData.length < 60  ? Math.ceil(this.averageDistanceBarData.length/10) : (this.averageDistanceBarData.length > 60 && this.averageDistanceBarData.length < 99  ? Math.ceil(this.averageDistanceBarData.length/12):(this.averageDistanceBarData.length > 99 ? Math.ceil(this.averageDistanceBarData.length/24): (this.averageDistanceBarData.length > 20 && this.averageDistanceBarData.length < 50 ? Math.ceil(this.averageDistanceBarData.length/6): Math.ceil(this.averageDistanceBarData.length/2))))) : Math.ceil(this.averageDistanceBarData.length/5),
           rotation: (this.selectionTab == 'last3month' || this.selectionTab == 'lastmonth') ? -45 :  0 ,
           },
           dateTimeLabelFormats: {
@@ -1631,15 +1612,17 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
             data.convertedAverageWeight?.toString().toLowerCase().includes(filter) ||
             data.convertedOdometer?.toString().toLowerCase().includes(filter)
    }
+
       this.dataSource.sortData = (data: String[], sort: MatSort) => {
         const isAsc = sort.direction === 'asc';
         return data.sort((a: any, b: any) => {
             let columnName = sort.active;
           return this.comparevehicle(a[sort.active], b[sort.active], isAsc, columnName);
         });
-
       }
+      
       });
+
       Util.applySearchFilter(this.dataSource, this.displayedColumns ,this.filterValue );
     }
 
@@ -1652,13 +1635,15 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
         return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
     }
 
-    // compareData(a: Number | String, b: Number | String, isAsc: boolean, columnName: any) {
-
-    //     if(!(a instanceof Number)) a = a.toString().toUpperCase();
-    //     if(!(b instanceof Number)) b = b.toString().toUpperCase();
-
-    //   return ( a < b ? -1 : 1) * (isAsc ? 1: -1);
+    // comparevehicleSort(a: any, b: any, isAsc: boolean, columnName:any) {
+    //   if(columnName === "vehicleName" || columnName == "registrationNumber" || columnName == "vin"){
+    //     if(!(a instanceof Number)) a = a?a.replace(/[^\w\s]/gi, 'z').toUpperCase(): "";
+    //     if(!(b instanceof Number)) b = b?b.replace(/[^\w\s]/gi, 'z').toUpperCase(): "";
+    //   }
+  
+    //     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
     // }
+
   idleDurationCount(){
     let idleDuration=0;
     this.initData.forEach(item => {
@@ -1816,7 +1801,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     localStorage.setItem("globalSearchFilterData", JSON.stringify(globalSearchFilterData));
   }
 
-  setPrefFormatTime(){
+  setDefaultStartEndTime(){
     if(!this.internalSelection && this.fleetUtilizationSearchData.modifiedFrom !== "" &&  ((this.fleetUtilizationSearchData.startTimeStamp || this.fleetUtilizationSearchData.endTimeStamp) !== "") ) {
       if(this.prefTimeFormat == this.fleetUtilizationSearchData.filterPrefTimeFormat){ // same format
         this.selectedStartTime = this.fleetUtilizationSearchData.startTimeStamp;
@@ -1889,14 +1874,6 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
         this.highchartDateFormat ='%m/%d/%Y';
       }
     }
-  }
-
-  setDefaultStartEndTime(){
-    this.setPrefFormatTime();
-    // if(this.internalSelection && this.fleetUtilizationSearchData.modifiedFrom == ""){
-    //   this.selectedStartTime = "00:00";
-    //   this.selectedEndTime = "23:59";
-    // }
   }
 
   setDefaultTodayDate(){

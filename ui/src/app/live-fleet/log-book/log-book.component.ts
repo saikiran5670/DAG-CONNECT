@@ -188,13 +188,13 @@ map_key: any = '';
 platform: any = '';
 vehicleIconMarker : any;
 noRecordFound: boolean = false;
+prefDetail: any = {};
+reportDetail: any = [];
+logbookPrefData: any = [];
 
 public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
-
 public filteredVehicleNames: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
-  filterValue: string;
-
-
+filterValue: string;
 
 constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private fleetMapService: FleetMapService, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private landmarkCategoryService: LandmarkCategoryService, private router: Router, private organizationService: OrganizationService, private _configService: ConfigService, private hereService: HereService,private completerService: CompleterService, private dataInterchangeService: DataInterchangeService, private messageService : MessageService, private _sanitizer: DomSanitizer) {
   // this.map_key =  _configService.getSettings("hereMap").api_key;
@@ -205,7 +205,7 @@ constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private fleetMapServi
   this.sendMessage();
   this.dataInterchangeService.prefSource$.subscribe((prefResp: any) => {
     if(prefResp && (prefResp.type == 'logbook') && prefResp.prefdata){
-      this.displayedColumns = [ 'all','alertLevel', 'alertGeneratedTime','vehicleName', 'vehicleRegNo', 'alertType', 'alertName', 'alertCategory', 'tripStartTime', 'tripEndTime',,'vin','occurrence','thresholdValue'];
+      this.displayedColumns = [ 'all','alertLevel', 'alertGeneratedTime','vehicleName', 'vehicleRegNo', 'alertType', 'alertName', 'alertCategory', 'tripStartTime', 'tripEndTime','vin','occurrence','thresholdValue'];
       this.resetTripPrefData();
       this.reportPrefData = prefResp.prefdata;
       this.getTranslatedColumnName(this.reportPrefData);
@@ -228,11 +228,7 @@ constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private fleetMapServi
   this.platform = new H.service.Platform({
     "apikey": this.map_key
   });
-
   this.configureAutoSuggest();
-  // this.defaultTranslation();
-
-
   if(this._state){
     this.showBack = true;
   }else{
@@ -244,12 +240,6 @@ defaultLayers: any;
 hereMap:any;
 ui: any;
 mapGroup : any;
-
-defaultTranslation(){
-  this.translationData = {
-    lblSearchReportParameters: 'Search Report Parameters'
-  }
-}
 
 ngOnDestroy(){
   if(this.getLogbookDetailsAPICall){
@@ -272,7 +262,6 @@ ngOnDestroy(){
     this.globalSearchFilterData["endTimeStamp"] = this.endTimeDisplay;
   }
   this.setGlobalSearchData(this.globalSearchFilterData);
-
 }
 
   ngOnInit() {
@@ -281,6 +270,8 @@ ngOnDestroy(){
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
+    this.prefDetail = JSON.parse(localStorage.getItem('prefDetail'));
+    this.reportDetail = JSON.parse(localStorage.getItem('reportDetail'));  
     this.logBookForm = this._formBuilder.group({
       vehicleGroup: ['', [Validators.required]],
       vehicle: ['', [Validators.required]],
@@ -317,18 +308,17 @@ ngOnDestroy(){
       this.mapFilterForm.get('trackType').setValue('snail');
       this.mapFilterForm.get('routeType').setValue('C');
       this.makeHerePOIList();
-      this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
+
+      if(this.prefDetail){
         if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
-          this.proceedStep(prefData, this.accountPrefObj.accountPreference);
+          this.proceedStep(this.accountPrefObj.accountPreference);
         }else{ // org pref
           this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
-            this.proceedStep(prefData, orgPref);
-
+            this.proceedStep(orgPref);
           }, (error) => { // failed org API
             let pref: any = {};
-            this.proceedStep(prefData, pref);
+            this.proceedStep(pref);
           });
-
         }
         if(this.showBack){
         //   if(this._state.fromDashboard == true){
@@ -357,12 +347,12 @@ ngOnDestroy(){
             }
         let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
         if (vehicleDisplayId) {
-          let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+          let vehicledisplay = this.prefDetail.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
           if (vehicledisplay.length != 0) {
             this.vehicleDisplayPreference = vehicledisplay[0].name;
           }
         }
-      });
+      }
     });
     // if(this._state.fromDashboard == true){
     // this.selectionTimeRange('yesterday');
@@ -422,22 +412,18 @@ ngOnDestroy(){
     }];
   }
 
-  proceedStep(prefData: any, preference: any){
-    let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
-    if(_search.length > 0){
-      //this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
-      this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
-      //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
-      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
-      this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
-      this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;
+  proceedStep(preference: any){
+    let _search = this.prefDetail.timeformat.filter(i => i.id == preference.timeFormatId);
+    if(_search.length > 0){ 
+      this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2)); 
+      this.prefTimeZone = this.prefDetail.timezone.filter(i => i.id == preference.timezoneId)[0].name;
+      this.prefDateFormat = this.prefDetail.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+      this.prefUnitFormat = this.prefDetail.unit.filter(i => i.id == preference.unitId)[0].name;
     }else{
-      //this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
-      this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
-      //this.prefTimeZone = prefData.timezone[0].value;
-      this.prefTimeZone = prefData.timezone[0].name;
-      this.prefDateFormat = prefData.dateformat[0].name;
-      this.prefUnitFormat = prefData.unit[0].name;
+      this.prefTimeFormat = Number(this.prefDetail.timeformat[0].name.split("_")[1].substring(0,2)); 
+      this.prefTimeZone = this.prefDetail.timezone[0].name;
+      this.prefDateFormat = this.prefDetail.dateformat[0].name;
+      this.prefUnitFormat = this.prefDetail.unit[0].name;
     }
     this.setDefaultStartEndTime();
     this.setPrefFormatDate();
@@ -450,25 +436,16 @@ ngOnDestroy(){
     // this.setDefaultTodayDate();
     // }
     this.getReportPreferences();
-
   }
 
   getReportPreferences(){
-    let reportListData: any = [];
-    this.reportService.getReportDetails().subscribe((reportList: any)=>{
-      reportListData = reportList.reportDetails;
-      let repoId: any = reportListData.filter(i => i.name == 'Logbook');
+    if(this.reportDetail){
+      let repoId: any = this.reportDetail.filter(i => i.name == 'Logbook');
       if(repoId.length > 0){
         this.logbookPrefId = repoId[0].id;
         this.getLogbookPref();
-      }else{
-        console.error("No report id found!")
       }
-    }, (error)=>{
-      //console.log('Report not found...', error);
-      reportListData = [{name: 'Logbook', id: this.logbookPrefId}];
-      // this.getLogbookPref();
-    });
+    }
   }
 
   getLogbookPref(){
@@ -490,7 +467,7 @@ ngOnDestroy(){
     this.logbookPrefData = [];
   }
 
-  logbookPrefData: any = [];
+  
   getTranslatedColumnName(prefData: any){
     if(prefData && prefData.subReportUserPreferences && prefData.subReportUserPreferences.length > 0){
       prefData.subReportUserPreferences.forEach(element => {
@@ -558,15 +535,15 @@ ngOnDestroy(){
     return res;
   }
 
-  setPrefFormatTime(){
+  setDefaultStartEndTime(){
     if (this._state && this._state.fromVehicleDetails && !this._state.data.todayFlag) {
-      let startHours = new Date(this._state.data.startDate).getHours();
-      let startMinutes = String(new Date(this._state.data.startDate).getMinutes());
+      let startHours = new Date(Util.convertUtcToDate(this._state.data.startDate, this.prefTimeZone)).getHours();
+      let startMinutes = String(new Date(Util.convertUtcToDate(this._state.data.startDate, this.prefTimeZone)).getMinutes());
       startMinutes = startMinutes.length == 2 ? startMinutes : '0'+startMinutes;
-      // let startampm = startHours >= 12 ? 'PM' : 'AM';
+        // let startampm = startHours >= 12 ? 'PM' : 'AM';
       let startTimeStamp = startHours +':'+ startMinutes;
-      let endHours = new Date(this._state.data.endDate).getHours();
-      let endMinutes = String(new Date(this._state.data.endDate).getMinutes());
+      let endHours = new Date(Util.convertUtcToDate(this._state.data.endDate, this.prefTimeZone)).getHours();
+      let endMinutes = String(new Date(Util.convertUtcToDate(this._state.data.endDate, this.prefTimeZone)).getMinutes());
       endMinutes = endMinutes.length == 2 ? endMinutes : '0'+endMinutes;
       // let endampm = endHours >= 12 ? 'PM' : 'AM';
       let endTimeStamp = endHours +':'+ endMinutes;
@@ -642,10 +619,6 @@ ngOnDestroy(){
     }
   }
 
-  setDefaultStartEndTime(){
-    this.setPrefFormatTime();
-  }
-
   setDefaultTodayDate() {
 
     if(this._state && this._state.fromDashboard == true){
@@ -715,7 +688,12 @@ if(!this._state){
 
   if(this._state && this._state.fromVehicleDetails){
     this.filterDateData();
-    this.logBookForm.get('vehicleGroup').setValue(this._state.data.vehicleGroupId);
+    if(this._state.data.vehicleGroupId == 0){
+      this.logBookForm.get('vehicleGroup').setValue('all');
+    }
+    else{
+      this.logBookForm.get('vehicleGroup').setValue(this._state.data.vehicleGroupId);
+    }  
     this.onVehicleGroupChange(this._state.data.vehicleGroupId);
     this.logBookForm.get('vehicle').setValue(this._state.data.vin);
     this.logBookForm.get('alertLevel').setValue("all");
@@ -778,6 +756,10 @@ if(!this._state){
   }
 // }
 if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAlerts || this._state.fromDashboard == true || this._state.fromVehicleDetails)){
+  if(this._state.fromVehicleDetails){
+    this.startDateValue = this.setStartEndDateTime(new Date(this._state.data.startTimeStamp), this.selectedStartTime, 'start');
+    this.endDateValue = this.setStartEndDateTime(new Date(this._state.data.endTimeStamp), this.selectedEndTime, 'end');
+  }
   this.onSearch();
 }
 
@@ -1876,8 +1858,6 @@ let prepare = []
             "vehicleId": element.vehicleId
           }
           this.vehicleGrpDD.push(vehicleGroupObj);
-          //console.log("vhicleGrpDD4", this.vehicleGrpDD);
-
         } else {
           this.singleVehicle.push(element);
         }

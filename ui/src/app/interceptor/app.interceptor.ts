@@ -28,7 +28,6 @@ export class AppInterceptor implements HttpInterceptor {
     request = request.clone({
       withCredentials: true
     });
-
     return next.handle(request).pipe(
       tap(
         (event: HttpEvent<any>) => {
