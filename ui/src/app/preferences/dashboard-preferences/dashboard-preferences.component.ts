@@ -229,7 +229,7 @@ export class DashboardPreferencesComponent implements OnInit {
             }
             this.todayLiveVehicleColumnData.push(_data);
             this.dashboardPreferenceForm.addControl(element.key + 'thresholdType', new FormControl(element.thresholdType != '' ? element.thresholdType : 'L'));
-            if (element.key.includes('todaylivevehicle_timebasedutilizationrate')) {
+            if (element.key.includes('todaylivevehicle_timebasedutilization')) {
               let secondscalc = (element.thresholdValue)/1000;          
               let hms = this.secondsToHms(secondscalc);
               let hrs = '';
@@ -241,7 +241,7 @@ export class DashboardPreferencesComponent implements OnInit {
               this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(hrs,[Validators.min(0),Validators.max(23)]));
               this.dashboardPreferenceForm.addControl(element.key + 'thresholdValuemin', new FormControl(mins,[Validators.min(0),Validators.max(60)]));
             }
-            else if (element.key.includes('todaylivevehicle_distancebasedutilizationrate')) {
+            else if (element.key.includes('todaylivevehicle_distancebasedutilization')) {
               let thresholdValueKm = this.reportMapService.getDistance(element.thresholdValue, this.prefUnitFormat);
               this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(thresholdValueKm, [Validators.min(0),Validators.max(10000),Validators.pattern('^\-?[0-9]+(?:\.[0-9]{1,2})?$')]));
             }        
@@ -343,13 +343,13 @@ export class DashboardPreferencesComponent implements OnInit {
         let totalsecs: number = thresholdValuehrs + thresholdValuemin;
         saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: chartType ? chartType : '', thresholdType: thresholdType, thresholdValue: totalsecs, reportId: element.reportId  });
       }
-      else if(element.key.includes('_todaylivevehicle_timebasedutilizationrate') || element.key.includes('_vehicleutilization_timebasedutilizationrate')){
+      else if(element.key.includes('_todaylivevehicle_timebasedutilization') || element.key.includes('_vehicleutilization_timebasedutilizationrate')){
         let thresholdValuehrs = thresholdValue * 3600;
         let thresholdValuemin = this.dashboardPreferenceForm.get([element.key + 'thresholdValuemin'])?.value * 60;
         let totalsecs: number = thresholdValuehrs + thresholdValuemin;
         saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: chartType ? chartType : '', thresholdType: thresholdType, thresholdValue: totalsecs * 1000, reportId: element.reportId });
       }
-      else if (element.key.includes('fleetkpi_totaldistance') || element.key.includes('todaylivevehicle_distancebasedutilizationrate') || element.key.includes('vehicleutilization_distancebasedutilizationrate')) {
+      else if (element.key.includes('fleetkpi_totaldistance') || element.key.includes('todaylivevehicle_distancebasedutilization') || element.key.includes('vehicleutilization_distancebasedutilizationrate')) {
         
         let totalmilimeters = this.prefUnitFormat == 'dunit_Imperial' ? thresholdValue * 1609.344 : thresholdValue * 1000;
        
