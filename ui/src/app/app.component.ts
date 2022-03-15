@@ -1105,7 +1105,6 @@ export class AppComponent {
         this.loadBrandlogoForReports(accinfo);
       });
     }, (error) => {
-      //console.log(error)
     });  
     this.signalRService.ngOnDestroy();
     this.getOfflineNotifications();  
