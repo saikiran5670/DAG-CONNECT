@@ -78,7 +78,7 @@ export class EcoScoreProfileManagementComponent implements OnInit {
   units: any = {};
   prefDetail: any = {};
   deleteSelection: any = false;
-
+  otherWtKpi: boolean = false;
   constructor(private _formBuilder: FormBuilder, private translationService: TranslationService, private reportMapService: ReportMapService, private organizationService: OrganizationService, private reportService: ReportService, private dialogService: ConfirmDialogService) { }
 
   ngOnInit() {
@@ -220,6 +220,7 @@ export class EcoScoreProfileManagementComponent implements OnInit {
     } else{
       this.otherWtKpiData = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 21)[0];
       this.otherDistanceKpiData = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 22)[0];   
+      this.otherWtKpi= true;
     }
 }); 
   this.isKPI = true;
