@@ -174,7 +174,10 @@ get24Time(_time: any){
 
 
   startConnection = () => {
-    this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    if(localStorage.getItem('contextOrgId'))
+      this.accountOrganizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
+    else 
+      this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.hubConnection = new signalR.HubConnectionBuilder()
     .withUrl(this.signalRServiceURL, {

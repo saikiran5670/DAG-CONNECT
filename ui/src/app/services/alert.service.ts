@@ -39,6 +39,23 @@ export class AlertService {
     return getHeaderObj;
   }
 
+  generateHeaderUpdated(){
+    let orgId;
+    if(localStorage.getItem('contextOrgId'))
+      orgId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
+    else 
+      orgId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+
+    let genericHeader : object = {
+      'Content-Type' : 'application/json',
+      'accountId' : localStorage.getItem('accountId'),
+      'orgId' : orgId,
+      'roleId' : localStorage.getItem('accountRoleId')
+    }
+    let getHeaderObj = JSON.stringify(genericHeader)
+    return getHeaderObj;
+  }
+
   getAlertFilterData(id, orgId): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {
@@ -139,7 +156,7 @@ export class AlertService {
    }
 
    getOfflineNotifications(): Observable<any[]> {
-    let headerObj = this.generateHeader();
+    let headerObj = this.generateHeaderUpdated();
     const headers = {
      headers: new HttpHeaders({ headerObj }),
    };
