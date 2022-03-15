@@ -711,7 +711,7 @@ removeDuplicates(originalArray, prop) {
             objData = this.vehicleListData;
           }
          
-          if(this.filterVehicleForm.controls.otherFilter.value == 'all'){
+          if(this.filterVehicleForm.controls.otherFilter.value == 'all' || this.allSelectedOther || this.filterVehicleForm.controls.otherFilter.value.length > 0 ){
             objData = this.fleetData;
           }
           if(this.filterVehicleForm.controls.status.value != 'all'){
@@ -829,6 +829,7 @@ removeDuplicates(originalArray, prop) {
   }
 
   filterLevel(fleetData :any){
+    this.vehicleListData = [];
     if(fleetData && fleetData.length > 0) {
       fleetData.forEach(e => {
         let critical = 0;
