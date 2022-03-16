@@ -438,7 +438,6 @@ export class AppComponent {
           // }
           //this.getReportDetails();
         }, (err) => {
-          //console.log(err);
         });
       }, (error) => {
         //console.log(error);

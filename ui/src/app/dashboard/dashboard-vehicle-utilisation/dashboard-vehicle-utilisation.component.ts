@@ -852,6 +852,7 @@ export class DashboardVehicleUtilisationComponent implements OnInit {
     this.greaterTimeCount = 0;
     this.vehicleUtilisationData.forEach((element) => {
       var date = new Date(element.calenderDate);
+      date = Util.convertUtcToDateNoFormat(date, this.prefTimeZone);
       const months = [
         'January',
         'February',

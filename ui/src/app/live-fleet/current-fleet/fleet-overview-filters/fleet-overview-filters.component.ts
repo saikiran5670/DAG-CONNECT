@@ -711,7 +711,7 @@ removeDuplicates(originalArray, prop) {
             objData = this.vehicleListData;
           }
          
-          if(this.filterVehicleForm.controls.otherFilter.value == 'all' || this.allSelectedOther || this.filterVehicleForm.controls.otherFilter.value.length > 0 ){
+          if(this.levelList.length <= 0 && (this.filterVehicleForm.controls.otherFilter.value == 'all' || this.allSelectedOther || this.filterVehicleForm.controls.otherFilter.value.length > 0 )){
             objData = this.fleetData;
           }
           if(this.filterVehicleForm.controls.status.value != 'all'){
