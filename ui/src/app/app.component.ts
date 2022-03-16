@@ -832,6 +832,11 @@ export class AppComponent {
     }
   }
 
+  ngOnDestroy(){
+    this.subscription.unsubscribe();
+    this.sub.unsubscribe();
+  }
+
   proceedStep(preference: any){
     this.preference = preference;
     this.setPrefFormatDate();
