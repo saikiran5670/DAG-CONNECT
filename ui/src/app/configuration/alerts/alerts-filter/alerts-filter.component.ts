@@ -147,6 +147,8 @@ export class AlertsFilterComponent implements OnInit {
             this.alertVehicle = '';
              this.alertVehicleGroup='';
             event_val = event.value.trim(); 
+            this.vehicleByVehGroupList= this.associatedVehicleData;
+            this.resetVehiclesFilter();
           }
           else{   
             this.alertVehicle = '';         
