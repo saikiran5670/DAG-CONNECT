@@ -392,14 +392,12 @@ export class ReportMapService {
               this.drawAlerts(elem.filterAlerts, _ui, translationData);
             }
           }
-          setTimeout(() => {
-            this.hereMap.addObject(this.group);
-            this.group.addObjects([this.startMarker, this.endMarker]); //16667 - main map group considered to show entire trip
+          //  this.hereMap.addObject(this.group);
+           // this.group.addObjects([this.startMarker, this.endMarker]); //16667 - main map group considered to show entire trip
             this.hereMap.addObject(this.group);
             this.hereMap.getViewModel().setLookAtData({
               bounds: this.group.getBoundingBox()
             });
-           }, 0); 
         }
       });
       this.makeCluster(_selectedRoutes, _ui);
