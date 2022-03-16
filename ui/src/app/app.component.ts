@@ -68,7 +68,6 @@ export class AppComponent {
   orgContextType: any = false;
   accountPrefObj: any;
   prefData : any;
-  preference : any;
   prefTimeFormat: any; //-- coming from pref setting
   prefTimeZone: any; //-- coming from pref setting
   prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
@@ -807,16 +806,13 @@ export class AppComponent {
       let prefDetail: any = JSON.parse(localStorage.getItem("prefDetail"));
       if(prefDetail){
         if(this.accountPrefObj && this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){
-          this.proceedStep(this.accountPrefObj.accountPreference);
+          this.proceedStep(prefDetail, this.accountPrefObj.accountPreference);
         }else{ 
           this.organizationService.getOrganizationPreference(this.orgId).subscribe((orgPref: any)=>{
-            this.proceedStep(orgPref);
+            this.proceedStep(prefDetail, orgPref);
           }, (error) => {
-            this.proceedStep({});
+            this.proceedStep(prefDetail, {});
           });
-        }
-        if(prefDetail) {
-          this.setInitialPref(prefDetail, this.preference);
         }
         let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
         if(vehicleDisplayId) {
@@ -837,12 +833,14 @@ export class AppComponent {
     this.sub.unsubscribe();
   }
 
-  proceedStep(preference: any){
-    this.preference = preference;
+  proceedStep(prefDetail: any, preference: any){ 
+    if(preference && Object.keys(preference).length > 0){
+      this.setInitialPref(prefDetail, preference);
+    }
     this.setPrefFormatDate();
   }
 
-  setInitialPref(prefData, preference){
+  setInitialPref(prefData: any, preference: any){
     let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
     if(_search.length > 0){
       this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
