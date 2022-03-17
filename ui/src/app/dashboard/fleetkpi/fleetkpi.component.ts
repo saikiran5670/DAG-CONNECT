@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Inject} from '@angular/core';
+import { Component, Input, OnInit, Inject, OnDestroy} from '@angular/core';
 import { Util } from '../../shared/util';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { DashboardService } from 'src/app/services/dashboard.service';
@@ -7,19 +7,21 @@ import { Color, Label, MultiDataSet, PluginServiceGlobalRegistrationAndOptions }
 import { ReportMapService } from '../../report/report-map.service';
 import { MessageService } from '../../services/message.service';
 import { DataInterchangeService } from '../../services/data-interchange.service'
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-fleetkpi',
   templateUrl: './fleetkpi.component.html',
   styleUrls: ['./fleetkpi.component.less']
 })
-export class FleetkpiComponent implements OnInit {
+export class FleetkpiComponent implements OnInit, OnDestroy {
   @Input() translationData : any;
   @Input() finalVinList : any;
   @Input() preference : any;
   @Input() prefData : any;
   @Input() dashboardPrefData: any;
   selectionTab: any;
+  msgSub: Subscription;
   clickButton:boolean = true;
   totalDays= 7;
   showLastChange : boolean = true;
@@ -451,19 +453,23 @@ export class FleetkpiComponent implements OnInit {
        }];
  
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private dashboardService : DashboardService,
-      private reportMapService : ReportMapService,private messageService: MessageService,private dataInterchangeService: DataInterchangeService) {
+      private reportMapService: ReportMapService, private messageService: MessageService, private dataInterchangeService: DataInterchangeService) {
         if(this._fleetTimer){
-          this.messageService.getMessage().subscribe(message => {
-            if (message.key.indexOf("refreshData") !== -1) {
+          this.msgSub = this.messageService.getMessage().subscribe(message => {
+            if (message.key.indexOf("refreshData") !== -1 || message.key.indexOf("fleetKpiData") !== -1) {
               this.getKPIData();
             }
           });
         }
-        
     }
 
   ngOnInit(): void {
     this.setInitialPref(this.prefData,this.preference);
+  }
+
+  ngOnDestroy(){
+    this.getFleetKPIDataAPI = undefined;
+    this.msgSub.unsubscribe();
   }
 
   setInitialPref(prefData,preference){
@@ -515,7 +521,7 @@ export class FleetkpiComponent implements OnInit {
     }
     this.messageService.sendMessage('refreshTimer'); 
     if(this._fleetTimer){
-      this.messageService.sendMessage('refreshData');
+      this.messageService.sendMessage('fleetKpiData');
     }
     else{
       this.getKPIData();
@@ -532,20 +538,56 @@ export class FleetkpiComponent implements OnInit {
       "endDateTime": _endTime,
       "viNs": this.finalVinList 
     }
+    let dayflag: boolean = true;
+    let _storage: any = localStorage.getItem(`fleetKPI_${this.selectionTab}`) ? JSON.parse(localStorage.getItem(`fleetKPI_${this.selectionTab}`)) : undefined;
+    if(_storage){
+      if(Math.abs(Number(_endTime)-Number(_storage.curTime)) >= 86400000){ // >24Hr
+        dayflag = false;
+      }
+    }
+    
+    if(_storage && dayflag){
+      this.callToProceed(_storage); // from Storage
+    }else{
+      this.callFleetData(_kpiPayload); // from API
+    } 
+  }
+
+  callFleetData(_kpiPayload: any){
     if(!this.getFleetKPIDataAPI){
       this.getFleetKPIDataAPI = this.dashboardService.getFleetKPIData(_kpiPayload).subscribe((kpiData: any)=>{
-        this.dataError = false;
-        this.kpiData = kpiData;
-        this.activeVehicles = kpiData['fleetKpis']?.vehicleCount;
-        this.updateCharts();
-        this.dataInterchangeService.getFleetData(kpiData);
-  
+        if(kpiData){
+          this.storeFleetKPIData(kpiData, _kpiPayload);
+        }
       },(error)=>{
         if(error.status === 404){
           this.dataError = true;
+          this.storeFleetKPIData({fleetKpis: {}}, _kpiPayload);
         }
-      })
-    } 
+      });
+    }
+  }
+
+  storeFleetKPIData(kpiData: any, _kpiPayload: any){
+    let obj: any = {
+      fleetKpis: kpiData.fleetKpis,
+      tabSelected: this.selectionTab, // add selected tab info,
+      curTime: _kpiPayload.endDateTime
+    }
+    localStorage.setItem(`fleetKPI_${this.selectionTab}`, JSON.stringify(obj));
+    this.callToProceed(obj);
+  }
+
+  callToProceed(kpiData: any){
+    if(Object.keys(kpiData.fleetKpis).length === 0){
+      this.dataError = true;
+    }else{
+      this.dataError = false;
+      this.kpiData = kpiData;
+      this.activeVehicles = kpiData['fleetKpis']?.vehicleCount;
+      this.updateCharts();
+      this.dataInterchangeService.getFleetData(kpiData); 
+    }
   }
 
   updateCharts(){

@@ -62,6 +62,7 @@ export class FleetMapService {
     });
     this.herePOISearch = this.platform.getPlacesService();
     this.entryPoint = H.service.PlacesService.EntryPoint;
+    this.orgId = localStorage.getItem("accountOrganizationId");
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
     this.prefDetail = JSON.parse(localStorage.getItem('prefDetail'));
       if(this.prefDetail){
