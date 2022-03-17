@@ -343,6 +343,7 @@ export class AppComponent {
       }
 
       if (val instanceof NavigationEnd) {
+        console.log('Navigate End. Route -> ', val);
         this.appUrlLink = val.url;
         this.isLogedIn = true;
         let PageName = val.url.split('/')[1];
