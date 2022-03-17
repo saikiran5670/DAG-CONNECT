@@ -1233,7 +1233,7 @@ removeDuplicates(originalArray, prop) {
       vehicleDetailsFlag: this.isVehicleDetails,
       data: this.vehicleListData
     }
-    if(!this.fromVehicleHealth.fromVehicleHealth)
+    if(!this.fromVehicleHealth || (this.fromVehicleHealth && !this.fromVehicleHealth.fromVehicleHealth))
       this.dataInterchangeService.getVehicleData(_dataObj);//change as per filter data
   }
 
