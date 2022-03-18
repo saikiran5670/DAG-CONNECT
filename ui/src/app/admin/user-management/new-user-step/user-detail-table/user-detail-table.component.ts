@@ -50,7 +50,10 @@ export class UserDetailTableComponent implements OnInit {
       this.dataSource.sort = this.sort;
       this.dataSource.filterPredicate = function(data, filter: any){
         let fullName = data.firstName.toLowerCase() +" "+ data.lastName.toLowerCase();
-        return  fullName.toLowerCase().includes(filter)
+        const dataroleStr =JSON.stringify(data.roles).toLowerCase();
+        const dataaccGrupListStr =JSON.stringify(data.accountGroups).toLowerCase();
+        return  fullName.toLowerCase().includes(filter) || data.emailId.toLowerCase().includes(filter) || dataroleStr.indexOf(filter) != -1 || dataaccGrupListStr.indexOf(filter) != -1
+        
       };
       this.dataSource.sortData = (data: String[], sort: MatSort) => {
         const isAsc = sort.direction === 'asc';

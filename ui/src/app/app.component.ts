@@ -1,5 +1,5 @@
 import { Component, HostListener, Inject } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
+import { Router, NavigationEnd, NavigationStart, NavigationError } from '@angular/router';
 import { DataInterchangeService } from './services/data-interchange.service';
 import { TranslationService } from './services/translation.service';
 import { DeviceDetectorService } from 'ngx-device-detector';
@@ -338,7 +338,12 @@ export class AppComponent {
     });
 
     router.events.subscribe((val: any) => {
+      if (val instanceof NavigationStart) {
+        console.log('Navigate start. Route -> ', val);
+      }
+
       if (val instanceof NavigationEnd) {
+        console.log('Navigate End. Route -> ', val);
         this.appUrlLink = val.url;
         this.isLogedIn = true;
         let PageName = val.url.split('/')[1];
@@ -372,6 +377,10 @@ export class AppComponent {
         }
         this.setPageTitle();
         this.showSpinner();
+      }
+
+      if (val instanceof NavigationError) {
+        console.log('Navigation error -> ', val, '\n', val.error);
       }
 
     });

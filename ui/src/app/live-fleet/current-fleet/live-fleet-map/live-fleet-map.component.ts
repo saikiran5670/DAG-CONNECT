@@ -130,9 +130,8 @@ export class LiveFleetMapComponent implements OnInit {
     setTimeout(() => {
       this.fleetMapService.initMap(this.mapElement, this.translationData);
       this.fleetMapService.clearRoutesFromMap();
-      if(this.fromVehicleHealth){}
-      else
-        this.tripTraceArray = this.detailsData;
+      if(!this.fromVehicleHealth)
+        this.tripTraceArray = this.detailsData;      
       this.showMap = true;
       this.makeHerePOIList();
       this.loadUserPOI();

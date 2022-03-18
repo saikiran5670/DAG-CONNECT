@@ -766,27 +766,27 @@ export class FleetMapService {
 
   drawAlerts(_alertDetails, _ui) {
     if (_alertDetails.length > 0) {
-      let distinctAlerts = orderBy(cloneDeep(_alertDetails), ['time'], ['desc']);
-      _alertDetails.forEach(item => {
-        let alertList = _alertDetails.filter(x => x.alertId == item.alertId);
-        if (alertList.length > 1) {
-          distinctAlerts.forEach((val, indx) => {
-            if (val.alertId == item.alertId) {
-              distinctAlerts.splice(indx, 1);
-            }
-          });
-          if (!distinctAlerts.find(s => s.alertId == item.alertId)) {
-            if (alertList.find(alert => alert.level == 'C')) {
-              distinctAlerts.push(alertList.find(alert => alert.level == 'C'));
-            } else if (alertList.find(alert => alert.level == 'W')) {
-              distinctAlerts.push(alertList.find(alert => alert.level == 'W'));
-            } else if (alertList.find(alert => alert.level == 'A')) {
-              distinctAlerts.push(alertList.find(alert => alert.level == 'A'));
-            }
-          }
-        }
-      })
-      distinctAlerts.forEach(element => {
+      // let distinctAlerts = orderBy(cloneDeep(_alertDetails), ['time'], ['desc']);
+      // _alertDetails.forEach(item => {
+      //   let alertList = _alertDetails.filter(x => x.alertId == item.alertId);
+      //   if (alertList.length > 1) {
+      //     distinctAlerts.forEach((val, indx) => {
+      //       if (val.alertId == item.alertId) {
+      //         distinctAlerts.splice(indx, 1);
+      //       }
+      //     });
+      //     if (!distinctAlerts.find(s => s.alertId == item.alertId)) {
+      //       if (alertList.find(alert => alert.level == 'C')) {
+      //         distinctAlerts.push(alertList.find(alert => alert.level == 'C'));
+      //       } else if (alertList.find(alert => alert.level == 'W')) {
+      //         distinctAlerts.push(alertList.find(alert => alert.level == 'W'));
+      //       } else if (alertList.find(alert => alert.level == 'A')) {
+      //         distinctAlerts.push(alertList.find(alert => alert.level == 'A'));
+      //       }
+      //     }
+      //   }
+      // })
+      _alertDetails.forEach(element => {
         let finalAlertPropObj: any = {};
         finalAlertPropObj = this.setColorForAlerts(element);
         let _alertMarker = `<svg width="23" height="20" viewBox="0 0 23 20" fill="none" xmlns="http://www.w3.org/2000/svg">
