@@ -470,7 +470,7 @@ export class FleetOverviewSummaryComponent implements OnInit, OnDestroy {
     //Fleet Utilization rate
     this.doughnutChartDataUtil = [[0, 0]];
     if (this.totalDriveTime && this.timeThreshold) {
-      this.utilizationRate = Number(((this.totalDriveTime / this.timeThreshold) * 100).toFixed(2));
+      this.utilizationRate = Number(((this.totalDriveTime / (this.timeThreshold/1000)) * 100).toFixed(2));
       let thresholdLeft = (100 - this.utilizationRate > 0) ? 100 - this.utilizationRate : 0;
       this.doughnutChartDataUtil = [[this.utilizationRate, thresholdLeft]];
     }
