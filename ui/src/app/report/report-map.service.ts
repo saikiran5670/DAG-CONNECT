@@ -2335,4 +2335,21 @@ export class ReportMapService {
     return _date;
   }
 
+  getConvertedSpeedUnits(data: any, unitFormat: any){
+    let speed: any;
+    switch(unitFormat){
+      case 'dunit_Metric': { 
+        speed = data * 3.60000288; //  m/s to Km/h
+        break;
+      }
+      case 'dunit_Imperial': {
+        speed = data * 2.2369380816; // m/s to miles/h
+        break;
+      }
+      default: {
+        speed = data * 3.60000288; //  m/s to Km/h
+      }
+    }
+    return Math.round(speed);
+  }
 }
