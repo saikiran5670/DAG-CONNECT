@@ -15,6 +15,7 @@ export class BreakingScoreComponent implements OnInit {
   @Input() selectedElementData: any;
   @Input() kpiId: any;
   @Input() translationData: any;
+  @Input() otherWtKpiVal: any;
   @Output() createKPIEmit = new EventEmitter<object>();
   kpiData: any = [];
   isKPI: any = true;

@@ -220,9 +220,9 @@
         </mat-expansion-panel-header>
             <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
                 <span class='font-16-px line-height-24px font-helvetica-md'>{{ translationData.lblAverageGrossWeight || 'Average Gross Weight' }} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblpound || 'pound') : (translationData.lblkg || 'kg') }})</span>
-                <app-breaking-score *ngIf = "isKPI" [translationData]='translationData' [actionType]='actionType' [selectedElementData]='otherWtKpiData'[kpiId] = 21 [units] = 'units' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <app-breaking-score *ngIf = "isKPI" [translationData]='translationData' [actionType]='actionType' [selectedElementData]='otherWtKpiData'[kpiId] = 21 [units] = 'units' (createKPIEmit)='createKPIEmit($event)' [otherWtKpiVal]='otherWtKpi'></app-breaking-score>
                 <span class='font-16-px line-height-24px font-helvetica-md'>{{ translationData.lblAverageDistanceperday || 'Average Distance per day' }} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblkm || 'km') }})</span>
-                <app-breaking-score *ngIf = "isKPI" [translationData]='translationData' [actionType]='actionType' [selectedElementData]='otherDistanceKpiData' [kpiId] = 22 [units] = 'units' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <app-breaking-score *ngIf = "isKPI" [translationData]='translationData' [actionType]='actionType' [selectedElementData]='otherDistanceKpiData' [kpiId] = 22 [units] = 'units' (createKPIEmit)='createKPIEmit($event)' [otherWtKpiVal]='otherWtKpi'></app-breaking-score>
             </div>
     </mat-expansion-panel> 
 </div>

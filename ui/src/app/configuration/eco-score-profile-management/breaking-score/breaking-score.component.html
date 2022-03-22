@@ -8,7 +8,7 @@
                 </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm' fxLayoutGap="10px">
-                <div fxLayout="column" fxLayoutAlign="left" class="areaWidth min-width-5-per">
+                <div *ngIf="!otherWtKpiVal" fxLayout="column" fxLayoutAlign="left" class="areaWidth min-width-5-per">
                     <mat-label style='display: flex;' class='font-16-px line-height-24px'>
                         <span>{{ translationData.lblMin || 'Min' }}</span>
                     </mat-label>

@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, ViewChild, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { ChartOptions, ChartType } from 'chart.js';
 import { Color, Label, MultiDataSet, PluginServiceGlobalRegistrationAndOptions } from 'ng2-charts';
@@ -6,6 +6,7 @@ import { DashboardService } from '../../services/dashboard.service';
 import { Util } from '../../shared/util';
 import { ReportMapService } from '../../report/report-map.service';
 import { MessageService } from '../../services/message.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-today-live-vehicle',
@@ -13,7 +14,7 @@ import { MessageService } from '../../services/message.service';
   styleUrls: ['./today-live-vehicle.component.less']
 })
 
-export class TodayLiveVehicleComponent implements OnInit {
+export class TodayLiveVehicleComponent implements OnInit, OnDestroy {
   @Input() translationData : any;
   @Input() preference : any;
   @Input() prefData : any;
@@ -38,7 +39,7 @@ export class TodayLiveVehicleComponent implements OnInit {
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   accountPrefObj: any;
   distanceRate : any;
-  todayLiveVehicalAPI: any;
+  todayLiveVehicalAPI: any = undefined;
   startDateValue: any;
   endDateValue: any;
   //threshold 
@@ -48,6 +49,7 @@ export class TodayLiveVehicleComponent implements OnInit {
   doughnutChartLabels: Label[] = [('Target'), '', ''];
   doughnutChartActiveVehicleData: MultiDataSet = [ [0, 100] ];
   doughnutChartType: ChartType = 'doughnut';
+  msgSub: Subscription;
   doughnutColors: Color[] = [
     {
       backgroundColor: [
@@ -210,19 +212,25 @@ doughnutDistanceColors: Color[] = [
   constructor(private router : Router, private dashboardService : DashboardService,
     private reportMapService : ReportMapService, private messageService: MessageService) {
       if(this._fleetTimer){
-        this.messageService.getMessage().subscribe(message => {
+        this.msgSub = this.messageService.getMessage().subscribe(message => {
           if (message.key.indexOf("refreshData") !== -1) {
+            this.todayLiveVehicalAPI = undefined;
             this.getLiveVehicleData();
           }
         });
       }
    }
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.setInitialPref(this.prefData,this.preference);
-    if(this.finalVinList.length >0){
-        this.getLiveVehicleData();
+    if(this.finalVinList.length > 0){
+      this.getLiveVehicleData();
     }
+  }
+
+  ngOnDestroy() {
+    this.todayLiveVehicalAPI = undefined;
+    this.msgSub.unsubscribe();
   }
 
   setInitialPref(prefData,preference){
@@ -259,15 +267,10 @@ doughnutDistanceColors: Color[] = [
       let _vehiclePayload = {
         "viNs": this.finalVinList,
         "startDateTime": _startTime,
-        "endDateTime": _endTime 
-        // [ //this.finalVinList
-        //       "M4A14532","XLR0998HGFFT76657"
-          
-        // ]
+        "endDateTime": _endTime
       }
       if(this.finalVinList && this.finalVinList.length > 0 && !this.todayLiveVehicalAPI){
         this.todayLiveVehicalAPI = this.dashboardService.getTodayLiveVehicleData(_vehiclePayload).subscribe((vehicleData)=>{
-          ////console.log(vehicleData);
           this.dataError = false;
           if(vehicleData){
             this.liveVehicleData = vehicleData;
@@ -517,7 +520,7 @@ doughnutDistanceColors: Color[] = [
     let _threshold = this.getPreferenceThreshold('timebasedutilizationrate')['value'];
     this.timeBasedThreshold = _threshold;
     let timeBasedCalculation = this.dashboardService.calculateKPIPercentage(todayTimeRate,this.activeVehicleTotalCount,_threshold,1);
-    let timeBasedPercent = timeBasedCalculation['kpiPercent'];
+    let timeBasedPercent = timeBasedCalculation['kpiPercent']*1000;       //Since the calculation is done secs / ms, hence multiplying by 1000
     let nextPercent = 100 - timeBasedPercent;
     if(timeBasedPercent > 100){
       nextPercent = 0;

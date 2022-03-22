@@ -41,7 +41,7 @@ export class SignalRService {
         if(this.accountPrefObj && this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
           this.proceedStep(prefData, this.accountPrefObj.accountPreference);
         }else{ // org pref
-          this.organizationService.getOrganizationPreference(this.orgId).subscribe((orgPref: any)=>{
+          this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
             this.proceedStep(prefData, orgPref);
           }, (error) => { // failed org API
             let pref: any = {};
@@ -174,7 +174,10 @@ get24Time(_time: any){
 
 
   startConnection = () => {
-    this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    if(localStorage.getItem('contextOrgId'))
+      this.accountOrganizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
+    else 
+      this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.hubConnection = new signalR.HubConnectionBuilder()
     .withUrl(this.signalRServiceURL, {
@@ -235,13 +238,15 @@ get24Time(_time: any){
   }
   
   ngOnDestroy() {
-  this.hubConnection.off("PushNotificationForAlertResponse");
+    if(this.hubConnection){
+      this.hubConnection.off("PushNotificationForAlertResponse");
 
-  //Added for testing
-  // this.hubConnection.off("TestAlertResponse");
-  //----------------------------------------------------
-  this.hubConnection.stop();
-  this.AlertNotifcaionList.push('HubConnection off for PushNotificationForAlertResponse');
+      //Added for testing
+      // this.hubConnection.off("TestAlertResponse");
+      //----------------------------------------------------
+      this.hubConnection.stop();
+      this.AlertNotifcaionList.push('HubConnection off for PushNotificationForAlertResponse');
+    }
   }
 
 }

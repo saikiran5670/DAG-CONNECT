@@ -252,8 +252,8 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredDriver: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
-  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, 
-  private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private organizationService: OrganizationService, private dataInterchangeService: DataInterchangeService, private messageService: MessageService, private _sanitizer: DomSanitizer) { 
+  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService,
+    private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private organizationService: OrganizationService, private dataInterchangeService: DataInterchangeService, private messageService: MessageService, private _sanitizer: DomSanitizer) {
     this.dataInterchangeService.prefSource$.subscribe((prefResp: any) => {
       if (prefResp && (prefResp.type == 'drive time report') && prefResp.prefdata) {
         this.displayedColumns = ['driverName', 'driverId', 'startTime', 'endTime', 'driveTime', 'workTime', 'serviceTime', 'restTime', 'availableTime'];
@@ -310,18 +310,18 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
           if (vehicledisplay.length != 0) {
             this.vehicleDisplayPreference = vehicledisplay[0].name;
           }
-        }  
-      }
-      });
-
-      this.messageService.brandLogoSubject.subscribe(value => {
-        if (value != null && value != "") {
-          this.brandimagePath = this._sanitizer.bypassSecurityTrustResourceUrl('data:image/jpeg;base64,' + value);
-        } else {
-          this.brandimagePath = null;
         }
-      });  
-    
+      }
+    });
+
+    this.messageService.brandLogoSubject.subscribe(value => {
+      if (value != null && value != "") {
+        this.brandimagePath = this._sanitizer.bypassSecurityTrustResourceUrl('data:image/jpeg;base64,' + value);
+      } else {
+        this.brandimagePath = null;
+      }
+    });
+
   }
 
   proceedStep(preference: any) {
@@ -613,46 +613,53 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     if (_vehicelIds.length > 0) {
       this.showLoadingIndicator = true;
       this.reportService.getDriverTimeDetails(searchDataParam).subscribe((_tripData: any) => {
-        if(_tripData.length == 0) {
-          this.noRecordFound = true;
-        } else {
-          this.noRecordFound = false;
-        }
-        this.hideloader();
-        let tripData = _tripData;
-        if (this.allDriversSelected) {
-          this.onSearchData = tripData;
-          this.driverSelected = false;
-          this.setGeneralDriverValue();
-          let updatedDriverData = this.makeDetailDriverList(tripData.driverActivities);
-          this.totalDriverCount = updatedDriverData.length;
-          this.allDriverData = [];
-          this.allDriverData = updatedDriverData;
-          let tableData = updatedDriverData.map(item => item.cummulativeDriverList)
-          this.updateDataSource(tableData);
-        }
-        else {
-          this.driverDetails = [];
-          this.driverDetails = [...tripData.driverActivities];
-          this.driverDetails.forEach(element => {
-            let vehDetails = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element.vin);
-            if (vehDetails) {
-              element["vehicleGroupName"] = vehDetails[0].vehicleGroupName;
-              element["vin"] = vehDetails[0].vin;
+      if(_tripData.length == 0) {
+        this.noRecordFound = true;
+      } else {
+        this.noRecordFound = false;
+      }
+      this.hideloader();
+      let tripData = _tripData;
+      if (this.allDriversSelected) {
+        this.onSearchData = tripData;
+        this.driverSelected = false;
+        this.setGeneralDriverValue();
+        let updatedDriverData = this.makeDetailDriverList(tripData.driverActivities);
+        this.totalDriverCount = updatedDriverData.length;
+        this.allDriverData = [];
+        this.allDriverData = updatedDriverData;
+        let tableData = updatedDriverData.map(item => item.cummulativeDriverList)
+        this.updateDataSource(tableData);
+      }
+      else {
+        this.driverDetails = [];
+        this.driverDetails = [...tripData.driverActivities];
+        this.driverDetails.forEach(element => {
+          let vehDetails = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element.vin);
+          if (vehDetails && vehDetails.length > 0) {
+            let vehGrpName = '';
+            if (parseInt(this.driverTimeForm.controls.vehicleGroup.value) == 0) {
+              vehGrpName = this.translationData.lblAll || 'All';
+            } else {
+              let groupId = vehDetails.filter(i => i.vehicleGroupId == parseInt(this.driverTimeForm.controls.vehicleGroup.value));
+              vehGrpName = groupId.length > 0 ? groupId[0].vehicleGroupName : '';
             }
-       });
-          let updatedDriverData = this.makeDetailDriverList(tripData.driverActivities);
-          this.totalDriverCount = updatedDriverData.length;
-          this.detailConvertedData = [];
-          this.detailConvertedData = this.reportMapService.getDriverDetailsTimeDataBasedOnPref(this.driverDetails, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat, this.prefTimeZone);
-          this.setGeneralDriverDetailValue(updatedDriverData[0]["cummulativeDriverList"]);
-          this.graphPayload = {
-            "startDateTime": _startTime,
-            "endDateTime": _endTime,
-            "driverId": _driverIds[0],
-            "hashedDriverId": _hashDriverIds[0]
+            element["vehicleGroupName"] = vehGrpName;
+            element["vin"] = parseInt(this.driverTimeForm.controls.vehicle.value) == 0 ? this.translationData.lblAll || 'All' : vehDetails[0].vin;
           }
+        });
+        let updatedDriverData = this.makeDetailDriverList(tripData.driverActivities);
+        this.totalDriverCount = updatedDriverData.length;
+        this.detailConvertedData = [];
+        this.detailConvertedData = this.reportMapService.getDriverDetailsTimeDataBasedOnPref(this.driverDetails, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat, this.prefTimeZone);
+        this.setGeneralDriverDetailValue(updatedDriverData[0]["cummulativeDriverList"]);
+        this.graphPayload = {
+          "startDateTime": _startTime,
+          "endDateTime": _endTime,
+          "driverId": _driverIds[0],
+          "hashedDriverId": _hashDriverIds[0]
         }
+      }
       }, (error) => {
         this.hideloader();
         this.onSearchData = [];
@@ -757,9 +764,9 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     }
     this.showLoadingIndicator = true;
     this.reportService.getDefaultDriverParameter(loadParam).subscribe((initData: any) => {
-      this.hideloader();
-      this.onLoadData = initData;
-      this.filterDateData();
+    this.hideloader();
+    this.onLoadData = initData;
+    this.filterDateData();
     }, (error) => {
       this.hideloader();
     });
@@ -1001,20 +1008,20 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
         fontSize: 12
       },
       didDrawPage: function (data) {
-          doc.setFontSize(16);
-          // var fileTitle = this.translationData.lblDriverTimeReport; 
-          var fileTitle = 'Drive Time Management Report';
-          // var img = "/assets/logo.png";
-          // doc.addImage(img, 'JPEG',10,8,0,0);
-          doc.addImage(imgleft, 'JPEG', 12, 10, 0, 15.5);
- 
-          var img = "/assets/logo_daf.png"; 
-          doc.text(fileTitle, 14, 35);
-          doc.addImage(img, 'JPEG',250, 10, 0, 8);            
+        doc.setFontSize(16);
+        // var fileTitle = this.translationData.lblDriverTimeReport; 
+        var fileTitle = 'Drive Time Management Report';
+        // var img = "/assets/logo.png";
+        // doc.addImage(img, 'JPEG',10,8,0,0);
+        doc.addImage(imgleft, 'JPEG', 12, 10, 0, 15.5);
+
+        var img = "/assets/logo_daf.png";
+        doc.text(fileTitle, 14, 35);
+        doc.addImage(img, 'JPEG', 250, 10, 0, 8);
       },
       margin: {
-        bottom: 30, 
-        top:40
+        bottom: 30,
+        top: 40
       }
     });
 
@@ -1058,17 +1065,17 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     });
 
     this.driverDetails.forEach(element => {
-         let vehDetails = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element.vin);
-         if(vehDetails){
-           element["vehicleGroupName"] =vehDetails[0].vehicleGroupName;
-           element["vin"] = vehDetails[0].vin;
-       }
+      let vehDetails = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element.vin);
+      if (vehDetails) {
+        element["vehicleGroupName"] = vehDetails[0].vehicleGroupName;
+        element["vin"] = vehDetails[0].vin;
+      }
     });
- 
-    let hashedId = (this.driverListData.filter(elem=>elem.driverID === _row.driverId)[0]['hashedDriverID']);
- //   this.driverDetails = this.allDriverData.map(item=>item.driverDetailList).filter(i=>i.driverID === _row.driverId)
- 
-    this.detailConvertedData = this.reportMapService.getDriverDetailsTimeDataBasedOnPref(this.driverDetails, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
+
+    let hashedId = (this.driverListData.filter(elem => elem.driverID === _row.driverId)[0]['hashedDriverID']);
+    //   this.driverDetails = this.allDriverData.map(item=>item.driverDetailList).filter(i=>i.driverID === _row.driverId)
+
+    this.detailConvertedData = this.reportMapService.getDriverDetailsTimeDataBasedOnPref(this.driverDetails, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat, this.prefTimeZone);
     this.driverSelected = true;
     this.graphPayload = {
       "startDateTime": Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone),//this.startDateValue,

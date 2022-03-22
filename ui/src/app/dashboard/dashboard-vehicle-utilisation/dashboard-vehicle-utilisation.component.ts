@@ -11,6 +11,7 @@ import { Inject } from '@angular/core';
 import { ReportMapService } from '../../report/report-map.service';
 import { MessageService } from '../../services/message.service';
 import { DataInterchangeService } from '../../services/data-interchange.service';
+import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-dashboard-vehicle-utilisation',
   templateUrl: './dashboard-vehicle-utilisation.component.html',
@@ -33,6 +34,7 @@ export class DashboardVehicleUtilisationComponent implements OnInit {
   fuelFlag: boolean = true;
   repairFlag: boolean = true;
   chartsLabelsdefined: any = [];
+  msgSub: Subscription;
   barChartOptions: any = {
     responsive: true,
     legend: {
@@ -331,7 +333,6 @@ export class DashboardVehicleUtilisationComponent implements OnInit {
   fuelAndDriverCount: any;
   repairAndMaintenanceCount: any;
   toatlSum: any;
-  _fleetTimer: boolean = true;
   totalThresholdDistance: any;
   timebasedThreshold: any;
   distancebasedThreshold: any;
@@ -339,9 +340,9 @@ export class DashboardVehicleUtilisationComponent implements OnInit {
   chartLabelDateFormat: any;
   alert24: any;
   displayPiechart: boolean = true;
-  subscriberOn: boolean = false;
+  subscriberOn: boolean = true;
   getVehicleUtilisationDataAPI: any;
-  getAlert24HoursAPI: any;
+  getAlert24HoursAPI: any = undefined;
   constructor(
     private router: Router,
     private elRef: ElementRef,
@@ -356,16 +357,27 @@ export class DashboardVehicleUtilisationComponent implements OnInit {
         this.totalActiveVehicles = data['fleetKpis']?.vehicleCount;
       }
     });
+    if(this.subscriberOn){
+      this.msgSub = this.messageService.getMessage().subscribe((message) => {
+        if (message.key.indexOf('refreshData') !== -1 || message.key.indexOf('vehUtilData') !== -1) {
+          this.getVehicleData(); // subscribed after pref are set
+          if(message.key.indexOf('refreshData') !== -1){
+            this.getAlert24HoursAPI = undefined;
+            this.getAlertData() 
+          }
+        }
+      });
+    }
   }
 
-  ngOnInit(): void {
-    this.setInitialPref(this.prefData, this.preference);
-    this.messageService.getMessage().subscribe((message) => {
-      if (message.key.indexOf('refreshData') !== -1) {
-        this.subscriberOn = true;
-        this.getVehicleData(); // subscribed after pref are set
-      }
-    });
+  ngOnInit() {
+    this.setInitialPref(this.prefData, this.preference); 
+  }
+
+  ngOnDestroy(){
+    this.getVehicleUtilisationDataAPI = undefined;
+    this.getAlert24HoursAPI = undefined;
+    this.msgSub.unsubscribe();
   }
 
   setInitialPref(prefData, preference) {
@@ -395,6 +407,7 @@ export class DashboardVehicleUtilisationComponent implements OnInit {
     }
     this.setPrefFormatDate();
     this.selectionTimeRange('lastweek');
+    this.getAlertData();
   }
 
   selectionTimeRange(selection: any) {
@@ -448,7 +461,7 @@ export class DashboardVehicleUtilisationComponent implements OnInit {
     }
     this.messageService.sendMessage('refreshTimer');
     if (this.subscriberOn) {
-      this.messageService.sendMessage('refreshData');
+      this.messageService.sendMessage('vehUtilData');
     } else {
       this.getVehicleData();
     }
@@ -548,21 +561,23 @@ export class DashboardVehicleUtilisationComponent implements OnInit {
       endDateTime: endDate,
       viNs: this.finalVinList,
     };
-    if (!this.getVehicleUtilisationDataAPI) {
-      this.getVehicleUtilisationDataAPI = this.dashboardService
-        .getVehicleUtilisationData(_vehiclePayload)
-        .subscribe((vehicleData) => {
-          if (vehicleData['fleetutilizationcharts'].length > 0) {
-            this.vehicleUtilisationData = vehicleData['fleetutilizationcharts'];
-            this.vehicleUtilisationLength =
-              vehicleData['fleetutilizationcharts'].length;
-            this.setChartData();
-          } else {
-            this.vehicleUtilisationLength = 0;
-          }
-        });
-    }
 
+    let dayflag: boolean = true;
+    let _storage = localStorage.getItem(`vehUtilisation_${this.selectionTab}`) ? JSON.parse(localStorage.getItem(`vehUtilisation_${this.selectionTab}`)) : undefined;
+    if(_storage){
+      if(Math.abs(Number(endDate)-Number(_storage.curTime)) >= 86400000){ // >24Hr
+        dayflag = false;
+      }
+    }
+    
+    if(_storage && dayflag){
+      this.callToProceed(_storage); // from Storage
+    }else{
+      this.callVehUtilData(_vehiclePayload); // from API
+    } 
+  }
+
+  getAlertData(){
     let endDateValue = Util.getUTCDate(this.prefTimeZone); //todaydate
     let startDateValue = this.getLast24Date(endDateValue); //last24 date
     this.startTime = Util.getMillisecondsToUTCDate(
@@ -578,28 +593,59 @@ export class DashboardVehicleUtilisationComponent implements OnInit {
       startDateTime: this.startTime,
       endDateTime: this.endTime,
     };
-    if (!this.getAlert24HoursAPI) {
+    if(!this.getAlert24HoursAPI){
       this.getAlert24HoursAPI = this.dashboardService
-        .getAlert24Hours(alertPayload)
-        .subscribe((alertData) => {
-          if (alertData['alert24Hours'].length > 0) {
-            this.alert24 = alertData['alert24Hours'];
-            this.alertsData = alertData['alert24Hours'][0];
-            this.logisticCount = this.alertsData.logistic;
-            this.fuelAndDriverCount = this.alertsData.fuelAndDriver;
-            this.repairAndMaintenanceCount =
-              this.alertsData.repairAndMaintenance;
-            this.toatlSum =
-              this.alertsData.critical +
-              this.alertsData.warning +
-              this.alertsData.advisory;
-            this.setAlertChartData();
-          } else {
-            this.logisticCount = 0;
-            this.fuelAndDriverCount = 0;
-            this.repairAndMaintenanceCount = 0;
-          }
-        });
+      .getAlert24Hours(alertPayload)
+      .subscribe((alertData) => {
+        if (alertData['alert24Hours'].length > 0) {
+          this.alert24 = alertData['alert24Hours'];
+          this.alertsData = alertData['alert24Hours'][0];
+          this.logisticCount = this.alertsData.logistic;
+          this.fuelAndDriverCount = this.alertsData.fuelAndDriver;
+          this.repairAndMaintenanceCount = this.alertsData.repairAndMaintenance;
+          this.toatlSum =
+            this.alertsData.critical +
+            this.alertsData.warning +
+            this.alertsData.advisory;
+          this.setAlertChartData();
+        } else {
+          this.logisticCount = 0;
+          this.fuelAndDriverCount = 0;
+          this.repairAndMaintenanceCount = 0;
+        }
+    });
+    }
+  }
+
+  callVehUtilData(_vehiclePayload: any){
+    if(!this.getVehicleUtilisationDataAPI){
+      this.getVehicleUtilisationDataAPI = this.dashboardService.getVehicleUtilisationData(_vehiclePayload).subscribe((vehicleData) => {
+        if(vehicleData){
+          this.storeVehUtilisationData(vehicleData, _vehiclePayload);
+        }
+      }, (error)=>{ 
+        this.storeVehUtilisationData({fleetutilizationcharts: []}, _vehiclePayload);
+      });
+    } 
+  }
+
+  storeVehUtilisationData(vehicleData: any, _vehiclePayload: any){
+    let obj: any = {
+      fleetutilizationcharts: vehicleData['fleetutilizationcharts'],
+      tabSelected: this.selectionTab, // add selected tab info
+      curTime: _vehiclePayload.endDateTime
+    }
+    localStorage.setItem(`vehUtilisation_${this.selectionTab}`, JSON.stringify(obj));
+    this.callToProceed(obj);
+  }
+
+  callToProceed(vehicleData: any){
+    if (vehicleData['fleetutilizationcharts'].length > 0) {
+      this.vehicleUtilisationData = vehicleData['fleetutilizationcharts'];
+      this.vehicleUtilisationLength = vehicleData['fleetutilizationcharts'].length;
+      this.setChartData();
+    } else {
+      this.vehicleUtilisationLength = 0;
     }
   }
 
@@ -852,6 +898,7 @@ export class DashboardVehicleUtilisationComponent implements OnInit {
     this.greaterTimeCount = 0;
     this.vehicleUtilisationData.forEach((element) => {
       var date = new Date(element.calenderDate);
+	  date = Util.convertUtcToDateNoFormat(date, this.prefTimeZone);
       const months = [
         'January',
         'February',

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, NgZone } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit, NgZone } from '@angular/core';
 import { TranslationService } from '../../services/translation.service';
 import { ReportService } from 'src/app/services/report.service';
 import { MessageService } from 'src/app/services/message.service';
@@ -17,7 +17,7 @@ declare var H: any;
   templateUrl: './current-fleet.component.html',
   styleUrls: ['./current-fleet.component.less']
 })
-export class CurrentFleetComponent implements OnInit {
+export class CurrentFleetComponent implements OnInit, OnDestroy {
 
   private platform: any;
   fleetSummary : any ={};
@@ -108,6 +108,10 @@ export class CurrentFleetComponent implements OnInit {
         });
       }
     }
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 
   getFleetOverviewPreferences(){

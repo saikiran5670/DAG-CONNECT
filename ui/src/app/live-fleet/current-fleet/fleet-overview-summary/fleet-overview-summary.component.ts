@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, SimpleChanges, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
 import { Color, Label, MultiDataSet } from 'ng2-charts';
 import { Subscription } from 'rxjs';
@@ -15,7 +15,7 @@ import { ReportMapService } from 'src/app/report/report-map.service';
   templateUrl: './fleet-overview-summary.component.html',
   styleUrls: ['./fleet-overview-summary.component.less']
 })
-export class FleetOverviewSummaryComponent implements OnInit {
+export class FleetOverviewSummaryComponent implements OnInit, OnDestroy {
   @Input() translationData: any = {};
   @Input() detailsData: any = [];
   @Input() filterData: any = {};
@@ -58,7 +58,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
   constructor(private messageService: MessageService, private reportService: ReportService, private fleetMapService: FleetMapService, private organizationService: OrganizationService, private translationService: TranslationService, private cdref: ChangeDetectorRef, private reportMapService: ReportMapService) {
     //this.loadData();
     this.subscription = this.messageService.getMessage().subscribe(message => {
-      if (message.key.indexOf("refreshData") < 0 && message.key.indexOf("refreshTimer") < 0) {
+      if (message.key.indexOf("refreshData") < 0 && message.key.indexOf("refreshTimer") < 0 && message.key.indexOf("fleetKpiData") < 0 && message.key.indexOf("vehUtilData") < 0) {
         this.filterInvoked = true;
         this.vehicleGroup = message.key[0].vehicleGroup;
         if (message.key[0].vehicleGroup && message.key[0].vehicleGroup === 'all')
@@ -78,6 +78,10 @@ export class FleetOverviewSummaryComponent implements OnInit {
 
   ngAfterViewInit() {
     this.cdref.detectChanges();
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -466,7 +470,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
     //Fleet Utilization rate
     this.doughnutChartDataUtil = [[0, 0]];
     if (this.totalDriveTime && this.timeThreshold) {
-      this.utilizationRate = Number(((this.totalDriveTime / this.timeThreshold) * 100).toFixed(2));
+      this.utilizationRate = Number(((this.totalDriveTime / (this.timeThreshold/1000)) * 100).toFixed(2));
       let thresholdLeft = (100 - this.utilizationRate > 0) ? 100 - this.utilizationRate : 0;
       this.doughnutChartDataUtil = [[this.utilizationRate, thresholdLeft]];
     }
