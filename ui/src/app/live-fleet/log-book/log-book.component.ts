@@ -1311,12 +1311,17 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
   }
 
   updateDataSource(tableData: any) {
-    this.initData = tableData;
+    // this.initData = tableData.slice(0);
     if(!this.fromAlertsNotifications){
     this.selectedTrip.clear();
     this.showMap = false;
     }
     if(this.initData.length > 0){
+      this.initData.forEach(obj => { 
+        if(obj.thresholdUnit !='N') {
+          obj.thresholdValue = this.getConvertedThresholdValues(obj.thresholdValue, obj.thresholdUnit);
+        }
+      });
       if(!this.showMapPanel){ //- map panel not shown already
         this.showMapPanel = true;
         setTimeout(() => {
@@ -1332,7 +1337,7 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
       this.showMapPanel = false;
     }
 
-    this.dataSource = new MatTableDataSource(tableData);
+    this.dataSource = new MatTableDataSource(this.initData);
     if(this._state && this._state.fromAlertsNotifications){
       this.checkBoxSelectionForAlertNotification();
     }
@@ -1341,6 +1346,39 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
       this.dataSource.sort = this.sort;
     });
     Util.applySearchFilter(this.dataSource, this.displayedColumns , this.filterValue );
+  }
+
+  getConvertedThresholdValues(originalThreshold,unitType){
+    let threshold,thresholdUnit;
+    if(unitType == 'H' || unitType == 'T' || unitType == 'S') {
+      threshold =this.reportMapService.getConvertedTime(originalThreshold,unitType);
+      threshold = unitType == 'H'? threshold.toFixed(2):threshold;
+      if(unitType == 'H') {
+        thresholdUnit = this.translationData.lblHours || 'Hours';
+      } else if(unitType == 'T') {
+        thresholdUnit = this.translationData.lblMinutes || 'Minutes';
+      } else if(unitType == 'S'){
+        thresholdUnit = this.translationData.lblSeconds || 'Seconds';
+      }
+    } else if(unitType == 'K' || unitType == 'L') {
+      threshold =this.reportMapService.convertDistanceUnits(originalThreshold,this.prefUnitFormat);
+      if(this.prefUnitFormat == 'dunit_Metric') {
+        thresholdUnit = this.translationData.lblkm || 'kms';
+      } else {
+        thresholdUnit = this.translationData.lblmile || 'miles';
+      }
+    } else if(unitType == 'A' || unitType == 'B') {
+      threshold =this.reportMapService.getConvertedSpeedUnits(originalThreshold,this.prefUnitFormat);
+      if(this.prefUnitFormat == 'dunit_Metric') {
+        thresholdUnit = this.translationData.lblKiloMeterPerHour || 'km/h';
+      } else {
+        thresholdUnit = this.translationData.lblMilesPerHour || 'miles/h';
+      }
+    } else if(unitType == 'P') {
+       threshold=originalThreshold;
+       thresholdUnit = '%';
+     }
+    return threshold+' '+thresholdUnit;
   }
 
   getPDFExcelHeader(){
@@ -2412,22 +2450,39 @@ let prepare = []
     );
     //console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
   }
-  filterVehicleNames(vehicleNameSearch){
-    //console.log("filterVehicleNames is called");
+  filterVehicleNames(VehicleSearch){
     if(!this.filteredVehicleNames){
       return;
     }
-    if(!vehicleNameSearch){
+    if(!VehicleSearch){
        this.resetVehicleNamesFilter();
        return;
     } else {
-      vehicleNameSearch = vehicleNameSearch.toLowerCase();
+      VehicleSearch = VehicleSearch.toLowerCase();
+    }
+    let filterby = '';
+    switch (this.vehicleDisplayPreference) {
+      case 'dvehicledisplay_VehicleIdentificationNumber':
+        filterby = "vin";
+        break;
+      case 'dvehicledisplay_VehicleName':
+        filterby = "vehicleName";
+        break;
+      case 'dvehicledisplay_VehicleRegistrationNumber':
+        filterby = "registrationNo";
+        break;
+      default:
+        filterby = "vin";
     }
     this.filteredVehicleNames.next(
-       this.vehicleDD.filter(item => item.vehicleName.toLowerCase().indexOf(vehicleNameSearch) > -1)
+      this.vehicleDD.filter(item => {
+        if(filterby == 'registrationNo') {
+          let ofilterby = (item['registrationNo'])? 'registrationNo' :'vehicleName';
+          return item[ofilterby]?.toLowerCase()?.indexOf(VehicleSearch) > -1;
+        } else {
+          return item[filterby]?.toLowerCase()?.indexOf(VehicleSearch) > -1;
+        }    
+      })
     );
-    //console.log("this.filteredVehicleNames", this.filteredVehicleNames);
   }
-
-
 }
