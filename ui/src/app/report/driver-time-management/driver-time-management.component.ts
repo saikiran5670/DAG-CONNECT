@@ -390,7 +390,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
 
   getDriveTimeReportPreferences() {
     this.reportService.getReportUserPreference(this.reportId).subscribe((data: any) => {
-      this.reportPrefData = data["userPreferences"];
+    this.reportPrefData = data["userPreferences"];
       this.resetPref();
       this.preparePrefData(this.reportPrefData);
       this.setDisplayColumnBaseOnPref();
@@ -523,8 +523,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       this.driverTimeForm.get('vehicle').setValue(0);
       this.driverTimeForm.get('driver').setValue(0);
       let vehicleData = this.vehicleListData.slice();
-      //this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
-      this.vehicleDD = this.getUniqueVINs([...vehicleData]);
+      this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
     } else {
       let search = this.vehicleListData.filter(i => i.vehicleGroupId == parseInt(event.value));
       if (search.length > 0) {
@@ -532,6 +531,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
         search.forEach(element => {
           this.vehicleDD.push(element);
         });
+        this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
       }
     }
     this.resetVehicleFilter();
@@ -776,7 +776,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     this.searchFilterpersistData["modifiedFrom"] = "TripReport";
     localStorage.setItem("globalSearchFilterData", JSON.stringify(globalSearchFilterData));
   }
-
+ 
   filterDateData() {
     let finalDriverList: any = [];
     let currentStartTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone);
@@ -819,6 +819,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
           });
         });
       }
+
       vinList = finalVinList;
       this.singleVehicle = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.groupType == 'S');
       if (vinList.length > 0) {
@@ -827,16 +828,24 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
           distinctVin.forEach(element => {
             let _item = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element && i.groupType != 'S')
             if (_item.length > 0) {
-              filteredVehicleList.push(_item[0]); //-- unique VIN data added 
               _item.forEach(element => {
                 finalVehicleList.push(element)
               });
             }
           });
-        }
+          distinctVin.forEach(element => {
+            let _item = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.groupType != 'S')
+            if (_item.length > 0) {
+              filteredVehicleList.push(_item[0]); //-- unique VIN data added 
+              _item.forEach(element => {
+                filteredVehicleList.push(element)
+              });
+            }
+          });
+        } 
       }
       this.driverListData = filteredDriverList;
-      this.vehicleListData = filteredVehicleList;
+      this.vehicleListData = filteredVehicleList; 
       this.vehicleGroupListData = finalVehicleList;
       this.vehicleGroupListData.sort(this.compare);
       this.resetVehicleGroupFilter();
