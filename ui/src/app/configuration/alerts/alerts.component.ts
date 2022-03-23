@@ -502,10 +502,10 @@ export class AlertsComponent implements OnInit {
     threshold = unitType == 'H'? threshold.toFixed(2):threshold;
    }
    else if(unitType == 'K' || unitType == 'L'){
-    threshold =this.reportMapService.getConvertedDistance(originalThreshold,unitType);
+    threshold =this.reportMapService.convertDistanceUnits(originalThreshold,this.prefUnitFormat);
     }
    else if(unitType == 'A' || unitType == 'B'){
-    threshold =this.reportMapService.getConvertedSpeed(originalThreshold,unitType);
+    threshold =this.reportMapService.getConvertedSpeedUnits(originalThreshold,this.prefUnitFormat);
    }
    else if(unitType == 'P'){
      threshold=originalThreshold;
