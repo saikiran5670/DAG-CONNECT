@@ -42,7 +42,7 @@ export class AppInterceptor implements HttpInterceptor {
             // server-side error
             errorMessage = `Error Code: ${err.status}\nMessage: ${err.message}`;
             if(localStorage.length !== 0 && (!localStorage.getItem("sessionFlag"))) {
-              if (err.status === 401 &&  localStorage.getItem("accountOrganizationId")) {
+              if ((err.status === 401 &&  localStorage.getItem("accountOrganizationId")) || err.status === 0) {
                 // redirect to the login route or show a modal
                 const options = {
                   title: 'Session Time Out',
