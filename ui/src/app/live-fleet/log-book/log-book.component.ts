@@ -1363,9 +1363,9 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
     } else if(unitType == 'K' || unitType == 'L') {
       threshold =this.reportMapService.convertDistanceUnits(originalThreshold,this.prefUnitFormat);
       if(this.prefUnitFormat == 'dunit_Metric') {
-        thresholdUnit = this.translationData.lblkm || 'kms';
+        thresholdUnit = this.translationData.lblkm || 'km';
       } else {
-        thresholdUnit = this.translationData.lblmile || 'miles';
+        thresholdUnit = this.translationData.lblmile || 'mile';
       }
     } else if(unitType == 'A' || unitType == 'B') {
       threshold =this.reportMapService.getConvertedSpeedUnits(originalThreshold,this.prefUnitFormat);
