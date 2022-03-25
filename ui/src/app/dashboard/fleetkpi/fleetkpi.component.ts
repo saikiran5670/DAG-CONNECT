@@ -21,6 +21,7 @@ export class FleetkpiComponent implements OnInit, OnDestroy {
   @Input() prefData : any;
   @Input() dashboardPrefData: any;
   selectionTab: any;
+  showLoadingIndicator: boolean = false;
   msgSub: Subscription;
   clickButton:boolean = true;
   totalDays= 7;
@@ -555,11 +556,14 @@ export class FleetkpiComponent implements OnInit, OnDestroy {
 
   callFleetData(_kpiPayload: any){
     if(!this.getFleetKPIDataAPI){
+      this.showLoadingIndicator = true;
       this.getFleetKPIDataAPI = this.dashboardService.getFleetKPIData(_kpiPayload).subscribe((kpiData: any)=>{
         if(kpiData){
+          this.showLoadingIndicator = false;
           this.storeFleetKPIData(kpiData, _kpiPayload);
         }
       },(error)=>{
+        this.showLoadingIndicator = false;
         if(error.status === 404){
           this.dataError = true;
           this.storeFleetKPIData({fleetKpis: {}}, _kpiPayload);

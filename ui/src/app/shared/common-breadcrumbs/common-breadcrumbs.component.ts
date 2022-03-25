@@ -11,7 +11,7 @@ export class CommonBreadcrumbsComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    console.log(this.breadcrumb, 'breadcrumb')
+    //console.log(this.breadcrumb, 'breadcrumb')
   }
 
 }

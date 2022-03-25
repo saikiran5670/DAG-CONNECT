@@ -41,6 +41,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   vehicleGroupListData: any = [];
   vehicleListData: any = [];
   driverListData: any = [];
+  vehicleGrpDD: any = [];
   searchExpandPanel: boolean = true;
   tableExpandPanel: boolean = true;
   noDetailsExpandPanel: boolean = true;
@@ -519,11 +520,13 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     this.internalSelection = true;
     this.driverTimeForm.get('vehicle').setValue(''); //- reset vehicle dropdown
     this.driverTimeForm.get('driver').setValue(''); //- reset driver dropdown
-    if (parseInt(event.value) == 0) { //-- all group
-      this.driverTimeForm.get('vehicle').setValue(0);
-      this.driverTimeForm.get('driver').setValue(0);
+    if(parseInt(event.value) == 0){ //-- all group
+      //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
       let vehicleData = this.vehicleListData.slice();
       this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
+      this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
+      ////console.log("vehicleDD 2", this.vehicleDD);
+      
     } else {
       let search = this.vehicleListData.filter(i => i.vehicleGroupId == parseInt(event.value));
       if (search.length > 0) {
@@ -534,7 +537,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
         this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
       }
     }
-    this.resetVehicleFilter();
+    this.resetVehicleFilter(); 
   }
 
   getUniqueVINs(vinList: any) {
@@ -764,7 +767,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     }
     this.showLoadingIndicator = true;
     this.reportService.getDefaultDriverParameter(loadParam).subscribe((initData: any) => {
-    this.hideloader();
+       this.hideloader();
     this.onLoadData = initData;
     this.filterDateData();
     }, (error) => {
@@ -796,6 +799,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     let finalVehicleList = [];
     let distinctVin = [];
     this.driverDD = [];
+    this.vehicleGrpDD = [];
     this.vehicleDD = [];
     this.vehicleGroupListData = [];
     let finalVinList = [];
@@ -828,17 +832,9 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
           distinctVin.forEach(element => {
             let _item = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element && i.groupType != 'S')
             if (_item.length > 0) {
-              _item.forEach(element => {
-                finalVehicleList.push(element)
-              });
-            }
-          });
-          distinctVin.forEach(element => {
-            let _item = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.groupType != 'S')
-            if (_item.length > 0) {
               filteredVehicleList.push(_item[0]); //-- unique VIN data added 
               _item.forEach(element => {
-                filteredVehicleList.push(element)
+                finalVehicleList.push(element)
               });
             }
           });
@@ -849,16 +845,30 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       this.vehicleGroupListData = finalVehicleList;
       this.vehicleGroupListData.sort(this.compare);
       this.resetVehicleGroupFilter();
-      if (this.vehicleGroupListData.length > 0) {
-        this.vehicleGroupListData.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
-        this.resetVehicleGroupFilter();
-        this.vehicleListData.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
-        this.resetVehicleFilter();
+      if(this.vehicleGroupListData.length > 0){
+        let _s = this.vehicleGroupListData.map(item => item.vehicleGroupId).filter((value, index, self) => self.indexOf(value) === index);
+        if(_s.length > 0){
+          _s.forEach(element => {
+            let count = this.vehicleGroupListData.filter(j => j.vehicleGroupId == element);
+            if(count.length > 0){
+              this.vehicleGrpDD.push(count[0]); //-- unique Veh grp data added
+              this.vehicleGrpDD.sort(this.compare);
+              this.resetVehicleGroupFilter();
+            }
+          });
+        }
+       this.vehicleGrpDD.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
+       this.resetVehicleGroupFilter();
       }
       if (this.driverListData.length > 1) {
-        this.driverListData.unshift({ driverID: 0, firstName: this.translationData.lblAll || 'All' });
+        this.vehicleGrpDD.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
         this.resetDriverFilter();
       }
+    if(this.vehicleListData.length > 0){
+      this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
+      this.resetVehicleFilter();
+      this.resetdriverTimeFormControlValue();
+    };
       let vehicleData = this.vehicleListData.slice();
       //this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
       this.vehicleDD = this.getUniqueVINs([...vehicleData]);
@@ -1344,7 +1354,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   }
 
   filterVehicleGroups(vehicleSearch) {
-    if (!this.vehicleGroupListData) {
+    if (!this.vehicleGrpDD) {
       return;
     }
     if (!vehicleSearch) {
@@ -1354,7 +1364,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       vehicleSearch = vehicleSearch.toLowerCase();
     }
     this.filteredVehicleGroups.next(
-      this.vehicleGroupListData.filter(item => item.vehicleGroupName.toLowerCase().indexOf(vehicleSearch) > -1)
+      this.vehicleGrpDD.filter(item => item.vehicleGroupName.toLowerCase().indexOf(vehicleSearch) > -1)
     );
   }
 
@@ -1415,7 +1425,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   }
 
   resetVehicleGroupFilter() {
-    this.filteredVehicleGroups.next(this.vehicleGroupListData.slice());
+    this.filteredVehicleGroups.next(this.vehicleGrpDD.slice());
   }
 
   resetDriverFilter() {
