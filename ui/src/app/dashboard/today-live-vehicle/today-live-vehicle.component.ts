@@ -21,7 +21,7 @@ export class TodayLiveVehicleComponent implements OnInit, OnDestroy {
   @Input() dashboardPrefData :  any;
   @ViewChild('chart1') chart1 : ElementRef;
   @ViewChild('chart3') chart3 : ElementRef;
-
+  showLoadingIndicator: boolean = false;
   errorMessage : any;
   dataError : boolean = false;
   distance = 0;
@@ -270,15 +270,18 @@ doughnutDistanceColors: Color[] = [
         "endDateTime": _endTime
       }
       if(this.finalVinList && this.finalVinList.length > 0 && !this.todayLiveVehicalAPI){
+        this.showLoadingIndicator = true;
         this.todayLiveVehicalAPI = this.dashboardService.getTodayLiveVehicleData(_vehiclePayload).subscribe((vehicleData)=>{
           this.dataError = false;
           if(vehicleData){
+            this.showLoadingIndicator = false;
             this.liveVehicleData = vehicleData;
             this.totalVehicles =  this.finalVinList.length;
             this.setValues();
             this.updateCharts();
           }
        },(error)=>{
+         this.showLoadingIndicator = false;
          if(error.status === 400){
            this.dataError = true;
            this.errorMessage = error.error.message;

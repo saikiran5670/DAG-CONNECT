@@ -33,6 +33,8 @@ export class DashboardVehicleUtilisationComponent implements OnInit {
   clickButton: boolean = true;
   fuelFlag: boolean = true;
   repairFlag: boolean = true;
+  showLoadingIndicator: boolean = false;
+  showLoadingIndicatorForAlerts: boolean = false;
   chartsLabelsdefined: any = [];
   msgSub: Subscription;
   barChartOptions: any = {
@@ -594,9 +596,11 @@ export class DashboardVehicleUtilisationComponent implements OnInit {
       endDateTime: this.endTime,
     };
     if(!this.getAlert24HoursAPI){
+      this.showLoadingIndicatorForAlerts = true;
       this.getAlert24HoursAPI = this.dashboardService
       .getAlert24Hours(alertPayload)
       .subscribe((alertData) => {
+        this.showLoadingIndicatorForAlerts = false;
         if (alertData['alert24Hours'].length > 0) {
           this.alert24 = alertData['alert24Hours'];
           this.alertsData = alertData['alert24Hours'][0];
@@ -613,17 +617,22 @@ export class DashboardVehicleUtilisationComponent implements OnInit {
           this.fuelAndDriverCount = 0;
           this.repairAndMaintenanceCount = 0;
         }
-    });
+      }, (error)=>{
+        this.showLoadingIndicatorForAlerts = false;
+      });
     }
   }
 
   callVehUtilData(_vehiclePayload: any){
     if(!this.getVehicleUtilisationDataAPI){
+      this.showLoadingIndicator = true;
       this.getVehicleUtilisationDataAPI = this.dashboardService.getVehicleUtilisationData(_vehiclePayload).subscribe((vehicleData) => {
         if(vehicleData){
+          this.showLoadingIndicator = false;
           this.storeVehUtilisationData(vehicleData, _vehiclePayload);
         }
       }, (error)=>{ 
+        this.showLoadingIndicator = false;
         this.storeVehUtilisationData({fleetutilizationcharts: []}, _vehiclePayload);
       });
     } 

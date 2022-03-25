@@ -427,7 +427,8 @@ export class NewUserStepComponent implements OnInit {
     let roleObj = {
       accountId: this.linkFlag ? this.linkAccountId : this.userData.id,
       organizationId: this.linkFlag ? this.accountOrganizationId : this.userData.organizationId,
-      roles: mapRoleData
+      roles: mapRoleData,
+      emailId: this.firstFormGroup.controls.loginEmail.value // #25775 Fixes
     }
 
     if(this.mapRoleIds.length > 0){ // add roles
