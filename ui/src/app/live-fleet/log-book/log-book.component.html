@@ -83,7 +83,9 @@
                   </mat-option>
                   <mat-option value="all">{{translationData.lblAll }}</mat-option>
                   <mat-option *ngFor="let rer of filteredVehicleNames | async " [value]="rer.vin">
-                      {{ rer.vehicleName }}
+                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleName'"> {{rer.vehicleName}} </span>
+                  <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber'"> {{ rer.vehicleId !=0 ? rer.vin : rer.vehicleName}} </span>
+                  <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber'"> {{ rer.vehicleId !=0 ? (rer.registrationNo ? rer.registrationNo : rer.vehicleName) : rer.vehicleName}} </span>
                   </mat-option>
                 </mat-select>
               </mat-form-field>
@@ -146,21 +148,6 @@
               </mat-form-field>
             </div>
             <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
-              <mat-label class='font-16-px'>{{ translationData.lblAlertType }}</mat-label>
-              <mat-form-field appearance="outline">
-                <mat-select [disabled]="vehicleGrpDD.length == 0 && fromAlertsNotifications == false" (selectionChange)="onAlertTypeChange($event)" placeholder="{{ translationData.lblSelectVehicle }}" formControlName="alertType">
-                  <mat-option value="all">{{translationData.lblAll }}</mat-option>
-                  <mat-option *ngFor="let rer of alertTyp" [value]="rer.enum">
-                      {{ rer.value }}
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div> 
-          </div>
-          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
-            <div class="areaWidth min-width-65-per" fxLayout="column" fxLayoutAlign="left">
-            </div>
-            <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
               <mat-label class='font-16-px'>{{ translationData.lblAlertCategory }} </mat-label>
                 <mat-form-field appearance="outline">
                   <mat-select [disabled]="vehicleGrpDD.length == 0 && fromAlertsNotifications == false" (selectionChange)="onAlertCategoryChange($event)" placeholder="{{ translationData.lblSelectVehicle  }}" formControlName="alertCategory">
@@ -170,6 +157,21 @@
                     </mat-option>
                   </mat-select>
                 </mat-form-field>
+            </div> 
+          </div>
+          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
+            <div class="areaWidth min-width-65-per" fxLayout="column" fxLayoutAlign="left">
+            </div>
+            <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label class='font-16-px'>{{ translationData.lblAlertType }}</mat-label>
+              <mat-form-field appearance="outline">
+                <mat-select [disabled]="vehicleGrpDD.length == 0 && fromAlertsNotifications == false" (selectionChange)="onAlertTypeChange($event)" placeholder="{{ translationData.lblSelectVehicle }}" formControlName="alertType">
+                  <mat-option value="all">{{translationData.lblAll }}</mat-option>
+                  <mat-option *ngFor="let rer of alertTyp" [value]="rer.enum">
+                      {{ rer.value }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
             </div>
             <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
             </div>   
@@ -282,8 +284,10 @@
           <span>{{ translationData.lblLogbookDetails }}</span>
         </mat-panel-title>
       </mat-expansion-panel-header>
-      <div *ngIf='initData.length == 0'>
-        <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound }}</div>
+      <div *ngIf='noRecordFound'>
+        <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound  }}</div>
+      </div>
+      <div *ngIf='initData.length == 0 && !noRecordFound'>
         <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblSelectionMessage }}</div>
       </div>
       <div *ngIf='initData.length > 0' [ngClass]="{'reportTable': displayedColumns.length > 7}">
@@ -373,15 +377,15 @@
             <ng-container matColumnDef="alertLevel">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAlertLevel }}
               </mat-header-cell>
-              <mat-cell *matCellDef="let row" style="max-width: 7%; word-break: 'break-word'">
+              <mat-cell *matCellDef="let row" style="word-break: 'break-word'">
                 <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>               
                 <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew }}</span>
-               
+              
                 <span [ngClass]="{ 'marginLeft-14': row.newTag }" *ngIf="row.alertLevel == 'Critical'">
                   <i class="material-icons alertLevelIcon" [style]="{ 'color':'#FF0000' } ">warning</i> 
                   <span class="alertLevelName">{{ translationData.lblCritical}}</span>
                 </span> 
-                <span [ngClass]="{ 'marginLeft-14': row.newTag }" *ngIf="row.alertLevel == 'Warning'">
+                <span [ngClass]="{ 'marginLeft-14': row.newTag }" *ngIf="row.alertLevel == 'warning'">
                   <i class="material-icons alertLevelIcon" [style]="{ 'color':'#FFBF00' } ">warning</i> 
                   <span class="alertLevelName">{{ translationData.lblWarning }}</span>
                 </span>

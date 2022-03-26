@@ -41,6 +41,8 @@ export class LoginComponent implements OnInit {
   dialogRefTerms: MatDialogRef<TermsConditionsPopupComponent>;
   translationData: any = {};
   showLoadingIndicator: any = false;
+  resetPwdOnedayFlag : boolean = false;
+  resetPwdOnedayMsg : string = '';
 
   constructor(private cookieService: CookieService, public fb: FormBuilder, public router: Router, public authService: AuthService, private dialogService: ConfirmDialogService, private dialog: MatDialog, private accountService: AccountService, private dataInterchangeService: DataInterchangeService, private translationService: TranslationService) {
     this.loginForm = this.fb.group({
@@ -65,12 +67,12 @@ export class LoginComponent implements OnInit {
     this.errorMsg= '';
     this.invalidUserMsg = false;
     if (this.loginForm.valid) { 
-      //console.log("values:: ", values)
+      ////console.log("values:: ", values)
       // if(this.loginClicks == 0){//commenting this for facing issue multiple times login ,popup is not getting displayed.
         this.loginClicks = 1;
        this.authService.signIn(this.loginForm.value).subscribe((data:any) => {
         this.hideLoader();
-         //console.log("data:: ", data)
+         ////console.log("data:: ", data)
          if(data.status === 200){
            
             if(data.body.accountInfo){
@@ -85,87 +87,22 @@ export class LoginComponent implements OnInit {
             if(data.body.accountRole.length > 0){
               localStorage.setItem('accountRoleId', data.body.accountRole[0].id);
             }
-
-            let loginObj = {
-              id: data.body.accountInfo.id,
-              organizationId: 0,
-              email: "",
-              accountIds: "",
-              name: "",
-              accountGroupId: 0,
-              dataBody: data.body
-            }
             
-              this.accountService.getAccount(loginObj).subscribe(getAccresp => {
-                if(getAccresp[0].preferenceId != 0){
-                  this.accountService.getAccountPreference(getAccresp[0].preferenceId).subscribe(accPref => {
-                    localStorage.setItem("liveFleetTimer", (accPref['pageRefreshTime']*60).toString());  // default set
-                    this.showOrganizationRolePopup(data.body, getAccresp[0], accPref);
-                      // this.translationService.getLanguageCodes().subscribe(languageCodes => {
-                      // let objData = {
-                      //   AccountId: data.body.accountInfo.id,
-                      //   OrganizationId: data.body.accountOrganization[0].id
-                      // }  
-                      // this.translationService.checkUserAcceptedTaC(objData).subscribe(response => {
-                      //   if(!response){
-                      //     let filterLang = languageCodes.filter(item => item.id == accPref["languageId"]);
-                      //     let translationObj = {
-                      //       id: 0,
-                      //       code: filterLang[0].code, //-- TODO: Lang code based on account 
-                      //       type: "Menu",
-                      //       name: "",
-                      //       value: "",
-                      //       filter: "",
-                      //       menuId: 0 //-- for common & user preference
-                      //     }
-                      //     this.translationService.getMenuTranslations(translationObj).subscribe( (resp) => {
-                      //       this.processTranslation(resp);
-                      //       this.openTermsConditionsPopup(data.body, getAccresp[0], accPref);
-                      //     });
-                        // }
-                        // else{
-                          // this.showOrganizationRolePopup(data.body, getAccresp[0], accPref);
-                        // }
-                      // }, (error) => {
-                      //   this.showOrganizationRolePopup(data.body, getAccresp[0], accPref);
-                      // })  
-                    // });
-                  })
-                }
-                else{
-                  localStorage.setItem("liveFleetTimer", (1*60).toString()); // default timer set 
-                  // let objData = {
-                  //   AccountId: data.body.accountInfo.id,
-                  //   OrganizationId: data.body.accountOrganization[0].id
-                  // }  
-                  this.showOrganizationRolePopup(data.body, getAccresp[0], "");
-                  // this.translationService.checkUserAcceptedTaC(objData).subscribe(response => {
-                  //   if(!response){
-                  //     let translationObj = {
-                  //       id: 0,
-                  //       code: "EN-GB", //-- TODO: Lang code based on account 
-                  //       type: "Menu",
-                  //       name: "",
-                  //       value: "",
-                  //       filter: "",
-                  //       menuId: 0 //-- for common & user preference
-                  //     }
-                  //     this.translationService.getMenuTranslations(translationObj).subscribe( (resp) => {
-                  //       this.processTranslation(resp);
-                  //       this.openTermsConditionsPopup(data.body, getAccresp[0], "");
-                  //     });
-                  //   }
-                  //   else{
-                  //     this.showOrganizationRolePopup(data.body, getAccresp[0], "");
-                  //   }
-                  // }, (error) => {
-                  //   this.showOrganizationRolePopup(data.body, getAccresp[0], "");
-                  // })  
-                } 
-              }, (error) => {
-                this.loginClicks = 0;
-                this.invalidUserMsg= true;
-              });
+            if(data.body && data.body.accountInfo && data.body.accountInfo.id) {
+              if(data.body.accountInfo.preferenceId && data.body.accountInfo.preferenceId != 0){
+                this.accountService.getAccountPreference(data.body.accountInfo.preferenceId).subscribe(accPref => {
+                  localStorage.setItem("liveFleetTimer", (accPref['pageRefreshTime']*60).toString());  // default set
+                  this.showOrganizationRolePopup(data.body, data.body.accountInfo, accPref); 
+                })
+              }
+              else{
+                localStorage.setItem("liveFleetTimer", (1*60).toString()); // default timer set 
+                this.showOrganizationRolePopup(data.body, data.body.accountInfo, ""); 
+              } 
+            }else{
+              this.loginClicks = 0;
+              this.invalidUserMsg= true;
+            }
 
                //this.cookiesFlag = true;
             let sessionObject: any = {
@@ -187,9 +124,10 @@ export class LoginComponent implements OnInit {
        (error)=> {
          this.hideLoader();
          this.loginClicks = 0;
-          console.log("Error: " + error);
+          //console.log("Error: " + error);
           if(error.status === 401){
-            this.invalidUserMsg = true;
+            this.errorMsg = error.error;
+            // this.invalidUserMsg = true;
           }
           else if(error.status == 404  || error.status == 403 || error.status == 500){
             this.errorMsg = error.error;
@@ -265,7 +203,7 @@ export class LoginComponent implements OnInit {
         OrganizationId: data.accountOrganization[0].id
       }  
       this.translationService.checkUserAcceptedTaC(objData).subscribe(response => {
-        if(!response){
+        if(!response){ 
           let langCode;
           if(accountPreference && accountPreference !== ''){
             let filterLang = languageCodes.filter(item => item.id == accountPreference["languageId"]);
@@ -284,8 +222,8 @@ export class LoginComponent implements OnInit {
             }
           this.translationService.getMenuTranslations(translationObj).subscribe( (resp) => {
             this.processTranslation(resp);
-            this.openTermsConditionsPopup(data, accountDetails, accountPreference);
-          });
+             this.openTermsConditionsPopup(data, accountDetails, accountPreference);
+            });
         }
         else{
           if(this.result){
@@ -333,15 +271,19 @@ export class LoginComponent implements OnInit {
 
   public onResetPassword(values: object): void {
     values['emailId'] = values['emailId'].toLowerCase(); 
-    console.log("values:: ", values)
+    this.resetPwdOnedayFlag = false;
+    //console.log("values:: ", values)
     if (this.forgotPasswordForm.valid) {
-      this.accountService.resetPasswordInitiate(values).subscribe(data => {
-        // if(data){
-          this.forgotPwdFlag = false;
-          this.resetPwdFlag = true;
-        // }
+      this.accountService.resetPasswordInitiate(values).subscribe((data:any) => {
+        this.forgotPwdFlag = false;
+        this.resetPwdFlag = true;
       },(error)=> {
-
+        this.forgotPwdFlag = false;
+        this.resetPwdFlag = true;
+        if(error.status === 409){
+          this.resetPwdOnedayFlag = true;
+          this.resetPwdOnedayMsg = error.error;
+        }
       })
     }
   }
@@ -358,23 +300,6 @@ export class LoginComponent implements OnInit {
     else{
       data.accountId = 0;
     }
-
-  //---Test scenario -----//
-  //  org  role  action
-  //  0     0    popup skip - dashboard with no data
-  //  1     0    popup skip - dashboard with org data only
-  //  1     1    popup skip - dashboard with both role & org data
-  //  2     0    popup show w/o role - dashboard with org data only
-  //  2	    1    popup show with both data - dashboard with both role & org data
-  //  1     2    popup show with both data - dashboard with both role & org data
-
-  //--- Test data-------------
-    //data.accountOrganization.push({id: 1, name: 'Org01'});
-    //data.accountRole.push({id: 1, name: 'Role01'});
-    //data.accountOrganization = [];
-    //data.accountRole = [];
-  //----------------------
-
     let organization: Organization[] = data.accountOrganization;
     if(data.accountRole == null){
       data.accountRole = [];

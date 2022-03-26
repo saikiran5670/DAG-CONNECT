@@ -41,31 +41,12 @@ export class FleetOverviewTabPreferencesComponent implements OnInit {
     if(repoId.length > 0){
       this.reportId = repoId[0].id; 
       this.loadFleetOverviewPreferences();
-    }else{
-      console.error("No report id found!")
-    }
-    // this.translationUpdate();
-   }
-
-   translationUpdate(){
-    this.translationData = {
-      lblGeneralVehicleInformation: 'General Vehicle Information',
-      lblCancel: 'Cancel',
-      lblReset: 'Reset',
-      lblConfirm: 'Confirm',
-      rp_fo_fleetoverview: 'Fleet Overview',
-      rp_fo_fleetoverview_settimer: 'Set Timer',
-      rp_fo_fleetoverview_settimer_pagerefresh: 'Page Refresh Time',
-      rp_fo_fleetoverview_generalvehicleinformation: 'General Vehicle Information',
-      rp_fo_fleetoverview_generalvehicleinformation_currentmileage: 'Current Mileage',
-      rp_fo_fleetoverview_generalvehicleinformation_nextservicein: 'Next Service In',
-      rp_fo_fleetoverview_generalvehicleinformation_healthstatus: 'Health Status'
     }
    }
 
    loadFleetOverviewPreferences(){
      this.showLoadingIndicator=true;
-    this.reportService.getReportUserPreference(this.reportId).subscribe((prefData : any) => {
+      this.reportService.getReportUserPreference(this.reportId).subscribe((prefData : any) => {
       this.showLoadingIndicator=false;
       this.initData = prefData['userPreferences'];
       this.resetColumnData();
@@ -77,21 +58,10 @@ export class FleetOverviewTabPreferencesComponent implements OnInit {
     });
    }
 
-   getTranslatedColumnName(prefData: any){
+  getTranslatedColumnName(prefData: any){
     if(prefData && prefData.subReportUserPreferences && prefData.subReportUserPreferences.length > 0){
       prefData.subReportUserPreferences.forEach(item => {
-        // if(element.subReportUserPreferences && element.subReportUserPreferences.length > 0){
-        //   element.subReportUserPreferences.forEach(item => {
             let _data: any;
-            // if(item.key.includes('rp_fo_fleetoverview_settimer_')){
-            //   _data = item;
-            //   if(this.translationData[item.key]){
-            //     _data.translatedName = this.translationData[item.key];  
-            //   }else{
-            //     _data.translatedName = this.getName(item.name, 23);   
-            //   }
-            //   this.timerPrefData.push(_data);
-            // }else 
             if(item.key.includes('rp_fo_fleetoverview_generalvehicleinformation_')){
               _data = item;
               if(this.translationData[item.key]){
@@ -102,18 +72,11 @@ export class FleetOverviewTabPreferencesComponent implements OnInit {
               this.vehInfoPrefData.push(_data);
             }
           });
-      //   }
-      // });
-      if (this.vehInfoPrefData.length > 0) {
-        //this.setDefaultFormValues();
+      if (this.vehInfoPrefData.length > 0) { 
         this.setColumnCheckbox();
       }
     }
   }
-
-  // setDefaultFormValues() {
-  //   this.fleetOverviewForm.get('refreshTime').setValue((this.timerPrefData[0].thresholdValue != '') ? (this.timerPrefData[0].thresholdValue > 0 ? this.timerPrefData[0].thresholdValue : 2): 2);
-  // }
 
   getName(name: any, _count: any) {
     let updatedName = name.slice(_count);
@@ -143,12 +106,10 @@ export class FleetOverviewTabPreferencesComponent implements OnInit {
    onCancel(){
     this.setFleetOverviewFlag.emit({flag: false, msg: ''});
     this.setColumnCheckbox();
-   // this.setDefaultFormValues();
   }
 
   onReset(){
     this.setColumnCheckbox();
-    //this.setDefaultFormValues();
   }
 
   onConfirm() {
@@ -157,16 +118,6 @@ export class FleetOverviewTabPreferencesComponent implements OnInit {
       let _timerArr: any = [];
       let _vehInfoArr: any = [];
       let parentDataAttr: any = [];
-
-      // this.timerPrefData.forEach(element => {
-      //   let sSearch = this.selectionForSetTimerColumns.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
-      //   if (sSearch.length > 0) {
-      //     _timerArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: parseInt(this.fleetOverviewForm.controls.refreshTime.value), reportId: element.reportId });
-      //   } else {
-      //     _timerArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: parseInt(this.fleetOverviewForm.controls.refreshTime.value), reportId: element.reportId });
-      //   }
-      // });
-
       this.vehInfoPrefData.forEach(element => {
         let sSearch = this.selectionForVehInfoColumns.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
         if (sSearch.length > 0) {
@@ -176,27 +127,6 @@ export class FleetOverviewTabPreferencesComponent implements OnInit {
         }
       });
       parentDataAttr.push({ dataAttributeId: this.initData.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0, reportId: this.initData.reportId });
-      // if (this.initData && this.initData.subReportUserPreferences && this.initData.subReportUserPreferences.length > 0) {
-      //   parentDataAttr.push({ dataAttributeId: this.initData.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0, reportId: this.initData.reportId });
-      //   this.initData.subReportUserPreferences.forEach(elem => {
-      //     // if (elem.key.includes('rp_fo_fleetoverview_settimer')) {
-      //     //   let _val = parseInt(this.fleetOverviewForm.controls.refreshTime.value);
-      //     //   if (_val && _val > 0) { // parent selected
-      //     //     parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0, reportId: elem.reportId });
-      //     //   } else {
-      //     //     parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0, reportId: elem.reportId });
-      //     //   }
-      //     // } else
-      //      if (elem.key.includes('rp_fo_fleetoverview_generalvehicleinformation')) {
-      //       if (this.selectionForVehInfoColumns.selected.length == this.vehInfoPrefData.length) { // parent selected
-      //         parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "C", chartType: "", thresholdType: "", thresholdValue: 0, reportId: elem.reportId });
-      //       } else {
-      //         parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "C", chartType: "", thresholdType: "", thresholdValue: 0, reportId: elem.reportId });
-      //       }
-      //     }
-      //   });
-      // }
-
       let objData: any = {
         reportId: this.reportId,
         attributes: [..._timerArr, ..._vehInfoArr, ...parentDataAttr] //-- merge data
@@ -204,7 +134,6 @@ export class FleetOverviewTabPreferencesComponent implements OnInit {
       this.showLoadingIndicator=true;
       this.reportService.updateReportUserPreference(objData).subscribe((prefData: any) => {
         this.showLoadingIndicator=false;
-        this.setTimerValueInLocalStorage(parseInt(this.fleetOverviewForm.controls.refreshTime.value));
         this.loadFleetOverviewPreferences();
         this.setFleetOverviewFlag.emit({ flag: false, msg: this.getSuccessMsg() });
         if ((this.router.url).includes("fleetoverview/fleetoverview")) {
@@ -273,11 +202,8 @@ export class FleetOverviewTabPreferencesComponent implements OnInit {
     }
   }
 
-  checkboxLabelForColumns(rowData?: any){
-  }
+  checkboxLabelForColumns(rowData?: any){ }
 
-  checkboxClicked(event: any, rowData: any){
-
-  }
+  checkboxClicked(event: any, rowData: any){ }
 
 }

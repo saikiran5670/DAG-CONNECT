@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { NotificationAdvancedFilterComponent } from './notification-advanced-filter.component';
 
 describe('NotificationAdvancedFilterComponent', () => {

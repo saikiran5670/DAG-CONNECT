@@ -109,7 +109,7 @@
             </div>
           </mat-expansion-panel>
         </mat-card> 
-    </form>
+   
     <!-- Summary Section -->
     <div id ="charts">
       <mat-card class='mat-elevation-z no-padding margin-bottom-xlg' id ="summary">
@@ -224,7 +224,7 @@
               <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
                 <mat-label>{{ translationData.lblSortBy || 'Sort By' }}</mat-label>
                 <mat-form-field appearance="outline">
-                  <mat-select [(ngModel)]="warningTypeSelection" (selectionChange)="onWarningTypeSelection($event)"
+                  <mat-select formControlName="warningTypeSorting" (selectionChange)="onWarningTypeSelection($event)"
                     placeholder="{{ translationData.lblSelectVehicleGroup }}">
                     <mat-option value="severity">{{ translationData.lblSeverity || 'Severity' }}</mat-option>
                     <mat-option *ngIf='isCurrent' value="activated_time">{{ translationData.lblActivatedTime || 'Activated Time' }}</mat-option>
@@ -247,24 +247,31 @@
                 </mat-checkbox>
                 <div class="areaWidth warning_history" fxLayout="column" fxLayoutAlign="left">
                   <div style="font-size: 14px; line-height: initial; padding: 10px 10px 0;">
-                    <img src="assets/images/icons/vehicleHealthStatus/{{warning.iconName}}" style="float: left; height: 40px; width: 40px;">
+                  <!--<img src="assets/images/icons/vehicleHealthStatus/{{warning.iconName}}" style="float: left; height: 40px; width: 40px;">-->
+                 
+                  <img src="assets/images/icons/vehicleHealthStatus/{{warning.iconName}}" onerror="if (this.src != 'default_warning_icon.svg') this.src = 'assets/images/icons/vehicleHealthStatus/default_warning_icon.svg';" style="float: left; height: 40px; width: 40px;">
+                 
                     <span class="font-helvetica-md">{{ warning.warningName }}&nbsp;</span>
                   </div>
                   <div fxLayout="row" class="class_padding">
                   <div class="warning_time" fxLayout="column" fxLayoutAlign="left">
                   <span *ngIf='warning.warningType=="A"'>
                   <span [ngClass]="[isCurrent ? 'name_small warning_danger' : 'name_small']">{{ translationData.lblActivatedTime || 'Activated Time' }}</span>
-                    <div class="full-width" style="font-size: 13px;padding-top: 2px;">{{ warning.warningTimetamp | date: 'yyyy/MM/dd h:mm:ss a' }}</div>
+                    <div class="full-width" style="font-size: 13px;padding-top: 2px;">{{ warning.warningTimetamp ? convertDateTime(warning.warningTimetamp) : '-' }}</div>
+                  </span>
+                  <span *ngIf='isCurrent'>
+                    <span [ngClass]="[isCurrent ? 'name_small warning_danger' : 'name_small']">{{ translationData.lblActivatedTime || 'Activated Time' }}</span>
+                    <div class="full-width" style="font-size: 13px;padding-top: 2px;">{{ warning.warningTimetamp ? convertDateTime(warning.warningTimetamp) : '-' }}</div>
                   </span>
                   <span *ngIf='warning.warningType=="D"'>                     
                      <span class="name_small">{{ translationData.lblActivatedTime || 'Activated Time' }}</span>                   
-                     <div class="full-width" style="font-size: 13px;padding-top: 2px;">{{ warning.warningActivatedForDeactive ? (warning.warningActivatedForDeactive | date: 'yyyy/MM/dd h:mm:ss a') : '-' }}</div>
+                     <div class="full-width" style="font-size: 13px;padding-top: 2px;">{{ warning.warningActivatedForDeactive ? convertDateTime(warning.warningActivatedForDeactive) : '-' }}</div>
                    </span>
                   </div>
                   <div class="warning_time" fxLayout="column" fxLayoutAlign="left">
                     <span *ngIf='warning.warningType=="D"'>
                     <span [ngClass]="[isCurrent ? 'name_small warning_danger' : 'name_small warning_danger']">{{ translationData.lblDeactivatedTime || 'Deactivated Time' }}</span>
-                    <div class="full-width" style="font-size: 13px;padding-top: 2px;">{{ warning.warningTimetamp | date: 'yyyy/MM/dd h:mm:ss a' }}</div>
+                    <div class="full-width" style="font-size: 13px;padding-top: 2px;">{{ convertDateTime(warning.warningTimetamp) }}</div>
                   </span>
                   </div>
                   <ng-container *ngIf="warning.warningDeactivatedTimestamp">
@@ -297,4 +304,5 @@
         </mat-expansion-panel>
       </mat-card>
       </div>
+    </form>
   </div> 

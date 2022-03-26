@@ -14,7 +14,7 @@
         <div class="full-width vehicleList-div" *ngFor="let item of driverListData">
             <div class="vehicleList-icon">
                 <span id="steps" class="step-image" [innerHTML]="item.icon"  matTooltip="{{translationData.lblHealthStatus}}: {{item.vehicleHealthStatusType}} 
-                &#13; Alert: {{item.alertName}}"> </span>
+                &#13; {{translationData.lblAlertLevel}}: {{item.alertName}}"> </span>
             </div>
             <div class="vehicleList-details">
             <div>

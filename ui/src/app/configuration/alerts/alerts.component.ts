@@ -1,6 +1,5 @@
-import { Component, Input, OnInit,ViewChild } from '@angular/core';
+import { Component, OnInit,ViewChild } from '@angular/core';
 import { TranslationService } from 'src/app/services/translation.service';
-import { AccountService } from '../../services/account.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { ActiveInactiveDailogComponent } from '../../shared/active-inactive-dailog/active-inactive-dailog.component';
@@ -8,12 +7,11 @@ import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dial
 import { UserDetailTableComponent } from '../../admin/user-management/new-user-step/user-detail-table/user-detail-table.component';
 import { MatSort } from '@angular/material/sort';
 import { VehicleService } from '../../services/vehicle.service';
-import { PackageService } from 'src/app/services/package.service';
 import { AlertService } from 'src/app/services/alert.service';
 import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dialog.service';
 import { ReportMapService } from '../../report/report-map.service';
-import { Util } from 'src/app/shared/util';
 import { ReplaySubject } from 'rxjs';
+import { OrganizationService } from '../../services/organization.service';
 
 @Component({
   selector: 'app-alerts',
@@ -26,6 +24,9 @@ export class AlertsComponent implements OnInit {
   grpTitleVisible : boolean = false;
   errorMsgVisible: boolean = false;
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
+  prefTimeFormat: any = 24;
+  prefTimeZone: any = 'dtimezone_Asia/Kolkata';
+  prefDateFormat: any = 'ddateformat_dd-mm-yyyy';
   highThresholdUnitType: any;
   displayMessage: any;
   createViewEditStatus: boolean = false;
@@ -68,7 +69,7 @@ export class AlertsComponent implements OnInit {
   alertCategoryTypeMasterData: any= [];
   alertCategoryTypeFilterData: any= [];
   associatedVehicleData: any= [];
-  generalPreferences: any;
+  //generalPreferences: any;
   dialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
   dialogVeh: MatDialogRef<UserDetailTableComponent>;
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -76,25 +77,24 @@ export class AlertsComponent implements OnInit {
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   filterValue: any;
   accountPrefObj: any;
-  prefData: any;
   vehicleDisplayPreference: any= 'dvehicledisplay_VehicleIdentificationNumber';
-
+  finalVehicleGroupList: any = [];
+  prefDetail: any = {};
   public filteredVehicles: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
   constructor(
-    private translationService: TranslationService,
-    private accountService: AccountService,
-    private packageService: PackageService,
+    private translationService: TranslationService, 
     private dialog: MatDialog,
     private vehicleService: VehicleService,
     private alertService: AlertService,
     private dialogService: ConfirmDialogService,
-    private reportMapService: ReportMapService ) {
-      this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
-     }
+    private reportMapService: ReportMapService,
+    private organizationService: OrganizationService) { }
 
     ngOnInit() {
       this.localStLanguage = JSON.parse(localStorage.getItem("language"));
+      this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
+      this.prefDetail = JSON.parse(localStorage.getItem('prefDetail'));
       //this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
       if(localStorage.getItem('contextOrgId')){
         this.accountOrganizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
@@ -102,8 +102,8 @@ export class AlertsComponent implements OnInit {
       else{
         this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
       }
-      let accountPreference = JSON.parse(localStorage.getItem('accountInfo')).accountPreference;
-      this.unitId = accountPreference.unitId;
+      // let accountPreference = JSON.parse(localStorage.getItem('accountInfo')).accountPreference;
+      // this.unitId = accountPreference.unitId;
       this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
       this.accountRoleId = localStorage.getItem('accountRoleId') ? parseInt(localStorage.getItem('accountRoleId')) : 0;
       let translationObj = {
@@ -115,32 +115,44 @@ export class AlertsComponent implements OnInit {
         filter: "",
         menuId: 17 //-- for alerts
       }
+      this.showLoadingIndicator = true;
       this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
         this.processTranslation(data);
-        // this.loadFiltersData();
+        this.hideloader();
         this.loadDataBasedOnPrivileges();
       });
-      this.translationService.getPreferences(this.localStLanguage).subscribe((res) => {
-        this.generalPreferences = res; this.getUnits();
-        this.prefData = res;
-      });
-    }
 
-    getUnits() {
-      let unitObj = this.generalPreferences?.unit.filter(item => item.id == this.unitId);
-      if (unitObj && unitObj.length != 0) {
-        this.prefUnit = unitObj[0].value;
-        if (this.prefUnit == 'Imperial') {
-          this.prefUnitFormat = 'dunit_Imperial';
-        } else {
-          this.prefUnitFormat = 'dunit_Metric';
+      if(this.prefDetail){
+        if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){
+          this.proceedStep(this.accountPrefObj.accountPreference); 
+        }else{ 
+          this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
+            this.proceedStep(orgPref);
+          }, (error) => {
+            this.proceedStep({});
+          });
         }
       }
     }
 
+    proceedStep(preference: any){ 
+      let _search = this.prefDetail?.timeformat.filter(i => i.id == preference.timeFormatId);
+      this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
+      this.prefTimeZone = this.prefDetail?.timezone.filter(i => i.id == preference.timezoneId)[0].name;
+      this.prefDateFormat = this.prefDetail?.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+      this.prefUnitFormat = this.prefDetail?.unit.filter(i => i.id == preference.unitId)[0].name; 
+      let vehicleDisplayId = preference.vehicleDisplayId;
+      if(vehicleDisplayId) {
+        let vehicledisplay = this.prefDetail?.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+        if(vehicledisplay.length != 0) {
+          this.vehicleDisplayPreference = vehicledisplay[0].name;
+        }
+      } 
+    }
+
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    //console.log("process translationData:: ", this.translationData)
+    ////console.log("process translationData:: ", this.translationData)
   }
 
   loadFiltersData(){
@@ -152,8 +164,8 @@ export class AlertsComponent implements OnInit {
       });
       this.alertCategoryList= filterData.filter(item => item.type == 'C');
       this.alertTypeList= filterData.filter(item => item.type == 'T');
-      // console.log("alertTypeList=" +this.alertTypeList);
-      // console.log("filterData=" +filterData);
+      // //console.log("alertTypeList=" +this.alertTypeList);
+      // //console.log("filterData=" +filterData);
       this.alertCriticalityList= filterData.filter(item => item.type == 'U');
       this.vehicleList= data["vehicleGroup"].filter(item => item.vehicleName != '');
       this.vehicleList = this.removeDuplicates(this.vehicleList, "vehicleName");
@@ -178,15 +190,14 @@ export class AlertsComponent implements OnInit {
   loadDataBasedOnPrivileges(){
     this.showLoadingIndicator = true;
     this.alertService.getAlertFilterDataBasedOnPrivileges(this.accountId, this.accountRoleId).subscribe((data) => {
+      this.hideloader();
       this.alertCategoryTypeMasterData = data["enumTranslation"];
       this.alertCategoryTypeFilterData = data["alertCategoryFilterRequest"];
       this.associatedVehicleData = data["associatedVehicleRequest"];
-
       let alertTypeMap = new Map();
       this.alertCategoryTypeFilterData.forEach(element => {
         alertTypeMap.set(element.featureKey, element.featureKey);
       });
-
       this.alertCriticalityList= this.alertCategoryTypeMasterData.filter(item => item.type == 'U');
       this.alertCriticalityList.forEach(element => {
         element["value"]= this.translationData[element["key"]];
@@ -241,6 +252,7 @@ export class AlertsComponent implements OnInit {
 
       this.vehicleGroupListBasedOnPrivilege = this.removeDuplicates(this.vehicleGroupListBasedOnPrivilege, "vehicleGroupId");
       // this.vehicleList = this.vehicleGroupListBasedOnPrivilege;
+      this.finalVehicleGroupList = this.vehicleGroupListBasedOnPrivilege.filter(i => i.vehicleGroupId >= 0); // NaN removed
 
       this.vehicleByVehGroupList = this.getUniqueVINs([...this.associatedVehicleData, ...this.singleVehicle]);
       // this.resetVehiclesFilter();
@@ -363,7 +375,9 @@ export class AlertsComponent implements OnInit {
       roleId: 0,
       name: ""
     }
+    this.showLoadingIndicator = true;
     this.alertService.getAlertData(this.accountId, this.accountOrganizationId).subscribe((data) => {
+      this.hideloader();
       let initDataBasedOnPrivilege = data;
       // this.initData =data;
       initDataBasedOnPrivilege.forEach(item => {
@@ -375,7 +389,7 @@ export class AlertsComponent implements OnInit {
 
       this.originalAlertData= JSON.parse(JSON.stringify(data)); //Clone array of objects
       this.initData.forEach(item => {
-        this.setUnitOfThreshold(item);
+      this.setUnitOfThreshold(item);
 
       let catVal = this.alertCategoryList.filter(cat => cat.enum == item.category);
       catVal.forEach(obj => {
@@ -383,7 +397,8 @@ export class AlertsComponent implements OnInit {
       });
       let typeVal = this.alertTypeList.filter(type => type.enum == item.type);
       typeVal.forEach(obj => {
-        item["type"]=obj.value;
+        item["keyType"] = obj.key; // add feature key
+        item["type"] = obj.value;
       });
 
       let alertUrgency=({
@@ -456,7 +471,7 @@ export class AlertsComponent implements OnInit {
       } else {//according to pref
         let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
         if(vehicleDisplayId) {
-          let vehicledisplay = this.prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+          let vehicledisplay = this.prefDetail?.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
           if(vehicledisplay.length != 0) {
             this.vehicleDisplayPreference = vehicledisplay[0].name;
           }
@@ -476,14 +491,15 @@ export class AlertsComponent implements OnInit {
      });
       this.updateDatasource(this.initData);
     }, (error) => {
-    })
-   this.hideloader();
+      this.hideloader();
+    });
  }
 
  getConvertedThresholdValues(originalThreshold,unitType){
    let threshold;
    if(unitType == 'H' || unitType == 'T' ||unitType == 'S'){
     threshold =this.reportMapService.getConvertedTime(originalThreshold,unitType);
+    threshold = unitType == 'H'? threshold.toFixed(2):threshold;
    }
    else if(unitType == 'K' || unitType == 'L'){
     threshold =this.reportMapService.getConvertedDistance(originalThreshold,unitType);
@@ -500,59 +516,62 @@ export class AlertsComponent implements OnInit {
 
  setUnitOfThreshold(item){
   let unitTypeEnum, unitType;
-  switch(item.category +item.type){
-    case 'LH': unitTypeEnum= "H";
+  switch(item.category+item.type){
+    case 'LH': item.unitTypeEnum= "H";
     item.UnitTypeVal =  this.translationData.lblHours;
     break;
 
     case 'LD':
     if(this.prefUnitFormat == 'dunit_Metric'){
-      unitTypeEnum= "K";
+      item.unitTypeEnum= "K";
       item.UnitTypeVal = this.translationData.lblkm;
      }
       else{
-      unitTypeEnum= "L";
+      item.unitTypeEnum= "L";
       item.UnitTypeVal = this.translationData.lblmile;
       }
       break;
 
-    case 'LU': unitTypeEnum= "H";
+    case 'LU':
     // item.UnitTypeVal =  this.translationData.lblHours;
      unitType = item.alertUrgencyLevelRefs? item.alertUrgencyLevelRefs[0].unitType : 'S';
     if(unitType == 'H'){
+      item.unitTypeEnum= "H";
       item.UnitTypeVal = this.translationData.lblHours;
     }
     else if(unitType == 'T'){
+      item.unitTypeEnum= "T";
       item.UnitTypeVal = this.translationData.lblMinutes;
     }
     else{
+      item.unitTypeEnum= "S";
       item.UnitTypeVal = this.translationData.lblSeconds;
     }
      break;
 
     case 'LG':
     if(this.prefUnitFormat == 'dunit_Metric'){
-      unitTypeEnum= "K";
+      item.unitTypeEnum= "K";
       item.UnitTypeVal = this.translationData.lblkm;}
       else{
-      unitTypeEnum= "L";
+        item.unitTypeEnum= "L";
       item.UnitTypeVal = this.translationData.lblmile;
       }
      break;
 
-    case 'FP': unitTypeEnum= "P";
+    case 'FP': item.unitTypeEnum= "P";
     item.UnitTypeVal =  "%"
     break;
 
-    case 'FL': unitTypeEnum= "P";
+    case 'FL': item.unitTypeEnum= "P";
     item.UnitTypeVal =  "%"
     break;
 
-    case 'FT': unitTypeEnum= "P";
+    case 'FT': item.unitTypeEnum= "P";
     item.UnitTypeVal =  "%"
     break;
 
-    case 'FI': unitTypeEnum= "S";
+    case 'FI': item.unitTypeEnum= "S";
     // item.UnitTypeVal = this.translationData.lblSeconds;
     unitType = item.alertUrgencyLevelRefs? item.alertUrgencyLevelRefs[0].unitType : 'S';
     if(unitType == 'H'){
@@ -568,20 +587,20 @@ export class AlertsComponent implements OnInit {
 
     case 'FA':
     if(this.prefUnitFormat == 'dunit_Metric'){
-      unitTypeEnum= "A";
+      item.unitTypeEnum= "A";
       item.UnitTypeVal = this.translationData.lblkilometerperhour;
     }
       else{
-        unitTypeEnum= "B";
+        item.unitTypeEnum= "B";
         item.UnitTypeVal = this.translationData.lblMilesPerHour
       }
       break;
 
-    case 'FF': unitTypeEnum= "P";
+    case 'FF': item.unitTypeEnum= "P";
     item.UnitTypeVal =  "%"
     break;
 
-    return item.UnitTypeVal;
+    return item.UnitTypeVal,item.unitTypeEnum ;
   }
  }
 
@@ -594,7 +613,7 @@ export class AlertsComponent implements OnInit {
     if(data && data.length > 0){
       this.initData = this.getNewTagData(data);
     }
-    this.initData = data;
+    // this.initData = data;
     this.dataSource = new MatTableDataSource(this.initData);
     this.initData.forEach((ele,index) => {
       if(ele.state == 'A'){
@@ -797,8 +816,8 @@ export class AlertsComponent implements OnInit {
   }
 
   onVehicleGroupClick(data: any) {
-    const colsList = ['name','vin','licensePlateNumber'];
-    const colsName =[this.translationData.lblVehicleName, this.translationData.lblVIN, this.translationData.lblRegistrationNumber];
+    const colsList = ['name','vin','licensePlateNumber', 'status'];
+    const colsName =[this.translationData.lblVehicleName, this.translationData.lblVIN, this.translationData.lblRegistrationNumber, this.translationData.lblStatus];
     const tableTitle =`${data.vehicleGroupName} - ${this.translationData.lblVehicles}`;
    let objData = {
       groupId: data.vehicleGroupId,
@@ -808,9 +827,44 @@ export class AlertsComponent implements OnInit {
       // groupType: data.groupType,
       // functionEnum: data.functionEnum
     }
+    this.showLoadingIndicator = true;
     this.vehicleService.getVehiclesDetails(objData).subscribe((vehList: any) => {
-      this.callToCommonTable(vehList, colsList, colsName, tableTitle);
+      this.hideloader();
+      let _vehList: any = this.addSubscribrNonSubscribeStatus(vehList, data); // #22342
+      this.callToCommonTable(_vehList, colsList, colsName, tableTitle);
+    }, (error) => {
+      this.hideloader();
     });
+  }
+
+  addSubscribrNonSubscribeStatus(_vehList: any, rowData: any){
+    if(rowData && rowData.keyType && rowData.keyType != ''){
+      let featuresData: any = this.alertCategoryTypeFilterData.filter(i => i.featureKey == rowData.keyType);
+      if(featuresData.length == 1 && featuresData[0].subscriptionType == 'O'){ // org based - all subscribe
+        _vehList.forEach(element => {
+          element.status = "Subscribed";
+        });
+      }else{
+        if(featuresData.length > 0){
+          let _orgSub: any = featuresData.filter(i => i.subscriptionType == 'O'); // find org based subscription
+          if(_orgSub && _orgSub.length > 0){ // all vehicle subscribe
+            _vehList.forEach(element => {
+              element.status = "Subscribed";
+            });
+          }else{ // all vehicle subscribe
+            _vehList.forEach(_el => {
+              let _find: any = featuresData.filter(j => j.vehicleId == _el.id && j.subscriptionType == 'V');
+              if(_find && _find.length > 0){ // find 'V'
+                _el.status = "Subscribed";
+              }else{ // non-subscribe
+                _el.status = "Non-Subscribed";
+              }
+            });
+          }
+        }
+      }
+    }
+    return _vehList;
   }
 
   callToCommonTable(tableData: any, colsList: any, colsName: any, tableTitle: any){
@@ -820,8 +874,10 @@ export class AlertsComponent implements OnInit {
     dialogConfig.data = {
       tableData: tableData,
       colsList: colsList,
-      colsName:colsName,
-      tableTitle: tableTitle
+      colsName: colsName,
+      tableTitle: tableTitle,
+      translationData: this.translationData,
+      popupWidth: true
     }
     this.dialogVeh = this.dialog.open(UserDetailTableComponent, dialogConfig);
   }

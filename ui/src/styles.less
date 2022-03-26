@@ -9,6 +9,32 @@
     src: local("Helvetica Neue LT Std-Md"), url(assets/fonts/helveticaneueltstdblk/HelveticaNeueLTStd-Md.otf) format("opentype");
 }
 
+
+//Material Icon Copied from Index file//
+/* fallback */
+@font-face {
+    font-family: 'Material Icons';
+    font-style: normal;
+    font-weight: 400;
+    src: url(assets/fonts/extrafonts/material_icon.woff2) format('woff2');
+  }
+  
+  .material-icons {
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+  }
+  
 /* body {
     margin: 0;
     font-family: PT Sans, "PT Sans" !important;
@@ -154,6 +180,7 @@ Refer : https://styleguide.daf.com/en/guidelines-for-developers/use-of-colors
     width: 210px; //200px
     align-items: center;
     border-right: 2px solid #f2f2f2;
+    padding: 8px;
 
     @media @mobile {
         //width: 50px;
@@ -252,10 +279,12 @@ Refer : https://styleguide.daf.com/en/guidelines-for-developers/use-of-colors
     // height: 610px;
     height: calc(100vh - 48px) !important;
     max-width: 100%;
-    background-image: url(assets/images/DAF-login-background.jpg); 
+    background-image: url(assets/images/DAF-Background.jpg); 
         background-repeat: no-repeat; 
         // background-size: 100% 100%;
-        background-size:cover;
+        background-size: cover;
+        // background: url(assets/images/DAF-login-background.jpg) no-repeat center fixed;
+        //background-size:cover;
         background-position: fixed !important;
         background-attachment: fixed !important;
         background-position-x: center;
@@ -268,16 +297,15 @@ Refer : https://styleguide.daf.com/en/guidelines-for-developers/use-of-colors
         }
     }
     .txtContainer{ 
-        padding: 0px 150px 0px 0px; 
+        padding: 0px 24px 0px 0px; 
         height: 100%;       
         .loginTxtContainer{
-            width:430px; 
-            padding: 50px; 
+            width:390px; 
+            padding: 32px; 
             background: #f1f1f1;
             .invalidMsgContainer{
-                margin-top:10px;
                 color: #f44336;
-                height: 20px;
+                height: 16px;
             }
             .fieldContainer{
                 margin-top:20px;
@@ -487,7 +515,7 @@ footer{
     }
     .loginFooter{
         bottom: 0;
-        padding: 10px;
+        padding: 10px 24px;
         width: 100%;
         background:#353c45;
         z-index: -1;
@@ -739,6 +767,10 @@ mat-dialog-container{
 }
 .margin-left-sm{
     margin-left: 10px;
+}
+.margin-left-sm1{
+    max-width:100%;
+    height:auto;
 }
 .margin-right-lg {
     margin-right: 15px !important;
@@ -1289,7 +1321,7 @@ mat-cell:first-of-type, mat-header-cell:first-of-type, mat-footer-cell:first-of-
     border-radius: 50%;
     box-shadow: 0px 0px 2px 2px;
     animation: pulse-animation 2s infinite;
-   
+    //pointer-events: none !important;
   }
 
   @keyframes pulse-animation {

@@ -30,7 +30,10 @@ import * as fs from 'file-saver';
 import { CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteData } from 'ng2-completer';
 import { treeExportFormatter } from 'angular-slickgrid';
 import { ReplaySubject } from 'rxjs';
-
+import { DataInterchangeService } from '../../services/data-interchange.service';
+import { MessageService } from '../../services/message.service';
+import { DomSanitizer } from '@angular/platform-browser';
+import { FleetMapService } from '../current-fleet/fleet-map.service';
 
 declare var H: any;
 
@@ -41,6 +44,7 @@ declare var H: any;
 })
 
 export class LogBookComponent implements OnInit, OnDestroy {
+logbookFilterData: any;
 searchStr: string = "";
 suggestionData: any;
 selectedMarker: any;
@@ -59,7 +63,7 @@ selectedStartTime: any = '00:00';
 selectedEndTime: any = '23:59';
 logBookForm: FormGroup;
 mapFilterForm: FormGroup;
-displayedColumns = [ 'all','alertLevel', 'alertGeneratedTime', 'vehicleRegNo', 'alertType', 'alertName', 'alertCategory', 'tripStartTime', 'tripEndTime', 'vehicleName','vin','occurrence','thresholdValue'];
+displayedColumns = [ 'all','alertLevel', 'alertGeneratedTime','vehicleName','vin','vehicleRegNo','alertName','alertType','occurrence', 'alertCategory', 'tripStartTime', 'tripEndTime', 'thresholdValue'];
 translationData: any = {};
 showMap: boolean = false;
 showBack: boolean = false;
@@ -93,6 +97,7 @@ FormsModule  = new SelectionModel(true, []);
 @ViewChild(MatSort) sort: MatSort;
 tripData: any = [];
 showLoadingIndicator: boolean = false;
+alertFoundFlag: boolean = false;
 startDateValue: any;
 endDateValue: any;
 last3MonthDate: any;
@@ -101,6 +106,7 @@ wholeTripData: any = [];
 wholeLogBookData: any = [];
 tableInfoObj: any = {};
 tripTraceArray: any = [];
+alertConfigMap: any;
 startTimeDisplay: any = '00:00:00';
 endTimeDisplay: any = '23:59:59';
 prefTimeFormat: any; //-- coming from pref setting
@@ -108,7 +114,9 @@ prefTimeZone: any; //-- coming from pref setting
 prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
 prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
 accountPrefObj: any;
+brandimagePath: any;
 advanceFilterOpen: boolean = false;
+drivingStatus: boolean = false;
 showField: any = {
   vehicleName: true,
   alertLevel: true,
@@ -117,11 +125,14 @@ showField: any = {
 };
 userPOIList: any = [];
 herePOIList: any = [];
+rippleMarker: any;
 displayPOIList: any = [];
 internalSelection: boolean = false;
 fromMoreAlertsFlag: boolean = false;
+logbookDataFlag: boolean = false;
 herePOIArr: any = [];
 getLogbookDetailsAPICall: any;
+vehicleDisplayPreference: any = 'dvehicledisplay_VehicleName';
 prefMapData: any = [
   {
     key: 'rp_lb_logbook_details_alertlevel',
@@ -176,19 +187,31 @@ _state: any ;
 map_key: any = '';
 platform: any = '';
 vehicleIconMarker : any;
+noRecordFound: boolean = false;
+prefDetail: any = {};
+reportDetail: any = [];
+logbookPrefData: any = [];
 
 public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
-
 public filteredVehicleNames: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
-  filterValue: string;
+filterValue: string;
 
-
-
-constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private landmarkCategoryService: LandmarkCategoryService, private router: Router, private organizationService: OrganizationService, private _configService: ConfigService, private hereService: HereService,private completerService: CompleterService) {
-  this.map_key =  _configService.getSettings("hereMap").api_key;
+constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private fleetMapService: FleetMapService, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private landmarkCategoryService: LandmarkCategoryService, private router: Router, private organizationService: OrganizationService, private _configService: ConfigService, private hereService: HereService,private completerService: CompleterService, private dataInterchangeService: DataInterchangeService, private messageService : MessageService, private _sanitizer: DomSanitizer) {
+  // this.map_key =  _configService.getSettings("hereMap").api_key;
+  this.map_key = localStorage.getItem("hereMapsK");
   // setTimeout(() => {
   //   this.initMap();
   //   }, 10);
+  this.sendMessage();
+  this.dataInterchangeService.prefSource$.subscribe((prefResp: any) => {
+    if(prefResp && (prefResp.type == 'logbook') && prefResp.prefdata){
+      this.displayedColumns = [ 'all','alertLevel', 'alertGeneratedTime','vehicleName', 'vehicleRegNo', 'alertType', 'alertName', 'alertCategory', 'tripStartTime', 'tripEndTime','vin','occurrence','thresholdValue'];
+      this.resetTripPrefData();
+      this.reportPrefData = prefResp.prefdata;
+      this.getTranslatedColumnName(this.reportPrefData);
+      this.setDisplayColumnBaseOnPref();
+    }
+  });
 
   const navigation = this.router.getCurrentNavigation();
   this._state = navigation.extras.state as {
@@ -197,19 +220,15 @@ constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationSe
     fromVehicleDetails: boolean,
     data: any
   };
-  setTimeout(() => {
-  this.loadWholeTripData();
-  },5);
+  // setTimeout(() => {
+  // this.loadWholeTripData();
+  // },5);
   //Add for Search Fucntionality with Zoom
   this.query = "starbucks";
   this.platform = new H.service.Platform({
     "apikey": this.map_key
   });
-
   this.configureAutoSuggest();
-  this.defaultTranslation();
-
-
   if(this._state){
     this.showBack = true;
   }else{
@@ -222,14 +241,10 @@ hereMap:any;
 ui: any;
 mapGroup : any;
 
-defaultTranslation(){
-  this.translationData = {
-    lblSearchReportParameters: 'Search Report Parameters'
-  }
-}
-
 ngOnDestroy(){
-  this.getLogbookDetailsAPICall.unsubscribe();
+  if(this.getLogbookDetailsAPICall){
+    this.getLogbookDetailsAPICall.unsubscribe();
+  }
   this.globalSearchFilterData["vehicleGroupDropDownValue"] = this.logBookForm.controls.vehicleGroup.value;
   this.globalSearchFilterData["vehicleDropDownValue"] = this.logBookForm.controls.vehicle.value;
   this.globalSearchFilterData["timeRangeSelection"] = this.selectionTab;
@@ -247,7 +262,6 @@ ngOnDestroy(){
     this.globalSearchFilterData["endTimeStamp"] = this.endTimeDisplay;
   }
   this.setGlobalSearchData(this.globalSearchFilterData);
-  
 }
 
   ngOnInit() {
@@ -256,6 +270,8 @@ ngOnDestroy(){
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
+    this.prefDetail = JSON.parse(localStorage.getItem('prefDetail'));
+    this.reportDetail = JSON.parse(localStorage.getItem('reportDetail'));  
     this.logBookForm = this._formBuilder.group({
       vehicleGroup: ['', [Validators.required]],
       vehicle: ['', [Validators.required]],
@@ -280,61 +296,88 @@ ngOnDestroy(){
       filter: "",
       menuId: 4 //-- for log-book
     }
-    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-      this.processTranslation(data);
-      this.mapFilterForm.get('trackType').setValue('snail');
-      this.mapFilterForm.get('routeType').setValue('C');
-      this.makeHerePOIList();
-      this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
-        if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
-          this.proceedStep(prefData, this.accountPrefObj.accountPreference);
-        }else{ // org pref
-          this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
-            this.proceedStep(prefData, orgPref);
-
-          }, (error) => { // failed org API
-            let pref: any = {};
-            this.proceedStep(prefData, pref);
-          });
-
-        }
-        if(this.showBack){
-          if(this._state.fromDashboard == true){
-          this.selectionTimeRange('today');}
-
-          if(this._state && this._state.fromAlertsNotifications == true){
-            this.fromAlertsNotifications = true;
-            this.showMapPanel = true;
-            setTimeout(() => {
-              this.initMap();
-             },0);
-            this.setDefaultTodayDate();
-          }
-          if(this._state.fromMoreAlerts == true){
-            this.showMapPanel = true;
-            this.fromMoreAlertsFlag = true;
-            setTimeout(() => {
-              this.initMap();
-            },0);
-            this.setDefaultTodayDate();
-          }
-
-          // if(this._state.fromMoreAlerts == true){
-          //   this.selectionTimeRange('today');}
-            }
-      });
-    });
-    // if(this._state.fromDashboard == true){
-    // this.selectionTimeRange('yesterday');
-    // }
-    if(this._state &&  this._state.fromAlertsNotifications){
+    if(this._state &&  (this._state.fromAlertsNotifications || this._state.fromMoreAlerts)){
       this.showMapPanel = true;
       setTimeout(() => {
         this.initMap();
         },0);
     }
+    
+    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+      this.processTranslation(data);
+      this.mapFilterForm.get('trackType').setValue('snail');
+      this.mapFilterForm.get('routeType').setValue('C');
+      this.makeHerePOIList();
+
+      if(this.prefDetail){
+        if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
+          this.proceedStep(this.accountPrefObj.accountPreference);
+        }else{ // org pref
+          this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
+            this.proceedStep(orgPref);
+          }, (error) => { // failed org API
+            let pref: any = {};
+            this.proceedStep(pref);
+          });
+        }
+        if(this.showBack){
+        //   if(this._state.fromDashboard == true){
+        //   this.selectionTimeRange('today');
+        // }
+
+          if(this._state && this._state.fromAlertsNotifications == true){
+            this.fromAlertsNotifications = true;
+            this.showMapPanel = true;
+            // setTimeout(() => {
+            //   this.initMap();
+            //  },0);
+            // this.setDefaultTodayDate();
+          }
+          if(this._state.fromMoreAlerts == true){
+            this.showMapPanel = true;
+            this.fromMoreAlertsFlag = true;
+            // setTimeout(() => {
+            //   this.initMap();
+            // },0);
+            // this.setDefaultTodayDate();
+          }
+
+          // if(this._state.fromMoreAlerts == true){
+          //   this.selectionTimeRange('today');}
+            }
+        let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
+        if (vehicleDisplayId) {
+          let vehicledisplay = this.prefDetail.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+          if (vehicledisplay.length != 0) {
+            this.vehicleDisplayPreference = vehicledisplay[0].name;
+          }
+        }
+      }
+    });
+    // if(this._state.fromDashboard == true){
+    // this.selectionTimeRange('yesterday');
+    // }
+ 
+    // if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAlerts)){
+    //   setTimeout(() => {
+    //     this.onSearch();
+    //   }, 0);
+    // }
 
 
+    this.messageService.brandLogoSubject.subscribe(value => {
+      if (value != null && value != "") {
+        this.brandimagePath = this._sanitizer.bypassSecurityTrustResourceUrl('data:image/jpeg;base64,' + value);
+      } else {
+        this.brandimagePath = null;
+      }
+    });
+
+  }
+
+  sendMessage(): void {
+    // send message to subscribers via observable subject
+    this.messageService.sendMessage('refreshTimer');
   }
 
   changeHerePOISelection(event: any, hereData: any){
@@ -369,45 +412,40 @@ ngOnDestroy(){
     }];
   }
 
-  proceedStep(prefData: any, preference: any){
-    let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
-    if(_search.length > 0){
-      //this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
-      this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
-      //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
-      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
-      this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
-      this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;
+  proceedStep(preference: any){
+    let _search = this.prefDetail.timeformat.filter(i => i.id == preference.timeFormatId);
+    if(_search.length > 0){ 
+      this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2)); 
+      this.prefTimeZone = this.prefDetail.timezone.filter(i => i.id == preference.timezoneId)[0].name;
+      this.prefDateFormat = this.prefDetail.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+      this.prefUnitFormat = this.prefDetail.unit.filter(i => i.id == preference.unitId)[0].name;
     }else{
-      //this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
-      this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
-      //this.prefTimeZone = prefData.timezone[0].value;
-      this.prefTimeZone = prefData.timezone[0].name;
-      this.prefDateFormat = prefData.dateformat[0].name;
-      this.prefUnitFormat = prefData.unit[0].name;
+      this.prefTimeFormat = Number(this.prefDetail.timeformat[0].name.split("_")[1].substring(0,2)); 
+      this.prefTimeZone = this.prefDetail.timezone[0].name;
+      this.prefDateFormat = this.prefDetail.dateformat[0].name;
+      this.prefUnitFormat = this.prefDetail.unit[0].name;
     }
     this.setDefaultStartEndTime();
     this.setPrefFormatDate();
-    this.setDefaultTodayDate();
+    setTimeout(() => {
+      this.loadWholeTripData();
+      },5);
+      // this.setDefaultTodayDate();
+    // if(!this._state){
+    //   this.selectionTimeRange('today');
+    // this.setDefaultTodayDate();
+    // }
     this.getReportPreferences();
   }
 
   getReportPreferences(){
-    let reportListData: any = [];
-    this.reportService.getReportDetails().subscribe((reportList: any)=>{
-      reportListData = reportList.reportDetails;
-      let repoId: any = reportListData.filter(i => i.name == 'Logbook');
+    if(this.reportDetail){
+      let repoId: any = this.reportDetail.filter(i => i.name == 'Logbook');
       if(repoId.length > 0){
         this.logbookPrefId = repoId[0].id;
         this.getLogbookPref();
-      }else{
-        console.error("No report id found!")
       }
-    }, (error)=>{
-      console.log('Report not found...', error);
-      reportListData = [{name: 'Logbook', id: this.logbookPrefId}];
-      // this.getLogbookPref();
-    });
+    }
   }
 
   getLogbookPref(){
@@ -429,7 +467,7 @@ ngOnDestroy(){
     this.logbookPrefData = [];
   }
 
-  logbookPrefData: any = [];
+  
   getTranslatedColumnName(prefData: any){
     if(prefData && prefData.subReportUserPreferences && prefData.subReportUserPreferences.length > 0){
       prefData.subReportUserPreferences.forEach(element => {
@@ -497,15 +535,15 @@ ngOnDestroy(){
     return res;
   }
 
-  setPrefFormatTime(){
+  setDefaultStartEndTime(){
     if (this._state && this._state.fromVehicleDetails && !this._state.data.todayFlag) {
-      let startHours = new Date(this._state.data.startDate).getHours();
-      let startMinutes = String(new Date(this._state.data.startDate).getMinutes());
+      let startHours = new Date(Util.convertUtcToDate(this._state.data.startDate, this.prefTimeZone)).getHours();
+      let startMinutes = String(new Date(Util.convertUtcToDate(this._state.data.startDate, this.prefTimeZone)).getMinutes());
       startMinutes = startMinutes.length == 2 ? startMinutes : '0'+startMinutes;
-      // let startampm = startHours >= 12 ? 'PM' : 'AM';
+        // let startampm = startHours >= 12 ? 'PM' : 'AM';
       let startTimeStamp = startHours +':'+ startMinutes;
-      let endHours = new Date(this._state.data.endDate).getHours();
-      let endMinutes = String(new Date(this._state.data.endDate).getMinutes());
+      let endHours = new Date(Util.convertUtcToDate(this._state.data.endDate, this.prefTimeZone)).getHours();
+      let endMinutes = String(new Date(Util.convertUtcToDate(this._state.data.endDate, this.prefTimeZone)).getMinutes());
       endMinutes = endMinutes.length == 2 ? endMinutes : '0'+endMinutes;
       // let endampm = endHours >= 12 ? 'PM' : 'AM';
       let endTimeStamp = endHours +':'+ endMinutes;
@@ -581,25 +619,27 @@ ngOnDestroy(){
     }
   }
 
-  setDefaultStartEndTime(){
-    this.setPrefFormatTime();
-  }
-
   setDefaultTodayDate() {
 
+    if(this._state && this._state.fromDashboard == true){
+      this.selectionTimeRange('today');
+      this.filterDateData();
+    }
     if (this._state && this._state.fromVehicleDetails) {
-      this.loadWholeTripData();
+      //this.loadWholeTripData();
       if (this._state.data.todayFlag || (this._state.data.startDate == 0 && this._state.data.endDate == 0)) {
-        if(this.prefTimeFormat == 24){
-          this.startTimeDisplay = '00:00:00';
-          this.endTimeDisplay = '23:59:59';
-          this.selectedStartTime = "00:00";
-          this.selectedEndTime = "23:59";
-        } else{
-          this.startTimeDisplay = '12:00 AM';
-          this.endTimeDisplay = '11:59 PM';
-          this.selectedStartTime = "12:00 AM";
-          this.selectedEndTime = "11:59 PM";
+        if(this.startTimeDisplay == '' && this.endTimeDisplay == ''){
+          if(this.prefTimeFormat == 24){
+            this.startTimeDisplay = '00:00:00';
+            this.endTimeDisplay = '23:59:59';
+            this.selectedStartTime = "00:00";
+            this.selectedEndTime = "23:59";
+          } else{
+            this.startTimeDisplay = '12:00 AM';
+            this.endTimeDisplay = '11:59 PM';
+            this.selectedStartTime = "12:00 AM";
+            this.selectedEndTime = "11:59 PM";
+          }
         }
         // this.selectionTimeRange('today');
         this.selectionTab = 'today';
@@ -630,24 +670,35 @@ ngOnDestroy(){
       this.todayDate = this.getTodayDate();
     } else {
       this.selectionTab = 'today';
+      if(this._state && !this._state.fromDashboard){
       this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
       this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
       this.last3MonthDate = this.getLast3MonthDate();
       this.todayDate = this.getTodayDate();
+      }
     }
 
-
-  this.logBookForm.get('vehicle').setValue("all");
+if(!this._state){
   this.logBookForm.get('vehicleGroup').setValue("all");
+  this.logBookForm.get('vehicle').setValue("all");
   this.logBookForm.get('alertLevel').setValue("all");
   this.logBookForm.get('alertType').setValue("all");
   this.logBookForm.get('alertCategory').setValue("all");
-
+}
 
   if(this._state && this._state.fromVehicleDetails){
-    this.logBookForm.get('vehicleGroup').setValue(this._state.data.vehicleGroupId);
+    this.filterDateData();
+    if(this._state.data.vehicleGroupId == 0){
+      this.logBookForm.get('vehicleGroup').setValue('all');
+    }
+    else{
+      this.logBookForm.get('vehicleGroup').setValue(this._state.data.vehicleGroupId);
+    }  
     this.onVehicleGroupChange(this._state.data.vehicleGroupId);
     this.logBookForm.get('vehicle').setValue(this._state.data.vin);
+    this.logBookForm.get('alertLevel').setValue("all");
+    this.logBookForm.get('alertType').setValue("all");
+    this.logBookForm.get('alertCategory').setValue("all");
 
   }
 
@@ -663,7 +714,7 @@ ngOnDestroy(){
   }
 }
   //for alerts & notification individual alert click
-  if(this.fromAlertsNotifications == true && this._state.data.length > 0){
+  if(this._state && this._state.fromAlertsNotifications == true && this._state.data.length > 0){
     this.selectionTab = '';
     // let sdate = this._state.data[0].date + ' ' + '00:00:00 AM';
     // let startDate: any = new Date( sdate +'UTC');
@@ -674,6 +725,7 @@ ngOnDestroy(){
     this.endDateValue = this.setStartEndDateTime(new Date(this._state.data[0].alertGeneratedTime), this.selectedEndTime, 'end');
     this.last3MonthDate = this.getLast3MonthDate();
     this.todayDate = this.getTodayDate();
+    this.filterDateData();
     this.logBookForm.get('alertLevel').setValue(this._state.data[0].urgencyLevel);
     this.logBookForm.get('alertType').setValue(this._state.data[0].alertType);
     this.logBookForm.get('alertCategory').setValue(this._state.data[0].alertCategory);
@@ -684,30 +736,59 @@ ngOnDestroy(){
       else{
         this.logBookForm.get('vehicleGroup').setValue('all');
       }
+      if(this.logbookDataFlag){
       this.onVehicleGroupChange(this._state.data[0].vehicleGroupId);
+      }
   }
-  if(this.fromMoreAlertsFlag == true){
+  // if(this.fromMoreAlertsFlag == true){
+     if(this._state && this._state.fromMoreAlerts){
     this.selectionTab ='';
     this.startDateValue = this.setStartEndDateTime(new Date(this._state.data.startDate), this.selectedStartTime, 'start');
     this.endDateValue = this.setStartEndDateTime(new Date(this._state.data.endDate), this.selectedEndTime, 'end');
     this.last3MonthDate = this.getLast3MonthDate();
     this.todayDate = this.getTodayDate();
+    this.filterDateData();
+    this.logBookForm.get('vehicle').setValue("all");
+    this.logBookForm.get('vehicleGroup').setValue("all");
+    this.logBookForm.get('alertLevel').setValue("all");
+    this.logBookForm.get('alertType').setValue("all");
+    this.logBookForm.get('alertCategory').setValue("all");
   }
 // }
+if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAlerts || this._state.fromDashboard == true || this._state.fromVehicleDetails)){
+  if(this._state.fromVehicleDetails){
+    this.startDateValue = this.setStartEndDateTime(new Date(this._state.data.startTimeStamp), this.selectedStartTime, 'start');
+    this.endDateValue = this.setStartEndDateTime(new Date(this._state.data.endTimeStamp), this.selectedEndTime, 'end');
+  }
+  this.onSearch();
+}
+
 }
 
   loadWholeTripData(){
     this.showLoadingIndicator = true;
-    this.reportService.getLogBookfilterdetails().subscribe((logBookDataData: any) => {
+
+    if(this.logbookFilterData){
+      this.logbookFilterData.unsubscribe();
+    }
+    this.logbookFilterData = this.reportService.getLogBookfilterdetails().subscribe((logBookDataData: any) => {
       this.hideloader();
+      this.logbookDataFlag = true;
       this.wholeLogBookData = logBookDataData;
-      //console.log("this.wholeLogBookData:---------------------------: ", this.wholeLogBookData);
+      ////console.log("this.wholeLogBookData:---------------------------: ", this.wholeLogBookData);
+      if(!this._state){
+        this.selectionTimeRange('today');
       this.filterDateData();
+      }
+      // else{
+        this.setDefaultTodayDate();
+      // }
       this.loadUserPOI();
       // if(this._state && this._state.fromAlertsNotifications){
       //   this.onVehicleGroupChange(this._state.data[0].vehicleGroupId);
       // }
     }, (error)=>{
+      this.logbookFilterData.unsubscribe();
       this.hideloader();
       this.wholeLogBookData.vinLogBookList = [];
       this.wholeLogBookData.vehicleDetailsWithAccountVisibiltyList = [];
@@ -789,11 +870,11 @@ ngOnDestroy(){
     this.advanceFilterOpen = false;
     this.searchMarker = {};
     //this.internalSelection = true;
-    let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
-    let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
+    let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone);
+    let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);
     //let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
-    let _vinData = this.vehicleDD.filter(item => item.vehicleId == parseInt(this.logBookForm.controls.vehicle.value));
-    console.log("vehicleDD", this.vehicleDD);
+    let _vinData = this.vehicleDD.filter(item => item.vin == parseInt(this.logBookForm.controls.vehicle.value));
+    //console.log("vehicleDD", this.vehicleDD);
     if(_vinData.length > 0){
       this.showLoadingIndicator = true;
     }
@@ -823,14 +904,12 @@ ngOnDestroy(){
           "end_time": _endTime
         }
 
-if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
-        setTimeout(() => {
-          this.initMap();
-        }, 0);
-      }
+
       this.showLoadingIndicator = true;
       this.getLogbookDetailsAPICall = this.reportService.getLogbookDetails(objData).subscribe((logbookData: any) => {
         this.hideloader();
+        let logBookResult = logbookData;
+        // let logBookResult : any = this.removeDuplicates(logbookData, "alertId");
         let newLogbookData = [];
         logbookData.forEach(element => {
           if(this._state && this._state.fromAlertsNotifications && (element.alertId == this._state.data[0].alertId)){
@@ -866,7 +945,8 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
                  }
         });
 
-        if(this._state && this._state.fromAlertsNotifications){
+        if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAlerts))
+        {
           logbookData = newLogbookData;
           logbookData.forEach(element => {
           // this.selectedTrip.select(element);
@@ -875,18 +955,30 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
           });
           this.showMap = true;
         }
-        this.initData = logbookData;
+        if(logBookResult.length == 0) {
+          this.noRecordFound = true;
+        } else {
+          this.noRecordFound = false;
+        }
+        this.initData = logBookResult;
         this.setTableInfo();
         this.updateDataSource(this.initData);
+
       }, (error)=>{
           this.hideloader();
           this.initData = [];
+          this.noRecordFound = true;
           this.tableInfoObj = {};
           this.updateDataSource(this.initData);
 
       });
 
   }
+
+  getLast24Date(todayDate){
+    let yesterdayDate = new Date(todayDate.getTime() - (24 * 60 * 60 * 1000));
+    return yesterdayDate;
+    }
 
   checkBoxSelectionForAlertNotification() {
     this.dataSource.data.forEach(element => {
@@ -902,12 +994,12 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
     let aCtgry : any = '';
 
     let vehGrpCount = this.vehicleGrpDD.filter(i => i.vehicleGroupId == parseInt(this.logBookForm.controls.vehicleGroup.value));
-    console.log("vhicleGrpDD1", this.vehicleGrpDD);
+    //console.log("vhicleGrpDD1", this.vehicleGrpDD);
     if(vehGrpCount.length > 0){
     vehGrpName = vehGrpCount[0].vehicleGroupName;
     }
     let vehCount = this.vehicleDD.filter(i => i.vin == this.logBookForm.controls.vehicle.value);
-    console.log("vehicleDD1", this.vehicleDD);
+    //console.log("vehicleDD1", this.vehicleDD);
     if(vehCount.length > 0){
     vehName = vehCount[0].vin;
 
@@ -935,19 +1027,16 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
     fromDate: this.formStartDate(this.startDateValue),
     endDate: this.formStartDate(this.endDateValue),
     vehGroupName: vehGrpName,
-    vehicleName: vehName,
-
+    vehicleName: (this.logBookForm.controls.vehicle.value == 'all') ? this.logBookForm.controls.vehicle.value : this.vehicleDisplayPreference == 'dvehicledisplay_VehicleName' ? vehCount[0].vehicleName : this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber' ?  vehCount[0].vin : vehCount[0].registrationNo ? vehCount[0].registrationNo : vehCount[0].vehicleName,
     alertLevel : this.logBookForm.controls.alertLevel.value,
     alertType : this.logBookForm.controls.alertType.value,
     alertCategory : this.logBookForm.controls.alertCategory.value
     }
-    if(this.tableInfoObj.vehGroupName=='')
-    {
-      this.tableInfoObj.vehGroupName='All';
+    if(this.tableInfoObj.vehGroupName == '') {
+      this.tableInfoObj.vehGroupName = 'All';
     }
-    if(this.tableInfoObj.vehicleName=='')
-    {
-      this.tableInfoObj.vehicleName='All';
+    if(this.tableInfoObj.vehicleName == '' || this.tableInfoObj.vehicleName == 'all') {
+      this.tableInfoObj.vehicleName = 'All';
     }
 
     let newLevel = this.alertLvl.filter(item => item.value == this.tableInfoObj.alertLevel);
@@ -1020,6 +1109,7 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
     this.setDefaultTodayDate();
     this.tripData = [];
     this.vehicleListData = [];
+    this.noRecordFound = false;
     this.updateDataSource(this.tripData);
     this.resetLogFormControlValue();
     this.filterDateData(); // extra addded as per discuss with Atul
@@ -1032,6 +1122,19 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
     this.selectedHerePOI.clear();
     this.searchMarker = {};
     this.selectionTimeRange('today');
+  }
+
+
+  removeDuplicates(originalArray, prop) {
+    var newArray = [];
+    var lookupObject  = {};
+    for(var i in originalArray) {
+       lookupObject[originalArray[i][prop]] = originalArray[i];
+    }
+    for(i in lookupObject) {
+        newArray.push(lookupObject[i]);
+    }
+     return newArray;
   }
 
   resetLogFormControlValue(){
@@ -1068,55 +1171,41 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
        }
      }
 
-    if(this.showBack && this.selectionTab == 'today'){
-    if(this._state.fromDashboard == true && this._state.logisticFlag == true){
-      this.logBookForm.get('alertCategory').setValue("L");
-    }
-    if(this._state.fromDashboard == true && this._state.fuelFlag == true){
-      this.logBookForm.get('alertCategory').setValue("F");
-    }
-    if(this._state.fromDashboard == true && this._state.repairFlag == true){
-      this.logBookForm.get('alertCategory').setValue("R");
-    }
-  }
+  //   if(this.showBack && this.selectionTab == 'today'){
+  //   if(this._state.fromDashboard == true && this._state.logisticFlag == true){
+  //     this.logBookForm.get('alertCategory').setValue("L");
+  //   }
+  //   if(this._state.fromDashboard == true && this._state.fuelFlag == true){
+  //     this.logBookForm.get('alertCategory').setValue("F");
+  //   }
+  //   if(this._state.fromDashboard == true && this._state.repairFlag == true){
+  //     this.logBookForm.get('alertCategory').setValue("R");
+  //   }
+  // }
       //for alerts & notification individual alert click
-    if(this.fromAlertsNotifications == true && this._state.data.length > 0){
-      this.selectionTab = '';
-      // let sdate = this._state.data[0].date + ' ' + '00:00:00 AM';
-      // let startDate = new Date( sdate +' UTC');
-      // startDate.toString();
-      // let newDate = new Date(this._state.data[0].date + 'UTC');
-      // newDate.toString();
-      this.startDateValue = this.setStartEndDateTime(new Date(this._state.data[0].alertGeneratedTime), this.selectedStartTime, 'start');
-      this.endDateValue = this.setStartEndDateTime(new Date(this._state.data[0].alertGeneratedTime), this.selectedEndTime, 'end');
-      this.logBookForm.get('alertLevel').setValue(this._state.data[0].urgencyLevel);
-      this.logBookForm.get('alertType').setValue(this._state.data[0].alertType);
-      this.logBookForm.get('alertCategory').setValue(this._state.data[0].alertCategory);
-      if(this._state.data[0].vehicleGroupId != 0){
-      this.logBookForm.get('vehicleGroup').setValue(this._state.data[0].vehicleGroupId);
-      }
-      else{
-        this.logBookForm.get('vehicleGroup').setValue('all');
-      }
-      this.onVehicleGroupChange(this._state.data[0].vehicleGroupId);
-      this.fromAlertsNotifications = false;
-    }
+    // if(this._state && this._state.fromAlertsNotifications == true && this._state.data.length > 0){
+    //   this.selectionTab = '';
+    //   this.startDateValue = this.setStartEndDateTime(new Date(this._state.data[0].alertGeneratedTime), this.selectedStartTime, 'start');
+    //   this.endDateValue = this.setStartEndDateTime(new Date(this._state.data[0].alertGeneratedTime), this.selectedEndTime, 'end');
+    //   this.logBookForm.get('alertLevel').setValue(this._state.data[0].urgencyLevel);
+    //   this.logBookForm.get('alertType').setValue(this._state.data[0].alertType);
+    //   this.logBookForm.get('alertCategory').setValue(this._state.data[0].alertCategory);
+    //   if(this._state.data[0].vehicleGroupId != 0){
+    //   this.logBookForm.get('vehicleGroup').setValue(this._state.data[0].vehicleGroupId);
+    //   }
+    //   else{
+    //     this.logBookForm.get('vehicleGroup').setValue('all');
+    //   }
+    //   this.onVehicleGroupChange(this._state.data[0].vehicleGroupId);
+    //   this.fromAlertsNotifications = false;
+    // }
 
-    if(this.fromMoreAlertsFlag == true){
-      this.selectionTab = '';
-      // let startDate = Util.convertUtcToDateAndTimeFormat(this._state.data.startDate, this.prefTimeZone,this.dateFormats.display.dateInput);
-      // let sDate = startDate[0]+ ' ' + '00:00:00 AM';
-      // let moreStartDate = new Date( sDate +' UTC');
-      // moreStartDate.toString();
-      // let endDate = Util.convertUtcToDateAndTimeFormat(this._state.data.endDate, this.prefTimeZone,this.dateFormats.display.dateInput);
-      // let eDate = endDate[0]+ ' ' + '00:00:00 AM';
-      // let moreEndDate = new Date( eDate +' UTC');
-      // moreEndDate.toString();
-      this.startDateValue = this.setStartEndDateTime(new Date(this._state.data.startDate), this.selectedStartTime, 'start');
-      this.endDateValue = this.setStartEndDateTime(new Date(this._state.data.endDate), this.selectedEndTime, 'end');
-      // this.startDateValue = this.setStartEndDateTime(moreStartDate, this.selectedStartTime, 'start');
-      // this.endDateValue = this.setStartEndDateTime(moreEndDate, this.selectedEndTime, 'end');
-    }
+    // // if(this.fromMoreAlertsFlag == true){
+    //   if(this._state && this._state.fromMoreAlerts){
+    //   this.selectionTab = '';
+    //   this.startDateValue = this.setStartEndDateTime(new Date(this._state.data.startDate), this.selectedStartTime, 'start');
+    //   this.endDateValue = this.setStartEndDateTime(new Date(this._state.data.endDate), this.selectedEndTime, 'end');
+    // }
 
   }
 
@@ -1140,27 +1229,33 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
       this.vehicleDD=[];
       let vehicleData = this.vehicleListData.slice();
       this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
-      console.log("vehicleDD 2", this.vehicleDD);
+      //console.log("vehicleDD 2", this.vehicleDD);
 
     }
     else{
-      let vehicle_group_selected:any = parseInt(value);
-      this.vehicleGrpDD.forEach(element => {
-        console.log("vhicleGrpDD2", this.vehicleGrpDD);
 
-       let vehicle= this.wholeLogBookData.associatedVehicleRequest.filter(item => item.vehicleId == element.vehicleId && item.vehicleGroupDetails.includes(vehicle_group_selected+"~"));
-      //  let vehicle= element.filter(item => item.vehicleId == value);
-       if(vehicle.length > 0){
-        this.vehicleDD.push(vehicle[0]);
-        console.log("vehicleDD 3", this.vehicleDD);
-
+        let vehicle_group_selected: any = parseInt(value);
+        if(this._state && this._state.fromAlertsNotifications){
+          let vehicle = this.wholeLogBookData.associatedVehicleRequest.filter(item => item.vin == this._state.data[0].vin && item.vehicleGroupDetails.includes(vehicle_group_selected + "~"));
+            if(vehicle && vehicle.length > 0){
+              this.logBookForm.get('vehicle').setValue(vehicle[0].vin);
+            }
         }
-      });
-      this.vehicleDD = this.getUnique(this.vehicleDD, "vehicleName");
-      console.log("vehicleDD 4", this.vehicleDD);
-      this.vehicleDD.sort(this.compareVehName);
-      this.resetVehicleNamesFilter();
+        this.vehicleGrpDD.forEach(element => {
+          //console.log("vhicleGrpDD2", this.vehicleGrpDD);
 
+          let vehicle = this.wholeLogBookData.associatedVehicleRequest.filter(item => item.vehicleId == element.vehicleId && item.vehicleGroupDetails.includes(vehicle_group_selected + "~"));
+          //  let vehicle= element.filter(item => item.vehicleId == value);
+          if (vehicle.length > 0) {
+            this.vehicleDD.push(vehicle[0]);
+            //console.log("vehicleDD 3", this.vehicleDD);
+          }
+        });
+        this.vehicleDD = this.getUnique(this.vehicleDD, "vehicleName");
+        //console.log("vehicleDD 4", this.vehicleDD);
+        this.vehicleDD.sort(this.compareVehName);
+        this.resetVehicleNamesFilter();
+      
     }
   }
 
@@ -1329,6 +1424,20 @@ if(this.fromAlertsNotifications || this.fromMoreAlertsFlag){
   }
 
 exportAsPDFFile(){
+
+  var imgleft;
+
+  if (this.brandimagePath != null) {
+    imgleft = this.brandimagePath.changingThisBreaksApplicationSecurity;
+    
+  } else {
+    imgleft = "/assets/Daf-NewLogo.png";
+    // let defaultIcon: any = "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 dZTWn+gq/wcifZTYZGl3fQAAAABJRU5ErkJggg==";
+    // let sanitizedData: any= this._sanitizer.bypassSecurityTrustResourceUrl('data:image/jpeg;base64,' + defaultIcon);
+    // imgleft = sanitizedData.changingThisBreaksApplicationSecurity;
+
+  }
+
   var doc = new jsPDF('p', 'mm', 'a2');
   (doc as any).autoTable({
     styles: {
@@ -1339,12 +1448,13 @@ exportAsPDFFile(){
         // Header
         doc.setFontSize(14);
         var fileTitle = "Logbook Details";
-        var img = "/assets/logo.png";
-        doc.addImage(img, 'JPEG',10,10,0,0);
+        // var img = "/assets/logo.png";
+        // doc.addImage(img, 'JPEG',10,10,0,0);
+        doc.addImage(imgleft, 'JPEG', 10, 10, 0, 16.5);
 
         var img = "/assets/logo_daf.png";
         doc.text(fileTitle, 14, 35);
-        doc.addImage(img, 'JPEG',150, 10, 0, 10);
+        doc.addImage(img, 'JPEG',360, 10, 0, 10);
     },
     margin: {
         bottom: 20,
@@ -1461,7 +1571,9 @@ let prepare = []
     }
     this.startDateValue = this.setStartEndDateTime(this.startDateValue, this.selectedStartTime, 'start');
     this.resetLogFormControlValue(); // extra addded as per discuss with Atul
+    
     this.filterDateData(); // extra addded as per discuss with Atul
+ 
   }
 
   endTimeChanged(selectedTime: any) {
@@ -1475,7 +1587,9 @@ let prepare = []
     }
     this.endDateValue = this.setStartEndDateTime(this.endDateValue, this.selectedEndTime, 'end');
     this.resetLogFormControlValue(); // extra addded as per discuss with Atul
+    
     this.filterDateData(); // extra addded as per discuss with Atul
+
   }
 
   getTodayDate(){
@@ -1500,13 +1614,13 @@ let prepare = []
 
   getLastMonthDate(){
     var date = Util.getUTCDate(this.prefTimeZone);
-    date.setMonth(date.getMonth()-1);
+    date.setDate(date.getDate()-30);
     return date;
   }
 
   getLast3MonthDate(){
     var date = Util.getUTCDate(this.prefTimeZone);
-    date.setMonth(date.getMonth()-3);
+    date.setDate(date.getDate()-90);
     date.setHours(0);
     date.setMinutes(0);
     date.setSeconds(0);
@@ -1519,8 +1633,23 @@ let prepare = []
       case 'today': {
         this.selectionTab = 'today';
         this.setDefaultStartEndTime();
+        if(this._state && this._state.fromDashboard){ //start date & end date should select from last 24 hours for dashboard
+          this.endDateValue = Util.getUTCDate(this.prefTimeZone); //todaydate
+          this.startDateValue = this.getLast24Date(this.endDateValue); //last24 date 
+          // this.selectedStartTime  = Util.convertUtcToDateAndTimeFormat(this.startDateValue , this.prefTimeZone);
+          let startTime  = Util.convertUtcToDateAndTimeFormat(this.startDateValue , this.prefTimeZone);
+          this.selectedStartTime = startTime[1];
+          let endTime = Util.convertUtcToDateAndTimeFormat(this.endDateValue , this.prefTimeZone);
+          this.selectedEndTime = endTime[1];
+          this.startTimeDisplay = (this.prefTimeFormat == 24) ? `${this.selectedEndTime}:00` : this.selectedEndTime;
+          this.endTimeDisplay = (this.prefTimeFormat == 24) ? `${this.selectedEndTime}:00` : this.selectedEndTime;
+
+        }
+        else{
         this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
         this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
+        }
+        
         break;
       }
       case 'yesterday': {
@@ -1553,19 +1682,21 @@ let prepare = []
       }
     }
     this.resetLogFormControlValue(); // extra addded as per discuss with Atul
-    this.filterDateData(); // extra addded as per discuss with Atul
+     this.filterDateData(); // extra addded as per discuss with Atul
+  
   }
 
   changeStartDateEvent(event: MatDatepickerInputEvent<any>){
+    this.setDefaultDates();
     this.internalSelection = true;
     let dateTime: any = '';
     if(event.value._d.getTime() >= this.last3MonthDate.getTime()){ // CurTime > Last3MonthTime
       if(event.value._d.getTime() <= this.endDateValue.getTime()){ // CurTime < endDateValue
         dateTime = event.value._d;
       }else{
-        dateTime = this.endDateValue; 
+        dateTime = this.endDateValue;
       }
-    }else{ 
+    }else{
       dateTime = this.last3MonthDate;
     }
     this.startDateValue = this.setStartEndDateTime(dateTime, this.selectedStartTime, 'start');
@@ -1574,15 +1705,16 @@ let prepare = []
   }
 
   changeEndDateEvent(event: MatDatepickerInputEvent<any>){
+    this.setDefaultDates();
     this.internalSelection = true;
     let dateTime: any = '';
     if(event.value._d.getTime() <= this.todayDate.getTime()){ // EndTime > todayDate
       if(event.value._d.getTime() >= this.startDateValue.getTime()){ // EndTime < startDateValue
         dateTime = event.value._d;
       }else{
-        dateTime = this.startDateValue; 
+        dateTime = this.startDateValue;
       }
-    }else{ 
+    }else{
       dateTime = this.todayDate;
     }
     this.endDateValue = this.setStartEndDateTime(dateTime, this.selectedEndTime, 'end');
@@ -1590,6 +1722,13 @@ let prepare = []
     this.filterDateData(); // extra addded as per discuss with Atul
   }
 
+  setDefaultDates(){
+    this.startDateValue = this.setStartEndDateTime(new Date(this.startDateValue), this.selectedStartTime, 'start');
+    this.endDateValue = this.setStartEndDateTime(new Date(this.endDateValue), this.selectedEndTime, 'end');
+    this.last3MonthDate = this.getLast3MonthDate();
+    this.todayDate = this.getTodayDate();
+  }
+  
   setStartEndDateTime(date: any, timeObj: any, type: any){
     // let _x = timeObj.split(":")[0];
     // let _y = timeObj.split(":")[1];
@@ -1623,10 +1762,10 @@ let prepare = []
     let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
     let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
 
-    //console.log("this.wholeLogBookData.associatedVehicleRequest ---:: ", this.wholeLogBookData.associatedVehicleRequest);
-    //console.log("this.wholeLogBookData.alFilterResponse---::", this.wholeLogBookData.alFilterResponse);
-    //console.log("this.wholeLogBookData.alertTypeFilterRequest---::", this.wholeLogBookData.alertTypeFilterRequest);
-    //console.log("this.wholeLogBookData.acFilterResponse---::", this.wholeLogBookData.acFilterResponse);
+    ////console.log("this.wholeLogBookData.associatedVehicleRequest ---:: ", this.wholeLogBookData.associatedVehicleRequest);
+    ////console.log("this.wholeLogBookData.alFilterResponse---::", this.wholeLogBookData.alFilterResponse);
+    ////console.log("this.wholeLogBookData.alertTypeFilterRequest---::", this.wholeLogBookData.alertTypeFilterRequest);
+    ////console.log("this.wholeLogBookData.acFilterResponse---::", this.wholeLogBookData.acFilterResponse);
 
     let filterData = this.wholeLogBookData["enumTranslation"];
     filterData.forEach(element => {
@@ -1649,7 +1788,8 @@ let prepare = []
         distinctVIN = filterVIN.filter((value, index, self) => self.indexOf(value) === index);
         if(distinctVIN.length > 0){
           distinctVIN.forEach(element => {
-            let _item = this.wholeLogBookData?.associatedVehicleRequest?.filter(i => i.vin === element && i.groupType != 'S');
+            // let _item = this.wholeLogBookData?.associatedVehicleRequest?.filter(i => i.vin === element && i.groupType != 'S');
+            let _item = this.wholeLogBookData?.associatedVehicleRequest?.filter(i => i.vin === element);
             if(_item.length > 0){
               this.vehicleListData.push(_item[0]); //-- unique VIN data added
               _item.forEach(element => {
@@ -1659,7 +1799,8 @@ let prepare = []
           });
         }
       }else{
-        if(this.fromAlertsNotifications == false && this.fromMoreAlertsFlag == false){
+        // if(this.fromAlertsNotifications == false && this.fromMoreAlertsFlag == false){
+          if(this._state && this._state.fromAlertsNotifications == false && this._state.fromMoreAlerts == false){
         this.resetFilterValues();}
       }
     }
@@ -1691,11 +1832,15 @@ let prepare = []
      }
      let vehicleData = this.vehicleListData.slice();
         this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
-        console.log("vehicleDD 5", this.vehicleDD);
+        //console.log("vehicleDD 5", this.vehicleDD);
+        this.resetVehicleNamesFilter();
         if(this.vehicleDD.length > 0){
       this.resetLogFormControlValue();
      }
      this.setVehicleGroupAndVehiclePreSelection();
+  //    if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAlertsFlag || this._state.fromDashboard == true)){
+  //     this.onSearch();
+  //  }
     //  if(this.showBack){
     //    this.onSearch();
     //  }
@@ -1713,21 +1858,19 @@ let prepare = []
             "vehicleId": element.vehicleId
           }
           this.vehicleGrpDD.push(vehicleGroupObj);
-          console.log("vhicleGrpDD4", this.vehicleGrpDD);
-
         } else {
           this.singleVehicle.push(element);
         }
       });
     });
     this.vehicleGrpDD = this.getUnique(this.vehicleGrpDD, "vehicleGroupId");
-    console.log("vhicleGrpDD5", this.vehicleGrpDD);
+    //console.log("vhicleGrpDD5", this.vehicleGrpDD);
     this.vehicleGrpDD.sort(this.compareGrpName);
     this.resetVehicleGroupFilter();
 
 
     this.vehicleGrpDD.forEach(element => {
-      console.log("vhicleGrpDD6", this.vehicleGrpDD);
+      //console.log("vhicleGrpDD6", this.vehicleGrpDD);
 
       element.vehicleGroupId = parseInt(element.vehicleGroupId);
     });
@@ -1779,7 +1922,20 @@ let prepare = []
   }
 
   onAlertCategoryChange(event: any){
-
+    let alertsTypes = this.wholeLogBookData["enumTranslation"].filter(item => item.type == 'T');
+    if(event.value == 'all') {
+      this.alertTyp = alertsTypes; 
+    } else {
+      let types = this.wholeLogBookData?.logbookTripAlertDetailsRequest?.filter(item => item.alertCategoryType == event.value).map(item => item.alertType);
+      let uniqueAlertEnums = [...new Set(types)];
+      let filteredTypes = [];
+      alertsTypes.forEach(element => {
+        if(uniqueAlertEnums.includes(element.enum)){
+          filteredTypes.push(element);
+        }
+      });
+      this.alertTyp = filteredTypes;
+    }
   }
 
 
@@ -2000,7 +2156,7 @@ let prepare = []
   drawAlerts(_alertArray){
     if(!this.fromAlertsNotifications){
     this.clearRoutesFromMap();
-    }
+    }    
     _alertArray.forEach(elem => {
       let  markerPositionLat = elem.latitude;
       let  markerPositionLng = elem.longitude;
@@ -2011,27 +2167,51 @@ let prepare = []
       if(_alertConfig){
         _type = _alertConfig.type;
       }
+      if(elem.alertLevel != ''){
+        this.alertFoundFlag = true;
+      }
+      else{
+        this.alertFoundFlag = false;
+      }
       let markerSize = { w: 34, h: 40 };
+      if (this.drivingStatus) {//if vehicle is driving
+      let endMarker = this.createSVGMarker(elem.latestReceivedPositionHeading, elem.vehicleHealthStatusType, elem, true);
+      const icon = new H.map.Icon(endMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
+      this.vehicleIconMarker = new H.map.Marker({ lat: elem.latitude, lng: elem.longitude }, { icon: icon });
+      let _checkValidLatLong = this.fleetMapService.validateLatLng(elem.latitude, elem.longitude);
+      if (_checkValidLatLong) {//16705
+        this.mapGroup.addObjects([this.rippleMarker, this.vehicleIconMarker]);
+      }
+    
+  }
+  else{
       let icon = new H.map.Icon(_vehicleMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
       this.vehicleIconMarker = new H.map.Marker({ lat:markerPositionLat, lng:markerPositionLng},{ icon:icon });
 
       this.mapGroup.addObject(this.vehicleIconMarker);
+  }
       let iconBubble;
+      let vehicleDisplayPref = '';
+      let elementValue = '';
+      if (this.vehicleDisplayPreference == 'dvehicledisplay_VehicleName') {
+        vehicleDisplayPref = this.translationData.lblVehicleName;
+        elementValue = elem.vehicleName;
+      } else if (this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber') {
+        vehicleDisplayPref = this.translationData.lblVIN;
+        elementValue = elem.vin;
+      } else if (this.vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber') {
+        vehicleDisplayPref = this.translationData.lblRegistrationNumber;
+        elementValue = elem.vehicleRegNo;
+      }
       this.vehicleIconMarker.addEventListener('pointerenter', (evt)=> {
         // event target is the marker itself, group is a parent event target
         // for all objects that it contains
         iconBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
           // read custom data
           content:`<table style='width: 300px; font-size:14px; line-height: 21px; font-weight: 400;' class='font-helvetica-lt'>
-            <tr>
-              <td style='width: 100px;'>${this.translationData.lblVehicleName}:</td> <td><b>${elem.vehicleName}</b></td>
-            </tr>
-            <tr>
-              <td style='width: 100px;'>${this.translationData.lblVIN}:</td> <td><b>${elem.vin}</b></td>
-            </tr>
-            <tr>
-              <td style='width: 100px;'>${this.translationData.lblRegistrationNumber}:</td> <td><b>${elem.vehicleRegNo}</b></td>
-            </tr>
+          <tr>
+          <td style='width: 100px;'>${vehicleDisplayPref}:</td> <td><b>${elementValue}</b></td>
+          </tr>
             <tr>
               <td style='width: 100px;'>${this.translationData.lblDate}:</td> <td><b>${elem.alertGeneratedTime}</b></td>
             </tr>
@@ -2057,87 +2237,125 @@ let prepare = []
 
   }
 
+  createDrivingMarkerSVG(direction: any, healthColor: any, elem): string {
+
+    if (!this.alertFoundFlag) {
+      return `
+      <g id="svg_15">
+			<g id="svg_1" transform="${direction.outer}">
+      <path d="M32.5 16.75C32.5 29 16.75 39.5 16.75 39.5C16.75 39.5 1 29 1 16.75C1 12.5728 2.65937 8.56677 5.61307 5.61307C8.56677 2.65937 12.5728 1 16.75 1C20.9272 1 24.9332 2.65937 27.8869 5.61307C30.8406 8.56677 32.5 12.5728 32.5 16.75Z" stroke="#00529C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M16.75 38.625C24.1875 32.5 31.625 24.9652 31.625 16.75C31.625 8.53477 24.9652 1.875 16.75 1.875C8.53477 1.875 1.875 8.53477 1.875 16.75C1.875 24.9652 9.75 32.9375 16.75 38.625Z" fill="#00529C"/>
+      <path d="M16.75 29.4375C23.9987 29.4375 29.875 23.8551 29.875 16.9688C29.875 10.0824 23.9987 4.5 16.75 4.5C9.50126 4.5 3.625 10.0824 3.625 16.9688C3.625 23.8551 9.50126 29.4375 16.75 29.4375Z" fill="white"/>
+      <g clip-path="url(#clip0)">
+      <path d="M11.7041 22.1148C10.8917 22.1148 10.2307 21.4539 10.2307 20.6415C10.2307 19.8291 10.8917 19.1682 11.7041 19.1682C12.5164 19.1682 13.1773 19.8291 13.1773 20.6415C13.1773 21.4539 12.5164 22.1148 11.7041 22.1148ZM11.7041 19.974C11.3359 19.974 11.0365 20.2735 11.0365 20.6416C11.0365 21.0096 11.3359 21.3091 11.7041 21.3091C12.0721 21.3091 12.3715 21.0096 12.3715 20.6416C12.3715 20.2735 12.0721 19.974 11.7041 19.974Z" fill="#00529C"/>
+      <path d="M21.7961 22.1148C20.9838 22.1148 20.3228 21.4539 20.3228 20.6415C20.3228 19.8291 20.9838 19.1682 21.7961 19.1682C22.6085 19.1682 23.2694 19.8291 23.2694 20.6415C23.2694 21.4539 22.6085 22.1148 21.7961 22.1148ZM21.7961 19.974C21.4281 19.974 21.1285 20.2735 21.1285 20.6416C21.1285 21.0096 21.4281 21.3091 21.7961 21.3091C22.1642 21.3091 22.4637 21.0096 22.4637 20.6416C22.4637 20.2735 22.1642 19.974 21.7961 19.974Z" fill="#00529C"/>
+      <path d="M18.819 10.5846H14.6812C14.4587 10.5846 14.2783 10.4043 14.2783 10.1817C14.2783 9.9592 14.4587 9.77881 14.6812 9.77881H18.819C19.0415 9.77881 19.2219 9.9592 19.2219 10.1817C19.2219 10.4042 19.0415 10.5846 18.819 10.5846Z" fill="#00529C"/>
+      <path d="M19.6206 22.2772H13.8795C13.6569 22.2772 13.4766 22.0969 13.4766 21.8743C13.4766 21.6518 13.6569 21.4714 13.8795 21.4714H19.6206C19.8431 21.4714 20.0235 21.6518 20.0235 21.8743C20.0235 22.0968 19.8431 22.2772 19.6206 22.2772Z" fill="#00529C"/>
+      <path d="M19.6206 19.8119H13.8795C13.6569 19.8119 13.4766 19.6315 13.4766 19.409C13.4766 19.1864 13.6569 19.0061 13.8795 19.0061H19.6206C19.8431 19.0061 20.0235 19.1864 20.0235 19.409C20.0235 19.6315 19.8431 19.8119 19.6206 19.8119Z" fill="#00529C"/>
+      <path d="M19.6206 21.0445H13.8795C13.6569 21.0445 13.4766 20.8642 13.4766 20.6417C13.4766 20.4191 13.6569 20.2388 13.8795 20.2388H19.6206C19.8431 20.2388 20.0235 20.4191 20.0235 20.6417C20.0235 20.8642 19.8431 21.0445 19.6206 21.0445Z" fill="#00529C"/>
+      <path d="M25.5346 14.0678H23.552C23.2742 14.0678 23.0491 14.2929 23.0491 14.5707V15.6681L22.7635 15.9697V10.1753C22.7635 9.20234 21.9722 8.41099 20.9993 8.41099H12.5009C11.528 8.41099 10.7365 9.20233 10.7365 10.1753V15.9696L10.451 15.6681V14.5707C10.451 14.2929 10.2259 14.0678 9.94814 14.0678H7.96539C7.68767 14.0678 7.4625 14.2929 7.4625 14.5707V15.8683C7.4625 16.1461 7.68767 16.3712 7.96539 16.3712H9.73176L10.1695 16.8335C9.49853 17.0833 9.01905 17.73 9.01905 18.4873V23.7339C9.01905 24.0117 9.24416 24.2368 9.52194 24.2368H10.1291V25.4026C10.1291 26.1947 10.7734 26.839 11.5655 26.839C12.3575 26.839 13.0018 26.1947 13.0018 25.4026V24.2368H20.4981V25.4026C20.4981 26.1947 21.1424 26.839 21.9345 26.839C22.7266 26.839 23.3709 26.1947 23.3709 25.4026V24.2368H23.9781C24.2558 24.2368 24.481 24.0117 24.481 23.7339V18.4873C24.481 17.73 24.0015 17.0834 23.3306 16.8336L23.7683 16.3712H25.5346C25.8124 16.3712 26.0375 16.1461 26.0375 15.8683V14.5707C26.0375 14.2929 25.8123 14.0678 25.5346 14.0678ZM9.4452 15.3655H8.46828V15.0736H9.4452V15.3655ZM11.7422 10.1753C11.7422 9.75712 12.0826 9.41677 12.5009 9.41677H20.9992C21.4173 9.41677 21.7576 9.75715 21.7576 10.1753V10.9469H11.7422V10.1753ZM21.7577 11.9526V16.723H17.2529V11.9526H21.7577ZM11.7422 11.9526H16.2471V16.723H11.7422V11.9526ZM11.996 25.4025C11.996 25.6399 11.8027 25.8331 11.5655 25.8331C11.3281 25.8331 11.1349 25.6399 11.1349 25.4025V24.2368H11.996V25.4025ZM22.3651 25.4025C22.3651 25.6399 22.1718 25.8331 21.9345 25.8331C21.6972 25.8331 21.5039 25.6399 21.5039 25.4025V24.2368H22.3651V25.4025ZM23.4752 18.4873V23.231H10.0248V18.4873C10.0248 18.0692 10.3652 17.7288 10.7834 17.7288H22.7166C23.1348 17.7288 23.4752 18.0692 23.4752 18.4873ZM25.0317 15.3655H24.0549V15.0736H25.0317V15.3655Z" fill="#00529C" stroke="#00529C" stroke-width="0.2"/>
+      </g>
+      <path d="M32.5 16.75C32.5 29 16.75 39.5 16.75 39.5C16.75 39.5 1 29 1 16.75C1 12.5728 2.65937 8.56677 5.61307 5.61307C8.56677 2.65937 12.5728 1 16.75 1C20.9272 1 24.9332 2.65937 27.8869 5.61307C30.8406 8.56677 32.5 12.5728 32.5 16.75Z" stroke="${healthColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M16.75 38.625C24.1875 32.5 31.625 24.9652 31.625 16.75C31.625 8.53477 24.9652 1.875 16.75 1.875C8.53477 1.875 1.875 8.53477 1.875 16.75C1.875 24.9652 9.75 32.9375 16.75 38.625Z" fill="${healthColor}"/>
+      <path d="M16.75 29.4375C23.9987 29.4375 29.875 23.8551 29.875 16.9688C29.875 10.0824 23.9987 4.5 16.75 4.5C9.50126 4.5 3.625 10.0824 3.625 16.9688C3.625 23.8551 9.50126 29.4375 16.75 29.4375Z" fill="white"/>
+      </g>
+      <defs>
+      <clipPath id="clip0">
+      <rect width="18.375" height="18.375" fill="white" transform="translate(7.5625 8.4375)"/>
+      </clipPath>
+      </defs>
+      <g  transform="${direction.inner}">
+      <path d="M4.70411 14.1148C3.89167 14.1148 3.23071 13.4539 3.23071 12.6415C3.23071 11.8291 3.89167 11.1682 4.70411 11.1682C5.51639 11.1682 6.17729 11.8291 6.17729 12.6415C6.17729 13.4539 5.51639 14.1148 4.70411 14.1148ZM4.70411 11.974C4.33592 11.974 4.03649 12.2735 4.03649 12.6416C4.03649 13.0096 4.33592 13.3091 4.70411 13.3091C5.07214 13.3091 5.37151 13.0096 5.37151 12.6416C5.37151 12.2735 5.07208 11.974 4.70411 11.974Z" fill="${healthColor}"/>
+      <path d="M14.7961 14.1148C13.9838 14.1148 13.3228 13.4539 13.3228 12.6415C13.3228 11.8291 13.9838 11.1682 14.7961 11.1682C15.6085 11.1682 16.2694 11.8291 16.2694 12.6415C16.2694 13.4539 15.6085 14.1148 14.7961 14.1148ZM14.7961 11.974C14.4281 11.974 14.1285 12.2735 14.1285 12.6416C14.1285 13.0096 14.4281 13.3091 14.7961 13.3091C15.1642 13.3091 15.4637 13.0096 15.4637 12.6416C15.4637 12.2735 15.1642 11.974 14.7961 11.974Z" fill="${healthColor}"/>
+      <path d="M11.819 2.58459H7.68121C7.45865 2.58459 7.27832 2.40425 7.27832 2.1817C7.27832 1.9592 7.45865 1.77881 7.68121 1.77881H11.819C12.0415 1.77881 12.2219 1.9592 12.2219 2.1817C12.2219 2.4042 12.0415 2.58459 11.819 2.58459Z" fill="${healthColor}"/>
+      <path d="M12.6206 14.2772H6.87945C6.6569 14.2772 6.47656 14.0969 6.47656 13.8743C6.47656 13.6518 6.6569 13.4714 6.87945 13.4714H12.6206C12.8431 13.4714 13.0235 13.6518 13.0235 13.8743C13.0235 14.0968 12.8431 14.2772 12.6206 14.2772Z" fill="${healthColor}"/>
+      <path d="M12.6206 11.8119H6.87945C6.6569 11.8119 6.47656 11.6315 6.47656 11.409C6.47656 11.1864 6.6569 11.0061 6.87945 11.0061H12.6206C12.8431 11.0061 13.0235 11.1864 13.0235 11.409C13.0235 11.6315 12.8431 11.8119 12.6206 11.8119Z" fill="${healthColor}"/>
+      <path d="M12.6206 13.0445H6.87945C6.6569 13.0445 6.47656 12.8642 6.47656 12.6417C6.47656 12.4191 6.6569 12.2388 6.87945 12.2388H12.6206C12.8431 12.2388 13.0235 12.4191 13.0235 12.6417C13.0235 12.8642 12.8431 13.0445 12.6206 13.0445Z" fill="${healthColor}"/>
+      <path d="M18.5346 6.06783H16.552C16.2742 6.06783 16.0491 6.29293 16.0491 6.57072V7.66811L15.7635 7.96969V2.1753C15.7635 1.20234 14.9722 0.410986 13.9993 0.410986H5.50091C4.52796 0.410986 3.73649 1.20233 3.73649 2.1753V7.96961L3.45103 7.66811V6.57072C3.45103 6.29293 3.22593 6.06783 2.94814 6.06783H0.96539C0.687667 6.06783 0.4625 6.29292 0.4625 6.57072V7.86835C0.4625 8.14614 0.687667 8.37124 0.96539 8.37124H2.73176L3.16945 8.83351C2.49853 9.08331 2.01905 9.73 2.01905 10.4873V15.7339C2.01905 16.0117 2.24416 16.2368 2.52194 16.2368H3.12909V17.4026C3.12909 18.1947 3.77337 18.839 4.56545 18.839C5.35754 18.839 6.00181 18.1947 6.00181 17.4026V16.2368H13.4981V17.4026C13.4981 18.1947 14.1424 18.839 14.9345 18.839C15.7266 18.839 16.3709 18.1947 16.3709 17.4026V16.2368H16.9781C17.2558 16.2368 17.481 16.0117 17.481 15.7339V10.4873C17.481 9.72999 17.0015 9.08335 16.3306 8.83356L16.7683 8.37124H18.5346C18.8124 8.37124 19.0375 8.14613 19.0375 7.86835V6.57072C19.0375 6.29292 18.8123 6.06783 18.5346 6.06783ZM2.4452 7.36546H1.46828V7.07361H2.4452V7.36546ZM4.74222 2.1753C4.74222 1.75712 5.08264 1.41677 5.50085 1.41677H13.9992C14.4173 1.41677 14.7576 1.75715 14.7576 2.1753V2.94688H4.74222V2.1753ZM14.7577 3.95261V8.72298H10.2529V3.95261H14.7577ZM4.74222 3.95261H9.24711V8.72298H4.74222V3.95261ZM4.99603 17.4025C4.99603 17.6399 4.80273 17.8331 4.56545 17.8331C4.32813 17.8331 4.13487 17.6399 4.13487 17.4025V16.2368H4.99603V17.4025ZM15.3651 17.4025C15.3651 17.6399 15.1718 17.8331 14.9345 17.8331C14.6972 17.8331 14.5039 17.6399 14.5039 17.4025V16.2368H15.3651V17.4025ZM16.4752 10.4873V15.231H3.02483V10.4873C3.02483 10.0692 3.36522 9.72881 3.78336 9.72881H15.7166C16.1348 9.72881 16.4752 10.0692 16.4752 10.4873ZM18.0317 7.36546H17.0549V7.07361H18.0317V7.36546Z" fill="${healthColor}" stroke="${healthColor}" stroke-width="0.2"/>
+
+    </g>
+
+		</g>`;
+    }
+    else {
+      // let alertConfig = this.getAlertConfig(elem);
+      let alertIcon = this.fleetMapService.setAlertFoundIcon(healthColor, this.alertConfigMap);
+      return alertIcon;
+    }
+  }
+
+   createSVGMarker(_value, _health, elem, isGroup?) {
+    let healthColor = this.fleetMapService.getHealthUpdateForDriving(_health);
+    let direction = this.fleetMapService.getDirectionIconByBearings(_value);
+    let markerSvg = this.createDrivingMarkerSVG(direction, healthColor, elem);
+    let rippleSize = { w: 50, h: 50 };
+    let rippleMarker = this.fleetMapService.createRippleMarker(direction);
+    const iconRipple = new H.map.DomIcon(rippleMarker, { size: rippleSize, anchor: { x: -(Math.round(rippleSize.w / 2)), y: -(Math.round(rippleSize.h / 2)) } });
+    this.rippleMarker = new H.map.DomMarker({ lat: elem.latitude, lng: elem.longitude }, { icon: iconRipple });
+
+    return isGroup ? `<svg width="34" height="41" viewBox="0 0 34 41" fill="none" xmlns="http://www.w3.org/2000/svg">
+		<style type="text/css">.st0{fill:#FFFFFF;}.st1{fill:#1D884F;}.st2{fill:#F4C914;}.st3{fill:#176BA5;}.st4{fill:#DB4F60;}.st5{fill:#7F7F7F;}.st6{fill:#808281;}.hidden{display:none;}.cls-1{isolation:isolate;}.cls-2{opacity:0.3;mix-blend-mode:multiply;}.cls-3{fill:#fff;}.cls-4{fill:none;stroke:#db4f60;stroke-width:3px;}.cls-4,.cls-6{stroke-miterlimit:10;}.cls-5,.cls-6{fill:#db4f60;}.cls-6{stroke:#fff;}</style>
+		${markerSvg}
+		</svg>` :
+    `<svg width="34" height="41" viewBox="0 0 34 41" fill="none" xmlns="http://www.w3.org/2000/svg">
+		<style type="text/css">.st0{fill:#FFFFFF;}.st1{fill:#1D884F;}.st2{fill:#F4C914;}.st3{fill:#176BA5;}.st4{fill:#DB4F60;}.st5{fill:#7F7F7F;}.st6{fill:#808281;}.hidden{display:none;}.cls-1{isolation:isolate;}.cls-2{opacity:0.3;mix-blend-mode:multiply;}.cls-3{fill:#fff;}.cls-4{fill:none;stroke:#db4f60;stroke-width:3px;}.cls-4,.cls-6{stroke-miterlimit:10;}.cls-5,.cls-6{fill:#db4f60;}.cls-6{stroke:#fff;}</style>
+		${markerSvg}
+		</svg>`;
+  }
+
   getAlertIcons(element){
-    let _drivingStatus = false;
+    this.drivingStatus = false;
+    let _healthStatus = '', _drivingStatus = '';
     let healthColor = '#D50017';
     let _alertConfig = undefined;
+    
     if (element.vehicleDrivingStatusType === 'D' || element.vehicleDrivingStatusType === 'Driving') {
-      _drivingStatus = true
+     this.drivingStatus = true;
     }
-    if(element.vehicleHealthStatusType){
-      switch (element.vehicleHealthStatusType) {
-        case 'T': // stop now;
-        case 'Stop Now':
-          healthColor = '#D50017'; //red
-          break;
-        case 'V': // service now;
-        case 'Service Now':
-          healthColor = '#FC5F01'; //orange
-          break;
-        case 'N': // no action;
-        case 'No Action':
-          healthColor = '#606060'; //grey
-          if (_drivingStatus) {
-            healthColor = '#00AE10'; //green
-          }
-          break
-        default:
-          break;
-      }
-    }
+     _drivingStatus = this.fleetMapService.getDrivingStatus(element, this.drivingStatus);
+    let obj = this.fleetMapService.getVehicleHealthStatusType(element, _healthStatus, healthColor, this.drivingStatus);
+    _healthStatus = obj._healthStatus;
+    healthColor = obj.healthColor;
     let _vehicleIcon : any;
         _alertConfig = this.getAlertConfig(element);
-        _vehicleIcon = `<svg width="40" height="49" viewBox="0 0 40 49" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M32.5 24.75C32.5 37 16.75 47.5 16.75 47.5C16.75 47.5 1 37 1 24.75C1 20.5728 2.65937 16.5668 5.61307 13.6131C8.56677 10.6594 12.5728 9 16.75 9C20.9272 9 24.9332 10.6594 27.8869 13.6131C30.8406 16.5668 32.5 20.5728 32.5 24.75Z" stroke="${healthColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M16.75 46.625C24.1875 40.5 31.625 32.9652 31.625 24.75C31.625 16.5348 24.9652 9.875 16.75 9.875C8.53477 9.875 1.875 16.5348 1.875 24.75C1.875 32.9652 9.75 40.9375 16.75 46.625Z" fill="${healthColor}"/>
-        <path d="M16.75 37.4375C23.9987 37.4375 29.875 31.8551 29.875 24.9688C29.875 18.0824 23.9987 12.5 16.75 12.5C9.50126 12.5 3.625 18.0824 3.625 24.9688C3.625 31.8551 9.50126 37.4375 16.75 37.4375Z" fill="white"/>
-        <g clip-path="url(#clip0)">
-        <path d="M11.7041 30.1148C10.8917 30.1148 10.2307 29.4539 10.2307 28.6415C10.2307 27.8291 10.8917 27.1682 11.7041 27.1682C12.5164 27.1682 13.1773 27.8291 13.1773 28.6415C13.1773 29.4539 12.5164 30.1148 11.7041 30.1148ZM11.7041 27.974C11.3359 27.974 11.0365 28.2735 11.0365 28.6416C11.0365 29.0096 11.3359 29.3091 11.7041 29.3091C12.0721 29.3091 12.3715 29.0096 12.3715 28.6416C12.3715 28.2735 12.0721 27.974 11.7041 27.974Z" fill="${healthColor}"/>
-        <path d="M21.7961 30.1148C20.9838 30.1148 20.3228 29.4539 20.3228 28.6415C20.3228 27.8291 20.9838 27.1682 21.7961 27.1682C22.6085 27.1682 23.2694 27.8291 23.2694 28.6415C23.2694 29.4539 22.6085 30.1148 21.7961 30.1148ZM21.7961 27.974C21.4281 27.974 21.1285 28.2735 21.1285 28.6416C21.1285 29.0096 21.4281 29.3091 21.7961 29.3091C22.1642 29.3091 22.4637 29.0096 22.4637 28.6416C22.4637 28.2735 22.1642 27.974 21.7961 27.974Z" fill="${healthColor}"/>
-        <path d="M18.819 18.5846H14.6812C14.4587 18.5846 14.2783 18.4043 14.2783 18.1817C14.2783 17.9592 14.4587 17.7788 14.6812 17.7788H18.819C19.0415 17.7788 19.2219 17.9592 19.2219 18.1817C19.2219 18.4042 19.0415 18.5846 18.819 18.5846Z" fill="${healthColor}"/>
-        <path d="M19.6206 30.2772H13.8795C13.6569 30.2772 13.4766 30.0969 13.4766 29.8743C13.4766 29.6518 13.6569 29.4714 13.8795 29.4714H19.6206C19.8431 29.4714 20.0235 29.6518 20.0235 29.8743C20.0235 30.0968 19.8431 30.2772 19.6206 30.2772Z" fill="${healthColor}"/>
-        <path d="M19.6206 27.8119H13.8795C13.6569 27.8119 13.4766 27.6315 13.4766 27.409C13.4766 27.1864 13.6569 27.0061 13.8795 27.0061H19.6206C19.8431 27.0061 20.0235 27.1864 20.0235 27.409C20.0235 27.6315 19.8431 27.8119 19.6206 27.8119Z" fill="${healthColor}"/>
-        <path d="M19.6206 29.0445H13.8795C13.6569 29.0445 13.4766 28.8642 13.4766 28.6417C13.4766 28.4191 13.6569 28.2388 13.8795 28.2388H19.6206C19.8431 28.2388 20.0235 28.4191 20.0235 28.6417C20.0235 28.8642 19.8431 29.0445 19.6206 29.0445Z" fill="${healthColor}"/>
-        <path d="M25.5346 22.0678H23.552C23.2742 22.0678 23.0491 22.2929 23.0491 22.5707V23.6681L22.7635 23.9697V18.1753C22.7635 17.2023 21.9722 16.411 20.9993 16.411H12.5009C11.528 16.411 10.7365 17.2023 10.7365 18.1753V23.9696L10.451 23.6681V22.5707C10.451 22.2929 10.2259 22.0678 9.94814 22.0678H7.96539C7.68767 22.0678 7.4625 22.2929 7.4625 22.5707V23.8683C7.4625 24.1461 7.68767 24.3712 7.96539 24.3712H9.73176L10.1695 24.8335C9.49853 25.0833 9.01905 25.73 9.01905 26.4873V31.7339C9.01905 32.0117 9.24416 32.2368 9.52194 32.2368H10.1291V33.4026C10.1291 34.1947 10.7734 34.839 11.5655 34.839C12.3575 34.839 13.0018 34.1947 13.0018 33.4026V32.2368H20.4981V33.4026C20.4981 34.1947 21.1424 34.839 21.9345 34.839C22.7266 34.839 23.3709 34.1947 23.3709 33.4026V32.2368H23.9781C24.2558 32.2368 24.481 32.0117 24.481 31.7339V26.4873C24.481 25.73 24.0015 25.0834 23.3306 24.8336L23.7683 24.3712H25.5346C25.8124 24.3712 26.0375 24.1461 26.0375 23.8683V22.5707C26.0375 22.2929 25.8123 22.0678 25.5346 22.0678ZM9.4452 23.3655H8.46828V23.0736H9.4452V23.3655ZM11.7422 18.1753C11.7422 17.7571 12.0826 17.4168 12.5009 17.4168H20.9992C21.4173 17.4168 21.7576 17.7571 21.7576 18.1753V18.9469H11.7422V18.1753ZM21.7577 19.9526V24.723H17.2529V19.9526H21.7577ZM11.7422 19.9526H16.2471V24.723H11.7422V19.9526ZM11.996 33.4025C11.996 33.6399 11.8027 33.8331 11.5655 33.8331C11.3281 33.8331 11.1349 33.6399 11.1349 33.4025V32.2368H11.996V33.4025ZM22.3651 33.4025C22.3651 33.6399 22.1718 33.8331 21.9345 33.8331C21.6972 33.8331 21.5039 33.6399 21.5039 33.4025V32.2368H22.3651V33.4025ZM23.4752 26.4873V31.231H10.0248V26.4873C10.0248 26.0692 10.3652 25.7288 10.7834 25.7288H22.7166C23.1348 25.7288 23.4752 26.0692 23.4752 26.4873ZM25.0317 23.3655H24.0549V23.0736H25.0317V23.3655Z" fill="#D50017" stroke="#D50017" stroke-width="0.2"/>
-        </g>
-        <mask id="path-11-outside-1" maskUnits="userSpaceOnUse" x="17.6667" y="0.666748" width="23" height="19" fill="black">
-        <rect fill="white" x="17.6667" y="0.666748" width="23" height="19"/>
-        <path d="M29.0001 4.66675L21.6667 17.3334H36.3334L29.0001 4.66675Z"/>
-        </mask>
-        <path d="M29.0001 4.66675L21.6667 17.3334H36.3334L29.0001 4.66675Z" fill="${_alertConfig.color}"/>
-        <path d="M29.0001 4.66675L30.7309 3.66468L29.0001 0.675021L27.2692 3.66468L29.0001 4.66675ZM21.6667 17.3334L19.9359 16.3313L18.1979 19.3334H21.6667V17.3334ZM36.3334 17.3334V19.3334H39.8023L38.0643 16.3313L36.3334 17.3334ZM27.2692 3.66468L19.9359 16.3313L23.3976 18.3355L30.7309 5.66882L27.2692 3.66468ZM21.6667 19.3334H36.3334V15.3334H21.6667V19.3334ZM38.0643 16.3313L30.7309 3.66468L27.2692 5.66882L34.6026 18.3355L38.0643 16.3313Z" fill="white" mask="url(#path-11-outside-1)"/>
-        <path d="M29.6666 14H28.3333V15.3333H29.6666V14Z" fill="white"/>
-        <path d="M29.6666 10H28.3333V12.6667H29.6666V10Z" fill="white"/>
-        <defs>
-        <clipPath id="clip0">
-        <rect width="18.375" height="18.375" fill="white" transform="translate(7.5625 16.4375)"/>
-        </clipPath>
-        </defs>
-        </svg>`;
+        this.alertConfigMap = _alertConfig;
+        if(!this.drivingStatus){ //if vehicle is not driving
+        if (_drivingStatus == "Unknown" || _drivingStatus == "Never Moved") {
+          let obj = this.fleetMapService.setIconForUnknownOrNeverMoved(true, _drivingStatus, _healthStatus, _alertConfig);
+          let data = obj.icon;
+          return { icon: data, alertConfig: _alertConfig };
+        }
+        else {
+          _vehicleIcon = this.fleetMapService.setAlertFoundIcon(healthColor, _alertConfig);
+        }
+      }
+        
     return {icon: _vehicleIcon,alertConfig:_alertConfig};
 
   }
 
   getAlertConfig(_currentAlert){
-    let _alertConfig = {color : '#D50017' , level :'Critical', type : ''};
+    // let _alertConfig = {color : '#D50017' , level :'Critical', type : ''};
     let _fillColor = '#D50017';
     let _level = 'Critical';
     let _type = '';
+    let _alertLevel = '';
+    // if(_currentAlert.alertLevel) _alertLevel = (_currentAlert.alertLevel).toLowerCase();
       switch (_currentAlert.alertLevel) {
         case 'C':
-          case 'Critical':{
+          case 'critical':{
           _fillColor = '#D50017';
           _level = 'Critical'
         }
         break;
         case 'W':
-          case 'Warning':{
+          case 'warning':{
           _fillColor = '#FC5F01';
           _level = 'Warning'
         }
         break;
         case 'A':
-          case 'Advisory':{
+          case 'advisory':{
           _fillColor = '#FFD80D';
           _level = 'Advisory'
         }
@@ -2179,7 +2397,7 @@ let prepare = []
     this.vehicleIconMarker = null;
    }
    filterVehicleGroups(vehicleGroupSearch){
-    console.log("filterVehicleGroups is called");
+    //console.log("filterVehicleGroups is called");
     if(!this.filteredVehicleGroups){
       return;
     }
@@ -2192,10 +2410,10 @@ let prepare = []
     this.filteredVehicleGroups.next(
        this.vehicleGrpDD.filter(item => item.vehicleGroupName.toLowerCase().indexOf(vehicleGroupSearch) > -1)
     );
-    console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
+    //console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
   }
   filterVehicleNames(vehicleNameSearch){
-    console.log("filterVehicleNames is called");
+    //console.log("filterVehicleNames is called");
     if(!this.filteredVehicleNames){
       return;
     }
@@ -2208,7 +2426,7 @@ let prepare = []
     this.filteredVehicleNames.next(
        this.vehicleDD.filter(item => item.vehicleName.toLowerCase().indexOf(vehicleNameSearch) > -1)
     );
-    console.log("this.filteredVehicleNames", this.filteredVehicleNames);
+    //console.log("this.filteredVehicleNames", this.filteredVehicleNames);
   }
 
 

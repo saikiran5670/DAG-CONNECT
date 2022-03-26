@@ -67,7 +67,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
       }
     });
     this.translatedvalues();
-    console.log(this.translationData);
+    //console.log(this.translationData);
     if(this.showType){
       this.TypeList = this.TypeList2;
     } else {
@@ -292,6 +292,9 @@ translatedvalues(){
       this.showLoadingIndicator=true;
       this.packageService.createPackage(createPackageParams).subscribe((res) => {
         this.packageService.getPackages().subscribe((getData) => {
+          getData["pacakageList"].forEach(element => {
+            (element.state == 'A') ? element.state = this.translationData.lblActive : element.state = this.translationData.lblInactive;
+          });
         this.updatedData = getData["pacakageList"];
         this.userCreatedMsg = this.getUserCreatedMessage();
         let emitObj = {
@@ -325,6 +328,9 @@ translatedvalues(){
     this.showLoadingIndicator=true;
     this.packageService.updatePackage(updatePackageParams).subscribe((data) => {
       this.packageService.getPackages().subscribe((getData) => {
+        getData["pacakageList"].forEach(element => {
+          (element.state == 'A') ? element.state = this.translationData.lblActive : element.state = this.translationData.lblInactive;
+        });
       this.updatedData = getData["pacakageList"];
       this.userCreatedMsg = this.getUserCreatedMessage();
       let emitObj = {

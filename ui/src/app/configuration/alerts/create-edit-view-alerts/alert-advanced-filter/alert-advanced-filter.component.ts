@@ -5,13 +5,12 @@ import { ViewChild } from '@angular/core';
 import { ViewChildren } from '@angular/core';
 import { Input, Output, EventEmitter } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
-import { FormControl, Validators } from '@angular/forms';
+import { FormControl } from '@angular/forms';
 import { FormBuilder } from '@angular/forms';
 import { FormGroup } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { AnyMxRecord } from 'dns';
 import { POIService } from 'src/app/services/poi.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { LandmarkGroupService } from 'src/app/services/landmarkGroup.service';
@@ -22,8 +21,6 @@ import { GeofenceService } from 'src/app/services/landmarkGeofence.service';
 import { Options } from '@angular-slider/ngx-slider';
 import { PeriodSelectionFilterComponent } from '../period-selection-filter/period-selection-filter.component';
 import { Util } from 'src/app/shared/util';
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
-import * as moment from 'moment-timezone';
 import { ReportMapService } from '../../../../report/report-map.service';
 import { ConfigService } from '@ngx-config/core';
 import { MapFunctionsService } from '../../../landmarks/manage-corridor/map-functions.service';
@@ -82,7 +79,6 @@ export class AlertAdvancedFilterComponent implements OnInit {
   poiWidth : number = 100;
   poiWidthKm : number = 0.1;
   sliderValue : number = 0;
- // selectedApplyOn: string = 'A';
   advancedAlertPayload: any = [];
   filterType: any;
   selectedDistance: any;
@@ -131,21 +127,18 @@ export class AlertAdvancedFilterComponent implements OnInit {
               private domSanitizer: DomSanitizer,
               private landmarkGroupService: LandmarkGroupService,
               private dialog: MatDialog,
-              private dialogService: ConfirmDialogService,
               private geofenceService: GeofenceService,
               private el: ElementRef,
-              private reportMapService: ReportMapService,  private _configService: ConfigService,
+              private reportMapService: ReportMapService,
               private mapFunctions: MapFunctionsService) {
-   this.map_key = _configService.getSettings("hereMap").api_key;
+    this.map_key = localStorage.getItem("hereMapsK");
     this.platform = new H.service.Platform({
       "apikey":this.map_key
     });
    }
 
   ngOnInit(): void {
-    console.log(this.prefUnitFormat);
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
-    //this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
     if(localStorage.getItem('contextOrgId')){
       this.organizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
     }
@@ -169,8 +162,6 @@ export class AlertAdvancedFilterComponent implements OnInit {
       toTimeRange:['23:59']
     })
     
-    
-
     this.alertAdvancedFilterForm.controls.widthInput.setValue(0.1);
     if(this.actionType == 'create'){
       this.setUnitsAsPrefData();
@@ -187,7 +178,6 @@ export class AlertAdvancedFilterComponent implements OnInit {
     let positionVal = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item=> item.positionType == "E" || "X");
     if(positionVal.length > 0){
     this.selectedPoiSite = positionVal[0].positionType;
-    // this.isPoiSelected= true;
     this.alertAdvancedFilterForm.get('poiSite').setValue(this.selectedPoiSite);
     }
     if (this.selectedPoiSite == 'X')
@@ -198,12 +188,10 @@ export class AlertAdvancedFilterComponent implements OnInit {
       this.enteringFlag =true;
     }
 
-    // if(this.alert_category_selected+this.alert_type_selected != 'LS'){
     this.loadMapData();
     this.loadPOIData();
     this.loadGeofenceData();
     this.loadGroupData();
-    // }
 
     let POIData =this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item=> item.landmarkType == "P" || "O" || "C" || "G");
     if(POIData.length > 0){
@@ -211,24 +199,6 @@ export class AlertAdvancedFilterComponent implements OnInit {
     this.sliderChanged();
     }
     this.selectedApplyOn = this.selectedRowData.alertUrgencyLevelRefs[0].periodType;
-   // if(this.selectedApplyOn == 'C'){
-    //   // this.from = Util.convertUtcToDateFormat(this.selectedRowData.alertUrgencyLevelRefs[0].urgencylevelStartDate,'DD/MM/YYYY HH:MM').split(" ");
-    //   // this.to = Util.convertUtcToDateFormat(this.selectedRowData.alertUrgencyLevelRefs[0].urgencylevelEndDate,'DD/MM/YYYY HH:MM').split(" ");
-    //   // this.from = Util.convertUtcToDateFormat(this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs[0].alertTimingDetail[0].startDate,'DD/MM/YYYY HH:MM').split(" ");
-    //   // this.to = Util.convertUtcToDateFormat(this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs[0].alertTimingDetail[0].endDate,'DD/MM/YYYY HH:MM').split(" ");
-     
-    //   // this.alertAdvancedFilterForm.get('fromDate').setValue(moment(this.from[0]));
-    //   // this.alertAdvancedFilterForm.get('toDate').setValue(moment(this.to[0]));
-    
-    //     this.from = Util.convertUtcToDateFormat(this.selectedRowData.alertUrgencyLevelRefs[0].urgencylevelStartDate,'DD/MM/YYYY HH:MM').split(" ");
-    //     this.to = Util.convertUtcToDateFormat(this.selectedRowData.alertUrgencyLevelRefs[0].urgencylevelEndDate,'DD/MM/YYYY HH:MM').split(" ");
-    
-    //   this.alertAdvancedFilterForm.get('fromDate').setValue(moment(this.from[0],'DD/MM/YYYY'));
-    //   this.alertAdvancedFilterForm.get('toDate').setValue(moment(this.to[0], 'DD/MM/YYYY'));
-
-    //   this.alertAdvancedFilterForm.get('fromTimeRange').setValue(this.from[1]);
-    //   this.alertAdvancedFilterForm.get('toTimeRange').setValue(this.to[1]);
-    // }
       this.alertAdvancedFilterForm.get('fullorCustom').setValue(this.selectedApplyOn);
       let Data = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.forEach(element => {
         if(element.filterType == 'N' && element.thresholdValue !='0' && element.unitType== 'N')
@@ -239,8 +209,6 @@ export class AlertAdvancedFilterComponent implements OnInit {
         if(element.filterType == 'T')
         {
           this.isDistanceSelected =true;
-          // let threshold = this.convertValues(element.thresholdValue,element.unitType);
-          // this.alertAdvancedFilterForm.get('distance').setValue(threshold);
           if(this.prefUnitFormat == 'dunit_Metric')
           {
             this.alertAdvancedFilterForm.get('distance').setValue(element.thresholdValue);
@@ -258,13 +226,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
         }
         if(element.landmarkType == 'P' || element.landmarkType == 'O' || element.landmarkType == 'C' || element.landmarkType == 'G')
         {
-
             this.isPoiSelected= true;
-            // this.loadMapData();
-            // this.loadPOIData();
-            // this.loadGeofenceData();
-            // this.loadGroupData();
-          
         }
         if(this.actionType == 'view'){
           let arr1 = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => (item.filterType == 'N' && item.thresholdValue != '0'));
@@ -277,7 +239,6 @@ export class AlertAdvancedFilterComponent implements OnInit {
           if(arr3.length > 0)
             this.durationVal.push(arr3);
         }
-        
       });
   }
 
@@ -306,15 +267,15 @@ export class AlertAdvancedFilterComponent implements OnInit {
   setUnitsAsPrefData(){
     if(this.prefUnitFormat == 'dunit_Metric'){
       this.distanceEnum = 'M';
-      this.distanceUnit = this.translationData.lblMeter;
+      this.distanceUnit = this.translationData.lblmtr;
       this.POIEnum = 'K';
-      this.poiUnit = this.translationData.lblKilometer;
+      this.poiUnit = this.translationData.lblkm;
   }
     else{
       this.distanceEnum = 'F';
       this.distanceUnit = this.translationData.lblFeet;
       this.POIEnum = 'L';
-      this.poiUnit = this.translationData.lblMiles;
+      this.poiUnit = this.translationData.lblmile;
     }
   }
 
@@ -338,42 +299,39 @@ export class AlertAdvancedFilterComponent implements OnInit {
     }
     else{
       let defaultLayers = this.platform.createDefaultLayers();
-      setTimeout(() => {
-        this.map = new H.Map(this.mapElement.nativeElement,
-          defaultLayers.raster.normal.map, {
-          center: { lat: 51.43175839453286, lng: 5.519981221425336 },
-          zoom: 4,
-          pixelRatio: window.devicePixelRatio || 1
-        });
-        window.addEventListener('resize', () => this.map.getViewPort().resize());
-        var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
-        this.ui = H.ui.UI.createDefault(this.map, defaultLayers);
-        
-        this.ui.removeControl("mapsettings");
-        // create custom one
-        var ms = new H.ui.MapSettingsControl({
-            baseLayers : [ { 
-              label: this.translationData.lblNormal , layer: defaultLayers.raster.normal.map
-            },{
-              label: this.translationData.lblSatellite , layer: defaultLayers.raster.satellite.map
-            }, {
-              label: this.translationData.lblTerrain , layer: defaultLayers.raster.terrain.map
-            }
-            ],
-          layers : [{
-                label: this.translationData.lblLayerTraffic , layer: defaultLayers.vector.normal.traffic
-            },
-            {
-                label: this.translationData.lblLayerIncidents , layer: defaultLayers.vector.normal.trafficincidents
-            }
-          ]
-        });
-        this.ui.addControl("customized", ms);
-      }, 1000);
+      if(this.mapElement){
+        setTimeout(() => {
+          this.map = new H.Map(this.mapElement.nativeElement,
+            defaultLayers.raster.normal.map, {
+            center: { lat: 51.43175839453286, lng: 5.519981221425336 },
+            zoom: 4,
+            pixelRatio: window.devicePixelRatio || 1
+          });
+          window.addEventListener('resize', () => this.map.getViewPort().resize());
+          this.ui = H.ui.UI.createDefault(this.map, defaultLayers);
+          this.ui.removeControl("mapsettings");
+          var ms = new H.ui.MapSettingsControl({
+              baseLayers : [ { 
+                label: this.translationData.lblNormal , layer: defaultLayers.raster.normal.map
+              },{
+                label: this.translationData.lblSatellite , layer: defaultLayers.raster.satellite.map
+              }, {
+                label: this.translationData.lblTerrain , layer: defaultLayers.raster.terrain.map
+              }
+              ],
+            layers : [{
+                  label: this.translationData.lblLayerTraffic , layer: defaultLayers.vector.normal.traffic
+              },
+              {
+                  label: this.translationData.lblLayerIncidents , layer: defaultLayers.vector.normal.trafficincidents
+              }
+            ]
+          });
+          this.ui.addControl("customized", ms);
+        }, 1000);
+      }
     }
 }
-
- 
 
   onChangePOI(event: any){
     if(event.checked){
@@ -509,6 +467,14 @@ export class AlertAdvancedFilterComponent implements OnInit {
       setTimeout(()=>{
         this.geofenceDataSource.paginator = this.paginator.toArray()[1];
         this.geofenceDataSource.sort = this.sort.toArray()[1];
+        this.geofenceDataSource.sortData = (data: String[], sort: MatSort) => {
+          const isAsc = sort.direction === 'asc';
+          return data.sort((a: any, b: any): any => {
+            let columnName = sort.active;
+            return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
+          });
+         }
+        
       },2000);
     }
 
@@ -526,7 +492,6 @@ export class AlertAdvancedFilterComponent implements OnInit {
           }
         }
       }, (error) => {
-        //console.log(error)
       });
     }
 
@@ -542,7 +507,26 @@ export class AlertAdvancedFilterComponent implements OnInit {
       setTimeout(()=>{
         this.groupDataSource.paginator = this.paginator.toArray()[2];
         this.groupDataSource.sort = this.sort.toArray()[2];
+        this.groupDataSource.sortData = (data: String[], sort: MatSort) => {
+         
+            const isAsc = sort.direction === 'asc';
+            return data.sort((a: any, b: any): any => {
+            let columnName = sort.active;
+            if ( columnName == 'name') {
+              return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
+            } else {
+
+              return this.comparenumber(a[sort.active], b[sort.active], isAsc);
+            }
+            });  
+         }
       },2000);
+    }
+
+    comparenumber(a: Number | String, b: Number | String, isAsc: boolean) {
+      if(!(a instanceof Number)) a = a;
+      if(!(b instanceof Number)) b = b;
+      return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
     }
 
     loadGroupSelectedData(tableData: any){
@@ -573,15 +557,23 @@ export class AlertAdvancedFilterComponent implements OnInit {
     }
 
     applyFilterForPOI(filterValue: string) {
-      filterValue = filterValue.trim(); // Remove whitespace
-      filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
-      this.poiDataSource.filter = filterValue;
+      filterValue = filterValue.trim().toLowerCase();
+      this.poiDataSource = new MatTableDataSource(this.poiGridData);
+      const filteredData = this.poiGridData.filter(value => {​​​​​​​​
+        return value.name.toLowerCase().toString().includes(filterValue) || value.categoryName.toLowerCase().toString().includes(filterValue) || value.subCategoryName.toLowerCase().toString().includes(filterValue) || value.address.toLowerCase().toString().includes(filterValue) || value.city.toLowerCase().toString().includes(filterValue) || value.country.toLowerCase().toString().includes(filterValue);    
+      }​​​​​​​​);
+      this.poiDataSource = filteredData;
+      this.updatePOIDataSource( this.poiDataSource);
     }
   
     applyFilterForGeofence(filterValue: string) {
-      filterValue = filterValue.trim(); // Remove whitespace
-      filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
-      this.geofenceDataSource.filter = filterValue;
+      filterValue = filterValue.trim().toLowerCase();
+      this.geofenceDataSource = new MatTableDataSource(this.geofenceGridData);
+      const filteredData = this.geofenceGridData.filter(value => {​​​​​​​​
+        return value.name.toLowerCase().toString().includes(filterValue) || value.categoryName.toLowerCase().toString().includes(filterValue) || value.subCategoryName.toLowerCase().toString().includes(filterValue) || value.address.toLowerCase().toString().includes(filterValue) || value.city.toLowerCase().toString().includes(filterValue) || value.country.toLowerCase().toString().includes(filterValue);    
+      }​​​​​​​​);
+      this.geofenceDataSource = filteredData;
+      this.updateGeofenceDataSource( this.geofenceDataSource);
     }
   
     applyFilterForGroup(filterValue: string) {
@@ -616,7 +608,6 @@ export class AlertAdvancedFilterComponent implements OnInit {
       this.markerArray.forEach(element => {
         let marker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: this.getSVGIcon() });
         this.map.addObject(marker);
-        // this.createResizableCircle(this.circularGeofenceFormGroup.controls.radius.value ? parseInt(this.circularGeofenceFormGroup.controls.radius.value) : 0, element);
         this.createResizableCircle(this.alertAdvancedFilterForm.controls.widthInput.value * 1000,this.ui,element);
 
          //For tooltip on info bubble
@@ -661,25 +652,11 @@ export class AlertAdvancedFilterComponent implements OnInit {
           });
           this.createResizablePolygon(this.map,this.polyPoints,this,this.ui, element);
         }
-  
     });
     }
 
-    getSVGIcon(){
-      let markup = '<svg xmlns="http://www.w3.org/2000/svg" width="28px" height="36px" >' +
-      '<path d="M 19 31 C 19 32.7 16.3 34 13 34 C 9.7 34 7 32.7 7 31 C 7 29.3 9.7 ' +
-      '28 13 28 C 16.3 28 19 29.3 19 31 Z" fill="#000" fill-opacity=".2"></path>' +
-      '<path d="M 13 0 C 9.5 0 6.3 1.3 3.8 3.8 C 1.4 7.8 0 9.4 0 12.8 C 0 16.3 1.4 ' +
-      '19.5 3.8 21.9 L 13 31 L 22.2 21.9 C 24.6 19.5 25.9 16.3 25.9 12.8 C 25.9 9.4 24.6 ' +
-      '6.1 22.1 3.8 C 19.7 1.3 16.5 0 13 0 Z" fill="#fff"></path>' +
-      '<path d="M 13 2.2 C 6 2.2 2.3 7.2 2.1 12.8 C 2.1 16.1 3.1 18.4 5.2 20.5 L ' +
-      '13 28.2 L 20.8 20.5 C 22.9 18.4 23.8 16.2 23.8 12.8 C 23.6 7.07 20 2.2 ' +
-      '13 2.2 Z" fill="${COLOR}"></path><text transform="matrix( 1 0 0 1 13 18 )" x="0" y="0" fill-opacity="1" ' +
-      'fill="#fff" text-anchor="middle" font-weight="bold" font-size="13px" font-family="arial" style="fill:black"></text></svg>';
-      
+    getSVGIcon(){    
       let locMarkup = '<svg height="24" version="1.1" width="24" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><g transform="translate(0 -1028.4)"><path d="m12 0c-4.4183 2.3685e-15 -8 3.5817-8 8 0 1.421 0.3816 2.75 1.0312 3.906 0.1079 0.192 0.221 0.381 0.3438 0.563l6.625 11.531 6.625-11.531c0.102-0.151 0.19-0.311 0.281-0.469l0.063-0.094c0.649-1.156 1.031-2.485 1.031-3.906 0-4.4183-3.582-8-8-8zm0 4c2.209 0 4 1.7909 4 4 0 2.209-1.791 4-4 4-2.2091 0-4-1.791-4-4 0-2.2091 1.7909-4 4-4z" fill="#55b242" transform="translate(0 1028.4)"/><path d="m12 3c-2.7614 0-5 2.2386-5 5 0 2.761 2.2386 5 5 5 2.761 0 5-2.239 5-5 0-2.7614-2.239-5-5-5zm0 2c1.657 0 3 1.3431 3 3s-1.343 3-3 3-3-1.3431-3-3 1.343-3 3-3z" fill="#ffffff" transform="translate(0 1028.4)"/></g></svg>';
-      
-      //let icon = new H.map.Icon(markup.replace('${COLOR}', '#55b242'));
       let icon = new H.map.Icon(locMarkup);
       return icon;
     }
@@ -697,9 +674,23 @@ export class AlertAdvancedFilterComponent implements OnInit {
       setTimeout(()=>{
         this.poiDataSource.paginator = this.paginator.toArray()[0];
         this.poiDataSource.sort = this.sort.toArray()[0];
+        this.poiDataSource.sortData = (data: String[], sort: MatSort) => {
+        const isAsc = sort.direction === 'asc';
+        return data.sort((a: any, b: any): any => {
+          let columnName = sort.active;
+          return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
+        });
+       }
+
       },2000);
     }
 
+    compare(a: any, b: any, isAsc: boolean, columnName:any) {
+      if(!(a instanceof Number)) a = a.replace(/\s/g, '').replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
+      if(!(b instanceof Number)) b = b.replace(/\s/g, '').replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
+      return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+    }
+   
     selectPOITableRows(rowData: any, event?:any){
       if(event){
         this.poiDataSource.data.forEach((row: any) => {
@@ -908,7 +899,6 @@ export class AlertAdvancedFilterComponent implements OnInit {
       }
 
       geofenceCheckboxClicked(event: any, row: any) {
-
         if(event.checked){ 
           this.geoMarkerArray.push(row);
           this.addMarkersAndSetViewBoundsGeofence(this.map, row);
@@ -917,7 +907,6 @@ export class AlertAdvancedFilterComponent implements OnInit {
           this.geoMarkerArray = arr;
         }
         this.addCircleOnMap(event);
-      // });
         }
 
         addCircleOnMap(event: any){
@@ -1134,7 +1123,6 @@ export class AlertAdvancedFilterComponent implements OnInit {
          else{
            this.poiWidthKm = this.poiWidth / 1609;
          }
-        // this.poiWidthKm = this.poiWidth / 1000;
         this.poiWidthKm.toFixed(2);
         this.alertAdvancedFilterForm.controls.widthInput.setValue(this.poiWidthKm);
         if(this.markerArray.length > 0){
@@ -1149,8 +1137,6 @@ export class AlertAdvancedFilterComponent implements OnInit {
 
    getAdvancedFilterAlertPayload(){
     if(this.isPoiSelected){
-    // let positionVal = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item=> item.positionType == "E" || "X");
-    // this.selectedPoiSite = positionVal[0].positionType;
     this.poiDistance = this.poiWidth;
     this.alertAdvancedFilterForm.get('poiSite').setValue('E');
     if (this.selectedPoiSite == 'X')
@@ -1164,7 +1150,6 @@ export class AlertAdvancedFilterComponent implements OnInit {
 
 let urgencylevelStartDate = 0;
 let urgencylevelEndDate = 0;
-// if(this.selectedApplyOn == 'C'){
   if(this.periodSelectionComponent !=undefined){
   this.alertTimingDetail = this.periodSelectionComponent.getAlertTimingPayload();
   urgencylevelStartDate = Util.convertDateToUtc(this.setStartEndDateTime(this.alertAdvancedFilterForm.controls.fromDate.value, this.alertAdvancedFilterForm.controls.fromTimeRange.value, "start"));
@@ -1172,18 +1157,19 @@ let urgencylevelEndDate = 0;
   
   this.alertTimingDetail.forEach(element => {
     element["type"] = "F";
-    // element["startDate"] =urgencylevelStartDate;
-    // element["endDate"] =urgencylevelEndDate;
   });
   }
   else{
     this.alertTimingDetail = [];
   }
-  // urgencylevelStartDate = Util.convertDateToUtc(this.setStartEndDateTime(this.alertAdvancedFilterForm.controls.fromDate.value, this.alertAdvancedFilterForm.controls.fromTimeRange.value, "start"));
-  // urgencylevelEndDate = Util.convertDateToUtc(this.setStartEndDateTime(this.alertAdvancedFilterForm.controls.toDate.value, this.alertAdvancedFilterForm.controls.toTimeRange.value, "end"));;
   urgencylevelStartDate = Util.convertDateToUtc(this.setStartEndDateTime(this.periodSelectedDateTime[0].startDate, this.periodSelectedDateTime[0].fromTime, "start"));
   urgencylevelEndDate = Util.convertDateToUtc(this.setStartEndDateTime(this.periodSelectedDateTime[0].endDate, this.periodSelectedDateTime[0].toTime, "end"));;
-
+  // urgencylevelStartDate = Util.convertDateToUtc(this.setStartEndDateTime(this.alertAdvancedFilterForm.controls.fromDate.value, this.alertAdvancedFilterForm.controls.fromTimeRange.value, "start"));
+  // urgencylevelEndDate = Util.convertDateToUtc(this.setStartEndDateTime(this.alertAdvancedFilterForm.controls.toDate.value, this.alertAdvancedFilterForm.controls.toTimeRange.value, "end"));;
+  if(this.periodSelectedDateTime && this.periodSelectedDateTime.length > 0){
+  urgencylevelStartDate = Util.convertDateToUtc(this.setStartEndDateTime(this.periodSelectedDateTime[0].startDate, this.periodSelectedDateTime[0].fromTime, "start"));
+  urgencylevelEndDate = Util.convertDateToUtc(this.setStartEndDateTime(this.periodSelectedDateTime[0].endDate, this.periodSelectedDateTime[0].toTime, "end"));;
+  }
 
 // }
 // else{
@@ -1220,7 +1206,6 @@ let urgencylevelEndDate = 0;
           obj["id"] = geofenceLandmarkRefArr.length > 0 ? geofenceLandmarkRefArr[0].id : 0;
           obj["alertId"] = this.selectedRowData.id;
           obj["state"] = element.state == 'Active' ? 'A' : 'I';
-         // obj["unitType"] = geofenceLandmarkRefArr[0].unitType;
           obj["unitType"] = geofenceLandmarkRefArr.length > 0 ? geofenceLandmarkRefArr[0].unitType : 'N';
           }
         
@@ -1244,7 +1229,6 @@ let urgencylevelEndDate = 0;
           obj["id"] = poiLandmarkRefArr.length > 0 ? poiLandmarkRefArr[0].id : 0;
           obj["alertId"] = this.selectedRowData.id;
           obj["state"] = element.state == 'Active' ? 'A' : 'I';
-         // obj["unitType"] = poiLandmarkRefArr[0].unitType;
           obj["unitType"] = poiLandmarkRefArr.length > 0 ? poiLandmarkRefArr[0].unitType : this.POIEnum;
           }
           this.advancedAlertPayload.push(obj);
@@ -1268,7 +1252,6 @@ let urgencylevelEndDate = 0;
           obj["id"] = groupLandmarkRefArr.length > 0 ? groupLandmarkRefArr[0].id : 0;
           obj["alertId"] = this.selectedRowData.id;
           obj["state"] = element.state == 'Active' ? 'A' : 'I';
-         // obj["unitType"] = groupLandmarkRefArr[0].unitType;
           obj["unitType"] = groupLandmarkRefArr.length > 0 ? groupLandmarkRefArr[0].unitType : 'N';
           }
         this.advancedAlertPayload.push(obj);
@@ -1378,9 +1361,6 @@ let urgencylevelEndDate = 0;
         obj["state"] = 'A';
         obj["alertTimingDetails"]["refId"] = periodRefArr ? periodRefArr.id : 0;
         obj["unitType"] = periodRefArr ? periodRefArr.unitType : "N";
-        // if(periodRefArr.unitType != undefined){
-        // obj["unitType"] = periodRefArr.unitType;
-        // }
        }
       this.advancedAlertPayload.push(obj);
     }  
@@ -1430,7 +1410,6 @@ let urgencylevelEndDate = 0;
               obj["alertId"] = this.selectedRowData.id;
               obj["state"] = 'A';
               obj["alertTimingDetails"]["refId"] = noOfOccuranceRefArr.length > 0 ? noOfOccuranceRefArr[0].id : 0;
-              //obj["unitType"] = noOfOccuranceRefArr.unitType;
               obj["unitType"] = noOfOccuranceRefArr.length > 0 ? noOfOccuranceRefArr[0].unitType : "N";
             }
             this.advancedAlertPayload.push(obj);
@@ -1459,7 +1438,6 @@ let urgencylevelEndDate = 0;
             obj["alertId"] = this.selectedRowData.id;
             obj["state"] = 'A';
             obj["alertTimingDetails"]["refId"] = periodRefArr ? periodRefArr.id : 0;
-            //obj["unitType"] = periodRefArr.unitType;
             obj["unitType"] = periodRefArr ? periodRefArr.unitType : "N";
           }
           this.advancedAlertPayload.push(obj);
@@ -1482,7 +1460,6 @@ let urgencylevelEndDate = 0;
               obj["alertId"] = this.selectedRowData.id;
               obj["state"] = element.state == 'Active' ? 'A' : 'I';
               obj["alertTimingDetails"]["refId"] = geofenceLandmarkRefArr.length > 0 ? geofenceLandmarkRefArr[0].id : 0;
-              //obj["unitType"] = geofenceLandmarkRefArr[0].unitType;
               obj["unitType"] = geofenceLandmarkRefArr.length > 0 ? geofenceLandmarkRefArr[0].unitType : "N";
 
             }
@@ -1511,7 +1488,6 @@ let urgencylevelEndDate = 0;
                     obj["alertId"] = this.selectedRowData.id;
                     obj["state"] = 'A';
                     obj["alertTimingDetails"]["refId"] = filterTypeRefArr.length > 0 ? filterTypeRefArr[0].id : 0;
-                   // obj["unitType"] = filterTypeRefArr.unitType;
                    obj["unitType"]= filterTypeRefArr.length > 0 ? filterTypeRefArr[0].unitType :  "N";
 
                   }
@@ -1539,7 +1515,6 @@ let urgencylevelEndDate = 0;
               obj["alertId"] = this.selectedRowData.id;
               obj["state"] = element.state == 'Active' ? 'A' : 'I';
               obj["alertTimingDetails"]["refId"] = poiLandmarkRefArr.length > 0 ? poiLandmarkRefArr[0].id : 0;
-              //obj["unitType"] = poiLandmarkRefArr[0].unitType;
               obj["unitType"] = poiLandmarkRefArr.length > 0 ? poiLandmarkRefArr[0].unitType : this.POIEnum;
             }
 
@@ -1570,7 +1545,6 @@ let urgencylevelEndDate = 0;
                   obj["alertId"] = this.selectedRowData.id;
                   obj["state"] = 'A';
                   obj["alertTimingDetails"]["refId"] = filterTypeRefArr.length > 0 ? filterTypeRefArr[0].id : 0;
-                  //obj["unitType"] = filterTypeRefArr.unitType;
                   obj["unitType"] = filterTypeRefArr.length > 0 ? filterTypeRefArr[0].unitType : "N";
                 }
               this.advancedAlertPayload.push(obj);
@@ -1596,7 +1570,6 @@ let urgencylevelEndDate = 0;
             obj["alertId"] = this.selectedRowData.id;
             obj["state"] = element.state == 'Active' ? 'A' : 'I';
             obj["alertTimingDetails"]["refId"] = groupLandmarkRefArr.length > 0 ? groupLandmarkRefArr[0].id : 0;
-          //  obj["unitType"] = groupLandmarkRefArr[0].unitType;
           obj["unitType"] = groupLandmarkRefArr.length > 0 ? groupLandmarkRefArr[0].unitType : 'N';
           }
            this.advancedAlertPayload.push(obj);
@@ -1624,9 +1597,7 @@ let urgencylevelEndDate = 0;
                   obj["alertId"] = this.selectedRowData.id;
                   obj["state"] = 'A';
                   obj["alertTimingDetails"]["refId"] = filterTypeRefArr.length > 0 ? filterTypeRefArr[0].id : 0;
-                  //obj["unitType"] = filterTypeRefArr.unitType;
                   obj["unitType"]  = filterTypeRefArr.length > 0 ? filterTypeRefArr[0].unitType : "N";
-
                 }
               this.advancedAlertPayload.push(obj);
             });
@@ -1763,12 +1734,10 @@ let urgencylevelEndDate = 0;
             obj["alertId"] = this.selectedRowData.id;
             obj["state"] = element.state == 'Active' ? 'A' : 'I';
             obj["alertTimingDetails"]["refId"] = geofenceLandmarkRefArr.length > 0 ? geofenceLandmarkRefArr[0].id : 0;
-           // obj["unitType"] = geofenceLandmarkRefArr[0].unitType;
-           obj["unitType"] = geofenceLandmarkRefArr.length > 0 ? geofenceLandmarkRefArr[0].unitType : 'N';
+            obj["unitType"] = geofenceLandmarkRefArr.length > 0 ? geofenceLandmarkRefArr[0].unitType : 'N';
           }
           this.advancedAlertPayload.push(obj);
         }
-    
           if (this.filterTypeArray.length != 0) {
             this.filterTypeArray.forEach(item => {
               this.filterType = item.type;
@@ -1793,7 +1762,6 @@ let urgencylevelEndDate = 0;
                   obj["alertId"] = this.selectedRowData.id;
                   obj["state"] = 'A';
                   obj["alertTimingDetails"]["refId"] = filterTypeRefArr.length > 0 ? filterTypeRefArr[0].id : 0;
-                  //obj["unitType"] = filterTypeRefArr.unitType;
                   obj["unitType"] = filterTypeRefArr.length > 0 ? filterTypeRefArr[0].unitType : 'N';
                 }
               this.advancedAlertPayload.push(obj);
@@ -1804,7 +1772,6 @@ let urgencylevelEndDate = 0;
       }
       if(this.markerArray.length != 0) {
         this.markerArray.forEach(element => {
-          // if(this.filterTypeArray.length == 0){
             let obj = {
               "alertUrgencyLevelId": 0,
               "filterType": "N",
@@ -1822,7 +1789,6 @@ let urgencylevelEndDate = 0;
               obj["alertId"] = this.selectedRowData.id;
               obj["state"] = element.state == 'Active' ? 'A' : 'I';
               obj["alertTimingDetails"]["refId"] = poiLandmarkRefArr.length > 0 ? poiLandmarkRefArr[0].id : 0;
-              //obj["unitType"] = poiLandmarkRefArr[0].unitType;
               obj["unitType"] = poiLandmarkRefArr.length > 0 ? poiLandmarkRefArr[0].unitType : this.POIEnum;
             }
             this.advancedAlertPayload.push(obj);
@@ -1857,7 +1823,6 @@ let urgencylevelEndDate = 0;
             obj["alertId"] = this.selectedRowData.id;
             obj["state"] = 'A';
             obj["alertTimingDetails"]["refId"] = filterTypeRefArr.length > 0 ? filterTypeRefArr[0].id : 0;
-            //obj["unitType"] = filterTypeRefArr.unitType;
             obj["unitType"] = filterTypeRefArr.length > 0 ? filterTypeRefArr[0].unitType :  this.unitTypeVal;
           }
           this.advancedAlertPayload.push(obj);
@@ -1886,8 +1851,7 @@ let urgencylevelEndDate = 0;
           obj["alertId"] = this.selectedRowData.id;
           obj["state"] = element.state == 'Active' ? 'A' : 'I';
           obj["alertTimingDetails"]["refId"] = groupLandmarkRefArr.length > 0 ? groupLandmarkRefArr[0].id : 0;
-         // obj["unitType"] = groupLandmarkRefArr[0].unitType;
-         obj["unitType"] = groupLandmarkRefArr.length > 0 ? groupLandmarkRefArr[0].unitType : 'N';
+          obj["unitType"] = groupLandmarkRefArr.length > 0 ? groupLandmarkRefArr[0].unitType : 'N';
         }
           this.advancedAlertPayload.push(obj);
         }
@@ -1944,13 +1908,11 @@ let urgencylevelEndDate = 0;
   
   // excessive average speed
   if((this.alert_category_selected == 'F') && (this.alert_type_selected == 'A')){
-    
     if (this.actionType == 'create' || this.actionType == 'duplicate'  || this.actionType == 'edit') {
       let obj;        
       if(this.isDurationSelected){
         this.filterType = 'D';
         this.thresholdVal = parseInt(this.alertAdvancedFilterForm.controls.duration.value);
-
         if(this.alertAdvancedFilterForm.controls.duration.value == ""){
           const invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'duration' + '"]');
           if (invalidControl) { 
@@ -1964,7 +1926,6 @@ let urgencylevelEndDate = 0;
         else{
           this.isDurationValidate=true;
         }
-       
         let filterObj = {
           "type" : this.filterType,
           "val" : this.thresholdVal
@@ -1987,8 +1948,7 @@ let urgencylevelEndDate = 0;
         obj["alertId"] = this.selectedRowData.id;
         obj["state"] = 'A';
         obj["alertTimingDetails"]["refId"] = durationRefArr.length > 0 ? durationRefArr[0].id : 0;
-       // obj["unitType"] = durationRefArr[0].enum;
-       obj["unitType"] = durationRefArr.length > 0 ? durationRefArr[0].enum : this.durationEnum;
+        obj["unitType"] = durationRefArr.length > 0 ? durationRefArr[0].enum : this.durationEnum;
       }
       this.advancedAlertPayload.push(obj);
     }
@@ -1996,7 +1956,6 @@ let urgencylevelEndDate = 0;
 
     if(this.isDistanceSelected){
       this.filterType = 'T';
-      // this.thresholdVal = parseInt(this.alertAdvancedFilterForm.controls.distance.value);
       let val = parseInt(this.alertAdvancedFilterForm.controls.distance.value);
       let length = this.convertLengthToMeter(val);
       this.thresholdVal = length;
@@ -2035,7 +1994,6 @@ let urgencylevelEndDate = 0;
       obj["alertId"] = this.selectedRowData.id;
       obj["state"] = 'A';
       obj["alertTimingDetails"]["refId"] = distanceRefArr.length > 0 ? distanceRefArr[0].id : 0;
-      //obj["unitType"] = distanceRefArr[0].enum;
       obj["unitType"] =  distanceRefArr.length > 0 ? distanceRefArr[0].enum :  this.distanceEnum;
     }
     this.advancedAlertPayload.push(obj);
@@ -2081,8 +2039,7 @@ let urgencylevelEndDate = 0;
     obj["alertId"] = this.selectedRowData.id;
     obj["state"] = 'A';
     obj["alertTimingDetails"]["refId"] = noOfOccuranceRefArr.length > 0 ? noOfOccuranceRefArr[0].id : 0;
-   // obj["unitType"] = noOfOccuranceRefArr[0].enum;
-   obj["unitType"] =  noOfOccuranceRefArr.length > 0 ? noOfOccuranceRefArr[0].enum :  'N';
+    obj["unitType"] =  noOfOccuranceRefArr.length > 0 ? noOfOccuranceRefArr[0].enum :  'N';
   }
   this.advancedAlertPayload.push(obj);
 }
@@ -2117,8 +2074,7 @@ if(this.actionType == 'edit'){
   obj["alertId"] = this.selectedRowData.id;
   obj["state"] = 'A';
   obj["alertTimingDetails"]["refId"] = periodRefArr ? periodRefArr.id : 0;
- //obj["unitType"] = periodRefArr.unitType;
- obj["unitType"] =  periodRefArr.length > 0 ? periodRefArr[0].unitType : 'N';
+  obj["unitType"] =  periodRefArr.length > 0 ? periodRefArr[0].unitType : 'N';
  }   
   this.advancedAlertPayload.push(obj);  
 }
@@ -2144,8 +2100,7 @@ if(this.actionType == 'edit'){
         obj["alertId"] = this.selectedRowData.id;
         obj["state"] = element.state == 'Active' ? 'A' : 'I';
         obj["alertTimingDetails"]["refId"] = geofenceLandmarkRefArr.length > 0 ? geofenceLandmarkRefArr[0].id : 0;
-       // obj["unitType"] = geofenceLandmarkRefArr[0].unitType;
-       obj["unitType"] =  geofenceLandmarkRefArr.length > 0 ? geofenceLandmarkRefArr[0].unitType : 'N';
+        obj["unitType"] =  geofenceLandmarkRefArr.length > 0 ? geofenceLandmarkRefArr[0].unitType : 'N';
       }
       this.advancedAlertPayload.push(obj);
     }
@@ -2174,8 +2129,7 @@ if(this.actionType == 'edit'){
             obj["alertId"] = this.selectedRowData.id;
             obj["state"] = 'A';
             obj["alertTimingDetails"]["refId"] = filterTypeRefArr.length > 0 ? filterTypeRefArr[0].id : 0;
-           // obj["unitType"] = filterTypeRefArr.unitType;
-           obj["unitType"] =  filterTypeRefArr.length > 0 ? filterTypeRefArr[0].unitType : 'N';
+            obj["unitType"] =  filterTypeRefArr.length > 0 ? filterTypeRefArr[0].unitType : 'N';
           }
           this.advancedAlertPayload.push(obj);
         });
@@ -2185,7 +2139,6 @@ if(this.actionType == 'edit'){
   }
       if(this.markerArray.length != 0) {
         this.markerArray.forEach(element => {
-          // if(this.filterTypeArray.length == 0){
             let obj = {
               "alertUrgencyLevelId": 0,
               "filterType": "N",
@@ -2204,8 +2157,7 @@ if(this.actionType == 'edit'){
               obj["state"] = element.state == 'Active' ? 'A' : 'I';
               obj["alertTimingDetails"]["refId"] = poiLandmarkRefArr.length > 0 ? poiLandmarkRefArr[0].id : 0;
               obj["unitType"] = poiLandmarkRefArr.length > 0 ? poiLandmarkRefArr[0].unitType : 'N';
-            //  obj["unitType"] = poiLandmarkRefArr[0].unitType;
-            obj["unitType"] =  poiLandmarkRefArr.length > 0 ? poiLandmarkRefArr[0].unitType : this.POIEnum;
+              obj["unitType"] =  poiLandmarkRefArr.length > 0 ? poiLandmarkRefArr[0].unitType : this.POIEnum;
             }
             this.advancedAlertPayload.push(obj);
           // }
@@ -2238,7 +2190,6 @@ if(this.actionType == 'edit'){
             obj["alertId"] = this.selectedRowData.id;
             obj["state"] = 'A';
             obj["alertTimingDetails"]["refId"] = filterTypeRefArr.length > 0 ? filterTypeRefArr[0].id : 0;
-            //obj["unitType"] = filterTypeRefArr.unitType;
             obj["unitType"] =  filterTypeRefArr.length > 0 ? filterTypeRefArr[0].unitType : this.unitTypeVal;
           }
           this.advancedAlertPayload.push(obj);
@@ -2267,7 +2218,6 @@ if(this.actionType == 'edit'){
           obj["alertId"] = this.selectedRowData.id;
           obj["state"] = element.state == 'Active' ? 'A' : 'I';
           obj["alertTimingDetails"]["refId"] = groupLandmarkRefArr.length > 0 ? groupLandmarkRefArr[0].id : 0;
-          //obj["unitType"] = groupLandmarkRefArr[0].unitType;
           obj["unitType"] =  groupLandmarkRefArr.length > 0 ? groupLandmarkRefArr[0].unitType : 'N';
         }
           this.advancedAlertPayload.push(obj);
@@ -2297,8 +2247,7 @@ if(this.actionType == 'edit'){
           obj["alertId"] = this.selectedRowData.id;
           obj["state"] = 'A';
           obj["alertTimingDetails"]["refId"] = filterTypeRefArr.length > 0 ? filterTypeRefArr[0].id : 0;
-         // obj["unitType"] = filterTypeRefArr.unitType;
-         obj["unitType"] =  filterTypeRefArr.length > 0 ? filterTypeRefArr[0].unitType : 'N';
+          obj["unitType"] =  filterTypeRefArr.length > 0 ? filterTypeRefArr[0].unitType : 'N';
         }
         this.advancedAlertPayload.push(obj);
       });
@@ -2351,7 +2300,6 @@ private scrollToFuelInvalidControl() {
   setStartEndDateTime(date: any, timeObj: any, type: any){
     let _x = timeObj.split(":")[0];
     let _y = timeObj.split(":")[1];
-    // date = date._d;
     if((this.actionType == 'edit' || this.actionType == 'duplicate') && type == 'start'){
       date = date._d;
     }

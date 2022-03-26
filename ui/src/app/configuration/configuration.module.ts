@@ -26,9 +26,7 @@ import { CreateEditViewCategoryComponent } from './landmarks/manage-category/cre
 import { CreateEditViewGroupComponent } from './landmarks/manage-group/create-edit-view-group/create-edit-view-group.component';
 import { CreateEditViewGeofenceComponent } from './landmarks/manage-poi-geofence/create-edit-view-geofence/create-edit-view-geofence.component';
 import { DeleteCategoryPopupComponent } from './landmarks/manage-category/delete-category-popup/delete-category-popup.component';
-import { CreateEditViewAlertsComponent } from './alerts/create-edit-view-alerts/create-edit-view-alerts.component';
 import { CreateEditCorridorComponent } from './landmarks/manage-corridor/create-edit-corridor/create-edit-corridor.component';
-import { AlertsFilterComponent } from './alerts/alerts-filter/alerts-filter.component';
 import { RouteCalculatingComponent } from './landmarks/manage-corridor/create-edit-corridor/route-calculating/route-calculating.component';
 import { ExistingTripsComponent } from './landmarks/manage-corridor/create-edit-corridor/existing-trips/existing-trips.component';
 import { Ng2CompleterModule } from 'ng2-completer';
@@ -47,7 +45,6 @@ import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { TimeRangeSliderComponent } from './eco-score-profile-management/time-range-slider/time-range-slider.component';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter } from '@angular/material-moment-adapter';
-// import { TableVirtualScrollModule } from 'ng-table-virtual-scroll';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 
 export const MY_DATE_FORMAT = {
@@ -109,7 +106,6 @@ export const MY_DATE_FORMAT = {
     BsDropdownModule.forRoot(),
     NgxIntlTelInputModule,
     NgxMatSelectSearchModule,
-    // TableVirtualScrollModule,
     ScrollingModule
     ],
     schemas: [

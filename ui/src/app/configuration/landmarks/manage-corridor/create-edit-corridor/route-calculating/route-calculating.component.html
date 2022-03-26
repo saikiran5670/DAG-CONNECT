@@ -101,25 +101,25 @@
 <div fxLayout="row" class="margin-bottom-sm">
     <div class="col-sm-4 areaWidth">
         <span class='font-16-px line-height-24px'>{{ translationData.lblWidth}}
-        <span class='font-14-px'>({{ translationData.lblKm|| 'km' }}):</span></span>
+        <span class='font-14-px'>({{ this.widthUnit }}):</span></span>
         <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
         <span>
             <input type="number" min="0" max="10" *ngIf="actionType != 'view'" class="sliderInput" formControlName="widthInput"  (focusout)="changeSliderInput()">
         </span>
         <mat-error *ngIf="corridorFormGroup.get('widthInput').hasError('cannotExceedMaxValue')">
-        {{ translationData.lblMaxkm || 'Width cannot be greater than 10km' }}
+        {{ this.maxDistance }}
         </mat-error>
         <div *ngIf="actionType == 'view'">
             <span class='font-helvetica-md'>{{corridorWidthKm}}</span>
         </div>
-        <div *ngIf="actionType != 'view'">
+        <div *ngIf="actionType != 'view'" style="display: flex;">
             <ngx-slider [(value)]="corridorWidth" [options]="options" (mouseup)="sliderChanged()" (mousemove)="sliderChanged()"></ngx-slider>
             <!-- <ngx-slider [(value)]="value" [options]="options"></ngx-slider> -->
         <!-- <mat-label>{{min}}</mat-label>
             <mat-slider class='sliderStyle' [min]="0" [max]="1000000" [step]="1" (change)="sliderChanged($event)"
                 thumbLabel [displayWith]="formatLabel"></mat-slider>
         <mat-label>{{max}}</mat-label> -->
-
+            ({{ translationData.lblMeter }})
         </div>
         
     </div>

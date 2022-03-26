@@ -40,7 +40,6 @@ export class DriverManagementComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   importDriverFormGroup: FormGroup;
   consentFormGroup: FormGroup;
-  templateFileUrl: string = 'assets/docs/driverTemplate.xlsx';
   templateFileName: string = 'driver-Template.xlsx';
   dialogRef: MatDialogRef<ConsentOptComponent>;
   @ViewChild('UploadFileInput') uploadFileInput: ElementRef;
@@ -130,7 +129,6 @@ export class DriverManagementComponent implements OnInit {
 
   processTranslation(transData: any){
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    ////console.log("process translationData:: ", this.translationData)
   }
 
   loadDriverData(){
@@ -142,15 +140,10 @@ export class DriverManagementComponent implements OnInit {
       });
       this.initData = driverList;
       this.hideloader();
-      // this.updateGridData(this.initData);
-      // this.onConsentChange(this.selectedConsentType);
     }, (error) => {
-      //console.log("error:: ", error);
       this.initData = [];
       this.selectedConsentType = 'All';
       this.hideloader();
-      // this.updateGridData(this.initData);
-      // this.onConsentChange(this.selectedConsentType);
     });
   }
 
@@ -179,69 +172,13 @@ export class DriverManagementComponent implements OnInit {
       }
     }
     this.gridComp.updatedTableData(data);
-    // this.updateGridData(data);
   }
-
-  // updateGridData(tableData: any){
-  //   tableData = this.getNewTagData(tableData);
-  //   this.dataSource = new MatTableDataSource(tableData);
-  //   setTimeout(()=>{
-  //     this.dataSource.paginator = this.paginator;
-  //     this.dataSource.sort = this.sort;
-  //     this.dataSource.sortData = (data: String[], sort: MatSort) => {
-  //       const isAsc = sort.direction === 'asc';
-  //       return data.sort((a: any, b: any) => {
-  //         var a1;
-  //         var b1;
-  //         if(sort.active && sort.active === 'firstName'){
-  //           a1 = a.firstName + ' ' + a.lastName;
-  //           b1 = b.firstName + ' ' + b.lastName;
-  //         } else {
-  //           a1 = a[sort.active];
-  //           b1 = b[sort.active]
-  //         }
-  //         return this.compare(a1, b1, isAsc);
-  //       });
-  //      }
-  //   });
-  // }
-
-  // compare(a: Number | String, b: Number | String, isAsc: boolean) {
-  //   if(!(a instanceof Number)) a = a.toUpperCase();
-  //   if(!(b instanceof Number)) b = b.toUpperCase();
-  //   return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
-  // }
-
-  // getNewTagData(data: any){
-  //   let currentDate = new Date().getTime();
-  //   if(data.length > 0){
-  //     data.forEach(row => {
-  //       let createdDate = parseInt(row.createdAt);
-  //       let nextDate = createdDate + 86400000;
-  //       if(currentDate > createdDate && currentDate < nextDate){
-  //         row.newTag = true;
-  //       }
-  //       else{
-  //         row.newTag = false;
-  //       }
-  //     });
-  //     let newTrueData = data.filter(item => item.newTag == true);
-  //     newTrueData.sort((userobj1, userobj2) => parseInt(userobj2.createdAt) - parseInt(userobj1.createdAt));
-  //     let newFalseData = data.filter(item => item.newTag == false);
-  //     Array.prototype.push.apply(newTrueData, newFalseData);
-  //     return newTrueData;
-  //   }
-  //   else{
-  //     return data;
-  //   }
-  // }
 
   importDrivers(clearInput: any){
     if(this.filelist.length > 0){
       this.validateExcelFileField(clearInput);
       this.excelEmptyMsg = false;
     }else{
-      //console.log("Empty Excel File...");
       this.excelEmptyMsg = true;
       clearInput.clear();
     }
@@ -277,7 +214,6 @@ export class DriverManagementComponent implements OnInit {
         _txt.lastName = "";
       }
       for (const [key, value] of Object.entries(item)) {
-        //console.log(`${key}: ${value}`);
         switch(key){
           case this.translationData.lblDriverIDCountryCode: // 'Driver ID Country Code'
             _txt.countryCode = value;
@@ -298,11 +234,9 @@ export class DriverManagementComponent implements OnInit {
       }
       driverAPIData.push(_txt);
     });
-    //console.log("Parse excel driver:: ", driverAPIData)
     let finalList: any = this.validateFields(driverAPIData);
     this.rejectedDriverList = finalList.invalidDriverList;
     this.newDriverCount = 0;
-    //console.log("Validated driver:: ", finalList)
     if(finalList.validDriverList.length > 0){
       let objData = [
         {
@@ -336,7 +270,6 @@ export class DriverManagementComponent implements OnInit {
       this.importDriverPopup = true;
       clearInput.clear();
     }
-    //this.newDriverCount = (this.filelist.length - this.rejectedDriverList.length); // new = (total - rejected)
   }
 
   validateFields(driverList: any){
@@ -349,7 +282,6 @@ export class DriverManagementComponent implements OnInit {
       let lname: any;
       let email: any
       for (const [key, value] of Object.entries(item)) {
-        ////console.log(`${key}: ${value}`);
         switch(key){
           case "countryCode":{
             let objData: any = this.countryCodeValidation(value, 'Driver ID Country Code',index);
@@ -394,9 +326,6 @@ export class DriverManagementComponent implements OnInit {
             if(!lname){
               item.returnMassage = objData.reason;
             }
-            // else if(lname && objData.undefineStatus){
-            //   item.lastName = '';
-            // }
             else{
               item.lastName = item.lastName.trim();
             }
@@ -408,9 +337,6 @@ export class DriverManagementComponent implements OnInit {
             if(!email){
               item.returnMassage = objData.reason;
             }
-            // else if(email && objData.undefineStatus){
-            //   item.email = '';
-            // }
             else{
               item.email = item.email.trim();
             }
@@ -421,7 +347,6 @@ export class DriverManagementComponent implements OnInit {
 
       if(driverIdCountryCode && driverIdNumber && fname && lname && email){
         item.driverID = `${item.countryCode}${item.driverNumber}`;
-        //validData.push(item);
         validData.push({
           driverID: item.driverID,
           email: item.email,
@@ -439,14 +364,6 @@ export class DriverManagementComponent implements OnInit {
   emailValidation(value: any,index:any){
     let obj: any = { status: true, reason: 'correct data' };
     const regx = /[a-zA-Z0-9-_.]{1,}@[a-zA-Z0-9-_.]{2,}[.]{1}[a-zA-Z]{2,}/;
-    // if(!value){
-    //   obj.undefineStatus = true
-    //   return obj;
-    // }
-    // if(value && value.trim().length == 0){ //-- optional field
-    //  return obj;
-    // }
-    //else{
       if(!value || value == '' || value.length == 0 || value.trim().length == 0){
         obj.status = false;
         obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblRequireEmailField || 'Required Email field'}`;
@@ -463,12 +380,10 @@ export class DriverManagementComponent implements OnInit {
         return obj;
       }
       return obj;
-    //}
   }
 
   countryCodeValidation(value: any, type: any, index: any){
     let obj: any = { status: true, reason: 'correct data'};
-    //const regx = /[A-Z]{1,1}[A-Z\s]{1,1}[A-Z\s]{1,1}/;
     let numberRegex = /[^0-9]+$/;
     let SpecialCharRegex = /[^-!@#\$%&*]+$/;
     if(!value || value == '' || value.trim().length == 0){
@@ -491,11 +406,6 @@ export class DriverManagementComponent implements OnInit {
       obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - `+this.getValidateMsg(type, this.translationData.lblSpecialcharactersnotallowedin );
       return obj;
     }
-    // if(!regx.test(value)){
-    //   obj.status = false;
-    //   obj.reason = this.translationData.lblDriverIDCountryCodeformatisinvalid || 'Driver ID Country Code format is invalid';
-    //   return obj;
-    // }
     return obj;
   }
 
@@ -545,14 +455,6 @@ export class DriverManagementComponent implements OnInit {
     let obj: any = { status: true, reason: 'correct data'};
     let numberRegex = /[^0-9]+$/;
     let SpecialCharRegex = /[^!@#\$%&*]+$/;
-    // if(!value){
-    //   obj.undefineStatus = true
-    //   return obj;
-    // }
-    // if(value && value.trim().length == 0){ //-- optional field
-    //   return obj;
-    // }
-    //else{
       if(!value || value == '' || value.length == 0){ // required field
         obj.status = false;
         obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - Required ${type} field `;
@@ -579,7 +481,6 @@ export class DriverManagementComponent implements OnInit {
         return obj;
       }
       return obj;
-    //}
   }
 
   getValidateMsg(type: any, typeTrans: any, maxLength?: any){
@@ -662,7 +563,6 @@ export class DriverManagementComponent implements OnInit {
         var workbook = XLSX.read(bstr, {type:"binary"});
         var first_sheet_name = workbook.SheetNames[0];
         var worksheet = workbook.Sheets[first_sheet_name];
-        ////console.log(XLSX.utils.sheet_to_json(worksheet,{raw:true}));
         var arraylist = XLSX.utils.sheet_to_json(worksheet, {raw:true, header: 0, defval: ""});
         this.filelist = [];
         this.filelist = arraylist;
@@ -714,13 +614,9 @@ export class DriverManagementComponent implements OnInit {
     this.dialogRef = this.dialog.open(ConsentOptComponent, dialogConfig);
     this.dialogRef.afterClosed().subscribe(res => {
       if(res){
-        // if(res.tableData && res.tableData.length > 0){
           this.selectedConsentType = 'All';
           this.setConsentDropdown();
-          // this.initData = res.tableData;
           this.loadDriverData();
-          // this.updateGridData(this.initData);
-        // }
         if(res.consentMsg) {
           var msg = '';
           if(dialogConfig.data.consentType == 'H' || dialogConfig.data.consentType == 'I') {
@@ -736,9 +632,6 @@ export class DriverManagementComponent implements OnInit {
           }
         }
         this.successMsgBlink(msg);
-        // if(res.consentMsg && res.consentMsg != ''){
-        //   this.successMsgBlink(res.consentMsg);
-        // }
       }
     });
   }
@@ -765,11 +658,8 @@ export class DriverManagementComponent implements OnInit {
     ];
     let workbook = new Workbook();
     let worksheet = workbook.addWorksheet('Driver Template');
-    //Add Header Row
     let headerRow = worksheet.addRow(header);
-    // Cell Style : Fill and Border
     headerRow.eachCell((cell, number) => {
-      ////console.log(cell)
       if(number != 6){
         cell.fill = {
           type: 'pattern',
@@ -781,8 +671,6 @@ export class DriverManagementComponent implements OnInit {
           color: { argb: 'FFFFFFFF'},
           bold: true
         }
-      }else{
-        //cell.alignment = { wrapText: true, vertical: 'justify', horizontal: 'justify' }
       }
       cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
     });

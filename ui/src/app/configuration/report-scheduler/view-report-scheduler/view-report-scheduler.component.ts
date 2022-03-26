@@ -121,7 +121,7 @@ export class ViewReportSchedulerComponent implements OnInit {
         this.updateDatasource();
       }
     }, (error) => {
-      console.log(error);
+      //console.log(error);
     });
   }
 

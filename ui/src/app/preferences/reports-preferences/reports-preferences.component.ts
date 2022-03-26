@@ -1,7 +1,5 @@
-import { Component, Input, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
-import { AccountService } from 'src/app/services/account.service';
+import { Component, Input, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core'; 
 import { ReportService } from 'src/app/services/report.service';
-import { TranslationService } from 'src/app/services/translation.service';
 import { FleetFuelPreferencesComponent } from './fleet-fuel-preferences/fleet-fuel-preferences.component';
 import { Router } from '@angular/router';
 
@@ -22,7 +20,6 @@ export class ReportsPreferencesComponent implements OnInit {
   showFleetUtilisationReport: boolean = false;
   editTripFlag: boolean = false;
   editFleetUtilisationFlag: boolean = false;
-  reportListData: any = [];
   showDriverTimePerferences: boolean = false;
   editDriverTimePerferencesFlag: boolean = false;
   showEcoScorePerferences: boolean = false;
@@ -32,41 +29,24 @@ export class ReportsPreferencesComponent implements OnInit {
   showFuelDeviationPerferences: boolean = false;
   editFuelDeviationPerferencesFlag: boolean = false;
   showFleetFuelPerferences: boolean = false;
-  editFleetFuelPerferencesFlag: boolean = false;
-  generalPreferences: any;
+  editFleetFuelPerferencesFlag: boolean = false; 
   requestSent: boolean = false;
   tabIndex: any = 0;
+  prefDetail: any = {};
+  reportDetail: any = [];
 
-  constructor(private reportService: ReportService, private translationService: TranslationService, private accountService: AccountService, private router: Router, private cdr: ChangeDetectorRef) { }
+  constructor(private reportService: ReportService, private router: Router, private cdr: ChangeDetectorRef) { }
 
   ngOnInit() {
-    this.loadReportData();
+    this.prefDetail = JSON.parse(localStorage.getItem('prefDetail'));
+    this.reportDetail = JSON.parse(localStorage.getItem('reportDetail')); 
   }
 
   ngAfterViewInit(){
     this.cdr.detectChanges();
   }
 
-  loadReportData(){
-    this.showLoadingIndicator = true;
-    this.reportService.getReportDetails().subscribe((reportList: any) => {
-      this.reportListData = reportList.reportDetails;
-      let languageCode = JSON.parse(localStorage.getItem('language')).code;
-      this.translationService.getPreferences(languageCode).subscribe((res: any) => { 
-        this.hideloader();
-        this.generalPreferences = res;
-      }, (error)=>{
-        this.hideloader();
-      });
-    }, (error)=>{
-      console.log('Report not found...', error);
-      this.hideloader();
-      this.reportListData = [];
-    });
-  }
-
   hideloader() {
-    // Setting display of spinner
     this.showLoadingIndicator = false;
   }
 
@@ -99,7 +79,7 @@ export class ReportsPreferencesComponent implements OnInit {
         this.successMsgBlink(retObj.msg);
       }
     }else{
-      this.editFleetUtilisationFlag = false; // hard coded
+      this.editFleetUtilisationFlag = false; 
     }
   }
 
@@ -110,7 +90,7 @@ export class ReportsPreferencesComponent implements OnInit {
         this.successMsgBlink(retObj.msg);
       }
     }else{
-      this.editTripFlag = false; // hard coded
+      this.editTripFlag = false; 
     }
   }
 
@@ -145,17 +125,15 @@ export class ReportsPreferencesComponent implements OnInit {
       let vehicleObj = this.fleetFuelPerferencesVehicle.onConfirm();
       let driverObj = this.fleetFuelPerferencesDriver.onConfirm();
       let objData: any = {
-        reportId: this.reportListData.filter(i => i.name == 'Fleet Fuel Report')[0].id,
+        reportId: this.reportDetail.filter(i => i.name == 'Fleet Fuel Report')[0].id,
         attributes: [...vehicleObj, ...driverObj]
       };
-      //this.showLoadingIndicator = true;
       this.reportService.updateReportUserPreference(objData).subscribe((res: any) => {
         this.showLoadingIndicator = false;
         let _reloadFlag: any = false;
         if ((this.router.url).includes("fleetfuelreport")) {
           _reloadFlag = true
-          this.fleetFuelPerferencesVehicle.loadFleetFuelPreferences(_reloadFlag);
-          //this.reloadCurrentComponent();
+          this.fleetFuelPerferencesVehicle.loadFleetFuelPreferences(_reloadFlag); 
         }
         this.updateFleetFuelPerferencesFlag({ flag: false, msg: this.getSuccessMsg() });
         this.requestSent = false;
@@ -237,8 +215,6 @@ export class ReportsPreferencesComponent implements OnInit {
   
   onTabChanged(event) {
     this.tabIndex = event.index;
-    // event.stopPropogation();
-    // event.preventDefault();
   }
 
   validateRequiredField() {

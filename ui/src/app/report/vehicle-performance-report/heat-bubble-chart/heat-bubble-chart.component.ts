@@ -27,7 +27,7 @@ export type ChartOptions = {
 @Component({
   selector: 'app-heat-bubble-chart',
   templateUrl: './heat-bubble-chart.component.html',
-  styleUrls: ['./heat-bubble-chart.component.css']
+  styleUrls: ['./heat-bubble-chart.component.less']
 })
 export class HeatBubbleChartComponent implements OnInit, AfterViewChecked {
   @ViewChild("chart") chart: ChartComponent;
@@ -50,8 +50,7 @@ export class HeatBubbleChartComponent implements OnInit, AfterViewChecked {
 
   constructor(private elementRef: ElementRef) { }
 
-  ngOnInit(): void {
-
+  ngOnInit() {
     this.chartOptions = {
       annotations: {
         position: "back",
@@ -100,8 +99,6 @@ export class HeatBubbleChartComponent implements OnInit, AfterViewChecked {
       grid: {
         row: {
           colors: [({ value, seriesIndex, w }) => {
-            console.log(`value => ${value} ::  seriesIndex => ${seriesIndex} :: w => ${w}`)
-            console.log('w', w)
             if(value < 55) {
                 return '#7E36AF'
             } else if (value >= 55 && value < 80) {
@@ -118,14 +115,11 @@ export class HeatBubbleChartComponent implements OnInit, AfterViewChecked {
   ngAfterViewChecked() {
     if(this.updateChartOptions) {
       let elm = this.elementRef.nativeElement.querySelectorAll('.apexcharts-grid');
-      // console.log("AfterViewChecked elm", elm);   
       if(elm.length != 0) {
         this.updateChartOptions = false;
         let elmClientWidth = elm[0].ownerSVGElement.clientWidth;
         let boxWidth = Math.round((elmClientWidth - 62)/10);
-        // console.log("AfterViewChecked boxWidth", boxWidth);
         let backgroundColorPattern = this.processYaxisAnnotation(boxWidth);
-        // this.chart.addYaxisAnnotation(obj);
         let chartOptions = {
           annotations: {
             position: "back",
@@ -136,7 +130,6 @@ export class HeatBubbleChartComponent implements OnInit, AfterViewChecked {
       }
     }
   }
-
 
   processYaxisAnnotation(boxWidth) {
     let backgroundColorPattern = [];
@@ -169,7 +162,4 @@ export class HeatBubbleChartComponent implements OnInit, AfterViewChecked {
     }
     return backgroundColorPattern;
   }
-
-
-
 }

@@ -274,7 +274,7 @@ export class CreateEditUserGroupComponent implements OnInit {
            });
         }, (err) => {
           this.showLoadingIndicator=false;
-          //console.log(err);
+          ////console.log(err);
           if (err.status == 409) {
             this.duplicateEmailMsg = true;
           }
@@ -318,7 +318,7 @@ export class CreateEditUserGroupComponent implements OnInit {
          });
       }, (err) => {
         this.showLoadingIndicator=false;
-        //console.log(err);
+        ////console.log(err);
         if (err.status == 409) {
           this.duplicateEmailMsg = true;
         }
@@ -374,7 +374,7 @@ export class CreateEditUserGroupComponent implements OnInit {
   }
 
   groupTypeChange(event: any){
-    //console.log("event:: ", event)
+    ////console.log("event:: ", event)
     if(event.value == 'D'){ //-- dynamic
       this.showUserList = false;
     }

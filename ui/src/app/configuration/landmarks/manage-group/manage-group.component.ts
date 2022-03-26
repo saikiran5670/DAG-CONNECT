@@ -87,7 +87,7 @@ export class ManageGroupComponent implements OnInit {
         this.updateDatasource(this.initData);
       }
     }, (error) => {
-      //console.log(error)
+      ////console.log(error)
       this.hideloader();
     });
   }
@@ -220,6 +220,16 @@ export class ManageGroupComponent implements OnInit {
         .subscribe((d) => {
           this.successMsgBlink(this.getDeletMsg(name));
           this.loadInitData();
+        }, (error)=>{         
+          if(error.status === 500 || error.status === 409){
+            const options = {
+              title: this.translationData.lblDelete || "Delete",
+              message: this.translationData.lblCorridorUsedInAlert.replace('$', name) || ("Corridor '$' cannot be deleted, it is used in alert.").replace('$', name),
+              cancelText: this.translationData.lblCancel || "Cancel",
+              confirmText: 'hide-btn'
+            };
+            this.dialogService.DeleteModelOpen(options);
+          }
         });
     }
    });

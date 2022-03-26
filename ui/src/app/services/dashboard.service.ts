@@ -17,7 +17,7 @@ import { ConfigService } from '@ngx-config/core';
 export class DashboardService {
   dashboardServiceUrl : any;
   constructor(private httpClient: HttpClient, private config: ConfigService) { 
-    this.dashboardServiceUrl = config.getSettings("foundationServices").dashboardRESTServiceURL;
+    this.dashboardServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/dashboard';
 
   }
 
@@ -135,8 +135,11 @@ export class DashboardService {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .get<any[]>(
-        `${this.dashboardServiceUrl}/alert24hours`, headers
+      // .get<any[]>(
+      //   `${this.dashboardServiceUrl}/alert24hours`, headers
+      // )
+      .post<any[]>(
+        `${this.dashboardServiceUrl}/alert24hours`, data, headers
       )
       .pipe(catchError(this.handleError));
   }

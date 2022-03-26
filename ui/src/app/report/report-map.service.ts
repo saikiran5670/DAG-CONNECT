@@ -38,7 +38,8 @@ export class ReportMapService {
   entryPoint: any = '';
 
   constructor(private hereSerive : HereService, private _configService: ConfigService) {
-    this.map_key =  _configService.getSettings("hereMap").api_key;
+    // this.map_key =  _configService.getSettings("hereMap").api_key;
+    this.map_key = localStorage.getItem("hereMapsK");
     this.platform = new H.service.Platform({
       "apikey": this.map_key 
     });
@@ -142,7 +143,7 @@ export class ReportMapService {
    // this.hereMap.addLayer(poi.raster.normal.map);
 
     // this.hereSerive.getHerePois().subscribe(data=>{
-    //   console.log(data)
+    //   //console.log(data)
     // });
    
   }
@@ -211,12 +212,12 @@ export class ReportMapService {
     if(POIArr.length > 0){
       POIArr.forEach(element => {
         this.herePOISearch.request(this.entryPoint.SEARCH, { 'at': lat + "," + lng, 'q': element }, (data) => {
-          //console.log(data);
+          ////console.log(data);
           for(let i = 0; i < data.results.items.length; i++) {
             this.dropMapPOIMarker({ "lat": data.results.items[i].position[0], "lng": data.results.items[i].position[1] }, data.results.items[i], element, _ui);
           }
         }, error => {
-          console.log('ERROR: ' + error);
+          //console.log('ERROR: ' + error);
         });
       });
       if(selectedRoutes && selectedRoutes.length == 0){
@@ -391,13 +392,14 @@ export class ReportMapService {
               this.drawAlerts(elem.filterAlerts, _ui, translationData);
             }
           }
-
-          this.hereMap.addObject(this.group);
-          this.group.addObjects([this.startMarker, this.endMarker]); //16667 - main map group considered to show entire trip
-          this.hereMap.addObject(this.group);
-          this.hereMap.getViewModel().setLookAtData({
-            bounds: this.group.getBoundingBox()
-          });
+          setTimeout(() => {
+            this.hereMap.addObject(this.group);
+            this.group.addObjects([this.startMarker, this.endMarker]); //16667 - main map group considered to show entire trip
+            this.hereMap.addObject(this.group);
+            this.hereMap.getViewModel().setLookAtData({
+              bounds: this.group.getBoundingBox()
+            });
+           }, 0); 
         }
       });
       this.makeCluster(_selectedRoutes, _ui);
@@ -452,7 +454,7 @@ export class ReportMapService {
                 <td style='width: 100px;'>${translationData.lblAlertName || 'Alert Name'}:</td> <td class='font-helvetica-md'>${element.alertName ? element.alertName : '-' }</td>
               </tr>
               <tr>
-                <td style='width: 100px;'>${translationData.lblAlertType || 'Alert Type'}:</td> <td class='font-helvetica-md'>${_obj.type}</td>
+                <td style='width: 100px;'>${translationData.lblAlertType || 'Alert Type'}:</td> <td class='font-helvetica-md'>${_obj.alertType}</td>
               </tr>
               <tr>
                 <td style='width: 100px;'>${translationData.lblAlertLevel || 'Alert Level'}:</td> <td class='font-helvetica-md'>${_obj.level}</td>
@@ -475,6 +477,7 @@ export class ReportMapService {
 
   setColorForAlerts(element: any, _fillColor: any, _level: any){
     let _type: any = '';
+    let _alertType: any = '';
       switch (element.urgencyLevelType) {
         case 'C':
           case 'Critical':{
@@ -518,7 +521,87 @@ export class ReportMapService {
         default:
           break;
       }
-      return {color: _fillColor, level: _level, type: _type};
+      switch (element.alertType) {
+        case 'N':
+          case 'Entering Zone':{
+          _alertType = 'Entering Zone'
+        }
+        break;
+        case 'X':
+          case 'Existing Zone':{
+          _alertType = 'Existing Zone'
+        }
+        break;
+        case 'C':
+          case 'Existing Corridor':{
+          _alertType = 'Existing Corridor'
+
+        }
+        break;
+        case 'D':
+          case 'Excessive Distance Done(Trip)':{
+          _alertType = 'Excessive Distance Done(Trip)'
+        }
+        break;
+        case 'U':
+          case 'Excessive Driving Duration(Trip)':{
+          _alertType = 'Excessive Driving Duration(Trip)'
+        }
+        break;
+        case 'G':
+          case 'Excessive Global Mileage(Trip)':{
+          _alertType = 'Excessive Global Mileage(Trip)'
+        }
+        break;
+        case 'S':
+          case 'Hours of Service(Realtime)':{
+          _alertType = 'Hours of service(Realtime)'
+        }
+        break;
+        case 'A':
+          case 'Excessive Average Speed':{
+          _alertType = 'Excessive Average Speed(Realtime)'
+        }
+        break;
+        case 'H':
+          case 'Excessive Under Utilization in Hours':{
+          _alertType = 'Excessive Under Utilization in Hours'
+        }
+        break;
+        case 'Y':
+          case 'Excessive Under Utilization in Days':{
+          _alertType = 'Excessive Under Utilization in Days (Batch)'
+        }
+        break;
+        case 'I':
+          case 'Excessive Idling(Realtime)':{
+          _alertType = 'Excessive Idling(Realtime)'
+        }
+        break;
+        case 'F':
+          case 'Fuel Consumed':{
+          _alertType = 'Fuel Consumed'
+        }
+        break;
+        case 'P':
+          case 'Fuel Increase During Stop(Realtime)':{
+          _alertType = 'Fuel Increase During Stop(Realtime)'
+        }
+        break;
+        case 'L':
+          case 'Fuel Loss During Stop(Realtime)':{
+          _alertType = 'Fuel Loss During Stop(Realtime)'
+        }
+        break;
+        case 'T':
+          case 'Fuel Loss During Trip(Realtime)':{
+          _alertType = 'Fuel Loss During Trip(Realtime)'
+        }
+        break;
+        default:
+          break;
+      }
+      return {color: _fillColor, level: _level, type: _type, alertType: _alertType};
   }
 
    makeCluster(_selectedRoutes: any, _ui: any){
@@ -838,7 +921,7 @@ export class ReportMapService {
     this.hereMap.addLayer(this.clusteringLayer, 100); // set z-index to cluster
     clusteredDataProvider.addEventListener('tap', (event) => {
       // Log data bound to the marker that has been tapped:
-      //console.log(event.target.getData(), data)
+      ////console.log(event.target.getData(), data)
       this.afterPlusClick(data, ui);
     });
   }
@@ -1134,7 +1217,7 @@ export class ReportMapService {
 
   infoBubbleCheckBoxClick(chkBxId, _data, _checked: any){
     var checkBox: any = document.getElementById(chkBxId);
-    //console.log(_data)
+    ////console.log(_data)
     //if (_checked){
       //alert(" Enabled")
       //this.removedDisabledGroup();
@@ -1767,7 +1850,7 @@ export class ReportMapService {
     let sTime: any = 0;
     if(startTime != 0){
       sTime = this.formStartEndDate(Util.convertUtcToDate(startTime, timeZone), dateFormat, timeFormat, addTime, onlyTime);
-      //console.log("sTime", sTime);
+      ////console.log("sTime", sTime);
     }
     return sTime;
   }
@@ -1832,7 +1915,7 @@ export class ReportMapService {
 
   //Fuel Consumption in Summary Section
   getFuelConsumptionSummary(FuelConsumpt: any, dt:any, unitFormat: any){
-    //console.log("This function works well"); 
+    ////console.log("This function works well"); 
     let _fuelConsumption: any = 0;
 
     switch(unitFormat){
@@ -1842,7 +1925,7 @@ export class ReportMapService {
       }
       
       case 'dunit_Imperial':{
-        _fuelConsumption = (dt/FuelConsumpt);
+        _fuelConsumption = (FuelConsumpt/dt);
         break;
       }
       default:{
@@ -2045,7 +2128,7 @@ export class ReportMapService {
         newGraphData[graphIndex].fuelConsumtion = 0;
       }
     }    
-     //console.log(ele);
+     ////console.log(ele);
   });
   newGraphData.sort((a, b) => { // date sort asc #20102
     return a.milisec - b.milisec;

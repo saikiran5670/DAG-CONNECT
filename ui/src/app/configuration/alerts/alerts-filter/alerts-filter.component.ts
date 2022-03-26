@@ -1,9 +1,9 @@
-import { Component, OnInit, Input, ViewChild, Output, EventEmitter } from '@angular/core';
-import { TranslationService } from 'src/app/services/translation.service';
+import { Component, OnInit, Input, ViewChild, Output, EventEmitter } from '@angular/core'; 
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { ReportMapService } from 'src/app/report/report-map.service';
+
 @Component({
   selector: 'app-alerts-filter',
   templateUrl: './alerts-filter.component.html',
@@ -24,13 +24,11 @@ export class AlertsFilterComponent implements OnInit {
   @Input() filteredVehicles: any;
   @Input() vehicleByVehGroupList: any;
   @Input() associatedVehicleData :any;
+  @Input() vehicleDisplayPreference: any;
   singleVehicle = [];
-
   isDisabledAlerts = true; 
   localData : any; 
   tempData: any; 
- 
-  vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   accountPrefObj: any;
   alertTypeEnum:any;
   dataResultTypes:any=[];
@@ -40,7 +38,7 @@ export class AlertsFilterComponent implements OnInit {
  
   alertCategory = ''; 
   alertType = ''; 
-  alertVehicleGroup = '';
+  alertVehicleGroup: any = '';
   alertVehicle = ''; 
   alertCriticality = ''; 
   alertStatus = '';
@@ -55,54 +53,28 @@ export class AlertsFilterComponent implements OnInit {
  filterListValues = {};
  dataSource = new MatTableDataSource();
 
- constructor(private translationService: TranslationService, private reportMapService : ReportMapService) { }
+ constructor(private reportMapService : ReportMapService) { }
    
-  ngOnInit(): void {
+  ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
-    //this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     if(localStorage.getItem('contextOrgId')){
       this.accountOrganizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
     }
     else{
       this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     }
-
-    let translationObj = {
-      id: 0,
-      code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
-      type: "Menu",
-      name: "",
-      value: "",
-      filter: "",
-      menuId: 17 //-- for alerts
-    }
-    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-     this.processTranslation(data);     
-     this.updatedTableData(this.initData);     
-     this.dataSource.filterPredicate = this.createFilter();  
-
-     this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
-      let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
-      if(vehicleDisplayId) {
-        let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
-        if(vehicledisplay.length != 0) {
-          this.vehicleDisplayPreference = vehicledisplay[0].name;
-        }
-      }  
-    });
+    this.updatedTableData(this.initData);     
+    this.dataSource.filterPredicate = this.createFilter();  
     this.resetVehiclesFilter();
-    });
   } 
 
   resetVehiclesFilter(){
     this.filteredVehicles.next(this.vehicleByVehGroupList.slice());
   }
 
-
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    //console.log("process translationData:: ", this.translationData)  
    }
 
   handleCategoryChange(filter, tempEnum, event) {
@@ -140,7 +112,7 @@ export class AlertsFilterComponent implements OnInit {
       });
     }
   // Called on Filter change
-  filterChange(filter, event) {     
+  filterChange(filter, event, status? : boolean) {   
     let event_val;      
       if(filter == "highUrgencyLevel"){          
         if(event.value == ''){          
@@ -150,20 +122,42 @@ export class AlertsFilterComponent implements OnInit {
           event_val = event.value.enum; 
         }
         }else if(filter == "vehicleGroupName"){
-
-          if(event.value == ''){ //for all option
-            this.alertVehicleGroup='';
-            event_val = event.value.trim();  
+          if(status){ //for all option vehicle  
+            if(this.alertVehicle == ''){
+              event_val= this.alertVehicleGroup == ''? this.alertVehicleGroup :this.alertVehicleGroup.value;
+            }
+            else{
+              let vehicleList = this.vehicleByVehGroupList.filter(i=>i.vehicleId==parseInt(this.alertVehicle));
+              if(vehicleList.length > 0){
+                switch(this.vehicleDisplayPreference){
+                  case 'dvehicledisplay_VehicleName' : event_val = vehicleList[0].vehicleName;
+                  break;
+                  case 'dvehicledisplay_VehicleIdentificationNumber' :  event_val = vehicleList[0].vin;
+                  break;
+                  case 'dvehicledisplay_VehicleRegistrationNumber' : event_val = vehicleList[0].registrationNo;
+                  break;
+                }          
+              }
+              else{
+                event_val = this.alertVehicleGroup == ''? this.alertVehicleGroup :this.alertVehicleGroup.value;
+              }
+            }
           }
-          else{
+          else if(event.value == ''){ // for all option vehicle group
+            this.alertVehicle = '';
+             this.alertVehicleGroup='';
+            event_val = event.value.trim(); 
+          }
+          else{   
+            this.alertVehicle = '';         
             if(event.value!= undefined){
               this.vehicle_group_selected= event.value.value;
               this.vehicleByVehGroupList= this.associatedVehicleData.filter(item => item.vehicleGroupDetails.includes(this.vehicle_group_selected+"~"));
               this.resetVehiclesFilter();
-              event_val = event.value.vehicleName.trim();
+              event_val = event.value.value.trim();
             }
             else{
-              event_val = event.value.value.trim();  
+              event_val = this.alertVehicleGroup == ''? this.alertVehicleGroup :this.alertVehicleGroup.value; 
             }
           }
        }       
@@ -204,28 +198,37 @@ export class AlertsFilterComponent implements OnInit {
           let critical  = data.alertUrgencyLevelRefs.filter(lvl=> lvl.urgencyLevelType == 'C');
           let warning   = data.alertUrgencyLevelRefs.filter(lvl=> lvl.urgencyLevelType == 'W');
           let advisory  = data.alertUrgencyLevelRefs.filter(lvl=> lvl.urgencyLevelType == 'A');
-         if(critical.length > 0){
+         
+          if(critical.length > 0){
             critical.forEach(obj => { 
             data["highUrgencyLevel"]=obj.urgencyLevelType;
             data["highThresholdValue"]=obj.thresholdValue;
+              if(searchTerms.highUrgencyLevel == ''){
+                data["highThresholdValue"]= obj.unitType !='N'? this.getConvertedThresholdValues(obj.thresholdValue, obj.unitType) : obj.thresholdValue;
+              }
             });
           }else if(warning.length > 0){
             warning.forEach(obj => { 
             data["highUrgencyLevel"]=obj.urgencyLevelType;
             data["highThresholdValue"]=obj.thresholdValue;
+            if(searchTerms.highUrgencyLevel == ''){
+              data["highThresholdValue"]= obj.unitType !='N'? this.getConvertedThresholdValues(obj.thresholdValue, obj.unitType) : obj.thresholdValue;
+            }
           });
           }
           else {
             advisory.forEach(obj => { 
             data["highUrgencyLevel"]=obj.urgencyLevelType;
             data["highThresholdValue"]=obj.thresholdValue;
+            if(searchTerms.highUrgencyLevel == ''){
+              data["highThresholdValue"]= obj.unitType !='N'? this.getConvertedThresholdValues(obj.thresholdValue, obj.unitType) : obj.thresholdValue;
+            }
           });
           }                     
          }         
           delete searchTerms[col];
         }
       }
-      console.log(searchTerms);
       let nameSearch = () => {
         let found = false;
         if (isFilterSet) {          
@@ -307,7 +310,6 @@ export class AlertsFilterComponent implements OnInit {
       }
       return nameSearch()
     }
-    // return filterFunction
   }
 
   getConvertedThresholdValues(originalThreshold,unitType){
@@ -326,6 +328,4 @@ export class AlertsFilterComponent implements OnInit {
     }
     return threshold;
   }
- 
-
 }

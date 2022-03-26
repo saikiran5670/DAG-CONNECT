@@ -1,4 +1,4 @@
-<app-common-breadcrumbs [breadcrumb]="breadcumMsg" [topRightElements]="topRightElements">
+<app-common-breadcrumbs *ngIf= "breadcumMsg && breadcumMsg!=''" [breadcrumb]="breadcumMsg" [topRightElements]="topRightElements">
     <ng-template #topRightElements>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
             <span class='custom-font' (click)="toBack()">
@@ -9,19 +9,6 @@
         </div>
 </ng-template>
 </app-common-breadcrumbs>
-
-<!-- <div  fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
-    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-        <span>{{ breadcumMsg }}</span>
-    </div>
-    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
-        <span class='custom-font' (click)="toBack()">
-            <span>
-                <&nbsp;</span>
-                    <span class='backBtnCss'>{{ translationData.lblBack }}</span>
-        </span>
-    </div>
-</div> -->
 
 <form [formGroup]="featureFormGroup" (keydown.enter)="$event.preventDefault()">
     <mat-card class='mat-elevation-z'>
@@ -45,7 +32,6 @@
                         </div>
                         <span *ngIf="actionType != 'view'">{{ translationData.lbl250CharMax }}</span>
                     </mat-label>
-                    <!-- <mat-error *ngIf="duplicateEmailMsg">{{translationData.lblDuplicateDataAttributeSetName }}</mat-error> -->
                     <div *ngIf="actionType != 'view'">
                         <mat-form-field appearance="outline" class="full-width">
                             <input maxlength="250"

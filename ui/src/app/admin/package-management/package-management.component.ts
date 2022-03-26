@@ -83,7 +83,7 @@ export class PackageManagementComponent implements OnInit {
 
   processTranslation(transData: any){
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    //console.log("process translationData:: ", this.translationData)
+    ////console.log("process translationData:: ", this.translationData)
   }
 
   ngOnInit() {
@@ -107,6 +107,9 @@ export class PackageManagementComponent implements OnInit {
   loadPackageData(){
     this.showLoadingIndicator = true;
     this.packageService.getPackages().subscribe((data : any) => {
+      data["pacakageList"].forEach(element => {
+        (element.state == 'A') ? element.state = this.translationData.lblActive : element.state = this.translationData.lblInactive;
+      });
       this.initData = data["pacakageList"];
     this.dataSource = new MatTableDataSource(this.tableData);
     Util.applySearchFilter(this.dataSource, this.tableColumnList , this.filterValue );
@@ -193,10 +196,10 @@ export class PackageManagementComponent implements OnInit {
   openSnackBar(message: string, action: string) {
     let snackBarRef = this._snackBar.open(message, action, { duration: 2000 });
     snackBarRef.afterDismissed().subscribe(() => {
-      console.log('The snackbar is dismissed');
+      //console.log('The snackbar is dismissed');
     });
     snackBarRef.onAction().subscribe(() => {
-      console.log('The snackbar action was triggered!');
+      //console.log('The snackbar action was triggered!');
     });
   }
 
@@ -264,7 +267,7 @@ export class PackageManagementComponent implements OnInit {
       this.initData = [];
       this.loadPackageData();
     }
-    //console.log(_event)
+    ////console.log(_event)
   }
   // getexportedValues(dataSource){
   //   this.dataSource = dataSource;

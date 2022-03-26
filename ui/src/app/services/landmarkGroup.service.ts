@@ -15,7 +15,7 @@ export class LandmarkGroupService {
     landmarkGroupServiceUrl: string = '';
 
   constructor(private httpClient: HttpClient, private config: ConfigService) {
-    this.landmarkGroupServiceUrl = config.getSettings("foundationServices").landmarkGroupRESTServiceURL;
+    this.landmarkGroupServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/landmarkgroup';
   }
 
   private handleError(errResponse: HttpErrorResponse) {
@@ -47,7 +47,7 @@ export class LandmarkGroupService {
    };
      const options =  { params: new HttpParams(data), headers: headers };
      return this.httpClient
-       .get<any[]>(data.groupid ? `${this.landmarkGroupServiceUrl}/get?Organizationid=${data.organizationid}&groupid=${data.groupid}` : `${this.landmarkGroupServiceUrl}/get?Organizationid=${data.organizationid}`,headers)
+       .get<any[]>((data.groupid) ? (`${this.landmarkGroupServiceUrl}/get?Organizationid=${data.organizationid}&groupid=${data.groupid}`) : (`${this.landmarkGroupServiceUrl}/get?Organizationid=${data.organizationid}`),headers)
        .pipe(catchError(this.handleError));
    }
 

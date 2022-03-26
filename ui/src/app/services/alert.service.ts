@@ -14,7 +14,7 @@ export class AlertService {
     alertServiceUrl: string = '';
 
   constructor(private httpClient: HttpClient, private config: ConfigService) {
-    this.alertServiceUrl = config.getSettings("foundationServices").alertRESTServiceURL;
+    this.alertServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/alert';
   }
 
   private handleError(errResponse: HttpErrorResponse) {
@@ -33,6 +33,23 @@ export class AlertService {
       'Content-Type' : 'application/json',
       'accountId' : localStorage.getItem('accountId'),
       'orgId' : localStorage.getItem('accountOrganizationId'),
+      'roleId' : localStorage.getItem('accountRoleId')
+    }
+    let getHeaderObj = JSON.stringify(genericHeader)
+    return getHeaderObj;
+  }
+
+  generateHeaderUpdated(){
+    let orgId;
+    if(localStorage.getItem('contextOrgId'))
+      orgId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
+    else 
+      orgId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+
+    let genericHeader : object = {
+      'Content-Type' : 'application/json',
+      'accountId' : localStorage.getItem('accountId'),
+      'orgId' : orgId,
       'roleId' : localStorage.getItem('accountRoleId')
     }
     let getHeaderObj = JSON.stringify(genericHeader)
@@ -139,7 +156,7 @@ export class AlertService {
    }
 
    getOfflineNotifications(): Observable<any[]> {
-    let headerObj = this.generateHeader();
+    let headerObj = this.generateHeaderUpdated();
     const headers = {
      headers: new HttpHeaders({ headerObj }),
    };
@@ -163,4 +180,17 @@ export class AlertService {
       )
       .pipe(catchError(this.handleError));
   }
+
+  getSubscribeNonSubsucribeVehicles(vehGrpIds: any): Observable<any> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj })
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.alertServiceUrl}/getsubscribenonsubsucribevehicles`, vehGrpIds, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
 }

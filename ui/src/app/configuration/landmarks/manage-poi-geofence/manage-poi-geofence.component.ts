@@ -1,30 +1,26 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild,NgZone  } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { POIService } from 'src/app/services/poi.service';
 import { ConfirmDialogService } from '../../../shared/confirm-dialog/confirm-dialog.service';
 import * as FileSaver from 'file-saver';
-import * as XLSX from 'xlsx';
 import { MatTableExporterDirective } from 'mat-table-exporter';
 import { GeofenceService } from 'src/app/services/landmarkGeofence.service';
 import { QueryList } from '@angular/core';
 import { ViewChildren } from '@angular/core';
-import { LandmarkCategoryService } from 'src/app/services/landmarkCategory.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { isNgTemplate } from '@angular/compiler';
+import { LandmarkCategoryService } from 'src/app/services/landmarkCategory.service'; 
 import { ElementRef } from '@angular/core';
 import { Workbook } from 'exceljs';
 import * as fs from 'file-saver';
-import { ConfigService } from '@ngx-config/core';
-import { CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteData } from 'ng2-completer';
+import { CompleterItem, CompleterService } from 'ng2-completer';
 import { HereService } from '../../../services/here.service';
 import { Util } from 'src/app/shared/util';
 import { DomSanitizer } from '@angular/platform-browser';
 
 declare var H: any;
-const createGpx = require('gps-to-gpx').default;
+// const createGpx = require('gps-to-gpx').default;
 
 @Component({
   selector: 'app-manage-poi-geofence',
@@ -75,7 +71,8 @@ export class ManagePoiGeofenceComponent implements OnInit {
   importTranslationData: any = {};
   xmlObject : any = {};
   map: any;
-  templateTitle = ['Name', 'Latitude', 'Longitude', 'CategoryName', 'SubCategoryName', 'Address','Zipcode', 'City', 'Country'];
+  // templateTitle = ['Name', 'Latitude', 'Longitude', 'CategoryName', 'SubCategoryName', 'Address','Zipcode', 'City', 'Country'];
+  templateTitle = [];
   //templateTitle = ['OrganizationId', 'CategoryId', 'CategoryName', 'SubCategoryId', 'SubCategoryName',
   //  'POIName', 'Address', 'City', 'Country', 'Zipcode', 'Latitude', 'Longitude', 'Distance', 'State', 'Type'];
   templateValue = [
@@ -83,10 +80,8 @@ export class ManagePoiGeofenceComponent implements OnInit {
   // [
   //  [36, 10, 'CategoryName', 8, 'SubCategoryName', "PoiTest",
   //    'Pune', 'Pune', 'India', '411057', 51.07, 57.07, 12, 'Active', 'POI']];
-  tableColumnList = ['organizationId', 'categoryName',  'subCategoryName',
-    'poiName', 'latitude', 'longitude', 'returnMessage'];
-  tableColumnName = ['OrganizationId', 'Category Name',  'SubCategory Name',
-    'POIName', 'Latitude', 'Longitude', 'Fail Reason'];
+  tableColumnList = ['organizationId', 'categoryName',  'subCategoryName', 'poiName', 'latitude', 'longitude', 'returnMessage'];
+  tableColumnName = ['OrganizationId', 'Category Name',  'SubCategory Name', 'POIName', 'Latitude', 'Longitude', 'Fail Reason'];
   tableTitle = 'Rejected POI Details';
   @Output() showImportCSV: EventEmitter<any> = new EventEmitter();
   selectedCategoryId = null;
@@ -118,14 +113,13 @@ export class ManagePoiGeofenceComponent implements OnInit {
     private dialogService: ConfirmDialogService,
     private poiService: POIService,
     private geofenceService: GeofenceService,
-    private landmarkCategoryService: LandmarkCategoryService,
-    private _snackBar: MatSnackBar,
-    private _configService: ConfigService,
+    private landmarkCategoryService: LandmarkCategoryService, 
     private completerService: CompleterService,
     private hereService: HereService,
     private domSanitizer: DomSanitizer
     ) {
-      this.map_key = _configService.getSettings("hereMap").api_key;
+      // this.map_key = _configService.getSettings("hereMap").api_key;
+      this.map_key = localStorage.getItem("hereMapsK");
       this.platform = new H.service.Platform({
         "apikey": this.map_key
       });
@@ -263,7 +257,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
     if(event.checked){ //-- add new marker
       this.markerArray.push(row);
       this.moveMapToSelectedPOI(this.map, row.latitude, row.longitude);
-    }else{ //-- remove existing marker
+    } else { //-- remove existing marker
       let arr = this.markerArray.filter(item => item.id != row.id);
       this.markerArray = arr;
     }
@@ -284,7 +278,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
       let marker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: this.getSVGIcon() });
       this.map.addObject(marker);
       var bubble;
-      console.log('t1',this.translationData);
+      //console.log('t1',this.translationData);
       let translatedPoiName = this.translationData.lblPOIName;
       let translatedCategory = this.translationData.lblCategory;
       let translatedSubCategory = this.translationData.lblSubCategory;
@@ -317,22 +311,22 @@ export class ManagePoiGeofenceComponent implements OnInit {
       this.geoMarkerArray.push(row);
       // if(row.type != 'C')
         this.addMarkersAndSetViewBoundsGeofence(this.map, this.geoMarkerArray);
-    }else{
+    } else {
       let arr = this.geoMarkerArray.filter(item => item.id != row.id);
       this.geoMarkerArray = arr;
     }
     this.showMap = (this.selectedgeofences.selected.length > 0 || this.selectedpois.selected.length > 0) ? true : false;
     this.removeMapObjects();
     this.addCirclePolygonOnMap();
-    if(this.selectedpois.selected.length > 0){ //-- poi selected
+    if(this.selectedpois.selected.length > 0) { //-- poi selected
       this.addMarkerOnMap(this.ui);
     }
   }
 
   showSearchMarker(markerData: any){
-    if(markerData && markerData.lat && markerData.lng){
+    if(markerData && markerData.lat && markerData.lng) {
       //let selectedMarker = new H.map.Marker({ lat: markerData.lat, lng: markerData.lng });
-      if(markerData.from && markerData.from == 'search'){
+      if(markerData.from && markerData.from == 'search') {
         this.map.setCenter({lat: markerData.lat, lng: markerData.lng}, 'default');
       }
       //this.map.addObject(selectedMarker);
@@ -349,8 +343,8 @@ export class ManagePoiGeofenceComponent implements OnInit {
       else{ //-- add polygon geofence on map
         let polyPoints: any = [];
         element.nodes.forEach(item => {
-          polyPoints.push(Math.abs(item.latitude.toFixed(4)));
-          polyPoints.push(Math.abs(item.longitude.toFixed(4)));
+          polyPoints.push(Math.abs(item.latitude));
+          polyPoints.push(Math.abs(item.longitude));
           polyPoints.push(0);
         });
         this.createResizablePolygon(this.map, polyPoints, this,this.ui, element);
@@ -519,12 +513,20 @@ export class ManagePoiGeofenceComponent implements OnInit {
         const isAsc = sort.direction === 'asc';
         return data.sort((a: any, b: any) => {
             let columnName = sort.active;
-          return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
+          return this.comparePOI(a[sort.active], b[sort.active], isAsc, columnName);
         });
       }
     });
     Util.applySearchFilter(this.poidataSource, this.displayedColumnsPoi ,this.filterValue );
   }
+  comparePOI(a: any, b: any, isAsc: boolean, columnName: any) {
+    if(columnName == "name"){
+    if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toUpperCase();
+    if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toUpperCase();
+    }
+  return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+}
+
 
   loadGeofenceData() {
     this.showLoadingIndicator = true;
@@ -557,10 +559,12 @@ export class ManagePoiGeofenceComponent implements OnInit {
     }, 1000);
     Util.applySearchFilter(this.geofencedataSource, this.displayedColumnsGeo ,this.filterValue );
   }
-  compare(a: Number | String, b: Number | String, isAsc: boolean, columnName: any) {
-    if(!(a instanceof Number)) a = a.replace(/\s/g, '').replace(/[^\w\s]/gi, 'z').toUpperCase();
-    if(!(b instanceof Number)) b = b.replace(/\s/g, '').replace(/[^\w\s]/gi, 'z').toUpperCase();
 
+  compare(a: any, b: any, isAsc: boolean, columnName: any) {
+    if(columnName == "name" || columnName == "categoryName" || columnName == "subCategoryName" || columnName == "address") {
+      if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toUpperCase();
+      if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toUpperCase();
+    }
   return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
 }
 
@@ -572,11 +576,9 @@ export class ManagePoiGeofenceComponent implements OnInit {
         let nextDate = createdDate + 86400000;
         if (currentDate > createdDate && currentDate < nextDate) {
           row.newTag = true;
-        }
-        else {
+        } else {
           row.newTag = false;
         }
-
         //------ Image icon ----------//
         if(type && type == 'poi'){ //-- only for POI
           if(row.icon && row.icon != ''){
@@ -588,15 +590,13 @@ export class ManagePoiGeofenceComponent implements OnInit {
           }
         }
         //----------------------------//
-
       });
       let newTrueData = data.filter(item => item.newTag == true);
       newTrueData.sort((userobj1, userobj2) => parseInt(userobj2.createdAt) - parseInt(userobj1.createdAt));
       let newFalseData = data.filter(item => item.newTag == false);
       Array.prototype.push.apply(newTrueData, newFalseData);
       return newTrueData;
-    }
-    else {
+    } else {
       return data;
     }
   }
@@ -622,13 +622,13 @@ export class ManagePoiGeofenceComponent implements OnInit {
     });
   }
 
-  fillDropdown(categoryData: any){
+  fillDropdown(categoryData: any) {
     this.categoryList = [];
     this.subCategoryList = [];
-    if(categoryData.length > 0){
+    if(categoryData.length > 0) {
       let catDD: any = categoryData.filter(i => i.parentCategoryId > 0 && i.subCategoryId == 0);
       let subCatDD: any = categoryData.filter(i => i.parentCategoryId > 0 && i.subCategoryId > 0);
-      if(catDD && catDD.length > 0){ // category dropdown
+      if(catDD && catDD.length > 0) { // category dropdown
         catDD.forEach(element => {
           this.categoryList.push({
             id: element.parentCategoryId,
@@ -637,7 +637,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
           });
         });
       }
-      if(subCatDD && subCatDD.length > 0){ // sub-category dropdown
+      if(subCatDD && subCatDD.length > 0) { // sub-category dropdown
         subCatDD.forEach(elem => {
           this.subCategoryList.push({
             id: elem.subCategoryId,
@@ -665,25 +665,22 @@ export class ManagePoiGeofenceComponent implements OnInit {
 
   onGeofenceCategoryChange(_event: any) {
     this.categorySelectionForGeo = parseInt(_event.value);
-    if(this.categorySelectionForGeo == 0 && this.subCategorySelectionForGeo == 0){
+    if(this.categorySelectionForGeo == 0 && this.subCategorySelectionForGeo == 0) {
       this.updatedGeofenceTableData(this.geoInitData); //-- load all data
       this.subCategoryList = JSON.parse(JSON.stringify(this.initSubCategoryList));
-    }
-    else if(this.categorySelectionForGeo == 0 && this.subCategorySelectionForGeo != 0){
+    } else if(this.categorySelectionForGeo == 0 && this.subCategorySelectionForGeo != 0) {
       let filterData = this.geoInitData.filter(item => item.subCategoryId == this.subCategorySelectionForGeo);
-      if(filterData){
+      if(filterData) {
         this.updatedGeofenceTableData(filterData);
-      }
-      else{
+      } else{
         this.updatedGeofenceTableData([]);
       }
-    }
-    else{
+    } else{
       let selectedId = this.categorySelectionForGeo;
       let selectedSubId = this.subCategorySelectionForGeo;
       let categoryData = this.geoInitData.filter(item => item.categoryId === selectedId);
       this.subCategoryList = this.initSubCategoryList.filter(item => item.parentCategoryId === selectedId);
-      if(selectedSubId != 0){
+      if(selectedSubId != 0) {
         categoryData = categoryData.filter(item => item.subCategoryId === selectedSubId);
       }
       this.updatedGeofenceTableData(categoryData);
@@ -692,32 +689,27 @@ export class ManagePoiGeofenceComponent implements OnInit {
 
   onGeofenceSubCategoryChange(_event: any) {
     this.subCategorySelectionForGeo = parseInt(_event.value);
-    if(this.categorySelectionForGeo == 0 && this.subCategorySelectionForGeo == 0){
+    if(this.categorySelectionForGeo == 0 && this.subCategorySelectionForGeo == 0) {
       this.updatedGeofenceTableData(this.geoInitData); //-- load all data
-    }
-    else if(this.subCategorySelectionForGeo == 0 && this.categorySelectionForGeo != 0){
+    } else if(this.subCategorySelectionForGeo == 0 && this.categorySelectionForGeo != 0) {
       let filterData = this.geoInitData.filter(item => item.categoryId == this.categorySelectionForGeo);
-      if(filterData){
+      if(filterData) {
         this.updatedGeofenceTableData(filterData);
-      }
-      else{
+      } else{
         this.updatedGeofenceTableData([]);
       }
-    }
-    else if(this.subCategorySelectionForGeo != 0 && this.categorySelectionForGeo == 0){
+    } else if(this.subCategorySelectionForGeo != 0 && this.categorySelectionForGeo == 0) {
       let filterData = this.geoInitData.filter(item => item.subCategoryId == this.subCategorySelectionForGeo);
-      if(filterData){
+      if(filterData) {
         this.updatedGeofenceTableData(filterData);
-      }
-      else{
+      } else{
         this.updatedGeofenceTableData([]);
       }
-    }
-    else{
+    } else{
       let selectedId = this.categorySelectionForGeo;
       let selectedSubId = this.subCategorySelectionForGeo;
       let categoryData = this.geoInitData.filter(item => item.categoryId === selectedId);
-      if(selectedSubId != 0){
+      if(selectedSubId != 0) {
         categoryData = categoryData.filter(item => item.subCategoryId === selectedSubId);
       }
       this.updatedGeofenceTableData(categoryData);
@@ -923,7 +915,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
     if(poiList != ''){
       poiList = poiList.slice(0, -2);
     }
-    console.log(poiList);
+    //console.log(poiList);
     this.dialogService.DeleteModelOpen(options, poiList);
     this.dialogService.confirmedDel().subscribe((res) => {
     if (res) {
@@ -1019,7 +1011,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
       });
     }
     else{
-      //console.log("geofence id not found...");
+      ////console.log("geofence id not found...");
     }
   }
 
@@ -1374,6 +1366,17 @@ export class ManagePoiGeofenceComponent implements OnInit {
       this.importTranslationData.existError = this.translationData.lblNamealreadyexists || 'POI name already exists';
       this.importTranslationData.input1mandatoryReason = this.translationData.lblNameMandatoryReason || '$ is mandatory input';
       this.importTranslationData.lblBack = this.translationData.lblBack || 'Back';
+      this.importTranslationData.duplicatePOI = this.translationData.lblDuplicatePOI || 'Duplicate POI';
+      this.importTranslationData.poiMaxLength = this.translationData.lblDataAttributeSetmaxlength || 'Max length should be 100';
+      this.importTranslationData.lblName = this.translationData.lblName || 'Name';
+      this.importTranslationData.lblLatitude = this.translationData.lblLatitude || 'Latitude';
+      this.importTranslationData.lblLongitude = this.translationData.lblLongitude || 'Longitude';
+      this.importTranslationData.lblCategoryName = this.translationData.lblCategoryName || 'Category Name';
+      this.importTranslationData.lblSubCategoryName = this.translationData.lblSubCategoryName || 'SubCategory Name';
+      this.importTranslationData.lblAddress = this.translationData.lblAddress || 'Address';
+      this.importTranslationData.lblZipCode = this.translationData.lblZipCode || 'Zipcode';
+      this.importTranslationData.lblCity = this.translationData.lblCity || 'City';
+      this.importTranslationData.lblCountry = this.translationData.lblCountry || 'Country';
       this.tableTitle = this.translationData.lblTableTitle || 'Rejected POI Details';
       this.tableColumnName = [this.translationData.lblOrganizationId || 'OrganizationId',
                               this.translationData.lblCategoryName || 'Category Name',
@@ -1382,6 +1385,15 @@ export class ManagePoiGeofenceComponent implements OnInit {
                               this.translationData.lblLatitude || 'Latitude',
                               this.translationData.lblLongitude || 'Longitude',
                               this.translationData.lblFailReason || 'Fail Reason'];
+      this.templateTitle = [this.translationData.lblName,
+                            this.translationData.lblLatitude,
+                            this.translationData.lblLongitude,
+                            this.translationData.lblCategoryName,
+                            this.translationData.lblSubCategoryName,
+                            this.translationData.lblAddress,
+                            this.translationData.lblZipCode,
+                            this.translationData.lblCity,
+                            this.translationData.lblCountry];
     }
   }
 

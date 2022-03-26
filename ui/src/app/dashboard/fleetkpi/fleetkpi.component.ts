@@ -2,9 +2,8 @@ import { Component, Input, OnInit, Inject} from '@angular/core';
 import { Util } from '../../shared/util';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { DashboardService } from 'src/app/services/dashboard.service';
-import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
-import { BaseChartDirective, Color, Label, MultiDataSet, PluginServiceGlobalRegistrationAndOptions } from 'ng2-charts';
-import { stringify } from '@angular/compiler/src/util';
+import { ChartOptions, ChartType } from 'chart.js';
+import { Color, Label, MultiDataSet, PluginServiceGlobalRegistrationAndOptions } from 'ng2-charts';
 import { ReportMapService } from '../../report/report-map.service';
 import { MessageService } from '../../services/message.service';
 import { DataInterchangeService } from '../../services/data-interchange.service'
@@ -85,26 +84,20 @@ export class FleetkpiComponent implements OnInit {
    public doughnutChartPlugins: PluginServiceGlobalRegistrationAndOptions[] = [{
      afterDraw(chart) {
        const ctx = chart.ctx;
- 
        ctx.textAlign = 'center';
        ctx.textBaseline = 'middle';
        const centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
        const centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
- 
        ctx.font = '500 14px Roboto, "Helvetica Neue", sans-serif';
        ctx.fillStyle = 'black';
- 
-       var text = chart.config.options.title.text;
        // Draw text in center
        ctx.fillText("0%", centerX, centerY);
      }
    }];
 
     //Idling Time Chart
-    
     currentIdlingTime: any =  0;
     cutOffIdlingTime : any =  0;
-
     idlingChartLabels: Label[] = [('Target'), '', ''];
     doughnutChartIdlingData: MultiDataSet = [ [0, 100] ];
     doughnutChartIdlingOptions: ChartOptions = {
@@ -117,11 +110,8 @@ export class FleetkpiComponent implements OnInit {
         position: 'nearest',
        
         callbacks: {
-          afterLabel: function(tooltipItem, data) {
-            var dataset = data['datasets'][0];
-            var percent = 100;
-           // let icon = '<i class="fas fa-sort-down"></i>'
-           return this.translationData.lblLastChange+': ' + percent;
+          afterLabel: function() {
+           return this.translationData.lblLastChange+': ' + 100;
           }
         },
         filter: function(item, data) {
@@ -129,7 +119,6 @@ export class FleetkpiComponent implements OnInit {
           if (label) return true;
           return false;
         },
-     
       },
       title:{
         text: "15",
@@ -156,16 +145,12 @@ export class FleetkpiComponent implements OnInit {
     public doughnutChartIdlingPlugins: PluginServiceGlobalRegistrationAndOptions[] = [{
       afterDraw(chart) {
         const ctx = chart.ctx;
-  
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         const centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
         const centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
-  
         ctx.font = '500 14px Roboto, "Helvetica Neue", sans-serif';
         ctx.fillStyle = 'black';
-  
-        var text = chart.config.options.title.text;
         // Draw text in center
         ctx.fillText("0%", centerX, centerY);
       }
@@ -186,11 +171,8 @@ export class FleetkpiComponent implements OnInit {
           position: 'nearest',
          
           callbacks: {
-            afterLabel: function(tooltipItem, data) {
-              var dataset = data['datasets'][0];
-              var percent = 100;
-             // let icon = '<i class="fas fa-sort-down"></i>'
-             return this.translationData.lblLastChange+': ' + percent;
+            afterLabel: function() {
+             return this.translationData.lblLastChange+': ' + 100;
             }
           },
           filter: function(item, data) {
@@ -198,7 +180,6 @@ export class FleetkpiComponent implements OnInit {
             if (label) return true;
             return false;
           },
-       
         },
         title:{
           text: "15",
@@ -226,16 +207,12 @@ export class FleetkpiComponent implements OnInit {
       public doughnutChartDrivingPlugins: PluginServiceGlobalRegistrationAndOptions[] = [{
         afterDraw(chart) {
           const ctx = chart.ctx;
-    
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           const centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
           const centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
-    
           ctx.font = '500 14px Roboto, "Helvetica Neue", sans-serif';
           ctx.fillStyle = 'black';
-    
-          var text = chart.config.options.title.text;
           // Draw text in center
           ctx.fillText("0%", centerX, centerY);
         }
@@ -254,13 +231,9 @@ export class FleetkpiComponent implements OnInit {
       cutoutPercentage: 80,
       tooltips: {
         position: 'nearest',
-       
         callbacks: {
-          afterLabel: function(tooltipItem, data) {
-            var dataset = data['datasets'][0];
-            var percent = 100;
-           // let icon = '<i class="fas fa-sort-down"></i>'
-           return this.translationData.lblLastChange+': ' + percent;
+          afterLabel: function() {
+           return this.translationData.lblLastChange+': ' + 100;
           }
         },
         filter: function(item, data) {
@@ -268,7 +241,6 @@ export class FleetkpiComponent implements OnInit {
           if (label) return true;
           return false;
         },
-     
       },
       title:{
         text: "15",
@@ -297,16 +269,12 @@ export class FleetkpiComponent implements OnInit {
     public doughnutChartDistancePlugins: PluginServiceGlobalRegistrationAndOptions[] = [{
       afterDraw(chart) {
         const ctx = chart.ctx;
-  
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         const centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
         const centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
-  
         ctx.font = '500 14px Roboto, "Helvetica Neue", sans-serif';
         ctx.fillStyle = 'black';
-  
-        var text = chart.config.options.title.text;
         // Draw text in center
         ctx.fillText("0%", centerX, centerY);
       }
@@ -347,7 +315,6 @@ export class FleetkpiComponent implements OnInit {
           if (label) return true;
           return false;
         },
-     
       },
       title:{
         text: "15",
@@ -358,16 +325,12 @@ export class FleetkpiComponent implements OnInit {
     public doughnutChartFuelConsumedPlugins: PluginServiceGlobalRegistrationAndOptions[] = [{
       afterDraw(chart) {
         const ctx = chart.ctx;
-  
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         const centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
         const centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
-  
         ctx.font = '500 14px Roboto, "Helvetica Neue", sans-serif';
         ctx.fillStyle = 'black';
-  
-        var text = chart.config.options.title.text;
         // Draw text in center
         ctx.fillText("0%", centerX, centerY);
       }
@@ -420,16 +383,12 @@ export class FleetkpiComponent implements OnInit {
       public doughnutChartFuelUsedPlugins: PluginServiceGlobalRegistrationAndOptions[] = [{
         afterDraw(chart) {
           const ctx = chart.ctx;
-    
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           const centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
           const centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
-    
           ctx.font = '500 14px Roboto, "Helvetica Neue", sans-serif';
           ctx.fillStyle = 'black';
-    
-          var text = chart.config.options.title.text;
           // Draw text in center
           ctx.fillText("0%", centerX, centerY);
         }
@@ -470,7 +429,6 @@ export class FleetkpiComponent implements OnInit {
              if (label) return true;
              return false;
            },
-        
          },
          title:{
            text: "15",
@@ -481,16 +439,12 @@ export class FleetkpiComponent implements OnInit {
        public doughnutChartFuelConsumptionPlugins: PluginServiceGlobalRegistrationAndOptions[] = [{
          afterDraw(chart) {
            const ctx = chart.ctx;
-     
            ctx.textAlign = 'center';
            ctx.textBaseline = 'middle';
            const centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
            const centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
-     
            ctx.font = '500 14px Roboto, "Helvetica Neue", sans-serif';
            ctx.fillStyle = 'black';
-     
-           var text = chart.config.options.title.text;
            // Draw text in center
            ctx.fillText("0%", centerX, centerY);
          }
@@ -515,16 +469,12 @@ export class FleetkpiComponent implements OnInit {
   setInitialPref(prefData,preference){
     let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
     if(_search.length > 0){
-      //this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
       this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
-      //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
       this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
       this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
       this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
     }else{
-      //this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
       this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
-      //this.prefTimeZone = prefData.timezone[0].value;
       this.prefTimeZone = prefData.timezone[0].name;
       this.prefDateFormat = prefData.dateformat[0].name;
       this.prefUnitFormat = prefData.unit[0].name;
@@ -534,7 +484,6 @@ export class FleetkpiComponent implements OnInit {
   }
 
   selectionTimeRange(selection: any){
-    // this.internalSelection = true;
     this.clickButton = true;
     this.showLastChange = true;
     switch(selection){
@@ -565,22 +514,15 @@ export class FleetkpiComponent implements OnInit {
       }
     }
     this.messageService.sendMessage('refreshTimer'); 
-    //this.messageService.sendMessage('refreshData');
-
     if(this._fleetTimer){
-      
       this.messageService.sendMessage('refreshData');
-
     }
     else{
       this.getKPIData();
-
     }
   }
 
   getKPIData(){
-    // let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
-    // let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
     let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone); 
     let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);
     this.totalVehicles = this.finalVinList.length;
@@ -589,16 +531,9 @@ export class FleetkpiComponent implements OnInit {
       "startDateTime": _startTime,
       "endDateTime": _endTime,
       "viNs": this.finalVinList 
-      // [ //this.finalVinList
-      //   "M4A14532",
-      //   "XLR0998HGFFT76657",
-      //   "XLRASH4300G1472w0",
-      //   "XLR0998HGFFT75550"
-      // ]
     }
     if(!this.getFleetKPIDataAPI){
       this.getFleetKPIDataAPI = this.dashboardService.getFleetKPIData(_kpiPayload).subscribe((kpiData: any)=>{
-        //console.log(kpiData);
         this.dataError = false;
         this.kpiData = kpiData;
         this.activeVehicles = kpiData['fleetKpis']?.vehicleCount;
@@ -651,7 +586,6 @@ export class FleetkpiComponent implements OnInit {
       else{
         caretColor = 'caretRed';
         caretIcon = `<i class="fa fa-caret-down tooltipCaret caretClass ${caretColor}"></i>`;
-  
       }
     }
    
@@ -666,16 +600,12 @@ export class FleetkpiComponent implements OnInit {
     this.doughnutChartPlugins = [{
       afterDraw(chart) {
         const ctx = chart.ctx;
-    
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         const centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
         const centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
-    
         ctx.font = '500 14px Roboto, "Helvetica Neue", sans-serif';
         ctx.fillStyle = 'black';
-    
-        var text = chart.config.options.title.text;
         // Draw text in center
         ctx.fillText(currentPercent.toFixed(2) + "%", centerX, centerY);
       }
@@ -691,7 +621,6 @@ export class FleetkpiComponent implements OnInit {
         enabled: false,
         custom: function(tooltip){
           let tooltipEl = document.getElementById('chartjs-tooltip');
-          let fileIcon = 'assets/dashboard/greenArrow.svg';
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
@@ -710,10 +639,6 @@ export class FleetkpiComponent implements OnInit {
         } else {
           tooltipEl.classList.add('no-transform');
         }
-        function getBody(bodyItem) {
-          return bodyItem.lines;
-      }
-      var position = this._chart.canvas.getBoundingClientRect();
         const positionY = this._chart.canvas.offsetTop;
         const positionX = this._chart.canvas.offsetLeft;
         const widthX = (this._chart.canvas.width)/8;
@@ -738,14 +663,12 @@ export class FleetkpiComponent implements OnInit {
           if (tooltip.opacity === 0) {
             tooltipEl.style.opacity = 0 as any;
             this._chart.canvas.parentNode.removeChild(tooltipEl);
-
             return;
           }
           else{
             tooltipEl.style.opacity = 1 as any;
             return;
           }
-          
         },
      },
       title:{
@@ -753,10 +676,7 @@ export class FleetkpiComponent implements OnInit {
         display: false
       }
     }
-
     let _prefLimit = this.getPreferenceThreshold('co2emission')['type'];
-    let _prefThreshold = this.getPreferenceThreshold('co2emission')['value'];
-     
     switch (_prefLimit) {
       case 'U':{
         if(calculationValue['cuttOff'] < currentValue){ //red
@@ -842,8 +762,6 @@ export class FleetkpiComponent implements OnInit {
       default:
         break;
     }
-
-
   }
 
   updateIdlingTime(){
@@ -855,57 +773,43 @@ export class FleetkpiComponent implements OnInit {
     let targetValue = calculationValue['cuttOff'];
     this.cutOffIdlingTime =  this.getTimeDisplay(targetValue);
     let convertTargetValue =  this.getTimeDisplay(targetValue);
-
     let currentPercent = calculationValue['kpiPercent'];
-
     let showLastChange = this.showLastChange;
     let lastChangePercent = 0;
     let caretColor = 'caretGreen';
     let caretIcon = '';
-
     let transTarget = this.translationData.lblTarget;
-    let transTon = this.translationData.lblton;
     let transLastChange = this.translationData.lblLastChange;
 
     if(this.kpiData['fleetKpis']?.lastChangeKpi){
-    let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['idlingTime'];
-      
-    lastChangePercent = this.dashboardService.calculateLastChange(currentValue,lastValue);
-    
-    caretColor = 'caretGreen';
-    caretIcon = '';
-    
-    if( lastChangePercent > 0){
+      let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['idlingTime'];
+      lastChangePercent = this.dashboardService.calculateLastChange(currentValue,lastValue);
       caretColor = 'caretGreen';
-      caretIcon = `<i class="fa fa-caret-up tooltipCaret caretClass ${caretColor}"></i>`;
-    }
-    else{
-      caretColor = 'caretRed';
-      caretIcon = `<i class="fa fa-caret-down tooltipCaret caretClass ${caretColor}"></i>`;
-
-    }
+      caretIcon = '';
+      if( lastChangePercent > 0){
+        caretColor = 'caretGreen';
+        caretIcon = `<i class="fa fa-caret-up tooltipCaret caretClass ${caretColor}"></i>`;
+      }
+      else{
+        caretColor = 'caretRed';
+        caretIcon = `<i class="fa fa-caret-down tooltipCaret caretClass ${caretColor}"></i>`;
+      }
     }
 
     let nextPercent = 100 - currentPercent;
-
     if(currentPercent > 100){
       nextPercent = 0;
     }
     this.doughnutChartIdlingData = [[currentPercent,(nextPercent)]]
-
     this.doughnutChartIdlingPlugins = [{
       afterDraw(chart) {
         const ctx = chart.ctx;
-    
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         const centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
         const centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
-    
         ctx.font = '500 14px Roboto, "Helvetica Neue", sans-serif';
         ctx.fillStyle = 'black';
-    
-        var text = chart.config.options.title.text;
         // Draw text in center
         ctx.fillText(currentPercent.toFixed(2) + "%", centerX, centerY);
       }
@@ -921,7 +825,6 @@ export class FleetkpiComponent implements OnInit {
         enabled: false,
         custom: function(tooltip){
           let tooltipEl = document.getElementById('chartjs-tooltip');
-          let fileIcon = 'assets/dashboard/greenArrow.svg';
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
@@ -931,7 +834,6 @@ export class FleetkpiComponent implements OnInit {
               _str += `<div>${transLastChange}: ` + lastChangePercent.toFixed(2) + '%'+
               `<span>${caretIcon}</span></div>`;
             }
-           
             tooltipEl.innerHTML = _str;
             this._chart.canvas.parentNode.appendChild(tooltipEl);
           }
@@ -942,10 +844,6 @@ export class FleetkpiComponent implements OnInit {
         } else {
           tooltipEl.classList.add('no-transform');
         }
-        function getBody(bodyItem) {
-          return bodyItem.lines;
-      }
-      var position = this._chart.canvas.getBoundingClientRect();
         const positionY = this._chart.canvas.offsetTop;
         const positionX = this._chart.canvas.offsetLeft;
         const widthX = (this._chart.canvas.width)/8;
@@ -970,14 +868,12 @@ export class FleetkpiComponent implements OnInit {
           if (tooltip.opacity === 0) {
             tooltipEl.style.opacity = 0 as any;
             this._chart.canvas.parentNode.removeChild(tooltipEl);
-
             return;
           }
           else{
             tooltipEl.style.opacity = 1 as any;
             return;
           }
-          
         },
      },
       title:{
@@ -987,7 +883,6 @@ export class FleetkpiComponent implements OnInit {
     }
 
     let _prefLimit = this.getPreferenceThreshold('idlingtime')['type']; 
-    let _prefThreshold = this.getPreferenceThreshold('idlingtime')['value']; 
      
     switch (_prefLimit) {
       case 'U':{
@@ -1074,8 +969,6 @@ export class FleetkpiComponent implements OnInit {
       default:
         break;
     }
-
-
   }
 
   updateDrivingTime(){
@@ -1089,20 +982,16 @@ export class FleetkpiComponent implements OnInit {
     let convertTargetValue = this.getTimeDisplay(targetValue);
     let currentPercent = calculationValue['kpiPercent'];
 
-
     let showLastChange = this.showLastChange;
     let lastChangePercent = 0;
     let caretColor = 'caretGreen';
     let caretIcon = '';
     let transTarget = this.translationData.lblTarget;
-    let transTon = this.translationData.lblton;
     let transLastChange = this.translationData.lblLastChange;
 
     if(this.kpiData['fleetKpis']?.lastChangeKpi){
       let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['drivingTime'];
-
       lastChangePercent = this.dashboardService.calculateLastChange(currentValue,lastValue);
-    
       
       if( lastChangePercent > 0){
         caretColor = 'caretGreen';
@@ -1111,32 +1000,24 @@ export class FleetkpiComponent implements OnInit {
       else{
         caretColor = 'caretRed';
         caretIcon = `<i class="fa fa-caret-down tooltipCaret caretClass ${caretColor}"></i>`;
-  
       }
     }
    
-
     let nextPercent = 100 - currentPercent;
-
     if(currentPercent > 100){
       nextPercent = 0;
     }
 
     this.doughnutChartDrivingData = [[currentPercent,(nextPercent)]]
-
     this.doughnutChartDrivingPlugins = [{
       afterDraw(chart) {
         const ctx = chart.ctx;
-    
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         const centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
         const centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
-    
         ctx.font = '500 14px Roboto, "Helvetica Neue", sans-serif';
         ctx.fillStyle = 'black';
-    
-        var text = chart.config.options.title.text;
         // Draw text in center
         ctx.fillText(currentPercent.toFixed(2) + "%", centerX, centerY);
       }
@@ -1152,7 +1033,6 @@ export class FleetkpiComponent implements OnInit {
         enabled: false,
         custom: function(tooltip){
           let tooltipEl = document.getElementById('chartjs-tooltip');
-          let fileIcon = 'assets/dashboard/greenArrow.svg';
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
@@ -1163,7 +1043,6 @@ export class FleetkpiComponent implements OnInit {
               `<span>${caretIcon}</span></div>`;
             }
             tooltipEl.innerHTML = _str;
-
             this._chart.canvas.parentNode.appendChild(tooltipEl);
           }
            // Set caret Position
@@ -1173,10 +1052,6 @@ export class FleetkpiComponent implements OnInit {
         } else {
           tooltipEl.classList.add('no-transform');
         }
-        function getBody(bodyItem) {
-          return bodyItem.lines;
-      }
-      var position = this._chart.canvas.getBoundingClientRect();
         const positionY = this._chart.canvas.offsetTop;
         const positionX = this._chart.canvas.offsetLeft;
         const widthX = (this._chart.canvas.width)/8;
@@ -1218,7 +1093,6 @@ export class FleetkpiComponent implements OnInit {
     }
 
     let _prefLimit = this.getPreferenceThreshold('drivingtime')['type'];
-    let _prefThreshold = this.getPreferenceThreshold('drivingtime')['value'];
      
     switch (_prefLimit) {
       case 'U':{
@@ -1305,8 +1179,6 @@ export class FleetkpiComponent implements OnInit {
       default:
         break;
     }
-
-
   }
 
   updateDistance(){
@@ -1318,22 +1190,16 @@ export class FleetkpiComponent implements OnInit {
     let targetValue =this.reportMapService.getDistance(calculationValue['cuttOff'],this.prefUnitFormat); 
     this.cutOffDistanceValue = targetValue;
     let currentPercent = calculationValue['kpiPercent'];
-
-    
     let showLastChange = this.showLastChange;
     let lastChangePercent = 0;
     let caretColor = 'caretGreen';
     let caretIcon = '';
-
     let transTarget = this.translationData.lblTarget;
-    let transTon = this.translationData.lblton;
     let transLastChange = this.translationData.lblLastChange;
 
     if(this.kpiData['fleetKpis']?.lastChangeKpi){
     let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['distance'];
-
      lastChangePercent = this.dashboardService.calculateLastChange(currentValue,lastValue);
-      
       if( lastChangePercent > 0){
         caretColor = 'caretGreen';
         caretIcon = `<i class="fa fa-caret-up tooltipCaret caretClass ${caretColor}"></i>`;
@@ -1341,31 +1207,22 @@ export class FleetkpiComponent implements OnInit {
       else{
         caretColor = 'caretRed';
         caretIcon = `<i class="fa fa-caret-down tooltipCaret caretClass ${caretColor}"></i>`;
-  
       }
-  
     }
-   
     let nextPercent = 100 - currentPercent;
-
     if(currentPercent > 100){
       nextPercent = 0;
     }
-    this.doughnutChartDistanceData = [[currentPercent,(nextPercent)]]
-
+    this.doughnutChartDistanceData = [[currentPercent,(nextPercent)]];
     this.doughnutChartDistancePlugins = [{
       afterDraw(chart) {
         const ctx = chart.ctx;
-    
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         const centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
         const centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
-    
         ctx.font = '500 14px Roboto, "Helvetica Neue", sans-serif';
         ctx.fillStyle = 'black';
-    
-        var text = chart.config.options.title.text;
         // Draw text in center
         ctx.fillText(currentPercent.toFixed(2) + "%", centerX, centerY);
       }
@@ -1382,7 +1239,6 @@ export class FleetkpiComponent implements OnInit {
         enabled: false,
         custom: function(tooltip){
           let tooltipEl = document.getElementById('chartjs-tooltip');
-          let fileIcon = 'assets/dashboard/greenArrow.svg';
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
@@ -1393,7 +1249,6 @@ export class FleetkpiComponent implements OnInit {
             `<span>${caretIcon}</span></div>`;
             }
             tooltipEl.innerHTML = _str;
-
             this._chart.canvas.parentNode.appendChild(tooltipEl);
           }
            // Set caret Position
@@ -1403,10 +1258,6 @@ export class FleetkpiComponent implements OnInit {
         } else {
           tooltipEl.classList.add('no-transform');
         }
-        function getBody(bodyItem) {
-          return bodyItem.lines;
-      }
-      var position = this._chart.canvas.getBoundingClientRect();
         const positionY = this._chart.canvas.offsetTop;
         const positionX = this._chart.canvas.offsetLeft;
         const widthX = (this._chart.canvas.width)/8;
@@ -1431,14 +1282,12 @@ export class FleetkpiComponent implements OnInit {
           if (tooltip.opacity === 0) {
             tooltipEl.style.opacity = 0 as any;
             this._chart.canvas.parentNode.removeChild(tooltipEl);
-
             return;
           }
           else{
             tooltipEl.style.opacity = 1 as any;
             return;
           }
-          
         },
      },
       title:{
@@ -1448,7 +1297,6 @@ export class FleetkpiComponent implements OnInit {
     }
 
     let _prefLimit = this.getPreferenceThreshold('totaldistance')['type'];
-    let _prefThreshold = this.getPreferenceThreshold('totaldistance')['value']
      
     switch (_prefLimit) {
       case 'U':{
@@ -1535,8 +1383,6 @@ export class FleetkpiComponent implements OnInit {
       default:
         break;
     }
-
-
   }
 
   updateFuelConsumed(){
@@ -1547,58 +1393,42 @@ export class FleetkpiComponent implements OnInit {
     let calculationValue = this.dashboardService.calculateKPIPercentage(currentValue,this.activeVehicles,_thresholdValue,this.totalDays);
     let targetValue = this.reportMapService.getFuelConsumedUnits( calculationValue['cuttOff'],this.prefUnitFormat,false);
     this.cutOffFuelConsumed = this.reportMapService.getFuelConsumedUnits( calculationValue['cuttOff'],this.prefUnitFormat,false);
-    let currentPercent = calculationValue['kpiPercent'];
-
-     
+    let currentPercent = calculationValue['kpiPercent'];     
     let showLastChange = this.showLastChange;
     let lastChangePercent = 0;
     let caretColor = 'caretGreen';
     let caretIcon = '';
-
     let transTarget = this.translationData.lblTarget;
-    let transTon = this.translationData.lblton;
     let transLastChange = this.translationData.lblLastChange;
-
     if(this.kpiData['fleetKpis']?.lastChangeKpi){
-      
-    let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['fuelConsumed'];
-
-    lastChangePercent = this.dashboardService.calculateLastChange(currentValue,lastValue);
-
-    if( lastChangePercent > 0){
-      caretColor = 'caretGreen';
-      caretIcon = `<i class="fa fa-caret-up tooltipCaret caretClass ${caretColor}"></i>`;
-    }
-    else{
-      caretColor = 'caretRed';
-      caretIcon = `<i class="fa fa-caret-down tooltipCaret caretClass ${caretColor}"></i>`;
-
-    }
+      let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['fuelConsumed'];
+      lastChangePercent = this.dashboardService.calculateLastChange(currentValue,lastValue);
+      if( lastChangePercent > 0){
+        caretColor = 'caretGreen';
+        caretIcon = `<i class="fa fa-caret-up tooltipCaret caretClass ${caretColor}"></i>`;
+      }
+      else{
+        caretColor = 'caretRed';
+        caretIcon = `<i class="fa fa-caret-down tooltipCaret caretClass ${caretColor}"></i>`;
+      }
     }
     
     let nextPercent = 100 - currentPercent;
-
     if(currentPercent > 100){
       nextPercent = 0;
     }
-
     this.doughnutChartFuelConsumedData = [[currentPercent,(nextPercent)]]
-
     let targetUnit = (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblgallons || 'g') : (this.translationData.lblLtrs || 'L');
 
     this.doughnutChartFuelConsumedPlugins = [{
       afterDraw(chart) {
         const ctx = chart.ctx;
-    
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         const centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
         const centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
-    
         ctx.font = '500 14px Roboto, "Helvetica Neue", sans-serif';
         ctx.fillStyle = 'black';
-    
-        var text = chart.config.options.title.text;
         // Draw text in center
         ctx.fillText(currentPercent.toFixed(2) + "%", centerX, centerY);
       }
@@ -1614,7 +1444,6 @@ export class FleetkpiComponent implements OnInit {
         enabled: false,
         custom: function(tooltip){
           let tooltipEl = document.getElementById('chartjs-tooltip');
-          let fileIcon = 'assets/dashboard/greenArrow.svg';
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
@@ -1634,10 +1463,6 @@ export class FleetkpiComponent implements OnInit {
         } else {
           tooltipEl.classList.add('no-transform');
         }
-        function getBody(bodyItem) {
-          return bodyItem.lines;
-      }
-      var position = this._chart.canvas.getBoundingClientRect();
         const positionY = this._chart.canvas.offsetTop;
         const positionX = this._chart.canvas.offsetLeft;
         const widthX = (this._chart.canvas.width)/8;
@@ -1662,14 +1487,12 @@ export class FleetkpiComponent implements OnInit {
           if (tooltip.opacity === 0) {
             tooltipEl.style.opacity = 0 as any;
             this._chart.canvas.parentNode.removeChild(tooltipEl);
-
             return;
           }
           else{
             tooltipEl.style.opacity = 1 as any;
             return;
           }
-          
         },
      },
       title:{
@@ -1679,7 +1502,6 @@ export class FleetkpiComponent implements OnInit {
     }
 
     let _prefLimit = this.getPreferenceThreshold('fuelconsumed')['type'];
-    let _prefThreshold = this.getPreferenceThreshold('fuelconsumed')['value'];
      
     switch (_prefLimit) {
       case 'U':{
@@ -1766,8 +1588,6 @@ export class FleetkpiComponent implements OnInit {
       default:
         break;
     }
-
-
   }
 
   updateIdlingFuelConsumption(){
@@ -1779,21 +1599,15 @@ export class FleetkpiComponent implements OnInit {
     let targetValue = this.reportMapService.getFuelConsumedUnits(calculationValue['cuttOff'],this.prefUnitFormat,false);
     this.cutOffIdlingFuelConsumed =  this.reportMapService.getFuelConsumedUnits(calculationValue['cuttOff'],this.prefUnitFormat,false);
     let currentPercent = calculationValue['kpiPercent'];
-     
     let showLastChange = this.showLastChange;
     let lastChangePercent = 0;
     let caretColor = 'caretGreen';
     let caretIcon = '';
-
     let transTarget = this.translationData.lblTarget;
-    let transTon = this.translationData.lblton;
     let transLastChange = this.translationData.lblLastChange;
-
     if(this.kpiData['fleetKpis']?.lastChangeKpi){
     let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['idlingfuelconsumption'];
-
     lastChangePercent = this.dashboardService.calculateLastChange(currentValue,lastValue);
-
       if( lastChangePercent > 0){
         caretColor = 'caretGreen';
         caretIcon = `<i class="fa fa-caret-up tooltipCaret caretClass ${caretColor}"></i>`;
@@ -1804,28 +1618,21 @@ export class FleetkpiComponent implements OnInit {
   
       }
     }
-    
 
     let nextPercent = 100 - currentPercent;
-
     if(currentPercent > 100){
       nextPercent = 0;
     }
-    this.doughnutChartFuelUsedData = [[currentPercent,(nextPercent)]]
-
+    this.doughnutChartFuelUsedData = [[currentPercent,(nextPercent)]];
     this.doughnutChartFuelUsedPlugins = [{
       afterDraw(chart) {
         const ctx = chart.ctx;
-    
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         const centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
         const centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
-    
         ctx.font = '500 14px Roboto, "Helvetica Neue", sans-serif';
         ctx.fillStyle = 'black';
-    
-        var text = chart.config.options.title.text;
         // Draw text in center
         ctx.fillText(currentPercent.toFixed(2) + "%", centerX, centerY);
       }
@@ -1863,10 +1670,6 @@ export class FleetkpiComponent implements OnInit {
         } else {
           tooltipEl.classList.add('no-transform');
         }
-        function getBody(bodyItem) {
-          return bodyItem.lines;
-      }
-      var position = this._chart.canvas.getBoundingClientRect();
         const positionY = this._chart.canvas.offsetTop;
         const positionX = this._chart.canvas.offsetLeft;
         const widthX = (this._chart.canvas.width)/8;
@@ -1891,14 +1694,12 @@ export class FleetkpiComponent implements OnInit {
           if (tooltip.opacity === 0) {
             tooltipEl.style.opacity = 0 as any;
             this._chart.canvas.parentNode.removeChild(tooltipEl);
-
             return;
           }
           else{
             tooltipEl.style.opacity = 1 as any;
             return;
           }
-          
         },
      },
       title:{
@@ -1908,7 +1709,6 @@ export class FleetkpiComponent implements OnInit {
     }
 
     let _prefLimit = this.getPreferenceThreshold('fuelusedidling')['type'];
-    let _prefThreshold = this.getPreferenceThreshold('fuelusedidling')['value'];
      
     switch (_prefLimit) {
       case 'U':{
@@ -1995,8 +1795,6 @@ export class FleetkpiComponent implements OnInit {
       default:
         break;
     }
-
-
   }
 
   updateFuelConsumption(){
@@ -2009,22 +1807,17 @@ export class FleetkpiComponent implements OnInit {
     let targetValue = calculationValue['cuttOff'] //this.reportMapService.getFuelConsumedUnits(calculationValue['cuttOff'],this.prefUnitFormat,true); // calculationValue['cuttOff'] //
     this.cutOffFuelConsumption = calculationValue['cuttOff'].toFixed(2); //this.reportMapService.getFuelConsumedUnits(calculationValue['cuttOff'],this.prefUnitFormat,true); //calculationValue['cuttOff'] //
     let currentPercent = (this.currentFuelConsumption / this.cutOffFuelConsumption ) * 100;//calculationValue['kpiPercent'];
-    
      
     let showLastChange = this.showLastChange;
     let lastChangePercent = 0;
     let caretColor = 'caretGreen';
     let caretIcon = '';
-
     let transTarget = this.translationData.lblTarget;
-    let transTon = this.translationData.lblton;
     let transLastChange = this.translationData.lblLastChange;
 
     if(this.kpiData['fleetKpis']?.lastChangeKpi){
       let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['fuelConsumption'];
-
       lastChangePercent = this.dashboardService.calculateLastChange(currentValue,lastValue);
-
       if( lastChangePercent > 0){
         caretColor = 'caretGreen';
         caretIcon = `<i class="fa fa-caret-up tooltipCaret caretClass ${caretColor}"></i>`;
@@ -2032,30 +1825,22 @@ export class FleetkpiComponent implements OnInit {
       else{
         caretColor = 'caretRed';
         caretIcon = `<i class="fa fa-caret-down tooltipCaret caretClass ${caretColor}"></i>`;
-  
       }
     }
     let nextPercent = 100 - currentPercent;
-
     if(currentPercent > 100){
       nextPercent = 0;
     }
-
     this.doughnutChartFuelConsumptionData = [[currentPercent,(nextPercent)]]
-
     this.doughnutChartFuelConsumptionPlugins = [{
       afterDraw(chart) {
         const ctx = chart.ctx;
-    
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         const centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
         const centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
-    
         ctx.font = '500 14px Roboto, "Helvetica Neue", sans-serif';
         ctx.fillStyle = 'black';
-    
-        var text = chart.config.options.title.text;
         // Draw text in center
         ctx.fillText(currentPercent.toFixed(2) + "%", centerX, centerY);
       }
@@ -2072,7 +1857,6 @@ export class FleetkpiComponent implements OnInit {
         enabled: false,
         custom: function(tooltip){
           let tooltipEl = document.getElementById('chartjs-tooltip');
-          let fileIcon = 'assets/dashboard/greenArrow.svg';
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
@@ -2092,10 +1876,6 @@ export class FleetkpiComponent implements OnInit {
         } else {
           tooltipEl.classList.add('no-transform');
         }
-        function getBody(bodyItem) {
-          return bodyItem.lines;
-      }
-      var position = this._chart.canvas.getBoundingClientRect();
         const positionY = this._chart.canvas.offsetTop;
         const positionX = this._chart.canvas.offsetLeft;
         const widthX = (this._chart.canvas.width)/8;
@@ -2120,14 +1900,12 @@ export class FleetkpiComponent implements OnInit {
           if (tooltip.opacity === 0) {
             tooltipEl.style.opacity = 0 as any;
             this._chart.canvas.parentNode.removeChild(tooltipEl);
-
             return;
           }
           else{
             tooltipEl.style.opacity = 1 as any;
             return;
           }
-          
         },
      },
       title:{
@@ -2137,7 +1915,6 @@ export class FleetkpiComponent implements OnInit {
     }
 
     let _prefLimit = this.getPreferenceThreshold('fuelconsumption')['type'];
-    let _prefThreshold = this.getPreferenceThreshold('fuelconsumption')['value'];
      
     switch (_prefLimit) {
       case 'U':{
@@ -2224,8 +2001,6 @@ export class FleetkpiComponent implements OnInit {
       default:
         break;
     }
-
-
   }
 
   // ***************************** Preference functions *****************************//
@@ -2295,30 +2070,26 @@ export class FleetkpiComponent implements OnInit {
   }
 
   getYesterdaysDate() {
-    //var date = new Date();
     var date = Util.getUTCDate(this.prefTimeZone);
     date.setDate(date.getDate()-1);
     return date;
   }
 
   getLastWeekDate() {
-    // var date = new Date();
     var date = Util.getUTCDate(this.prefTimeZone);
     date.setDate(date.getDate()-7);
     return date;
   }
 
   getLastMonthDate(){
-    // let date = new Date();
     var date = Util.getUTCDate(this.prefTimeZone);
-    date.setMonth(date.getMonth()-1);
+    date.setDate(date.getDate()-30);
     return date;
   }
 
   getLast3MonthDate(){
-    // let date = new Date();
     var date = Util.getUTCDate(this.prefTimeZone);
-    date.setMonth(date.getMonth()-3);
+    date.setDate(date.getDate()-90);
     date.setHours(0);
     date.setMinutes(0);
     date.setSeconds(0);
@@ -2356,6 +2127,4 @@ export class FleetkpiComponent implements OnInit {
     }
     return convertedTimeDisplay;
   }
-
-
 }

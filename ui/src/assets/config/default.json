@@ -1,34 +1,5 @@
 {
     "authentication": {
       "authRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#"
-    },
-    "foundationServices": {
-      "vehicleGroupRESTServiceUrl": "#{AUTHENTICATIONSERVICEURL}#/vehicle",
-      "roleRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/role",
-      "featureRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/feature",
-      "accountRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/account",
-      "translationRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/translation",
-      "driverRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/driver",
-      "packageRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/package",
-      "organizationRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/organization",
-      "subscriptionRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/subscribe",
-      "landmarkGroupRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/landmarkgroup",
-      "poiRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/poi",
-      "landmarkCategoryRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/poigeofence",
-      "geofenceRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/geofence",
-      "alertRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/alert",
-      "corridorRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/corridor",
-      "authZuoraSSOServiceURL": "#{AUTHENTICATIONSERVICEURL}#/account/sso",
-      "reportRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/report",
-      "reportSchedulerRESTServiceURL" : "#{AUTHENTICATIONSERVICEURL}#/reportscheduler",
-      "dashboardRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/dashboard",
-      "signalRServiceURL": "#{AUTHENTICATIONSERVICEURL}#/notificationhub",
-      "vehicleUpdateRESTServiceUrl": "#{AUTHENTICATIONSERVICEURL}#/otasoftwareupdate"
-
-    },
-    "hereMap":{
-      "app_id":"LRJH9LmTMNbwteXRz03L",
-      "app_code":"o9LPYEnoFvNtmkYUhCb1Tg",
-      "api_key":"BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw" 
     }
 }

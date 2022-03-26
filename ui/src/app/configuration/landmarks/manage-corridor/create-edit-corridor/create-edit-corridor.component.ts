@@ -1,7 +1,7 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { Form, FormBuilder,FormControl, FormGroup, Validators } from '@angular/forms';
 import { CustomValidators } from '../../../../shared/custom.validators';
-import { AlertService } from '../../../../services/alert.service';
+import { CorridorService } from '../../../../services/corridor.service';
 
 @Component({
   selector: 'app-create-edit-corridor',
@@ -26,8 +26,9 @@ export class CreateEditCorridorComponent implements OnInit {
   //selectedCorridorTypeId : any = 46;
   exclusionList : any;
   vehicleGroupList : any;
+  vinTripList : any;
 
-  constructor(private alertService: AlertService) {
+  constructor(private corridorService: CorridorService) {
    }
 
   ngOnInit(): void {
@@ -41,24 +42,26 @@ export class CreateEditCorridorComponent implements OnInit {
     if(this.actionType ==='create'){
       this.selectedCorridorTypeId = 46;
     }
-    //console.log(this.selectedCorridorTypeId)
+    ////console.log(this.selectedCorridorTypeId)
   }
 
   loadDropdownData(){
     this.showLoadingIndicator = true;
     // this.alertService.getAlertFilterData(this.accountId, this.organizationId).subscribe((data) => {
-    this.alertService.getAlertFilterDataBasedOnPrivileges(this.accountId, this.accountRoleId).subscribe((data) => {
+    this.corridorService.getCorridorParameters().subscribe((data) => {
       let filterData = data["enumTranslation"];
       let vehicleGroup = data["associatedVehicleRequest"];
+      let vinTrip = data["vinTripList"];
       filterData.forEach(element => {
         element["value"]= this.translationData[element["key"]];
       });
       this.corridorTypeList= filterData.filter(item => item.type == 'R');
       this.exclusionList= filterData.filter(item => item.type == 'E');
       this.vehicleGroupList= vehicleGroup;
+      this.vinTripList = vinTrip;
       this.showLoadingIndicator = false;
 
-      // console.log(this.vehicleGroupList)
+      // //console.log(this.vehicleGroupList)
     });
   }
   
@@ -90,10 +93,11 @@ export class CreateEditCorridorComponent implements OnInit {
     this.backToPage.emit(emitObj);
   }
 
-  backFromUpdate(){
+  backFromUpdate(_event){
     let emitObj = {
       booleanFlag: false,
       successMsg: "update",
+      corridorName: _event.corridorName
     }  
     this.backToPage.emit(emitObj);
   }

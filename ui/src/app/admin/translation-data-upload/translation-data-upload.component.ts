@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import * as XLSX from 'xlsx';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -8,10 +8,10 @@ import { TranslationService } from 'src/app/services/translation.service';
 import { FileValidator } from 'ngx-material-file-input';
 import { MatTableDataSource } from '@angular/material/table';
 import * as FileSaver from 'file-saver';
-import { LanguageSelectionComponent } from './language-selection/language-selection.component';
-import { stringify } from '@angular/compiler/src/util';
+import { LanguageSelectionComponent } from './language-selection/language-selection.component'; 
 import { Util } from 'src/app/shared/util';
 import { DatePipe } from '@angular/common';
+import { OrganizationService } from 'src/app/services/organization.service';
 
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
 
@@ -27,6 +27,7 @@ export class TranslationDataUploadComponent implements OnInit {
   accountOrganizationId: any = 0;
   dataSource: any;
   initData: any = [];
+  accountPrefObj:any;
   columnCodes: string[] = ['fileName','createdAt','fileSize','description','action'];
   displayedColumns: string[] = ['fileName','createdAt','fileSize','description','action'];
   columnLabels: String[] = ['FileName', 'UploadedDate', 'FileSize', 'Description', 'Action'];
@@ -51,21 +52,21 @@ export class TranslationDataUploadComponent implements OnInit {
   updatedCount: number = 0;
   filterValue: string;
   excelFileLengthFlag: boolean = false;
+   prefTimeFormat: any;
+   prefTimeZone: any;
+   prefDateFormat: any;
+   nextScheduleDateFormat: any;
+  prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
+  prefDetail: any = {};
 
-  constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private translationService: TranslationService, private datePipe: DatePipe) {
-      this.defaultTranslation();
-  }
-
-  defaultTranslation(){
-    this.translationData = {
-
-    }
-  }
+  constructor(private _formBuilder: FormBuilder, private organizationService: OrganizationService,private dialog: MatDialog, private translationService: TranslationService, private datePipe: DatePipe) { }
 
   ngOnInit(){
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.adminAccessType = JSON.parse(localStorage.getItem("accessType"));
     this.userType = localStorage.getItem("userType");
+    this.prefDetail = JSON.parse(localStorage.getItem('prefDetail'));
+    this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.uploadTranslationDataFormGroup = this._formBuilder.group({
       uploadFile: [
@@ -84,19 +85,74 @@ export class TranslationDataUploadComponent implements OnInit {
       filter: "",
       menuId: 31 //-- for Translation mgnt
     }
-
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
       this.loadInitData();
-    })
-  }
+    });
+      if(this.prefDetail){
+        if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){
+          this.proceedStep(this.accountPrefObj.accountPreference);
+        }else{ 
+          this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
+            this.proceedStep(orgPref);
+          }, (error) => { 
+            this.proceedStep({});
+          });
+        }
+      } 
+    }
+
+    proceedStep(preference: any){
+      let _search = this.prefDetail.timeformat.filter(i => i.id == preference.timeFormatId);
+      if(_search.length > 0){
+        this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
+        this.prefTimeZone = this.prefDetail.timezone.filter(i => i.id == preference.timezoneId)[0].name;
+        this.prefDateFormat = this.prefDetail.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+      }else{
+        this.prefTimeFormat = Number(this.prefDetail.timeformat[0].name.split("_")[1].substring(0,2)); 
+        this.prefTimeZone = this.prefDetail.timezone[0].name;
+        this.prefDateFormat = this.prefDetail.dateformat[0].name;
+      }
+      this.setPrefFormatDate();
+    }
+  
+    setPrefFormatDate(){
+      switch(this.prefDateFormat){
+        case 'ddateformat_dd/mm/yyyy': {
+          this.prefDateFormat = "DD/MM/YYYY";
+          this.nextScheduleDateFormat = "dd/MM/yyyy";
+          break;
+        }
+        case 'ddateformat_mm/dd/yyyy': {
+          this.prefDateFormat = "MM/DD/YYYY";
+          this.nextScheduleDateFormat = "MM/dd/yyyy";
+          break;
+        }
+        case 'ddateformat_dd-mm-yyyy': {
+          this.prefDateFormat = "DD-MM-YYYY";
+          this.nextScheduleDateFormat = "dd-MM-yyyy";
+          break;
+        }
+        case 'ddateformat_mm-dd-yyyy': {
+          this.prefDateFormat = "MM-DD-YYYY";
+          this.nextScheduleDateFormat = "MM-dd-yyyy";
+          break;
+        }
+        default:{
+          this.prefDateFormat = "MM/DD/YYYY";
+          this.nextScheduleDateFormat = "MM/dd/yyyy";
+        }
+      }
+    }
 
   loadInitData(){
     this.showLoadingIndicator = true;
     this.translationService.getTranslationUploadDetails().subscribe((data: any) => {
       this.hideloader();
       if(data){
-        var dateFormat = ((localStorage.getItem("dateFormat")).toLowerCase()).replace(/mm/g, 'MM');
+        if(localStorage.getItem("dateFormat")) {
+          var dateFormat = ((localStorage.getItem("dateFormat")).toLowerCase()).replace(/mm/g, 'MM');
+        }
         data.forEach(element => {
           element.createdAt = this.datePipe.transform(element.createdAt, dateFormat); 
           // var date = new Date(element.createdAt);
@@ -226,7 +282,7 @@ export class TranslationDataUploadComponent implements OnInit {
           let _fileName = this.uploadTranslationDataFormGroup.controls.uploadFile.value._fileNames;
           if(_fileName && _fileName != '' && _fileName.includes('.xlsx')){
             let charLength = _fileName.split('.xlsx')[0].length;
-            if(charLength > 45){ // file length error
+            if(charLength > 50){ // file length error
               this.excelFileLengthFlag = true;
             }
           }

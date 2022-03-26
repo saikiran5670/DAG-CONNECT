@@ -20,7 +20,7 @@ import { Util } from 'src/app/shared/util';
 })
 
 export class ReportSchedulerComponent implements OnInit {
-  columnCodes = ['reportName','vehicleGroupAndVehicleList','frequencyTypeName','recipientList','driverList','lastScheduleRunDate','nextScheduleRunDate', 'status', 'action'];
+  columnCodes = ['reportName','action2','frequencyTypeName','recipientList','driverList','lastScheduleRunDate','nextScheduleRunDate', 'status', 'action'];
   columnLabels = ['ReportType','VehicleGroupVehicle', 'Frequency', 'Recipient', 'Driver', 'LastRun', 'NextRun', 'Status', 'Action'];
   // displayedColumns: string[] = ['reportName','vehicleGroupAndVehicleList','frequencyType','recipientList','driverList','lastScheduleRunDate','nextScheduleRunDate','status','action'];
   grpTitleVisible : boolean = false;
@@ -40,7 +40,6 @@ export class ReportSchedulerComponent implements OnInit {
   originalAlertData: any= [];
   rowsData: any;
   accountOrganizationId: any;
-  completePrefData: any;
   accountId: any;
   titleVisible : boolean = false;
   dialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
@@ -58,8 +57,11 @@ export class ReportSchedulerComponent implements OnInit {
   prefDateFormat: any = 'DD/MM/YYYY'; //-- coming from pref setting
   nextScheduleDateFormat:any ='dd/MM/yyyy';
   accountPrefObj: any;
+  associatedVehicleGroup:any;
+  associatedVehicle:any;
   @ViewChild('gridComp') gridComp: DataTableComponent
   filterValue: string;
+  prefDetail: any = {};
 
   constructor(
     private translationService: TranslationService,
@@ -76,6 +78,7 @@ export class ReportSchedulerComponent implements OnInit {
       this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
       this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
       this.adminAccessType = JSON.parse(localStorage.getItem("accessType"));
+      this.prefDetail = JSON.parse(localStorage.getItem('prefDetail'));
       let translationObj = {
         id: 0,
         code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
@@ -87,53 +90,40 @@ export class ReportSchedulerComponent implements OnInit {
       }
       this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
         this.processTranslation(data);
-        this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
-          this.completePrefData = prefData;
-          if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
-            this.proceedStep(prefData, this.accountPrefObj.accountPreference);
-          }else{ // org pref
+        if(this.prefDetail){
+          if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ 
+            this.proceedStep(this.accountPrefObj.accountPreference);
+          }else{
             this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
-              this.proceedStep(prefData, orgPref);
-            }, (error) => { // failed org API
-              let pref: any = {};
-              this.proceedStep(prefData, pref);
+              this.proceedStep(orgPref);
+            }, (error) => {
+              this.proceedStep({});
             });
           }
           this.loadScheduledReports();
-        }, error => {
-          this.loadScheduledReports();
-        });
+        }
       });
-
       this.reportSchedulerService.getReportSchedulerParameter(this.accountId, this.accountOrganizationId).subscribe(parameterData => {
         this.reportSchedulerParameterData = parameterData;
         this.ReportTypeList = this.reportSchedulerParameterData["reportType"];
-        this.StatusList= [{id : "A", name : this.translationData.lblActive}, {id : "I", name : this.translationData.lblSuspended}]
-      })
-
+        this.StatusList= [{id : "Active", name : this.translationData.lblActive}, {id : "Suspended", name : this.translationData.lblSuspended}]
+      });
     }
 
-
   processTranslation(transData: any) {
-    this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    //console.log("process translationData:: ", this.translationData)
+    this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {}); 
   }
 
-
-  proceedStep(prefData: any, preference: any){
-    let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
+  proceedStep(preference: any){
+    let _search = this.prefDetail.timeformat.filter(i => i.id == preference.timeFormatId);
     if(_search.length > 0){
-      //this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
       this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
-      //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
-      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
-      this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+      this.prefTimeZone = this.prefDetail.timezone.filter(i => i.id == preference.timezoneId)[0].name;
+      this.prefDateFormat = this.prefDetail.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
     }else{
-      //this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
-      this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
-      //this.prefTimeZone = prefData.timezone[0].value;
-      this.prefTimeZone = prefData.timezone[0].name;
-      this.prefDateFormat = prefData.dateformat[0].name;
+      this.prefTimeFormat = Number(this.prefDetail.timeformat[0].name.split("_")[1].substring(0,2)); 
+      this.prefTimeZone = this.prefDetail.timezone[0].name;
+      this.prefDateFormat = this.prefDetail.dateformat[0].name;
     }
     this.setPrefFormatDate();
   }
@@ -210,7 +200,6 @@ export class ReportSchedulerComponent implements OnInit {
     this.dataSource.filter = filterValue;
   }
   hideloader() {
-    // Setting display of spinner
       this.showLoadingIndicator=false;
   }
 
@@ -221,19 +210,44 @@ export class ReportSchedulerComponent implements OnInit {
        this.statusSelection= 0;
        this.schedulerData =this.makeLists(data["reportSchedulerRequest"]);
        this.initData = this.schedulerData;
-      //  this.updateDatasource(this.schedulerData);
-        this.initData.forEach(element => {
+       this.associatedVehicleGroup = this.getUnique(this.reportSchedulerParameterData["associatedVehicle"], "vehicleGroupId");
+       this.associatedVehicle = this.getUnique(this.reportSchedulerParameterData["associatedVehicle"], "vehicleId");
+       this.associatedVehicle.forEach(element => {
+         element.name='';
+         element.licensePlateNumber = element.registrationNo;
+         let vehicleGroupList= this.associatedVehicleGroup.filter(item=> item.vin == element.vin);
+         vehicleGroupList.forEach(ele => {         
+           element.name += ele.vehicleGroupName +', '
+         });
+        });
+       this.initData.forEach(element => {
           if(element.reportName == "Fleet Fuel Report" || element.reportName == "TripReport"||
              element.reportName == "Fleet Utilisation Report"||element.reportName == "Fuel Deviation Report"){
                element.driverList = "";
              }
+             if(element.status=='I'){
+               element.status='Suspended'
+             }
+             else if(element.status=='A'){
+              element.status='Active'
+             }
         });
        this.hideloader();
+       if(this.gridComp){
+        this.gridComp.updatedTableData(this.initData);      
+       }
     }, (error) => {
        this.hideloader();
     })
-
  }
+
+ showVehiclePopup(row: any){
+  const colsList = ['name','vin','licensePlateNumber'];
+  const colsName =[this.translationData.lblVehicleGroup , this.translationData.lblVIN , this.translationData.lblRegistrationNumber ];
+  const tableTitle =`${row[0].vehicleName} - ${this.translationData.lblVehicles }`; 
+  let data: any = row;
+  this.callToCommonTable(data, colsList, colsName, tableTitle);
+}
 
  makeLists(initdata: any){
   let accountId =  localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
@@ -241,18 +255,33 @@ export class ReportSchedulerComponent implements OnInit {
     let recipientTxt: any = '';
     let driverTxt: any = '';
     let vehicleGroupTxt: any = '';
+    let reportDriverRef = element.driverDetail.split(',');
+    let newDriverList=[];
 
-    element.scheduledReportRecipient.forEach(resp => {
-      recipientTxt += resp.email + ', ';
-    });
-    if(element.scheduledReportDriverRef.length == 1){
-      driverTxt += element.scheduledReportDriverRef[0].driverName;
-    }
-    else{
-      element.scheduledReportDriverRef.forEach(resp => {
-        driverTxt += resp.driverName + ', ';
-      });
-    }
+     reportDriverRef.forEach(item => {
+     let drivItem  = item.split('~');
+      newDriverList.push({'driverId': drivItem[0],'driverName': drivItem[1]})
+     });
+     if(newDriverList.length == 1){
+        driverTxt += newDriverList[0].driverName;
+      }
+      else{
+        newDriverList.forEach(resp => {
+            driverTxt += resp.driverName + ', ';
+          });
+      }
+
+     element.scheduledReportRecipient.forEach(resp => {
+       recipientTxt += resp.email + ', ';
+     });
+    // if(element.scheduledReportDriverRef.length == 1){
+    //   driverTxt += element.scheduledReportDriverRef[0].driverName;
+    // }
+    // else{
+    //   element.scheduledReportDriverRef.forEach(resp => {
+    //     driverTxt += resp.driverName + ', ';
+    //   });
+    // }
 
     if(element.scheduledReportVehicleRef.length > 0){
       let vehicleGroups = element.scheduledReportVehicleRef.filter(item => item.vehicleGroupType == 'G');
@@ -275,7 +304,7 @@ export class ReportSchedulerComponent implements OnInit {
     initdata[index].driverList = driverTxt.slice(0, -2);
     initdata[index].vehicleGroupAndVehicleList = vehicleGroupTxt == "" ? vehicleGroupTxt : vehicleGroupTxt.slice(0, -2);
     initdata[index].lastScheduleRunDate= element.lastScheduleRunDate == 0 ? '-' : Util.convertUtcToDateFormat(element.lastScheduleRunDate, this.prefDateFormat, this.prefTimeZone);
-    initdata[index].nextScheduleRunDate= element.nextScheduleRunDate == 0 ? '-' : Util.convertUtcToDateFormat(element.nextScheduleRunDate, this.prefDateFormat, this.prefTimeZone);
+    // initdata[index].nextScheduleRunDate= element.nextScheduleRunDate == 0 ? '-' : Util.convertUtcToDateFormat(element.nextScheduleRunDate, this.prefDateFormat, this.prefTimeZone);
     initdata[index].isDriver = this.ReportTypeList.filter(item => item.id == initdata[index].reportId)[0].isDriver == 'Y' ? true : false;
   });
 
@@ -400,10 +429,10 @@ getUnique(arr, comp) {
   }
 
   getDeletMsg(reportSchedulerName: any){
-      if(this.translationData.lblReportSchedulerDelete)
-        return this.translationData.lblReportSchedulerDelete.replace('$', reportSchedulerName);
+      if(this.translationData.lblScheduleDeletedSuccessfully )
+        return this.translationData.lblScheduleDeletedSuccessfully.replace('$', reportSchedulerName);
       else
-        return ("Scheduled '$' deleted successfully ").replace('$', reportSchedulerName);
+        return ("'$' has been deleted successfully").replace('$', reportSchedulerName);
   }
 
   rowData: any;
@@ -450,8 +479,8 @@ getUnique(arr, comp) {
       title: this.translationData.lblReportScheduler || "Report Scheduler",
       message: this.translationData.lblChangeReportSchedulerStatus || "You want to change '$' status?",
       cancelText: this.translationData.lblCancel || "Cancel",
-      confirmText: (rowData.status == 'A') ? this.translationData.lblDeactivate || " Deactivate" : this.translationData.lblActivate || " Activate",
-      status: rowData.status == 'A' ? 'Deactivate' : 'Activate' ,
+      confirmText: (rowData.status == 'Active') ? this.translationData.lblDeactivate || " Deactivate" : this.translationData.lblActivate || " Activate",
+      status: rowData.status == 'Active' ? 'Deactivate' : 'Activate' ,
       name: rowData.reportName
     };
     const dialogConfig = new MatDialogConfig();
@@ -460,10 +489,17 @@ getUnique(arr, comp) {
     dialogConfig.data = options;
     this.dialogRef = this.dialog.open(ActiveInactiveDailogComponent, dialogConfig);
     this.dialogRef.afterClosed().subscribe((res: any) => {
+     let updatedStatus;
+      if(rowData.status=='Suspended'){
+        updatedStatus='I'
+      }
+      else{
+        updatedStatus='A'
+      }
       if(res == true){
         let obj = {
           "reportId": rowData.id,
-          "status": rowData.status
+          "status": updatedStatus
         }
         this.reportSchedulerService.enableDisableScheduledReport(obj).subscribe((data) => {
           let successMsg = "Status updated successfully."

@@ -1,4 +1,4 @@
-<app-common-breadcrumbs [breadcrumb]="breadcumMsg"></app-common-breadcrumbs>
+<app-common-breadcrumbs *ngIf= "breadcumMsg && breadcumMsg!=''" [breadcrumb]="breadcumMsg"></app-common-breadcrumbs>
 <form [formGroup]="OrganisationRelationshipFormGroup">
     <mat-card *ngIf="createStatus" class='mat-elevation-z margin-bottom-xlg'>
       <mat-card-content>

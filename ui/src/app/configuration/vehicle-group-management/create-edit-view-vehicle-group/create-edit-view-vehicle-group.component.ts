@@ -101,7 +101,7 @@ export class CreateEditViewVehicleGroupComponent implements OnInit {
     }
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} /
     ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} /
-    ${this.translationData.lblVehicleGroupManagement ? this.translationData.lblVehicleGroupManagement : "Vehicle Group Management"} /`+lastBreadCumValue;
+    ${this.translationData.lblVehicleGroupManagement ? this.translationData.lblVehicleGroupManagement : "Vehicle Group Management"} / `+lastBreadCumValue;
     // ${(this.actionType == 'edit') ? (this.translationData.lblEditVehicleGroupDetails ? this.translationData.lblEditVehicleGroupDetails : 'Edit Vehicle Group Details') : (this.translationData.lblViewVehicleGroupDetails ? this.translationData.lblViewVehicleGroupDetails : 'View Vehicle Group Details') }`;
   }
 
@@ -223,7 +223,7 @@ export class CreateEditViewVehicleGroupComponent implements OnInit {
         this.showLoadingIndicator=false;
       }, (err) => {
         this.showLoadingIndicator=false;
-        //console.log(err);
+        ////console.log(err);
         if (err.status == 409) {
           this.duplicateVehicleGroupMsg = true;
         }
@@ -250,7 +250,7 @@ export class CreateEditViewVehicleGroupComponent implements OnInit {
         this.showLoadingIndicator=false;
       }, (err) => {
         this.showLoadingIndicator=false;
-        //console.log(err);
+        ////console.log(err);
         if (err.status == 409) {
           this.duplicateVehicleGroupMsg = true;
         }

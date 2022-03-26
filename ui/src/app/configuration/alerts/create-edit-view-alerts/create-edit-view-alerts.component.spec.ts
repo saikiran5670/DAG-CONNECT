@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { CreateEditViewAlertsComponent } from './create-edit-view-alerts.component';
 
 describe('CreateEditViewAlertsComponent', () => {

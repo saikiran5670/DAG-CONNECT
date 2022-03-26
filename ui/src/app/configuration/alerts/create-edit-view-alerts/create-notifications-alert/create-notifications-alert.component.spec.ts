@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { CreateNotificationsAlertComponent } from './create-notifications-alert.component';
 
 describe('CreateNotificationsAlertComponent', () => {

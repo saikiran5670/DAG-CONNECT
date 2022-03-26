@@ -119,7 +119,7 @@
                 (click)='onDelete()'>{{ (translationData.lblDelete || 'Delete') }}</button>
                 <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" 
                     (click)='onReset()'>{{ translationData.lblReset || 'Reset' }}</button>
-                <button class='no-margin' [disabled]="!ecoScoreProfileForm.valid || !saveButton" mat-raised-button color="primary"
+                <button [ngStyle]="{'opacity': (!ecoScoreProfileForm.valid || !saveButton) ? '0.2' : '1' }" class='no-margin' [disabled]="!ecoScoreProfileForm.valid || !saveButton" mat-raised-button color="primary"
                     (click)='onCreate()'>{{ actionType == 'create' ? (translationData.lblCreate || 'Create') :
                     (translationData.lblSave || 'Save') }}</button>
             </div>
@@ -148,43 +148,30 @@
             </mat-panel-title>
         </mat-expansion-panel-header>
             <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
-                <!-- <span class='font-16-px line-height-24px font-helvetica-md'>{{ fuelConsumption.kpiName }} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmpg || 'mpg') : (translationData.lblLtr100Km || 'Ltr/100Km') }})</span> -->
                 <span class='font-16-px line-height-24px font-helvetica-md'>{{ translationData.lblFuelConsumption || 'Fuel Consumption' }} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmpg || 'mpg') : (translationData.lblLtr100Km || 'Ltr/100Km') }})</span>
                 <app-max-target-score *ngIf = "isKPI" [translationData]='translationData' [actionType]='actionType'[selectedElementData]='fuelConsumption' [kpiId] = 2 [units] = 'units' (createKPIEmit)='createKPIEmit($event)'></app-max-target-score>
-                <!-- <span class='font-16-px line-height-24px font-helvetica-md'>{{ cruiseControlUsage.kpiName }} (%)</span> -->
                 <span class='font-16-px line-height-24px font-helvetica-md'>{{ translationData.lblCruiseControlUsage || 'Cruise Control Usage' }} (%)</span>
                 <app-breaking-score *ngIf = "isKPI" [translationData]='translationData' [actionType]='actionType' [selectedElementData]='cruiseControlUsage' [kpiId] = 3 [units] = 'units' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
-                <!-- <span class='font-16-px line-height-24px font-helvetica-md'>{{ cruiseControlUsage.kpiName }} {{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lbl15_30mph || '15-30 mph') :(translationData.lbl30_50kmph || '30-50 kmph') }} (%)</span> -->
                 <span class='font-16-px line-height-24px font-helvetica-md'>{{ translationData.lblCruiseControlUsage || 'Cruise Control Usage' }} {{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lbl15_30mph || '15-30 mph') :(translationData.lbl30_50kmph || '30-50 kmph') }} (%)</span>
                 <app-breaking-score *ngIf = "isKPI" [translationData]='translationData' [actionType]='actionType' [selectedElementData]='cruiseControlUsage30_50' [kpiId] = 4 [units] = 'units' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
-                <!-- <span class='font-16-px line-height-24px font-helvetica-md'>{{ cruiseControlUsage.kpiName }} {{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lbl30_45mph || '30-45 mph') : (translationData.lbl50_75kmph || '50-75 kmph') }} (%)</span> -->
                 <span class='font-16-px line-height-24px font-helvetica-md'>{{ translationData.lblCruiseControlUsage || 'Cruise Control Usage' }} {{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lbl30_45mph || '30-45 mph') : (translationData.lbl50_75kmph || '50-75 kmph') }} (%)</span>
                 <app-breaking-score *ngIf = "isKPI" [translationData]='translationData' [actionType]='actionType' [selectedElementData]='cruiseControlUsage50_75'  [kpiId] = 5 [units] = 'units' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
-                <!-- <span class='font-16-px line-height-24px font-helvetica-md'>{{ cruiseControlUsage.kpiName }} {{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lbl45mph || '>45 mph') : (translationData.lbl75kmph || '>75 kmph') }} (%)</span> -->
                 <span class='font-16-px line-height-24px font-helvetica-md'>{{ translationData.lblCruiseControlUsage || 'Cruise Control Usage' }} {{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lbl45mph || '>45 mph') : (translationData.lbl75kmph || '>75 kmph') }} (%)</span>
                 <app-breaking-score *ngIf = "isKPI" [translationData]='translationData' [actionType]='actionType'[selectedElementData]='cruiseControlUsageGreaterThan75' [kpiId] = 6 [units] = 'units' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
-                <!-- <span class='font-16-px line-height-24px font-helvetica-md'>{{ PTOUsage.kpiName }}</span> -->
                 <span class='font-16-px line-height-24px font-helvetica-md'>{{ translationData.lblPTOUsage || 'PTO Usage' }} (%)</span>
                 <app-max-target-score *ngIf = "isKPI" [translationData]='translationData' [actionType]='actionType' [selectedElementData]='PTOUsage' [kpiId] = 7 [units] = 'units' (createKPIEmit)='createKPIEmit($event)'></app-max-target-score>
-                <!-- <span class='font-16-px line-height-24px font-helvetica-md'>{{ PTODuration.kpiName }}</span> -->
                 <span class='font-16-px line-height-24px font-helvetica-md'>{{ translationData.lblPTODuration || 'PTO Duration' }}</span>
                 <app-time-range-slider *ngIf = "isKPI" [translationData]='translationData' [actionType]='actionType' [selectedElementData]='PTODuration' [kpiId] = 8 [units] = 'units' (createKPIEmit)='createKPIEmit($event)'></app-time-range-slider>
-                <!-- <span class='font-16-px line-height-24px font-helvetica-md'>{{ averageDrivingSpeed.kpiName }} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmph || 'mph') : (translationData.lblkmph || 'kmph') }})</span> -->
                 <span class='font-16-px line-height-24px font-helvetica-md'>{{ translationData.lblAverageDrivingSpeed || 'Average Driving Speed' }} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmph || 'mph') : (translationData.lblkmph || 'kmph') }})</span>
                 <app-max-target-score *ngIf = "isKPI" [translationData]='translationData' [actionType]='actionType' [selectedElementData]='averageDrivingSpeed' [kpiId] = 9  [units] = 'units'(createKPIEmit)='createKPIEmit($event)'></app-max-target-score>
-                <!-- <span class='font-16-px line-height-24px font-helvetica-md'>{{ averageSpeed.kpiName }} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmph || 'mph') : (translationData.lblkmph || 'kmph') }})</span> -->
                 <span class='font-16-px line-height-24px font-helvetica-md'>{{ translationData.lblAverageSpeed || 'Average Speed' }} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmph || 'mph') : (translationData.lblkmph || 'kmph') }})</span>
                 <app-max-target-score *ngIf = "isKPI" [translationData]='translationData' [actionType]='actionType' [selectedElementData]='averageSpeed'  [kpiId] = 10 [units] = 'units' (createKPIEmit)='createKPIEmit($event)'></app-max-target-score>
-                <!-- <span class='font-16-px line-height-24px font-helvetica-md'>{{ heavyThrottling.kpiName }}</span> -->
                 <span class='font-16-px line-height-24px font-helvetica-md'>{{ translationData.lblHeavyThrottling || 'Heavy Throttling' }} (%)</span>
                 <app-max-target-score *ngIf = "isKPI" [translationData]='translationData' [actionType]='actionType' [selectedElementData]='heavyThrottling' [kpiId] = 11 [units] = 'units' (createKPIEmit)='createKPIEmit($event)'></app-max-target-score>
-                <!-- <span class='font-16-px line-height-24px font-helvetica-md'>{{ heavyThrottleDuration.kpiName }}</span> -->
                 <span class='font-16-px line-height-24px font-helvetica-md'>{{ translationData.lblHeavyThrottleDuration || 'Heavy Throttle Duration' }}</span>
                 <app-time-range-slider *ngIf = "isKPI" [translationData]='translationData' [actionType]='actionType'[selectedElementData]='heavyThrottleDuration' [kpiId] = 12 [units] = 'units' (createKPIEmit)='createKPIEmit($event)'></app-time-range-slider>
-                <!-- <span class='font-16-px line-height-24px font-helvetica-md'>{{ idling.kpiName }}</span> -->
                 <span class='font-16-px line-height-24px font-helvetica-md'>{{ translationData.lblIdling || 'Idling' }} (%)</span>
                 <app-max-target-score *ngIf = "isKPI" [translationData]='translationData' [actionType]='actionType' [selectedElementData]='idling' [kpiId] = 13 [units] = 'units' (createKPIEmit)='createKPIEmit($event)'></app-max-target-score>
-                <!-- <span class='font-16-px line-height-24px font-helvetica-md'>{{ idleDuration.kpiName }}</span> -->
                 <span class='font-16-px line-height-24px font-helvetica-md'>{{ translationData.lblIdleDuration || 'Idle Duration' }}</span>
                 <app-time-range-slider *ngIf = "isKPI" [translationData]='translationData' [actionType]='actionType'[selectedElementData]='idleDuration' [kpiId] = 14 [units] = 'units' (createKPIEmit)='createKPIEmit($event)'></app-time-range-slider>
             </div>
@@ -199,20 +186,14 @@
             </mat-panel-title>
         </mat-expansion-panel-header>
             <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
-                <!-- <span class='font-16-px line-height-24px font-helvetica-md'>{{ brakingScoreKpiData.kpiName }}</span> -->
                 <span class='font-16-px line-height-24px font-helvetica-md'>{{ translationData.lblBrakingScore || 'Braking Score' }}</span>
                 <app-breaking-score *ngIf = "isKPI" [translationData]='translationData' [actionType]='actionType' [selectedElementData]='brakingScoreKpiData' [kpiId] = 15 [units] = 'units' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
-                <!-- <span class='font-16-px line-height-24px font-helvetica-md'>{{ harshBrakingScoreKpiData.kpiName }}</span> -->
                 <span class='font-16-px line-height-24px font-helvetica-md'>{{ translationData.lblHarshBraking || 'Harsh Braking' }} (%)</span>
                 <app-max-target-score *ngIf = "isKPI" [translationData]='translationData' [actionType]='actionType' [selectedElementData]='harshBrakingScoreKpiData' [kpiId] = 16  [units] = 'units'(createKPIEmit)='createKPIEmit($event)'></app-max-target-score>
-                <!-- <app-breaking-score *ngIf = "isKPI" [translationData]='translationData' [actionType]='actionType'[selectedElementData]='harshBrakingScoreKpiData' [kpiId] = 16 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score> -->
-                <!-- <span class='font-16-px line-height-24px font-helvetica-md'>{{ harshBrakeDurationKpiData.kpiName }}</span> -->
                 <span class='font-16-px line-height-24px font-helvetica-md'>{{ translationData.lblHarshBrakeDuration || 'Harsh Brake Duration' }}</span>
                 <app-time-range-slider *ngIf = "isKPI" [translationData]='translationData' [actionType]='actionType' [selectedElementData]='harshBrakeDurationKpiData' [kpiId] = 17 [units] = 'units' (createKPIEmit)='createKPIEmit($event)'></app-time-range-slider>
-                <!-- <span class='font-16-px line-height-24px font-helvetica-md'>{{ brakeKpiData.kpiName }}</span> -->
                 <span class='font-16-px line-height-24px font-helvetica-md'>{{ translationData.lblBraking || 'Braking' }} (%)</span>
                 <app-max-target-score *ngIf = "isKPI" [translationData]='translationData' [actionType]='actionType' [selectedElementData]='brakeKpiData' [kpiId] = 18 [units] = 'units' (createKPIEmit)='createKPIEmit($event)'></app-max-target-score>
-                <!-- <span class='font-16-px line-height-24px font-helvetica-md'>{{ brakeDurationKpiData.kpiName }}</span> -->
                 <span class='font-16-px line-height-24px font-helvetica-md'>{{ translationData.lblBrakeDuration || 'Brake Duration' }}</span>
                 <app-time-range-slider *ngIf = "isKPI" [translationData]='translationData' [actionType]='actionType'[selectedElementData]='brakeDurationKpiData'  [kpiId] = 19 [units] = 'units' (createKPIEmit)='createKPIEmit($event)'></app-time-range-slider>
             </div>
@@ -239,9 +220,9 @@
         </mat-expansion-panel-header>
             <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
                 <span class='font-16-px line-height-24px font-helvetica-md'>{{ translationData.lblAverageGrossWeight || 'Average Gross Weight' }} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblpound || 'pound') : (translationData.lblkg || 'kg') }})</span>
-                <app-breaking-score *ngIf = "isKPI" [translationData]='translationData' [actionType]='actionType' [selectedElementData]='otherWtKpiData'[kpiId] = 21 [units] = 'units' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <app-breaking-score *ngIf = "isKPI" [translationData]='translationData' [actionType]='actionType' [selectedElementData]='otherWtKpiData'[kpiId] = 21 [units] = 'units' (createKPIEmit)='createKPIEmit($event)' [otherWtKpiVal]='otherWtKpi'></app-breaking-score>
                 <span class='font-16-px line-height-24px font-helvetica-md'>{{ translationData.lblAverageDistanceperday || 'Average Distance per day' }} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblkm || 'km') }})</span>
-                <app-breaking-score *ngIf = "isKPI" [translationData]='translationData' [actionType]='actionType' [selectedElementData]='otherDistanceKpiData' [kpiId] = 22 [units] = 'units' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <app-breaking-score *ngIf = "isKPI" [translationData]='translationData' [actionType]='actionType' [selectedElementData]='otherDistanceKpiData' [kpiId] = 22 [units] = 'units' (createKPIEmit)='createKPIEmit($event)' [otherWtKpiVal]='otherWtKpi'></app-breaking-score>
             </div>
     </mat-expansion-panel> 
 </div>

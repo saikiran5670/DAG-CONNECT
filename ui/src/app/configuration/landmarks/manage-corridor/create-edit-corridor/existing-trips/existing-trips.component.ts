@@ -8,6 +8,7 @@ import { CorridorService } from '../../../../../services/corridor.service';
 import { TranslationService } from '../../../../../../app/services/translation.service';
 // import { AccountService } from '../../../services/account.service';
 import { CustomValidators } from '../../../../../shared/custom.validators';
+import { OrganizationService } from 'src/app/services/organization.service'
 import { NgxMaterialTimepickerComponent, NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import * as moment from 'moment';
 import { POIService } from 'src/app/services/poi.service';
@@ -47,6 +48,17 @@ export class ExistingTripsComponent implements OnInit {
   @Input() value: string = '11:00 PM';
   @Input() format: number = 12;
   @Input() vehicleGroupList: any;
+  @Input() vinTripList: any;
+  //internalSelection: boolean = false;
+  vehicleGrpDD: any = [];
+  vehicleDD: any = [];
+  vehicleListData: any = [];
+  vehicleGroupListData: any = [];
+  accountPrefObj: any;
+  prefTimeZone: any;
+  newVehicleGrpList: any = [];
+  prefUnitFormat: any = 'dunit_Metric';
+  singleVehicle = [];
   selectedStartTime: any = '12:00 AM'
   selectedEndTime: any = '11:59 PM'
   selectedStartDateStamp: any;
@@ -68,7 +80,7 @@ export class ExistingTripsComponent implements OnInit {
   existingTripData: any = [];
   dataColValue: any = [];
   createEditStatus = false;
-  corridorDistance :any = 0;
+  corridorDistance: any = 0;
   accountOrganizationId: any = 0;
   corridorCreatedMsg: any = '';
   covertedDateValue: any = [];
@@ -121,7 +133,6 @@ export class ExistingTripsComponent implements OnInit {
   // localStLanguage: any;
   accountId: any = JSON.parse(localStorage.getItem("accountId"));
   filterValue: string;
-;
   hereMap: any;
   distanceinKM = 0;
   viaRouteCount: boolean = false;
@@ -175,20 +186,21 @@ export class ExistingTripsComponent implements OnInit {
   endTimeDisplay: any = '23:59:59';
   prefTimeFormat: any = 12; //-- coming from pref setting
   prefDateFormat: any = ''; //-- coming from pref setting
-
+  noRecordFound: boolean = false;
+  prefDetail: any = {};
   public filteredVehicleList: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
-
+  public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private here: HereService,
     private _formBuilder: FormBuilder, private translationService: TranslationService,
     private corridorService: CorridorService, private poiService: POIService,
-    private mapFunctions: MapFunctionsService,
+    private mapFunctions: MapFunctionsService, private organizationService: OrganizationService,
     private completerService: CompleterService, private config: ConfigService) {
 
-    this.map_key = config.getSettings("hereMap").api_key;
-    this.map_id = config.getSettings("hereMap").app_id;
-    this.map_code = config.getSettings("hereMap").app_code;
-
+    // this.map_key = config.getSettings("hereMap").api_key;
+    // this.map_id = config.getSettings("hereMap").app_id;
+    // this.map_code = config.getSettings("hereMap").app_code;
+    this.map_key = localStorage.getItem("hereMapsK");
 
     this.platform = new H.service.Platform({
       "apikey": this.map_key
@@ -198,22 +210,23 @@ export class ExistingTripsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log("-------selectedElementData---",this.selectedElementData)
+    this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
+    this.prefDetail = JSON.parse(localStorage.getItem('prefDetail'));
     this.vehicleGroupList.forEach(item => {
       this.vehicleGroupIdsSet.push(item.vehicleGroupId);
       this.vehicleGroupIdsSet = [...new Set(this.vehicleGroupIdsSet)];
     });
-    if(this.vehicleGroupIdsSet.length > 0){
-      this.vehicleGroupIdsSet.unshift(this.translationData.lblAll || 'All' );
+    if (this.vehicleGroupIdsSet.length > 0) {
+      this.vehicleGroupIdsSet.unshift(this.translationData.lblAll || 'All');
     };
-    this.vinList = [];
-    this.vehicleGroupList.forEach(item => {
-        this.vinList.push(item.vin)
-    });
+    // //this.vinList = [];
+    // this.vehicleGroupList.forEach(item => {
+    //   this.vinList.push(item.vin)
+    // });
     // if(this.vinList.length > 0){
     //   this.vinList.unshift(this.translationData.lblAll || 'All' );
     // };
-    this.filteredVehicleList.next(this.vinList);
+    //this.filteredVehicleList.next(this.vinList);
 
     this.showLoadingIndicator = true;
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -236,34 +249,226 @@ export class ExistingTripsComponent implements OnInit {
       endTime: ['', []]
       // userGroupDescription: ['', [CustomValidators.noWhitespaceValidatorforDesc]]
     },
-    {
-      validator: [
-        CustomValidators.specialCharValidationForName('label')
-      ]
-    });
-    let translationObj = {
-      id: 0,
-      code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
-      type: "Menu",
-      name: "",
-      value: "",
-      filter: "",
-      menuId: 6 //-- for ExistingTrips
+      {
+        validator: [
+          CustomValidators.specialCharValidationForName('label')
+        ]
+      }); 
+      if(this.prefDetail){
+        if (this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != '') { // account pref
+          this.proceedStep(this.accountPrefObj.accountPreference);
+        } else { // org pref
+          this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any) => {
+            this.proceedStep(orgPref);
+          }, (error) => {
+            this.proceedStep({});
+          });
+        }
+      }
+  }
+
+  resetExistingTripFormControlValue() {
+    if(this.vehicleGroupListData.length > 0){
+      this.existingTripForm.get('vehicleGroup').setValue(0);
     }
-    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-      // this.processTranslation(data);
-      this.setDefaultStartEndTime();
-      this.setPrefFormatDate();
-      this.setDefaultTodayDate();
-    });
-    // this.loadExistingTripData();
+    else {
+      this.existingTripForm.get('vehicleGroup').setValue('');
+    }
+
+    this.existingTripForm.get('vehicle').setValue('');
+  }
+
+  proceedStep(preference: any) {
+    let _search = this.prefDetail.timeformat.filter(i => i.id == preference.timeFormatId);
+    if (_search.length > 0) { 
+      this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0, 2)); 
+      this.prefTimeZone = this.prefDetail.timezone.filter(i => i.id == preference.timezoneId)[0].name;
+      this.prefDateFormat = this.prefDetail.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+      this.prefUnitFormat = this.prefDetail.unit.filter(i => i.id == preference.unitId)[0].name;
+    } else { 
+      this.prefTimeFormat = Number(this.prefDetail.timeformat[0].name.split("_")[1].substring(0, 2)); 
+      this.prefTimeZone = this.prefDetail.timezone[0].name;
+      this.prefDateFormat = this.prefDetail.dateformat[0].name;
+      this.prefUnitFormat = this.prefDetail.unit[0].name;
+    }
+    this.setDefaultStartEndTime();
+    this.setPrefFormatDate();
     this.setDefaultTodayDate();
-    this.existingTripForm.get('vehicleGroup');
-    this.existingTripForm.get('vehicle');
-    //For Edit Screen
-    // if(this.actionType === 'edit'){
-    //   this.existingTripForm.controls.label.disable();
+    this.filterDateData();
+  }
+
+  filterDateData() {
+    let distinctVIN: any = [];
+    let finalVINDataList: any = [];
+    this.vehicleListData = [];
+    this.vehicleGrpDD = [];
+    let currentStartTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone);
+    let currentEndTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);
+    if (this.vinTripList.length > 0) {
+      let vinArray = [];
+      this.vinTripList.forEach(element => {
+        if (element.endTimeStamp && element.endTimeStamp.length > 0) {
+          let search = element.endTimeStamp.filter(item => (item >= currentStartTime) && (item <= currentEndTime));
+          if (search.length > 0) {
+            vinArray.push(element.vin);
+          }
+        }
+      });
+      if (vinArray.length > 0) {
+        distinctVIN = vinArray.filter((value, index, self) => self.indexOf(value) === index);
+        if (distinctVIN.length > 0) {
+          distinctVIN.forEach(element => {
+            let _item = this.vehicleGroupList.filter(i => i.vin === element);
+            if (_item.length > 0) {
+              this.vehicleListData.push(_item[0]); //-- unique VIN data added
+              _item.forEach(element => {
+                finalVINDataList.push(element);
+              });
+            }
+          });
+        }
+      } else {
+        this.existingTripForm.get('vehicle').setValue('');
+        this.existingTripForm.get('vehicleGroup').setValue('');
+      }
+    }
+    this.vehicleGroupListData = finalVINDataList;
+
+    this.getVehicleGroupsForExistingTrip();
+    this.resetExistingTripFormControlValue();
+
+    // if(this.vehicleGroupListData.length > 0){
+    //   let _s = this.vehicleGroupListData.map(item => item.vehicleGroupId).filter((value, index, self) => self.indexOf(value) === index);
+    //   if(_s.length > 0){
+    //     _s.forEach(element => {
+    //       let count = this.vehicleGroupListData.filter(j => j.vehicleGroupId == element);
+    //       if(count.length > 0){
+    //         this.vehicleGrpDD.push(count[0]); //-- unique Veh grp data added
+    //         this.vehicleGrpDD.sort(this.compare);
+    //         this.resetVehicleGroupFilter();
+    //       }
+    //     });
+    //   }
+
+    //   this.vehicleGrpDD.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
+    //   this.resetVehicleGroupFilter();
     // }
+
+    // let vehicleData = this.vehicleListData.slice();
+    // this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
+    // ////console.log("vehicleDD 1", this.vehicleDD);
+    // this.vehicleDD.sort(this.compareVin);
+    // this.resetVehicleSearch();
+
+    // if(this.vehicleListData.length > 0){
+    //   this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
+    //   this.resetVehicleSearch();
+    //   //this.resetTripFormControlValue();----later
+    // };
+    //this.setVehicleGroupAndVehiclePreSelection();
+    // if(this.fromTripPageBack){ --------later
+    //   this.onSearch();
+    // }
+
+
+  }
+
+
+
+  compareVin(a, b) {
+    if (a.vin < b.vin) {
+      return -1;
+    }
+    if (a.vin > b.vin) {
+      return 1;
+    }
+    return 0;
+  }
+
+  getUniqueVINs(vinList: any) {
+    let uniqueVINList = [];
+    for (let vin of vinList) {
+      let vinPresent = uniqueVINList.map(element => element.vin).indexOf(vin.vin);
+      if (vinPresent == -1) {
+        uniqueVINList.push(vin);
+      }
+    }
+    return uniqueVINList;
+  }
+
+  getUnique(arr, comp) {
+
+    // store the comparison  values in array
+    const unique = arr.map(e => e[comp])
+      // store the indexes of the unique objects
+      .map((e, i, final) => final.indexOf(e) === i && i)
+
+      // eliminate the false indexes & return unique objects
+      .filter((e) => arr[e]).map(e => arr[e]);
+    return unique;
+  }
+
+  compareHere(a, b) {
+    if (a.vehicleGroupName < b.vehicleGroupName) {
+      return -1;
+    }
+    if (a.vehicleGroupName > b.vehicleGroupName) {
+      return 1;
+    }
+    return 0;
+  }
+
+  newVehicleList: any = [];
+
+  getVehicleGroupsForExistingTrip() {
+    this.newVehicleGrpList = [];
+    this.newVehicleList = [];
+    this.vinList = [];
+    if (this.vehicleGroupListData.length > 0) {
+      this.vehicleGroupListData.forEach(element => {
+        let vehicleObj = {
+          vehicleId: parseInt(element.vehicleId),
+          vehicleName: element.vehicleName,
+          vin: element.vin,
+          vehicleRegistrationNo: element.registrationNo
+        }
+        this.newVehicleList.push(vehicleObj);
+        this.vinList.push(vehicleObj.vin);
+        let vehicleGroupDetails = element.vehicleGroupDetails.split(",");
+        vehicleGroupDetails.forEach(item => {
+          let itemSplit = item.split("~");
+          // if(itemSplit[2] != 'S') {
+          let vehicleGroupObj = {
+            "vehicleGroupId": parseInt(itemSplit[0]),
+            "vehicleGroupName": itemSplit[1],
+            "vehicleId": parseInt(element.vehicleId),
+          }
+          this.newVehicleGrpList.push(vehicleGroupObj);
+          // //console.log("vehicleGroupList 1", this.newVehicleGrpList);
+          //  } else {
+          //    this.singleVehicle.push(element);
+          //  }
+        });
+      });
+      this.newVehicleGrpList = this.getUnique(this.newVehicleGrpList, "vehicleGroupId");
+      // //console.log("vehicleGroupList 2", this.newVehicleGrpList);
+      this.newVehicleGrpList.sort(this.compareHere);
+
+
+      // this.newVehicleGrpList.forEach(element => {
+      //   element.vehicleGroupId = parseInt(element.vehicleGroupId);
+      // });
+
+      this.newVehicleGrpList.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll });
+      this.resetVehicleGroupFilter();
+      this.resetVehicleSearch();
+
+    }
+
+  }
+
+  resetVehicleGroupFilter() {
+    this.filteredVehicleGroups.next(this.newVehicleGrpList.slice());
   }
 
   public ngAfterViewInit() {
@@ -282,12 +487,6 @@ export class ExistingTripsComponent implements OnInit {
   }
 
   setDefaultStartEndTime() {
-    // this.selectedStartTime = "00:00";
-    // this.selectedEndTime = "23:59";
-    this.setPrefFormatTime();
-  }
-
-  setPrefFormatTime() {
     if (this.prefTimeFormat == 24) {
       this.startTimeDisplay = '00:00:00';
       this.endTimeDisplay = '23:59:59';
@@ -374,13 +573,13 @@ export class ExistingTripsComponent implements OnInit {
 
   getLastMonthDate() {
     let date = new Date();
-    date.setMonth(date.getMonth() - 1);
+    date.setDate(date.getDate() - 30);
     return date;
   }
 
   getLast3MonthDate() {
     let date = new Date();
-    date.setMonth(date.getMonth() - 3);
+    date.setDate(date.getDate() - 90);
     date.setHours(0);
     date.setMinutes(0);
     date.setSeconds(0);
@@ -425,54 +624,57 @@ export class ExistingTripsComponent implements OnInit {
         break;
       }
     }
+    this.filterDateData();
   }
 
   changeStartDateEvent(event: MatDatepickerInputEvent<any>) {
     let dateTime: any = '';
-    if(event.value._d.getTime() >= this.last3MonthDate.getTime()){ // CurTime > Last3MonthTime
-      if(event.value._d.getTime() <= this.endDateValue.getTime()){ // CurTime < endDateValue
+    if (event.value._d.getTime() >= this.last3MonthDate.getTime()) { // CurTime > Last3MonthTime
+      if (event.value._d.getTime() <= this.endDateValue.getTime()) { // CurTime < endDateValue
         dateTime = event.value._d;
-      }else{
+      } else {
         dateTime = this.endDateValue;
       }
-    }else{
+    } else {
       dateTime = this.last3MonthDate;
     }
     this.startDateValue = this.setStartEndDateTime(dateTime, this.selectedStartTime, 'start');
+    this.filterDateData();
   }
 
   changeEndDateEvent(event: MatDatepickerInputEvent<any>) {
     let dateTime: any = '';
-    if(event.value._d.getTime() <= this.todayDate.getTime()){ // EndTime > todayDate
-      if(event.value._d.getTime() >= this.startDateValue.getTime()){ // EndTime < startDateValue
+    if (event.value._d.getTime() <= this.todayDate.getTime()) { // EndTime > todayDate
+      if (event.value._d.getTime() >= this.startDateValue.getTime()) { // EndTime < startDateValue
         dateTime = event.value._d;
-      }else{
+      } else {
         dateTime = this.startDateValue;
       }
-    }else{
+    } else {
       dateTime = this.todayDate;
     }
     this.endDateValue = this.setStartEndDateTime(dateTime, this.selectedEndTime, 'end');
+    this.filterDateData();
   }
 
   setStartEndDateTime(date: any, timeObj: any, type: any) {
     let _x = timeObj.split(":")[0];
     let _y = timeObj.split(":")[1];
     if (this.prefTimeFormat == 12) {
-      if(_y.split(' ')[1] == 'AM'){
+      if (_y.split(' ')[1] == 'AM') {
         if (_x == 12) {
           date.setHours(0);
         } else {
           date.setHours(_x);
         }
       }
-      else if(_y.split(' ')[1] == 'PM'){
-         if(_x != 12){
-           date.setHours(parseInt(_x) + 12);
-         }
-         else{
+      else if (_y.split(' ')[1] == 'PM') {
+        if (_x != 12) {
+          date.setHours(parseInt(_x) + 12);
+        }
+        else {
           date.setHours(_x);
-         }
+        }
       }
       date.setMinutes(_y.split(' ')[0]);
     } else {
@@ -493,8 +695,8 @@ export class ExistingTripsComponent implements OnInit {
     //_endTime = 1604337449000
     // StartDateTime=1078724200000&EndDateTime=2078724200000&VIN=XLR0998HGFFT76657
 
-    let _startTime = this.startDateValue.getTime();
-    let _endTime = this.endDateValue.getTime();
+    let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone);
+    let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);
     //For testing data
     // _startTime = 1604336137000;
     // _endTime = 1604337449000;
@@ -503,15 +705,20 @@ export class ExistingTripsComponent implements OnInit {
     // this.vinListSelectedValue = "5A39727"
     // _startTime = 1604336137000
     // _endTime = 1604337449000
-      this.poiService.getalltripdetails(_startTime, _endTime, this.vinListSelectedValue).subscribe((existingTripDetails: any) => {
+    this.poiService.getalltripdetails(_startTime, _endTime, this.vinListSelectedValue).subscribe((existingTripDetails: any) => {
       this.showLoadingIndicator = true;
       this.initData = existingTripDetails.tripData;
-
+      if(this.initData.length == 0) {
+        this.noRecordFound = true;
+      } else {
+        this.noRecordFound = false;
+      }
       this.hideloader();
       this.updatedTableData(this.initData);
     }, (error) => {
       this.initData = [];
       this.hideloader();
+      this.noRecordFound = true;
       this.updatedTableData(this.initData);
     });
 
@@ -522,18 +729,18 @@ export class ExistingTripsComponent implements OnInit {
     // this.selectedStartTime = '00:00:00';
     // this.selectedEndTime= '23:59:59';
     this.startTimeDisplay = '00:00:00';
-    this.endTimeDisplay= '23:59:59';
+    this.endTimeDisplay = '23:59:59';
     this.setDefaultStartEndTime();
     this.setDefaultTodayDate();
-    this.existingTripForm.get('vehicle');
-    this.existingTripForm.get('vehicleGroup');
     // this.existingTripForm.get('startTime').setValue(this.selectedStartTime);
     // this.existingTripForm.get('endTime').setValue(this.selectedEndTime);
     this.vinListSelectedValue = '';
     //this.vinList = [];
     this.initData = [];
+    this.noRecordFound = false;
     this.updatedTableData(this.initData);
-   }
+    this.filterDateData();
+  }
 
   setDefaultTodayDate() {
     this.selectionTab = 'today';
@@ -696,18 +903,24 @@ export class ExistingTripsComponent implements OnInit {
   }
   vehicleGroupSelection(vehicleGroupValue: any) {
     this.vinList = [];
-    // console.log("----vehicleGroupList---",this.vehicleGroupList)
-    if(vehicleGroupValue.value == "All"){
-      this.vehicleGroupList.forEach(item => {
-          this.vinList.push(item.vin)
+    // //console.log("----vehicleGroupList---",this.vehicleGroupList)
+    if (vehicleGroupValue.value == 0) {
+      this.newVehicleList.forEach(item => {
+        this.vinList.push(item.vin)
       });
     }
-    this.vehicleGroupList.forEach(item => {
-      // this.vehicleGroupIdsSet.push(item.vehicleGroupId)
-      if (item.vehicleGroupId == vehicleGroupValue.value) {
-        this.vinList.push(item.vin)
-      }
-    });
+    else {
+      this.newVehicleGrpList.forEach(element => {
+        if (element.vehicleGroupId == parseInt(vehicleGroupValue.value)) {
+          let vehicleFound: any = this.newVehicleList.filter(i => i.vehicleId == element.vehicleId);
+          if (vehicleFound.length > 0) {
+            this.vinList.push(vehicleFound[0].vin);
+          }
+        }
+      });
+    }
+
+    this.resetVehicleSearch();
   }
 
   // ------------- Map Functions ------------------------//
@@ -868,7 +1081,7 @@ export class ExistingTripsComponent implements OnInit {
     // this.corridorWidth = _event.value;
     this.corridorWidthKm = this.corridorWidth / 1000;
     this.existingTripForm.controls.widthInput.setValue(this.corridorWidthKm);
-    this.mapFunctions.updateWidth(this.corridorWidthKm,true);
+    this.mapFunctions.updateWidth(this.corridorWidthKm, true);
     this.checkRoutePlot();
     //this.calculateRouteFromAtoB();
   }
@@ -936,8 +1149,8 @@ export class ExistingTripsComponent implements OnInit {
 
       }
 
-      // console.log("------- Node points--",this.internalNodePoints)
-      // console.log("-------all slected Values--", items)
+      // //console.log("------- Node points--",this.internalNodePoints)
+      // //console.log("-------all slected Values--", items)
       this.startAddressLatitudePoints.push(items.startPositionlattitude)
       this.startAddressLongitudePoints.push(items.startPositionLongitude)
       this.endAddressLatitudePoints.push(items.endPositionLattitude)
@@ -959,7 +1172,7 @@ export class ExistingTripsComponent implements OnInit {
         "distance": items.distance,
         "nodePoints": [...this.internalNodePoints],
       }
-      this.corridorDistance= this.corridorDistance + items.distance;
+      this.corridorDistance = this.corridorDistance + items.distance;
       this.selectedTrips.push(createExistingTripObj)
     })
 
@@ -985,14 +1198,14 @@ export class ExistingTripsComponent implements OnInit {
       "existingTrips": [...this.selectedTrips]
     }
 
-    console.log("------existingTrip Create Obj--", existingTripObj)
+    //console.log("------existingTrip Create Obj--", existingTripObj)
     this.corridorService.createExistingCorridor(existingTripObj).subscribe((responseData) => {
       if (responseData.code === 200) {
         let emitObj = {
           booleanFlag: false,
           successMsg: "create",
           fromCreate: true,
-          CreateCorridorName:this.existingTripForm.controls.label.value
+          CreateCorridorName: this.existingTripForm.controls.label.value
         }
         this.backToCreate.emit(emitObj);
       }
@@ -1002,7 +1215,7 @@ export class ExistingTripsComponent implements OnInit {
           booleanFlag: false,
           successMsg: "duplicate",
           fromCreate: true,
-          CreateCorridorName:this.existingTripForm.controls.label.value
+          CreateCorridorName: this.existingTripForm.controls.label.value
         }
         this.backToReject.emit(emitObj);
       }
@@ -1038,9 +1251,9 @@ export class ExistingTripsComponent implements OnInit {
     this.filteredVehicleList.next(
       this.vinList.filter(item => item.toLowerCase().indexOf(search) > -1)
     );
-   }
+  }
 
-   resetVehicleSearch() {
+  resetVehicleSearch() {
     this.filteredVehicleList.next(this.vinList.slice());
   }
 
@@ -1135,7 +1348,7 @@ export class ExistingTripsComponent implements OnInit {
       this.mapFunctions.viewSelectedRoutes(this.markerArray);
       this.showMap = true;
     }
-    // console.log("---markerArray---",this.markerArray);
+    // //console.log("---markerArray---",this.markerArray);
     this.setAllAddressValues(this.markerArray);
 
   }
@@ -1164,18 +1377,18 @@ export class ExistingTripsComponent implements OnInit {
       this.markerArray.push(row);
       this.mapFunctions.viewSelectedRoutes(this.markerArray);
       this.tripsSelection.push(row);
-      console.log("----this.tripsSelection.push(row);------", this.tripsSelection);
+      //console.log("----this.tripsSelection.push(row);------", this.tripsSelection);
 
     } else { //-- remove existing marker
       //It will filter out checked points only
       let arr = this.markerArray.filter(item => item.id != row.id);
       this.markerArray = arr;
       this.tripsSelection = this.markerArray.filter(item => item.id !== row.id);
-      console.log("----this.tripsSelection.push(row);------", this.tripsSelection);
+      //console.log("----this.tripsSelection.push(row);------", this.tripsSelection);
       this.mapFunctions.clearRoutesFromMap();
       this.mapFunctions.viewSelectedRoutes(this.markerArray);
     }
-    console.log("---markerArray--", this.markerArray)
+    //console.log("---markerArray--", this.markerArray)
 
     this.setAllAddressValues(this.markerArray);
   }
@@ -1183,40 +1396,59 @@ export class ExistingTripsComponent implements OnInit {
   updatedTableData(tableData: any) {
     tableData = this.getNewTagData(tableData);
     this.dataSource = new MatTableDataSource(tableData);
-    // console.log("------dataSource--", this.dataSource)
+    // //console.log("------dataSource--", this.dataSource)
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+      this.sort.disableClear = true;
+      this.dataSource.filterPredicate = function(data: any, filter: string): boolean {
+        let driverName = data.driverFirstName+" "+data.driverLastName;
+        let startDate = moment(data.startTimeStamp).format("DD/MM/YYYY-h:mm:ss")
+        return (  
+          driverName.toString().toLowerCase().includes(filter) || 
+          data.distance.toString().toLowerCase().includes(filter) ||
+          startDate.toString().toLowerCase().includes(filter) ||
+          data.startAddress.toString().toLowerCase().includes(filter) ||
+          data.endAddress.toString().toLowerCase().includes(filter)
+        );
+      };
       this.dataSource.sortData = (data: String[], sort: MatSort) => {
         const isAsc = sort.direction === 'asc';
         return data.sort((a: any, b: any) => {
-            let columnName = sort.active;
-            // if(columnName === date){
-            //   return this.compare(a[sort.active], b[sort.active], isAsc , date);
-            // }
+          let columnName = sort.active;
+          if(columnName !== 'DriverName'){
             return this.compare(a[sort.active], b[sort.active], isAsc , columnName);
+            }else{
+            const currentName = a.driverFirstName+" "+a.driverLastName;
+            const nextName = b.driverFirstName+" "+b.driverLastName;
+            return this.compare(currentName, nextName, isAsc , columnName);
+            }
+          // if(columnName === date){
+          //   return this.compare(a[sort.active], b[sort.active], isAsc , date);
+          // }
+          return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
         });
       }
     });
-    Util.applySearchFilter(this.dataSource, this.displayedColumns ,this.filterValue );
+    Util.applySearchFilter(this.dataSource, this.displayedColumns, this.filterValue);
   }
-  compare(a: any , b: any , isAsc: boolean, columnName: any) {
-    if(columnName == "startTimeStamp" ) {
-      if(!(a instanceof Number)) a = a.toString().toUpperCase();
-      if(!(b instanceof Number)) b = b.toString().toUpperCase();
+  compare(a: any, b: any, isAsc: boolean, columnName: any) {
+    if (columnName == "startTimeStamp") {
+      if (!(a instanceof Number)) a = a.toString().toUpperCase();
+      if (!(b instanceof Number)) b = b.toString().toUpperCase();
     }
-    if(columnName === "distance" ) {
+    if (columnName === "distance") {
       var aa = a;
       var bb = b;
       return (aa < bb ? -1 : 1) * (isAsc ? 1 : -1);
     }
-    if(columnName !== "distance" || columnName !== "startTimeStamp" ) {
-    if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toUpperCase();
-    if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toUpperCase();
+    if (columnName === "startAddress" || columnName === "endAddress") {
+      if (!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toUpperCase();
+      if (!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toUpperCase();
     }
 
-  return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
-}
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  }
 
   setAllAddressValues(markerArray: any) {
     if (this.markerArray.length > 0) {
@@ -1269,9 +1501,9 @@ export class ExistingTripsComponent implements OnInit {
 
   vinSelection(vinSelectedValue: any) {
     this.vinListSelectedValue = vinSelectedValue.value;
-    if(vinSelectedValue.value=='All')
+    if (vinSelectedValue.value == 'All')
       this.vinListSelectedValue = this.vinList;
-    // console.log("------vins selection--", this.vinListSelectedValue)
+    // //console.log("------vins selection--", this.vinListSelectedValue)
   }
 
   applyFilter(filterValue: string) {

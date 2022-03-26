@@ -1,8 +1,4 @@
 <form [formGroup]="notificationForm">
-    <!-- for level selection -->
-    <!-- <div  formArrayName="FormArrayItems"> -->
-    <!-- <div  [formGroupName]="i"> -->
-
     <div *ngIf="(alert_category_selected + alert_type_selected === 'LU') || (alert_category_selected + alert_type_selected === 'LD') ||
                 (alert_category_selected + alert_type_selected === 'LG') || (alert_category_selected + alert_type_selected === 'LH') ||
                 (alert_category_selected + alert_type_selected === 'FA') || (alert_category_selected + alert_type_selected === 'FI') ||
@@ -38,21 +34,16 @@
                 {{translationData.lblMaxTenRecipientLabelsAreAllowed }}
             </mat-error>
             <mat-label>{{ translationData.lblRecipientLabel }} <span
-                    class='mandatoryColor'>*</span></mat-label>
+                    class='mandatoryColor'  >*</span></mat-label>
             <div class="ng-autocomplete">
-                    <ng-autocomplete [data]="notificationReceipients" [searchKeyword]="keyword"
-                        placeholder="{{ translationData.lblEnterRecipientLabel }}"
-                        (selected)='addMultipleItems(false, $event)' [itemTemplate]="itemTemplate"
-                        formControlName="recipientLabel">
-                    </ng-autocomplete>
+                <ng-autocomplete [data]="notificationReceipients" [searchKeyword]="keyword"
+                    placeholder="{{ translationData.lblEnterRecipientLabel }}" (selected)='addMultipleItems(false, $event)'
+                    [itemTemplate]="itemTemplate" formControlName="recipientLabel">
+                </ng-autocomplete>
                 <ng-template #itemTemplate let-item>
                     <a [innerHTML]="item.recipientLabel"></a>
                 </ng-template>
             </div>
-            <!-- <mat-form-field appearance="outline" class="full-width">
-                <input placeholder="{{ translationData.lblEnterRecipientLabel || 'Enter Recipient Label' }}" matInput
-                    formControlName="recipientLabel" maxlength="50">
-            </mat-form-field> -->
             <mat-hint>{{translationData.lblEnterMaxRecipientLabelForCategorization }}</mat-hint>
             <mat-error
                 *ngIf="notificationForm.get('recipientLabel').hasError('required') && notificationForm.get('recipientLabel').touched">
@@ -60,6 +51,9 @@
             </mat-error>
             <mat-error *ngIf="notificationForm.get('recipientLabel').hasError('specialCharsNotAllowed')">
                 {{ translationData.lblSpecialcharactersnotallowed }}
+            </mat-error>
+            <mat-error *ngIf="notificationForm.get('recipientLabel').hasError('maxlength')">
+               {{ translationData.lbl50CharMax }}
             </mat-error>
             <mat-error *ngIf="isDuplicateRecipientLabel">
                 {{ translationData.lblDuplicateRecipientLabel }}
@@ -74,9 +68,6 @@
                     <mat-option *ngFor="let item of contactModes" [value]="item.id">
                         {{item.value}}
                     </mat-option>
-                    <!-- <mat-option>
-                        Ws
-                    </mat-option> -->
                 </mat-select>
             </mat-form-field>
             <mat-hint>{{translationData.lblSelectContactModeAndAddWithList }}
@@ -94,19 +85,12 @@
                 (translationData.lblAdd ) }}</button>
         </div>
     </div>
-    <!-- <div  formArrayName="FormArrayItems">
-    <div  *ngFor="let item of notificationForm.controls['FormArrayItems']['controls']; let i = index" >
-    <div  [formGroupName]="i"> -->
     <div formArrayName="FormEmailArray">
         <div *ngFor="let item of notificationForm.controls['FormEmailArray']['controls']; let i = index">
             <div [formGroupName]="i">
-                <!-- For email -->
                 <mat-card class='mat-elevation-z' *ngIf="(contactModeType == 'E' && addEmailFlag) || emailCount > 0"
                     style="border: 1px solid #ddd;box-shadow: 1px 1px 5px 1px #ddd;margin-bottom: 10px;">
                     <mat-panel-title>
-                        <!-- <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;padding-right: 80%;'>{{
-                translationData.lblRecipientLabel02 || 'Recipient Label 02' }}</span>
-            <mat-icon style="color: red;" (click)="deleteEmailNotificationRow(i)">deleteicon</mat-icon> -->
                         <div fxLayout="row" fxLayoutAlign="space-between" style="width: 100%;">
                             <div fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="right" class="areawidth">
                                 <span class='font-16-px line-height-24px font-helvetica-md'>{{
@@ -126,13 +110,7 @@
                                         <a [innerHTML]="item.recipientLabel"></a>
                                     </ng-template>
                                 </div>
-                                <!-- <mat-form-field appearance="outline" class="full-width">
-                    <input matInput
-                        formControlName="emailRecipientLabel" >
-                </mat-form-field> -->
-                                <!-- <span style="margin-left: 5px;">{{item['controls']['emailRecipientLabel'].value}}</span> -->
                             </div>
-                            
                         </div>
                     </mat-panel-title>
                     <div fxLayout="row" class="full-width filter-direction" fxLayoutAlign="space-between">
@@ -154,11 +132,6 @@
                                         *ngIf="notificationForm.controls['FormEmailArray']['controls'][i].get('emailAddress').hasError('required') && notificationForm.controls['FormEmailArray']['controls'][i].get('emailAddress').touched">
                                         {{ translationData.lblPleaseenteremailAddress }}
                                     </mat-error>
-                                    <!-- <mat-error
-                                        *ngIf="notificationForm.controls['FormEmailArray']['controls'][i].get('emailAddress').hasError('email')">
-                                        {{ translationData.lblPleaseentervalidemailAddress || 'Please enter valid email
-                                        address' }}
-                                    </mat-error> -->
                                     <mat-error *ngIf="only10Emails">
                                         {{ translationData.lblOnly10EmailIdsAreAllowed }}
                                     </mat-error>
@@ -203,25 +176,15 @@
                                     </mat-error>
                                 </div>
                             </div>
-                            <!-- <div style="display:none">
-                    <mat-form-field style="display:none" appearance="outline" class="full-width">
-                        <input placeholder="{{ translationData.lblEnterRecipientLabel || 'Enter Recipient Label' }}" matInput
-                            formControlName="emailRecipientLabel" maxlength="50">
-                    </mat-form-field>
-                </div> -->
                         </div>
                         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left"
                             style="background: #dedddd;padding: 0.5em" class="areaWidth">
-                            <!-- <div class="full-width orgGrayDefault" fxLayout="column" fxLayoutAlign="left" style="background: grey"> -->
                             <span class='font-16-px line-height-24px font-helvetica-md'
                                 style='padding-left: 10px;padding-top: 10px;'>{{
                                 translationData.lblSetLimitations }}</span>
                             <span
                                 style="padding-bottom: 15px;padding-left: 8px;">{{translationData.lblMaxAlertNotificationsPerVehicle }}</span>
                             <span style="padding-left: 10px;" class='radioLabel'>{{ translationData.lblNotify }}<span class='mandatoryColor'>*</span></span>
-                            <!-- <mat-radio-button formControlName="notifyPeriod" checked style='margin-right: 20px;' [value]="'A'">{{
-                    translationData.lblAlways || 'Always' }}
-                </mat-radio-button> -->
                             <mat-radio-group (change)="onLimitationButtonChange($event)" formControlName="notifyPeriod"
                                 style='margin-right: 20px;'>
                                 <mat-radio-button style='margin-right: 20px;' value="A">
@@ -234,13 +197,10 @@
                             <div *ngIf="limitButton == 'C'" fxLayout="row" class="full-width">
                                 <div fxLayout="column" fxLayoutAlign="left" class="limitation">
                                     <mat-label>{{translationData.lblRestrictTo }}</mat-label>
-                                    <!-- <mat-form-field appearance="outline" class="full-width"> -->
                                     <input type="number" min="0" max="24" formControlName="retrictTo" class="textField">
-                                    <!-- </mat-form-field> -->
                                 </div>
                                 <div fxLayout="column" fxLayoutAlign="left" class="limitation">
                                     <mat-label>{{translationData.lblEmailEach }}</mat-label>
-                                    <!-- <mat-form-field appearance="outline" class="full-width"> -->
                                     <div fxLayout="row" fxLayoutGap="6px">
                                         <input type="number" min="0" max="60" matInput formControlName="emailEach"
                                             class="textField">
@@ -254,11 +214,8 @@
                                             </mat-select>
                                         </mat-form-field>
                                     </div>
-                                    <!-- </mat-form-field> -->
                                 </div>
-
                             </div>
-                            <!-- </div> -->
                         </div>
                     </div>
                 </mat-card>
@@ -277,8 +234,6 @@
                             <div fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="right" class="areawidth">
                                 <span class='font-16-px line-height-24px font-helvetica-md'>{{
                                     translationData.lblRecipientLabel02 }}
-
-                                    <!-- <span style="margin-left: 5px;">{{item['controls']['webRecipientLabel'].value}}</span> -->
                                 </span>
                                 <div fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="end" class="areawidth">
                                     <mat-icon style="color: red;cursor: pointer;position: absolute;top: 20px;right: 20px;" (click)="deleteWebNotificationRow(i)">
@@ -294,10 +249,6 @@
                                         <a [innerHTML]="item.recipientLabel"></a>
                                     </ng-template>
                                 </div>
-                                <!-- <mat-form-field appearance="outline" class="full-width">
-                <input matInput
-                    formControlName="webRecipientLabel" >
-            </mat-form-field> -->
                             </div>                            
                         </div>
                     </mat-panel-title>
@@ -402,16 +353,12 @@
 
                         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left"
                             style="background: #dedddd;padding: 0.5em" class="areaWidth">
-                            <!-- <div class="full-width orgGrayDefault" fxLayout="column" fxLayoutAlign="left" style="background: grey"> -->
                             <span class='font-16-px line-height-24px font-helvetica-md'
                                 style='padding-left: 10px;padding-top: 10px;'>{{
                                 translationData.lblSetLimitations }}</span>
                             <span
                                 style="padding-bottom: 15px;padding-left:10px;">{{translationData.lblMaxAlertNotificationsPerVehicle }}</span>
                             <span style="padding-left: 10px;" class='radioLabel'>{{ translationData.lblNotify }}<span class='mandatoryColor'>*</span></span>
-                            <!-- <mat-radio-button checked style='margin-right: 20px;' [value]="'A'">{{
-                    translationData.lblAlways || 'Always' }}
-                </mat-radio-button> -->
                             <mat-radio-group (change)="onWebLimitationButtonChange($event)"
                                 formControlName="notifyPeriodweb" style='margin-right: 20px;'>
                                 <mat-radio-button style='margin-right: 20px;' value="A">
@@ -443,9 +390,7 @@
                                         </mat-form-field>
                                     </div>
                                 </div>
-
                             </div>
-                            <!-- </div> -->
                         </div>
                     </div>
                 </mat-card>
@@ -497,7 +442,6 @@
                                             [enableAutoCountrySelect]="true"  [searchCountryFlag]="true" [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
                                             [selectFirstCountry]="false" [maxLength]="15" [phoneValidation]="true"
                                             [separateDialCode]="true" name="mobileNumber" formControlName="mobileNumber" (focusout)="validateMobileNumber(i)">
-                                            <!-- [separateDialCode]="true" [(ngModel)]="phoneNumber" name="mobileNumber" formControlName="mobileNumber" (ngModelChange)="validateMobileNumber(i)"> -->
                                         </ngx-intl-tel-input>
                                     </div>
                                     <mat-hint>{{translationData.lblOnlyOneContactNumberCanBeAddedAtATime}}</mat-hint>
@@ -538,7 +482,6 @@
                         </div>
                         <div fxLayout="column" class="min-width-50-per" fxLayoutGap="3px" fxLayoutAlign="left"
                             style="background: #dedddd;padding: 0.5em" class="areaWidth">
-                            <!-- <div class="full-width orgGrayDefault" fxLayout="column" fxLayoutAlign="left" style="background: grey"> -->
                             <span class='font-16-px line-height-24px font-helvetica-md'
                                 style='padding-left: 10px;padding-top: 10px;'>{{
                                 translationData.lblSetLimitations }}</span>
@@ -557,13 +500,10 @@
                             <div *ngIf="smsLimitButton == 'C'" fxLayout="row" class="full-width">
                                 <div fxLayout="column" fxLayoutAlign="left" class="limitation">
                                     <mat-label>{{translationData.lblRestrictTo }}</mat-label>
-                                    <!-- <mat-form-field appearance="outline" class="full-width"> -->
                                     <input type="number" min="0" max="24" formControlName="smsRetrictTo" class="textField">
-                                    <!-- </mat-form-field> -->
                                 </div>
                                 <div fxLayout="column" fxLayoutAlign="left" class="limitation">
                                     <mat-label>{{translationData.lblSmsEach }}</mat-label>
-                                    <!-- <mat-form-field appearance="outline" class="full-width"> -->
                                     <div fxLayout="row" fxLayoutGap="6px">
                                         <input type="number" min="0" max="60" matInput formControlName="smsEach"
                                             class="textField">
@@ -577,11 +517,8 @@
                                             </mat-select>
                                         </mat-form-field>
                                     </div>
-                                    <!-- </mat-form-field> -->
                                 </div>
-
                             </div>
-                            <!-- </div> -->
                         </div>
                     </div>
                 </mat-card>
@@ -670,14 +607,6 @@
                         <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'H'">
                             <span style='font-weight: 500!important;'>{{translationData.lblHours  }}</span>
                         </div>
-                        <!-- <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'D'">
-                            <span style='font-weight: 500!important;'>{{translationData.lblDays ||
-                                'Days' }}</span>
-                        </div>
-                        <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'W'">
-                            <span style='font-weight: 500!important;'>{{translationData.lblWeeks ||
-                                'Weeks' }}</span>
-                        </div> -->
                     </div>
                 </div>
             </div>
@@ -747,14 +676,6 @@
                         <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'H'">
                             <span style='font-weight: 500!important;'>{{translationData.lblHours }}</span>
                         </div>
-                        <!-- <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'D'">
-                            <span style='font-weight: 500!important;'>{{translationData.lblDays ||
-                                'Days' }}</span>
-                        </div>
-                        <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'W'">
-                            <span style='font-weight: 500!important;'>{{translationData.lblWeeks ||
-                                'Weeks' }}</span>
-                        </div> -->
                     </div>
                 </div>
             </div>
@@ -821,14 +742,6 @@
                         <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'H'">
                             <span style='font-weight: 500!important;'>{{translationData.lblHours }}</span>
                         </div>
-                        <!-- <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'D'">
-                            <span style='font-weight: 500!important;'>{{translationData.lblDays ||
-                                'Days' }}</span>
-                        </div>
-                        <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'W'">
-                            <span style='font-weight: 500!important;'>{{translationData.lblWeeks ||
-                                'Weeks' }}</span>
-                        </div> -->
                     </div>
                 </div>
             </div>
@@ -863,9 +776,4 @@
         </app-notification-advanced-filter>
     </mat-card>
 </div>
-
-
-    <!-- </div>
-</div>
-</div> -->
 </form>

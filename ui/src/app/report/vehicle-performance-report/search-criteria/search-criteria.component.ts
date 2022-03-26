@@ -22,8 +22,6 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
   @Output() showSearchResult = new EventEmitter();
   @Output() hideSearchResult = new EventEmitter();
-
-  localStLanguage;
   accountPrefObj;
   vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   accountOrganizationId;
@@ -42,24 +40,20 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   internalSelection: boolean = false;
   todayDate: any;
   last3MonthDate: any;
-
   wholeTripData: any = [];
   vehicleDD: any = [];
   singleVehicle: any = [];
   vehicleGrpDD: any = [];
   vehicleGroupListData: any = [];
   vehicleListData: any = [];
-  
-
   public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
-  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private formBuilder: FormBuilder, private organizationService: OrganizationService, private utilsService: UtilsService, private reportService: ReportService, private reportMapService:ReportMapService, private translationService: TranslationService) {
-    this.localStLanguage = JSON.parse(localStorage.getItem("language"));
+  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private formBuilder: FormBuilder, private organizationService: OrganizationService, private utilsService: UtilsService, private reportService: ReportService, private reportMapService: ReportMapService, private translationService: TranslationService) {
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
-    if(!this.utilsService.isEmpty(localStorage.getItem("globalSearchFilterData"))) {
+    if (!this.utilsService.isEmpty(localStorage.getItem("globalSearchFilterData"))) {
       this.globalSearchFilterData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
     }
   }
@@ -74,28 +68,16 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
       startTime: ['00:00', []],
       endTime: ['23:59', []]
     });
-
-    this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
-      let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
-      if(vehicleDisplayId) {
-        let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
-        if(vehicledisplay.length != 0) {
-          this.vehicleDisplayPreference = vehicledisplay[0].name;
-        }
-      }  
-    });
   }
 
   getPreferences(prefData) {
     if (this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != '') { // account pref
       this.proceedStep(prefData, this.accountPrefObj.accountPreference);
-    } else { // org pref
+    } else {
       this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any) => {
         this.proceedStep(prefData, orgPref);
-        console.log("orgPref", orgPref)
-      }, (error) => { // failed org API
-        let pref: any = {};
-        this.proceedStep(prefData, pref);
+      }, (error) => {
+        this.proceedStep(prefData, {});
       });
     }
     this.loadWholeTripData();
@@ -157,7 +139,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
 
   setStartEndDateTime(date: any, timeObj: any, type: any) {
     return this.reportMapService.setStartEndDateTime(date, timeObj, type, this.prefTimeFormat);
-   }
+  }
 
   setPrefFormatDate() {
     switch (this.prefDateFormat) {
@@ -189,7 +171,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   }
 
   getTodayDate() {
-    if(this.prefTimeZone) {
+    if (this.prefTimeZone) {
       let _todayDate: any = Util.getUTCDate(this.prefTimeZone);
       _todayDate.setHours(0);
       _todayDate.setMinutes(0);
@@ -200,7 +182,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   }
 
   getYesterdaysDate() {
-    if(this.prefTimeZone) {
+    if (this.prefTimeZone) {
       var date = Util.getUTCDate(this.prefTimeZone);
       date.setDate(date.getDate() - 1);
       return date;
@@ -209,7 +191,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   }
 
   getLastWeekDate() {
-    if(this.prefTimeZone) {
+    if (this.prefTimeZone) {
       var date = Util.getUTCDate(this.prefTimeZone);
       date.setDate(date.getDate() - 7);
       return date;
@@ -218,18 +200,18 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   }
 
   getLastMonthDate() {
-    if(this.prefTimeZone) {
+    if (this.prefTimeZone) {
       var date = Util.getUTCDate(this.prefTimeZone);
-      date.setMonth(date.getMonth() - 1);
+      date.setDate(date.getDate() - 30);
       return date;
     }
     return null;
   }
 
   getLast3MonthDate() {
-    if(this.prefTimeZone) {
+    if (this.prefTimeZone) {
       var date = Util.getUTCDate(this.prefTimeZone);
-      date.setMonth(date.getMonth() - 3);
+      date.setDate(date.getDate() - 90);
       date.setHours(0);
       date.setMinutes(0);
       date.setSeconds(0);
@@ -240,20 +222,23 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
 
   proceedStep(prefData: any, preference: any) {
     let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
-    if (_search.length > 0) { 
-      //this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
-      this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0,2));
-      //this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+    if (_search.length > 0) {
+      this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0, 2));
       this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].name;
       this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
       this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;
     } else {
-      //this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
-      this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0,2));
-      //this.prefTimeZone = prefData.timezone[0].value;
+      this.prefTimeFormat = Number(prefData.timeformat[0].name.split("_")[1].substring(0, 2));
       this.prefTimeZone = prefData.timezone[0].name;
       this.prefDateFormat = prefData.dateformat[0].name;
       this.prefUnitFormat = prefData.unit[0].name;
+    }
+    let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
+    if (vehicleDisplayId) {
+      let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+      if (vehicledisplay.length != 0) {
+        this.vehicleDisplayPreference = vehicledisplay[0].name;
+      }
     }
     this.setDefaultStartEndTime();
     this.setPrefFormatDate();
@@ -263,7 +248,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
 
   loadWholeTripData() {
     this.reportService.getVINFromTripVehicleperformance(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
-      this.wholeTripData = tripData;
+    this.wholeTripData = tripData;
       this.filterDateData();
     }, (error) => {
       this.wholeTripData.vinTripList = [];
@@ -276,29 +261,27 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
     let finalVINDataList: any = [];
     this.vehicleListData = [];
     this.vehicleGrpDD = [];
-     
-    let currentStartTime = Util.getMillisecondsToUTCDate(this.searchForm.get('startDate').value, this.prefTimeZone); 
-    let currentEndTime = Util.getMillisecondsToUTCDate(this.searchForm.get('endDate').value, this.prefTimeZone); 
-    // let currentStartTime = Util.convertDateToUtc(this.searchForm.get('startDate').value);  // extra addded as per discuss with Atul
-    // let currentEndTime = Util.convertDateToUtc(this.searchForm.get('endDate').value); // extra addded as per discuss with Atul
+
+    let currentStartTime = Util.getMillisecondsToUTCDate(this.searchForm.get('startDate').value, this.prefTimeZone);
+    let currentEndTime = Util.getMillisecondsToUTCDate(this.searchForm.get('endDate').value, this.prefTimeZone);
     if (this.wholeTripData && this.wholeTripData.vinTripList && this.wholeTripData.vinTripList.length > 0) {
       let vinArray = [];
       this.wholeTripData.vinTripList.forEach(element => {
-        if(element.endTimeStamp && element.endTimeStamp.length > 0){
-          let search =  element.endTimeStamp.filter(item => (item >= currentStartTime) && (item <= currentEndTime));
-          if(search.length > 0){
+        if (element.endTimeStamp && element.endTimeStamp.length > 0) {
+          let search = element.endTimeStamp.filter(item => (item >= currentStartTime) && (item <= currentEndTime));
+          if (search.length > 0) {
             vinArray.push(element.vin);
           }
         }
       });
-      this.singleVehicle = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i=> i.groupType == 'S');
+      this.singleVehicle = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.groupType == 'S');
       if (vinArray.length > 0) {
         distinctVIN = vinArray.filter((value, index, self) => self.indexOf(value) === index);
         if (distinctVIN.length > 0) {
           distinctVIN.forEach(element => {
             let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element && i.groupType != 'S');
             if (_item.length > 0) {
-              this.vehicleListData.push(_item[0]); //-- unique VIN data added 
+              this.vehicleListData.push(_item[0]); //-- unique VIN data added
               _item.forEach(element => {
                 finalVINDataList.push(element)
               });
@@ -306,7 +289,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
           });
         }
       } else {
-        if(this.searchForm) {
+        if (this.searchForm) {
           this.searchForm.get('vehicleName').setValue('');
           this.searchForm.get('vehicleGroup').setValue('');
         }
@@ -321,9 +304,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
           if (count.length > 0) {
             this.vehicleGrpDD.push(count[0]); //-- unique Veh grp data added
             this.vehicleGrpDD.sort(this.compare);
-           // this.vehicleDD.sort(this.compare);
             this.resetVehicleGroupFilter();
-           // this.resetVehicleFilter();
           }
         });
       }
@@ -332,16 +313,15 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
     }
     let vehicleData = this.vehicleListData.slice();
     this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
-    console.log("vehicleDD 1", this.vehicleDD);
     this.vehicleDD.sort(this.compareVin);
     this.resetVehicleFilter();
   }
 
-  getUniqueVINs(vinList: any){
+  getUniqueVINs(vinList: any) {
     let uniqueVINList = [];
-    for(let vin of vinList){
+    for (let vin of vinList) {
       let vinPresent = uniqueVINList.map(element => element.vin).indexOf(vin.vin);
-      if(vinPresent == -1) {
+      if (vinPresent == -1) {
         uniqueVINList.push(vin);
       }
     }
@@ -441,15 +421,16 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
       if (parseInt(event.value) == 0) { //-- all group
         let vehicleData = this.vehicleListData.slice();
         this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
-        console.log("vehicleDD 2", this.vehicleDD);
+        //console.log("vehicleDD 2", this.vehicleDD);
+        this.vehicleGrpDD.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
       } else {
         let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
         if (search.length > 0) {
           this.vehicleDD = [];
           search.forEach(element => {
             this.vehicleDD.push(element);
-            console.log("vehicleDD 3", this.vehicleDD);
           });
+          this.vehicleGrpDD.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
         }
       }
       this.searchForm.get('vehicleName').setValue('');
@@ -458,18 +439,19 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
     else {
       this.searchForm.get('vehicleGroup').setValue(parseInt(this.globalSearchFilterData.vehicleGroupDropDownValue));
     }
+    this.resetVehicleFilter();
   }
 
   changeStartDateEvent(event: MatDatepickerInputEvent<any>) {
     this.internalSelection = true;
     let dateTime: any = '';
-    if(event.value._d.getTime() >= this.last3MonthDate.getTime()){ // CurTime > Last3MonthTime
-      if(event.value._d.getTime() <= this.searchForm.get("endDate").value.getTime()){ // CurTime < endDateValue
+    if (event.value._d.getTime() >= this.last3MonthDate.getTime()) { // CurTime > Last3MonthTime
+      if (event.value._d.getTime() <= this.searchForm.get("endDate").value.getTime()) { // CurTime < endDateValue
         dateTime = event.value._d;
-      }else{
-        dateTime = this.searchForm.get("endDate").value; 
+      } else {
+        dateTime = this.searchForm.get("endDate").value;
       }
-    }else{ 
+    } else {
       dateTime = this.last3MonthDate;
     }
     this.searchForm.get('startDate').setValue(this.setStartEndDateTime(dateTime, this.searchForm.get('startTime').value, 'start'));
@@ -480,13 +462,13 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   changeEndDateEvent(event: MatDatepickerInputEvent<any>) {
     this.internalSelection = true;
     let dateTime: any = '';
-    if(event.value._d.getTime() <= this.todayDate.getTime()){ // EndTime > todayDate
-      if(event.value._d.getTime() >= this.searchForm.get("startDate").value.getTime()){ // EndTime < startDateValue
+    if (event.value._d.getTime() <= this.todayDate.getTime()) { // EndTime > todayDate
+      if (event.value._d.getTime() >= this.searchForm.get("startDate").value.getTime()) { // EndTime < startDateValue
         dateTime = event.value._d;
-      }else{
-        dateTime = this.searchForm.get("startDate").value; 
+      } else {
+        dateTime = this.searchForm.get("startDate").value;
       }
-    }else{ 
+    } else {
       dateTime = this.todayDate;
     }
     this.searchForm.get("endDate").setValue(this.setStartEndDateTime(dateTime, this.searchForm.get('endTime').value, 'end'));
@@ -508,9 +490,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
     this.filterDateData(); // extra addded as per discuss with Atul
   }
 
-  onVehicleChange(event: any) {
-    // this.internalSelection = true;
-  }
+  onVehicleChange(event: any) { }
 
   ngOnDestroy() {
     this.setGlobalSearchData();
@@ -550,7 +530,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
     this.filterDateData(); // extra addded as per discuss with Atul
   }
 
-  formStartDate(date: any) {    
+  formStartDate(date: any) {
     return this.reportMapService.formStartDate(date, this.prefTimeFormat, this.prefDateFormat);
   }
 
@@ -565,7 +545,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
 
   onSearch() {
     this.formSubmitted = true;
-    if(this.searchForm.valid) {
+    if (this.searchForm.valid) {
       let vehName: any = '';
       let vehGrpName: any = '';
       let vin;
@@ -580,13 +560,8 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
         vin = vehCount[0].vin;
         registrationNo = vehCount[0].registrationNo;
       }
-      
-      // let utcStartDateTime = Util.convertDateToUtc(this.searchForm.get('startDate').value);
-      // let utcEndDateTime = Util.convertDateToUtc(this.searchForm.get('endDate').value);
-     
-      let utcStartDateTime = Util.getMillisecondsToUTCDate(this.searchForm.get('startDate').value, this.prefTimeZone); 
-      let utcEndDateTime = Util.getMillisecondsToUTCDate(this.searchForm.get('endDate').value, this.prefTimeZone); 
-    
+      let utcStartDateTime = Util.getMillisecondsToUTCDate(this.searchForm.get('startDate').value, this.prefTimeZone);
+      let utcEndDateTime = Util.getMillisecondsToUTCDate(this.searchForm.get('endDate').value, this.prefTimeZone);
       let searchData = {
         utcStartDateTime: utcStartDateTime,
         utcEndDateTime: utcEndDateTime,
@@ -606,7 +581,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   }
 
   compare(a, b) {
-    if (a.vehicleGroupName< b.vehicleGroupName) {
+    if (a.vehicleGroupName < b.vehicleGroupName) {
       return -1;
     }
     if (a.vehicleGroupName > b.vehicleGroupName) {
@@ -614,8 +589,9 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
     }
     return 0;
   }
+
   compareVin(a, b) {
-    if (a.vin< b.vin) {
+    if (a.vin < b.vin) {
       return -1;
     }
     if (a.vin > b.vin) {
@@ -623,13 +599,12 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
     }
     return 0;
   }
-   
-    filterVehicleGroups(vehicleSearch){
-    console.log("filterVehicleGroups called");
-    if(!this.vehicleGrpDD){
+
+  filterVehicleGroups(vehicleSearch) {
+    if (!this.vehicleGrpDD) {
       return;
     }
-    if(!vehicleSearch){
+    if (!vehicleSearch) {
       this.resetVehicleGroupFilter();
       return;
     } else {
@@ -638,32 +613,28 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
     this.filteredVehicleGroups.next(
       this.vehicleGrpDD.filter(item => item.vehicleGroupName.toLowerCase().indexOf(vehicleSearch) > -1)
     );
-    console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
-
   }
 
-  filterVehicle(search){
-    console.log("vehicle dropdown called");
-    if(!this.vehicleDD){
+  filterVehicle(search) {
+    if (!this.vehicleDD) {
       return;
     }
-    if(!search){
+    if (!search) {
       this.resetVehicleFilter();
       return;
-    }else{
+    } else {
       search = search.toLowerCase();
     }
     this.filteredVehicle.next(
       this.vehicleDD.filter(item => item.vin.toLowerCase().indexOf(search) > -1)
     );
-    console.log("filtered vehicles", this.filteredVehicle);
   }
-  
-  resetVehicleFilter(){
+
+  resetVehicleFilter() {
     this.filteredVehicle.next(this.vehicleDD.slice());
   }
-  
-   resetVehicleGroupFilter(){
+
+  resetVehicleGroupFilter() {
     this.filteredVehicleGroups.next(this.vehicleGrpDD.slice());
   }
 

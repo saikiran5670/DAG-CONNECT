@@ -15,10 +15,12 @@ import { ConfigService } from '@ngx-config/core';
 })
 export class CorridorService {
   corridorServiceUrl: string = '';
+  reportCorridorUrl: string = '';
   hereMapApiUrl: string = 'https://places.ls.hereapi.com';
 
   constructor(private httpClient: HttpClient, private config: ConfigService) {
-    this.corridorServiceUrl = config.getSettings("foundationServices").corridorRESTServiceURL;
+    this.corridorServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/corridor';
+    this.reportCorridorUrl = config.getSettings("authentication").authRESTServiceURL + '/report';
    }
 
    generateHeader(){
@@ -32,6 +34,15 @@ export class CorridorService {
     return getHeaderObj;
   }
 
+  getCorridorParameters(): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .get<any[]>(`${this.reportCorridorUrl}/corridor/getparameters`,headers)
+      .pipe(catchError(this.handleError));
+  }
   
   getCorridorList(id : any): Observable<any[]> {
     let headerObj = this.generateHeader();

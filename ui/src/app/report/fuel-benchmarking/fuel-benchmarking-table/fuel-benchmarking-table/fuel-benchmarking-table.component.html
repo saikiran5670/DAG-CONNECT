@@ -3,32 +3,29 @@
     <mat-expansion-panel-header class="full-width">
       <mat-panel-title>
         <span>
-          <span *ngIf="selectionValueBenchmarkBY == 'timePeriods'">{{ translationData.lblBenchmarkBetweenTimePeriods || 'Benchmark Between Time Periods' }}</span>
-          <span *ngIf="selectionValueBenchmarkBY == 'vehicleGroups'">{{ translationData.lblBenchmarkBetweenGroups || 'Benchmark Between Groups' }}</span>
+          <span *ngIf="selectionValueBenchmarkBY == 'timePeriods'">{{ translationData.lblBenchmarkBetweenTimePeriods ||
+            'Benchmark Between Time Periods' }}</span>
+          <span *ngIf="selectionValueBenchmarkBY == 'vehicleGroups'">{{ translationData.lblBenchmarkBetweenGroups ||
+            'Benchmark Between Groups' }}</span>
         </span>
       </mat-panel-title>
     </mat-expansion-panel-header>
-
     <div class='areaWidth margin-bottom-xlg' style="background-color: #BEE3F8; padding: 10px;">
-      <span *ngIf="selectionValueBenchmarkBY == 'timePeriods'" class='font-16-px line-height-24px font-helvetica-md'>{{ translationData.lblSelectedGroup || 'Selected Group:' }}
+      <span *ngIf="selectionValueBenchmarkBY == 'timePeriods'" class='font-16-px line-height-24px font-helvetica-md'>{{
+        translationData.lblSelectedGroup || 'Selected Group:' }}
         {{vehicleGroupSelected}}</span>
-      <span class='font-16-px line-height-24px font-helvetica-md' *ngIf="selectionValueBenchmarkBY == 'vehicleGroups'">{{ translationData.lblSelectedTimePeriods || 'Selected Time Periods:' }} {{ startDateRange }} -
-          {{ endDateRange }}</span>
+      <span class='font-16-px line-height-24px font-helvetica-md'
+        *ngIf="selectionValueBenchmarkBY == 'vehicleGroups'">{{ translationData.lblSelectedTimePeriods || 'Selected Time
+        Periods:' }} {{ startDateRange }} -
+        {{ endDateRange }}</span>
     </div>
-
     <div style='display: flex;'>
-
       <mat-table style="overflow: auto;" [dataSource]="dataSource">
-        <!-- <ng-container matColumnDef="period" class="text-truncate" style="max-width: 20%;margin-right: 10px;" >
-                <mat-header-cell style="margin-right: 10px;" *matHeaderCellDef> Period
-                </mat-header-cell>
-                <mat-cell style="margin-right: 10px;" *matCellDef="let row"> {{row}} </mat-cell>
-              </ng-container> -->
-
         <ng-container [matColumnDef]="column" class="text-truncate" style="margin-right: 10px;"
           *ngFor="let column of displayedColumns; let index=index">
           <mat-header-cell style="cursor: default; margin-right: 10px;" *matHeaderCellDef> {{selectionValueBenchmarkBY
-            == 'timePeriods'? column == "period" ? translationData.lblPeriod || "Period" : column : column == "period" ? translationData.lblGroups || "Groups" : column}}
+            == 'timePeriods'? column == "period" ? translationData.lblPeriod || "Period" : column : column == "period" ?
+            translationData.lblGroups || "Groups" : column}}
             <mat-icon
               matTooltip="{{ translationData.lblDeleteTooltipMsg || 'click to delete the group from the benchmark' }}"
               matTooltipPosition="above" style="cursor: pointer;" *ngIf="index !== 0" aria-hidden="false"
@@ -36,13 +33,13 @@
             </mat-icon>
           </mat-header-cell>
           <mat-cell style="margin-right: 10px;" *matCellDef="let row; let i=index">
-            <!-- <div *ngIf="(i !== 4 && i !== 5) || column == 'period'" >{{i==1 && index !== 0? row[column]+" gal": i==2 && index !== 0? row[column]+" km" : i==3 && index !== 0? row[column]+" mpg" : row[column] }}</div> -->
             <div *ngIf="(i !== 4 && i !== 5) || column == 'period'">{{i==1 && index !== 0? row[column]: i==2 && index
               !== 0? row[column] : i==3 && index !== 0? row[column] : row[column] }}</div>
-
             <div *ngIf="index !== 0 && i == 4">
-              <span class='font-16-px line-height-24px font-helvetica-md'>{{ translationData.lblConsumption || 'Consumption' }}</span>&nbsp;
-              <span class='font-14-px line-height-21px font-helvetica-md'>({{ prefUnitFormat == 'dunit_Metric' ? (translationData.lblLtr100km || 'Ltr/100km') : (translationData.lblmpg || 'mpg') }})</span>
+              <span class='font-16-px line-height-24px font-helvetica-md'>{{ translationData.lblConsumption ||
+                'Consumption' }}</span>&nbsp;
+              <span class='font-14-px line-height-21px font-helvetica-md'>({{ prefUnitFormat == 'dunit_Metric' ?
+                (translationData.lblLtr100km || 'Ltr/100km') : (translationData.lblmpg || 'mpg') }})</span>
               <div style="margin-top: 10px;" *ngFor="let ranking of row[column]; let index=index">
                 <div>{{index + 1}}. {{ranking.vehicleName==""?ranking.vin:ranking.vehicleName}}
                   <span>
@@ -56,62 +53,26 @@
                 <div style="position: sticky;
                     margin-top: -25px;font-size:10px; color:white;"> {{ ranking.ltrVal }} </div>
               </div>
-
             </div>
-
             <div class="chart-container" style="position: relative; height:150px; width:19vw; margin-left: -50px;"
               *ngIf="index !== 0 && i == 5">
-              <canvas id="chart" baseChart [data]="row[column]" [labels]="doughnutChartLabels"
-                [chartType]="doughnutChartType">
-              </canvas>
+              <div *ngIf="chartType == 'doughnut'" class="chart-wrapper">
+                <canvas id="chart_doughnut" baseChart [data]="row[column]" [labels]="doughnutChartLabels"
+                  [chartType]="doughnutChartType">
+                </canvas>
+              </div>
+              <div *ngIf="chartType == 'pie'" class="chart-wrapper">
+                <canvas id="chart_pie" baseChart [data]="row[column]" [labels]="doughnutChartLabels"
+                  [chartType]="pieChartType">
+                </canvas>
+              </div>
             </div>
-
           </mat-cell>
         </ng-container>
-
-
-
-        <!-- <ng-container matColumnDef="period">
-                <mat-header-cell *matHeaderCellDef >{{'Period' }}</mat-header-cell>
-                <mat-cell *matCellDef="let row">
-                <b style="font-size: 16px;">{{ row.period }}</b>
-                </mat-cell>
-            </ng-container>
-
-            <ng-container matColumnDef="range1">
-                <mat-header-cell *matHeaderCellDef >{{ startDateRange}} to {{endDateRange}}</mat-header-cell>
-                <mat-cell *matCellDef="let row">
-                <b style="font-size: 16px;">{{ row.range1 }}</b>
-                </mat-cell>
-            </ng-container> -->
-
         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
         <mat-row *matRowDef="let row; columns: displayedColumns;">
         </mat-row>
       </mat-table>
-
-      <!-- <mat-table style="max-width: 20%; margin-right: 10px;"  [dataSource]="tabledataSource">
-
-            <ng-container matColumnDef="timerangeColumn">
-                <mat-header-cell *matHeaderCellDef >{{ startDateRange}} to {{endDateRange}}</mat-header-cell>
-                <mat-cell *matCellDef="let row">
-                {{ responseDataTP.ActiveVehicle }}
-                </mat-cell>
-                <mat-cell *matCellDef="let row">
-                {{ responseDataTP.TotalFuelConsumed }}
-                </mat-cell>
-                <mat-cell *matCellDef="let row">
-                {{ responseDataTP.TotalMileage }}
-                </mat-cell>
-                
-            </ng-container>
-
-
-                <mat-header-row *matHeaderRowDef="timerangeColumn"></mat-header-row>
-                <mat-row *matRowDef="let row; columns: timerangeColumn;">
-                </mat-row>
-        </mat-table> -->
     </div>
-
   </mat-expansion-panel>
 </mat-card>

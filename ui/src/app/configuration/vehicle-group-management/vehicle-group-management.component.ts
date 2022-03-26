@@ -80,7 +80,7 @@ export class VehicleGroupManagementComponent implements OnInit {
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    //console.log("process translationData:: ", this.translationData)
+    ////console.log("process translationData:: ", this.translationData)
   }
 
   applyFilter(filterValue: string) {
@@ -181,7 +181,7 @@ export class VehicleGroupManagementComponent implements OnInit {
           this.showLoadingIndicator=false;
         }, (error) => {
           this.showLoadingIndicator=false;
-          //console.log("error:: ", error);
+          ////console.log("error:: ", error);
           if(error.status == 404){
             this.selectedRowData.selectedVehicleList = [];
             this.createViewEditStatus = true;
@@ -193,6 +193,14 @@ export class VehicleGroupManagementComponent implements OnInit {
       }
     }, (error) => {
       this.showLoadingIndicator=false;
+      if(error.status == 404){
+        if(this.actionType != 'create'){
+          this.selectedRowData = rowData;
+          this.createViewEditStatus = true;
+        } else {
+          this.createViewEditStatus = true;
+        }
+      }
     });
   }
 
@@ -223,7 +231,8 @@ export class VehicleGroupManagementComponent implements OnInit {
       tableData: tableData,
       colsList: colsList,
       colsName:colsName,
-      tableTitle: tableTitle
+      tableTitle: tableTitle,
+      translationData: this.translationData
     }
     this.dialogRef = this.dialog.open(UserDetailTableComponent, dialogConfig);
   }
@@ -277,15 +286,15 @@ export class VehicleGroupManagementComponent implements OnInit {
               this.notDeleteDialogRef.afterClosed().subscribe((res: any) => {
               });
             }else if(!deleteResp.isDeleted && deleteResp.canDelete){ // exception/error
-              console.log('error while deleting...')
+              //console.log('error while deleting...')
             }else if(deleteResp.isDeleted && !deleteResp.canDelete){ // NA
-              console.log('error while deleting...')
+              //console.log('error while deleting...')
             }else{
-              console.log('error while deleting...')
+              //console.log('error while deleting...')
             }
           }
         }, (error) => {
-          console.log('error')
+          //console.log('error')
         });
       }
     });

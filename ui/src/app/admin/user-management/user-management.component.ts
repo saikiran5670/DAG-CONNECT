@@ -61,7 +61,8 @@ export class UserManagementComponent implements OnInit {
   editViewRoleList: any = [];
   deleteRecord: boolean = false;
   filterValue: string;
-
+  errorVisible: boolean = false;
+  displayMessage : any = '';
   constructor(
     private dialogService: ConfirmDialogService,
     private translationService: TranslationService,
@@ -186,7 +187,7 @@ export class UserManagementComponent implements OnInit {
       this.hideloader();
       this.getUserSettingsDropdownValues();
       if(this.userDetailsType != undefined){
-        console.log(localStorage.getItem('selectedRowItems'));
+        //console.log(localStorage.getItem('selectedRowItems'));
         let sessionVal = JSON.parse(localStorage.getItem('selectedRowItems'));
         this.editViewUser(sessionVal, this.userDetailsType)
       }
@@ -197,7 +198,7 @@ export class UserManagementComponent implements OnInit {
   }
 
   getUserSettingsDropdownValues(){
-    this.showLoadingIndicator = true;
+    //this.showLoadingIndicator = true;
     let languageCode = this.localStLanguage.code;
     let accountNavMenu = localStorage.getItem("accountNavMenu") ? JSON.parse(localStorage.getItem("accountNavMenu")) : [];
     accountNavMenu.forEach(element => {
@@ -207,25 +208,42 @@ export class UserManagementComponent implements OnInit {
         element.transName = this.translationService.applicationTranslationData[element.menuLabelKey];
       }
     });
-    this.translationService.getPreferences(languageCode).subscribe(data => {
-      this.hideloader();
-      this.defaultSetting = {
-        languageDropdownData: data.language,
-        timezoneDropdownData: data.timezone,
-        unitDropdownData: data.unit,
-        currencyDropdownData: data.currency,
-        dateFormatDropdownData: data.dateformat,
-        timeFormatDropdownData: data.timeformat,
-        vehicleDisplayDropdownData: data.vehicledisplay,
-        landingPageDisplayDropdownData: accountNavMenu
+
+    let _prefData: any = JSON.parse(localStorage.getItem('prefDetail'));
+    if(languageCode.toUpperCase() == 'EN-GB'){
+      this.callToProceed(_prefData, accountNavMenu);
+    }else{
+      if(_prefData && _prefData.isUpdate){
+        this.callToProceed(_prefData, accountNavMenu);
+      }else {
+        this.translationService.getPreferences(languageCode).subscribe((_data: any) => { 
+          if(_data){
+            _data.isUpdate = true; // lang updated
+            localStorage.setItem("prefDetail", JSON.stringify(_data)); // update LS
+            this.callToProceed(_data, accountNavMenu);
+          }
+        }, (error) => {  });
       }
-      this.loadRoles();
-    });
+    }
+  }
+
+  callToProceed(data: any, accountNavMenu: any){
+    this.defaultSetting = {
+      languageDropdownData: data.language,
+      timezoneDropdownData: data.timezone,
+      unitDropdownData: data.unit,
+      currencyDropdownData: data.currency,
+      dateFormatDropdownData: data.dateformat,
+      timeFormatDropdownData: data.timeformat,
+      vehicleDisplayDropdownData: data.vehicledisplay,
+      landingPageDisplayDropdownData: accountNavMenu
+    }
+    this.loadRoles();
   }
 
   processTranslation(transData: any){
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    //console.log("process translationData:: ", this.translationData)
+    ////console.log("process translationData:: ", this.translationData)
   }
 
   ngAfterViewInit() { }
@@ -237,6 +255,7 @@ export class UserManagementComponent implements OnInit {
   }
 
   deleteUser(item: any) {
+    console.log("The deleteUser function is called");
     const options = {
       title: this.translationData.lblDeleteAccount,
       message: this.translationData.lblAreyousureyouwanttodeleteuseraccount,
@@ -255,10 +274,11 @@ export class UserManagementComponent implements OnInit {
     this.roleService.getUserRoles(roleObj).subscribe(allRoleData => {
       this.hideloader();
       this.roleData = allRoleData;
-      let accountRoleLevel: any = this.roleData.filter(item => item.roleId == this.accountRoleId);
-      if(accountRoleLevel.length > 0){
-        this.filterRoleList = this.roleData.filter(i => i.level >= accountRoleLevel[0].level);
-        this.filterRoleList2 = this.roleData.filter(i => i.level < accountRoleLevel[0].level);
+      // let accountRoleLevel: any = this.roleData.filter(item => item.roleId == this.accountRoleId);
+      let accountRoleLevel: number = Number(localStorage.getItem("userLevel"));
+      if(accountRoleLevel){
+        this.filterRoleList = this.roleData.filter(i => i.level >= accountRoleLevel);
+        this.filterRoleList2 = this.roleData.filter(i => i.level < accountRoleLevel);
       }
       this.loadUsersData();
     }, (error) => {
@@ -396,7 +416,7 @@ export class UserManagementComponent implements OnInit {
          }
       });
     }, (error) => {
-      console.log('error');
+      //console.log('error');
       this.hideloader();
     });
   }
@@ -481,22 +501,40 @@ export class UserManagementComponent implements OnInit {
   }
 
   OpenDialog(options: any, flag: any, item: any) {
+    console.log("The openDialog popup is called");
     // Model for delete
     this.filterFlag = true;
     let name = `${item.salutation} ${item.firstName} ${item.lastName}`;
     this.dialogService.DeleteModelOpen(options, name);
     this.dialogService.confirmedDel().subscribe((res) => {
+      console.log("It goes confirmDel method inside");
       if (res) {
+        console.log("It goes inside if");
+        
         this.accountService.deleteAccount(item).subscribe(d=>{
+          console.log("it goes into deleteAccount method");
           this.deleteRecord = true;
           this.successMsgBlink(this.getDeletMsg(name));
           this.loadUsersData();
+        },(error) => {
+          let errorMsg = error.error;
+          console.log("errorMsg:", errorMsg);
+          this.errorMsgBlink(errorMsg);
         });
       }
     });
   }
+  errorMsgBlink(errorMsg: any) {
+    console.log("It goes errorMsgBlink inside");
+    this.errorVisible = true;
+    this.displayMessage = errorMsg;
+    setTimeout(() => {
+      this.errorVisible = false;
+    }, 5000);
+  }
 
   getDeletMsg(userName: any){
+    console.log("getDeleteMsg is called");
     if(this.translationData.lblUseraccountwassuccessfullydeleted)
       return this.translationData.lblUseraccountwassuccessfullydeleted.replace('$', userName);
     else
@@ -543,6 +581,7 @@ export class UserManagementComponent implements OnInit {
   }
 
   successMsgBlink(msg: any){
+    console.log("It goes into successMsgBlink method");
     this.grpTitleVisible = true;
     this.userCreatedMsg = msg;
     setTimeout(() => {
@@ -553,6 +592,7 @@ export class UserManagementComponent implements OnInit {
 
   getFilteredValues(dataSource){
     let val = JSON.parse(dataSource.filter);
+    this.dataSource = new MatTableDataSource(this.initData);
     this.dataSource = this.dataSource.data.filter((item)=>{
       let isGroup = false;
       let isRole = false;
@@ -583,7 +623,7 @@ export class UserManagementComponent implements OnInit {
       return isGroup && isRole && isName;
     });
     setTimeout(()=>{
-      this.dataSource = new MatTableDataSource(this.initData);
+      this.dataSource = new MatTableDataSource(this.dataSource);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
     });

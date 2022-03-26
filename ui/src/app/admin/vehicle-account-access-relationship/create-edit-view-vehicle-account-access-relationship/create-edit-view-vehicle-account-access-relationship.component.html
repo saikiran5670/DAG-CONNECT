@@ -1,6 +1,6 @@
-<app-common-breadcrumbs [breadcrumb]="breadcumMsg" [topRightElements]="topRightElements">
+<app-common-breadcrumbs  *ngIf= "breadcumMsg && breadcumMsg!=''" [breadcrumb]="breadcumMsg" [topRightElements]="topRightElements">
   <ng-template #topRightElements>
-    <div *ngIf="actionType == 'view'" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
       <span class='custom-font' (click)="onCancel()">
         <span><&nbsp;</span>
         <span class='backBtnCss'>{{ translationData.lblBack }}</span></span>
@@ -115,7 +115,7 @@
             <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>
               <div style='margin-right: 50px;' class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                 <mat-form-field appearance="outline">
-                    <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch }}" formControlName="gridSearch">
+                    <input matInput (keydown.enter)="$event.preventDefault()" (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch }}" formControlName="gridSearch">
                     <span matPrefix><mat-icon>search</mat-icon></span>
                 </mat-form-field>
               </div>

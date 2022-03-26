@@ -204,15 +204,13 @@
 
         </mat-expansion-panel-header>
 
-        <div *ngIf='displayData.length == 0'>
-
-          <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound || '' }}
-
+        <div *ngIf='noRecordFound'>
+          <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound || '' }}</div>
+        </div>
+        <div *ngIf='displayData.length == 0 && !noRecordFound'>
+          <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblSelectionMessage || 
+            'Please select and search required fields from top to view the details' }}
           </div>
-
-          <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblSelectionMessage || 'Please select and search required fields from top to view the details'
-            }}</div>
-
         </div>
         <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
 
@@ -562,6 +560,336 @@
     </mat-card>
     </div>
 
+    <div id ="hideData">
+      <div *ngIf="dontShow">
+        <mat-card *ngIf='displayData.length > 0' class='mat-elevation-z no-padding margin-bottom-xlg' id="summary">
+
+          <mat-expansion-panel [(expanded)]="isSummaryOpen" class="full-width" fxLayoutGap="10px" (opened)="isSummaryOpen == true"
+            (closed)="isSummaryOpen == false">
+    
+            <mat-expansion-panel-header class="full-width">
+    
+              <mat-panel-title>
+    
+                <span>{{ translationData.lblSummary || 'Summary' }}
+    
+                </span>
+    
+    
+              </mat-panel-title>
+    
+            </mat-expansion-panel-header>
+    
+            <div *ngIf='displayData.length > 0'>
+    
+              <div style='padding: 30px 20px; margin-bottom: 10px; background: #bee3f8;'>
+    
+                <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
+    
+                  <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
+    
+                    <span>
+    
+                      <span>{{ translationData.lblFrom || 'From' }}: </span>
+    
+                      <span class='font-helvetica-md'>{{ tableInfoObj.fromDate }}
+                      </span>
+    
+                    </span>
+    
+                  </div>
+    
+                  <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
+    
+                    <span>
+    
+                      <span>{{ translationData.lblTo || 'To' }}: </span>
+    
+                      <span class='font-helvetica-md'>{{ tableInfoObj.endDate }}</span>
+    
+                    </span>
+    
+                  </div>
+    
+                  <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
+    
+                    <span>
+    
+                      <span>{{ translationData.lblVehicleGroup || 'Vehicle Group' }}: </span>
+    
+                      <span class='font-helvetica-md'>{{ tableInfoObj.vehGroupName }}
+                      </span>
+    
+                    </span>
+    
+                  </div>
+    
+                  <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
+    
+                    <span>
+    
+                      <span>{{ translationData.lblVehicleName || 'Vehicle Name' }}: </span>
+    
+                      <span class='font-helvetica-md'>{{ tableInfoObj.vehicleName }}
+                      </span>
+    
+                    </span>
+    
+                  </div>
+    
+                </div>
+    
+              </div>
+    
+    
+    
+              <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="20px">
+    
+                <div class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
+    
+                  <span>{{ translationData.lblNumberOfTrips || 'Number Of Trips' }}</span>
+    
+                  <span class='font-helvetica-md'>{{sumOfColumns('noOfTrips')}}</span>
+    
+                </div>
+    
+                <div class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
+    
+                  <span>{{ translationData.lblDistance || 'Distance' }}</span>
+    
+                  <span class='font-helvetica-md'>{{ convertZeros(sumOfColumns('distance'))}} {{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || ' km') : (prefUnitFormat
+                    == 'dunit_Imperial') ? (translationData.lblmile || ' mile') : (translationData.lblmile || ' mile') }}</span>
+    
+                </div>
+    
+                <div class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
+    
+                  <span>{{ translationData.lblFuelConsumed || 'Fuel Consumed' }}</span>
+    
+                  <span class='font-helvetica-md'>{{sumOfColumns('fuelconsumed')}} {{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr || '
+                    l') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgal || 'gal') :
+                    (translationData.lblgal || ' gal') }} </span>
+    
+                </div>
+    
+                <div class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
+    
+                  <span>{{ translationData.lblIdleDuration || 'Idle Duration' }}</span>
+    
+                  <span class='font-helvetica-md'>{{sumOfColumns('idleDuration')}} {{translationData.lblhhmm}}</span>
+    
+                </div>
+    
+                <div class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
+    
+                  <span>{{ translationData.lblFuelConsumption || 'Fuel Consumption' }}</span>
+    
+                  <span class='font-helvetica-md'>{{sumOfColumns('fuelConsumption')}} {{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || '
+                    Ltrs/100km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmpg || 'mpg') :
+                    (translationData.lblmpg || ' mpg') }}</span>
+    
+                </div>
+    
+                <div class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
+    
+                  <span>{{ translationData.lblCO2Emission}}</span>
+    
+                  <span class='font-helvetica-md'>{{sumOfColumns('co2emission')}} {{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblton || ' t') :
+                    (prefUnitFormat == 'dunit_Imperial') ? (translationData.lbltons || ' Ton') : (translationData.lbltons ||' Ton') }} </span>
+    
+                </div>
+    
+              </div>
+    
+    
+    
+            </div>
+    
+          </mat-expansion-panel>
+    
+        </mat-card>
+
+        <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
+
+          <mat-expansion-panel [(expanded)]="isChartsOpen" class="full-width" fxLayoutGap="10px" (opened)="isChartsOpen" (closed)="!isChartsOpen" *ngIf="isChartsOpen">
+    
+            <mat-expansion-panel-header class="full-width">
+    
+              <mat-panel-title>
+    
+                <span id= "chartHeader">{{ translationData.lblCharts || 'Charts' }}</span>
+    
+              </mat-panel-title>
+    
+            </mat-expansion-panel-header>
+    
+            <div *ngIf='showGraph' fxLayout="row wrap" fxLayout.lt-sm="column" fxLayoutGap="15px" fxLayoutAlign="flex-start">
+    
+              <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right" fxFlex="0 1 calc(50% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32px)"
+              fxFlex.lt-sm="100%">
+    
+                <span style='text-align: center; padding-top: 20px;' class='font-16-px line-height-24px'>{{ translationData.lblFuelConsumed || 'Fuel Consumed' }}</span>
+    
+                <div *ngIf="ConsumedChartType =='Line'" class="chart-wrapper">
+    
+                  <canvas baseChart [datasets]="lineChartData1" [labels]="lineChartLabels" [options]="lineChartOptions3" [colors]="lineChartColors"
+                    [legend]="lineChartLegend" [chartType]="lineChartType" [plugins]="lineChartPlugins">
+    
+                  </canvas>
+    
+                </div>
+    
+                <div *ngIf="ConsumedChartType =='Bar'" class="chart-wrapper">
+    
+                  <canvas baseChart [datasets]="barChartData1" [labels]="barChartLabels" [options]="barChartOptions3" [plugins]="barChartPlugins"
+                    [legend]="barChartLegend" [chartType]="barChartType">
+    
+                  </canvas>
+    
+                </div>
+    
+              </div>
+    
+              <div class="areaWidth areaWidth half-width" fxLayout="column" fxLayoutAlign="right" fxFlex="0 1 calc(50% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32px)"
+              fxFlex.lt-sm="100%">
+    
+                <span style='text-align: center; padding-top: 20px;' class='font-16-px line-height-24px'>{{ translationData.lblNumberOfTrips || 'Number Of Trips' }}</span>
+    
+                <div *ngIf="TripsChartType =='Bar'" class="chart-wrapper">
+    
+                  <canvas baseChart [datasets]="barChartData2" [labels]="barChartLabels" [options]="barChartOptions" [plugins]="barChartPlugins"
+                    [legend]="barChartLegend" [chartType]="barChartType">
+    
+                  </canvas>
+    
+                </div>
+    
+                <div *ngIf="TripsChartType =='Line'" class="chart-wrapper">
+    
+                  <canvas baseChart [datasets]="lineChartData2" [labels]="lineChartLabels" [options]="lineChartOptions" [colors]="lineChartColors"
+                    [legend]="lineChartLegend" [chartType]="lineChartType" [plugins]="lineChartPlugins">
+    
+                  </canvas>
+    
+                </div>
+    
+              </div>
+    
+              <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right" fxFlex="0 1 calc(50% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32px)"
+              fxFlex.lt-sm="100%">
+    
+                <span style='text-align: center; padding-top: 20px;' class='font-16-px line-height-24px'>{{ translationData.lblCO2Emission }}</span>
+    
+                <div *ngIf="Co2ChartType =='Line'" class="chart-wrapper">
+    
+                  <canvas baseChart [datasets]="lineChartData3" [labels]="lineChartLabels" [options]="lineChartOptions4" [colors]="lineChartColors"
+                    [legend]="lineChartLegend" [chartType]="lineChartType" [plugins]="lineChartPlugins">
+    
+                  </canvas>
+    
+                </div>
+    
+                <div *ngIf="Co2ChartType =='Bar'" class="chart-wrapper">
+    
+                  <canvas baseChart [datasets]="barChartData3" [labels]="barChartLabels" [options]="barChartOptions4" [plugins]="barChartPlugins"
+                    [legend]="barChartLegend" [chartType]="barChartType">
+    
+                  </canvas>
+    
+                </div>
+    
+              </div>
+    
+              <div class="areaWidth areaWidth half-width" fxLayout="column" fxLayoutAlign="right" fxFlex="0 1 calc(50% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32px)"
+              fxFlex.lt-sm="100%">
+    
+                <span style='text-align: center; padding-top: 20px;' class='font-16-px line-height-24px'>{{ translationData.lblDistance || 'Distance' }}</span>
+    
+                <div *ngIf="DistanceChartType =='Line'" class="chart-wrapper">
+    
+                  <canvas baseChart [datasets]="lineChartData4" [labels]="lineChartLabels" [options]="lineChartOptions2" [colors]="lineChartColors"
+                    [legend]="lineChartLegend" [chartType]="lineChartType" [plugins]="lineChartPlugins">
+    
+                  </canvas>
+    
+                </div>
+    
+                <div *ngIf="DistanceChartType =='Bar'" class="chart-wrapper">
+    
+                  <canvas baseChart [datasets]="barChartData4" [labels]="barChartLabels" [options]="barChartOptions2" [plugins]="barChartPlugins"
+                    [legend]="barChartLegend" [chartType]="barChartType">
+    
+                  </canvas>
+    
+                </div>
+    
+              </div>
+    
+            <!-- </div>
+    
+    
+    
+            <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px"> -->
+    
+              <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right" fxFlex="0 1 calc(50% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32px)"
+              fxFlex.lt-sm="100%">
+    
+                <span style='text-align: center; padding-top: 20px;' class='font-16-px line-height-24px'>{{ translationData.lblFuelConsumption || 'Fuel Consumption' }}</span>
+    
+                <div *ngIf="ConsumptionChartType =='Line'" class="chart-wrapper">
+    
+                  <canvas baseChart [datasets]="lineChartData5" [labels]="lineChartLabels" [options]="lineChartOptions5" [colors]="lineChartColors"
+                    [legend]="lineChartLegend" [chartType]="lineChartType" [plugins]="lineChartPlugins">
+    
+                  </canvas>
+    
+                </div>
+    
+                <div *ngIf="ConsumptionChartType =='Bar'" class="chart-wrapper">
+    
+                  <canvas baseChart [datasets]="barChartData5" [labels]="barChartLabels" [options]="barChartOptions5" [plugins]="barChartPlugins"
+                    [legend]="barChartLegend" [chartType]="barChartType">
+    
+                  </canvas>
+    
+                </div>
+    
+              </div>
+    
+              <div class="areaWidth areaWidth half-width" fxLayout="column" fxLayoutAlign="right" fxFlex="0 1 calc(50% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32px)"
+              fxFlex.lt-sm="100%">
+    
+                <span style='text-align: center; padding-top: 20px;' class='font-16-px line-height-24px'>{{ translationData.lblIdleDuration || 'Idle Duration' }}</span>
+    
+                <div *ngIf="DurationChartType =='Line'" class="chart-wrapper">
+    
+                  <canvas baseChart [datasets]="lineChartData6" [labels]="lineChartLabels" [options]="lineChartOptions1" [colors]="lineChartColors"
+                    [legend]="lineChartLegend" [chartType]="lineChartType" [plugins]="lineChartPlugins">
+    
+                  </canvas>
+    
+                </div>
+    
+                <div *ngIf="DurationChartType =='Bar'" class="chart-wrapper">
+    
+                  <canvas baseChart [datasets]="barChartData6" [labels]="barChartLabels" [options]="barChartOptions1" [plugins]="barChartPlugins"
+                    [legend]="barChartLegend" [chartType]="barChartType">
+    
+                  </canvas>
+    
+                </div>
+    
+              </div>
+    
+            </div>
+            <div *ngIf='!showGraph'>{{ translationData.lblNoRecordFound || 'No Record Found'}}</div>
+    
+    
+          </mat-expansion-panel>
+    
+        </mat-card>
+      </div>
+    </div>
 
     <!-- Fleet Table -->
     <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
@@ -644,8 +972,13 @@
               </mat-cell> -->
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_driverid')">
                 <!-- <span >{{row.driverID}}</span> -->
-                <span *ngIf="!row.unknownDriver" class='navigatePoint' (click)='onDriverSelected(row)'>{{ row.driverID }}</span>
-                <span *ngIf="row.unknownDriver" class='navigatePoint' (click)='onDriverSelected(row)'>*</span>
+                <!-- <span *ngIf="!row.unknownDriver" class='navigatePoint' (click)='onDriverSelected(row)'>{{ row.driverID }}</span>
+                <span *ngIf="row.unknownDriver" class='navigatePoint' (click)='onDriverSelected(row)'>*</span> -->
+                <!-- <span *ngIf="row.hashedDriverId != null" class='navigatePoint' (click)='onDriverSelected(row)'>{{ row.hashedDriverId.length > 9 ? row.hashedDriverId.substring(0, 9) + "..." : row.hashedDriverId }}</span>
+                <span *ngIf="row.hashedDriverId == null" class='navigatePoint' (click)='onDriverSelected(row)'>Unknown</span> -->
+                <span *ngIf=" (row.driverID != '' && row.driverID != null) && (row.hashedDriverId != '' && row.hashedDriverId != null)  " class='navigatePoint' (click)='onDriverSelected(row)'>{{ row.driverID }}</span>
+                <span *ngIf=" ( (row.driverID != '' && row.driverID != null) && (row.hashedDriverId == null || row.hashedDriverId == '')) || ( (row.driverID == '' || row.driverID == null) && (row.hashedDriverId != null && row.hashedDriverId != ''))   " class='navigatePoint' (click)='onDriverSelected(row)'>*</span>  
+                <span *ngIf=" (row.driverID == null || row.driverID == '') && (row.hashedDriverId == null || row.hashedDriverId == '') " class='navigatePoint' (click)='onDriverSelected(row)'>Unknown</span>
               </mat-cell>
           </ng-container>
 

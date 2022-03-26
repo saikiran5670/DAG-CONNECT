@@ -40,13 +40,11 @@ export class LandmarksComponent implements OnInit {
   
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    //console.log("process translationData:: ", this.translationData)
   }
 
   onTabChanged(event: any){
     this.selectedIndex = event.index;
   }
-
 }
 
 

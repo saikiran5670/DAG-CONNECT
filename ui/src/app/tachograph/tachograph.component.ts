@@ -30,7 +30,7 @@ export class TachographComponent implements OnInit {
   }
   
   saveData(){
-    //console.log(this.outputData);
+    ////console.log(this.outputData);
     this.showOutput = true;
   }
 
