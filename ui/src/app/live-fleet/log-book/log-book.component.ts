@@ -536,7 +536,7 @@ ngOnDestroy(){
   }
 
   setDefaultStartEndTime(){
-    if (this._state && this._state.fromVehicleDetails && !this._state.data.todayFlag) {
+    if (this._state && this._state.fromVehicleDetails) {
       let startHours = new Date(Util.convertUtcToDate(this._state.data.startDate, this.prefTimeZone)).getHours();
       let startMinutes = String(new Date(Util.convertUtcToDate(this._state.data.startDate, this.prefTimeZone)).getMinutes());
       startMinutes = startMinutes.length == 2 ? startMinutes : '0'+startMinutes;
@@ -554,6 +554,12 @@ ngOnDestroy(){
         this.selectedEndTime = this._get12Time(endTimeStamp);
         this.startTimeDisplay = this.selectedStartTime;
         this.endTimeDisplay = this.selectedEndTime;
+      }
+      else{ // 24
+        this.selectedStartTime = this.get24Time(startTimeStamp);
+        this.selectedEndTime = this.get24Time(endTimeStamp);
+        this.startTimeDisplay = `${this.selectedStartTime}:00`;
+        this.endTimeDisplay = `${this.selectedEndTime}:59`;
       }
     } else if(!this.internalSelection && this.globalSearchFilterData.modifiedFrom !== "" && ((this.globalSearchFilterData.startTimeStamp || this.globalSearchFilterData.endTimeStamp) !== "") ) {
       if(this.prefTimeFormat == this.globalSearchFilterData.filterPrefTimeFormat){ // same format
@@ -643,8 +649,8 @@ ngOnDestroy(){
         }
         // this.selectionTimeRange('today');
         this.selectionTab = 'today';
-        this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
-        this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
+        this.startDateValue = this.setStartEndDateTime(new Date(this._state.data.startDate), this.selectedStartTime, 'start');
+        this.endDateValue = this.setStartEndDateTime(new Date(this._state.data.endDate), this.selectedEndTime, 'end');
         this.last3MonthDate = this.getLast3MonthDate();
         this.todayDate = this.getTodayDate();
       } else {
