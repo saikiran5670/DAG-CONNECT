@@ -91,7 +91,8 @@ compare(a: any, b: any, isAsc: boolean, columnName:any) {
 
       let roleDeleteObj = {
         accountId: this.data.accountInfo.id,
-        organizationId: this.data.accountInfo.organizationId
+        organizationId: this.data.accountInfo.organizationId,
+        emailId: this.data.accountInfo.emailId // #25775 Fixes
         //roles: mapRoleIds
       }
 
@@ -99,7 +100,8 @@ compare(a: any, b: any, isAsc: boolean, columnName:any) {
       let roleAddObj = {
         accountId: this.data.accountInfo.id,
         organizationId: this.data.accountInfo.organizationId,
-        roles: selectedRoleIds
+        roles: selectedRoleIds,
+        emailId: this.data.accountInfo.emailId // #25775 Fixes
       }
       let updatedRoles = [];
 

@@ -392,14 +392,12 @@ export class ReportMapService {
               this.drawAlerts(elem.filterAlerts, _ui, translationData);
             }
           }
-          setTimeout(() => {
-            this.hereMap.addObject(this.group);
-            this.group.addObjects([this.startMarker, this.endMarker]); //16667 - main map group considered to show entire trip
+          //  this.hereMap.addObject(this.group);
+           // this.group.addObjects([this.startMarker, this.endMarker]); //16667 - main map group considered to show entire trip
             this.hereMap.addObject(this.group);
             this.hereMap.getViewModel().setLookAtData({
               bounds: this.group.getBoundingBox()
             });
-           }, 0); 
         }
       });
       this.makeCluster(_selectedRoutes, _ui);
@@ -2337,4 +2335,21 @@ export class ReportMapService {
     return _date;
   }
 
+  getConvertedSpeedUnits(data: any, unitFormat: any){
+    let speed: any;
+    switch(unitFormat){
+      case 'dunit_Metric': { 
+        speed = data * 3.60000288; //  m/s to Km/h
+        break;
+      }
+      case 'dunit_Imperial': {
+        speed = data * 2.2369380816; // m/s to miles/h
+        break;
+      }
+      default: {
+        speed = data * 3.60000288; //  m/s to Km/h
+      }
+    }
+    return Math.round(speed);
+  }
 }

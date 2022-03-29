@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, ViewChild, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { ChartOptions, ChartType } from 'chart.js';
 import { Color, Label, MultiDataSet, PluginServiceGlobalRegistrationAndOptions } from 'ng2-charts';
@@ -6,6 +6,7 @@ import { DashboardService } from '../../services/dashboard.service';
 import { Util } from '../../shared/util';
 import { ReportMapService } from '../../report/report-map.service';
 import { MessageService } from '../../services/message.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-today-live-vehicle',
@@ -13,14 +14,14 @@ import { MessageService } from '../../services/message.service';
   styleUrls: ['./today-live-vehicle.component.less']
 })
 
-export class TodayLiveVehicleComponent implements OnInit {
+export class TodayLiveVehicleComponent implements OnInit, OnDestroy {
   @Input() translationData : any;
   @Input() preference : any;
   @Input() prefData : any;
   @Input() dashboardPrefData :  any;
   @ViewChild('chart1') chart1 : ElementRef;
   @ViewChild('chart3') chart3 : ElementRef;
-
+  showLoadingIndicator: boolean = false;
   errorMessage : any;
   dataError : boolean = false;
   distance = 0;
@@ -38,7 +39,7 @@ export class TodayLiveVehicleComponent implements OnInit {
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   accountPrefObj: any;
   distanceRate : any;
-  todayLiveVehicalAPI: any;
+  todayLiveVehicalAPI: any = undefined;
   startDateValue: any;
   endDateValue: any;
   //threshold 
@@ -48,6 +49,7 @@ export class TodayLiveVehicleComponent implements OnInit {
   doughnutChartLabels: Label[] = [('Target'), '', ''];
   doughnutChartActiveVehicleData: MultiDataSet = [ [0, 100] ];
   doughnutChartType: ChartType = 'doughnut';
+  msgSub: Subscription;
   doughnutColors: Color[] = [
     {
       backgroundColor: [
@@ -210,19 +212,25 @@ doughnutDistanceColors: Color[] = [
   constructor(private router : Router, private dashboardService : DashboardService,
     private reportMapService : ReportMapService, private messageService: MessageService) {
       if(this._fleetTimer){
-        this.messageService.getMessage().subscribe(message => {
+        this.msgSub = this.messageService.getMessage().subscribe(message => {
           if (message.key.indexOf("refreshData") !== -1) {
+            this.todayLiveVehicalAPI = undefined;
             this.getLiveVehicleData();
           }
         });
       }
    }
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.setInitialPref(this.prefData,this.preference);
-    if(this.finalVinList.length >0){
-        this.getLiveVehicleData();
+    if(this.finalVinList.length > 0){
+      this.getLiveVehicleData();
     }
+  }
+
+  ngOnDestroy() {
+    this.todayLiveVehicalAPI = undefined;
+    this.msgSub.unsubscribe();
   }
 
   setInitialPref(prefData,preference){
@@ -259,23 +267,21 @@ doughnutDistanceColors: Color[] = [
       let _vehiclePayload = {
         "viNs": this.finalVinList,
         "startDateTime": _startTime,
-        "endDateTime": _endTime 
-        // [ //this.finalVinList
-        //       "M4A14532","XLR0998HGFFT76657"
-          
-        // ]
+        "endDateTime": _endTime
       }
       if(this.finalVinList && this.finalVinList.length > 0 && !this.todayLiveVehicalAPI){
+        this.showLoadingIndicator = true;
         this.todayLiveVehicalAPI = this.dashboardService.getTodayLiveVehicleData(_vehiclePayload).subscribe((vehicleData)=>{
-          ////console.log(vehicleData);
           this.dataError = false;
           if(vehicleData){
+            this.showLoadingIndicator = false;
             this.liveVehicleData = vehicleData;
             this.totalVehicles =  this.finalVinList.length;
             this.setValues();
             this.updateCharts();
           }
        },(error)=>{
+         this.showLoadingIndicator = false;
          if(error.status === 400){
            this.dataError = true;
            this.errorMessage = error.error.message;
