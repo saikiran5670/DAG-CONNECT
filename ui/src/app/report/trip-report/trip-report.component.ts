@@ -829,7 +829,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
     let unitValTon = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton || 't') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblton || 't') : (this.translationData.lblton || 't');
     let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmileh) : (this.translationData.lblmileh);
     let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile) : (this.translationData.lblmile);
-    col = [`${this.translationData.lblVIN || 'VIN'}`, `${this.translationData.lblVehicleName || 'Vehicle Name'}`, `${this.translationData.lblRegistrationNo || 'Registration No'}`, `${this.translationData.lblStartDate}`, `${this.translationData.lblEndDate}`, `${this.translationData.lblDistance} (${unitValkm})`, `${this.translationData.lblIdleDuration} (${this.translationData.lblhhmm})`, `${this.translationData.lblAverageSpeed} (${unitValkmh})`, `${this.translationData.lblAverageWeight} (${unitValTon})`, `${this.translationData.lblOdometer} (${unitValkm})`, `${this.translationData.lblStartPosition}`, `${this.translationData.lblEndPosition}`, `${this.translationData.lblFuelConsumed} (${unitValLtrGallon})`, `${this.translationData.lblDrivingTime} (${this.translationData.lblhhmm})`, `${this.translationData.lblAlerts}`];
+    col = [`${this.translationData.lblVIN || 'VIN'}`, `${this.translationData.lblVehicleName || 'Vehicle Name'}`, `${this.translationData.lblRegistrationNo || 'Registration No'}`, `${this.translationData.lblStartDate}`, `${this.translationData.lblEndDate}`, `${this.translationData.lblDistance} (${unitValkm})`, `${this.translationData.lblIdleDuration} (${this.translationData.lblhhmmss})`, `${this.translationData.lblAverageSpeed} (${unitValkmh})`, `${this.translationData.lblAverageWeight} (${unitValTon})`, `${this.translationData.lblOdometer} (${unitValkm})`, `${this.translationData.lblStartPosition}`, `${this.translationData.lblEndPosition}`, `${this.translationData.lblFuelConsumed} (${unitValLtrGallon})`, `${this.translationData.lblDrivingTime} (${this.translationData.lblhhmmss})`, `${this.translationData.lblAlerts}`];
     return col;
   }
 
@@ -880,9 +880,9 @@ export class TripReportComponent implements OnInit, OnDestroy {
     })
     this.initData.forEach(item => {
       worksheet.addRow([item.vin, item.vehicleName, item.registrationNo, item.convertedStartTime,
-      item.convertedEndTime, item.convertedDistance, item.convertedIdleDuration, item.convertedAverageSpeed,
+      item.convertedEndTime, item.convertedDistance,this.reportMapService.getHhMmSsTimeExport(item.idleDuration), item.convertedAverageSpeed,
       item.convertedAverageWeight, item.convertedOdometer, item.startPosition, item.endPosition, item.convertedFuelConsumed,
-      item.convertedDrivingTime, item.totalAlerts]);
+      this.reportMapService.getHhMmSsTimeExport(item.drivingTime), item.totalAlerts]);
     });
     worksheet.mergeCells('A1:D2');
     subTitleRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
