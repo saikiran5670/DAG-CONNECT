@@ -1122,7 +1122,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       "driverId": this.selectedDriverId,
       "minTripDistance": _minTripVal,
       "minDriverTotalDistance": _minDriverDist,
-      "targetProfileId": 2,
+      "targetProfileId": this.targetProfileId,
       "reportId": 10,
       "uoM": _prefUnit
     }
@@ -1435,7 +1435,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
         "driverIds": _driverIds,
         "minTripDistance": _minTripVal,
         "minDriverTotalDistance": _minDriverDist,
-        "targetProfileId": 2,
+        "targetProfileId": this.targetProfileId,
         "reportId": 10
       }
       if (_vehicelIds.length > 0) {
