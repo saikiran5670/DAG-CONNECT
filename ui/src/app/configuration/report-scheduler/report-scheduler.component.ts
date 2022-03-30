@@ -318,9 +318,9 @@ export class ReportSchedulerComponent implements OnInit {
     initdata[index].vehicleGroupAndVehicleList = vehicleGroupTxt == "" ? vehicleGroupTxt : vehicleGroupTxt.slice(0, -2);
     initdata[index].lastScheduleRunDate= element.lastScheduleRunDate == 0 ? '-' : Util.convertUtcToDateFormat(element.lastScheduleRunDate, this.prefDateFormat, this.prefTimeZone);
     // initdata[index].nextScheduleRunDate= element.nextScheduleRunDate == 0 ? '-' : Util.convertUtcToDateFormat(element.nextScheduleRunDate, this.prefDateFormat, this.prefTimeZone);
-    let isDriver = this.ReportTypeList.filter(item => item.id == initdata[index].reportId);
-    if(isDriver && isDriver.length > 0){
-      initdata[index].isDriver = this.ReportTypeList.filter(item => item.id == initdata[index].reportId)[0].isDriver == 'Y' ? true : false;
+    let result = this.ReportTypeList.filter(item => item.id == initdata[index].reportId);
+    if(result && result.length > 0){
+      initdata[index].isDriver = result[0].isDriver == 'Y' ? true : false;
     } else {
       initdata[index].isDriver = false;
     }
