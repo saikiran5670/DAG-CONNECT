@@ -36,18 +36,19 @@
                             (data.consentType === 'I') ? 
                             (data.translationData.lblOptInAll ):
                             (data.translationData.lblInherit )) : 
-                            ((data.optInType === 'U') ? 
+                            ((data.consentType === 'U') ? 
                             (data.translationData.lblOptOut ) : 
-                            (data.optInType === 'I') ? 
+                            (data.consentType === 'I') ? 
                             (data.translationData.lblOptIn ):
-                            (data.translationData.lblInherit )) }}</span>
+                            (data.translationData.lblInherit ))
+                        }}</span>
                     </div>
                     <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="30px">
                         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                             <mat-radio-group (change)='onChange($event)'>
-                                <mat-radio-button style='margin-right: 20px;' [disabled]="data.radioSelected" value="H" [checked]="(data.consentType === 'U' && data.optInType === 'H') || (data.consentType === 'I' && data.optInType === 'H') || (data.consentType === 'H' && data.optInType === 'H') ? true : false">{{ data.translationData.lblInherit  }}</mat-radio-button>
-                                <mat-radio-button style='margin-right: 20px;' [disabled]="data.radioSelected" value="I" [checked]="(data.consentType === 'I' && data.optInType === 'I') ? true : false">{{ (data.actionType == true) ? (data.translationData.lblOptInAll ) : (data.translationData.lblOptIn ) }}</mat-radio-button>
-                                <mat-radio-button value="U" [disabled]="data.radioSelected" [checked]="(data.consentType === 'U' && data.optInType === 'U') ? true : false">{{ (data.actionType == true) ? (data.translationData.lblOptOutAll ) : (data.translationData.lblOptOut ) }}</mat-radio-button>
+                                <mat-radio-button style='margin-right: 20px;' [disabled]="data.radioSelected" value="H" [checked]="data.consentType === 'H' ? true : false">{{ data.translationData.lblInherit  }}</mat-radio-button>
+                                <mat-radio-button style='margin-right: 20px;' [disabled]="data.radioSelected" value="I" [checked]="data.consentType === 'I' ? true : false">{{ (data.actionType == true) ? (data.translationData.lblOptInAll ) : (data.translationData.lblOptIn ) }}</mat-radio-button>
+                                <mat-radio-button value="U" [disabled]="data.radioSelected" [checked]="data.consentType === 'U' ? true : false">{{ (data.actionType == true) ? (data.translationData.lblOptOutAll ) : (data.translationData.lblOptOut ) }}</mat-radio-button>
                             </mat-radio-group>
                         </div>
                     </div>
