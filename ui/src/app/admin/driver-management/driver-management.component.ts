@@ -95,8 +95,8 @@ export class DriverManagementComponent implements OnInit {
 
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
       this.processTranslation(data);
+      this.loadDriverData();
       this.getOrganizationDetail();
-      this.loadDriverData();      
       this.setConsentDropdown();
       this.getConsentList();
     });
@@ -137,10 +137,6 @@ export class DriverManagementComponent implements OnInit {
     this.driverService.getDrivers(this.accountOrganizationId, drvId).subscribe((driverList: any) => {
       driverList.forEach(element => {
         element['fullName'] = element.firstName + " " + element.lastName;
-        if(this.organizationData){
-         if(element.optIn == 'H'){
-          element.status = this.organizationData['driverOptIn'];   
-         }}  
       });
       this.initData = driverList;
       this.hideloader();
@@ -607,15 +603,11 @@ export class DriverManagementComponent implements OnInit {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
-    let optInTypeVal:any;
-    if(actionType){optInTypeVal = consentType;
-    }else{optInTypeVal = driverData.optIn;}
     dialogConfig.data = {
       translationData: this.translationData,
       driverData: driverData,
       actionType: actionType,
       consentType: consentType,
-      optInType: optInTypeVal,
       organizationData: this.organizationData,
       radioSelected:false
     }
