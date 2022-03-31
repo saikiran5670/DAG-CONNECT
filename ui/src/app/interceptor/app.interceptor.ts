@@ -42,7 +42,7 @@ export class AppInterceptor implements HttpInterceptor {
             // server-side error
             errorMessage = `Error Code: ${err.status}\nMessage: ${err.message}`;
             if(localStorage.length !== 0 && (!localStorage.getItem("sessionFlag"))) {
-              if ((err.status === 401 &&  localStorage.getItem("accountOrganizationId")) || err.status === 0) {
+              if (err.status === 401 &&  localStorage.getItem("accountOrganizationId")) {
                 // redirect to the login route or show a modal
                 const options = {
                   title: 'Session Time Out',
@@ -50,7 +50,9 @@ export class AppInterceptor implements HttpInterceptor {
                     'Your session has been expired. Kindly login again to continue.',
                   confirmText: 'Ok',
                 };
+
                 localStorage.setItem("sessionFlag", "false");
+                
                 if(localStorage.getItem("sessionFlag") == 'false'){
                   this.dialogService.SessionModelOpen(options);
                   localStorage.setItem("sessionFlag", "true");
