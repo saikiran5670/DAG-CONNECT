@@ -33,7 +33,6 @@ export class AppInterceptor implements HttpInterceptor {
         (event: HttpEvent<any>) => {
           if (event instanceof HttpResponse) {
             // do stuff with response if you want
-            ////console.log(event)
           }
         },
         (err: any) => {
@@ -52,7 +51,7 @@ export class AppInterceptor implements HttpInterceptor {
                 };
 
                 localStorage.setItem("sessionFlag", "false");
-                
+
                 if(localStorage.getItem("sessionFlag") == 'false'){
                   this.dialogService.SessionModelOpen(options);
                   localStorage.setItem("sessionFlag", "true");
