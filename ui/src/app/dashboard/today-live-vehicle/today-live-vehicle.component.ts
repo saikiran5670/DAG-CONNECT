@@ -644,7 +644,7 @@ doughnutDistanceColors: Color[] = [
     let _timeRateLimit = this.getPreferenceThreshold('timebasedutilizationrate')['type'];
     switch (_timeRateLimit) {
       case 'U':{
-        if(timeBasedCalculation['cuttOff'] < todayTimeRate){ //red
+        if((timeBasedCalculation['cuttOff']/1000) < todayTimeRate){ //red     converting ms to secs, as preference API returns threshold value in ms, and todayTimeRate is in secs
           this.doughnutTimeColors = [
             {
               backgroundColor: [
@@ -685,7 +685,7 @@ doughnutDistanceColors: Color[] = [
       }
         break;
         case 'L':{
-          if(timeBasedCalculation['cuttOff'] > todayTimeRate){
+          if((timeBasedCalculation['cuttOff']/1000) > todayTimeRate){     //converting ms to secs, as preference API returns threshold value in ms, and todayTimeRate is in secs
             this.doughnutTimeColors = [
               {
                 backgroundColor: [
