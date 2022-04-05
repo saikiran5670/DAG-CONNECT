@@ -198,5 +198,6 @@
     <mat-error *ngIf="dataError">
       {{ translationData.lblNoDataFoundForFleetKPI }}
   </mat-error>
+  <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
 </mat-expansion-panel>
  

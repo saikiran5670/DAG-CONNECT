@@ -1122,7 +1122,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       "driverId": this.selectedDriverId,
       "minTripDistance": _minTripVal,
       "minDriverTotalDistance": _minDriverDist,
-      "targetProfileId": 2,
+      "targetProfileId": this.targetProfileId,
       "reportId": 10,
       "uoM": _prefUnit
     }
@@ -1435,7 +1435,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
         "driverIds": _driverIds,
         "minTripDistance": _minTripVal,
         "minDriverTotalDistance": _minDriverDist,
-        "targetProfileId": 2,
+        "targetProfileId": this.targetProfileId,
         "reportId": 10
       }
       if (_vehicelIds.length > 0) {
@@ -1598,19 +1598,41 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     );
   }
 
-  filterVehicle(search) {
+  filterVehicle(VehicleSearch) {
     if (!this.vehicleDD) {
       return;
     }
-    if (!search) {
+    if (!VehicleSearch) {
       this.resetVehicleFilter();
       return;
     } else {
-      search = search.toLowerCase();
+      VehicleSearch = VehicleSearch.toLowerCase();
+    }
+    let filterby = '';
+    switch (this.vehicleDisplayPreference) {
+      case 'dvehicledisplay_VehicleIdentificationNumber':
+        filterby = "vin";
+        break;
+      case 'dvehicledisplay_VehicleName':
+        filterby = "vehicleName";
+        break;
+      case 'dvehicledisplay_VehicleRegistrationNumber':
+        filterby = "registrationNo";
+        break;
+      default:
+        filterby = "vin";
     }
     this.filteredVehicle.next(
-      this.vehicleDD.filter(item => item.vin?.toLowerCase()?.indexOf(search) > -1)
+      this.vehicleDD.filter(item => {
+        if(filterby == 'registrationNo') {
+          let ofilterby = (item['registrationNo'])? 'registrationNo' :'vehicleName';
+          return item[ofilterby]?.toLowerCase()?.indexOf(VehicleSearch) > -1;
+        } else {
+          return item[filterby]?.toLowerCase()?.indexOf(VehicleSearch) > -1;
+        }    
+      })
     );
+    ////console.log("filtered vehicles", this.filteredVehicle);
   }
 
   filterDriver(DriverSearch) {
