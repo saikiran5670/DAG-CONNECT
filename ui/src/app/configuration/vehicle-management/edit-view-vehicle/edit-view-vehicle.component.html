@@ -11,6 +11,17 @@
 <form [formGroup]="vehicleForm">
   <mat-card class='mat-elevation-z'>
     <mat-card-content>
+
+      <div *ngIf='updateMsgVisible' fxLayout="row" fxLayoutAlign="center center"
+        style='padding:10px; color:#fff; background: #5dc24e;' class='margin-bottom-sm'>
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center" style='width:95%;'>
+          {{ displayMessage }}
+        </div>
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
+          <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
+        </div>
+      </div>
+
       <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ actionType == 'edit' ? (translationData.lblEditVehicleDetails ) : (translationData.lblViewVehicleDetails ) }}</span>

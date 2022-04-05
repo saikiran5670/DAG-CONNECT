@@ -18,6 +18,8 @@ export class EditViewVehicleComponent implements OnInit {
   @Input() actionType: any;
   vehicleForm: FormGroup;
   breadcumMsg: any = '';
+  displayMessage: any = '';
+  updateMsgVisible: boolean = false;
   duplicateVehicleMsg: boolean = false;
   duplicateRegistrationNumber: boolean = false;
   vehicleStatus: any = '';
@@ -98,6 +100,17 @@ export class EditViewVehicleComponent implements OnInit {
   onReset(){ //-- Reset
     this.setDefaultValue();
   }
+  onClose() {
+    this.updateMsgVisible = false;
+  }
+
+  successMsgBlink(msg: any) {
+    this.updateMsgVisible = true;
+    this.displayMessage = msg;
+    setTimeout(() => {
+      this.updateMsgVisible = false;
+    }, 5000);
+  }
 
   onUpdateVehicle(){ //-- update
     this.showLoadingIndicator=true;
@@ -113,6 +126,7 @@ export class EditViewVehicleComponent implements OnInit {
       // this.getVehicleGridData();
       this.updateRelationshipVehiclesData.emit();
       this.showLoadingIndicator=false;
+      this.successMsgBlink('Details Updated Successfully');
     }, (error) => {
       this.showLoadingIndicator=false;
       //console.error(error);

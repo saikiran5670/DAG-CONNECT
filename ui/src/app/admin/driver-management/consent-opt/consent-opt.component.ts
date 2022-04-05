@@ -25,6 +25,7 @@ export class ConsentOptComponent implements OnInit {
     driverData: any,
     actionType: any,
     consentType: any,
+    optInType: any,
     organizationData: any,
     radioSelected: any
   }, private mdDialogRef: MatDialogRef<ConsentOptComponent>, private driverService: DriverService) {
@@ -228,6 +229,7 @@ export class ConsentOptComponent implements OnInit {
 
   onChange(event: any){
     this.data.consentType = event.value;
+    this.data.optInType = event.value;
     if(event.value === 'U'){
       this.showOptOutMsg = true;
       this.getConsentMsg(event.value);

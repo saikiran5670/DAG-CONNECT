@@ -2652,9 +2652,31 @@ setVehicleGroupAndVehiclePreSelection() {
     }else{
       VehicleSearch = VehicleSearch.toLowerCase();
     }
+    let filterby = '';
+    switch (this.vehicleDisplayPreference) {
+      case 'dvehicledisplay_VehicleIdentificationNumber':
+        filterby = "vin";
+        break;
+      case 'dvehicledisplay_VehicleName':
+        filterby = "vehicleName";
+        break;
+      case 'dvehicledisplay_VehicleRegistrationNumber':
+        filterby = "registrationNo";
+        break;
+      default:
+        filterby = "vin";
+    }
     this.filteredVehicle.next(
-      this.vehicleDD.filter(item => item.vin?.toLowerCase()?.indexOf(VehicleSearch) > -1)
+      this.vehicleDD.filter(item => {
+        if(filterby == 'registrationNo') {
+          let ofilterby = (item['registrationNo'])? 'registrationNo' :'vehicleName';
+          return item[ofilterby]?.toLowerCase()?.indexOf(VehicleSearch) > -1;
+        } else {
+          return item[filterby]?.toLowerCase()?.indexOf(VehicleSearch) > -1;
+        }    
+      })
     );
+    ////console.log("filtered vehicles", this.filteredVehicle);
   }
 
   resetVehicleFilter(){

@@ -40,6 +40,8 @@ export class SetPasswordComponent implements OnInit {
   }
 
   ngOnInit() { 
+    this.setPasswordForm.get('newPassword').setValue('');
+    this.setPasswordForm.get('confirmPassword').setValue('');
     this.token=  this.route.snapshot.paramMap.get('token');
     this.accountService.getResetPasswordTokenStatus(this.token).subscribe(data => {
       if(data){

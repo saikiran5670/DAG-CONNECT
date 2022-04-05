@@ -99,11 +99,11 @@
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label style='display: flex; place-content: space-between;'>
                         <span class='font-16-px line-height-24px'>{{ translationData.lblUserRoleDescriptionOptional }}</span>
-                        <span *ngIf="showCount"> {{textLengthCounter }}  {{translationData.lblmaxoutchars || 'out of max 100 characters'}}</span>
+                        <span *ngIf="showCount"> {{textLengthCounter }}  {{translationData.lblmaxoutchars}}</span>
                         <span *ngIf="!showCount"> {{ translationData.lbl120CharMax }}</span>
                     </mat-label>
                     <mat-form-field appearance="outline" class="full-width">
-                        <input maxlength="100" (keyup)="textCounter($event,100)" placeholder="{{ translationData.lblEnterAboutUserRole  }}" matInput formControlName="userRoleDescription">
+                        <input maxlength="120" (keyup)="textCounter($event,120)" placeholder="{{ translationData.lblEnterAboutUserRole  }}" matInput formControlName="userRoleDescription">
                     </mat-form-field>
                     <mat-error *ngIf="userRoleFormGroup.get('userRoleDescription').hasError('whitespace')">
                       {{ translationData.lblAccountRoleDescriptioncannotcontainonlywhitespace || 'Account Role Description cannot contain only whitespace' }}
