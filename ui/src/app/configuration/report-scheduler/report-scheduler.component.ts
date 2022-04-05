@@ -234,7 +234,7 @@ export class ReportSchedulerComponent implements OnInit {
          });
         });
        this.initData.forEach(element => {
-          if(element.reportName == "Fleet Fuel Report" || element.reportName == "TripReport"||
+          if(element.reportName == "Fleet Fuel Report" || element.reportName == "Trip Report"||
              element.reportName == "Fleet Utilisation Report"||element.reportName == "Fuel Deviation Report"){
                element.driverList = "";
              }
