@@ -357,6 +357,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       this.prefDateFormat = this.prefDetail.dateformat[0].name;
       this.prefUnitFormat = this.prefDetail.unit[0].name;
     }
+    this.getProfiles();
     this.setDefaultStartEndTime();
     this.setPrefFormatDate();
     this.setDefaultTodayDate();
@@ -414,6 +415,21 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
         this.selectedEndTime = "11:59 PM";
       }
     }
+  }
+
+  getProfiles(){
+    this.reportService.getEcoScoreProfiles(true).subscribe((profiles: any) => {
+      if (profiles) {
+        this.profileList = profiles.profiles;
+        let obj = this.profileList.find(o => o.isDeleteAllowed === false);
+        if (obj) this.targetProfileId = obj.profileId;
+        this.targetProfileSelected = this.targetProfileId;
+      }
+    }, (error) => {
+        this.isSearched = true;
+        this.hideloader();
+        this.tableInfoObj = {};
+      });
   }
 
   getEcoScoreReportPreferences() {
@@ -651,12 +667,6 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     if (_vehicelIds.length > 0) {
       if (this.allDriversSelected) {
         this.showLoadingIndicator = true;
-        this.reportService.getEcoScoreProfiles(true).subscribe((profiles: any) => {
-          if (profiles) {
-            this.profileList = profiles.profiles;
-            let obj = this.profileList.find(o => o.isDeleteAllowed === false);
-            if (obj) this.targetProfileId = obj.profileId;
-            this.targetProfileSelected = this.targetProfileId;
             let searchDataParam = {
               "startDateTime": _startTime,
               "endDateTime": _endTime,
@@ -676,12 +686,6 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
               this.hideloader();
               this.tableInfoObj = {};
             });
-          }
-        }, (error) => {
-          this.isSearched = true;
-          this.hideloader();
-          this.tableInfoObj = {};
-        });
       }
       else {
         this.setGeneralDriverValue();
