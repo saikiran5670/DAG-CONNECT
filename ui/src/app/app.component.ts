@@ -1100,6 +1100,9 @@ export class AppComponent {
       languageCode: this.localStLanguage.code
     }
     this.accountService.switchOrgContext(switchObj).subscribe((data: any) => {
+      localStorage.setItem('vehUtilisation_lastweek','');
+      localStorage.setItem('vehUtilisation_lastmonth','');
+      localStorage.setItem('vehUtilisation_last3month','');
       this.accountService.getSessionInfo().subscribe((accountData: any) => {
         this.getMenu(data, 'orgContextSwitch', accountData);
         let accinfo = JSON.parse(localStorage.getItem("accountInfo"))
