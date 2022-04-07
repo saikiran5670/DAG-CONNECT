@@ -48,24 +48,15 @@ export class UserDetailTableComponent implements OnInit {
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
-      this.dataSource.filterPredicate = function(data, filter: any){
-        let fullName = data.firstName.toLowerCase() +" "+ data.lastName.toLowerCase();
-        const dataroleStr =JSON.stringify(data.roles).toLowerCase();
-        const dataaccGrupListStr =JSON.stringify(data.accountGroups).toLowerCase();
-        return  fullName.toLowerCase().includes(filter) || data.emailId.toLowerCase().includes(filter) || dataroleStr.indexOf(filter) != -1 || dataaccGrupListStr.indexOf(filter) != -1
-        
-      };
       this.dataSource.sortData = (data: String[], sort: MatSort) => {
         const isAsc = sort.direction === 'asc';
         let columnName = this.sort.active
         return data.sort((a: any, b: any) => {
           return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
         });
-
        }
-
+       Util.applySearchFilter(this.dataSource, this.data.colsList ,this.filterValue );
     });
-    Util.applySearchFilter(this.dataSource, this.data.colsList ,this.filterValue );
   }
 
   compare(a: any, b: any, isAsc: boolean, columnName: any) {
