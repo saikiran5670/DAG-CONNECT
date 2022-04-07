@@ -572,11 +572,16 @@ export class DashboardVehicleUtilisationComponent implements OnInit {
       }
     }
     
-    if(_storage && dayflag){
+    let contextOrgStatus = localStorage.getItem('orgContextStatus');
+    if(_storage && dayflag && (contextOrgStatus != 'true' && localStorage.getItem('vehUtilisation_lastweek') != '')){
       this.callToProceed(_storage); // from Storage
     }else{
-      this.callVehUtilData(_vehiclePayload); // from API
-    } 
+      if(localStorage.getItem('vehUtilisation_lastweek') == '') {
+        this.callVehUtilData(_vehiclePayload); // from API
+      } else {
+        this.callToProceed(_storage); // from Storage
+      }
+    }
   }
 
   getAlertData(){
