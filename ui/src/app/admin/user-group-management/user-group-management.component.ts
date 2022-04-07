@@ -339,7 +339,7 @@ export class UserGroupManagementComponent implements OnInit {
   }
 
   onUserClick(data: any) {
-    const colsList = ['fullName', 'emailId', 'roleList', 'accountGroupList'];
+    const colsList = ['firstName', 'emailId', 'roleList', 'accountGroupList'];
     const colsName = [this.translationData.lblUserName, this.translationData.lblEmailId , this.translationData.lblUserRole,
     this.translationData.lblUserGroup ];
     const tableTitle = `${data.accountGroupName} - ${this.translationData.lblUsers }`;
@@ -353,9 +353,6 @@ export class UserGroupManagementComponent implements OnInit {
     }
     this.showLoadingIndicator=true;
     this.accountService.getAccountDetails(obj).subscribe((data) => {
-      data.forEach(element => {
-        element['fullName'] = element.firstName + " " + element.lastName;
-      })
       data = this.makeRoleAccountGrpList(data);
       this.callToCommonTable(data, colsList, colsName, tableTitle);
       this.showLoadingIndicator=false;
