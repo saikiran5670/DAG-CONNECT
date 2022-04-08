@@ -60,6 +60,7 @@ export class LiveFleetMapComponent implements OnInit {
   prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   prefDetail: any = {};
+  @Input() fromVehicleHealth: boolean = false;
 
   constructor(
     private _formBuilder: FormBuilder,
@@ -129,7 +130,8 @@ export class LiveFleetMapComponent implements OnInit {
     setTimeout(() => {
       this.fleetMapService.initMap(this.mapElement, this.translationData);
       this.fleetMapService.clearRoutesFromMap();
-      this.tripTraceArray = this.detailsData;
+      if(!this.fromVehicleHealth)
+        this.tripTraceArray = this.detailsData;      
       this.showMap = true;
       this.makeHerePOIList();
       this.loadUserPOI();

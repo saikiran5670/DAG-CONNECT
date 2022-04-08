@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild, ElementRef, ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, ViewChild, ElementRef, ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { ReportService } from 'src/app/services/report.service';
 import { MatTableDataSource } from '@angular/material/table';
@@ -26,7 +26,7 @@ import { ReportMapService } from 'src/app/report/report-map.service';
   templateUrl: './fleet-overview-filters.component.html',
   styleUrls: ['./fleet-overview-filters.component.less']
 })
-export class FleetOverviewFiltersComponent implements OnInit, OnChanges {
+export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestroy {
 @Input() translationData: any = {};
 @Input() detailsData: any;
 @Input() fromVehicleHealth: any;
@@ -112,7 +112,11 @@ ngAfterViewInit(){
     this.updateDriverFilter();}
   else{
     this.updateVehicleFilter(); }
- }
+}
+
+ngOnDestroy(){
+  this.subscription.unsubscribe();
+}
 
 ngOnChanges(changes: SimpleChanges) {
   if(changes && changes.filterData && changes.filterData.currentValue){
@@ -1229,7 +1233,8 @@ removeDuplicates(originalArray, prop) {
       vehicleDetailsFlag: this.isVehicleDetails,
       data: this.vehicleListData
     }
-    this.dataInterchangeService.getVehicleData(_dataObj);//change as per filter data
+    if(!this.fromVehicleHealth || (this.fromVehicleHealth && !this.fromVehicleHealth.fromVehicleHealth))
+      this.dataInterchangeService.getVehicleData(_dataObj);//change as per filter data
   }
 
   // onChangeOtherFilter(id: any){

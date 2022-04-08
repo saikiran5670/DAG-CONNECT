@@ -3304,22 +3304,41 @@ ngOnChanges(changes: SimpleChanges) {
      //console.log("this.filteredVehicleGroups", this.filteredVehicleGroups);
 }
 
-filterVehicles(search){
-  //console.log("filterVehicles called");
-  if(!this.vehicleByVehGroupList){
-    return;
+filterVehicles(VehicleSearch) {
+    if (!this.vehicleByVehGroupList) {
+      return;
+    }
+    if (!VehicleSearch) {
+      this.resetVehiclesFilter();
+      return;
+    } else {
+      VehicleSearch = VehicleSearch.toLowerCase();
+    }
+    let filterby = '';
+    switch (this.vehicleDisplayPreference) {
+      case 'dvehicledisplay_VehicleIdentificationNumber':
+        filterby = "vin";
+        break;
+      case 'dvehicledisplay_VehicleName':
+        filterby = "vehicleName";
+        break;
+      case 'dvehicledisplay_VehicleRegistrationNumber':
+        filterby = "registrationNo";
+        break;
+      default:
+        filterby = "vin";
+    }
+    this.filteredVehicles.next(
+      this.vehicleByVehGroupList.filter(item => {
+        if(filterby == 'registrationNo') {
+          let ofilterby = (item['registrationNo'])? 'registrationNo' :'vehicleName';
+          return item[ofilterby]?.toLowerCase()?.indexOf(VehicleSearch) > -1;
+        } else {
+          return item[filterby]?.toLowerCase()?.indexOf(VehicleSearch) > -1;
+        }    
+      })
+    );
   }
-  if(!search){
-    this.resetVehiclesFilter();
-    return;
-   } else{
-    search = search.toLowerCase();
-   }
-   this.filteredVehicles.next(
-     this.vehicleByVehGroupList.filter(item=> item.vin.toLowerCase().indexOf(search) > -1)
-   );
-   //console.log("this.filteredVehicles", this.filteredVehicles);
-}
 
 setStartEndDateTime(date: any, timeObj: any, type: any){
   let _x = timeObj.split(":")[0];

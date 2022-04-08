@@ -359,6 +359,7 @@ export class LoginComponent implements OnInit {
   }
 
   onForgetPassword() {
+    this.errorMsg = '';
     this.forgotPwdFlag = true;
     this.invalidUserMsg= false;
   }
