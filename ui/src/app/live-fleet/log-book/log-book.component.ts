@@ -879,6 +879,10 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
     let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone);
     let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);
     //let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
+    if(this._state && this._state.fromVehicleDetails){
+      _startTime = this._state.data.startDate;
+      _endTime = this._state.data.endDate;
+    }
     let _vinData = this.vehicleDD.filter(item => item.vin == parseInt(this.logBookForm.controls.vehicle.value));
     //console.log("vehicleDD", this.vehicleDD);
     if(_vinData.length > 0){
