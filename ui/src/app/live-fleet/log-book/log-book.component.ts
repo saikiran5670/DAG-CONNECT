@@ -1037,7 +1037,7 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
     fromDate: this.formStartDate(this.startDateValue),
     endDate: this.formStartDate(this.endDateValue),
     vehGroupName: vehGrpName,
-    vehicleName: (this.logBookForm.controls.vehicle.value == 'all') ? this.logBookForm.controls.vehicle.value : this.vehicleDisplayPreference == 'dvehicledisplay_VehicleName' ? vehCount[0].vehicleName : this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber' ?  vehCount[0].vin : vehCount[0].registrationNo ? vehCount[0].registrationNo : vehCount[0].vehicleName,
+    vehicleName: (this.logBookForm.controls.vehicle.value == 'all') ? this.logBookForm.controls.vehicle.value : vehCount && vehCount.length > 0 ? this.vehicleDisplayPreference == 'dvehicledisplay_VehicleName' ? vehCount[0].vehicleName : this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber' ?  vehCount[0].vin : vehCount[0].registrationNo ? vehCount[0].registrationNo : vehCount[0].vehicleName : '',
     alertLevel : this.logBookForm.controls.alertLevel.value,
     alertType : this.logBookForm.controls.alertType.value,
     alertCategory : this.logBookForm.controls.alertCategory.value
@@ -1810,6 +1810,10 @@ let prepare = []
     let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
     let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
 
+    if(this._state && this._state.fromVehicleDetails){
+      currentStartTime = this._state.data.startTimeStamp;
+      currentEndTime = this._state.data.endTimeStamp;
+    }
     ////console.log("this.wholeLogBookData.associatedVehicleRequest ---:: ", this.wholeLogBookData.associatedVehicleRequest);
     ////console.log("this.wholeLogBookData.alFilterResponse---::", this.wholeLogBookData.alFilterResponse);
     ////console.log("this.wholeLogBookData.alertTypeFilterRequest---::", this.wholeLogBookData.alertTypeFilterRequest);
