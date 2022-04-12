@@ -250,7 +250,7 @@
         <ng-template #actionColumnElements let-gridData='rowData'>
           <ng-container *ngIf="gridData.hasOwned">
             <button [disabled]='adminAccessType.adminReadOnlyAccess' *ngIf="gridData.status != 'T'" class='actionBtn' mat-flat-button (click)="onChangeConnectedStatus(gridData)"
-              matTooltip="{{ gridData.opt_In == 'I' ? (translationData.lblClicktodeactivate) : translationData.lblClicktoactivate }}">
+              matTooltip="{{ gridData.opt_In == 'I' ? (translationData.lblClicktodeactivate || 'Click to change the status') : translationData.lblClicktoactivate || 'Click to change the status' }}">
               <mat-slide-toggle [disabled]='adminAccessType.adminReadOnlyAccess' color="primary"
                 [checked]='(gridData.opt_In == "I" ? true : false) || ((gridData.status == "C" && gridData.opt_In == "H") ? true : false) || ((gridData.status == "N" && gridData.opt_In == "H") ? true : false) '>
               </mat-slide-toggle>&nbsp;
