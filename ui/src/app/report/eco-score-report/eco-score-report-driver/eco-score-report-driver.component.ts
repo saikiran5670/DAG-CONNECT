@@ -248,13 +248,13 @@ export class EcoScoreReportDriverComponent implements OnInit {
       '',
     ];
     //litre/100 km - mpg pending
-    this.fuelConsumption =
-      this.ecoScoreDriverDetails.overallPerformance.fuelConsumption.score;
-    if (
-      this.prefUnitFormat == 'dunit_Imperial' &&
-      this.fuelConsumption !== '0.0'
-    )
+    this.fuelConsumption = this.ecoScoreDriverDetails.overallPerformance.fuelConsumption.score;
+    if(this.fuelConsumption !== '0.0'){
+      if (this.prefUnitFormat == 'dunit_Imperial')
       this.fuelConsumption = (282.481 / this.fuelConsumption).toFixed(2);
+      else if(this.prefUnitFormat == 'dunit_Metric')
+        this.fuelConsumption = (Number(this.fuelConsumption)).toFixed(1);
+    }
     this.doughnutChartDataFuelConsumption = [
       [this.fuelConsumption, 100 - this.fuelConsumption],
     ];
