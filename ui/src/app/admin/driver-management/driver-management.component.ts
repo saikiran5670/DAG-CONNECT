@@ -457,7 +457,7 @@ export class DriverManagementComponent implements OnInit {
 
   nameValidation(value: any, maxLength: any, type: any, index: any){
     let obj: any = { status: true, reason: 'correct data'};
-    let numberRegex = /[^0-9]+$/;
+    //let numberRegex = /[^0-9]+$/;
     let SpecialCharRegex = /[^!@#\$%&*]+$/;
       if(!value || value == '' || value.length == 0){ // required field
         obj.status = false;
@@ -469,11 +469,11 @@ export class DriverManagementComponent implements OnInit {
         obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - `+this.getValidateMsg(type, this.translationData.lblexceedsmaximumallowedlengthofchars, maxLength)
         return obj;
       }
-      if(!numberRegex.test(value)){
-        obj.status = false;
-        obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - `+this.getValidateMsg(type, this.translationData.lblNumbersnotallowedin );
-        return obj;
-      }
+      // if(!numberRegex.test(value)){
+      //   obj.status = false;
+      //   obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - `+this.getValidateMsg(type, this.translationData.lblNumbersnotallowedin );
+      //   return obj;
+      // }
       if(!SpecialCharRegex.test(value)){
         obj.status = false;
         obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - `+this.getValidateMsg(type, this.translationData.lblSpecialcharactersnotallowedin );

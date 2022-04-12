@@ -234,7 +234,7 @@ export class ReportSchedulerComponent implements OnInit {
          });
         });
        this.initData.forEach(element => {
-          if(element.reportName == "Fleet Fuel Report" || element.reportName == "TripReport"||
+          if(element.reportName == "Fleet Fuel Report" || element.reportName == "Trip Report"||
              element.reportName == "Fleet Utilisation Report"||element.reportName == "Fuel Deviation Report"){
                element.driverList = "";
              }
@@ -392,9 +392,9 @@ getUnique(arr, comp) {
     });
     Util.applySearchFilter(this.dataSource, this.columnCodes ,this.filterValue );
   }
-
+ 
   compare(a: Number  |String, b: Number |String, isAsc: boolean, columnName: any){
-    if(columnName == "recipientList"){
+    if(columnName == "recipientList" || columnName == "action2"){
       if(!(a instanceof Number)) a = a.replace(/\s/g, '').replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
       if(!(b instanceof Number)) b= b.replace(/\s/g, '').replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
     }
