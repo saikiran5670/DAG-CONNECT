@@ -658,15 +658,20 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     }
     if (this.ecoScoreForm.get('minTripCheck').value) {
       _minTripVal = Number(this.ecoScoreForm.get('minTripValue').value);
-      _minTripVal = this.checkForConversion(_minTripVal);
+      // _minTripVal = this.checkForConversion(_minTripVal);
     }
     if (this.ecoScoreForm.get('minDriverCheck').value) {
       _minDriverDist = Number(this.ecoScoreForm.get('minDriverValue').value);
-      _minDriverDist = this.checkForConversion(_minDriverDist);
+      // _minDriverDist = this.checkForConversion(_minDriverDist);
     }
     if (_vehicelIds.length > 0) {
       if (this.allDriversSelected) {
         this.showLoadingIndicator = true;
+        let _prefUnit='';
+        if (this.prefUnitFormat === 'dunit_Metric')
+          _prefUnit = 'Metric';
+        else if (this.prefUnitFormat === 'dunit_Imperial')
+          _prefUnit = 'Imperial';
             let searchDataParam = {
               "startDateTime": _startTime,
               "endDateTime": _endTime,
@@ -674,7 +679,8 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
               "minTripDistance": _minTripVal,
               "minDriverTotalDistance": _minDriverDist,
               "targetProfileId": this.targetProfileId,
-              "reportId": 10
+              "reportId": 10,
+              "uoM": _prefUnit
             }
             this.reportService.getEcoScoreDetails(searchDataParam).subscribe((_ecoScoreDriverData: any) => {
               this.hideloader();
@@ -1432,6 +1438,11 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       if (this.ecoScoreForm.get('minDriverCheck').value) {
         _minDriverDist = Number(this.ecoScoreForm.get('minDriverValue').value);
       }
+      let _prefUnit='';
+        if (this.prefUnitFormat === 'dunit_Metric')
+          _prefUnit = 'Metric';
+        else if (this.prefUnitFormat === 'dunit_Imperial')
+          _prefUnit = 'Imperial';
       let searchDataParam = {
         "startDateTime": _startTime,
         "endDateTime": _endTime,
@@ -1440,7 +1451,8 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
         "minTripDistance": _minTripVal,
         "minDriverTotalDistance": _minDriverDist,
         "targetProfileId": this.targetProfileId,
-        "reportId": 10
+        "reportId": 10,
+        "uoM": _prefUnit
       }
       if (_vehicelIds.length > 0) {
         this.showLoadingIndicator = true;
