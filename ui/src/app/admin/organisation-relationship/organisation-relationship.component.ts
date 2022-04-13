@@ -430,7 +430,7 @@ export class OrganisationRelationshipComponent implements OnInit {
       if(res == true){
         let objData = {
           "orgRelationID": rowData.id,
-          "allowChaining": !rowData.allowChain
+          "allowChaining": rowData.allowChain == 'Active' ? false : true
         }
         this.organizationService.updateAllowChain(objData).subscribe((data) => {
           this.relationshipNametogglechain = rowData.relationshipName;
