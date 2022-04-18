@@ -30,6 +30,7 @@ export class DataTableComponent implements OnInit {
   @Input() exportFileName;
   @Input() nextScheduleRunDateColumnElements;
   @Input() createdAtRunDateColumnElements;
+  noTextWrap: boolean = false;
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -42,6 +43,12 @@ export class DataTableComponent implements OnInit {
 
   ngOnInit(): void {
     this.updatedTableData(this.tableData);
+    if(this.columnLabels.length > 0){
+      let a = ["VIN", "VehicleName", "Status"];
+      if(JSON.stringify(a) == JSON.stringify(this.columnLabels)){
+        this.noTextWrap = true;
+      }
+    }
   }
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
