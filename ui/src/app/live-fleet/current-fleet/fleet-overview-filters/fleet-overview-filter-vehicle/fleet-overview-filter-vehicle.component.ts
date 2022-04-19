@@ -39,7 +39,8 @@ ngAfterViewInit(){
   ngOnInit(): void {
     this.vehicleFilterComponentEmitFlag= true;
     if(this.fromVehicleHealth && this.fromVehicleHealth.fromVehicleHealth && this.fromVehicleHealth.selectedElementData){
-      this.onChangetodayCheckbox(!this.fromVehicleHealth.fromVehicleHealth);
+      //this.onChangetodayCheckbox(!this.fromVehicleHealth.fromVehicleHealth);
+      this.onChangetodayCheckbox(this.fromVehicleHealth.selectedElementData.todayFlag); 
       this.openVehicleDetails(this.fromVehicleHealth.selectedElementData);
     }
     else{
