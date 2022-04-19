@@ -228,6 +228,41 @@ export class EcoScoreReportDriverComponent implements OnInit {
   doughnutChartLabelsBrakingScore: Label[];
   doughnutChartDataBrakingScore: MultiDataSet;
 
+  ecoScoreColor: string;
+  fuelConsumptionColor: string;
+  anticipationScoreColor: string;
+  brakingScoreColor: string;
+
+  doughnutColorsEcoScore: Color[];
+  doughnutColorsFuelConsumption: Color[];
+  doughnutColorsBrakingScore: Color[];
+  doughnutColorsAnticipationScore: Color[];
+
+  greenColor: Color[] = [
+    {
+      backgroundColor: ['#89c64d', '#cecece'],
+      hoverBackgroundColor: ['#89c64d', '#cecece'],
+      hoverBorderColor: ['#cce6b2', '#ffffff'],
+      hoverBorderWidth: 7,
+    },
+  ];;
+  orangeColor: Color[] = [
+    {
+      backgroundColor: ['#ff9900', '#cecece'],
+      hoverBackgroundColor: ['#ff9900', '#cecece'],
+      hoverBorderColor: ['#ffe0b3', '#ffffff'],
+      hoverBorderWidth: 7,
+    },
+  ]; ;
+  redColor: Color[] = [
+    {
+      backgroundColor: ['#ff0000', '#cecece'],
+      hoverBackgroundColor: ['#ff0000', '#cecece'],
+      hoverBorderColor: ['#ffb3b3', '#ffffff'],
+      hoverBorderWidth: 7,
+    },
+  ]; ;
+
   loadOverallPerfomance() {
     // Doughnut - Eco-Score
     this.doughnutChartLabelsEcoScore = [
@@ -283,6 +318,43 @@ export class EcoScoreReportDriverComponent implements OnInit {
         this.ecoScoreDriverDetails.overallPerformance.brakingScore.targetValue,
       ],
     ];
+    this.ecoScoreColor= this.getScoreColor(this.ecoScoreDriverDetails.overallPerformance.ecoScore.score, this.ecoScoreDriverDetails.overallPerformance.ecoScore.targetValue,
+      this.ecoScoreDriverDetails.overallPerformance.ecoScore.limitValue, this.ecoScoreDriverDetails.overallPerformance.ecoScore.limitType); 
+    this.fuelConsumptionColor= this.getScoreColor(this.ecoScoreDriverDetails.overallPerformance.fuelConsumption.score, this.ecoScoreDriverDetails.overallPerformance.fuelConsumption.targetValue,
+      this.ecoScoreDriverDetails.overallPerformance.fuelConsumption.limitValue, this.ecoScoreDriverDetails.overallPerformance.fuelConsumption.limitType);
+    this.anticipationScoreColor= this.getScoreColor(this.ecoScoreDriverDetails.overallPerformance.anticipationScore.score, this.ecoScoreDriverDetails.overallPerformance.anticipationScore.targetValue,
+      this.ecoScoreDriverDetails.overallPerformance.anticipationScore.limitValue, this.ecoScoreDriverDetails.overallPerformance.anticipationScore.limitType);       
+    this.brakingScoreColor= this.getScoreColor(this.ecoScoreDriverDetails.overallPerformance.brakingScore.score, this.ecoScoreDriverDetails.overallPerformance.brakingScore.targetValue,
+      this.ecoScoreDriverDetails.overallPerformance.brakingScore.limitValue, this.ecoScoreDriverDetails.overallPerformance.brakingScore.limitType);
+ 
+  if(this.ecoScoreColor == 'G'){
+    this.doughnutColorsEcoScore = this.greenColor;
+  } else if(this.ecoScoreColor == 'R'){
+    this.doughnutColorsEcoScore = this.redColor;
+  } else if(this.ecoScoreColor == "O"){
+    this.doughnutColorsEcoScore = this.orangeColor;
+  }
+  if(this.fuelConsumptionColor == 'G'){
+    this.doughnutColorsFuelConsumption = this.greenColor;
+  } else if(this.fuelConsumptionColor == 'R'){
+    this.doughnutColorsFuelConsumption = this.redColor;
+  } else if(this.fuelConsumptionColor == 'O'){
+    this.doughnutColorsFuelConsumption = this.orangeColor;
+  }
+  if(this.anticipationScoreColor == 'G'){
+    this.doughnutColorsAnticipationScore = this.greenColor;
+  } else if(this.anticipationScoreColor == 'R'){
+    this.doughnutColorsAnticipationScore = this.redColor;
+  } else if(this.anticipationScoreColor == 'O'){
+    this.doughnutColorsAnticipationScore = this.orangeColor;
+  }
+  if(this.brakingScoreColor == 'G'){
+    this.doughnutColorsBrakingScore = this.greenColor;
+  } else if(this.brakingScoreColor == 'R'){
+    this.doughnutColorsBrakingScore = this.redColor;
+  } else if(this.brakingScoreColor == 'O'){
+    this.doughnutColorsBrakingScore = this.orangeColor;
+  }
 
     this.pluginsCommon = [
       {
@@ -305,22 +377,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
   }
 
   doughnutChartType: ChartType = 'doughnut';
-  doughnutColors: Color[] = [
-    {
-      backgroundColor: ['#89c64d', '#cecece'],
-      hoverBackgroundColor: ['#89c64d', '#cecece'],
-      hoverBorderColor: ['#cce6b2', '#ffffff'],
-      hoverBorderWidth: 7,
-    },
-  ];
-  doughnutColorsAnticipationScore: Color[] = [
-    {
-      backgroundColor: ['#ff9900', '#cecece'],
-      hoverBackgroundColor: ['#ff9900', '#cecece'],
-      hoverBorderColor: ['#ffe0b3', '#ffffff'],
-      hoverBorderWidth: 7,
-    },
-  ];
+  
 
   doughnutChartOptions: ChartOptions = {
     responsive: true,
@@ -351,6 +408,24 @@ export class EcoScoreReportDriverComponent implements OnInit {
       },
     },
   };
+
+  getScoreColor(score, target, limit, type){
+    if(type.indexOf("N") !== -1){
+      if(score < limit)
+        return "R";
+      else if(score >= target)
+        return "G";
+      else
+        return "O";
+    } else if(type.indexOf("X") !== -1){
+      if(score > limit)
+        return "R";
+      else if(score <= target)
+        return "G";
+      else
+        return "O";
+    }
+  }
 
   trendLineSelectionLimit() {
     switch (this.selectionTab) {
