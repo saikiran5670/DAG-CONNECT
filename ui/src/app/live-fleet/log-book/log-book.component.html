@@ -381,15 +381,15 @@
                 <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>               
                 <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew }}</span>
               
-                <span [ngClass]="{ 'marginLeft-14': row.newTag }" *ngIf="row.alertLevel == 'Critical'">
+                <span [ngClass]="{ 'marginLeft-14': row.newTag }" *ngIf="row.alertLevel == 'Critical' || row.alertLevel == 'critical'">
                   <i class="material-icons alertLevelIcon" [style]="{ 'color':'#FF0000' } ">warning</i> 
                   <span class="alertLevelName">{{ translationData.lblCritical}}</span>
                 </span> 
-                <span [ngClass]="{ 'marginLeft-14': row.newTag }" *ngIf="row.alertLevel == 'warning'">
+                <span [ngClass]="{ 'marginLeft-14': row.newTag }" *ngIf="row.alertLevel == 'Warning' || row.alertLevel == 'warning'">
                   <i class="material-icons alertLevelIcon" [style]="{ 'color':'#FFBF00' } ">warning</i> 
                   <span class="alertLevelName">{{ translationData.lblWarning }}</span>
                 </span>
-                <span [ngClass]="{ 'marginLeft-14': row.newTag }" *ngIf="row.alertLevel == 'Advisory'">
+                <span [ngClass]="{ 'marginLeft-14': row.newTag }" *ngIf="row.alertLevel == 'Advisory' || row.alertLevel == 'advisory'">
                   <i class="material-icons alertLevelIcon" [style]="{ 'color':'#FFFF00' } ">warning</i> 
                   <span class="alertLevelName">{{ translationData.lblAdvisory}}</span>
                 </span>  
