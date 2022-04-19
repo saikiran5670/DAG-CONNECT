@@ -1596,9 +1596,9 @@ removeDuplicates(originalArray, prop) {
   this.fleetMapService.clearRoutesFromMap();
 
   this.todayFlagClicked = item.todayFlagClicked;
-  if(!this.todayFlagClicked){
-    this.getFilterData();
-  }
+  // if(!this.todayFlagClicked){
+  //   this.getFilterData();
+  // }
   // this.getFilterData();
   //this.setDropdownValues(this.fleetData);
   this.isVehicleDetails = item.vehicleDetailsFlag;
