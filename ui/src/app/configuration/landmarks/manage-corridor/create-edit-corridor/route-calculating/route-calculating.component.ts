@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { Form, FormBuilder,FormControl, FormGroup, Validators } from '@angular/forms';
 import { CustomValidators } from '../../../../../shared/custom.validators';
 import { HereService } from 'src/app/services/here.service';
@@ -19,7 +19,7 @@ declare var H: any;
   templateUrl: './route-calculating.component.html',
   styleUrls: ['./route-calculating.component.less']
 })
-export class RouteCalculatingComponent implements OnInit {
+export class RouteCalculatingComponent implements OnInit, AfterViewInit{
   @Input() translationData: any = {};
   @Input() exclusionList :  any;
   @Input() actionType: any; 
@@ -316,14 +316,14 @@ export class RouteCalculatingComponent implements OnInit {
       this.endAddressPositionLong = _selectedElementData.endLong;
       this.corridorWidth = _selectedElementData.width;
       this.corridorWidthKm = this.unitFormat == 'dunit_Metric' ? this.corridorWidth / 1000 : this.unitFormat == 'dunit_Imperial' ? Number((this.corridorWidth / (1.60934 * 1000)).toFixed(2)) : this.corridorWidth / 1000;
-
+      this.clearMap();
       this.plotStartPoint();
       this.plotEndPoint();
       if(_selectedElementData.corridorType && _selectedElementData.corridorType == 'R'){
-        _selectedElementData.viaAddressDetail.forEach(element => {
-          this.gpsLineString.push(element.latitude, element.longitude, 0);
-        });
-        if(_selectedElementData.viaAddressDetail.length > 0){
+        if(_selectedElementData.viaAddressDetail && _selectedElementData.viaAddressDetail.length > 0){
+          _selectedElementData.viaAddressDetail.forEach(element => {
+            this.gpsLineString.push(element.latitude, element.longitude, 0);
+          });
           this.viaRouteCount = true;
           this.viaRoutePlottedPoints = _selectedElementData.viaAddressDetail.filter( e => e.type == "V");
           this.viaRoutePlottedPoints.forEach(element => {
@@ -335,10 +335,10 @@ export class RouteCalculatingComponent implements OnInit {
             })
             
           });
-        // this.plotViaPoint(this.viaRoutesList);
-          this.plotSeparateVia();
+        this.plotSeparateVia();
         }
-        this.addTruckRouteShapeToMapEdit();
+        // Commented the below function as part of fix for defect 26003 the below function plots a straight line on the map with the start and end point.
+        // this.addTruckRouteShapeToMapEdit(_selectedElementData);
       } else {
         if(_selectedElementData.viaAddressDetail.length > 0){
           this.viaRouteCount = true;
@@ -350,8 +350,9 @@ export class RouteCalculatingComponent implements OnInit {
          // this.plotViaPoint(this.viaRoutesList);
           this.plotSeparateVia();  
         }
-        this.calculateTruckRoute()
+        
       }
+      this.calculateTruckRoute();
     }
   }
 
