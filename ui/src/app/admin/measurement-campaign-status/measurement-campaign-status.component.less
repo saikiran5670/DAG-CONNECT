@@ -1,0 +1,177 @@
+.status__wrapper {
+    padding: 20px 30px;
+
+    .measurement__icon{
+        margin-top: 5px;
+        margin-left: 8px;
+        font-size: 20px;
+    }
+
+    .measure__row{
+        margin-bottom: 20px;
+    }
+
+    .input__right {
+        margin-right: 40px;
+    }
+
+    .input__width {
+        width: 300px;
+    }
+
+    .input__datepick__width {
+        width: 200px;
+    }
+
+    .datpicker__right {
+        margin-right: 20px;
+    }
+
+    .timeAdjustSpan {
+        position: absolute;
+        width: auto;
+        padding: 0px 5px;
+        z-index: 1;
+        margin-top: 8px;
+        background: #fff;
+        margin-left: 3px;
+        border-radius: 1px;
+    }
+
+    .inputBox {
+        margin-right: -42px;
+        width: 155px;
+        padding: 6px;
+        border: 1px solid #cccccc;
+        border-radius: 5px;
+    }
+
+    .select__input {
+        width: 295px;
+    }
+
+    .select__input_status {
+        width: 299px;
+    }
+
+    .measure__table_wrapper {
+        margin-top: 20px;
+
+        .interpret__btn:disabled {
+            background-color: rgba(0,0,0,.12) !important;
+            color: rgba(0,0,0,.26) !important;
+        }
+
+        .text-truncate {
+            display: inline-block;
+            max-width: 150px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding-top: 10px;
+            margin-right: 10px;
+        }
+
+        
+
+        .mat-column-select {
+            flex: 0 0 10%;
+        }
+
+        .mat-column-select {
+            flex: 0 0 9%;
+        }
+
+        .mat-column-intendedDateTime {
+            flex: 0 0 17%;
+        }
+
+        .mat-column-targetSystem {
+            flex: 0 0 14%;
+        }
+
+        .mat-column-status {
+            flex: 0 0 8%;
+        }
+        .mat-column-targetSystemStatus {
+            flex: 0 0 18%;
+        }
+
+        .mat-column-appliedDateTime {
+            flex: 0 0 17%;
+        }
+
+        .mat-column-action {
+            justify-content: center;
+        }
+
+        .action__icon {
+            cursor: pointer;
+        }
+    }
+    
+    @media screen and (max-width: 1330px) {
+        .measure__row{
+            flex-wrap: wrap;
+        }
+        
+    }
+
+    @media screen and (max-width: 960px) {
+        .measure__title {
+            font-size: 16px;
+        }
+
+        .input__width {
+            width: 63%;
+        }
+
+        .select__input_status {
+            width: 60%;
+        }
+
+        .input__datepick__width {
+            width: 116%;
+        }
+
+        .select__input {
+            width: 56%;
+        }
+        
+        .inputBox {
+            width: 100%;
+        }
+
+        .input__right {
+            margin-bottom: 15px;
+        }
+
+        .datpicker__right {
+            margin-bottom: 10px;
+        }
+
+        .timepicker {
+            width: 60%;
+        }
+
+        .btn__wrapper {
+            .reset__btn {
+                margin-bottom: 15px !important;
+                margin-right: 0px !important;
+            }
+        }
+
+        .measure__table_wrapper {
+            .reportTable {
+                .mat-table {
+                    width: 100%;
+                    overflow-x: scroll;
+                    .mat-header-row, .mat-row {
+                        width: 300% ;
+                    }
+                }
+            }
+        }
+        
+    }
+}

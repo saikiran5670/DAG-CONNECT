@@ -42,6 +42,23 @@ import { LanguageSelectionComponent } from './translation-data-upload/language-s
 import { MatTableExporterModule } from 'mat-table-exporter';
 import { CreateEditViewVehicleAccountAccessRelationshipComponent } from './vehicle-account-access-relationship/create-edit-view-vehicle-account-access-relationship/create-edit-view-vehicle-account-access-relationship.component';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
+import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
+import { MeasurementCampaignStatusComponent, DialogMeasurementStatusDialog } from './measurement-campaign-status/measurement-campaign-status.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core'
+import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter } from '@angular/material-moment-adapter';
+
+export const MY_DATE_FORMAT = {
+  parse: {
+    dateInput: 'DD MMM YYYY'
+  },
+  display: {
+    dateInput: 'DD MMM YYYY',
+    monthYearLabel: 'MMM YYYY',
+    dateA11yLabel: 'LL',
+    monthYearA11yLabel: 'MMMM YYYY',
+  },
+}
 
 @NgModule({
   declarations: [
@@ -75,7 +92,9 @@ import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
     CreateEditViewOrganisationRelationshipComponent,
     LinkOrgPopupComponent,
     LanguageSelectionComponent,
-    CreateEditViewVehicleAccountAccessRelationshipComponent
+    CreateEditViewVehicleAccountAccessRelationshipComponent,
+    MeasurementCampaignStatusComponent,
+    DialogMeasurementStatusDialog
     
   ],
   imports: [
@@ -88,9 +107,22 @@ import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
       ImageCropperModule,
       DirectivesModule,
       MatTableExporterModule,
-      NgxMatSelectSearchModule
+      NgxMatSelectSearchModule,
+      NgxMaterialTimepickerModule,
+      MatDialogModule
     ],
-    providers: [ConfirmDialogService, AccountService, VehicleService],
+    providers: [
+      ConfirmDialogService, 
+      AccountService, 
+      VehicleService,
+      { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMAT },
+      {
+        provide: DateAdapter,
+        useClass: MomentDateAdapter,
+        deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS]
+      },
+      { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: false } }
+    ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 

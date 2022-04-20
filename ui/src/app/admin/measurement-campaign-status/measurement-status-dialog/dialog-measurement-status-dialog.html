@@ -1,0 +1,30 @@
+<div class="status__dialog__wrapper">
+    <div fxLayout="row" fxLayoutAlign="start space-around"
+          style='padding: 10px 20px !important; background: #65c3f8; color: #fff;'>
+        <div class='min-width-70-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+          <span class='font-16-px line-height-24px font-helvetica-md'>Rule Re-Interpret</span>
+        </div>
+        <div class='min-width-30-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center flex-end">
+          <mat-icon style='cursor: pointer; color: #000 !important;' mat-dialog-close>close</mat-icon>
+        </div>
+    </div>
+		<div fxLayout="row" class="status__content__title">
+			<div *ngIf="data.selectedvin.length == 1" class='line-height-24px font-helvetica-md'>Are you sure you want to Re-interpret VIN?</div>
+			<div *ngIf="data.selectedvin.length > 1" class='line-height-24px font-helvetica-md'>Are you sure you want to Re-interpret VINs?</div>
+		</div>
+		<div class="vin__list">
+			<mat-dialog-content class="measure__vin__list__content">
+				<div fxLayout="row"  class='line-height-24px font-helvetica-md status__content' *ngFor="let item of vinList">{{item.vin}}</div>
+			</mat-dialog-content>
+		</div>
+		<div fxLayout="row" *ngIf="showMoreLink">
+			<div fxLayout="row" class="morelesslink font-16-px" *ngIf="showMoreString" ><span class="text__underline" (click)="showMore()">view more</span>  <mat-icon>keyboard_arrow_down</mat-icon></div>
+			<div fxLayout="row" class="morelesslink font-16-px" *ngIf="!showMoreString"><span class="text__underline" (click)="showLess()">view less</span><mat-icon>keyboard_arrow_up</mat-icon></div>
+		</div>
+		<mat-card-actions fxLayoutAlign="center center" class='no-margin' style="padding: 0px 20px;">
+			<div fxLayout="row" fxLayout.lt-md="column" fxLayoutAlign="center center" class="areaWidth full-width action__btns">
+					<button class='resetCancelBtnColor cancel__btn margin-right-10' mat-raised-button color="primary" mat-dialog-close>Cancel</button>
+					<button class='no-margin' mat-raised-button color="primary" [mat-dialog-close]="submit">Re-Interpret</button>
+			</div>
+	</mat-card-actions>
+</div>

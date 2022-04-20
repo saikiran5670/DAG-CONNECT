@@ -1,0 +1,276 @@
+<div class="status__wrapper">
+
+	<div *ngIf='showMessage' fxLayout="row" fxLayoutAlign="center center"
+  		style='padding:10px; color:#fff; background: #5dc24e; margin-bottom: 20px;'>
+		<div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center" style='width:95%;'>
+			Success Message
+		</div>
+		<div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
+			<mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
+		</div>
+  </div>
+
+
+	<mat-expansion-panel [expanded]="true">
+    <mat-expansion-panel-header>
+      <mat-panel-title class="measure__title">
+        {{translationData.lblSearchParameters}}
+				<mat-icon class="measurement__icon" matTooltip="At least one field should be selected for the result." matTooltipPosition="after">error</mat-icon>
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+		<form (ngSubmit)="onSubmitMeasurement()" #measurementForm="ngForm">
+			<div class="measure__row" fxLayout="row"  fxLayout.lt-md="column">
+
+				<div class="areaWidth input__right">
+					<mat-label class='font-16-px line-height-24px'>{{translationData.lblSearchVin}}</mat-label>
+					<div class="full-width">
+					  <div class="areaWidth">
+						<mat-form-field appearance="outline" class="input__width">
+						  <input matInput [(ngModel)]="model.vin" name="vin">
+						</mat-form-field>
+					  </div>
+					</div>
+				</div>
+
+				<div class="areaWidth datpicker__right">
+					<mat-label class='font-16-px line-height-24px'>{{translationData.lblIntendedDate}}</mat-label>
+					<div class="full-width">
+					  <div class="areaWidth max-width-50-per">
+						<mat-form-field appearance="outline" class="input__datepick__width">
+						  <input matInput [(ngModel)]="model.intendedDate" (dateChange)="intendedDateEvent($event)"
+							[matDatepicker]="intendedPicker" name="intendedDate" readonly>
+						  <mat-datepicker-toggle matSuffix [for]="intendedPicker"></mat-datepicker-toggle>
+						  <mat-datepicker #intendedPicker></mat-datepicker>
+						</mat-form-field>
+					  </div>
+					</div>
+				</div>
+				<div class="areaWidth input__right">
+					<mat-label class='font-16-px line-height-24px'>{{translationData.lblTime}}</mat-label>
+					<div class="full-width">
+						<div class="areaWidth" fxLayout="row">
+							<div fxLayout="row" fxLayoutAlign="space-between" class="full-width" class="timepicker"
+								style='margin-top: 4px;'>
+								<span class='timeAdjustSpan'> {{ intendedTimeDisplay }}</span>
+								<input [(ngModel)]="model.intendedTime" class='inputBox'
+								  [ngxTimepicker]="intendedTimepicker" disableClick="true"
+									name="intendedTime" [format]="prefTimeFormat" readonly>
+								<ngx-material-timepicker-toggle [for]="intendedTimepicker"></ngx-material-timepicker-toggle>
+								<ngx-material-timepicker (timeChanged)="intendedtimeChanged($event)" #intendedTimepicker>
+								</ngx-material-timepicker>
+							</div>
+						</div>
+					</div>
+				</div>
+			
+				<div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
+					<mat-label class='font-16-px line-height-24px'>{{translationData.lblTargetSystem}}</mat-label>
+					<mat-form-field appearance="outline" class="select__input">
+						<mat-select (selectionChange)="targetSystemchange($event, true)" [(ngModel)]="model.target" name="target">
+							<!-- <mat-option>
+								<ngx-mat-select-search (keyup)="filterVehicleGroups(vehicleSearch.value)"
+									placeholderLabel="{{ translationData.lblSearch|| 'Search' }}" #vehicleSearch>
+									<mat-icon (click)="resetVehicleGroupFilter()" ngxMatSelectSearchClear>close</mat-icon>
+								</ngx-mat-select-search>
+							</mat-option> -->
+							<mat-option *ngFor="let trgtsys of targetSystemValues" [value]="trgtsys">
+								{{ trgtsys }}
+							</mat-option>
+						</mat-select>
+					</mat-form-field>
+					<!-- <mat-error *ngIf="tripForm.get('vehicleGroup').hasError('required') && vehicleGrpDD.length > 0">
+						{{ translationData.lblPleaseSelectvehicleGroup }}
+					</mat-error> -->
+				</div>
+
+
+			</div>
+			<div class="measure__row" fxLayout="row"  fxLayout.lt-md="column">
+
+				<div class="areaWidth input__right" fxLayout="column" fxLayoutAlign="left">
+					<mat-label class='font-16-px line-height-24px'>{{translationData.lblStatus}}</mat-label>
+					<mat-form-field appearance="outline" class="select__input_status">
+						<mat-select (selectionChange)="statusChange($event, true)" [(ngModel)]="model.status" name="status">
+							<!-- <mat-option>
+								<ngx-mat-select-search (keyup)="filterVehicleGroups(vehicleSearch.value)"
+									placeholderLabel="{{ translationData.lblSearch|| 'Search' }}" #vehicleSearch>
+									<mat-icon (click)="resetVehicleGroupFilter()" ngxMatSelectSearchClear>close</mat-icon>
+								</ngx-mat-select-search>
+							</mat-option> -->
+							<mat-option *ngFor="let st of statusValues" [value]="st">
+								{{ st }}
+							</mat-option>
+						</mat-select>
+					</mat-form-field>
+					<!-- <mat-error *ngIf="tripForm.get('vehicleGroup').hasError('required') && vehicleGrpDD.length > 0">
+						{{ translationData.lblPleaseSelectvehicleGroup }}
+					</mat-error> -->
+				</div>
+
+
+
+				<div class="areaWidth datpicker__right">
+					<mat-label class='font-16-px line-height-24px'>{{translationData.lblAppliedDate}}</mat-label>
+					<div class="full-width">
+					  <div class="areaWidth max-width-50-per">
+						<mat-form-field appearance="outline" class="input__datepick__width">
+						  <input matInput [(ngModel)]="model.appliedDate" (dateChange)="changeAppliedDateEvent($event)"
+							[matDatepicker]="appliedPicker" name="appliedDate" readonly>
+						  <mat-datepicker-toggle matSuffix [for]="appliedPicker"></mat-datepicker-toggle>
+						  <mat-datepicker #appliedPicker></mat-datepicker>
+						</mat-form-field>
+					  </div>
+					</div>
+				</div>
+				<div class="areaWidth input__right">
+					<mat-label class='font-16-px line-height-24px'>{{translationData.lblTime}}</mat-label>
+					<div class="full-width">
+						<div class="areaWidth" fxLayout="row">
+							<div fxLayout="row" fxLayoutAlign="space-between" class="full-width" class="timepicker"
+								style='margin-top: 4px;'>
+								<span class='timeAdjustSpan'>{{ appliedTimeDisplay }}</span>
+								<input [(ngModel)]="model.appliedTime" class='inputBox'
+								  [ngxTimepicker]="appliedTimeTimepicker" disableClick="true"
+									name="appliedTime"   [format]="prefTimeFormat" readonly>
+								<ngx-material-timepicker-toggle [for]="appliedTimeTimepicker"></ngx-material-timepicker-toggle>
+								<ngx-material-timepicker (timeChanged)="appliedtimeChanged($event)" #appliedTimeTimepicker>
+								</ngx-material-timepicker>
+							</div>
+						</div>
+					</div>
+				</div>
+			
+				<div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
+					<mat-label class='font-16-px line-height-24px'>{{translationData.lblMaxResultSet}}</mat-label>
+					<mat-form-field appearance="outline" class="select__input">
+						<mat-select (selectionChange)="maxResultchange($event, true)" [(ngModel)]="model.maxset" name="maxset">
+							<!-- <mat-option>
+								<ngx-mat-select-search (keyup)="filterVehicleGroups(vehicleSearch.value)"
+									placeholderLabel="{{ translationData.lblSearch|| 'Search' }}" #vehicleSearch>
+									<mat-icon (click)="resetVehicleGroupFilter()" ngxMatSelectSearchClear>close</mat-icon>
+								</ngx-mat-select-search>
+							</mat-option> -->
+							<mat-option *ngFor="let max of maxResultValues" [value]="max">
+								{{ max }}
+							</mat-option>
+						</mat-select>
+					</mat-form-field>
+					<!-- <mat-error *ngIf="tripForm.get('vehicleGroup').hasError('required') && vehicleGrpDD.length > 0">
+						{{ translationData.lblPleaseSelectvehicleGroup }}
+					</mat-error> -->
+				</div>
+
+			</div>
+			<div class="btn__wrapper areaWidth" fxLayout="row" fxLayout.lt-md="column" fxLayoutAlign="end">
+				<button type="button" class='resetCancelBtnColor margin-right-10 no-margin reset__btn' mat-raised-button color="primary" (click)="measurementForm.reset();onReset()">Reset</button>
+				<button type="submit" class='no-margin search__btn' mat-raised-button color="primary" [disabled]="!measurementForm.form.valid">Search</button>
+			</div>
+    </form>
+  </mat-expansion-panel>
+  <div class="measure__table_wrapper">
+	<mat-card class="mat-elevation-z">
+		<div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm' *ngIf="!showTableResult">
+			<div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+				<span class='font-18-px line-height-27px font-helvetica-md'>Vehicle Interpreted Status Details</span>
+			</div>
+		</div>
+		<div fxLayout="row" class='margin-bottom-sm' fxlayoutalign="space-between"  *ngIf="!showTableResult">
+			Please select and search required fields from top to view the details
+		</div>
+
+		<!-- Table -->
+
+		<div *ngIf="showTableResult" [ngClass]="{'reportTable': displayedColumns.length > 7}">
+			<div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+				<div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+					<span class='font-18-px line-height-27px font-helvetica-md'>Vehicle Interpreted Status Details</span>
+				</div>
+			</div>
+			<div fxLayout="row"  fxLayout.lt-md="column" fxLayoutAlign="space-between" class='margin-bottom-sm' fxLayoutGap="10px">
+			  <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+				<mat-form-field appearance="outline">
+					<input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+					<span matPrefix><mat-icon>search</mat-icon></span>
+				</mat-form-field>
+			  </div>
+			  <div class='areaWidth' fxLayout="row" fxLayout.lt-md="column" fxLayoutGap="3px" fxLayoutAlign="end">
+				<button mat-button [matMenuTriggerFor]="menu">
+				  <mat-icon>file_upload</mat-icon>{{ translationData.lblExport || 'Export' }}<mat-icon>more_vert</mat-icon>
+				</button>
+				<mat-menu #menu="matMenu">
+				  <button mat-menu-item (click)="exportAsExcelFile()">{{ translationData.lblExcel || 'Excel' }}</button>
+				  <button mat-menu-item (click)="exportAsPDFFile()">{{ translationData.lblPDF || 'PDF' }}</button>
+				</mat-menu>
+				<div class="measure__re_interpret" fxLayout="column" matTooltip='Please select VIN checkbox for any action' matTooltipPosition="above" [matTooltipDisabled]="selectedEcoScore.selected.length > 0">
+					<button type="button" class='no-margin search__btn interpret__btn'   mat-raised-button color="primary" [disabled]="selectedEcoScore.selected.length == 0" (click)="reInterpretDialog()">Re-Interpret</button>
+				</div>
+				
+			  </div>
+			</div>
+			<div id="fleetDetailBlock">
+			<mat-table matTableExporter [dataSource]="dataSource" class="table-items"
+			matSort #exporter="matTableExporter">
+			<ng-container matColumnDef="select">
+				<mat-header-cell *matHeaderCellDef >{{ translationData.lblSelect || 'Select' }} 
+				</mat-header-cell>
+				<mat-cell *matCellDef="let row">
+					<mat-checkbox (change)='rowSelected($event, row)' [checked]='selectedEcoScore.isSelected(row)'></mat-checkbox>
+				</mat-cell>
+			</ng-container>
+			<ng-container matColumnDef="vin">
+			  <mat-header-cell [ngClass]="{'text-truncate': displayedColumns.length > 7}" *matHeaderCellDef mat-sort-header>{{ translationData.lblVin || 'VIN' }}
+			  </mat-header-cell>
+			  <mat-cell [ngClass]="{'text-truncate': row.vin.length > 9}" matTooltip='{{ row.vin }}' *matCellDef="let row">
+				<span class='navigatePoint'>{{ row.vin }}</span>
+			  </mat-cell>
+			</ng-container>
+			<ng-container matColumnDef="intendedDateTime">
+			  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblIntendedDateTime || 'Intended Date-Time' }}
+			  </mat-header-cell>
+			  <mat-cell *matCellDef="let row">
+				<span class='navigatePoint' matTooltip='{{ row.intendedDateTime }}' >{{ row.intendedDateTime }}</span>
+			  </mat-cell>
+			</ng-container>
+			<ng-container matColumnDef="targetSystem">
+			  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblTargetSystem || 'Target System' }}
+			  </mat-header-cell>
+			  <mat-cell *matCellDef="let row">
+				<span class='navigatePoint' matTooltip='{{ row.targetSystem }}' >{{ row.targetSystem }}</span>
+			  </mat-cell>
+			</ng-container>
+			<ng-container matColumnDef="status">
+			  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStatus || 'Status' }} 
+			  </mat-header-cell>
+			  <mat-cell *matCellDef="let row">{{ row.status }}</mat-cell>
+			</ng-container>
+			<ng-container matColumnDef="targetSystemStatus">
+				<mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblTargetSystemStatus || 'Target System Status' }} 
+				</mat-header-cell>
+				<mat-cell *matCellDef="let row">{{ row.targetSystemStatus }}</mat-cell>
+			</ng-container>
+			<ng-container matColumnDef="appliedDateTime">
+				<mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAppliedDateTime || 'Applied Date-Time' }} 
+				</mat-header-cell>
+				<mat-cell *matCellDef="let row">{{ row.appliedDateTime }}</mat-cell>
+			</ng-container>
+			<ng-container matColumnDef="action">
+				<mat-header-cell *matHeaderCellDef >{{ translationData.lblAction || 'Action' }} 
+				</mat-header-cell>
+				<mat-cell *matCellDef="let row">
+					<mat-icon class="action__icon" matSuffix>{{'visibility'}}</mat-icon>
+				</mat-cell>
+			</ng-container>
+			
+			<mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+			<mat-row *matRowDef="let row; columns: displayedColumns;">
+			</mat-row>
+			</mat-table>
+			<mat-paginator [pageSizeOptions]="[5, 10, 25, 100, 500]" (page)="pageSizeUpdated($event)"></mat-paginator>
+			</div>
+		  </div>
+  
+
+		<!-- Table -->
+	</mat-card>
+  </div>
+</div>
