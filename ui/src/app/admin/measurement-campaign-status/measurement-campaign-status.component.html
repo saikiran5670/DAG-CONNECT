@@ -161,10 +161,17 @@
 				</div>
 
 			</div>
-			<div class="btn__wrapper areaWidth" fxLayout="row" fxLayout.lt-md="column" fxLayoutAlign="end">
+			<div fxLayout="row" fxLayout.lt-md="column" fxLayoutAlign="space-between">
+				<div class="error__onSearch"><span *ngIf="showAtleastOneErr">At least one field should be selected for the result.</span></div>
+				<div class="btn__wrapper areaWidth" fxLayout="row" fxLayout.lt-md="column" fxLayoutAlign="end">
+					<button type="button" class='resetCancelBtnColor margin-right-10 no-margin reset__btn' mat-raised-button color="primary" (click)="onReset()">Reset</button>
+					<button type="submit" class='no-margin search__btn' mat-raised-button color="primary" [disabled]="!measurementForm.form.valid">Search</button>
+				</div>
+			</div>
+			<!-- <div class="btn__wrapper areaWidth" fxLayout="row" fxLayout.lt-md="column" fxLayoutAlign="end">
 				<button type="button" class='resetCancelBtnColor margin-right-10 no-margin reset__btn' mat-raised-button color="primary" (click)="measurementForm.reset();onReset()">Reset</button>
 				<button type="submit" class='no-margin search__btn' mat-raised-button color="primary" [disabled]="!measurementForm.form.valid">Search</button>
-			</div>
+			</div> -->
     </form>
   </mat-expansion-panel>
   <div class="measure__table_wrapper">

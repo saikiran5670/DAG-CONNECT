@@ -34,6 +34,7 @@ export class MeasurementCampaignStatusComponent implements OnInit {
   viewPageData: any;
   viewPage = false;
   showLoadingIndicator = false;
+  showAtleastOneErr = false;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   showMessage = false;
@@ -399,17 +400,33 @@ ELEMENT_DATA: any = [
   }
 
   onSubmitMeasurement() {
+    this.showAtleastOneErr = false;
     console.log('Form Submit')
-    console.log(this.model)
-  this.showLoadingIndicator = false; // will be change at logic time
+    this.showLoadingIndicator = false; // will be change at logic time
+    if (this.model.appliedDate == '' && this.model.appliedTime == '' && this.model.intendedDate == '' && this.model.intendedTime == '' && this.model.status == '' && this.model.target == '' && this.model.vin == '') {
+      this.showAtleastOneErr = true;
+    } else {
+      this.showAtleastOneErr = false;
+      console.log(this.model)
+    }
 
   }
 
   onReset() {
   this.intendedTimeDisplay = '';
   this.appliedTimeDisplay = '';
-  this.model.target = '';
+  this.model = {
+    vin: '',
+    target: '',
+    status: '',
+    maxset: 50,
+    intendedDate: '',
+    intendedTime: '',
+    appliedDate:'',
+    appliedTime:''
+  }
   this.model.maxset = 50;
+  this.showAtleastOneErr = false;
   }
 
   updateDataSource(tableData: any) {
