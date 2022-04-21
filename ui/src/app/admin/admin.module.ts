@@ -47,6 +47,7 @@ import { MeasurementCampaignStatusComponent, DialogMeasurementStatusDialog } fro
 import { MatDialogModule } from '@angular/material/dialog';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core'
 import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter } from '@angular/material-moment-adapter';
+import { ViewMeasurementCampaignStatusComponent } from './measurement-campaign-status/view-measurement-campaign-status/view-measurement-campaign-status.component';
 
 export const MY_DATE_FORMAT = {
   parse: {
@@ -94,7 +95,8 @@ export const MY_DATE_FORMAT = {
     LanguageSelectionComponent,
     CreateEditViewVehicleAccountAccessRelationshipComponent,
     MeasurementCampaignStatusComponent,
-    DialogMeasurementStatusDialog
+    DialogMeasurementStatusDialog,
+    ViewMeasurementCampaignStatusComponent
     
   ],
   imports: [

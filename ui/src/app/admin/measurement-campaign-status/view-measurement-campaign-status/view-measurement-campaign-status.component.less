@@ -1,0 +1,61 @@
+.view__wrapper {
+    padding: 20px 30px;
+
+    .backBtnCss{
+        text-decoration: underline;
+        color: #29539c;
+        cursor: pointer;
+    }
+
+    .view__content{
+        padding-top: 20px;
+
+        .padding-title-bottom {
+            padding-bottom: 5px;
+        }
+    }
+
+    .content__view {
+        .content__field{
+            padding-bottom: 35px;
+        }
+
+        .width-419 {
+            width: 419px;
+        }
+
+        .width-360 {
+            width: 360px;
+        }
+
+        .field__value {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .padding-view-10 {
+            padding-bottom: 10px;
+        }
+    }
+
+    @media screen and (max-width: 1330px) {
+        .content__view{
+            .row__section {
+                flex-wrap: wrap;
+            }    
+        }
+        
+    }
+
+    @media screen and (max-width: 960px) {
+        .content__view {
+            .width-419 {
+                width: 100%;
+            }
+    
+            .width-360 {
+                width: 100%;
+            }
+        }
+    }
+}

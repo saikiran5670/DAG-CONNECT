@@ -31,6 +31,9 @@ export class MeasurementCampaignStatusComponent implements OnInit {
   initData: any = [];
   dataSource: any;
   filterValue: string;
+  viewPageData: any;
+  viewPage = false;
+  showLoadingIndicator = false;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   showMessage = false;
@@ -136,7 +139,132 @@ export class MeasurementCampaignStatusComponent implements OnInit {
       name: "lblAppliedDate",
       type: "L",
       value: "Applied Date" 
+    },
+    { 
+      code: "EN-GB",
+      filter: "",
+      id: 9,
+      menuId: 0,
+      name: "lblHome",
+      type: "L",
+      value: "Home" 
+    },
+    { 
+      code: "EN-GB",
+      filter: "",
+      id: 10,
+      menuId: 0,
+      name: "lblAdmin",
+      type: "L",
+      value: "Admin" 
+    },
+
+    { 
+      code: "EN-GB",
+      filter: "",
+      id: 11,
+      menuId: 0,
+      name: "lblMeasurementCampaignStatus",
+      type: "L",
+      value: "Measurement Campaign Status" 
+    },
+
+    { 
+      code: "EN-GB",
+      filter: "",
+      id: 11,
+      menuId: 0,
+      name: "lblViewDetails",
+      type: "L",
+      value: "View Details" 
+    },
+    
+    { 
+      code: "EN-GB",
+      filter: "",
+      id: 12,
+      menuId: 0,
+      name: "lblBack",
+      type: "L",
+      value: "Back" 
+    },
+
+    { 
+      code: "EN-GB",
+      filter: "",
+      id: 13,
+      menuId: 0,
+      name: "lblIntendedAction",
+      type: "L",
+      value: "Intended Action" 
+    },
+    { 
+      code: "EN-GB",
+      filter: "",
+      id: 14,
+      menuId: 0,
+      name: "lblIntendedActionArgument",
+      type: "L",
+      value: "Intended Action Argument" 
+    },
+
+    { 
+      code: "EN-GB",
+      filter: "",
+      id: 15,
+      menuId: 0,
+      name: "lblAppliedSystem",
+      type: "L",
+      value: "Applied System" 
+    },
+    { 
+      code: "EN-GB",
+      filter: "",
+      id: 16,
+      menuId: 0,
+      name: "lblAppliedAction",
+      type: "L",
+      value: "Applied Action" 
+    },
+    { 
+      code: "EN-GB",
+      filter: "",
+      id: 17,
+      menuId: 0,
+      name: "lblAppliedActionArgument",
+      type: "L",
+      value: "Applied Action Argument" 
+    },
+
+    { 
+      code: "EN-GB",
+      filter: "",
+      id: 18,
+      menuId: 0,
+      name: "lblCancel",
+      type: "L",
+      value: "Cancel" 
+    },
+    { 
+      code: "EN-GB",
+      filter: "",
+      id: 19,
+      menuId: 0,
+      name: "lblReInterpret",
+      type: "L",
+      value: "Re-Interpret" 
+    },
+    { 
+      code: "EN-GB",
+      filter: "",
+      id: 20,
+      menuId: 0,
+      name: "lblRuleReInterpret",
+      type: "L",
+      value: "Rule Re-Interpret" 
     }
+    
+
   ]
 
   
@@ -273,6 +401,8 @@ ELEMENT_DATA: any = [
   onSubmitMeasurement() {
     console.log('Form Submit')
     console.log(this.model)
+  this.showLoadingIndicator = false; // will be change at logic time
+
   }
 
   onReset() {
@@ -356,12 +486,22 @@ ELEMENT_DATA: any = [
     this.showMessage = false;
   }
 
+  viewData(data) {
+    this.viewPage = true;
+    this.viewPageData = data;
+  }
+
+  backFromviewPage(e){
+    this.viewPage = false;
+  }
+
   reInterpretDialog() {
     const dialogRef = this.dialog.open(DialogMeasurementStatusDialog, {
       width: '40%',
       disableClose: true,
       data: {
-        selectedvin: this.selectedEcoScore.selected
+        selectedvin: this.selectedEcoScore.selected,
+        translationDataDialog: this.translationData
       }
     });
 
@@ -386,6 +526,7 @@ ELEMENT_DATA: any = [
 export class DialogMeasurementStatusDialog {
   vinList: any;
   dataList: any;
+  dataTranslation: any;
   showMoreString = false;
   showMoreLink = false;
   submit = 'submit';
@@ -393,6 +534,7 @@ export class DialogMeasurementStatusDialog {
 
   ngOnInit() {
     console.log('dialog',this.data.selectedvin)
+    this.dataTranslation = this.data.translationDataDialog;
     this.dataList = this.data.selectedvin;
     this.morelessfunctionality(this.data.selectedvin);
   }

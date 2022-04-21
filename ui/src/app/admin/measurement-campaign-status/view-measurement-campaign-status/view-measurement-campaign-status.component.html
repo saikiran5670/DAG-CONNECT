@@ -1,0 +1,78 @@
+<div class="view__wrapper">
+    <div  fxLayout="row" fxLayoutAlign="space-between">
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+            <span>{{ breadcrumbs }}</span>
+        </div>
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+            <span class='custom-font' (click)="onBack()">
+            <span><&nbsp;</span>
+            <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span></span>
+        </div>
+    </div>
+
+    <div class="view__content">
+        <mat-card class='mat-elevation-z'>
+            <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm padding-title-bottom'>
+                <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                    <span class='font-18-px line-height-27px font-helvetica-md'>Vehicle Campaign Status Details</span>
+                </div>
+            </div>
+            <div class="content__view">
+                <div fxLayout="row" fxLayout.lt-md="column" class="content__field row__section" >
+                    <div class='font-16-px width-419 padding-view-10'>
+                        <div>{{ translationData.lblVin || 'VIN' }}</div>
+                        <div class="field__value">{{viewPageData.vin}}</div>
+                    </div>
+                    <div class='font-16-px width-360 padding-view-10'>
+                        <div>{{ translationData.lblStatus || 'Status' }}</div>
+                        <div class="field__value">{{viewPageData.status}}</div>
+                    </div>
+                </div>
+                <div fxLayout="row" fxLayout.lt-md="column" class="content__field row__section" >
+                    <div class='font-16-px width-419 padding-view-10'>
+                        <div>{{ translationData.lblIntendedDateTime || 'Intended Date-Time' }}</div>
+                        <div class="field__value">{{viewPageData.intendedDateTime}}</div>
+                    </div>
+                    <div class='font-16-px width-360 padding-view-10'>
+                        <div>{{translationData.lblIntendedAction || 'Intended Action'}}</div>
+                        <div class="field__value">-</div>
+                    </div>
+                    <div class='font-16-px padding-view-10'>
+                        <div>{{translationData.lblIntendedActionArgument  ||'Intended Action Argument'}}</div>
+                        <div class="field__value">-</div>
+                    </div>
+                </div>
+                <div fxLayout="row" fxLayout.lt-md="column" class="content__field row__section" >
+                    <div class='font-16-px width-419 padding-view-10'>
+                        <div>{{ translationData.lblTargetSystem || 'Target System' }}</div>
+                        <div class="field__value">{{viewPageData.targetSystem}}</div>
+                    </div>
+                    <div class='font-16-px width-360 padding-view-10'>
+                        <div>{{ translationData.lblTargetSystemStatus || 'Target System Status' }} </div>
+                        <div class="field__value">{{viewPageData.targetSystemStatus}}</div>
+                    </div>
+                    <div class='font-16-px padding-view-10'>
+                        <div>{{ translationData.lblAppliedDateTime || 'Applied Date-Time' }} </div>
+                        <div class="field__value">{{viewPageData.appliedDateTime}}</div>
+                    </div>
+                </div>
+                <div fxLayout="row" fxLayout.lt-md="column" class="row__section">
+                    <div class='font-16-px  width-419 padding-view-10'>
+                        <div>{{  translationData.lblAppliedSystem || 'Applied System'}}</div>
+                        <div class="field__value">-</div>
+                    </div>
+                    <div class='font-16-px width-360 padding-view-10'>
+                        <div> {{translationData.lblAppliedAction || 'Applied Action'}}</div>
+                        <div class="field__value">-</div>
+                    </div>
+                    <div class='font-16-px padding-view-10'>
+                        <div>{{ translationData.lblAppliedActionArgument || 'Applied Action Argument'}}</div>
+                        <div class="field__value">-</div>
+                    </div>
+                </div>
+            </div>
+        </mat-card>
+    </div>
+       
+
+</div>
