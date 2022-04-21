@@ -92,7 +92,7 @@
               }}</span></div>
           <canvas #chart1 baseChart [data]="doughnutChartDataEcoScore" [labels]="doughnutChartLabelsEcoScore"
             [chartType]="doughnutChartType" [options]="doughnutChartOptions" [plugins]="pluginsCommon"
-            [colors]="doughnutColors" height="125" width="250">
+            [colors]="doughnutColorsEcoScore" height="125" width="250">
           </canvas>
         </div>
         <div style="display: block" class="relative">
@@ -100,7 +100,7 @@
               translationData.lblFuelConsumption }}</span></div>
           <canvas baseChart [data]="doughnutChartDataFuelConsumption" [labels]="doughnutChartLabelsFuelConsumption"
             [chartType]="doughnutChartType" [options]="doughnutChartOptions" [plugins]="pluginsCommon"
-            [colors]="doughnutColors" height="125" width="250">
+            [colors]="doughnutColorsFuelConsumption" height="125" width="250">
           </canvas>
         </div>
         <div style="display: block" class="relative">
@@ -116,7 +116,7 @@
               translationData.lblBrakingscore }}</span></div>
           <canvas baseChart [data]="doughnutChartDataBrakingScore" [labels]="doughnutChartLabelsBrakingScore"
             [chartType]="doughnutChartType" [options]="doughnutChartOptions" [plugins]="pluginsCommon"
-            [colors]="doughnutColors" height="125" width="250">
+            [colors]="doughnutColorsBrakingScore" height="125" width="250">
           </canvas>
         </div>
       </div>
