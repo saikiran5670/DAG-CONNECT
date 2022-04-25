@@ -78,7 +78,7 @@ export class LiveFleetMapComponent implements OnInit {
     this.configureAutoSuggest();
     const navigation = this.router.getCurrentNavigation();
     this.dataInterchangeService.detailDataInterface$.subscribe(vehicleResponse => {
-    this.tripTraceArray = [];
+    // this.tripTraceArray = [];
     this.fleetMapService.clearRoutesFromMap();
     if (vehicleResponse) {
       if(!vehicleResponse.vehicleDetailsFlag){
@@ -87,11 +87,12 @@ export class LiveFleetMapComponent implements OnInit {
         this.showIcons = true;
       }
       else{
-        this.tripTraceArray = [];
-        if(vehicleResponse.data.length === undefined){ // 16665 - changes added to convert data to array
+        if(vehicleResponse.data.length === undefined){
+          this.tripTraceArray = []; // 16665 - changes added to convert data to array
           this.tripTraceArray.push(vehicleResponse.data);
         }
-        else if(vehicleResponse.data.length > 0){
+        else if(vehicleResponse.data.length > 0 && this.tripTraceArray.length > 1 ) {
+          this.tripTraceArray = [];
           this.tripTraceArray = vehicleResponse.data; //1665 - data wasn't mapped correctly
         }
         this.showIcons = false;

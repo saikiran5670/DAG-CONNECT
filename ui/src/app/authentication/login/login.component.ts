@@ -10,6 +10,7 @@ import { CookieService } from 'ngx-cookie-service';
 import { DataInterchangeService } from 'src/app/services/data-interchange.service';
 import { TermsConditionsPopupComponent } from 'src/app/terms-conditions-content/terms-conditions-popup.component';
 import { TranslationService } from 'src/app/services/translation.service';
+import { OrganizationService } from 'src/app/services/organization.service';
 
 export interface Organization {
   id: number ;
@@ -44,7 +45,7 @@ export class LoginComponent implements OnInit {
   resetPwdOnedayFlag : boolean = false;
   resetPwdOnedayMsg : string = '';
 
-  constructor(private cookieService: CookieService, public fb: FormBuilder, public router: Router, public authService: AuthService, private dialogService: ConfirmDialogService, private dialog: MatDialog, private accountService: AccountService, private dataInterchangeService: DataInterchangeService, private translationService: TranslationService) {
+  constructor(private cookieService: CookieService, public fb: FormBuilder, public router: Router, public authService: AuthService, private dialogService: ConfirmDialogService, private dialog: MatDialog, private accountService: AccountService, private dataInterchangeService: DataInterchangeService, private translationService: TranslationService, private organizationService: OrganizationService) {
     this.loginForm = this.fb.group({
       // 'username': [null, Validators.compose([Validators.required, Validators.email])],
       // 'password': [null, Validators.compose([Validators.required, Validators.minLength(6)])]
@@ -96,8 +97,16 @@ export class LoginComponent implements OnInit {
                 })
               }
               else{
-                localStorage.setItem("liveFleetTimer", (1*60).toString()); // default timer set 
-                this.showOrganizationRolePopup(data.body, data.body.accountInfo, ""); 
+                if(data.body.accountOrganization.length > 0){
+                  this.organizationService.getOrganizationPreference(data.body.accountOrganization[0].id).subscribe((orgPref: any)=>{
+                    localStorage.setItem("orgPref", JSON.stringify(orgPref));
+                    this.openOrgRolePopup(data);
+                  }, (error) => {
+                    this.openOrgRolePopup(data);
+                  });
+                } else {
+                  this.openOrgRolePopup(data);
+                }
               } 
             }else{
               this.loginClicks = 0;
@@ -148,6 +157,11 @@ export class LoginComponent implements OnInit {
       //  }
        //------------------------//
     }
+  }
+
+  openOrgRolePopup(data){
+    localStorage.setItem("liveFleetTimer", (1*60).toString()); // default timer set 
+    this.showOrganizationRolePopup(data.body, data.body.accountInfo, "");
   }
 
   processTranslation(transData: any){

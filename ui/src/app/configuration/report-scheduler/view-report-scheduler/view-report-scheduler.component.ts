@@ -83,8 +83,8 @@ export class ViewReportSchedulerComponent implements OnInit {
         let vehicledisplay = this.completePrefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
         if(vehicledisplay.length != 0) {
           this.vehicleDisplayPreference = vehicledisplay[0].name;
-         // this.vehicleName = this.selectedRowData[0].vehicleGroupAndVehicleList != "" ? this.selectedRowData[0].scheduledReportVehicleRef.length == 0 ? this.translationData.lblAll : this.vehicleDisplayPreference == 'dvehicledisplay_VehicleName' ? this.selectedRowData[0].scheduledReportVehicleRef[0].vehicleName : this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber' ? this.selectedRowData[0].scheduledReportVehicleRef[0].vin : this.selectedRowData[0].scheduledReportVehicleRef[0].regno : this.translationData.lblAll;
-         this.vehicleName = this.selectedRowData[0].scheduledReportVehicleRef.length == 0 || this.selectedRowData[0].scheduledReportVehicleRef.length > 1 ? 0 : this.selectedRowData[0].scheduledReportVehicleRef[0].vehicleName;
+         this.vehicleName = this.selectedRowData[0].vehicleGroupAndVehicleList != "" ? this.selectedRowData[0].scheduledReportVehicleRef.length == 0 ? this.translationData.lblAll : this.vehicleDisplayPreference == 'dvehicledisplay_VehicleName' ? this.selectedRowData[0].scheduledReportVehicleRef[0].vehicleName : this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber' ? this.selectedRowData[0].scheduledReportVehicleRef[0].vin : this.selectedRowData[0].scheduledReportVehicleRef[0].regno : this.translationData.lblAll;
+         //this.vehicleName = this.selectedRowData[0].scheduledReportVehicleRef.length == 0 || this.selectedRowData[0].scheduledReportVehicleRef.length > 1 ? 0 : this.selectedRowData[0].scheduledReportVehicleRef[0].vehicleName;
          this.vehicleName = (this.vehicleName == '0' || this.vehicleName == '' )? this.translationData.lblAll : this.vehicleName ;       
         }
       }  
@@ -94,7 +94,7 @@ export class ViewReportSchedulerComponent implements OnInit {
     // });
 
     this.language = this.languageCodeList.filter(item => item.code == (this.selectedRowData[0].code).trim())[0].name;
-    this.vehicleGroupName = this.selectedRowData[0].vehicleGroupAndVehicleList != "" ? this.selectedRowData[0].scheduledReportVehicleRef.length == 0 ? this.translationData.lblAll : this.selectedRowData[0].scheduledReportVehicleRef[0].vehicleGroupName: this.translationData.lblAll;
+    this.vehicleGroupName = this.selectedRowData[0].vehicleGroupAndVehicleList != "" ? (this.selectedRowData[0].scheduledReportVehicleRef.length == 0 ? this.translationData.lblAll :this.selectedRowData[0].scheduledReportVehicleRef.length == 1 ? this.selectedRowData[0].scheduledReportVehicleRef[0].vehicleGroupName : this.translationData.lblAll):this.translationData.lblAll;
     this.vehicleGroupName =  this.vehicleGroupName == '' ? this.translationData.lblAll : this.vehicleGroupName ;       
 
     // this.vehicleName = this.selectedRowData[0].vehicleGroupAndVehicleList != "" ? this.selectedRowData[0].scheduledReportVehicleRef.length == 0 ? "ALL" : this.vehicleDisplayPreference == 'dvehicledisplay_VehicleName' ? this.selectedRowData[0].scheduledReportVehicleRef[0].vehicleName : this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber' ? this.selectedRowData[0].scheduledReportVehicleRef[0].vin : this.selectedRowData[0].scheduledReportVehicleRef[0].regno : "ALL";
