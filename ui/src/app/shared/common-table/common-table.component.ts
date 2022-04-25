@@ -55,8 +55,8 @@ export class CommonTableComponent implements OnInit {
   }
   compare(a:Number | String, b: Number | String, isAsc: boolean, columnName: any){
 
-      if(!(a instanceof Number)) a = a.replace(/[^\w\s]/gi, 'z').toUpperCase();
-      if(!(b instanceof Number)) b = b.replace(/[^\w\s]/gi, 'z').toUpperCase();
+      if(!(a instanceof Number)) a = a ? a.replace(/[^\w\s]/gi, 'z').toUpperCase() : '';
+      if(!(b instanceof Number)) b = b ? b.replace(/[^\w\s]/gi, 'z').toUpperCase() : '';
 
       return (a< b ? -1 : 1) * (isAsc ? 1: -1);
   }
