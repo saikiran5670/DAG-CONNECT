@@ -763,8 +763,8 @@ if(!this._state){
 // }
 if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAlerts || this._state.fromDashboard == true || this._state.fromVehicleDetails)){
   if(this._state.fromVehicleDetails){
-    this.startDateValue = this.setStartEndDateTime(new Date(this._state.data.startTimeStamp), this.selectedStartTime, 'start');
-    this.endDateValue = this.setStartEndDateTime(new Date(this._state.data.endTimeStamp), this.selectedEndTime, 'end');
+    this.startDateValue = this.setStartEndDateTime(new Date(Util.convertUtcToDate(this._state.data.startDate, this.prefTimeZone)), this.selectedStartTime, 'start');
+    this.endDateValue = this.setStartEndDateTime(new Date(Util.convertUtcToDate(this._state.data.endDate, this.prefTimeZone)), this.selectedEndTime, 'end');
   }
   this.onSearch();
 }
@@ -879,6 +879,10 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
     let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone);
     let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);
     //let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
+    if(this._state && this._state.fromVehicleDetails){
+      _startTime = this._state.data.startDate;
+      _endTime = this._state.data.endDate;
+    }
     let _vinData = this.vehicleDD.filter(item => item.vin == parseInt(this.logBookForm.controls.vehicle.value));
     //console.log("vehicleDD", this.vehicleDD);
     if(_vinData.length > 0){
@@ -1033,7 +1037,7 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
     fromDate: this.formStartDate(this.startDateValue),
     endDate: this.formStartDate(this.endDateValue),
     vehGroupName: vehGrpName,
-    vehicleName: (this.logBookForm.controls.vehicle.value == 'all') ? this.logBookForm.controls.vehicle.value : this.vehicleDisplayPreference == 'dvehicledisplay_VehicleName' ? vehCount[0].vehicleName : this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber' ?  vehCount[0].vin : vehCount[0].registrationNo ? vehCount[0].registrationNo : vehCount[0].vehicleName,
+    vehicleName: (this.logBookForm.controls.vehicle.value == 'all') ? this.logBookForm.controls.vehicle.value : vehCount && vehCount.length > 0 ? this.vehicleDisplayPreference == 'dvehicledisplay_VehicleName' ? vehCount[0].vehicleName : this.vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber' ?  vehCount[0].vin : vehCount[0].registrationNo ? vehCount[0].registrationNo : vehCount[0].vehicleName : '',
     alertLevel : this.logBookForm.controls.alertLevel.value,
     alertType : this.logBookForm.controls.alertType.value,
     alertCategory : this.logBookForm.controls.alertCategory.value
@@ -1806,6 +1810,10 @@ let prepare = []
     let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
     let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
 
+    if(this._state && this._state.fromVehicleDetails){
+      currentStartTime = this._state.data.startTimeStamp;
+      currentEndTime = this._state.data.endTimeStamp;
+    }
     ////console.log("this.wholeLogBookData.associatedVehicleRequest ---:: ", this.wholeLogBookData.associatedVehicleRequest);
     ////console.log("this.wholeLogBookData.alFilterResponse---::", this.wholeLogBookData.alFilterResponse);
     ////console.log("this.wholeLogBookData.alertTypeFilterRequest---::", this.wholeLogBookData.alertTypeFilterRequest);

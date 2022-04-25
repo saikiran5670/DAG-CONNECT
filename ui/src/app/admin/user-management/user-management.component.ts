@@ -395,8 +395,9 @@ export class UserManagementComponent implements OnInit {
       this.hideloader();
       this.initData = this.makeRoleAccountGrpList(usrlist);
       this.initData = this.getNewTagData(this.initData);
-      this.dataSource = new MatTableDataSource(this.initData);
+      // this.dataSource = new MatTableDataSource(this.initData);
       setTimeout(()=>{
+        this.dataSource = new MatTableDataSource(this.initData);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
         this.dataSource.filterPredicate = function(data: any, filter: string): boolean {
@@ -552,32 +553,33 @@ export class UserManagementComponent implements OnInit {
     if(item.msg && item.msg != ""){
       this.successMsgBlink(item.msg);
     }
-    if(item.tableData){
-      this.initData = this.makeRoleAccountGrpList(item.tableData);
-      this.initData = this.getNewTagData(this.initData);
-    }
-    setTimeout(()=>{
-      this.dataSource = new MatTableDataSource(this.initData);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-      this.dataSource.filterPredicate = function(data: any, filter: string): boolean {
-        return (
-          data.roleList.toString().toLowerCase().includes(filter) ||
-          data.firstName.toLowerCase().includes(filter) ||
-          data.emailId.toString().toLowerCase().includes(filter)
+    this.loadUsersData();
+    // if(item.tableData){
+    //   this.initData = this.makeRoleAccountGrpList(item.tableData);
+    //   this.initData = this.getNewTagData(this.initData);
+    // }
+    // setTimeout(()=>{
+    //   this.dataSource = new MatTableDataSource(this.initData);
+    //   this.dataSource.paginator = this.paginator;
+    //   this.dataSource.sort = this.sort;
+    //   this.dataSource.filterPredicate = function(data: any, filter: string): boolean {
+    //     return (
+    //       data.roleList.toString().toLowerCase().includes(filter) ||
+    //       data.firstName.toLowerCase().includes(filter) ||
+    //       data.emailId.toString().toLowerCase().includes(filter)
 
-        );
-      }
-      this.dataSource.sortData = (data: String[], sort: MatSort) => {
-        const isAsc = sort.direction === 'asc';
-        return data.sort((a: any, b: any) => {
-            let columnName = sort.active;
-          return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
-        });
-       }
+    //     );
+    //   }
+    //   this.dataSource.sortData = (data: String[], sort: MatSort) => {
+    //     const isAsc = sort.direction === 'asc';
+    //     return data.sort((a: any, b: any) => {
+    //         let columnName = sort.active;
+    //       return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
+    //     });
+    //    }
       Util.applySearchFilter(this.dataSource, this.displayedColumns ,this.filterValue );
 
-    });
+    // });
   }
 
   successMsgBlink(msg: any){

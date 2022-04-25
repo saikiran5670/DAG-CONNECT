@@ -415,22 +415,24 @@ export class DriverManagementComponent implements OnInit {
 
   driverIDNumberValidation(value: any, index: any){
     let obj: any = { status: true, reason: 'correct data'};
-    const regx = /[A-Z0-9]{13,13}[0-9]{3,3}/;
+    // const regx = /[A-Z0-9]{13,13}[0-9]{3,3}/;
     if(!value || value == '' || value.trim().length == 0){
       obj.status = false;
       obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblDriverIDNumberismandatoryinput}`;
       return obj;
     }
-    if(value.trim().length != 16){
+    
+    if(!(value.trim().length == 16 || value.trim().length == 14 )){
       obj.status = false;
       obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblDriverIDshouldbeexactly16charsinlength}`;
       return obj;
-    }
-    if(!regx.test(value)){
-      obj.status = false;
-      obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblDriverIDNumberformatisinvalid}`;
-      return obj;
-    }
+    } 
+    
+    // if(!regx.test(value)){
+    //   obj.status = false;
+    //   obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblDriverIDNumberformatisinvalid}`;
+    //   return obj;
+    // }
     return obj;
   }
 
@@ -457,7 +459,7 @@ export class DriverManagementComponent implements OnInit {
 
   nameValidation(value: any, maxLength: any, type: any, index: any){
     let obj: any = { status: true, reason: 'correct data'};
-    let numberRegex = /[^0-9]+$/;
+    //let numberRegex = /[^0-9]+$/;
     let SpecialCharRegex = /[^!@#\$%&*]+$/;
       if(!value || value == '' || value.length == 0){ // required field
         obj.status = false;
@@ -469,11 +471,11 @@ export class DriverManagementComponent implements OnInit {
         obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - `+this.getValidateMsg(type, this.translationData.lblexceedsmaximumallowedlengthofchars, maxLength)
         return obj;
       }
-      if(!numberRegex.test(value)){
-        obj.status = false;
-        obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - `+this.getValidateMsg(type, this.translationData.lblNumbersnotallowedin );
-        return obj;
-      }
+      // if(!numberRegex.test(value)){
+      //   obj.status = false;
+      //   obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - `+this.getValidateMsg(type, this.translationData.lblNumbersnotallowedin );
+      //   return obj;
+      // }
       if(!SpecialCharRegex.test(value)){
         obj.status = false;
         obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - `+this.getValidateMsg(type, this.translationData.lblSpecialcharactersnotallowedin );

@@ -3,8 +3,10 @@ trigger:
   branches:
     include:
     - development
+#   - dev2-branch
     - release
     - testing
+#   - tst1-branch    
     - performance-pen-testing
     - master
   paths:
@@ -65,7 +67,7 @@ stages:
         manifestFile: $(manifestFile)
         jsonPath: $(jsonFile)
         #log4netConfigPath: $(log4netConfigFile)
-    condition: eq(variables['Build.SourceBranchName'],  'development')
+    condition: eq(variables['Build.SourceBranchName'],  'dev2-branch')
 
   - stage: stage_tst1
     jobs:
@@ -79,7 +81,7 @@ stages:
         manifestFile: $(manifestFile)
         jsonPath: $(jsonFile)
         #log4netConfigPath: $(log4netConfigFile)
-    condition: eq(variables['Build.SourceBranchName'],  'testing')
+    condition: eq(variables['Build.SourceBranchName'],  'tst1-branch')
 
   - stage: stage_tst2
     dependsOn: []

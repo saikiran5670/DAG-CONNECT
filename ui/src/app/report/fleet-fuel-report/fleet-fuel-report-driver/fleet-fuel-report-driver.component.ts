@@ -901,6 +901,7 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
 
   onSearch(){
     this.resetCharts();
+    this.driverSelected= false;
     this.isChartsOpen = true;
     if (this.finalPrefData.length != 0) {
       let filterData = this.finalPrefData.filter(item => item.key.includes('driver_chart_fuelconsumed'));
