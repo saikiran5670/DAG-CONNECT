@@ -19,7 +19,7 @@ import { ErrorComponent } from '../error/error.component';
 
 @Injectable({ providedIn: 'root' })
 export class AppInterceptor implements HttpInterceptor {
-  constructor(private dialogService: SessionDialogService) {}
+  constructor(private dialogService: SessionDialogService, private router: Router) {}
 
   public intercept(
     request: HttpRequest<any>,
@@ -41,7 +41,7 @@ export class AppInterceptor implements HttpInterceptor {
             // server-side error
             errorMessage = `Error Code: ${err.status}\nMessage: ${err.message}`;
             if(localStorage.length !== 0 && (!localStorage.getItem("sessionFlag"))) {
-              if (err.status === 401 &&  localStorage.getItem("accountOrganizationId")) {
+              if (err.status === 401 &&  localStorage.getItem("accountOrganizationId")) { 
                 // redirect to the login route or show a modal
                 const options = {
                   title: 'Session Time Out',
@@ -56,6 +56,8 @@ export class AppInterceptor implements HttpInterceptor {
                   this.dialogService.SessionModelOpen(options);
                   localStorage.setItem("sessionFlag", "true");
                 }
+              } else if(err.status === 401 || err.status == 0){
+                this.router.navigate(['auth/login']);
               }
             }
           } else if (err instanceof ErrorEvent) {
