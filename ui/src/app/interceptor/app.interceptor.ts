@@ -56,8 +56,8 @@ export class AppInterceptor implements HttpInterceptor {
                   this.dialogService.SessionModelOpen(options);
                   localStorage.setItem("sessionFlag", "true");
                 }
-              } else if(err.status === 401 &&  (!localStorage.getItem("accountOrganizationId"))){
-                this.router.navigate(['']);
+              } else if(err.status === 401 || err.status == 0){
+                this.router.navigate(['auth/login']);
               }
             }
           } else if (err instanceof ErrorEvent) {
