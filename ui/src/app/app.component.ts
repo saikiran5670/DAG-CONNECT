@@ -330,9 +330,21 @@ export class AppComponent {
     if (!this.isLogedIn) {
       this.getTranslationLabels();
     }
+    
+    let language;
+    if(this.accountInfo && this.accountInfo.accountPreference)
+      language = this.accountInfo.accountPreference.languageId;
+    else if(localStorage.getItem("orgPref"))
+      language = JSON.parse(localStorage.getItem("orgPref")).language;
+    else {
+      let filterLang = this.languages.filter(item => item.code == "EN-GB")
+      if (filterLang.length > 0) {
+        language = filterLang[0].id;
+      }
+    }
 
     this.appForm = this.fb.group({
-      'languageSelection': [this.localStLanguage ? this.localStLanguage.id : (this.accountInfo ? this.accountInfo.accountPreference.languageId : 8)],
+      'languageSelection': [this.localStLanguage ? this.localStLanguage.id : language],
       'contextOrgSelection': this.organizationList.length > 0 ? this.organizationList[0].id : 1,
       'langFilterCtrl' : []
     });
@@ -689,7 +701,12 @@ export class AppComponent {
           preferenceLanguageId = this.localStLanguage.id;
         }
         else if (this.accountInfo) {
-          filterLang = this.languages.filter(item => item.id == (this.accountInfo.accountPreference ? this.accountInfo.accountPreference.languageId : 8))
+          // filterLang = this.languages.filter(item => item.id == (this.accountInfo.accountPreference ? this.accountInfo.accountPreference.languageId : 8))
+          if(this.accountInfo.accountPreference)
+            filterLang = this.languages.filter(item => item.id == this.accountInfo.accountPreference.languageId);
+          else if(localStorage.getItem("orgPref"))
+            filterLang = this.languages.filter(item => item.id == (JSON.parse(localStorage.getItem("orgPref")).language));
+
           if (filterLang.length > 0) {
             preferencelanguageCode = filterLang[0].code;
             preferenceLanguageId = filterLang[0].id;
