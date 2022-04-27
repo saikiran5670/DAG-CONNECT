@@ -265,6 +265,7 @@ export class ExistingTripsComponent implements OnInit {
           });
         }
       }
+      this.sliderChanged();
   }
 
   resetExistingTripFormControlValue() {
