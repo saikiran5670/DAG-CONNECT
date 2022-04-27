@@ -265,6 +265,7 @@ export class ExistingTripsComponent implements OnInit {
           });
         }
       }
+      this.sliderChanged();
   }
 
   resetExistingTripFormControlValue() {
@@ -426,32 +427,41 @@ export class ExistingTripsComponent implements OnInit {
     this.vinList = [];
     if (this.vehicleGroupListData.length > 0) {
       this.vehicleGroupListData.forEach(element => {
+        let associatedList = element.vehicleGroupDetails.split(",");
+        let associatedVechileList = [];
+        associatedList.forEach(item => {
+        let itemSplit = item.split("~");
+        associatedVechileList.push(itemSplit[0]);
+        })
+
         let vehicleObj = {
           vehicleId: parseInt(element.vehicleId),
           vehicleName: element.vehicleName,
           vin: element.vin,
-          vehicleRegistrationNo: element.registrationNo
+          vehicleRegistrationNo: element.registrationNo,
+          associatedVehGrpIds:associatedVechileList,
         }
         this.newVehicleList.push(vehicleObj);
-        this.vinList.push(vehicleObj.vin);
+      this.vinList.push(vehicleObj.vin);
         let vehicleGroupDetails = element.vehicleGroupDetails.split(",");
         vehicleGroupDetails.forEach(item => {
           let itemSplit = item.split("~");
-          // if(itemSplit[2] != 'S') {
+          // if(itemSplit[2] != 'S') { 
           let vehicleGroupObj = {
             "vehicleGroupId": parseInt(itemSplit[0]),
             "vehicleGroupName": itemSplit[1],
             "vehicleId": parseInt(element.vehicleId),
           }
           this.newVehicleGrpList.push(vehicleGroupObj);
-          // //console.log("vehicleGroupList 1", this.newVehicleGrpList);
+
+          // console.log("vehicleGroupList 1", this.newVehicleGrpList);
           //  } else {
           //    this.singleVehicle.push(element);
           //  }
         });
       });
-      this.newVehicleGrpList = this.getUnique(this.newVehicleGrpList, "vehicleGroupId");
-      // //console.log("vehicleGroupList 2", this.newVehicleGrpList);
+      this.newVehicleGrpList =this.getUnique(this.newVehicleGrpList, 'vehicleGroupName')
+
       this.newVehicleGrpList.sort(this.compareHere);
 
 
@@ -912,10 +922,12 @@ export class ExistingTripsComponent implements OnInit {
     else {
       this.newVehicleGrpList.forEach(element => {
         if (element.vehicleGroupId == parseInt(vehicleGroupValue.value)) {
-          let vehicleFound: any = this.newVehicleList.filter(i => i.vehicleId == element.vehicleId);
-          if (vehicleFound.length > 0) {
-            this.vinList.push(vehicleFound[0].vin);
-          }
+          this.newVehicleList.forEach((item)=>{
+            if(item.associatedVehGrpIds.indexOf(vehicleGroupValue.value.toString()) > -1){
+              this.vinList.push(item.vin);
+            }
+          })
+
         }
       });
     }
