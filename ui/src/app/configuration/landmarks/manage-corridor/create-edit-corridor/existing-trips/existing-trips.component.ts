@@ -1095,6 +1095,7 @@ export class ExistingTripsComponent implements OnInit {
   changeSliderInput() {
     this.corridorWidthKm = this.existingTripForm.controls.widthInput.value;
     this.corridorWidth = this.corridorWidthKm * 1000;
+    this.sliderChanged();
   }
 
   formatLabel(value: number) {
