@@ -198,8 +198,9 @@ export class DriverTimeDetailComponent implements OnInit {
        startTime = formatDate[0];
         // startTime=this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false);
         // //console.log('sta'+_startTime+' end'+_endTime+' sa'+Util.convertUtcToDateStart(element.startTime, this.prefTimeZone)+' ac'+Util.convertUtcToDateFormat2(element.activityDate, this.prefTimeZone));
+        let newStartDate = new Date(_startTimeDate).setUTCHours(12,0,0);
         let restObj={
-          x :  _startTimeDate,
+          x :  newStartDate,
           // actualDate: this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false),
           actualDate: startTime,
           duration: element.duration,
@@ -370,7 +371,9 @@ export class DriverTimeDetailComponent implements OnInit {
         xAxis: {
           labels: {
             formatter: function() {
-                return Util.convertUtcToDateFormat2(this.value, tz);
+                //return Util.convertUtcToDateFormat2(this.value, tz);
+                let date1 = new Date(this.value);
+                return (date1.getMonth() + 1) + "/" + date1.getDate() + "/" + date1.getFullYear() ;
             },
         },
         // lineWidth: 2,
