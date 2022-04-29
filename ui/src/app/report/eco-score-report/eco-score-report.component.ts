@@ -135,6 +135,10 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   singleVehicle: any = [];
   rowData: any = [];
   brandimagePath: any;
+  maxStartTime: any;
+  selectedStartTimeValue: any ='00:00';
+  selectedEndTimeValue: any ='11:59';
+  endTimeStart:any;
   prefMapData: any = [
     {
       key: 'da_report_alldriver_general_driverscount',
@@ -1356,6 +1360,21 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       dateTime = this.lastYearDate;
     }
     this.startDateValue = this.setStartEndDateTime(dateTime, this.selectedStartTime, 'start');
+    let startDate1 = this.startDateValue.getFullYear() + "/" + (this.startDateValue.getMonth() + 1) + "/" + this.startDateValue.getDate();
+    let endDate1 = this.endDateValue.getFullYear() + "/" + (this.endDateValue.getMonth() + 1) + "/" + this.endDateValue.getDate();
+    if(startDate1 == endDate1){
+      this.maxStartTime = this.selectedEndTime;
+      this.endTimeStart = this.selectedStartTime; 
+    }
+    else{
+      if (this.prefTimeFormat == 24) {
+        this.maxStartTime = '23:59';
+      }
+      else{
+        this.maxStartTime = '11:59';
+      }
+      this.endTimeStart = "00:00";
+    }
     this.resetEcoScoreFormControlValue();
     this.filterDateData();
   }
@@ -1373,34 +1392,88 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       dateTime = this.todayDate;
     }
     this.endDateValue = this.setStartEndDateTime(dateTime, this.selectedEndTime, 'end');
+    let startDate1 = this.startDateValue.getFullYear() + "/" + (this.startDateValue.getMonth() + 1)+ "/" + this.startDateValue.getDate();
+    let endDate1 = this.endDateValue.getFullYear() + "/" + (this.endDateValue.getMonth() + 1) + "/" + this.endDateValue.getDate();
+    if(startDate1 == endDate1){
+      this.maxStartTime = this.selectedEndTime;
+      this.endTimeStart = this.selectedStartTime; 
+    }
+    else{
+      if (this.prefTimeFormat == 24) {
+        this.maxStartTime = '23:59';
+      }
+      else{
+        this.maxStartTime = '11:59';
+      }
+      this.endTimeStart = "00:00";
+    }
     this.resetEcoScoreFormControlValue();
     this.filterDateData();
   }
 
+  getStartTimeChanged(time: any){
+    this.selectedStartTimeValue = time;
+  }
+
+  getEndTimeChanged(time: any){
+    this.selectedEndTimeValue = time;
+  }
+
   startTimeChanged(selectedTime: any) {
     this.internalSelection = true;
-    this.selectedStartTime = selectedTime;
+    this.selectedStartTime = this.selectedStartTimeValue;
     if (this.prefTimeFormat == 24) {
-      this.startTimeDisplay = selectedTime + ':00';
+      this.startTimeDisplay = this.selectedStartTimeValue + ':00';
     }
     else {
-      this.startTimeDisplay = selectedTime;
+      this.startTimeDisplay = this.selectedStartTimeValue;
     }
     this.startDateValue = this.setStartEndDateTime(this.startDateValue, this.selectedStartTime, 'start');
+    let startDate1 = this.startDateValue.getFullYear() + "/" + (this.startDateValue.getMonth() + 1) + "/" + this.startDateValue.getDate();
+    let endDate1 = this.endDateValue.getFullYear() + "/" + (this.endDateValue.getMonth() + 1) + "/" + this.endDateValue.getDate();
+    if(startDate1 == endDate1){
+    this.maxStartTime = this.selectedEndTime;
+    this.endTimeStart = this.selectedStartTime; 
+    }
+    else{
+      if (this.prefTimeFormat == 24) {
+        this.maxStartTime = '23:59';
+      }
+      else{
+        this.maxStartTime = '11:59';
+      }
+      this.endTimeStart = "00:00";
+    }
     this.resetEcoScoreFormControlValue();
     this.filterDateData();
   }
 
   endTimeChanged(selectedTime: any) {
     this.internalSelection = true;
-    this.selectedEndTime = selectedTime;
+    this.selectedEndTime = this.selectedEndTimeValue;
     if (this.prefTimeFormat == 24) {
-      this.endTimeDisplay = selectedTime + ':59';
+      this.endTimeDisplay = this.selectedEndTimeValue + ':59';
     }
     else {
-      this.endTimeDisplay = selectedTime;
+      this.endTimeDisplay = this.selectedEndTimeValue;
     }
     this.endDateValue = this.setStartEndDateTime(this.endDateValue, this.selectedEndTime, 'end');
+    let startDate1 = this.startDateValue.getFullYear() + "/" + (this.startDateValue.getMonth() + 1) + "/" + this.startDateValue.getDate();
+    let endDate1 = this.endDateValue.getFullYear() + "/" + (this.endDateValue.getMonth() + 1) + "/" + this.endDateValue.getDate();
+    if(startDate1 == endDate1){
+      this.maxStartTime = this.selectedEndTime;
+      this.endTimeStart = this.selectedStartTime; 
+    }
+    else{
+      this.maxStartTime = this.selectedEndTime;
+      if (this.prefTimeFormat == 24) {
+        this.maxStartTime = '23:59';
+      }
+      else{
+        this.maxStartTime = '11:59';
+      }
+      this.endTimeStart = "00:00";
+    }
     this.resetEcoScoreFormControlValue();
     this.filterDateData();
   }
