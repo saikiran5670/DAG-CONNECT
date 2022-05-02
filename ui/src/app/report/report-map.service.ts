@@ -1621,7 +1621,7 @@ export class ReportMapService {
     if(isHHMM)
       return Number.parseFloat(`${h}.${m}`);
     if(isddMMYYYY)
-      return Number(`${_d}${_m}${_y}`);
+      return `${_d}${_m}${_y}`;
 
     if(timeFormat == 12){
       _time = (h > 12 || (h == 12 && m > 0 && s>0)) ? `${h == 12 ? 12 : h-12}:${m}:${s} PM` : `${(h == 0) ? 12 : h}:${m}:${s} AM`;
@@ -2367,4 +2367,17 @@ export class ReportMapService {
     }
     return Math.round(speed);
   }
+
+  msToTime(duration) {
+    var milliseconds = Math.floor((duration % 1000) / 100),
+      secs = Math.floor((duration / 1000) % 60),
+      mins = Math.floor((duration / (1000 * 60)) % 60),
+      hrs = Math.floor((duration / (1000 * 60 * 60)) % 24);
+    let hours = (hrs < 10) ? "0" + hrs : hrs;
+    let minutes = (mins < 10) ? "0" + mins : mins;
+    let seconds = (secs < 10) ? "0" + secs : secs;
+  
+    return hours + ":" + minutes + ":" + seconds + "." + milliseconds;
+  }
+
 }
