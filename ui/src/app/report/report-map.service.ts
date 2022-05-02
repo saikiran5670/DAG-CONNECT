@@ -1601,7 +1601,7 @@ export class ReportMapService {
     return data.toFixed(2);
   }
 
-  formStartendDate(date: any, dateFormat: any, timeFormat: any, addTime?:boolean, onlyTime?:boolean){
+  formStartendDate(date: any, dateFormat: any, timeFormat: any, addTime?:boolean, onlyTime?:boolean, isHHMM?:boolean, isddMMYYYY?:boolean){
     // let h = (date.getHours() < 10) ? ('0'+date.getHours()) : date.getHours(); 
     // let m = (date.getMinutes() < 10) ? ('0'+date.getMinutes()) : date.getMinutes(); 
     // let s = (date.getSeconds() < 10) ? ('0'+date.getSeconds()) : date.getSeconds(); 
@@ -1618,6 +1618,11 @@ export class ReportMapService {
     let _y = date1.split("/")[0];
     let _date: any;
     let _time: any;
+    if(isHHMM)
+      return Number.parseFloat(`${h}.${m}`);
+    if(isddMMYYYY)
+      return `${_d}${_m}${_y}`;
+
     if(timeFormat == 12){
       _time = (h > 12 || (h == 12 && m > 0 && s>0)) ? `${h == 12 ? 12 : h-12}:${m}:${s} PM` : `${(h == 0) ? 12 : h}:${m}:${s} AM`;
     }else{
@@ -2362,4 +2367,17 @@ export class ReportMapService {
     }
     return Math.round(speed);
   }
+
+  msToTime(duration) {
+    var milliseconds = Math.floor((duration % 1000) / 100),
+      secs = Math.floor((duration / 1000) % 60),
+      mins = Math.floor((duration / (1000 * 60)) % 60),
+      hrs = Math.floor((duration / (1000 * 60 * 60)) % 24);
+    let hours = (hrs < 10) ? "0" + hrs : hrs;
+    let minutes = (mins < 10) ? "0" + mins : mins;
+    let seconds = (secs < 10) ? "0" + secs : secs;
+  
+    return hours + ":" + minutes + ":" + seconds + "." + milliseconds;
+  }
+
 }
