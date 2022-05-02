@@ -1376,7 +1376,8 @@ export class ReportMapService {
   skipInvalidRecord(livePoints: any){
     livePoints.sort((a, b) => parseInt(a.messageTimeStamp) - parseInt(b.messageTimeStamp)); // lat-> -90 to 90 & lng -> -180 to 180
     let filterPoints = livePoints.filter(i => (i.gpsLatitude >= -90 && i.gpsLatitude <= 90) && (i.gpsLongitude >= -180 && i.gpsLongitude <= 180));
-    return filterPoints;
+    let filterPointsArr = filterPoints.filter(item => (item.gpsLatitude != 0 && item.gpsLongitude != 0));
+    return filterPointsArr;
   }
 
   // fuel deviation report data-conversion 
