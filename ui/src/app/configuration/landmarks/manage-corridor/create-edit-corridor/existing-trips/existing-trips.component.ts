@@ -1534,7 +1534,7 @@ export class ExistingTripsComponent implements OnInit {
     if (date === 0) {
       return "-";
     } else {
-      var dateValue = moment(date).format("DD/MM/YYYY-h:mm:ss")
+      var dateValue = Util.convertUtcToDateAndTimeFormatWithSeconds(date , this.prefTimeZone);
       return dateValue;
     }
   }
