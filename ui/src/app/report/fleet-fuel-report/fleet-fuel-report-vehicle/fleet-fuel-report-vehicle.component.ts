@@ -74,6 +74,8 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
   showMapPanel: boolean = false;
   tableExpandPanel: boolean = true;
   rankingExpandPanel: boolean = false;
+  isVehicleData: boolean = false;
+  isGraphData: boolean = false;
   rankingData: any;
   isSummaryOpen: boolean = false;
   isRankingOpen: boolean = false;
@@ -798,10 +800,14 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
     this.rankingData = rankingSortedData;
     this.updateRankingDataSource(rankingSortedData);
   }
-    this.hideloader();
+    // this.hideloader();
+    this.isVehicleData = true;
+    this.completeHideLoader();
     this.idleDurationCount();
     }, (error)=>{
-      this.hideloader();
+      // this.hideloader();
+      this.isVehicleData = true;
+      this.completeHideLoader();
       this.noRecordFound = true;
     });
   }
@@ -943,13 +949,15 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
     if (_vinData.length > 0) {
       this.showLoadingIndicator = true;
       this.loadfleetFuelDetails(_vinData);
-      this.hideloader();
+      // this.hideloader();
       this.isRankingOpen = true;
       this.isChartsOpen = true;
       this.isSummaryOpen = true;
       this.isDetailsOpen = true;
       this.tripData.forEach(element => { }, (error) => {
-        this.hideloader();
+        // this.hideloader();
+        this.isVehicleData = true;
+        this.completeHideLoader();
         this.tripData = [];
         this.tableInfoObj = {};
         this.updateDataSource(this.FuelData);
@@ -968,10 +976,20 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
       this.setChartData(this.chartDataSet);
       this.graphData = graphData;
       this.showGraph = true;
-      this.hideloader();
+      // this.hideloader();
+      this.isGraphData = true;
+      this.completeHideLoader();
     }, (error) => {
-      this.hideloader();
+      // this.hideloader();
+      this.isGraphData = true;
+      this.completeHideLoader();
     });
+  }
+
+  completeHideLoader(){
+    if(this.isVehicleData && this.isGraphData){
+      this.hideloader();
+    }
   }
 
   updateDataSource(tableData: any) {

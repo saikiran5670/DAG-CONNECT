@@ -77,6 +77,8 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
   endTimeDisplay: any = '23:59:59';
   selectedStartTime: any = '00:00';
   selectedEndTime: any = '23:59';
+  isDriverData: boolean = false;
+  isGraphData: boolean = false;
   fleetFuelSearchData: any = JSON.parse(localStorage.getItem("globalSearchFilterData")) || {};
   localStLanguage: any;
   accountOrganizationId: any;
@@ -790,10 +792,14 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
     this.FuelData = this.reportMapService.getConvertedFleetFuelDataBasedOnPref(this.displayData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
     this.updateDataSource(this.FuelData);
     this.setTableInfo();
-    this.hideloader();
+    // this.hideloader();
+    this.isDriverData = true;
+    this.completeHideLoader();
     this.idleDurationCount();
     }, (error)=>{
-      this.hideloader();
+      // this.hideloader();
+      this.isDriverData = true;
+      this.completeHideLoader();
       this.noRecordFound = true;
     });
   }
@@ -938,12 +944,14 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
     if(_vinData.length > 0){
       this.showLoadingIndicator = true; 
       this.loadfleetFuelDetails(_vinData);
-      this.hideloader();
+      // this.hideloader();
       this.isChartsOpen = true;
       this.isSummaryOpen = true;
       this.isDetailsOpen = true;
       this.tripData.forEach(element => { }, (error)=>{
-         this.hideloader();
+        //  this.hideloader();
+        this.isDriverData = true;
+        this.completeHideLoader();
          this.tripData = [];
           this.tableInfoObj = {};
          this.updateDataSource(this.FuelData);
@@ -965,10 +973,20 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
      this.setChartData(this.chartDataSet);
      this.graphData = graphData;
      this.showGraph = true;
-     this.hideloader();
+    //  this.hideloader();
+    this.isGraphData = true;
+    this.completeHideLoader();
     }, (error)=>{
-      this.hideloader();
+      // this.hideloader();
+      this.isGraphData = true;
+      this.completeHideLoader();
     });
+  }
+
+  completeHideLoader(){
+    if(this.isDriverData && this.isGraphData){
+      this.hideloader();
+    }
   }
 
   updateDataSource(tableData: any) {
