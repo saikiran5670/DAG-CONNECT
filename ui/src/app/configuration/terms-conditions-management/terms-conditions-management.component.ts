@@ -75,10 +75,17 @@ export class TermsConditionsManagementComponent implements OnInit {
       menuId: 41
     }
 
-    this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
-      this.processTranslation(data);
+    let menuId = 'menu_41_' + this.localStLanguage.code;
+    if (!localStorage.getItem(menuId)) {
+      this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+        this.processTranslation(data);
+        this.loadInitData();
+      });
+    } else {
+      this.translationData = JSON.parse(localStorage.getItem(menuId));
       this.loadInitData();
-    })
+    }
+    
   }
 
   loadInitData(){
@@ -102,6 +109,9 @@ export class TermsConditionsManagementComponent implements OnInit {
 
   processTranslation(transData: any){
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
+    let langCode =this.localStLanguage? this.localStLanguage.code : 'EN-GB';
+    let menuId = 'menu_41_'+ langCode;
+    localStorage.setItem(menuId, JSON.stringify(this.translationData));
   }
 
   updateGridData(tableData: any){
