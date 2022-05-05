@@ -275,6 +275,7 @@ export class AppComponent {
   messages: any[] = [];
   subscription: Subscription;
   showTimer: boolean = false;
+  accountRoleLevel: string;
   public langFilterCtrl: FormControl = new FormControl();
   public filteredLanguages: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredOrganizationList: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
@@ -427,6 +428,7 @@ export class AppComponent {
 
   getNavigationMenu() {
     let parseLanguageCode = JSON.parse(localStorage.getItem("language"));
+    this.accountRoleLevel = localStorage.getItem('roleLevel');
     let refresh = localStorage.getItem('pageRefreshed') == 'true';
     this.orgContextType = localStorage.getItem("orgContextStatus") == 'true';
     if(refresh && this.orgContextType) {
@@ -439,23 +441,23 @@ export class AppComponent {
         "languageCode": parseLanguageCode.code
       }
       this.accountService.getMenuFeatures(featureMenuObj).subscribe((result: any) => {
-        this.accountService.getSessionInfo().subscribe((accountData: any) => {
-          this.getMenu(result, 'orgRoleChange', accountData);
+        // this.accountService.getSessionInfo().subscribe((accountData: any) => {
+          this.getMenu(result, 'orgRoleChange', this.accountRoleLevel);
           this.timeLeft = Number.parseInt(localStorage.getItem("liveFleetTimer"));
             this.getOfflineNotifications();
             let accinfo = JSON.parse(localStorage.getItem("accountInfo"))
             this.loadBrandlogoForReports(accinfo);
           // }
           //this.getReportDetails();
-        }, (err) => {
-        });
+        // }, (err) => {
+        // });
       }, (error) => {
         //console.log(error);
       });
     }
   }
 
-  getMenu(data: any, from?: any, accountData?: any) {
+  getMenu(data: any, from?: any, accountRoleLevel?: string) {
     this.menuPages = data;
     //-- This will handle externalLink and Icons for Navigation Menu --//
     let landingPageMenus: any = [];
@@ -579,8 +581,8 @@ export class AppComponent {
         this.userType = "Admin#Account";
       }
 
-      if(accountData && accountData.roleLevel){ // added logIn user level. Bug- #19027
-        this.userLevel = Number(accountData.roleLevel);
+      if(accountRoleLevel){ // added logIn user level. Bug- #19027
+        this.userLevel = Number(accountRoleLevel);
       }
 
       if (accessNameList.includes("Admin#TranslationManagement#Inspect")){
@@ -1048,6 +1050,8 @@ export class AppComponent {
           this.landingPageForm.get('role').setValue(this.selectedRoles[0].id);
           localStorage.setItem("accountRoleId", this.selectedRoles[0].id);
           this.userRole = this.selectedRoles[0].name;
+          let selectedRoleLevel = this.selectedRoles[0].level;
+          localStorage.setItem('roleLevel', selectedRoleLevel);
         }
         else {
           this.selectedRoles = [];
@@ -1117,11 +1121,11 @@ export class AppComponent {
       languageCode: this.localStLanguage.code
     }
     this.accountService.switchOrgContext(switchObj).subscribe((data: any) => {
-      this.accountService.getSessionInfo().subscribe((accountData: any) => {
-        this.getMenu(data, 'orgContextSwitch', accountData);
+      // this.accountService.getSessionInfo().subscribe((accountData: any) => {
+        this.getMenu(data, 'orgContextSwitch', this.accountRoleLevel);
         let accinfo = JSON.parse(localStorage.getItem("accountInfo"))
         this.loadBrandlogoForReports(accinfo);
-      });
+      // });
     }, (error) => {
     });  
     this.signalRService.ngOnDestroy();

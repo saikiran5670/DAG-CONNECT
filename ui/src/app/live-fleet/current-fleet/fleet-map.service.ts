@@ -1455,7 +1455,7 @@ export class FleetMapService {
   }
 
   setAlertFoundIcon(healthColor, _alertConfig) {
-    let _vehicleIcon = `<svg width="40" height="41" viewBox="0 0 40 49" fill="none" xmlns="http://www.w3.org/2000/svg">
+    let _vehicleIcon = `<svg width="40" height="49" viewBox="0 0 40 49" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M32.5 24.75C32.5 37 16.75 47.5 16.75 47.5C16.75 47.5 1 37 1 24.75C1 20.5728 2.65937 16.5668 5.61307 13.6131C8.56677 10.6594 12.5728 9 16.75 9C20.9272 9 24.9332 10.6594 27.8869 13.6131C30.8406 16.5668 32.5 20.5728 32.5 24.75Z" stroke="${healthColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
     <path d="M16.75 46.625C24.1875 40.5 31.625 32.9652 31.625 24.75C31.625 16.5348 24.9652 9.875 16.75 9.875C8.53477 9.875 1.875 16.5348 1.875 24.75C1.875 32.9652 9.75 40.9375 16.75 46.625Z" fill="${healthColor}"/>
     <path d="M16.75 37.4375C23.9987 37.4375 29.875 31.8551 29.875 24.9688C29.875 18.0824 23.9987 12.5 16.75 12.5C9.50126 12.5 3.625 18.0824 3.625 24.9688C3.625 31.8551 9.50126 37.4375 16.75 37.4375Z" fill="white"/>
@@ -2320,23 +2320,28 @@ export class FleetMapService {
         element.startPositionLongitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[0].gpsLongitude : element.startPositionLongitude;
         element.latestReceivedPositionLattitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[element.liveFleetPosition.length - 1].gpsLatitude : element.latestReceivedPositionLattitude;
         element.latestReceivedPositionLongitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[element.liveFleetPosition.length - 1].gpsLongitude : element.latestReceivedPositionLongitude;
-        if (element.latestReceivedPositionLattitude != 255 && element.latestReceivedPositionLongitude != 255) {
+        if (element.latestReceivedPositionLattitude != 255 && element.latestReceivedPositionLongitude != 255){
+        if(element.latestReceivedPositionLattitude != 0 && element.latestReceivedPositionLongitude != 0) {
           flag = true;
         }
+       }
       }
       else if (element.tripId != "" && element.liveFleetPosition.length == 0 && element.latestWarningClass != 0) {
         element.latestReceivedPositionLattitude = element.latestWarningPositionLatitude;
         element.latestReceivedPositionLongitude = element.latestWarningPositionLongitude;
-        if (element.latestReceivedPositionLattitude != 255 && element.latestReceivedPositionLongitude != 255) {
+        if (element.latestReceivedPositionLattitude != 255 && element.latestReceivedPositionLongitude != 255){
+        if(element.latestReceivedPositionLattitude != 0 && element.latestReceivedPositionLongitude != 0) {
           flag = true;
         }
+       } 
       }
-      else if (element.latestReceivedPositionLattitude != 255 && element.latestReceivedPositionLongitude != 255) { // why ?
+      else if (element.latestReceivedPositionLattitude != 255 && element.latestReceivedPositionLongitude != 255){
+     if (element.latestReceivedPositionLattitude != 0 && element.latestReceivedPositionLongitude != 0) { // why ?
         element.latestReceivedPositionLattitude = element.latestReceivedPositionLattitude; // 48.8566
         element.latestReceivedPositionLongitude = element.latestReceivedPositionLongitude; // 2.3522
         flag = true;
       }
-
+     }
       if (flag) {
         _arr.push(element); // valid record only
       }

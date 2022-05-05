@@ -29,7 +29,7 @@ export class LoginDialogComponent {
   }
 
   setDropdownValues(){
-    if(this.data.organization.length > 0){
+    if (this.data.organization.length > 0){
       this.loginDialogForm.get('organization').setValue(this.data.organization[0].id);
       this.filterOrgRoles(this.data.organization[0].id); //-- filter roles based on org
     }
@@ -53,18 +53,21 @@ export class LoginDialogComponent {
     this.close(false);
   }
 
-  orgBasedRoleSelection(event: any){
+  orgBasedRoleSelection(event: any) {
     this.filterOrgRoles(event.value); //-- pass orgId
   }
 
-  filterOrgRoles(orgId: any){
-    if(this.data.role.length > 0){ //-- (Roles > 0) 
+  filterOrgRoles(orgId: any) {
+    if (this.data.role.length > 0) { //-- (Roles > 0) 
       let filterRoles = this.data.role.filter(item => parseInt(item.organization_Id) === parseInt(orgId));
-      if(filterRoles.length > 0){
+
+      if (filterRoles.length > 0) {
         this.selectedRoles = filterRoles;
         this.loginDialogForm.get('role').setValue(this.selectedRoles[0].id);
+        let selectedRoleLevel = this.selectedRoles[0].level;
+        localStorage.setItem('roleLevel', selectedRoleLevel);
       }
-      else{
+      else {
         this.selectedRoles = [];
       }
     }
