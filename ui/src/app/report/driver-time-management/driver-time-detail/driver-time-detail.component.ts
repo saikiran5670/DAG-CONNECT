@@ -105,6 +105,13 @@ export class DriverTimeDetailComponent implements OnInit {
         this.brandimagePath = null;
       }
     });
+    // this.createChart([{
+    //   activityDate: 1649299853000,
+    //   code: 0,
+    //   duration: 43430000,
+    //   endTime: 1649299853000,
+    //   startTime: 1649299853000,
+    //   }]);
   }
 
   ngOnChanges(){
@@ -184,31 +191,31 @@ export class DriverTimeDetailComponent implements OnInit {
       // let _startTimeDate = Util.getMillisecondsToUTCDate(utc, this.prefTimeZone);
       // console.log('actual:tzconv =>'+element.startTime+':'+ _startTimeDate );
      
-    let _startTimeDate = this.reportMapService.formStartendDate(Util.convertUtcToDate(element.startTime, this.prefTimeZone), '', 24, false, false, false, true);
-    let _startTime = this.reportMapService.formStartendDate(Util.convertUtcToDate(element.startTime, this.prefTimeZone), '', 24, false, true, true, false)
-    let _endTime = this.reportMapService.formStartendDate(Util.convertUtcToDate(element.endTime, this.prefTimeZone), '', 24, false, true, true, false);
+      let _startTimeDate = this.reportMapService.formStartendDate(Util.convertUtcToDate(element.startTime, this.prefTimeZone), '', 24, false, false, false, true);
+      let _startTime = this.reportMapService.formStartendDate(Util.convertUtcToDate(element.startTime, this.prefTimeZone), '', 24, false, true, true, false)
+      let _endTime = this.reportMapService.formStartendDate(Util.convertUtcToDate(element.endTime, this.prefTimeZone), '', 24, false, true, true, false);
 
       let isValid=true;
       if(_startTime == _endTime || (_startTime) > (_endTime)){  
         isValid=false;
       }
       if(isValid && element.duration > 0){
-      let tooltip;
-      let day, month, year;
-      if(_startTimeDate){
-        _startTimeDate = _startTimeDate.toString();
-        if(_startTimeDate.length < 8){
-          _startTimeDate = '0' + _startTimeDate;
+        let tooltip;
+        let day, month, year;
+        if(_startTimeDate){
+          _startTimeDate = _startTimeDate.toString();
+          if(_startTimeDate.length < 8){
+            _startTimeDate = '0' + _startTimeDate;
+          }
+          day=(_startTimeDate.toString()).substring(0,2);
+          month=(_startTimeDate.toString()).substring(2,4);
+          year=(_startTimeDate.toString()).substring(4);
+          tooltip= month+'/'+day+'/'+year;
+          startTime = tooltip;
         }
-         day=(_startTimeDate.toString()).substring(0,2);
-         month=(_startTimeDate.toString()).substring(2,4);
-         year=(_startTimeDate.toString()).substring(4);
-        tooltip= month+'/'+day+'/'+year;
-        startTime = tooltip;
-      }
-      if(tooltip == "05/02/2022"){
-          console.log("start "+element.startTime+' '+element.endTIme);
-      }
+        if(tooltip == "05/02/2022"){
+            console.log("start "+element.startTime+' '+element.endTIme);
+        }
         let restObj={
           x: Date.UTC(year, month-1, day),
           actualDate: tooltip,
@@ -246,7 +253,7 @@ export class DriverTimeDetailComponent implements OnInit {
           currentArray['driveTime']= currentArray.driveTime + element.duration;
         }
         // //console.log(currentArray.date+ ' ' + currentArray.restTime + ' ' + currentArray.workTime + ' ' + currentArray.availableTime + ' ' + currentArray.serviceTime);
-    }
+      }
     });
     let totDriveTime=0;
     let totAvailableTime=0;
@@ -332,7 +339,8 @@ export class DriverTimeDetailComponent implements OnInit {
         // }],
         plotOptions: {
           series: {
-            pointWidth: 16,
+            pointWidth: 10,  
+            turboThreshold:0
           }
         },
         xAxis: {
