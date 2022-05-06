@@ -181,20 +181,25 @@ export class UserManagementComponent implements OnInit {
       filter: "",
       menuId: 25 //-- for account mgnt
     }
+    let menuId = 'menu_25_' + this.localStLanguage.code;
     this.showLoadingIndicator = true;
-    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-      this.processTranslation(data);
+    if (!localStorage.getItem(menuId)) {
+      this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+        this.processTranslation(data);
+        this.hideloader();
+      });
+    } else {
+      this.translationData = JSON.parse(localStorage.getItem(menuId));
       this.hideloader();
+    }
       this.getUserSettingsDropdownValues();
       if(this.userDetailsType != undefined){
-        //console.log(localStorage.getItem('selectedRowItems'));
         let sessionVal = JSON.parse(localStorage.getItem('selectedRowItems'));
         this.editViewUser(sessionVal, this.userDetailsType)
       }
       else{
         this.router.navigate([]);   //16422 - page reloads and api was called multiple times
       }
-    });
   }
 
   getUserSettingsDropdownValues(){
@@ -243,7 +248,9 @@ export class UserManagementComponent implements OnInit {
 
   processTranslation(transData: any){
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    ////console.log("process translationData:: ", this.translationData)
+    let langCode =this.localStLanguage? this.localStLanguage.code : 'EN-GB';
+    let menuId = 'menu_25_'+ langCode;
+    localStorage.setItem(menuId, JSON.stringify(this.translationData));
   }
 
   ngAfterViewInit() { }

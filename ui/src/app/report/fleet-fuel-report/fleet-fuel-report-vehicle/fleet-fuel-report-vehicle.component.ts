@@ -706,8 +706,6 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
       filter: "",
       menuId: 9 //-- for fleet fuel report
     }
-    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-      this.processTranslation(data);
       if (this.prefDetail) {
         if (this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != '') { // account pref
           this.proceedStep(this.accountPrefObj.accountPreference);
@@ -726,7 +724,6 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
           }
         }
       }
-    });
 
     this.messageService.brandLogoSubject.subscribe(value => {
       if (value != null && value != "") {

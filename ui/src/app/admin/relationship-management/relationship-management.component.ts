@@ -86,11 +86,18 @@ export class RelationshipManagementComponent implements OnInit {
       filter: "",
       menuId: 35 //-- for relationship mgnt
     }
-    this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
-      this.processTranslation(data);
+   
+    let menuId = 'menu_35_' + this.localStLanguage.code;
+    if (!localStorage.getItem(menuId)) {
+      this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+        this.processTranslation(data);
+        this.loadInitData();
+      });
+    } else {
+      this.translationData = JSON.parse(localStorage.getItem(menuId));
       this.loadInitData();
-    });
-    //this.loadInitData(); //--temporary
+    }
+    
   }
 
   defaultTranslation(){
@@ -99,7 +106,9 @@ export class RelationshipManagementComponent implements OnInit {
 
   processTranslation(transData: any){
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    ////console.log("process translationData:: ", this.translationData)
+    let langCode =this.localStLanguage? this.localStLanguage.code : 'EN-GB';
+    let menuId = 'menu_35_'+ langCode;
+    localStorage.setItem(menuId, JSON.stringify(this.translationData));
   }
 
   loadInitData() {

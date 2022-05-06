@@ -108,6 +108,7 @@ export class UserRoleManagementComponent implements OnInit {
     this.userLevel = parseInt(localStorage.getItem('userLevel'));
     this.adminAccessType = JSON.parse(localStorage.getItem("accessType"));
     this.isGlobal = true;
+    
     let translationObj = {
       id: 0,
       code: this.localStLanguage.code,
@@ -117,15 +118,25 @@ export class UserRoleManagementComponent implements OnInit {
       filter: "",
       menuId: 26 //-- for account role mgnt
     }
-    this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
-      this.processTranslation(data);
+   
+    let menuId = 'menu_26_' + this.localStLanguage.code;
+    if (!localStorage.getItem(menuId)) {
+      this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+        this.processTranslation(data);
+        this.loadInitData();
+      });
+    } else {
+      this.translationData = JSON.parse(localStorage.getItem(menuId));
       this.loadInitData();
-    });
+    }
+    
   }
 
   processTranslation(transData: any){
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    ////console.log("process translationData:: ", this.translationData)
+    let langCode =this.localStLanguage? this.localStLanguage.code : 'EN-GB';
+    let menuId = 'menu_26_'+ langCode;
+    localStorage.setItem(menuId, JSON.stringify(this.translationData));
   }
 
   loadInitData() {

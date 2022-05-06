@@ -93,11 +93,11 @@ export class OrganisationDetailsComponent implements OnInit {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountDetails = JSON.parse(localStorage.getItem('accountInfo'));
     this.organisationList = this.accountDetails["organization"];
-    ////console.log("organizationList", this.organisationList);
     this.organisationList.sort(this.compare);
     this.resetOrgListFilter();
     this.accountId = parseInt(localStorage.getItem('accountId'));
     this.accountNavMenu = localStorage.getItem("accountNavMenu") ? JSON.parse(localStorage.getItem("accountNavMenu")) : [];
+    
     if(localStorage.getItem('contextOrgId')){
       this.selectedOrganisationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
     }
@@ -135,12 +135,19 @@ export class OrganisationDetailsComponent implements OnInit {
       filter: "",
       menuId: 23 //-- for org details
     }
-    this.showLoadingIndicator = true;
-    this.translationService.getMenuTranslations(translationObj).subscribe( (data: any) => {
-      this.processTranslation(data);
+
+    let menuId = 'menu_23_' + this.localStLanguage.code;
+    if (!localStorage.getItem(menuId)) {
+      this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+        this.processTranslation(data);
+        this.getTranslatedPref();
+      });
+    } else {
+      this.translationData = JSON.parse(localStorage.getItem(menuId));
       this.getTranslatedPref();
-    });
+    }
   }
+
   resetOrgListFilter(){
     this.filteredOrgList.next(this.organisationList.slice());
   }
@@ -407,7 +414,9 @@ compareHere(a, b) {
 
   processTranslation(transData: any){
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    ////console.log("process translationData:: ", this.translationData)
+    let langCode =this.localStLanguage? this.localStLanguage.code : 'EN-GB';
+    let menuId = 'menu_23_'+ langCode;
+    localStorage.setItem(menuId, JSON.stringify(this.translationData));
   }
 
   successMsgBlink(msg: any){

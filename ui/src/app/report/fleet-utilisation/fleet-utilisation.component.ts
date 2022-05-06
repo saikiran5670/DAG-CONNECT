@@ -529,8 +529,16 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       filter: "",
       menuId: 10 //-- for fleet utilisation
     }
-    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-      this.processTranslation(data);
+    
+    let menuId = 'menu_10_' + this.localStLanguage.code;
+    if (!localStorage.getItem(menuId)) {
+      this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+        this.processTranslation(data);
+      });
+    } else {
+      this.translationData = JSON.parse(localStorage.getItem(menuId));
+    }
+
       if(this.prefDetail){
         if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
           this.proceedStep(this.accountPrefObj.accountPreference);
@@ -549,7 +557,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
           }
         }
       }
-    });
+      
     this.messageService.brandLogoSubject.subscribe(value => {
       if (value != null && value != "") {
         this.brandimagePath = this._sanitizer.bypassSecurityTrustResourceUrl('data:image/jpeg;base64,' + value);
@@ -880,6 +888,9 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
+    let langCode =this.localStLanguage? this.localStLanguage.code : 'EN-GB';
+    let menuId = 'menu_10_'+ langCode;
+    localStorage.setItem(menuId, JSON.stringify(this.translationData));
     setTimeout(() =>{
       this.setPDFTranslations();
     }, 0);
