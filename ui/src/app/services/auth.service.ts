@@ -45,4 +45,11 @@ export class AuthService {
         };
         return this.httpClient.post(`${this.domainUrl}/logout`,httpOptions);
     }
+
+    public getAuthStatus() {
+        if(localStorage.getItem('accountOrganizationId') === null && localStorage.getItem('accountId') === null)
+            return false
+        else
+            return true
+    }
 }

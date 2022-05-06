@@ -2036,7 +2036,8 @@ convertToFromTime(milliseconds: any){
       return (
         data.name.toString().toLowerCase().includes(filter) ||
         data.categoryName.toString().toLowerCase().includes(filter) ||
-        data.subCategoryName.toString().toLowerCase().includes(filter)
+        data.subCategoryName.toString().toLowerCase().includes(filter) ||
+        data.address.toString().toLowerCase().includes(filter)
       );
     };
     setTimeout(()=>{
@@ -2059,8 +2060,8 @@ convertToFromTime(milliseconds: any){
   }
 
   compareOnalerteditview(a: any, b: any, isAsc: boolean, columnName:any) {
-    if(!(a instanceof Number)) a = a.replace(/\s/g, '').replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
-    if(!(b instanceof Number)) b = b.replace(/\s/g, '').replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
+    if(!(a instanceof Number)) a = a ? a.replace(/\s/g, '').replace(/[^\w\s]/gi, 'z').toString().toUpperCase() : '';
+    if(!(b instanceof Number)) b = b ? b.replace(/\s/g, '').replace(/[^\w\s]/gi, 'z').toString().toUpperCase() : '';
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 

@@ -52,7 +52,7 @@ export class OrganizationService {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .get<any[]>(`${this.organizationServiceUrl}/getall`,headers)
+      .get<any[]>(`${this.organizationServiceUrl}/getallorg`,headers)
       .pipe(catchError(this.handleError));
   }
 

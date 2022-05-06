@@ -392,6 +392,22 @@ export class Util {
 //     return _date;
 // }
 
+public static convertUtcToDateAndTimeFormatWithSeconds(_utc: any, timeZone: any, timeFormat? :any){
+  // let _t = timeZone.split(')');
+  // let _timezone: any;
+  // if(_t.length > 0){
+  //     _timezone = _t[1].trim();
+  // }
+  let _timezone: any;
+  _timezone = this.getExactZone(timeZone);
+  let _format =  timeFormat ? timeFormat : 'DD/MM/YYYY';
+  let _tFormat =  'HH:mm:ss';
+  let _date: any = moment.utc(_utc).tz(_timezone ? _timezone : timeZone).format(_format);
+  let _time: any = moment.utc(_utc).tz(_timezone ? _timezone : timeZone).format(_tFormat);
+
+  return ([_date,_time]);
+}
+
 public static applySearchFilter(filterData:any, columns:any, filterValue:string){
 
   filterData.filter = filterValue;

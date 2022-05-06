@@ -234,7 +234,7 @@ export class ReportSchedulerComponent implements OnInit {
          });
         });
        this.initData.forEach(element => {
-          if(element.reportName == "Fleet Fuel Report" || element.reportName == "TripReport"||
+          if(element.reportName == "Fleet Fuel Report" || element.reportName == "Trip Report"||
              element.reportName == "Fleet Utilisation Report"||element.reportName == "Fuel Deviation Report"){
                element.driverList = "";
              }
@@ -244,6 +244,13 @@ export class ReportSchedulerComponent implements OnInit {
              else if(element.status=='A'){
               element.status='Active'
              }
+             if(element.scheduledReportVehicleRef.length == 1){             
+              if(element.scheduledReportVehicleRef[0].parentVehicleGroupId > 0){
+                element.scheduledReportVehicleRef[0].vehicleGroupId=element.scheduledReportVehicleRef[0].parentVehicleGroupId;
+                let vehicleNewGroupList= this.associatedVehicleGroup.filter(item=> item.vehicleGroupId == element.scheduledReportVehicleRef[0].parentVehicleGroupId);
+                element.scheduledReportVehicleRef[0].vehicleGroupName=vehicleNewGroupList[0].vehicleGroupName;
+              }           
+           }   
         });
        this.hideloader();
        if(this.gridComp){
@@ -392,9 +399,9 @@ getUnique(arr, comp) {
     });
     Util.applySearchFilter(this.dataSource, this.columnCodes ,this.filterValue );
   }
-
+ 
   compare(a: Number  |String, b: Number |String, isAsc: boolean, columnName: any){
-    if(columnName == "recipientList"){
+    if(columnName == "recipientList" || columnName == "action2"){
       if(!(a instanceof Number)) a = a.replace(/\s/g, '').replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
       if(!(b instanceof Number)) b= b.replace(/\s/g, '').replace(/[^\w\s]/gi, 'z').toString().toUpperCase();
     }
