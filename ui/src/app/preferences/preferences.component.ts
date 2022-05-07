@@ -36,11 +36,19 @@ export class PreferencesComponent implements OnInit, AfterViewInit {
       filter: "",
       menuId: 0 //-- for common & user preference
     }
+
+    let menuId = 'menu_0_' + this.localStLanguage.code;
     this.showLoadingIndicator = true;
-    this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
+    if (!localStorage.getItem(menuId)) {
+      this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+        this.processTranslation(data);
+        this.showLoadingIndicator = false;
+      });
+    } else {
+      this.translationData = JSON.parse(localStorage.getItem(menuId));
       this.showLoadingIndicator = false;
-      this.processTranslation(data);
-    });
+    }
+
   }
  
   ngAfterViewInit(){
@@ -61,6 +69,9 @@ export class PreferencesComponent implements OnInit, AfterViewInit {
 
   processTranslation(transData: any){
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
+    let langCode =this.localStLanguage? this.localStLanguage.code : 'EN-GB';
+    let menuId = 'menu_0_'+ langCode;
+    localStorage.setItem(menuId, JSON.stringify(this.translationData));
   }
 
   onTabChanged(event: any){

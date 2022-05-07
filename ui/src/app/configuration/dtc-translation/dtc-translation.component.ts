@@ -64,15 +64,25 @@ export class DtcTranslationComponent implements OnInit {
       filter: "",
       menuId: 42 //-- DTC Translation
     }
-
-    this.translationService.getMenuTranslations(translationObj).subscribe( (data: any) => {
-      this.processTranslation(data);
+    
+    let menuId = 'menu_42_' + this.localStLanguage.code;
+    if(!localStorage.getItem(menuId)){
+      this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+        this.processTranslation(data);
+        this.loadTranslationData();
+      });
+    } else{
+      this.translationData = JSON.parse(localStorage.getItem(menuId));
       this.loadTranslationData();
-    });
+    }
+      
   }
 
   processTranslation(transData: any){
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
+    let langCode =this.localStLanguage? this.localStLanguage.code : 'EN-GB';
+    let menuId = 'menu_42_'+ langCode;
+    localStorage.setItem(menuId, JSON.stringify(this.translationData));
   } 
 
   loadTranslationData(){ 

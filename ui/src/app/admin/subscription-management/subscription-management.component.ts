@@ -27,22 +27,22 @@ import { Util } from 'src/app/shared/util';
 export class SubscriptionManagementComponent implements OnInit {
   private domainUrl: string;
   private requestBody: any;
-  options=['Select Status','All','Active','Expired'];
+  options = ['Select Status', 'All', 'Active', 'Expired'];
   subscriptionRestData: any = [];
   //displayedColumns = ['subscriptionId','packageCode', 'name', 'orgName', 'type', 'count', 'subscriptionStartDate', 'subscriptionEndDate', 'state', 'action'];
-  displayedColumns = ['subscriptionId','packageCode', 'name', 'type', 'count', 'subscriptionStartDate', 'subscriptionEndDate', 'state', 'action'];
+  displayedColumns = ['subscriptionId', 'packageCode', 'name', 'type', 'count', 'subscriptionStartDate', 'subscriptionEndDate', 'state', 'action'];
   vehicleDiaplayColumns = ['name', 'vin', 'licensePlateNumber'];
   openVehicleFlag: boolean = false;
   selectedElementData: any;
-  subscriptionCreatedMsg : any = '';
-  titleVisible : boolean = false;
+  subscriptionCreatedMsg: any = '';
+  titleVisible: boolean = false;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective
   initData: any = [];
   vehicleData: any = [];
   accountOrganizationId: any = 0;
-  contextOrgId: any =0;
+  contextOrgId: any = 0;
   organizationId: any = 0;
   localStLanguage: any;
   dataSource: any;
@@ -52,24 +52,24 @@ export class SubscriptionManagementComponent implements OnInit {
   translationData: any = {};
   createEditViewSubscriptionFlag: boolean = false;
   actionType: any;
-  actionBtn:any;
+  actionBtn: any;
   // dialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
   dialogRef: MatDialogRef<UserDetailTableComponent>;
   selectionForSubscription = new SelectionModel(true, []);
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   userType: any = localStorage.getItem("userType");
   organizationList: any = [];
-  organisationData : any = [];
-  accountDetails : any =[];
-  TypeList: any = [ ];
+  organisationData: any = [];
+  accountDetails: any = [];
+  TypeList: any = [];
   StatusList: any;
   showLoadingIndicator: any = true;
   filterData: any = [];
   updateDatasource: any;
-  orgTypeSelection= new FormControl();
-  typeSelection= new FormControl();
-  statusFilter= new FormControl();
-  searchFilter= new FormControl();
+  orgTypeSelection = new FormControl();
+  typeSelection = new FormControl();
+  statusFilter = new FormControl();
+  searchFilter = new FormControl();
   filteredValues = {
     status: '',
     org: '',
@@ -85,33 +85,33 @@ export class SubscriptionManagementComponent implements OnInit {
     private dialogService: ConfirmDialogService,
     private subscriptionService: SubscriptionService,
     public dialog: MatDialog) {
-    this.domainUrl= config.getSettings("authentication").authRESTServiceURL + '/account/sso';
+    this.domainUrl = config.getSettings("authentication").authRESTServiceURL + '/account/sso';
     // this.defaultTranslation();
   }
 
-  generateHeader(){
-    let genericHeader : object = {
-      'accountId' : localStorage.getItem('accountId'),
-      'orgId' : localStorage.getItem('accountOrganizationId'),
-      'roleId' : localStorage.getItem('accountRoleId')
+  generateHeader() {
+    let genericHeader: object = {
+      'accountId': localStorage.getItem('accountId'),
+      'orgId': localStorage.getItem('accountOrganizationId'),
+      'roleId': localStorage.getItem('accountRoleId')
     }
     let getHeaderObj = JSON.stringify(genericHeader)
     return getHeaderObj;
   }
 
-  getSsoToken(){
+  getSsoToken() {
     let headerObj = this.generateHeader();
-      const httpOptions = {
-          headers: new HttpHeaders({
-              headerObj,
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-              'responseType': 'application/json'
-          }),
-          observe: "response" as 'body',
-      };
-      return this.httpClient.post(`${this.domainUrl}`, { "featureName": "Shop"}, httpOptions);
-    }
+    const httpOptions = {
+      headers: new HttpHeaders({
+        headerObj,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'responseType': 'application/json'
+      }),
+      observe: "response" as 'body',
+    };
+    return this.httpClient.post(`${this.domainUrl}`, { "featureName": "Shop" }, httpOptions);
+  }
 
   // defaultTranslation(){
   //   this.translationData = {
@@ -122,19 +122,22 @@ export class SubscriptionManagementComponent implements OnInit {
   //   }
   // }
 
-  exportAsCSV(){
-      this.matTableExporter.exportTable('csv', {fileName:'Subscription_Data', sheet: 'sheet_name'});
+  exportAsCSV() {
+    this.matTableExporter.exportTable('csv', { fileName: 'Subscription_Data', sheet: 'sheet_name' });
   }
 
   exportAsPdf() {
     let DATA = document.getElementById('subscriptionData');
 
-    html2canvas( DATA , { onclone: (document) => {
-      this.actionBtn = document.getElementsByClassName('action');
-      for (let obj of this.actionBtn) {
-        obj.style.visibility = 'hidden';  }
-    }})
-    .then(canvas => {
+    html2canvas(DATA, {
+      onclone: (document) => {
+        this.actionBtn = document.getElementsByClassName('action');
+        for (let obj of this.actionBtn) {
+          obj.style.visibility = 'hidden';
+        }
+      }
+    })
+      .then(canvas => {
 
         let fileWidth = 208;
         let fileHeight = canvas.height * fileWidth / canvas.width;
@@ -146,7 +149,7 @@ export class SubscriptionManagementComponent implements OnInit {
 
         PDF.save('subscription_Data.pdf');
         PDF.output('dataurlnewwindow');
-    });
+      });
   }
 
   ngOnInit() {
@@ -156,8 +159,9 @@ export class SubscriptionManagementComponent implements OnInit {
     this.accountDetails = JSON.parse(localStorage.getItem('accountInfo'));
     // this.organisationData = this.accountDetails["organization"];
     this.contextOrgId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
-    this.organizationId = this.contextOrgId? this.contextOrgId : this.accountOrganizationId;
+    this.organizationId = this.contextOrgId ? this.contextOrgId : this.accountOrganizationId;
     this.organisationData = JSON.parse(localStorage.getItem('allOrgList'));
+    
     let translationObj = {
       id: 0,
       code: this.localStLanguage.code,
@@ -167,42 +171,50 @@ export class SubscriptionManagementComponent implements OnInit {
       filter: "",
       menuId: 34 //-- for Subscription mgnt
     }
-    this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
+
+    let menuId = 'menu_34_' +this.localStLanguage.code;
+    if (!localStorage.getItem(menuId)) {
+      this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
         this.processTranslation(data);
         this.loadSubscriptionData();
         this.getTranslatedNames();
-    });
+      });
+    } else {
+      this.translationData = JSON.parse(localStorage.getItem(menuId));
+      this.loadSubscriptionData();
+      this.getTranslatedNames();
+    }
 
     this.orgTypeSelection.valueChanges.subscribe(filterValue => {
-      if(filterValue==='allOrg'){
+      if (filterValue === 'allOrg') {
         this.filteredValues['org'] = '';
-      } else{
+      } else {
         this.filteredValues['org'] = filterValue;
       }
       this.dataSource.filter = JSON.stringify(this.filteredValues);
     });
     this.typeSelection.valueChanges.subscribe(filterValue => {
-      if(filterValue==='allType'){
+      if (filterValue === 'allType') {
         this.filteredValues['type'] = '';
-      } else{
-        if(filterValue==='Organisation'){
+      } else {
+        if (filterValue === 'Organisation') {
           this.filteredValues['type'] = 'Organization';
         }
-        if(filterValue==='VIN'){
+        if (filterValue === 'VIN') {
           this.filteredValues['type'] = 'subscriber';
         }
-        if(filterValue==='Org+VIN'){
+        if (filterValue === 'Org+VIN') {
           this.filteredValues['type'] = 'donator';
         }
       }
       this.dataSource.filter = JSON.stringify(this.filteredValues);
     });
     this.statusFilter.valueChanges.subscribe(filterValue => {
-      if(filterValue==='allStatus'){
+      if (filterValue === 'allStatus') {
         this.filteredValues['status'] = '';
-      } else if(filterValue === 'Active'){
+      } else if (filterValue === 'Active') {
         this.filteredValues['status'] = 'true';
-      } else if(filterValue === 'Inactive'){
+      } else if (filterValue === 'Inactive') {
         this.filteredValues['status'] = 'false';
       }
       this.dataSource.filter = JSON.stringify(this.filteredValues);
@@ -213,19 +225,19 @@ export class SubscriptionManagementComponent implements OnInit {
     });
 
 
-  //   this.StatusList= [
-  //     {
-  //       name: this.translationData.lblActive,
-  //       value: '1'
-  //     },
-  //     {
-  //       name: this.translationData.lblInactive,
-  //       value: '2'
-  //     }
-  //   ]
+    //   this.StatusList= [
+    //     {
+    //       name: this.translationData.lblActive,
+    //       value: '1'
+    //     },
+    //     {
+    //       name: this.translationData.lblInactive,
+    //       value: '2'
+    //     }
+    //   ]
   }
-  getTranslatedNames(){
-    this.TypeList= [
+  getTranslatedNames() {
+    this.TypeList = [
       {
         name: this.translationData.lblVIN,
         value: 'N'
@@ -241,9 +253,9 @@ export class SubscriptionManagementComponent implements OnInit {
     ];
   }
 
-  loadSubscriptionData(){
+  loadSubscriptionData() {
     this.showLoadingIndicator = true;
-    this.StatusList= [
+    this.StatusList = [
       {
         name: this.translationData.lblActive,
         value: '1'
@@ -253,10 +265,10 @@ export class SubscriptionManagementComponent implements OnInit {
         value: '2'
       }
     ];
-    this.subscriptionService.getSubscriptions(this.organizationId).subscribe((data : any) => {
+    this.subscriptionService.getSubscriptions(this.organizationId).subscribe((data: any) => {
       this.initData = data["subscriptionList"];
       this.initData.forEach(ele => {
-        ele.subscriptionStartDate =  getDt(ele.subscriptionStartDate).toString().toLowerCase();
+        ele.subscriptionStartDate = getDt(ele.subscriptionStartDate).toString().toLowerCase();
         ele.subscriptionEndDate = getDt(ele.subscriptionEndDate).toString().toLowerCase();
       });
       this.filterData = this.initData;
@@ -271,13 +283,13 @@ export class SubscriptionManagementComponent implements OnInit {
     });
   }
 
-  getOrgListData(){
+  getOrgListData() {
     let inputData = {
-      "id" : this.accountOrganizationId,
+      "id": this.accountOrganizationId,
       "roleid": this.roleID
     }
     this.subscriptionService.getOrganizations(inputData).subscribe((data: any) => {
-      if(data){
+      if (data) {
         this.organizationList = data["organizationList"];
         // var newRole = {
         //   "id":0,
@@ -310,109 +322,110 @@ export class SubscriptionManagementComponent implements OnInit {
       return data;
     }
   }
-  updatedTableData(tableData : any) {
+  updatedTableData(tableData: any) {
 
-    this.initData.forEach((ele,index) => {
-      if(ele.state == 'A'){
+    this.initData.forEach((ele, index) => {
+      if (ele.state == 'A') {
         this.initData[index]["status"] = 'true';
       }
-      if(ele.state == 'I'){
+      if (ele.state == 'I') {
         this.initData[index]["status"] = 'false';
       }
-      if(ele.type =='Organization'){
+      if (ele.type == 'Organization') {
         this.initData[index]["typeOfOrg"] = 'Organization';
       }
-      if(ele.type =='VIN'){
+      if (ele.type == 'VIN') {
         this.initData[index]["typeOfOrg"] = 'subscriber';
       }
-      if(ele.type =='Org+VIN'){
+      if (ele.type == 'Org+VIN') {
         this.initData[index]["typeOfOrg"] = 'donator';
       }
     }),
-    this.initData = this.getNewTagData(tableData);
+      this.initData = this.getNewTagData(tableData);
     this.dataSource = new MatTableDataSource(this.initData);
-    setTimeout(()=>{
+    setTimeout(() => {
       this.dataSource = new MatTableDataSource(this.initData);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
 
-        this.dataSource.filterPredicate = function(data, filter: any){  
-          let val = JSON.parse(filter);
-          return (val.org === '' || data.orgName.toString() === val.org.toString() ) &&
-                  (val.type === '' || data.typeOfOrg.toString() === val.type.toString() ) &&
-                  (val.status === '' || data.status.toString() === val.status.toString() ) &&
-                  (data.subscriptionId.toLowerCase().indexOf(val.search.toLowerCase()) !== -1 ||
-                    data.packageCode.toLowerCase().indexOf(val.search.toLowerCase()) !== -1 ||
-                    data.name.toLowerCase().indexOf(val.search.toLowerCase()) !== -1 ||
-                    data.typeOfOrg.toLowerCase().indexOf(val.search.toLowerCase()) !== -1 ||
-                    (data.subscriptionStartDate).toString().toLowerCase().indexOf(val.search.toLowerCase()) !== -1 ||
-                    (data.subscriptionEndDate).toString().toLowerCase().indexOf(val.search.toLowerCase()) !== -1
-                  )
-          };
-      this.dataSource.sortData = (data:String[], sort: MatSort) => {
+      this.dataSource.filterPredicate = function (data, filter: any) {
+        let val = JSON.parse(filter);
+        return (val.org === '' || data.orgName.toString() === val.org.toString()) &&
+          (val.type === '' || data.typeOfOrg.toString() === val.type.toString()) &&
+          (val.status === '' || data.status.toString() === val.status.toString()) &&
+          (data.subscriptionId.toLowerCase().indexOf(val.search.toLowerCase()) !== -1 ||
+            data.packageCode.toLowerCase().indexOf(val.search.toLowerCase()) !== -1 ||
+            data.name.toLowerCase().indexOf(val.search.toLowerCase()) !== -1 ||
+            data.typeOfOrg.toLowerCase().indexOf(val.search.toLowerCase()) !== -1 ||
+            (data.subscriptionStartDate).toString().toLowerCase().indexOf(val.search.toLowerCase()) !== -1 ||
+            (data.subscriptionEndDate).toString().toLowerCase().indexOf(val.search.toLowerCase()) !== -1
+          )
+      };
+      this.dataSource.sortData = (data: String[], sort: MatSort) => {
         const isAsc = sort.direction === 'asc';
         let columnName = this.sort.active;
-        return data.sort((a: any, b: any)=>{
+        return data.sort((a: any, b: any) => {
           return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
         });
       }
     });
   }
 
-  compare(a: Number | String, b: Number | String, isAsc: boolean, columnName: any){
-      if(columnName == "packageCode" || columnName == "name"){
-        if(a && !(a instanceof Number)) a = a.toString().toUpperCase();
-        if(b && !(b instanceof Number)) b = b.toString().toUpperCase();
-      }
-      return (a<b ? -1 : 1) * (isAsc ? 1 : -1);
+  compare(a: Number | String, b: Number | String, isAsc: boolean, columnName: any) {
+    if (columnName == "packageCode" || columnName == "name") {
+      if (a && !(a instanceof Number)) a = a.toString().toUpperCase();
+      if (b && !(b instanceof Number)) b = b.toString().toUpperCase();
+    }
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
 
   }
 
 
-  onShopclick(data:any){
-    this.getSsoToken().subscribe((data:any) => {
-      if(data.status === 200){
+  onShopclick(data: any) {
+    this.getSsoToken().subscribe((data: any) => {
+      if (data.status === 200) {
         window.open(data.body, '_blank');
       }
-      else if(data.status === 401){
+      else if (data.status === 401) {
         //console.log("Error: Unauthorized");
-     }
-     else if(data.status == 302){
-      //console.log("Error: Unauthorized");
-     }
+      }
+      else if (data.status == 302) {
+        //console.log("Error: Unauthorized");
+      }
     },
-    (error)=> {
-       if(error.status == 404  || error.status == 403){
-        //console.log("Error: not found");
-       }
-       else if(error.status === 401){
-        //console.log("Error: Unauthorized");
-       }
-       else if(error.status == 302){
-        //console.log("Error: Unauthorized");
-       }
-       else if(error.status == 500){
-        //console.log("Error: Internal server error");
-       }
-     })
-    }
+      (error) => {
+        if (error.status == 404 || error.status == 403) {
+          //console.log("Error: not found");
+        }
+        else if (error.status === 401) {
+          //console.log("Error: Unauthorized");
+        }
+        else if (error.status == 302) {
+          //console.log("Error: Unauthorized");
+        }
+        else if (error.status == 500) {
+          //console.log("Error: Internal server error");
+        }
+      })
+  }
 
 
-  onVehicleClick(rowData: any){``
-    const colsList = ['name','vin','licensePlateNumber'];
-    const colsName =[this.translationData.lblVehicleName , this.translationData.lblVIN , this.translationData.lblRegistrationNumber ];
-    const tableTitle =`${rowData.subscriptionId} - ${this.translationData.lblVehicles }`;
-    this.showLoadingIndicator=true;
+  onVehicleClick(rowData: any) {
+    ``
+    const colsList = ['name', 'vin', 'licensePlateNumber'];
+    const colsName = [this.translationData.lblVehicleName, this.translationData.lblVIN, this.translationData.lblRegistrationNumber];
+    const tableTitle = `${rowData.subscriptionId} - ${this.translationData.lblVehicles}`;
+    this.showLoadingIndicator = true;
     this.subscriptionService.getVehicleBySubscriptionId(rowData).subscribe((vehList: any) => {
       this.vehicleData = vehList["vehicles"]
       this.callToCommonTable(this.vehicleData, colsList, colsName, tableTitle);
-      this.showLoadingIndicator=false;
+      this.showLoadingIndicator = false;
     }, (error) => {
-      this.showLoadingIndicator=false;
+      this.showLoadingIndicator = false;
     });
   }
 
-  callToCommonTable(tableData: any, colsList: any, colsName: any, tableTitle: any){
+  callToCommonTable(tableData: any, colsList: any, colsName: any, tableTitle: any) {
     if (this.dialogRef) return;
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
@@ -420,9 +433,9 @@ export class SubscriptionManagementComponent implements OnInit {
     dialogConfig.data = {
       tableData: tableData,
       colsList: this.vehicleDiaplayColumns,
-      colsName:colsName,
+      colsName: colsName,
       tableTitle: tableTitle,
-      translationData:this.translationData
+      translationData: this.translationData
     }
     this.dialogRef = this.dialog.open(UserDetailTableComponent, dialogConfig);
     this.dialogRef
@@ -432,8 +445,11 @@ export class SubscriptionManagementComponent implements OnInit {
       }))
   }
 
-  processTranslation(transData: any){
+  processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
+    let langCode =this.localStLanguage? this.localStLanguage.code : 'EN-GB';
+    let menuId = 'menu_34_'+ langCode;
+    localStorage.setItem(menuId, JSON.stringify(this.translationData));
   }
 
   // applyFilter(filterValue: string) {
@@ -472,15 +488,15 @@ export class SubscriptionManagementComponent implements OnInit {
   }
 
 }
-function getDt(date){
-  if (date === 0) {​​​​​​​​
+function getDt(date) {
+  if (date === 0) {
     return '-';
-  }​​​​​​​​
-  else {​​​​​​​​
+  }
+  else {
     var newdate = new Date(date);
     var day = newdate.getDate();
     var month = newdate.getMonth();
     var year = newdate.getFullYear();
-    return (`${​​​​​​​​day}/${​​​​​​​​month + 1}/${​​​​​​​​year}​​​​​​​​`);
-  }​​​​​​​​
+    return (`${day}/${month + 1}/${year}​​​​​​​​`);
+  }
 }

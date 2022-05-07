@@ -24,13 +24,23 @@ export class SignalrAlertNotificationComponent implements OnInit {
       filter: "",
       menuId: 17 //-- for alerts
     }
-    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-      this.processTranslation(data);
-    });
+
+    let menuId = 'menu_17_' + this.localStLanguage.code;
+    if(!localStorage.getItem(menuId)){
+      this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+        this.processTranslation(data);
+      });
+    } else{
+      this.translationData = JSON.parse(localStorage.getItem(menuId));
+    } 
+    
   }
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
+    let langCode =this.localStLanguage? this.localStLanguage.code : 'EN-GB';
+    let menuId = 'menu_17_'+ langCode;
+    localStorage.setItem(menuId, JSON.stringify(this.translationData));
   }
 
   ngOnInit() { }
