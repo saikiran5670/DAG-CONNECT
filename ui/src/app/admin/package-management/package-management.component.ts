@@ -16,14 +16,14 @@ import { Util } from 'src/app/shared/util';
   styleUrls: ['./package-management.component.less']
 })
 export class PackageManagementComponent implements OnInit {
-  columnCodes = ['code','name', 'type', 'state', 'action'];
-  columnLabels = ['PackageCode','PackageName', 'PackageType', 'PackageStatus', 'Action'];
+  columnCodes = ['code', 'name', 'type', 'state', 'action'];
+  columnLabels = ['PackageCode', 'PackageName', 'PackageType', 'PackageStatus', 'Action'];
   packageRestData: any = [];
   selectedElementData: any;
   features: any = [];
-  titleVisible : boolean = false;
+  titleVisible: boolean = false;
   exportFlag = true;
-  packageCreatedMsg : any = '';
+  packageCreatedMsg: any = '';
   selectedPackages = new SelectionModel(true, []);
   createEditViewPackageFlag: boolean = false;
   translationData: any = {};
@@ -36,27 +36,27 @@ export class PackageManagementComponent implements OnInit {
   showLoadingIndicator: any = false;
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   userType: any = localStorage.getItem("userType");
-  importClicked :boolean =false;
-  importTranslationData : any = {};
-  templateTitle = ['PackageCode','PackageName','Description','PackageType','PackageStatus','FeatureId'];
+  importClicked: boolean = false;
+  importTranslationData: any = {};
+  templateTitle = ['PackageCode', 'PackageName', 'Description', 'PackageType', 'PackageStatus', 'FeatureId'];
   templateValue = [
-    ['PTest100', 'Package1', "Package Template", "VIN", "Active","Dashboard, Report"]
+    ['PTest100', 'Package1', "Package Template", "VIN", "Active", "Dashboard, Report"]
   ];
-  tableColumnList = ['packageCode','packageName','packageDescription','packageType','packageStatus','packageFeature','returnMessage'];
-  tableColumnName = ['Package Code','Package Name','Package Description','Package Type','Package Status','Package Feature','Fail Reason'];
+  tableColumnList = ['packageCode', 'packageName', 'packageDescription', 'packageType', 'packageStatus', 'packageFeature', 'returnMessage'];
+  tableColumnName = ['Package Code', 'Package Name', 'Package Description', 'Package Type', 'Package Status', 'Package Feature', 'Fail Reason'];
   tableTitle = 'Rejected Driver Details';
   dataSource: any;
   tableData: unknown[];
   filterValue: string;
 
   constructor(
-      private translationService: TranslationService,
-      private packageService: PackageService,
-      private dialogService: ConfirmDialogService,
-      private dialog: MatDialog,
-      private _snackBar: MatSnackBar,
-      private route:Router
-    ) {
+    private translationService: TranslationService,
+    private packageService: PackageService,
+    private dialogService: ConfirmDialogService,
+    private dialog: MatDialog,
+    private _snackBar: MatSnackBar,
+    private route: Router
+  ) {
     // this.defaultTranslation();
   }
 
@@ -81,14 +81,17 @@ export class PackageManagementComponent implements OnInit {
   //   }
   // }
 
-  processTranslation(transData: any){
+  processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    ////console.log("process translationData:: ", this.translationData)
+    let langCode =this.localStLanguage? this.localStLanguage.code : 'EN-GB';
+    let menuId = 'menu_33_'+ langCode;
+    localStorage.setItem(menuId, JSON.stringify(this.translationData));
   }
 
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    
     let translationObj = {
       id: 0,
       code: this.localStLanguage.code,
@@ -98,23 +101,31 @@ export class PackageManagementComponent implements OnInit {
       filter: "",
       menuId: 33 //-- for package mgnt
     }
-    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-      this.processTranslation(data);
+
+    let menuId = 'menu_33_' + this.localStLanguage.code;
+    if (!localStorage.getItem(menuId)) {
+      this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+        this.processTranslation(data);
+        this.loadPackageData();
+      });
+    } else {
+      this.translationData = JSON.parse(localStorage.getItem(menuId));
       this.loadPackageData();
-    });
+    }
+
   }
 
-  loadPackageData(){
+  loadPackageData() {
     this.showLoadingIndicator = true;
-    this.packageService.getPackages().subscribe((data : any) => {
+    this.packageService.getPackages().subscribe((data: any) => {
       data["pacakageList"].forEach(element => {
         (element.state == 'A') ? element.state = this.translationData.lblActive : element.state = this.translationData.lblInactive;
       });
       this.initData = data["pacakageList"];
-    this.dataSource = new MatTableDataSource(this.tableData);
-    Util.applySearchFilter(this.dataSource, this.tableColumnList , this.filterValue );
+      this.dataSource = new MatTableDataSource(this.tableData);
+      Util.applySearchFilter(this.dataSource, this.tableColumnList, this.filterValue);
 
-    this.hideloader();
+      this.hideloader();
 
       // this.updatedTableData(this.initData);
     }, (error) => {
@@ -128,26 +139,26 @@ export class PackageManagementComponent implements OnInit {
 
 
 
-  createNewPackage(){
+  createNewPackage() {
     this.actionType = 'create';
     this.createEditViewPackageFlag = true;
   }
 
-  editViewPackage(rowData: any, type: any){
+  editViewPackage(rowData: any, type: any) {
     this.actionType = type;
     this.selectedElementData = rowData;
     this.createEditViewPackageFlag = true;
   }
 
-  changePackageStatus(rowData: any){
+  changePackageStatus(rowData: any) {
     const options = {
       title: this.translationData.lblAlert,
       message: this.translationData.lblYouwanttoDetails,
       // cancelText: this.translationData.lblNo || "No",
       // confirmText: this.translationData.lblYes || "Yes",
       cancelText: this.translationData.lblCancel,
-      confirmText: (rowData.state == 'Active') ? this.translationData.lblDeactivate  : this.translationData.lblActivate ,
-      status: rowData.state == 'Active' ? 'Inactive' : 'Active' ,
+      confirmText: (rowData.state == 'Active') ? this.translationData.lblDeactivate : this.translationData.lblActivate,
+      status: rowData.state == 'Active' ? 'Inactive' : 'Active',
       name: rowData.name
     };
     const dialogConfig = new MatDialogConfig();
@@ -156,38 +167,38 @@ export class PackageManagementComponent implements OnInit {
     dialogConfig.data = options;
     this.dialogRef = this.dialog.open(ActiveInactiveDailogComponent, dialogConfig);
     this.dialogRef.afterClosed().subscribe((res: any) => {
-      if(res == true){
+      if (res == true) {
         // TODO: change status with latest grid data
         let updatePackageParams = {
           "packageId": rowData.id,
-          "state":rowData.state === "Active" ? "I" : "A"
+          "state": rowData.state === "Active" ? "I" : "A"
         }
         this.packageService.updateChangedStatus(updatePackageParams).subscribe((data) => {
           this.loadPackageData();
           let successMsg = "Updated Successfully!";
           this.successMsgBlink(successMsg);
         })
-      }else {
+      } else {
         this.loadPackageData();
       }
     });
   }
 
-  deletePackage(rowData: any){
+  deletePackage(rowData: any) {
     let packageId = rowData.id;
     const options = {
-      title: this.translationData.lblDelete ,
+      title: this.translationData.lblDelete,
       message: this.translationData.lblAreyousureyouwanttodelete,
-      cancelText: this.translationData.lblCancel ,
+      cancelText: this.translationData.lblCancel,
       confirmText: this.translationData.lblDelete
     };
     this.dialogService.DeleteModelOpen(options, rowData.code);
     this.dialogService.confirmedDel().subscribe((res) => {
-    if (res) {
-      this.packageService.deletePackage(packageId).subscribe((data) => {
-        this.openSnackBar('Item delete', 'dismiss');
-        this.loadPackageData();
-      })
+      if (res) {
+        this.packageService.deletePackage(packageId).subscribe((data) => {
+          this.openSnackBar('Item delete', 'dismiss');
+          this.loadPackageData();
+        })
         this.successMsgBlink(this.getDeletMsg(rowData.code));
       }
     });
@@ -203,14 +214,14 @@ export class PackageManagementComponent implements OnInit {
     });
   }
 
-  getDeletMsg(PackageCode: any){
-    if(this.translationData.lblPackagewassuccessfullydeleted)
+  getDeletMsg(PackageCode: any) {
+    if (this.translationData.lblPackagewassuccessfullydeleted)
       return this.translationData.lblPackagewassuccessfullydeleted.replace('$', PackageCode);
     else
       return ("Package '$' was successfully deleted").replace('$', PackageCode);
   }
 
-  successMsgBlink(msg: any){
+  successMsgBlink(msg: any) {
     this.titleVisible = true;
     this.packageCreatedMsg = msg;
     setTimeout(() => {
@@ -218,7 +229,7 @@ export class PackageManagementComponent implements OnInit {
     }, 5000);
   }
 
-  onClose(){
+  onClose() {
     this.titleVisible = false;
   }
 
@@ -244,13 +255,13 @@ export class PackageManagementComponent implements OnInit {
   //       } row`;
   // }
 
-  checkCreationForPackage(item: any){
+  checkCreationForPackage(item: any) {
     // this.createEditViewPackageFlag = !this.createEditViewPackageFlag;
     this.createEditViewPackageFlag = item.stepFlag;
-    if(item.successMsg) {
+    if (item.successMsg) {
       this.successMsgBlink(item.successMsg);
     }
-    if(item.tableData) {
+    if (item.tableData) {
       this.initData = item.tableData;
     }
     // this.updatedTableData(this.initData);
@@ -261,9 +272,9 @@ export class PackageManagementComponent implements OnInit {
     this.showLoadingIndicator = false;
   }
 
-  updateImportView(_event){
+  updateImportView(_event) {
     this.importClicked = _event;
-    if(!_event){
+    if (!_event) {
       this.initData = [];
       this.loadPackageData();
     }
@@ -274,14 +285,14 @@ export class PackageManagementComponent implements OnInit {
   //   this.dataSource.paginator = this.paginator;
   //   this.dataSource.sort = this.sort;
   // }
-  importPackageCSV(){
+  importPackageCSV() {
     this.importClicked = true;
     this.processTranslationForImport();
     //this.route.navigate(["import"]);
   }
 
-  processTranslationForImport(){
-    if(this.translationData){
+  processTranslationForImport() {
+    if (this.translationData) {
       this.importTranslationData.lblBack = this.translationData.lblBack;
       this.importTranslationData.lblDuplicatePackage = this.translationData.lblDuplicatePackageCode || 'Duplicate Package Code';
       this.importTranslationData.lblIncorrectFeatureIds = this.translationData.lblIncorrectFeatureIds || 'Incorrect Package Feature(s)';
@@ -289,17 +300,17 @@ export class PackageManagementComponent implements OnInit {
       this.importTranslationData.downloadTemplate = this.translationData.lbldownloadTemplate;
       this.importTranslationData.downloadTemplateInstruction = this.translationData.lbldownloadTemplateInstruction;
       this.importTranslationData.selectUpdatedFile = this.translationData.lblselectUpdatedFile;
-      this.importTranslationData.browse= this.translationData.lblbrowse;
-      this.importTranslationData.uploadButtonText= this.translationData.lbluploadPackage;
-      this.importTranslationData.selectFile= this.translationData.lblPleaseSelectAFile ;
-      this.importTranslationData.totalSizeMustNotExceed= this.translationData.lblTotalSizeMustNotExceed;
-      this.importTranslationData.emptyFile= this.translationData.lblEmptyFile;
-      this.importTranslationData.importedFileDetails= this.translationData.lblImportedFileDetails;
-      this.importTranslationData.new= this.translationData.lblNew;
-      this.importTranslationData.fileType= this.translationData.lblPackage;
-      this.importTranslationData.fileTypeMultiple= this.translationData.lblPackage;
-      this.importTranslationData.imported= this.translationData.lblimport;
-      this.importTranslationData.rejected= this.translationData.lblrejected;
+      this.importTranslationData.browse = this.translationData.lblbrowse;
+      this.importTranslationData.uploadButtonText = this.translationData.lbluploadPackage;
+      this.importTranslationData.selectFile = this.translationData.lblPleaseSelectAFile;
+      this.importTranslationData.totalSizeMustNotExceed = this.translationData.lblTotalSizeMustNotExceed;
+      this.importTranslationData.emptyFile = this.translationData.lblEmptyFile;
+      this.importTranslationData.importedFileDetails = this.translationData.lblImportedFileDetails;
+      this.importTranslationData.new = this.translationData.lblNew;
+      this.importTranslationData.fileType = this.translationData.lblPackage;
+      this.importTranslationData.fileTypeMultiple = this.translationData.lblPackage;
+      this.importTranslationData.imported = this.translationData.lblimport;
+      this.importTranslationData.rejected = this.translationData.lblrejected;
       this.importTranslationData.existError = this.translationData.lblPackagecodealreadyexists;
       this.importTranslationData.input1mandatoryReason = this.translationData.lblPackageCodeMandatoryReason;
       this.importTranslationData.input2mandatoryReason = this.translationData.lblPackageNameMandatoryReason;
@@ -309,17 +320,17 @@ export class PackageManagementComponent implements OnInit {
       this.importTranslationData.packageTypeMandateReason = this.translationData.lblPackageTypeMandate;
       this.importTranslationData.packageStatusMandateReason = this.translationData.lblPackageStatusMandate;
       this.importTranslationData.packageTypeReason = this.translationData.lblPackageTypeValue;
-      this.importTranslationData.packageStatusReason = this.translationData.lblPackageStatusValue ;
+      this.importTranslationData.packageStatusReason = this.translationData.lblPackageStatusValue;
       this.importTranslationData.featureemptyReason = this.translationData.lblFeatureCannotbeEmpty;
       this.importTranslationData.featureinvalidReason = this.translationData.lblFeatureInvalid;
       this.tableTitle = this.translationData.lblTableTitle;
       this.tableColumnName = [this.translationData.lblPackageCode,
-                              this.translationData.lblPackageName,
-                              this.translationData.lblPackageDescription ,
-                              this.translationData.lblPackageType ,
-                              this.translationData.lblPackageStatus,
-                              this.translationData.lblPackageFeature,
-                              this.translationData.lblFailReason ];
+      this.translationData.lblPackageName,
+      this.translationData.lblPackageDescription,
+      this.translationData.lblPackageType,
+      this.translationData.lblPackageStatus,
+      this.translationData.lblPackageFeature,
+      this.translationData.lblFailReason];
     }
   }
 }

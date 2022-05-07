@@ -221,6 +221,9 @@ export class FuelBenchmarkingComponent implements OnInit {
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
+    let langCode =this.localStLanguage? this.localStLanguage.code : 'EN-GB';
+    let menuId = 'menu_11_'+ langCode;
+    localStorage.setItem(menuId, JSON.stringify(this.translationData));
   }
 
   ngOnInit() {
@@ -249,8 +252,16 @@ export class FuelBenchmarkingComponent implements OnInit {
       filter: "",
       menuId: 11 //-- for fleet benchmarking
     }
-    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-      this.processTranslation(data);
+    
+    let menuId = 'menu_11_' + this.localStLanguage.code;
+    if (!localStorage.getItem(menuId)) {
+      this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+        this.processTranslation(data);
+      });
+    } else {
+      this.translationData = JSON.parse(localStorage.getItem(menuId));
+    }
+
       if (this.prefDetail) {
         if (this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != '') {
           this.proceedStep(this.accountPrefObj.accountPreference);
@@ -262,7 +273,7 @@ export class FuelBenchmarkingComponent implements OnInit {
           });
         }
       }
-    });
+    
   }
 
   selectionTimeRange(selection: any) {

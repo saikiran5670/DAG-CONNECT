@@ -88,22 +88,29 @@ export class ReportSchedulerComponent implements OnInit {
         filter: "",
         menuId: 19 //-- for report scheduler
       }
-      this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-        this.processTranslation(data);
-        if(this.prefDetail){
-          if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ 
-            this.proceedStep(this.accountPrefObj.accountPreference);
-          }else{
-            this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
-              this.proceedStep(orgPref);
-            }, (error) => {
-              this.proceedStep({});
-            });
-          }
-          // this.loadScheduledReports();
-          this.loadSchedulerParameter();
+      
+      let menuId = 'menu_19_' + this.localStLanguage.code;
+      if (!localStorage.getItem(menuId)) {
+        this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+          this.processTranslation(data);
+        });
+      } else {
+        this.translationData = JSON.parse(localStorage.getItem(menuId));
+      }
+
+      if(this.prefDetail){
+        if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){
+          this.proceedStep(this.accountPrefObj.accountPreference);
+        }else{
+          this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
+            this.proceedStep(orgPref);
+          }, (error) => {
+            this.proceedStep({});
+          });
         }
-      });
+        // this.loadScheduledReports();
+        this.loadSchedulerParameter();
+      }
       // this.reportSchedulerService.getReportSchedulerParameter(this.accountId, this.accountOrganizationId).subscribe(parameterData => {
       //   this.reportSchedulerParameterData = parameterData;
       //   this.ReportTypeList = this.reportSchedulerParameterData["reportType"];
@@ -112,7 +119,10 @@ export class ReportSchedulerComponent implements OnInit {
     }
 
   processTranslation(transData: any) {
-    this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {}); 
+    this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
+    let langCode =this.localStLanguage? this.localStLanguage.code : 'EN-GB';
+    let menuId = 'menu_19_'+ langCode;
+    localStorage.setItem(menuId, JSON.stringify(this.translationData)); 
   }
 
   proceedStep(preference: any){

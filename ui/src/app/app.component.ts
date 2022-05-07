@@ -809,6 +809,9 @@ export class AppComponent {
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
     this.translationService.applicationTranslationData = this.translationData;
+    let langCode =this.localStLanguage? this.localStLanguage.code : 'EN-GB';
+    let menuId = 'menu_0_'+ langCode;
+    localStorage.setItem(menuId, JSON.stringify(this.translationData));
   }
 
   ngOnInit() {

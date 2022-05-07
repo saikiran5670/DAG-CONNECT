@@ -302,9 +302,16 @@ ngOnDestroy(){
         this.initMap();
         },0);
     }
-    
-    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-      this.processTranslation(data);
+
+    let menuId = 'menu_4_' + this.localStLanguage.code;
+    if(!localStorage.getItem(menuId)){
+      this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+        this.processTranslation(data);
+      });
+    } else{
+      this.translationData = JSON.parse(localStorage.getItem(menuId));
+    }
+
       this.mapFilterForm.get('trackType').setValue('snail');
       this.mapFilterForm.get('routeType').setValue('C');
       this.makeHerePOIList();
@@ -353,7 +360,7 @@ ngOnDestroy(){
           }
         }
       }
-    });
+    // });
     // if(this._state.fromDashboard == true){
     // this.selectionTimeRange('yesterday');
     // }
@@ -854,6 +861,9 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
+    let langCode =this.localStLanguage? this.localStLanguage.code : 'EN-GB';
+    let menuId = 'menu_4_'+ langCode;
+    localStorage.setItem(menuId, JSON.stringify(this.translationData));
   }
 
   public ngAfterViewInit() {
