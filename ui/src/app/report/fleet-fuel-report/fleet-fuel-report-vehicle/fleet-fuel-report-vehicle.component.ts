@@ -1,4 +1,4 @@
-import { Inject } from '@angular/core';
+import { Inject, TemplateRef } from '@angular/core';
 import { Input } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -74,6 +74,8 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
   showMapPanel: boolean = false;
   tableExpandPanel: boolean = true;
   rankingExpandPanel: boolean = false;
+  isVehicleData: boolean = false;
+  isGraphData: boolean = false;
   rankingData: any;
   isSummaryOpen: boolean = false;
   isRankingOpen: boolean = false;
@@ -85,12 +87,16 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
   endTimeDisplay: any = '23:59:59';
   selectedStartTime: any = '00:00';
   selectedEndTime: any = '23:59';
+  maxStartTime: any;
+  selectedStartTimeValue: any ='00:00';
+  selectedEndTimeValue: any ='11:59';
   fleetFuelSearchData: any = JSON.parse(localStorage.getItem("globalSearchFilterData")) || {};
   localStLanguage: any;
   accountOrganizationId: any;
   fleetFuelReportId: number;
   wholeTripData: any = [];
   singleVehicle: any = [];
+  endTimeStart:any;
   accountId: any;
   internalSelection: boolean = false;
   accountPrefObj: any;
@@ -795,10 +801,14 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
     this.rankingData = rankingSortedData;
     this.updateRankingDataSource(rankingSortedData);
   }
-    this.hideloader();
+    // this.hideloader();
+    this.isVehicleData = true;
+    this.completeHideLoader();
     this.idleDurationCount();
     }, (error)=>{
-      this.hideloader();
+      // this.hideloader();
+      this.isVehicleData = true;
+      this.completeHideLoader();
       this.noRecordFound = true;
     });
   }
@@ -940,13 +950,15 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
     if (_vinData.length > 0) {
       this.showLoadingIndicator = true;
       this.loadfleetFuelDetails(_vinData);
-      this.hideloader();
+      // this.hideloader();
       this.isRankingOpen = true;
       this.isChartsOpen = true;
       this.isSummaryOpen = true;
       this.isDetailsOpen = true;
       this.tripData.forEach(element => { }, (error) => {
-        this.hideloader();
+        // this.hideloader();
+        this.isVehicleData = true;
+        this.completeHideLoader();
         this.tripData = [];
         this.tableInfoObj = {};
         this.updateDataSource(this.FuelData);
@@ -965,10 +977,20 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
       this.setChartData(this.chartDataSet);
       this.graphData = graphData;
       this.showGraph = true;
-      this.hideloader();
+      // this.hideloader();
+      this.isGraphData = true;
+      this.completeHideLoader();
     }, (error) => {
-      this.hideloader();
+      // this.hideloader();
+      this.isGraphData = true;
+      this.completeHideLoader();
     });
+  }
+
+  completeHideLoader(){
+    if(this.isVehicleData && this.isGraphData){
+      this.hideloader();
+    }
   }
 
   updateDataSource(tableData: any) {
@@ -1739,14 +1761,30 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
 
   endTimeChanged(selectedTime: any) {
     this.internalSelection = true;
-    this.selectedEndTime = selectedTime;
+    this.selectedEndTime = this.selectedEndTimeValue;
     if (this.prefTimeFormat == 24) {
-      this.endTimeDisplay = selectedTime + ':59';
+      this.endTimeDisplay = this.selectedEndTimeValue + ':59';
     }
     else {
-      this.endTimeDisplay = selectedTime;
+      this.endTimeDisplay = this.selectedEndTimeValue;
     }
     this.endDateValue = this.setStartEndDateTime(this.endDateValue, this.selectedEndTime, 'end');
+    let startDate1 = this.startDateValue.getFullYear() + "/" + this.startDateValue.getMonth() + 1+ "/" + this.startDateValue.getDate();
+    let endDate1 = this.endDateValue.getFullYear() + "/" + this.endDateValue.getMonth() + 1+ "/" + this.endDateValue.getDate();
+    if(startDate1 == endDate1){
+      this.maxStartTime = this.selectedEndTime;
+      this.endTimeStart = this.selectedStartTime; 
+    }
+    else{
+      this.maxStartTime = this.selectedEndTime;
+      if (this.prefTimeFormat == 24) {
+        this.maxStartTime = '23:59';
+      }
+      else{
+        this.maxStartTime = '11:59';
+      }
+      this.endTimeStart = "00:00";
+    }
     this.resetTripFormControlValue(); // extra addded as per discuss with Atul
     this.filterDateData();
   }
@@ -1917,24 +1955,61 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
       dateTime = this.todayDate;
     }
     this.endDateValue = this.setStartEndDateTime(dateTime, this.selectedEndTime, 'end');
+    let startDate1 = this.startDateValue.getFullYear() + "/" + (this.startDateValue.getMonth() + 1) + "/" + this.startDateValue.getDate();
+    let endDate1 = this.endDateValue.getFullYear() + "/" + (this.endDateValue.getMonth() + 1) + "/" + this.endDateValue.getDate();
+    if(startDate1 == endDate1){
+      this.maxStartTime = this.selectedEndTime;
+      this.endTimeStart = this.selectedStartTime; 
+    }
+    else{
+      if (this.prefTimeFormat == 24) {
+        this.maxStartTime = '23:59';
+      }
+      else{
+        this.maxStartTime = '11:59';
+      }
+      this.endTimeStart = "00:00";
+    }
     this.resetTripFormControlValue(); // extra addded as per discuss with Atul
     this.filterDateData(); // extra addded as per discuss with Atul
   }
 
   startTimeChanged(selectedTime: any) {
     this.internalSelection = true;
-    this.selectedStartTime = selectedTime;
+    this.selectedStartTime = this.selectedStartTimeValue;
     if (this.prefTimeFormat == 24) {
-      this.startTimeDisplay = selectedTime + ':00';
+      this.startTimeDisplay = this.selectedStartTimeValue + ':00';
     }
     else {
-      this.startTimeDisplay = selectedTime;
+      this.startTimeDisplay = this.selectedStartTimeValue;
     }
     this.startDateValue = this.setStartEndDateTime(this.startDateValue, this.selectedStartTime, 'start');
+    let startDate1 = this.startDateValue.getFullYear() + "/" + (this.startDateValue.getMonth() + 1) + "/" + this.startDateValue.getDate();
+    let endDate1 = this.endDateValue.getFullYear() + "/" + (this.endDateValue.getMonth() + 1) + "/" + this.endDateValue.getDate();
+    if(startDate1 == endDate1){
+    this.maxStartTime = this.selectedEndTime;
+    this.endTimeStart = this.selectedStartTime; 
+    }
+    else{
+      if (this.prefTimeFormat == 24) {
+        this.maxStartTime = '23:59';
+      }
+      else{
+        this.maxStartTime = '11:59';
+      }
+      this.endTimeStart = "00:00";
+    }
     this.resetTripFormControlValue(); // extra addded as per discuss with Atul
     this.filterDateData();// extra addded as per discuss with Atul
   }
 
+  getStartTimeChanged(time: any){
+      this.selectedStartTimeValue = time;
+  }
+
+  getEndTimeChanged(time: any){
+    this.selectedEndTimeValue = time;
+}
   changeStartDateEvent(event: MatDatepickerInputEvent<any>) {
     this.internalSelection = true;
     let dateTime: any = '';
@@ -1948,6 +2023,21 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
       dateTime = this.last3MonthDate;
     }
     this.startDateValue = this.setStartEndDateTime(dateTime, this.selectedStartTime, 'start');
+    let startDate1 = this.startDateValue.getFullYear() + "/" + (this.startDateValue.getMonth() + 1) + "/" + this.startDateValue.getDate();
+    let endDate1 = this.endDateValue.getFullYear() + "/" + (this.endDateValue.getMonth() + 1) + "/" + this.endDateValue.getDate();
+    if(startDate1 == endDate1){
+      this.maxStartTime = this.selectedEndTime;
+      this.endTimeStart = this.selectedStartTime; 
+    }
+    else{
+      if (this.prefTimeFormat == 24) {
+        this.maxStartTime = '23:59';
+      }
+      else{
+        this.maxStartTime = '11:59';
+      }
+      this.endTimeStart = "00:00";
+    }
     this.resetTripFormControlValue(); // extra addded as per discuss with Atul
     this.filterDateData(); // extra addded as per discuss with Atul
   }
