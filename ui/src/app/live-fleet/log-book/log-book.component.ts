@@ -636,7 +636,7 @@ ngOnDestroy(){
   setDefaultTodayDate() {
 
     if(this._state && this._state.fromDashboard == true){
-      this.selectionTimeRange('today');
+      this.selectionTimeRange('today', true);
       this.filterDateData();
     }
     if (this._state && this._state.fromVehicleDetails) {
@@ -717,13 +717,13 @@ if(!this._state){
   }
 
   if(this.showBack && this.selectionTab == 'today'){
-  if(this._state.fromDashboard == true && this._state.logisticFlag == true){
+  if(this._state && this._state.fromDashboard == true && this._state.logisticFlag == true){
     this.logBookForm.get('alertCategory').setValue("L");
   }
-  else if(this._state.fromDashboard == true && this._state.fuelFlag == true){
+  else if(this._state && this._state.fromDashboard == true && this._state.fuelFlag == true){
     this.logBookForm.get('alertCategory').setValue("F");
   }
-  else if(this._state.fromDashboard == true && this._state.repairFlag == true){
+  else if(this._state && this._state.fromDashboard == true && this._state.repairFlag == true){
     this.logBookForm.get('alertCategory').setValue("R");
   }
 }
@@ -1689,8 +1689,9 @@ let prepare = []
     return date;
   }
 
-  selectionTimeRange(selection: any){
+  selectionTimeRange(selection: any, isState?: boolean){
     this.internalSelection = true;
+    if(!isState) this._state = false;
     switch(selection){
       case 'today': {
         this.selectionTab = 'today';
