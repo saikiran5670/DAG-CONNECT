@@ -574,7 +574,9 @@ export class DashboardVehicleUtilisationComponent implements OnInit {
     
     if(_storage && dayflag){
       this.callToProceed(_storage); // from Storage
-    }else{
+    } else if (localStorage.getItem('contextSwitchFlag') == 'true') {
+      this.callVehUtilData(_vehiclePayload); // from API
+    } else {
       this.callVehUtilData(_vehiclePayload); // from API
     } 
   }

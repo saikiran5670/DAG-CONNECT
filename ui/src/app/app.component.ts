@@ -276,6 +276,7 @@ export class AppComponent {
   subscription: Subscription;
   showTimer: boolean = false;
   accountRoleLevel: string;
+  contextSwitchFlag: string = 'false';
   public langFilterCtrl: FormControl = new FormControl();
   public filteredLanguages: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredOrganizationList: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
@@ -481,6 +482,10 @@ export class AppComponent {
     localStorage.setItem("accountNavMenu", JSON.stringify(landingPageMenus));
     let refreshPage = localStorage.getItem('pageRefreshed') == 'true';
     if(refreshPage || from == 'orgContextSwitch'){
+      if(from == 'orgContextSwitch') {
+        this.contextSwitchFlag = 'true';
+        localStorage.setItem('contextSwitchFlag',this.contextSwitchFlag);
+      }
       let _feature: any = JSON.parse(localStorage.getItem("accountFeatures"));
       if(_feature && _feature.features && _feature.features.length > 0){
         _feature.menus = this.menuPages.menus; 
@@ -488,6 +493,7 @@ export class AppComponent {
       }
       localStorage.removeItem('pageRefreshed');
     }else{
+      localStorage.removeItem('contextSwitchFlag');
       localStorage.setItem("accountFeatures", JSON.stringify(this.menuPages));
     }
     //-- For checking Access of the User --//
@@ -1124,6 +1130,12 @@ export class AppComponent {
       languageCode: this.localStLanguage.code
     }
     this.accountService.switchOrgContext(switchObj).subscribe((data: any) => {
+      localStorage.setItem('vehUtilisation_lastweek','');
+      localStorage.setItem('vehUtilisation_lastmonth','');
+      localStorage.setItem('vehUtilisation_last3month','');
+      localStorage.setItem('fleetKPI_lastweek','');
+      localStorage.setItem('fleetKPI_lastmonth','');
+      localStorage.setItem('fleetKPI_last3month','');
       // this.accountService.getSessionInfo().subscribe((accountData: any) => {
         this.getMenu(data, 'orgContextSwitch', this.accountRoleLevel);
         let accinfo = JSON.parse(localStorage.getItem("accountInfo"))

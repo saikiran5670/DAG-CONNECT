@@ -77,6 +77,8 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
   endTimeDisplay: any = '23:59:59';
   selectedStartTime: any = '00:00';
   selectedEndTime: any = '23:59';
+  isDriverData: boolean = false;
+  isGraphData: boolean = false;
   fleetFuelSearchData: any = JSON.parse(localStorage.getItem("globalSearchFilterData")) || {};
   localStLanguage: any;
   accountOrganizationId: any;
@@ -115,6 +117,10 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
   mode: ProgressBarMode = 'determinate';
   bufferValue = 75;
   chartsLabelsdefined: any = [];
+  maxStartTime: any;
+  selectedStartTimeValue: any ='00:00';
+  selectedEndTimeValue: any ='11:59';
+  endTimeStart:any;
   lineChartData1:  ChartDataSets[] = [{ data: [], label: '' },];
   lineChartData2:  ChartDataSets[] = [{ data: [], label: '' },];
   lineChartData3:  ChartDataSets[] = [{ data: [], label: '' },];
@@ -788,10 +794,14 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
     this.FuelData = this.reportMapService.getConvertedFleetFuelDataBasedOnPref(this.displayData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
     this.updateDataSource(this.FuelData);
     this.setTableInfo();
-    this.hideloader();
+    // this.hideloader();
+    this.isDriverData = true;
+    this.completeHideLoader();
     this.idleDurationCount();
     }, (error)=>{
-      this.hideloader();
+      // this.hideloader();
+      this.isDriverData = true;
+      this.completeHideLoader();
       this.noRecordFound = true;
     });
   }
@@ -936,12 +946,14 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
     if(_vinData.length > 0){
       this.showLoadingIndicator = true; 
       this.loadfleetFuelDetails(_vinData);
-      this.hideloader();
+      // this.hideloader();
       this.isChartsOpen = true;
       this.isSummaryOpen = true;
       this.isDetailsOpen = true;
       this.tripData.forEach(element => { }, (error)=>{
-         this.hideloader();
+        //  this.hideloader();
+        this.isDriverData = true;
+        this.completeHideLoader();
          this.tripData = [];
           this.tableInfoObj = {};
          this.updateDataSource(this.FuelData);
@@ -963,10 +975,20 @@ export class FleetFuelReportDriverComponent implements OnInit, OnDestroy {
      this.setChartData(this.chartDataSet);
      this.graphData = graphData;
      this.showGraph = true;
-     this.hideloader();
+    //  this.hideloader();
+    this.isGraphData = true;
+    this.completeHideLoader();
     }, (error)=>{
-      this.hideloader();
+      // this.hideloader();
+      this.isGraphData = true;
+      this.completeHideLoader();
     });
+  }
+
+  completeHideLoader(){
+    if(this.isDriverData && this.isGraphData){
+      this.hideloader();
+    }
   }
 
   updateDataSource(tableData: any) {
@@ -1771,14 +1793,30 @@ setDefaultTodayDate(){
 
   endTimeChanged(selectedTime: any) {
     this.internalSelection = true;
-    this.selectedEndTime = selectedTime;
+    this.selectedEndTime = this.selectedEndTimeValue;
     if(this.prefTimeFormat == 24){
-      this.endTimeDisplay = selectedTime + ':59';
+      this.endTimeDisplay = this.selectedEndTimeValue + ':59';
     }
     else{
-      this.endTimeDisplay = selectedTime;
+      this.endTimeDisplay = this.selectedEndTimeValue;
     }
     this.endDateValue = this.setStartEndDateTime(this.endDateValue, this.selectedEndTime, 'end');
+    let startDate1 = this.startDateValue.getFullYear() + "/" + (this.startDateValue.getMonth() + 1) + "/" + this.startDateValue.getDate();
+    let endDate1 = this.endDateValue.getFullYear() + "/" + (this.endDateValue.getMonth() + 1) + "/" + this.endDateValue.getDate();
+    if(startDate1 == endDate1){
+      this.maxStartTime = this.selectedEndTime;
+      this.endTimeStart = this.selectedStartTime; 
+    }
+    else{
+      this.maxStartTime = this.selectedEndTime;
+      if (this.prefTimeFormat == 24) {
+        this.maxStartTime = '23:59';
+      }
+      else{
+        this.maxStartTime = '11:59';
+      }
+      this.endTimeStart = "00:00";
+    }
     this.resetTripFormControlValue(); 
     this.filterDateData();
   }
@@ -1922,22 +1960,60 @@ setVehicleGroupAndVehiclePreSelection() {
       dateTime = this.todayDate;
     }
     this.endDateValue = this.setStartEndDateTime(dateTime, this.selectedEndTime, 'end');
+    let startDate1 = this.startDateValue.getFullYear() + "/" + (this.startDateValue.getMonth() + 1) + "/" + this.startDateValue.getDate();
+    let endDate1 = this.endDateValue.getFullYear() + "/" + (this.endDateValue.getMonth() + 1) + "/" + this.endDateValue.getDate();
+    if(startDate1 == endDate1){
+      this.maxStartTime = this.selectedEndTime;
+      this.endTimeStart = this.selectedStartTime; 
+    }
+    else{
+      if (this.prefTimeFormat == 24) {
+        this.maxStartTime = '23:59';
+      }
+      else{
+        this.maxStartTime = '11:59';
+      }
+      this.endTimeStart = "00:00";
+    }
     this.resetTripFormControlValue(); 
     this.filterDateData(); 
   }
 
   startTimeChanged(selectedTime: any) {
     this.internalSelection = true;
-    this.selectedStartTime = selectedTime;
+    this.selectedStartTime = this.selectedStartTimeValue;
     if(this.prefTimeFormat == 24){
-      this.startTimeDisplay = selectedTime + ':00';
+      this.startTimeDisplay = this.selectedStartTimeValue + ':00';
     }
     else{
-      this.startTimeDisplay = selectedTime;
+      this.startTimeDisplay = this.selectedStartTimeValue;
     }
     this.startDateValue = this.setStartEndDateTime(this.startDateValue, this.selectedStartTime, 'start');
+    let startDate1 = this.startDateValue.getFullYear() + "/" +(this.startDateValue.getMonth() + 1) + "/" + this.startDateValue.getDate();
+    let endDate1 = this.endDateValue.getFullYear() + "/" + (this.endDateValue.getMonth() + 1) + "/" + this.endDateValue.getDate();
+    if(startDate1 == endDate1){
+    this.maxStartTime = this.selectedEndTime;
+    this.endTimeStart = this.selectedStartTime; 
+    }
+    else{
+      if (this.prefTimeFormat == 24) {
+        this.maxStartTime = '23:59';
+      }
+      else{
+        this.maxStartTime = '11:59';
+      }
+      this.endTimeStart = "00:00";
+    }
     this.resetTripFormControlValue(); 
     this.filterDateData();
+  }
+
+  getStartTimeChanged(time: any) {
+    this.selectedStartTimeValue = time;
+  }
+
+  getEndTimeChanged(time: any) {
+    this.selectedEndTimeValue = time;
   }
 
   changeStartDateEvent(event: MatDatepickerInputEvent<any>){
@@ -1953,6 +2029,21 @@ setVehicleGroupAndVehiclePreSelection() {
       dateTime = this.last3MonthDate;
     }
     this.startDateValue = this.setStartEndDateTime(dateTime, this.selectedStartTime, 'start');
+    let startDate1 = this.startDateValue.getFullYear() + "/" + (this.startDateValue.getMonth() + 1)+ "/" + this.startDateValue.getDate();
+    let endDate1 = this.endDateValue.getFullYear() + "/" + (this.endDateValue.getMonth() + 1)+ "/" + this.endDateValue.getDate();
+    if(startDate1 == endDate1){
+      this.maxStartTime = this.selectedEndTime;
+      this.endTimeStart = this.selectedStartTime; 
+    }
+    else{
+      if (this.prefTimeFormat == 24) {
+        this.maxStartTime = '23:59';
+      }
+      else{
+        this.maxStartTime = '11:59';
+      }
+      this.endTimeStart = "00:00";
+    }
     this.resetTripFormControlValue(); 
     this.filterDateData(); 
   }
