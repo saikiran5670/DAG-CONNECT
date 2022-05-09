@@ -133,6 +133,7 @@ logbookDataFlag: boolean = false;
 herePOIArr: any = [];
 getLogbookDetailsAPICall: any;
 vehicleDisplayPreference: any = 'dvehicledisplay_VehicleName';
+isLogbookDtChange: boolean = false;
 prefMapData: any = [
   {
     key: 'rp_lb_logbook_details_alertlevel',
@@ -889,7 +890,7 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
     let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone);
     let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);
     //let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
-    if(this._state && this._state.fromVehicleDetails){
+    if(!this.isLogbookDtChange && this._state && this._state.fromVehicleDetails){
       _startTime = this._state.data.startDate;
       _endTime = this._state.data.endDate;
     }
@@ -1123,6 +1124,7 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
   }
 
   onReset(){
+    this._state=null;
     this.herePOIArr = [];
     this.internalSelection = false;
     this.setDefaultStartEndTime();
@@ -1620,6 +1622,7 @@ let prepare = []
 
   startTimeChanged(selectedTime: any) {
     this.internalSelection = true;
+    this.isLogbookDtChange = true;
     this.selectedStartTime = selectedTime;
     if(this.prefTimeFormat == 24){
       this.startTimeDisplay = selectedTime + ':00';
@@ -1636,6 +1639,7 @@ let prepare = []
 
   endTimeChanged(selectedTime: any) {
     this.internalSelection = true;
+    this.isLogbookDtChange = true;
     this.selectedEndTime = selectedTime;
     if(this.prefTimeFormat == 24){
       this.endTimeDisplay = selectedTime + ':59';
@@ -1745,6 +1749,7 @@ let prepare = []
   }
 
   changeStartDateEvent(event: MatDatepickerInputEvent<any>){
+    this.isLogbookDtChange = true;
     this.setDefaultDates();
     this.internalSelection = true;
     let dateTime: any = '';
@@ -1763,6 +1768,7 @@ let prepare = []
   }
 
   changeEndDateEvent(event: MatDatepickerInputEvent<any>){
+    this.isLogbookDtChange = true;
     this.setDefaultDates();
     this.internalSelection = true;
     let dateTime: any = '';
