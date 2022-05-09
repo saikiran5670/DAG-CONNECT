@@ -182,7 +182,7 @@
                     <mat-error *ngIf="accountInfoForm.get('loginEmail').hasError('required')">
                       {{ translationData.lblPleaseenteremailID }}
                     </mat-error>
-                    <mat-error *ngIf="accountInfoForm.get('loginEmail').hasError('email')">
+                    <mat-error *ngIf="accountInfoForm.get('loginEmail').hasError('pattern')">
                       {{ translationData.lblPleaseentervalidemailID  }}
                     </mat-error>
                     <mat-error *ngIf="emailErrorMsg">
