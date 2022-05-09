@@ -319,6 +319,12 @@ export class FuelBenchmarkingComponent implements OnInit {
         break;
       }
     }
+    if(this.test.length <= 3){
+      this.makeAddDisable = false;      
+    }
+    else{
+      this.makeAddDisable = true;
+    }
     this.resetTripFormControlValue(); // extra addded as per discuss with Atul
     this.filterDateData(); // extra addded as per discuss with Atul
   }
@@ -698,6 +704,9 @@ export class FuelBenchmarkingComponent implements OnInit {
           if (this.test.length >= 4) {
             this.makeAddDisable = true;
           }
+          else{
+            this.makeAddDisable = false;
+          }
         }
         this.hideloader();
       }, (complete) => {
@@ -724,6 +733,9 @@ export class FuelBenchmarkingComponent implements OnInit {
           if (this.test.length >= 4) {
             this.makeAddDisable = true;
           }
+          else{
+            this.makeAddDisable = false;
+          }
         }
         this.hideloader();
       }, (complete) => {
@@ -744,6 +756,12 @@ export class FuelBenchmarkingComponent implements OnInit {
     if (event.value || event.value == 0) {
     } else {
       this.fuelBenchmarkingForm.get('vehicleGroup').setValue(parseInt(this.fuelBenchmarkingSearchData.vehicleGroupDropDownValue));
+    }
+    if(this.test.length <= 3){
+      this.makeAddDisable = false;      
+    }
+    else{
+      this.makeAddDisable = true;
     }
   }
 
@@ -933,6 +951,7 @@ export class FuelBenchmarkingComponent implements OnInit {
     this.setDefaultTodayDate();
     this.tripData = [];
     this.vehicleListData = [];
+    this.test = [];
     this.resetTripFormControlValue();
     this.filterDateData(); // extra addded as per discuss with Atul
   }
@@ -967,10 +986,10 @@ export class FuelBenchmarkingComponent implements OnInit {
 
   onBenchmarkChange(event: any) {
     this.onReset();
-    this.selectionValueBenchmarkBY = '';
-    this.makeAddDisable = false;
-    this.makeDisableVehicleGroup = false;
-    this.makeDisableTimePeriod = false;
+    // this.selectionValueBenchmarkBY = '';
+    // this.makeAddDisable = false;
+    // this.makeDisableVehicleGroup = false;
+    // this.makeDisableTimePeriod = false;
     this.selectedBenchmarking = event.value;
     if (this.test.length > 0) {
       this.test = [];
