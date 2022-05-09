@@ -928,7 +928,13 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
       this.showLoadingIndicator = true;
       this.getLogbookDetailsAPICall = this.reportService.getLogbookDetails(objData).subscribe((logbookData: any) => {
         this.hideloader();
-        let logBookResult = logbookData;
+        // let logBookResult = logbookData;
+        let logBookResult = [];
+        logbookData.forEach((ele, i) => {
+          if ((ele.latitude >= -90 && ele.latitude <= 90) && (ele.longitude >= -180 && ele.longitude <= 180)) {
+            logBookResult.push(ele)
+          }
+        })
         // let logBookResult : any = this.removeDuplicates(logbookData, "alertId");
         let newLogbookData = [];
         logbookData.forEach(element => {
