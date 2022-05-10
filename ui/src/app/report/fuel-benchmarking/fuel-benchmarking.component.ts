@@ -105,6 +105,10 @@ export class FuelBenchmarkingComponent implements OnInit {
   calendarpreferenceOption: any = "";
   calendarValue: any = [];
   summaryObj: any = [];
+  maxStartTime: any;
+  selectedStartTimeValue: any ='00:00';
+  selectedEndTimeValue: any ='11:59';
+  endTimeStart:any;
   barChartOptions: any = {
     responsive: true,
     legend: {
@@ -315,6 +319,12 @@ export class FuelBenchmarkingComponent implements OnInit {
         break;
       }
     }
+    if(this.test.length <= 3){
+      this.makeAddDisable = false;      
+    }
+    else{
+      this.makeAddDisable = true;
+    }
     this.resetTripFormControlValue(); // extra addded as per discuss with Atul
     this.filterDateData(); // extra addded as per discuss with Atul
   }
@@ -505,6 +515,21 @@ export class FuelBenchmarkingComponent implements OnInit {
       dateTime = this.last3MonthDate;
     }
     this.startDateValue = this.setStartEndDateTime(dateTime, this.selectedStartTime, 'start');
+    let startDate1 = this.startDateValue.getFullYear() + "/" + (this.startDateValue.getMonth() + 1) + "/" + this.startDateValue.getDate();
+    let endDate1 = this.endDateValue.getFullYear() + "/" + (this.endDateValue.getMonth() + 1) + "/" + this.endDateValue.getDate();
+    if(startDate1 == endDate1){
+      this.maxStartTime = this.selectedEndTime;
+      this.endTimeStart = this.selectedStartTime; 
+    }
+    else{
+      if (this.prefTimeFormat == 24) {
+        this.maxStartTime = '23:59';
+      }
+      else{
+        this.maxStartTime = '11:59';
+      }
+      this.endTimeStart = "00:00";
+    }
     this.resetTripFormControlValue(); // extra addded as per discuss with Atul
     this.filterDateData(); // extra addded as per discuss with Atul
   }
@@ -679,6 +704,9 @@ export class FuelBenchmarkingComponent implements OnInit {
           if (this.test.length >= 4) {
             this.makeAddDisable = true;
           }
+          else{
+            this.makeAddDisable = false;
+          }
         }
         this.hideloader();
       }, (complete) => {
@@ -705,6 +733,9 @@ export class FuelBenchmarkingComponent implements OnInit {
           if (this.test.length >= 4) {
             this.makeAddDisable = true;
           }
+          else{
+            this.makeAddDisable = false;
+          }
         }
         this.hideloader();
       }, (complete) => {
@@ -725,6 +756,12 @@ export class FuelBenchmarkingComponent implements OnInit {
     if (event.value || event.value == 0) {
     } else {
       this.fuelBenchmarkingForm.get('vehicleGroup').setValue(parseInt(this.fuelBenchmarkingSearchData.vehicleGroupDropDownValue));
+    }
+    if(this.test.length <= 3){
+      this.makeAddDisable = false;      
+    }
+    else{
+      this.makeAddDisable = true;
     }
   }
 
@@ -771,6 +808,21 @@ export class FuelBenchmarkingComponent implements OnInit {
       dateTime = this.todayDate;
     }
     this.endDateValue = this.setStartEndDateTime(dateTime, this.selectedEndTime, 'end');
+    let startDate1 = this.startDateValue.getFullYear() + "/" + (this.startDateValue.getMonth() + 1)+ "/" + this.startDateValue.getDate();
+    let endDate1 = this.endDateValue.getFullYear() + "/" + (this.endDateValue.getMonth() + 1) + "/" + this.endDateValue.getDate();
+    if(startDate1 == endDate1){
+      this.maxStartTime = this.selectedEndTime;
+      this.endTimeStart = this.selectedStartTime; 
+    }
+    else{
+      if (this.prefTimeFormat == 24) {
+        this.maxStartTime = '23:59';
+      }
+      else{
+        this.maxStartTime = '11:59';
+      }
+      this.endTimeStart = "00:00";
+    }
     this.resetTripFormControlValue(); // extra addded as per discuss with Atul
     this.filterDateData(); // extra addded as per discuss with Atul
   }
@@ -783,30 +835,69 @@ export class FuelBenchmarkingComponent implements OnInit {
     this.showLoadingIndicator = false;
   }
 
+  getStartTimeChanged(time: any){
+    this.selectedStartTimeValue = time;
+  }
+
+  getEndTimeChanged(time: any){
+    this.selectedEndTimeValue = time;
+  }
+
   startTimeChanged(selectedTime: any) {
     this.internalSelection = true;
-    this.selectedStartTime = selectedTime;
+    this.selectedStartTime = this.selectedStartTimeValue;
     if (this.prefTimeFormat == 24) {
-      this.startTimeDisplay = selectedTime + ':00';
+      this.startTimeDisplay = this.selectedStartTimeValue + ':00';
     }
     else {
-      this.startTimeDisplay = selectedTime;
+      this.startTimeDisplay = this.selectedStartTimeValue;
     }
     this.startDateValue = this.setStartEndDateTime(this.startDateValue, this.selectedStartTime, 'start');
+    let startDate1 = this.startDateValue.getFullYear() + "/" + (this.startDateValue.getMonth() + 1) + "/" + this.startDateValue.getDate();
+    let endDate1 = this.endDateValue.getFullYear() + "/" + (this.endDateValue.getMonth() + 1) + "/" + this.endDateValue.getDate();
+    if(startDate1 == endDate1){
+    this.maxStartTime = this.selectedEndTime;
+    this.endTimeStart = this.selectedStartTime; 
+    }
+    else{
+      if (this.prefTimeFormat == 24) {
+        this.maxStartTime = '23:59';
+      }
+      else{
+        this.maxStartTime = '11:59';
+      }
+      this.endTimeStart = "00:00";
+    }
     this.resetTripFormControlValue(); // extra addded as per discuss with Atul
     this.filterDateData(); // extra addded as per discuss with Atul
   }
 
   endTimeChanged(selectedTime: any) {
     this.internalSelection = true;
-    this.selectedEndTime = selectedTime;
+    this.selectedEndTime = this.selectedEndTimeValue;
     if (this.prefTimeFormat == 24) {
-      this.endTimeDisplay = selectedTime + ':59';
+      this.endTimeDisplay = this.selectedEndTimeValue + ':59';
     }
     else {
-      this.endTimeDisplay = selectedTime;
+      this.endTimeDisplay = this.selectedEndTimeValue;
     }
     this.endDateValue = this.setStartEndDateTime(this.endDateValue, this.selectedEndTime, 'end');
+    let startDate1 = this.startDateValue.getFullYear() + "/" + (this.startDateValue.getMonth() + 1) + "/" + this.startDateValue.getDate();
+    let endDate1 = this.endDateValue.getFullYear() + "/" + (this.endDateValue.getMonth() + 1) + "/" + this.endDateValue.getDate();
+    if(startDate1 == endDate1){
+      this.maxStartTime = this.selectedEndTime;
+      this.endTimeStart = this.selectedStartTime; 
+    }
+    else{
+      this.maxStartTime = this.selectedEndTime;
+      if (this.prefTimeFormat == 24) {
+        this.maxStartTime = '23:59';
+      }
+      else{
+        this.maxStartTime = '11:59';
+      }
+      this.endTimeStart = "00:00";
+    }
     this.resetTripFormControlValue(); // extra addded as per discuss with Atul
     this.filterDateData(); // extra addded as per discuss with Atul
   }
@@ -860,6 +951,7 @@ export class FuelBenchmarkingComponent implements OnInit {
     this.setDefaultTodayDate();
     this.tripData = [];
     this.vehicleListData = [];
+    this.test = [];
     this.resetTripFormControlValue();
     this.filterDateData(); // extra addded as per discuss with Atul
   }
@@ -894,10 +986,10 @@ export class FuelBenchmarkingComponent implements OnInit {
 
   onBenchmarkChange(event: any) {
     this.onReset();
-    this.selectionValueBenchmarkBY = '';
-    this.makeAddDisable = false;
-    this.makeDisableVehicleGroup = false;
-    this.makeDisableTimePeriod = false;
+    // this.selectionValueBenchmarkBY = '';
+    // this.makeAddDisable = false;
+    // this.makeDisableVehicleGroup = false;
+    // this.makeDisableTimePeriod = false;
     this.selectedBenchmarking = event.value;
     if (this.test.length > 0) {
       this.test = [];
