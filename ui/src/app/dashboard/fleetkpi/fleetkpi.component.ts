@@ -549,7 +549,9 @@ export class FleetkpiComponent implements OnInit, OnDestroy {
     
     if(_storage && dayflag){
       this.callToProceed(_storage); // from Storage
-    }else{
+    } else if (localStorage.getItem('contextSwitchFlag') == 'true') {
+      this.callFleetData(_kpiPayload); // from API
+    } else {
       this.callFleetData(_kpiPayload); // from API
     } 
   }

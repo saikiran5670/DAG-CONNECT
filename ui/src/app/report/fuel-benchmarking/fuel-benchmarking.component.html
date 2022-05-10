@@ -103,14 +103,16 @@
                         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" class="timepicker"
                           style='margin-top: 4px;'>
                           <span class='timeAdjustSpan'>{{ startTimeDisplay }}</span>
-                          <input [disabled]="makeDisableTimePeriod" [max]='selectedEndTime'
+                          <input [disabled]="makeDisableTimePeriod" [max]='maxStartTime'
                             [(ngModel)]="selectedStartTime" class='inputBox' [format]="prefTimeFormat"
                             [ngxTimepicker]="toggleStartTimepicker" [disableClick]="true" formControlName="startTime"
                             readonly>
                           <ngx-material-timepicker-toggle [for]="toggleStartTimepicker">
                           </ngx-material-timepicker-toggle>
-                          <ngx-material-timepicker (timeChanged)="startTimeChanged($event)" #toggleStartTimepicker>
+                          <ngx-material-timepicker (timeChanged)="getStartTimeChanged($event)" #toggleStartTimepicker [cancelBtnTmpl]="cancelBtn" [confirmBtnTmpl]="confirmBtn">
                           </ngx-material-timepicker>
+                          <ng-template #cancelBtn> <button class="timepicker-button">Cancel</button> </ng-template> 
+                          <ng-template #confirmBtn > <button class="timepicker-button" (click)="startTimeChanged($event)">Ok</button> </ng-template>  
                         </div>
                       </div>
                     </div>
@@ -134,13 +136,15 @@
                         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" class="timepicker"
                           style='margin-top: 4px;'>
                           <span class='timeAdjustSpan'>{{ endTimeDisplay }}</span>
-                          <input [disabled]="makeDisableTimePeriod" [min]='selectedStartTime'
+                          <input [disabled]="makeDisableTimePeriod" [min]='endTimeStart'
                             [(ngModel)]="selectedEndTime" class='inputBox' [format]="prefTimeFormat"
                             [ngxTimepicker]="toggleEndTimepicker" [disableClick]="true" formControlName="endTime"
                             readonly>
                           <ngx-material-timepicker-toggle [for]="toggleEndTimepicker"></ngx-material-timepicker-toggle>
-                          <ngx-material-timepicker (timeChanged)="endTimeChanged($event)" #toggleEndTimepicker>
+                          <ngx-material-timepicker (timeChanged)="getEndTimeChanged($event)" #toggleEndTimepicker [cancelBtnTmpl]="cancelBtn2" [confirmBtnTmpl]="confirmBtn2">
                           </ngx-material-timepicker>
+                          <ng-template #cancelBtn2> <button class="timepicker-button">Cancel</button> </ng-template> 
+                          <ng-template #confirmBtn2 > <button class="timepicker-button" (click)="endTimeChanged($event)">Ok</button> </ng-template>  
                         </div>
                       </div>
                     </div>

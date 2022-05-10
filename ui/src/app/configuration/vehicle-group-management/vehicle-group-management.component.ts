@@ -72,15 +72,25 @@ export class VehicleGroupManagementComponent implements OnInit {
       filter: "",
       menuId: 27 //-- for vehicle group mgnt
     }
-    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-      this.processTranslation(data);
+   
+    let menuId = 'menu_27_' + this.localStLanguage.code;
+    if (!localStorage.getItem(menuId)) {
+      this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+        this.processTranslation(data);
+        this.loadVehicleGroupData();
+      });
+    } else {
+      this.translationData = JSON.parse(localStorage.getItem(menuId));
       this.loadVehicleGroupData();
-    });
+    }
+    
   }
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    ////console.log("process translationData:: ", this.translationData)
+    let langCode =this.localStLanguage? this.localStLanguage.code : 'EN-GB';
+    let menuId = 'menu_27_'+ langCode;
+    localStorage.setItem(menuId, JSON.stringify(this.translationData));
   }
 
   applyFilter(filterValue: string) {

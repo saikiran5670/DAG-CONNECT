@@ -275,6 +275,8 @@ export class AppComponent {
   messages: any[] = [];
   subscription: Subscription;
   showTimer: boolean = false;
+  accountRoleLevel: string;
+  contextSwitchFlag: string = 'false';
   public langFilterCtrl: FormControl = new FormControl();
   public filteredLanguages: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredOrganizationList: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
@@ -427,6 +429,7 @@ export class AppComponent {
 
   getNavigationMenu() {
     let parseLanguageCode = JSON.parse(localStorage.getItem("language"));
+    this.accountRoleLevel = localStorage.getItem('roleLevel');
     let refresh = localStorage.getItem('pageRefreshed') == 'true';
     this.orgContextType = localStorage.getItem("orgContextStatus") == 'true';
     if(refresh && this.orgContextType) {
@@ -439,23 +442,23 @@ export class AppComponent {
         "languageCode": parseLanguageCode.code
       }
       this.accountService.getMenuFeatures(featureMenuObj).subscribe((result: any) => {
-        this.accountService.getSessionInfo().subscribe((accountData: any) => {
-          this.getMenu(result, 'orgRoleChange', accountData);
+        // this.accountService.getSessionInfo().subscribe((accountData: any) => {
+          this.getMenu(result, 'orgRoleChange', this.accountRoleLevel);
           this.timeLeft = Number.parseInt(localStorage.getItem("liveFleetTimer"));
             this.getOfflineNotifications();
             let accinfo = JSON.parse(localStorage.getItem("accountInfo"))
             this.loadBrandlogoForReports(accinfo);
           // }
           //this.getReportDetails();
-        }, (err) => {
-        });
+        // }, (err) => {
+        // });
       }, (error) => {
         //console.log(error);
       });
     }
   }
 
-  getMenu(data: any, from?: any, accountData?: any) {
+  getMenu(data: any, from?: any, accountRoleLevel?: string) {
     this.menuPages = data;
     //-- This will handle externalLink and Icons for Navigation Menu --//
     let landingPageMenus: any = [];
@@ -479,6 +482,10 @@ export class AppComponent {
     localStorage.setItem("accountNavMenu", JSON.stringify(landingPageMenus));
     let refreshPage = localStorage.getItem('pageRefreshed') == 'true';
     if(refreshPage || from == 'orgContextSwitch'){
+      if(from == 'orgContextSwitch') {
+        this.contextSwitchFlag = 'true';
+        localStorage.setItem('contextSwitchFlag',this.contextSwitchFlag);
+      }
       let _feature: any = JSON.parse(localStorage.getItem("accountFeatures"));
       if(_feature && _feature.features && _feature.features.length > 0){
         _feature.menus = this.menuPages.menus; 
@@ -486,6 +493,7 @@ export class AppComponent {
       }
       localStorage.removeItem('pageRefreshed');
     }else{
+      localStorage.removeItem('contextSwitchFlag');
       localStorage.setItem("accountFeatures", JSON.stringify(this.menuPages));
     }
     //-- For checking Access of the User --//
@@ -579,8 +587,8 @@ export class AppComponent {
         this.userType = "Admin#Account";
       }
 
-      if(accountData && accountData.roleLevel){ // added logIn user level. Bug- #19027
-        this.userLevel = Number(accountData.roleLevel);
+      if(accountRoleLevel){ // added logIn user level. Bug- #19027
+        this.userLevel = Number(accountRoleLevel);
       }
 
       if (accessNameList.includes("Admin#TranslationManagement#Inspect")){
@@ -807,6 +815,9 @@ export class AppComponent {
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
     this.translationService.applicationTranslationData = this.translationData;
+    let langCode =this.localStLanguage? this.localStLanguage.code : 'EN-GB';
+    let menuId = 'menu_0_'+ langCode;
+    localStorage.setItem(menuId, JSON.stringify(this.translationData));
   }
 
   ngOnInit() {
@@ -1048,6 +1059,8 @@ export class AppComponent {
           this.landingPageForm.get('role').setValue(this.selectedRoles[0].id);
           localStorage.setItem("accountRoleId", this.selectedRoles[0].id);
           this.userRole = this.selectedRoles[0].name;
+          let selectedRoleLevel = this.selectedRoles[0].level;
+          localStorage.setItem('roleLevel', selectedRoleLevel);
         }
         else {
           this.selectedRoles = [];
@@ -1117,11 +1130,17 @@ export class AppComponent {
       languageCode: this.localStLanguage.code
     }
     this.accountService.switchOrgContext(switchObj).subscribe((data: any) => {
-      this.accountService.getSessionInfo().subscribe((accountData: any) => {
-        this.getMenu(data, 'orgContextSwitch', accountData);
+      localStorage.setItem('vehUtilisation_lastweek','');
+      localStorage.setItem('vehUtilisation_lastmonth','');
+      localStorage.setItem('vehUtilisation_last3month','');
+      localStorage.setItem('fleetKPI_lastweek','');
+      localStorage.setItem('fleetKPI_lastmonth','');
+      localStorage.setItem('fleetKPI_last3month','');
+      // this.accountService.getSessionInfo().subscribe((accountData: any) => {
+        this.getMenu(data, 'orgContextSwitch', this.accountRoleLevel);
         let accinfo = JSON.parse(localStorage.getItem("accountInfo"))
         this.loadBrandlogoForReports(accinfo);
-      });
+      // });
     }, (error) => {
     });  
     this.signalRService.ngOnDestroy();

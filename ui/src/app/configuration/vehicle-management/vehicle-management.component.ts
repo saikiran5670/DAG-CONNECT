@@ -43,10 +43,17 @@ export class VehicleManagementComponent implements OnInit {
       filter: '',
       menuId: 21 //-- for vehicle mgnt
     };
-    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-      this.processTranslation(data);    
+
+    let menuId = 'menu_21_' + this.localStLanguage.code;
+    if (!localStorage.getItem(menuId)) {
+      this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+        this.processTranslation(data);
+        this.checkVehicleConnectionSetting();
+      });
+    } else {
+      this.translationData = JSON.parse(localStorage.getItem(menuId));
       this.checkVehicleConnectionSetting();
-    });
+    }
     //let currentComponentUrl: String;
     // currentComponentUrl = this.route.routerState.snapshot.url
     // if(currentComponentUrl == "/vehicleconnectsettings")
@@ -61,6 +68,9 @@ export class VehicleManagementComponent implements OnInit {
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc: any, cur: any) => ({ ...acc, [cur.name]: cur.value }),{});
+    let langCode =this.localStLanguage? this.localStLanguage.code : 'EN-GB';
+    let menuId = 'menu_21_'+ langCode;
+    localStorage.setItem(menuId, JSON.stringify(this.translationData));
   }
 
   loadVehicleData(){

@@ -145,8 +145,14 @@ export class UserGroupManagementComponent implements OnInit {
       filter: "",
       menuId: 24 //-- for user grp mgnt
     }
-    this.translationService.getMenuTranslations(translationObj).subscribe((data) => {
-      this.processTranslation(data);
+    let menuId = 'menu_24_' + this.localStLanguage.code;
+    if (!localStorage.getItem(menuId)) {
+      this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+        this.processTranslation(data);
+      });
+    } else {
+      this.translationData = JSON.parse(localStorage.getItem(menuId));
+    }
 
       if(this.userDetailsType != undefined){
         let sessionVal = JSON.parse(sessionStorage.getItem('selectedRowItems'));
@@ -156,12 +162,13 @@ export class UserGroupManagementComponent implements OnInit {
         this.router.navigate([]);
       }
       this.loadUserGroupData();
-    });
   }
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    ////console.log("process translationData:: ", this.translationData)
+    let langCode =this.localStLanguage? this.localStLanguage.code : 'EN-GB';
+    let menuId = 'menu_24_'+ langCode;
+    localStorage.setItem(menuId, JSON.stringify(this.translationData));
   }
 
   applyFilter(filterValue: string) {

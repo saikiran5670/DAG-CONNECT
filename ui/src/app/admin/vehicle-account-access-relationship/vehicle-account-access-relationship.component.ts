@@ -63,6 +63,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
     this.userType = localStorage.getItem("userType");
     this.prefDetail = JSON.parse(localStorage.getItem('prefDetail'));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    
     let translationObj = {
       id: 0,
       code: this.localStLanguage.code,
@@ -72,10 +73,23 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
       filter: "",
       menuId: 30 //-- for access relationship mgnt
     }
+
+    let menuId = 'menu_30_' + this.localStLanguage.code;
     this.showLoadingIndicator = true;
-    this.translationService.getMenuTranslations(translationObj).subscribe( (data: any) => {
-      this.processTranslation(data);
+    if(!localStorage.getItem(menuId)){
+      this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+        this.processTranslation(data);
+        this.columnNames = [this.translationData.lblVehicleGroupVehicle, this.translationData.lblAccessType, this.translationData.lblAccountGroupAccount, this.translationData.lblAction];
+        this.hideloader();
+      }, (error)=>{
+        this.hideloader();
+      });
+    } else{
+      this.translationData = JSON.parse(localStorage.getItem(menuId));
       this.columnNames = [this.translationData.lblVehicleGroupVehicle, this.translationData.lblAccessType, this.translationData.lblAccountGroupAccount, this.translationData.lblAction];
+      this.hideloader();
+    }
+      
       if(this.prefDetail){
         if (this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != '') { 
           this.proceedStep(this.accountPrefObj.accountPreference);
@@ -87,9 +101,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
           });
         } 
       }
-    }, (error)=>{
-      this.hideloader();
-    });
+
   }
 
   proceedStep(preference: any){
@@ -129,7 +141,9 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
 
   processTranslation(transData: any){
     this.translationData = transData.reduce((acc: any, cur: any) => ({ ...acc, [cur.name]: cur.value }), {});
-    ////console.log("process translationData:: ", this.translationData)
+    let langCode =this.localStLanguage? this.localStLanguage.code : 'EN-GB';
+    let menuId = 'menu_30_'+ langCode;
+    localStorage.setItem(menuId, JSON.stringify(this.translationData));
   }
 
   applyFilter(filterValue: string) {

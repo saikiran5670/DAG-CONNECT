@@ -105,6 +105,13 @@ export class DriverTimeDetailComponent implements OnInit {
         this.brandimagePath = null;
       }
     });
+    // this.createChart([{
+    //   activityDate: 1649299853000,
+    //   code: 0,
+    //   duration: 43430000,
+    //   endTime: 1649299853000,
+    //   startTime: 1649299853000,
+    //   }]);
   }
 
   ngOnChanges(){
@@ -180,28 +187,38 @@ export class DriverTimeDetailComponent implements OnInit {
     let newObj=[];
     this.dayWiseSummaryList=[];
     _data.forEach(element => {
-      // let _startTime1 = Util.convertUtcToDateTZ(element.startTime,this.prefTimeZone);
-      let _startTime = Util.convertUtcToHour(element.startTime,this.prefTimeZone);
-      let _endTime = Util.convertUtcToHour(element.endTime,this.prefTimeZone);
-      // let _startTimeDate = Util.convertUtcToDateStart(element.startTime, this.prefTimeZone);
-      let _startTimeDate = Util.getMillisecondsToUTCDate(new Date(element.startTime), this.prefTimeZone);
+
+      // let _startTimeDate = Util.getMillisecondsToUTCDate(utc, this.prefTimeZone);
+      // console.log('actual:tzconv =>'+element.startTime+':'+ _startTimeDate );
+     
+      let _startTimeDate = this.reportMapService.formStartendDate(Util.convertUtcToDate(element.startTime, this.prefTimeZone), '', 24, false, false, false, true);
+      let _startTime = this.reportMapService.formStartendDate(Util.convertUtcToDate(element.startTime, this.prefTimeZone), '', 24, false, true, true, false)
+      let _endTime = this.reportMapService.formStartendDate(Util.convertUtcToDate(element.endTime, this.prefTimeZone), '', 24, false, true, true, false);
+
       let isValid=true;
-      if(_startTime == _endTime || (_startTime) > (_endTime)){
+      if(_startTime == _endTime || (_startTime) > (_endTime)){  
         isValid=false;
       }
-      // //console.log(this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false));
       if(isValid && element.duration > 0){
-        // //console.log('start'+element.startTime+' end '+element.endTime+' activity'+element.activityDate+' duration'+element.duration);
-        
-        // startTime=Util.convertUtcToDateFormat2(_startTimeDate, this.prefTimeZone);------
-        let formatDate = Util.convertUtcToDateAndTimeFormat(_startTimeDate, this.prefTimeZone,this.dateFormats);
-       startTime = formatDate[0];
-        // startTime=this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false);
-        // //console.log('sta'+_startTime+' end'+_endTime+' sa'+Util.convertUtcToDateStart(element.startTime, this.prefTimeZone)+' ac'+Util.convertUtcToDateFormat2(element.activityDate, this.prefTimeZone));
+        let tooltip;
+        let day, month, year;
+        if(_startTimeDate){
+          _startTimeDate = _startTimeDate.toString();
+          if(_startTimeDate.length < 8){
+            _startTimeDate = '0' + _startTimeDate;
+          }
+          day=(_startTimeDate.toString()).substring(0,2);
+          month=(_startTimeDate.toString()).substring(2,4);
+          year=(_startTimeDate.toString()).substring(4);
+          tooltip= month+'/'+day+'/'+year;
+          startTime = tooltip;
+        }
+        if(tooltip == "05/02/2022"){
+            console.log("start "+element.startTime+' '+element.endTIme);
+        }
         let restObj={
-          x :  _startTimeDate,
-          // actualDate: this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false),
-          actualDate: startTime,
+          x: Date.UTC(year, month-1, day),
+          actualDate: tooltip,
           duration: element.duration,
           low : _startTime,
           high:_endTime
@@ -236,7 +253,7 @@ export class DriverTimeDetailComponent implements OnInit {
           currentArray['driveTime']= currentArray.driveTime + element.duration;
         }
         // //console.log(currentArray.date+ ' ' + currentArray.restTime + ' ' + currentArray.workTime + ' ' + currentArray.availableTime + ' ' + currentArray.serviceTime);
-    }
+      }
     });
     let totDriveTime=0;
     let totAvailableTime=0;
@@ -266,6 +283,7 @@ export class DriverTimeDetailComponent implements OnInit {
     this.totalRestTime = Util.getHhMmTimeFromMS(totRestTime);
     this.totalServiceTime = Util.getHhMmTimeFromMS(totServiceTime);
     const tz=this.prefTimeZone;
+    const mapService = this.reportMapService;
     this.updateDataSource(this.dayWiseSummaryList);
       // //console.log("newObj" +JSON.stringify(newObj));
       this.chartOptions = {
@@ -310,76 +328,27 @@ export class DriverTimeDetailComponent implements OnInit {
                 symbol + '</span>'+ this.point.type +'</div>'+
                '<div>'+transFrom+':'+ this.point.actualDate +'&nbsp;&nbsp;'+ this.point.low +'</div>'+
                '<div>'+transTo+':'+ this.point.actualDate+'&nbsp;&nbsp;'+this.point.high +'</div>'+
-               '<div>'+transDuration+':' + Util.getTimeHHMMSS(this.point.duration)+'</div>'+
+               '<div>'+transDuration+':' + mapService.msToTime(this.point.duration)+'</div>'+
                '</div>'
             )
         },  useHTML: true},
         series: [{
           data: newObj
         }],
-        //   data: [{"x":1626805800000,"actualDate":"07/21/2021","duration":604000,"low":8.5,"high":8.53,"color":"blue","type":"Work"},{"x":1626805800000,"actualDate":"07/21/2021","duration":263926000,"low":7.8,"high":8.27,"color":"blue","type":"Work"},{"x":1626892200000,"actualDate":"07/22/2021","duration":44000,"low":2.53,"high":2.54,"color":"orange","type":"Drive"},]
-        // }],
-        //   data: [{"x":1625423400000,"duration":10899000,"low":0.1,"high":0.21,"color":"orange","type":"Drive"},{"x":1625423400000,"duration":1998000,"low":0.21,"high":0.25,"color":"orange","type":"Drive"}]
-        // }],
-          // data: JSON.stringify(newObj)        }],
-        // series: [{
-        //   data: [{
-        //     color: "blue",
-        //       high: 15,
-        //       low: 12,
-        //       x: 1625509800000,
-        //   },{
-        //     color: "red",
-        //     high: 17,
-        //     low: 16,
-        //     x: 1625337000000,
-        //   }
-        // ]
-        // }],
-        // series : [{
-        //   data : [{
-        //     low: 1262336400000,
-        //     high: 1262347200000,
-        //     color: 'blue',
-        //     x: 1262336400000
-        //   }]
-        // }],
-        // series: _seriesN,
-        // series : [{data:[ {
-        //           x: 2,
-        //           low: 1262336400000,//Date.UTC(2010, 0, 1, 9, 0, 0),
-        //           high: 1262347200000,//Date.UTC(2010, 0, 1, 12, 0, 0),
-        //           color: 'blue'
-        //         }]}],
-        // series: newObj,
-        // series: [{
-        //   data: [{
-        //       x: 0,
-        //       low: Date.UTC(2010, 0, 1, 9, 0, 0),
-        //       high: Date.UTC(2010, 0, 1, 12, 0, 0),
-        //       color: 'blue'
-        //     }
-    
-        //   ]
+        //   data: [{"x":1626805800000,"actualDate":"07/21/2021","duration":604000,"low":1.5,"high":8.53,"color":"blue","type":"Work"},{"x":1626805800000,"actualDate":"07/21/2021","duration":263926000,"low":7.8,"high":8.27,"color":"blue","type":"Work"},{"x":1626892200000,"actualDate":"07/22/2021","duration":44000,"low":2.53,"high":6.54,"color":"orange","type":"Drive"},{"x":1626892200000,"actualDate":"07/22/2021","duration":44000,"low":15.53,"high":22.54,"color":"orange","type":"Drive"}]
         // }],
         plotOptions: {
           series: {
-            pointWidth: 16,
+            pointWidth: 10,  
+            turboThreshold:0
           }
         },
         xAxis: {
-          labels: {
-            formatter: function() {
-                return Util.convertUtcToDateFormat2(this.value, tz);
-            },
-        },
-        // lineWidth: 2,
-        // tickInterval: 24*3600*1000*1,
-        // visible: false,
-        // tickInterval: 3600*1000*24,
-        lineWidth: 0,
-          minorGridLineWidth: 0,
-          lineColor: 'transparent',
+          type: 'datetime',
+          tickInterval: 24 * 3600 * 1000,
+      labels: {
+        format: '{value:%m/%e/%Y}'
+      },
         },
         yAxis: {
           type: 'numeric',
@@ -396,20 +365,7 @@ export class DriverTimeDetailComponent implements OnInit {
         legend: {
           enabled: false
         },
-      //   legend :{
-      //     useHTML: true,
-      //     symbolWidth: 0,
-      //     labelFormatter: function () {
-      //                  return '<div><div class="legend-color" style="background: rgb(0, 82, 155); display: inline-block; height: 17px; width: 30px;"></div><div style="display: inline-block; font: 16px Arial,Helvetica,sans-serif; font-weight: bold;"> Drive &nbsp;&nbsp;</div>'+
-      //                  '<div class="legend-color" style="background: rgb(252, 95, 1); display: inline-block; height: 17px; width: 30px;"></div><div style="display: inline-block; font: 16px Arial,Helvetica,sans-serif; font-weight: bold;"> Work &nbsp;&nbsp;</div>'+
-      //                  '<div class="legend-color" style="background: rgb(138, 197, 67); display: inline-block; height: 17px; width: 30px;"></div><div style="display: inline-block; font: 16px Arial,Helvetica,sans-serif; font-weight: bold;"> Rest &nbsp;&nbsp;</div>'+
-      //                  '<div class="legend-color" style="background: rgb(221, 222, 226); display: inline-block; height: 17px; width: 30px;"></div><div style="display: inline-block; font: 16px Arial,Helvetica,sans-serif; font-weight: bold;"> Available &nbsp;&nbsp;</div></div>'
-      //              }
-
-      // },
       }
-      // this.setGraphData();
-      // this.showLoadingIndicator=false;
   }
 
   setPrefFormatDate(){

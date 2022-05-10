@@ -132,7 +132,12 @@ fromMoreAlertsFlag: boolean = false;
 logbookDataFlag: boolean = false;
 herePOIArr: any = [];
 getLogbookDetailsAPICall: any;
+maxStartTime: any;
+selectedStartTimeValue: any ='00:00';
+selectedEndTimeValue: any ='11:59';
+endTimeStart:any;
 vehicleDisplayPreference: any = 'dvehicledisplay_VehicleName';
+isLogbookDtChange: boolean = false;
 prefMapData: any = [
   {
     key: 'rp_lb_logbook_details_alertlevel',
@@ -302,9 +307,16 @@ ngOnDestroy(){
         this.initMap();
         },0);
     }
-    
-    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-      this.processTranslation(data);
+
+    let menuId = 'menu_4_' + this.localStLanguage.code;
+    if(!localStorage.getItem(menuId)){
+      this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+        this.processTranslation(data);
+      });
+    } else{
+      this.translationData = JSON.parse(localStorage.getItem(menuId));
+    }
+
       this.mapFilterForm.get('trackType').setValue('snail');
       this.mapFilterForm.get('routeType').setValue('C');
       this.makeHerePOIList();
@@ -353,7 +365,7 @@ ngOnDestroy(){
           }
         }
       }
-    });
+    // });
     // if(this._state.fromDashboard == true){
     // this.selectionTimeRange('yesterday');
     // }
@@ -854,6 +866,9 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
+    let langCode =this.localStLanguage? this.localStLanguage.code : 'EN-GB';
+    let menuId = 'menu_4_'+ langCode;
+    localStorage.setItem(menuId, JSON.stringify(this.translationData));
   }
 
   public ngAfterViewInit() {
@@ -879,7 +894,7 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
     let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone);
     let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);
     //let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
-    if(this._state && this._state.fromVehicleDetails){
+    if(!this.isLogbookDtChange && this._state && this._state.fromVehicleDetails){
       _startTime = this._state.data.startDate;
       _endTime = this._state.data.endDate;
     }
@@ -918,7 +933,13 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
       this.showLoadingIndicator = true;
       this.getLogbookDetailsAPICall = this.reportService.getLogbookDetails(objData).subscribe((logbookData: any) => {
         this.hideloader();
-        let logBookResult = logbookData;
+        // let logBookResult = logbookData;
+        let logBookResult = [];
+        logbookData.forEach((ele, i) => {
+          if ((ele.latitude >= -90 && ele.latitude <= 90) && (ele.longitude >= -180 && ele.longitude <= 180)) {
+            logBookResult.push(ele)
+          }
+        })
         // let logBookResult : any = this.removeDuplicates(logbookData, "alertId");
         let newLogbookData = [];
         logbookData.forEach(element => {
@@ -1113,6 +1134,7 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
   }
 
   onReset(){
+    this._state=null;
     this.herePOIArr = [];
     this.internalSelection = false;
     this.setDefaultStartEndTime();
@@ -1610,30 +1632,71 @@ let prepare = []
 
   startTimeChanged(selectedTime: any) {
     this.internalSelection = true;
-    this.selectedStartTime = selectedTime;
+    this.isLogbookDtChange = true;
+    this.selectedStartTime = this.selectedStartTimeValue;
     if(this.prefTimeFormat == 24){
-      this.startTimeDisplay = selectedTime + ':00';
+      this.startTimeDisplay = this.selectedStartTimeValue + ':00';
     }
     else{
-      this.startTimeDisplay = selectedTime;
+      this.startTimeDisplay = this.selectedStartTimeValue;
     }
     this.startDateValue = this.setStartEndDateTime(this.startDateValue, this.selectedStartTime, 'start');
+    let startDate1 = this.startDateValue.getFullYear() + "/" + (this.startDateValue.getMonth() + 1) + "/" + this.startDateValue.getDate();
+    let endDate1 = this.endDateValue.getFullYear() + "/" + (this.endDateValue.getMonth() + 1) + "/" + this.endDateValue.getDate();
+    if(startDate1 == endDate1){
+    this.maxStartTime = this.selectedEndTime;
+    this.endTimeStart = this.selectedStartTime; 
+    }
+    else{
+      if (this.prefTimeFormat == 24) {
+        this.maxStartTime = '23:59';
+      }
+      else{
+        this.maxStartTime = '11:59';
+      }
+      this.endTimeStart = "00:00";
+    }
     this.resetLogFormControlValue(); // extra addded as per discuss with Atul
     
     this.filterDateData(); // extra addded as per discuss with Atul
  
   }
 
+  getStartTimeChanged(time: any){
+    this.selectedStartTimeValue = time;
+  }
+
+  getEndTimeChanged(time: any){
+    this.selectedEndTimeValue = time;
+  }
+
   endTimeChanged(selectedTime: any) {
     this.internalSelection = true;
-    this.selectedEndTime = selectedTime;
+    this.isLogbookDtChange = true;
+    this.selectedEndTime = this.selectedEndTimeValue;
     if(this.prefTimeFormat == 24){
-      this.endTimeDisplay = selectedTime + ':59';
+      this.endTimeDisplay = this.selectedEndTimeValue; + ':59';
     }
     else{
-      this.endTimeDisplay = selectedTime;
+      this.endTimeDisplay = this.selectedEndTimeValue;;
     }
     this.endDateValue = this.setStartEndDateTime(this.endDateValue, this.selectedEndTime, 'end');
+    let startDate1 = this.startDateValue.getFullYear() + "/" + (this.startDateValue.getMonth() + 1) + "/" + this.startDateValue.getDate();
+    let endDate1 = this.endDateValue.getFullYear() + "/" + (this.endDateValue.getMonth() + 1) + "/" + this.endDateValue.getDate();
+    if(startDate1 == endDate1){
+      this.maxStartTime = this.selectedEndTime;
+      this.endTimeStart = this.selectedStartTime; 
+    }
+    else{
+      this.maxStartTime = this.selectedEndTime;
+      if (this.prefTimeFormat == 24) {
+        this.maxStartTime = '23:59';
+      }
+      else{
+        this.maxStartTime = '11:59';
+      }
+      this.endTimeStart = "00:00";
+    }
     this.resetLogFormControlValue(); // extra addded as per discuss with Atul
     
     this.filterDateData(); // extra addded as per discuss with Atul
@@ -1735,6 +1798,7 @@ let prepare = []
   }
 
   changeStartDateEvent(event: MatDatepickerInputEvent<any>){
+    this.isLogbookDtChange = true;
     this.setDefaultDates();
     this.internalSelection = true;
     let dateTime: any = '';
@@ -1748,11 +1812,27 @@ let prepare = []
       dateTime = this.last3MonthDate;
     }
     this.startDateValue = this.setStartEndDateTime(dateTime, this.selectedStartTime, 'start');
+    let startDate1 = this.startDateValue.getFullYear() + "/" + (this.startDateValue.getMonth() + 1) + "/" + this.startDateValue.getDate();
+    let endDate1 = this.endDateValue.getFullYear() + "/" + (this.endDateValue.getMonth() + 1) + "/" + this.endDateValue.getDate();
+    if(startDate1 == endDate1){
+      this.maxStartTime = this.selectedEndTime;
+      this.endTimeStart = this.selectedStartTime; 
+    }
+    else{
+      if (this.prefTimeFormat == 24) {
+        this.maxStartTime = '23:59';
+      }
+      else{
+        this.maxStartTime = '11:59';
+      }
+      this.endTimeStart = "00:00";
+    }
     this.resetLogFormControlValue(); // extra addded as per discuss with Atul
     this.filterDateData(); // extra addded as per discuss with Atul
   }
 
   changeEndDateEvent(event: MatDatepickerInputEvent<any>){
+    this.isLogbookDtChange = true;
     this.setDefaultDates();
     this.internalSelection = true;
     let dateTime: any = '';
@@ -1766,6 +1846,21 @@ let prepare = []
       dateTime = this.todayDate;
     }
     this.endDateValue = this.setStartEndDateTime(dateTime, this.selectedEndTime, 'end');
+    let startDate1 = this.startDateValue.getFullYear() + "/" + (this.startDateValue.getMonth() + 1)+ "/" + this.startDateValue.getDate();
+    let endDate1 = this.endDateValue.getFullYear() + "/" + (this.endDateValue.getMonth() + 1) + "/" + this.endDateValue.getDate();
+    if(startDate1 == endDate1){
+      this.maxStartTime = this.selectedEndTime;
+      this.endTimeStart = this.selectedStartTime; 
+    }
+    else{
+      if (this.prefTimeFormat == 24) {
+        this.maxStartTime = '23:59';
+      }
+      else{
+        this.maxStartTime = '11:59';
+      }
+      this.endTimeStart = "00:00";
+    }
     this.resetLogFormControlValue(); // extra addded as per discuss with Atul
     this.filterDateData(); // extra addded as per discuss with Atul
   }

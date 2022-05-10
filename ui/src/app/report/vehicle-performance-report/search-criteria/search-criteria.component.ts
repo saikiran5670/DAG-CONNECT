@@ -46,6 +46,10 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   vehicleGrpDD: any = [];
   vehicleGroupListData: any = [];
   vehicleListData: any = [];
+  maxStartTime: any;
+  selectedStartTimeValue: any ='00:00';
+  selectedEndTimeValue: any ='11:59';
+  endTimeStart:any;
   public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
@@ -455,6 +459,21 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
       dateTime = this.last3MonthDate;
     }
     this.searchForm.get('startDate').setValue(this.setStartEndDateTime(dateTime, this.searchForm.get('startTime').value, 'start'));
+    let startDate1 = this.searchForm.get('startDate').value.getFullYear() + "/" + (this.searchForm.get('startDate').value.getMonth() + 1) + "/" + this.searchForm.get('startDate').value.getDate();
+    let endDate1 = this.searchForm.get('endDate').value.getFullYear() + "/" + (this.searchForm.get('endDate').value.getMonth() + 1) + "/" + this.searchForm.get('endDate').value.getDate();
+    if(startDate1 == endDate1){
+      this.maxStartTime = this.searchForm.get('endTime').value;
+      this.endTimeStart = this.searchForm.get('startTime').value; 
+    }
+    else{
+      if (this.prefTimeFormat == 24) {
+        this.maxStartTime = '23:59';
+      }
+      else{
+        this.maxStartTime = '11:59';
+      }
+      this.endTimeStart = "00:00";
+    }
     this.resetDropdownValues(); // extra addded as per discuss with Atul
     this.filterDateData(); // extra addded as per discuss with Atul
   }
@@ -472,20 +491,50 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
       dateTime = this.todayDate;
     }
     this.searchForm.get("endDate").setValue(this.setStartEndDateTime(dateTime, this.searchForm.get('endTime').value, 'end'));
+    let startDate1 = this.searchForm.get('startDate').value.getFullYear() + "/" + (this.searchForm.get('startDate').value.getMonth() + 1) + "/" + this.searchForm.get('startDate').value.getDate();
+    let endDate1 = this.searchForm.get('endDate').value.getFullYear() + "/" + (this.searchForm.get('endDate').value.getMonth() + 1) + "/" + this.searchForm.get('endDate').value.getDate();
+    if(startDate1 == endDate1){
+      this.maxStartTime = this.searchForm.get('endTime').value;
+      this.endTimeStart = this.searchForm.get('startTime').value; 
+    }
+    else{
+      if (this.prefTimeFormat == 24) {
+        this.maxStartTime = '23:59';
+      }
+      else{
+        this.maxStartTime = '11:59';
+      }
+      this.endTimeStart = "00:00";
+    }
     this.resetDropdownValues(); // extra addded as per discuss with Atul
     this.filterDateData(); // extra addded as per discuss with Atul
   }
 
   endTimeChanged(selectedTime: any) {
     this.internalSelection = true;
-    this.searchForm.get('endTime').setValue(selectedTime);
+    this.searchForm.get('endTime').setValue(this.selectedEndTimeValue);
     if (this.prefTimeFormat == 24) {
-      this.endTimeDisplay = selectedTime + ':59';
+      this.endTimeDisplay = this.selectedEndTimeValue + ':59';
     }
     else {
-      this.endTimeDisplay = selectedTime;
+      this.endTimeDisplay = this.selectedEndTimeValue;
     }
     this.searchForm.get("endDate").setValue(this.setStartEndDateTime(this.searchForm.get("endDate").value, this.searchForm.get('endTime').value, 'end'));
+    let startDate1 = this.searchForm.get('startDate').value.getFullYear() + "/" + (this.searchForm.get('startDate').value.getMonth() + 1) + "/" + this.searchForm.get('startDate').value.getDate();
+    let endDate1 = this.searchForm.get('endDate').value.getFullYear() + "/" + (this.searchForm.get('endDate').value.getMonth() + 1) + "/" + this.searchForm.get('endDate').value.getDate();
+    if(startDate1 == endDate1){
+      this.maxStartTime = this.searchForm.get('endTime').value;
+      this.endTimeStart = this.searchForm.get('startTime').value; 
+    }
+    else{
+      if (this.prefTimeFormat == 24) {
+        this.maxStartTime = '23:59';
+      }
+      else{
+        this.maxStartTime = '11:59';
+      }
+      this.endTimeStart = "00:00";
+    }
     this.resetDropdownValues(); // extra addded as per discuss with Atul
     this.filterDateData(); // extra addded as per discuss with Atul
   }
@@ -519,19 +568,42 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
 
   startTimeChanged(selectedTime: any) {
     this.internalSelection = true;
-    this.searchForm.get('startTime').setValue(selectedTime);
+    this.searchForm.get('startTime').setValue(this.selectedStartTimeValue);
     if (this.prefTimeFormat == 24) {
-      this.startTimeDisplay = selectedTime + ':00';
+      this.startTimeDisplay = this.selectedStartTimeValue + ':00';
     } else {
-      this.startTimeDisplay = selectedTime;
+      this.startTimeDisplay = this.selectedStartTimeValue;
     }
     this.searchForm.get('startDate').setValue(this.setStartEndDateTime(this.searchForm.get('startDate').value, this.searchForm.get('startTime').value, 'start'));
+    let startDate1 = this.searchForm.get('startDate').value.getFullYear() + "/" + (this.searchForm.get('startDate').value.getMonth() + 1) + "/" + this.searchForm.get('startDate').value.getDate();
+    let endDate1 = this.searchForm.get('endDate').value.getFullYear() + "/" + (this.searchForm.get('endDate').value.getMonth() + 1) + "/" + this.searchForm.get('endDate').value.getDate();
+    if(startDate1 == endDate1){
+    this.maxStartTime = this.searchForm.get('endTime').value;
+    this.endTimeStart = this.searchForm.get('startTime').value; 
+    }
+    else{
+      if (this.prefTimeFormat == 24) {
+        this.maxStartTime = '23:59';
+      }
+      else{
+        this.maxStartTime = '11:59';
+      }
+      this.endTimeStart = "00:00";
+    }
     this.resetDropdownValues(); // extra addded as per discuss with Atul
     this.filterDateData(); // extra addded as per discuss with Atul
   }
 
   formStartDate(date: any) {
     return this.reportMapService.formStartDate(date, this.prefTimeFormat, this.prefDateFormat);
+  }
+
+  getStartTimeChanged(time: any){
+    this.selectedStartTimeValue = time;
+  }
+
+  getEndTimeChanged(time: any){
+    this.selectedEndTimeValue = time;
   }
 
   onReset() {
