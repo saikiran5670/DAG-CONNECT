@@ -10,7 +10,7 @@
   </div>
   <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
   <div *ngIf='!showLoadingIndicator'>
-    <mat-expansion-panel class="full-width margin-bottom-15" fxLayoutGap="10px" [(expanded)]="showTripReport"
+    <mat-expansion-panel *ngIf='tripReport' class="full-width margin-bottom-15" fxLayoutGap="10px" [(expanded)]="showTripReport"
       (opened)="showTripReport == true" (closed)="showTripReport == false">
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title>
@@ -31,7 +31,7 @@
         </app-trip-report-preference>
       </div>
     </mat-expansion-panel>
-    <mat-expansion-panel class="full-width margin-bottom-15" fxLayoutGap="10px"
+    <mat-expansion-panel *ngIf='fleetUtilisationReport' class="full-width margin-bottom-15" fxLayoutGap="10px"
       [(expanded)]="showFleetUtilisationReport" (opened)="showFleetUtilisationReport == true"
       (closed)="showFleetUtilisationReport == false">
       <mat-expansion-panel-header class="full-width">
@@ -53,7 +53,7 @@
           (setFleetUtilFlag)="updateEditFleetUtilFlag($event)"></app-fleet-utilisation-preference>
       </div>
     </mat-expansion-panel>
-    <mat-expansion-panel class="full-width margin-bottom-15" fxLayoutGap="10px" [(expanded)]="showDriverTimePerferences"
+    <mat-expansion-panel *ngIf='driveTimeReport' class="full-width margin-bottom-15" fxLayoutGap="10px" [(expanded)]="showDriverTimePerferences"
       (opened)="showDriverTimePerferences == true" (closed)="showDriverTimePerferences == false">
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title>
@@ -74,7 +74,7 @@
           (setDriverTimeFlag)="updateEditDriverTimeFlag($event)"></app-driver-time-preferences>
       </div>
     </mat-expansion-panel>
-    <mat-expansion-panel class="full-width margin-bottom-15" fxLayoutGap="10px" [(expanded)]="showEcoScorePerferences"
+    <mat-expansion-panel *ngIf='ecoScoreReport' class="full-width margin-bottom-15" fxLayoutGap="10px" [(expanded)]="showEcoScorePerferences"
       (opened)="showEcoScorePerferences == true" (closed)="showEcoScorePerferences == false">
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title>
@@ -95,7 +95,7 @@
           (setEcoScoreFlag)="updateEcoScoreReportFlag($event)"></app-eco-score-report-preferences>
       </div>
     </mat-expansion-panel>
-    <mat-expansion-panel class="full-width margin-bottom-15" fxLayoutGap="10px" [(expanded)]="showFuelBenchmarkPerferences"
+    <mat-expansion-panel *ngIf='fuelBenchmarkingReport' class="full-width margin-bottom-15" fxLayoutGap="10px" [(expanded)]="showFuelBenchmarkPerferences"
       (opened)="showFuelBenchmarkPerferences == true" (closed)="showFuelBenchmarkPerferences == false">
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title>
@@ -117,7 +117,7 @@
         </app-fuel-benchmark-preferences>
       </div>
     </mat-expansion-panel>
-    <mat-expansion-panel class="full-width margin-bottom-15" fxLayoutGap="10px" [(expanded)]="showFleetFuelPerferences"
+    <mat-expansion-panel *ngIf='fleetFuelReport' class="full-width margin-bottom-15" fxLayoutGap="10px" [(expanded)]="showFleetFuelPerferences"
       (opened)="showFleetFuelPerferences == true" (closed)="showFleetFuelPerferences == false">
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title>
@@ -158,7 +158,7 @@
         </div>
       </div>
     </mat-expansion-panel>
-    <mat-expansion-panel class="full-width margin-bottom-15" fxLayoutGap="10px" [(expanded)]="showFuelDeviationPerferences"
+    <mat-expansion-panel *ngIf='fuelDeviationReport' class="full-width margin-bottom-15" fxLayoutGap="10px" [(expanded)]="showFuelDeviationPerferences"
       (opened)="showFuelDeviationPerferences == true" (closed)="showFuelDeviationPerferences == false">
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title>
