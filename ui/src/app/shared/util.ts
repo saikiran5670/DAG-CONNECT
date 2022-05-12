@@ -292,8 +292,8 @@ export class Util {
 
     static getTimeFormat(timeFormat){
       if(timeFormat && timeFormat == 12)
-        return ' HH:mm:ss A';
-      return ' hh:mm:ss';
+        return ' hh:mm:ss A';
+      return ' HH:mm:ss';
     }
 
     public static utcToDateConversion(utc: any){
