@@ -106,6 +106,7 @@ export class AlertsComponent implements OnInit {
       // this.unitId = accountPreference.unitId;
       this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
       this.accountRoleId = localStorage.getItem('accountRoleId') ? parseInt(localStorage.getItem('accountRoleId')) : 0;
+      
       let translationObj = {
         id: 0,
         code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
@@ -115,12 +116,20 @@ export class AlertsComponent implements OnInit {
         filter: "",
         menuId: 17 //-- for alerts
       }
+
+      let menuId = 'menu_17_' + this.localStLanguage.code;
       this.showLoadingIndicator = true;
-      this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-        this.processTranslation(data);
+      if (!localStorage.getItem(menuId)) {
+        this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+          this.processTranslation(data);
+          this.hideloader();
+          this.loadDataBasedOnPrivileges();
+        });
+      } else {
+        this.translationData = JSON.parse(localStorage.getItem(menuId));
         this.hideloader();
         this.loadDataBasedOnPrivileges();
-      });
+      }
 
       if(this.prefDetail){
         if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){
@@ -152,7 +161,9 @@ export class AlertsComponent implements OnInit {
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    ////console.log("process translationData:: ", this.translationData)
+    let langCode =this.localStLanguage? this.localStLanguage.code : 'EN-GB';
+    let menuId = 'menu_17_'+ langCode;
+    localStorage.setItem(menuId, JSON.stringify(this.translationData));
   }
 
   loadFiltersData(){

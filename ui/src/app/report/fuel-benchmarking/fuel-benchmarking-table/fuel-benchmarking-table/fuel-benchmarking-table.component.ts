@@ -19,6 +19,7 @@ export class FuelBenchmarkingTableComponent implements OnInit {
   searchExpandPanel: boolean = true;
   mode: ProgressBarMode = 'determinate';
   color: ThemePalette = 'primary';
+  displayedColumnsUpdated: any = [];
   @Input() test;
   @Input() startDateRange: any;
   @Input() endDateRange: any;
@@ -88,19 +89,28 @@ export class FuelBenchmarkingTableComponent implements OnInit {
       let removingColumn = this.displayedColumns[index];
       if (removingColumn !== "period") {
         delete row[this.displayedColumns[index]];
-        this.test.pop(row)
+        this.test.pop(row);
+        if (this.displayedColumns.length > 1) {
+          this.displayedColumns.splice(index, 1);
+          this.displayedColumnsUpdated = [...this.displayedColumns];
+        }
+        return true;
       }
-    }
-    if (this.displayedColumns.length > 1) {
-      this.displayedColumns.splice(index, 1)
     }
   }
 
   addColumn(data: any, column: any) {
     if (this.displayedColumns.length < 5) {
-      if (!this.displayedColumns.includes(column)) {
-        this.displayedColumns.push(column);
+      // if (!this.displayedColumns.includes(column)) {
+      //   this.displayedColumns.push(column);
+      // }
+      if (!this.displayedColumnsUpdated.includes(column)) {
+        if(this.displayedColumnsUpdated.length == 0){
+          this.displayedColumnsUpdated.push('period');
+        }
+         this.displayedColumnsUpdated.push(column);
       }
+      this.displayedColumns = [...this.displayedColumnsUpdated];
       for (let colIndx in this.firstColumn) {
         if (this.firstColumn[colIndx] == 'ranking') {
           let rakingSortedData = data.fuelBenchmarkDetails[this.firstColumn[colIndx]].sort((a, b) => (a.fuelConsumption > b.fuelConsumption) ? 1 : ((b.fuelConsumption > a.fuelConsumption) ? -1 : 0));

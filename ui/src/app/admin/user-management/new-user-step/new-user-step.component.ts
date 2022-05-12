@@ -172,7 +172,7 @@ export class NewUserStepComponent implements OnInit {
       salutation: ['', [Validators.required]],
       firstName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
       lastName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
-      loginEmail: ['', [Validators.required, Validators.email]],
+      loginEmail: ['', [Validators.required, Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]],
       userType: ['', []],
       organization: new FormControl({value: null, disabled: true}),
       birthDate: ['', []],

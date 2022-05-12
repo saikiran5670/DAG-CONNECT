@@ -92,15 +92,22 @@ export class DriverManagementComponent implements OnInit {
       filter: "",
       menuId: 20 //-- driver mgnt
     }
-
-    this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
-      this.processTranslation(data);
-      this.getOrganizationDetail();
-      this.loadDriverData();      
-      this.setConsentDropdown();
-      this.getConsentList();
-    });
-    
+    let menuId = 'menu_20_' + this.localStLanguage.code;
+    if (!localStorage.getItem(menuId)) {
+      this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+        this.processTranslation(data);
+        this.getOrganizationDetail();
+        this.loadDriverData();
+        this.setConsentDropdown();
+        this.getConsentList();
+      });
+    } else {
+        this.translationData = JSON.parse(localStorage.getItem(menuId));
+        this.getOrganizationDetail();
+        this.loadDriverData();
+        this.setConsentDropdown();
+        this.getConsentList();
+    } 
   }
 
   getConsentList() {
@@ -129,6 +136,9 @@ export class DriverManagementComponent implements OnInit {
 
   processTranslation(transData: any){
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
+    let langCode =this.localStLanguage? this.localStLanguage.code : 'EN-GB';
+    let menuId = 'menu_20_'+ langCode;
+    localStorage.setItem(menuId, JSON.stringify(this.translationData));
   }
 
   loadDriverData(){

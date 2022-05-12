@@ -92,10 +92,17 @@ export class CurrentFleetComponent implements OnInit, OnDestroy {
       menuId: 3 
     }
     this.showLoadingIndicator = true;
-    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-      this.processTranslation(data);
+    let menuId = 'menu_3_' + this.localStLanguage.code; 
+    if(!localStorage.getItem(menuId)){
+      this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+        this.processTranslation(data);
+        this.showLoadingIndicator = false;
+      });
+    } else{
+      this.translationData = JSON.parse(localStorage.getItem(menuId));
+      this.showLoadingIndicator = false;
+    }
       this.getFleetOverviewPreferences();
-    });
     
     if(this.prefDetail){
       if (accountPrefObj.accountPreference && accountPrefObj.accountPreference != '') {
@@ -263,6 +270,9 @@ export class CurrentFleetComponent implements OnInit, OnDestroy {
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
+    let langCode =this.localStLanguage? this.localStLanguage.code : 'EN-GB';
+    let menuId = 'menu_3_'+ langCode;
+    localStorage.setItem(menuId, JSON.stringify(this.translationData));
   }
   
   userPreferencesSetting(event?: any) {
