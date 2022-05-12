@@ -14,6 +14,7 @@ import { Util } from '../../../shared/util';
 import { OrganizationService } from 'src/app/services/organization.service'; 
 import { ReportService } from 'src/app/services/report.service';
 import { Observable } from 'rxjs';
+import { ReportMapService } from 'src/app/report/report-map.service';
 
 declare var H: any;
 
@@ -98,7 +99,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
   @Output() backToPage = new EventEmitter<object>();
   prefDetail: any = {};
 
-  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder,private organizationService: OrganizationService, private reportService: ReportService, private changeDetectorRef: ChangeDetectorRef) { 
+  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder,private organizationService: OrganizationService, private reportService: ReportService, private changeDetectorRef: ChangeDetectorRef, private reportMapService: ReportMapService) { 
       // this.map_key = _configService.getSettings("hereMap").api_key;
       this.map_key = localStorage.getItem("hereMapsK");
       this.platform = new H.service.Platform({
@@ -743,7 +744,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
   }
   
   convertDateTime(val){
-    return Util.convertUtcToDateFormat(val,'DD/MM/YYYY hh:mm:ss A', this.prefTimeZone);
+    return Util.convertUtctoDateTzFormat(val, this.prefTimeFormat, this.prefDateFormat, this.prefTimeZone);
   }
 
   processDataForActivatedAndDeactivatedTime(responseData) {
@@ -883,8 +884,8 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
         default:
           break;
       }
-      let activatedTime = Util.convertUtcToDateFormat(elem.warningTimetamp,'DD/MM/YYYY hh:mm:ss a', this.prefTimeZone);
-      let deactivatedTime = elem.warningDeactivatedTimestamp ?  Util.convertUtcToDateFormat(elem.warningDeactivatedTimestamp,'DD/MM/YYYY hh:mm:ss a', this.prefTimeZone): '--';
+      let activatedTime = this.convertDateTime(elem.warningTimetamp);
+      let deactivatedTime = elem.warningDeactivatedTimestamp ?  this.convertDateTime(elem.warningDeactivatedTimestamp): '--';
       if(elem.warningType && (elem.warningType).trim() == 'D'){
         activatedTime = this.convertDateTime(elem.warningActivatedForDeactive);
         deactivatedTime = this.convertDateTime(elem.warningTimetamp);
