@@ -921,15 +921,24 @@ removeDuplicates(originalArray, prop) {
           for (let i of this.filterVehicleForm.controls.category.value) {
             this.findCriticality(objData);
             objData.forEach(e => {
-             if(e.fleetOverviewAlert.length > 0){
-              e.alertDetails?.forEach(j=> {
-                if(j.categoryType == i){
-              this.vehicleListData.push(e);
-              this.noRecordFlag = false;
-                }
-              // break;
-             })
+            //  if(e.fleetOverviewAlert.length > 0){
+            //   e.alertDetails?.forEach(j=> {
+            //     if(j.categoryType == i){
+            //   this.vehicleListData.push(e);
+            //   this.noRecordFlag = false;
+            //     }
+            //   // break;
+            //  })
+            //   }
+
+              let latestAlert = e.fleetOverviewAlert.sort((x, y) => y.time - x.time); 
+              if(latestAlert.length > 0){
+              e.alertCategoryType = latestAlert[0].categoryType;
               }
+                if(e.alertCategoryType == i){
+                  this.vehicleListData.push(e);
+                  this.noRecordFlag = false;
+                 }
             })
           }
         // }
@@ -1433,7 +1442,38 @@ removeDuplicates(originalArray, prop) {
     this.getFleetOverviewDetails = this.reportService.getFleetOverviewDetails(this.objData).subscribe((fleetdata:any) => {
      let data = fleetdata.fleetOverviewDetailList;//this.fleetMapService.processedLiveFLeetData(fleetdata.fleetOverviewDetailList);
     this.fleetData = data;
+    if(this.fleetData.length >0){
+       this.fleetData[2].fleetOverviewAlert = [
+        {
+          alertId: 897,
+          categoryType: "L",
+          geolocationAddress: "De Hooge Akker 6, 5661 Geldrop, Nederland",
+          geolocationAddressId: 103586,
+          id: 221914,
+          latitude: 51.4276,
+          level: "C",
+          longitude: 5.5352,
+          name: "new exiting corridor",
+          time: 1652432400000, //May 13, 2022 9:00:00 AM
+          type: "C",
 
+        },
+        {
+          alertId: 897,
+          categoryType: "F",
+          geolocationAddress: "De Hooge Akker 6, 5661 Geldrop, Nederland",
+          geolocationAddressId: 103586,
+          id: 221914,
+          latitude: 51.4276,
+          level: "C",
+          longitude: 5.5352,
+          name: "fuel excessive idling",
+          time: 1652371524000, //May 12, 2022 4:05:24 PM
+          type: "I",
+
+        }
+      ]
+    }
     let val = [{vehicleGroup : vehicleGroupSel.vehicleGroupName, data : data}];
     this.messageService.sendMessage(val);
     // this.messageService.sendMessage("refreshTimer");
