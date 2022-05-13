@@ -978,10 +978,10 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
       this.graphData = graphData;
       this.showGraph = true;
       // this.hideloader();
-      if(graphData.fleetfuelGraph.length > 0){
-      this.isGraphData = true;
-      this.completeHideLoader();
-      }
+      // if(graphData.fleetfuelGraph.length > 0){
+      // this.isGraphData = true;
+      // this.completeHideLoader();
+      // }
     }, (error) => {
       // this.hideloader();
       this.isGraphData = true;
@@ -1529,6 +1529,8 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
     this.lineChartType = 'line';
     this.lineChartLabels = this.chartsLabelsdefined;
     this.barChartLabels = this.chartsLabelsdefined;
+    this.isGraphData = true;
+    this.completeHideLoader();
   }
 
   miliLitreToLitre(_data: any) {
