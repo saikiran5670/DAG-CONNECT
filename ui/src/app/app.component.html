@@ -26,7 +26,7 @@
                         </button>&nbsp;</span> -->
                         <span *ngIf="orgContextType" class='contextSettingTxt'>{{ translationData.lblContextSetting || 'Context Setting' }}</span>
                         
-                        <mat-select *ngIf="orgContextType" formControlName="contextOrgSelection" class="matSelect" placeholder="{{ orgName }}"
+                        <!-- <mat-select *ngIf="orgContextType" formControlName="contextOrgSelection" class="matSelect" placeholder="{{ orgName }}"
                             (selectionChange)="applyFilterOnOrganization($event.value)">
                             <mat-option>
                                 <ngx-mat-select-search (keyup)="filterContextSettings(search.value)"  placeholderLabel="{{ translationData.lblSearchOrganization|| 'Search organization' }}" #search>
@@ -36,7 +36,14 @@
                             <mat-option *ngFor="let options of filteredOrganizationList | async" [value]="options.id" matTooltip="{{ options.name }}">
                                 {{options.name}}
                             </mat-option>
-                        </mat-select>
+                        </mat-select> -->
+                        
+                        <input *ngIf="orgContextType" type="text" placeholder="{{ translationData.lblSearchOrganization|| 'Search organization' }}" aria-label="Number" formControlName="contextOrgInput" matInput [matAutocomplete]="auto">
+                        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayWith" (optionsScroll)="onScroll()" showPanel="true">
+                            <mat-option *ngFor="let option of filteredOptions | async" [value]="option.name" matTooltip="{{ option.name }}" > 
+                                {{option.name}}
+                            </mat-option>
+                        </mat-autocomplete>
 
                         <a class="navIcon fullScreen">
                             <mat-icon aria-hidden="false" aria-label="fullscreen"

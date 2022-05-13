@@ -1,4 +1,4 @@
-import { Component, HostListener, Inject } from '@angular/core';
+import { Component, HostListener, Inject, OnInit } from '@angular/core';
 import { Router, NavigationEnd, NavigationStart, NavigationError } from '@angular/router';
 import { DataInterchangeService } from './services/data-interchange.service';
 import { TranslationService } from './services/translation.service';
@@ -10,11 +10,12 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { OrganizationService } from './services/organization.service';
 import { AuthService } from './services/auth.service';
 import { MessageService } from './services/message.service';
-import { timer, Subscription, ReplaySubject, Subject } from 'rxjs';
+import { timer, Subscription, ReplaySubject, Subject, Observable } from 'rxjs';
 import { ReportService } from './services/report.service';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { SignalRService } from './services/signalR.service';
 import { AlertService } from './services/alert.service';
+import { map, startWith} from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -22,7 +23,7 @@ import { AlertService } from './services/alert.service';
   styleUrls: ['./app.component.less']
 })
 
-export class AppComponent {
+export class AppComponent implements OnInit {
   AlertNotifcaionList: any[] = [];
   appUrlLink: any = '';
   public deviceInfo = null;
@@ -281,6 +282,9 @@ export class AppComponent {
   public filteredLanguages: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredOrganizationList: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   protected _onDestroy = new Subject<void>();
+  private nextPage$ = new Subject();
+  filteredOptions: Observable<any[]>;
+
 
   constructor(private reportService: ReportService, private router: Router, private dataInterchangeService: DataInterchangeService, public authService: AuthService, private translationService: TranslationService, private deviceService: DeviceDetectorService, public fb: FormBuilder, @Inject(DOCUMENT) private document: any, private domSanitizer: DomSanitizer, private accountService: AccountService, private organizationService: OrganizationService, private messageService: MessageService,@Inject(MAT_DATE_FORMATS) private dateFormats, public signalRService: SignalRService, private alertService: AlertService) {
     this.landingPageForm = this.fb.group({
@@ -348,6 +352,7 @@ export class AppComponent {
     this.appForm = this.fb.group({
       'languageSelection': [this.localStLanguage ? this.localStLanguage.id : language],
       'contextOrgSelection': this.organizationList.length > 0 ? this.organizationList[0].id : 1,
+      'contextOrgInput': '',
       'langFilterCtrl' : []
     });
 
@@ -742,7 +747,8 @@ export class AppComponent {
         }
 
         this.appForm.get("languageSelection").setValue(this.localStLanguage.id); //-- set language dropdown
-
+        let roleLevel = parseInt(localStorage.getItem('roleLevel'));
+        if(roleLevel == 10 || roleLevel == 20){
         this.organizationService.getAllOrganizations().subscribe((data: any) => {
           if (data) {
             this.organizationList = data["organizationList"];
@@ -767,14 +773,30 @@ export class AppComponent {
               this.appForm.get("contextOrgSelection").setValue(this.organizationList[0].id); //-- set context org dropdown
             }
             this.calledTranslationLabels(preferencelanguageCode);
+
+            const take = 5;
+            let page = 1;
+            const skip = page > 0 ? (page - 1) * take : 0;
+            this.filteredOptions = this.appForm.controls.contextOrgInput.valueChanges.pipe(
+              startWith(''),
+              map(value => this._filter(value))
+            );
+
           }
         }, (error) => {
           this.organizationList = [];
           this.calledTranslationLabels(preferencelanguageCode);
         });
+      }
       });
 
     }
+  }
+
+  _filter(name: string): any[] {
+    const filterValue = name.toLowerCase();
+    console.log(filterValue);
+    return this.organizationList.filter(option => option.name.toLowerCase().includes(filterValue));
   }
 
   resetLanguageFilter() {
@@ -853,6 +875,10 @@ export class AppComponent {
     if (this.router.url) {
       //this.isLogedIn = true;
     }
+  }
+
+  selectHandler(e){
+    this.appForm.controls.contextOrgInput.patchValue(e.option.value);
   }
 
   ngOnDestroy(){
@@ -1327,4 +1353,11 @@ loadBrandlogoForReports(value) {
   }
 }
 
+displayWith(lookup) {
+  return lookup ? lookup.name : null;
+}
+onScroll() {
+  //Note: This is called multiple times after the scroll has reached the 80% threshold position.
+  this.nextPage$.next();
+}
 }
