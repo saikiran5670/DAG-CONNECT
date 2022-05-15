@@ -132,7 +132,7 @@ export class DashboardComponent implements OnInit {
 
   processVins(tripData){
     // API will always send unique VIN's
-    this.finalVinList = tripData['vinTripList'].map(x=>x.vin);
+    this.finalVinList = tripData['vinTripList'];
     // if(_vinList.length > 0){
     //   this.finalVinList = _vinList.filter((value, index, self) => self.indexOf(value) === index);
     // }
