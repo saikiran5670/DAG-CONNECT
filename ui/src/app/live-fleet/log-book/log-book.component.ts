@@ -1135,6 +1135,7 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
 
   onReset(){
     this._state=null;
+    this.initData = [];
     this.herePOIArr = [];
     this.internalSelection = false;
     this.setDefaultStartEndTime();
