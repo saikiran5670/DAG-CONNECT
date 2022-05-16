@@ -247,6 +247,55 @@ export class Util {
         return (_date);
     }
 
+    public static convertUtctoDateTzFormat(_utc, _timeFormat, _dateFormat, _timeZone){
+      let _date: any;
+      let _dtformat = this.getDateFormat(_dateFormat);
+      let _tmFormat = this.getTimeFormat(_timeFormat);
+      let _format = _dtformat + _tmFormat;
+      if (_timeZone){
+          let _timezone: any;
+          _timezone = this.getExactZone(_timeZone);
+          _date = moment.utc(_utc).tz(_timezone ? _timezone : _timeZone).format(_format);
+      }
+      else{
+      _date = moment.utc(_utc).format(_format);
+      }
+      return (_date);
+    }
+
+    static getDateFormat(prefDateFormat){
+      if(prefDateFormat){
+        switch (prefDateFormat) {
+          case 'ddateformat_dd/mm/yyyy': {
+            return 'DD/MM/YYYY';
+            break;
+          }
+          case 'ddateformat_mm/dd/yyyy': {
+            return 'MM/DD/YYYY';
+            break;
+          }
+          case 'ddateformat_dd-mm-yyyy': {
+            return 'DD-MM-YYYY';
+            break;
+          }
+          case 'ddateformat_mm-dd-yyyy': {
+            return 'MM-DD-YYYY';
+            break;
+          }
+          default: {
+            return 'MM/DD/YYY';
+          }
+        }
+      }
+      return 'MM/DD/YYY';
+    }
+
+    static getTimeFormat(timeFormat){
+      if(timeFormat && timeFormat == 12)
+        return ' hh:mm:ss A';
+      return ' HH:mm:ss';
+    }
+
     public static utcToDateConversion(utc: any){
         let _date: any = moment.utc(utc);
         return (_date._d);
