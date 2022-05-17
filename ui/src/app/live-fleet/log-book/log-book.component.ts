@@ -2490,7 +2490,7 @@ let prepare = []
     let _type = '';
     let _alertLevel = '';
     // if(_currentAlert.alertLevel) _alertLevel = (_currentAlert.alertLevel).toLowerCase();
-      switch (_currentAlert.alertLevel) {
+      switch ((_currentAlert.alertLevel).toLowerCase()) {
         case 'C':
           case 'critical':{
           _fillColor = '#D50017';
