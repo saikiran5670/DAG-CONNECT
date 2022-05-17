@@ -105,7 +105,7 @@ constructor(private fleetMapService: FleetMapService, private messageService: Me
     private dataInterchangeService: DataInterchangeService, private cdr: ChangeDetectorRef,private reportMapService: ReportMapService) {
       this.subscription = this.messageService.getMessage().subscribe(message => {
         if (message.key.indexOf("refreshData") !== -1) {
-          this.loadVehicleData();
+          this.loadVehicleData(true);
         }
       });
 }
@@ -1319,7 +1319,7 @@ removeDuplicates(originalArray, prop) {
       this.dataInterchangeService.getVehicleData(_dataObj);//change as per filter data
   }
 
-  loadVehicleData(){
+  loadVehicleData(refresh?:boolean){
     this.noRecordFlag = true;
     this.showLoadingIndicator=true;
     this.initData =this.detailsData;
@@ -1397,10 +1397,10 @@ removeDuplicates(originalArray, prop) {
     {
       this.objData = {
         "groupId": [this.filterVehicleForm.controls.group.value.toString()],
-        "alertLevel": levelList,
-        "alertCategory": categoryList,
-        "healthStatus": health_status,
-        "otherFilter": otherList,
+        "alertLevel": ["all"],
+        "alertCategory": ["all"],
+        "healthStatus": ["all"],
+        "otherFilter": ["all"],
         "driverId": ["all"],
         "days": 90,
         "languagecode":this.localStLanguage ? this.localStLanguage.code : "EN-GB"
@@ -1422,10 +1422,10 @@ removeDuplicates(originalArray, prop) {
       let _endTime = Util.getMillisecondsToUTCDate(endDateValue, this.preferenceObject.prefTimeZone);
       this.objData = {
         "groupId": [this.filterVehicleForm.controls.group.value.toString()],
-        "alertLevel": levelList,
-        "alertCategory": categoryList,
-        "healthStatus": health_status,
-        "otherFilter": otherList,
+        "alertLevel": ["all"],
+        "alertCategory": ["all"],
+        "healthStatus": ["all"],
+        "otherFilter": ["all"],
         "driverId": ["all"],
         "days": 0,
         "languagecode":this.localStLanguage ? this.localStLanguage.code : "EN-GB",
@@ -1442,38 +1442,6 @@ removeDuplicates(originalArray, prop) {
     this.getFleetOverviewDetails = this.reportService.getFleetOverviewDetails(this.objData).subscribe((fleetdata:any) => {
      let data = fleetdata.fleetOverviewDetailList;//this.fleetMapService.processedLiveFLeetData(fleetdata.fleetOverviewDetailList);
     this.fleetData = data;
-    if(this.fleetData.length >0){
-       this.fleetData[2].fleetOverviewAlert = [
-        {
-          alertId: 897,
-          categoryType: "L",
-          geolocationAddress: "De Hooge Akker 6, 5661 Geldrop, Nederland",
-          geolocationAddressId: 103586,
-          id: 221914,
-          latitude: 51.4276,
-          level: "C",
-          longitude: 5.5352,
-          name: "new exiting corridor",
-          time: 1652432400000, //May 13, 2022 9:00:00 AM
-          type: "C",
-
-        },
-        {
-          alertId: 897,
-          categoryType: "F",
-          geolocationAddress: "De Hooge Akker 6, 5661 Geldrop, Nederland",
-          geolocationAddressId: 103586,
-          id: 221914,
-          latitude: 51.4276,
-          level: "C",
-          longitude: 5.5352,
-          name: "fuel excessive idling",
-          time: 1652371524000, //May 12, 2022 4:05:24 PM
-          type: "I",
-
-        }
-      ]
-    }
     let val = [{vehicleGroup : vehicleGroupSel.vehicleGroupName, data : data}];
     this.messageService.sendMessage(val);
     // this.messageService.sendMessage("refreshTimer");
@@ -1486,7 +1454,8 @@ removeDuplicates(originalArray, prop) {
     // this.categoryList = this.removeDuplicates(newAlertCat, "value");
 
     this.vehicleListData = data;
-    this.detailsData = data;
+    this.applyFilterOnVehicleData();
+    this.detailsData = this.vehicleListData;
 
     let _dataObj: any = {};
     if(this.setflag){ // vehicle details
@@ -1526,7 +1495,7 @@ removeDuplicates(originalArray, prop) {
       this.showLoadingIndicator=false;
     });
     //this.noRecordFlag = false;
-    if(this.filterData){
+    if(this.filterData && !refresh){
         this.setDefaultDropValue();
     }
  }
