@@ -373,13 +373,13 @@ export class ReportMapService {
           }, false);
 
           //this.calculateAtoB(trackType);
-          if(elem.liveFleetPosition.length > 1){ // required 2 points atleast to draw polyline
-            let liveFleetPoints: any = elem.liveFleetPosition;
+          if (elem.liveFleetPosition.length > 1) { // required 2 points atleast to draw polyline
+            let liveFleetPoints: any = this.skipInvalidRecord(elem.liveFleetPosition);
             liveFleetPoints.sort((a, b) => parseInt(a.messageTimeStamp) - parseInt(b.messageTimeStamp)); // sorted in Asc order based on Id's 
-            if(_displayRouteView == 'C'){ // classic route
+            if (_displayRouteView == 'C') { // classic route
               let blueColorCode: any = '#436ddc';
               this.showClassicRoute(liveFleetPoints, trackType, blueColorCode);
-            }else if(_displayRouteView == 'F' || _displayRouteView == 'CO'){ // fuel consumption/CO2 emissiom route
+            } else if (_displayRouteView == 'F' || _displayRouteView == 'CO') { // fuel consumption/CO2 emissiom route
               let filterDataPoints: any = this.getFilterDataPoints(liveFleetPoints, _displayRouteView);
               filterDataPoints.forEach((element) => {
                 this.drawPolyline(element, trackType);
@@ -614,25 +614,27 @@ export class ReportMapService {
     }
    }
 
-   showClassicRoute(dataPoints: any, _trackType: any, _colorCode: any){
+  showClassicRoute(dataPoints: any, _trackType: any, _colorCode: any) {
     let lineString: any = new H.geo.LineString();
-    dataPoints.map((element) => {
-      lineString.pushPoint({lat: element.gpsLatitude, lng: element.gpsLongitude});  
-    });
-
-    let _style: any = {
-      lineWidth: 4, 
-      strokeColor: _colorCode
-    }
-    if(_trackType == 'dotted'){
-      _style.lineDash = [2,2];
-    }
-    let polyline = new H.map.Polyline(
-      lineString, { style: _style }
-    );
     
-    this.group.addObject(polyline);
-   }
+    if (dataPoints.length > 0) {
+      dataPoints.map((element) => {
+        lineString.pushPoint({ lat: element.gpsLatitude, lng: element.gpsLongitude });
+      });
+      let _style: any = {
+        lineWidth: 4,
+        strokeColor: _colorCode
+      }
+      if (_trackType == 'dotted') {
+        _style.lineDash = [2, 2];
+      }
+      let polyline = new H.map.Polyline(
+        lineString, { style: _style }
+      );
+      this.group.addObject(polyline);
+    }
+    
+  }
 
    selectionPolylineRoute(dataPoints: any, _index: any, checkStatus?: any){
     let lineString: any = new H.geo.LineString();
