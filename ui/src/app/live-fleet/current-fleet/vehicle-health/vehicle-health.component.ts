@@ -707,6 +707,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
       let deactiveActiveData=[];
       let healthStatusActiveData=healthStatusData.filter(item => item.warningType== "A");
       healthStatusData.forEach((element,index) => {
+        element.warningAdvice = element.warningAdvice.replaceAll('\\u022', '"');
         element.warningActivatedForDeactive = '';
         if(element.warningType== "D"){        
            let healthFilterData = healthStatusActiveData.filter(item => item.warningClass == element.warningClass && item.warningNumber == element.warningNumber);
