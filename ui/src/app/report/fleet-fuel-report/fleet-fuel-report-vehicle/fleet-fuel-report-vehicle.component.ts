@@ -1627,7 +1627,7 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
         this.selectedEndTime = "23:59";
       } else {
         this.startTimeDisplay = '12:00:00 AM';
-        this.endTimeDisplay = '11:59:00 PM';
+        this.endTimeDisplay = '11:59:59 PM';
         this.selectedStartTime = "12:00 AM";
         this.selectedEndTime = "11:59 PM";
       }
