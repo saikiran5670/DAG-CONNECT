@@ -602,7 +602,15 @@ export class ReportService {
     );
   }
 
-
+  getLiveFleetPositions(data: any){
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(`${this.reportServiceUrl}/trip/livefleetposition`, data, headers)
+      .pipe(catchError(this.handleError));
+  }
 
 }
 
