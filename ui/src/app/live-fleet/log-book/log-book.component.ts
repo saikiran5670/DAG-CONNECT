@@ -1135,13 +1135,14 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
 
   onReset(){
     this._state=null;
+    this.initData = [];
     this.herePOIArr = [];
     this.internalSelection = false;
     this.setDefaultStartEndTime();
     this.setDefaultTodayDate();
     this.tripData = [];
     this.vehicleListData = [];
-    this.noRecordFound = false;
+    this.noRecordFound = true;
     this.updateDataSource(this.tripData);
     this.resetLogFormControlValue();
     this.filterDateData(); // extra addded as per discuss with Atul
@@ -2494,7 +2495,7 @@ let prepare = []
     let _type = '';
     let _alertLevel = '';
     // if(_currentAlert.alertLevel) _alertLevel = (_currentAlert.alertLevel).toLowerCase();
-      switch (_currentAlert.alertLevel) {
+      switch ((_currentAlert.alertLevel).toLowerCase()) {
         case 'C':
           case 'critical':{
           _fillColor = '#D50017';
