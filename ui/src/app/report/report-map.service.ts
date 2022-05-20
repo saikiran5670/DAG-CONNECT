@@ -1351,8 +1351,10 @@ export class ReportMapService {
       element.startPositionLongitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[0].gpsLongitude : element.startPositionLongitude; 
       element.endPositionLattitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[element.liveFleetPosition.length - 1].gpsLatitude : element.endPositionLattitude; 
       element.endPositionLongitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[element.liveFleetPosition.length - 1].gpsLongitude : element.endPositionLongitude; 
-      element.filterAlerts = this.filterAlerts(element.tripAlert, dateFormat, timeFormat, timeZone); 
-      element.totalAlerts = element.filterAlerts.length;
+     // removing this check for DAF defect #2160
+      // element.filterAlerts = this.filterAlerts(element.tripAlert, dateFormat, timeFormat, timeZone); 
+      // element.totalAlerts = element.filterAlerts.length;
+      element.totalAlerts = element.alert;
     });
     return gridData;
   }
