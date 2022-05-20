@@ -14,6 +14,7 @@ import { Util } from '../../../shared/util';
 import { OrganizationService } from 'src/app/services/organization.service'; 
 import { ReportService } from 'src/app/services/report.service';
 import { Observable } from 'rxjs';
+import { ReportMapService } from 'src/app/report/report-map.service';
 
 declare var H: any;
 
@@ -98,7 +99,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
   @Output() backToPage = new EventEmitter<object>();
   prefDetail: any = {};
 
-  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder,private organizationService: OrganizationService, private reportService: ReportService, private changeDetectorRef: ChangeDetectorRef) { 
+  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder,private organizationService: OrganizationService, private reportService: ReportService, private changeDetectorRef: ChangeDetectorRef, private reportMapService: ReportMapService) { 
       // this.map_key = _configService.getSettings("hereMap").api_key;
       this.map_key = localStorage.getItem("hereMapsK");
       this.platform = new H.service.Platform({
@@ -212,7 +213,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
       }
       else if (warningType == 'Deactive') {
         this.filteredHistoryHealthData = this.filteredHistoryHealthData.filter((item: any) => item.warningType == 'D');
-      }
+      }      
       //console.log("filterrredData", this.filteredHistoryHealthData)
       this.applyDatatoCardPaginator(this.filteredHistoryHealthData);
       this.setGeneralFleetValue();
@@ -701,11 +702,12 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
       this.getvehiclehealthstatusservicecall.unsubscribe();
     }
     this.showLoadingIndicator=true;
-    this.getvehiclehealthstatusservicecall = this.reportService.getvehiclehealthstatus(this.healthData.vin, this.localStLanguage.code, warningdata).subscribe((res) => {
+    this.getvehiclehealthstatusservicecall = this.reportService.getvehiclehealthstatus(this.healthData.vin, this.localStLanguage.code, warningdata).subscribe((res) => {      
       let healthStatusData = res;
       let deactiveActiveData=[];
       let healthStatusActiveData=healthStatusData.filter(item => item.warningType== "A");
       healthStatusData.forEach((element,index) => {
+        element.warningAdvice = element.warningAdvice.replaceAll('\\u022', '"');
         element.warningActivatedForDeactive = '';
         if(element.warningType== "D"){        
            let healthFilterData = healthStatusActiveData.filter(item => item.warningClass == element.warningClass && item.warningNumber == element.warningNumber);
@@ -743,7 +745,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
   }
   
   convertDateTime(val){
-    return Util.convertUtcToDateFormat(val,'DD/MM/YYYY hh:mm:ss A');
+    return Util.convertUtctoDateTzFormat(val, this.prefTimeFormat, this.prefDateFormat, this.prefTimeZone);
   }
 
   processDataForActivatedAndDeactivatedTime(responseData) {
@@ -883,8 +885,8 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
         default:
           break;
       }
-      let activatedTime = Util.convertUtcToDateFormat(elem.warningTimetamp,'DD/MM/YYYY hh:mm:ss a');
-      let deactivatedTime = elem.warningDeactivatedTimestamp ?  Util.convertUtcToDateFormat(elem.warningDeactivatedTimestamp,'DD/MM/YYYY hh:mm:ss a'): '--';
+      let activatedTime = this.convertDateTime(elem.warningTimetamp);
+      let deactivatedTime = elem.warningDeactivatedTimestamp ?  this.convertDateTime(elem.warningDeactivatedTimestamp): '--';
       if(elem.warningType && (elem.warningType).trim() == 'D'){
         activatedTime = this.convertDateTime(elem.warningActivatedForDeactive);
         deactivatedTime = this.convertDateTime(elem.warningTimetamp);

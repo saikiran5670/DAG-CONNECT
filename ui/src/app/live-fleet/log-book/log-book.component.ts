@@ -1135,13 +1135,14 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
 
   onReset(){
     this._state=null;
+    this.initData = [];
     this.herePOIArr = [];
     this.internalSelection = false;
     this.setDefaultStartEndTime();
     this.setDefaultTodayDate();
     this.tripData = [];
     this.vehicleListData = [];
-    this.noRecordFound = false;
+    this.noRecordFound = true;
     this.updateDataSource(this.tripData);
     this.resetLogFormControlValue();
     this.filterDateData(); // extra addded as per discuss with Atul
@@ -1928,10 +1929,15 @@ let prepare = []
           levelListData.push({'name':levelName, 'value': item.value})
         });
 
-
     if(this.wholeLogBookData.logbookTripAlertDetailsRequest.length > 0){
-      let filterVIN: any = this.wholeLogBookData?.logbookTripAlertDetailsRequest?.filter(item => item.alertGeneratedTime >= currentStartTime && item.alertGeneratedTime <= currentEndTime).map(data => data.vin);
+      // let filterVIN: any = this.wholeLogBookData?.logbookTripAlertDetailsRequest?.filter(item => item.alertGeneratedTime >= currentStartTime && item.alertGeneratedTime <= currentEndTime).map(data => data.vin);
       // this.singleVehicle = this.wholeTripData?.vehicleDetailsWithAccountVisibiltyList?.filter(i=> i.groupType == 'S');
+      
+      let filterVIN: any = this.wholeLogBookData?.logbookTripAlertDetailsRequest?.map((item) => {
+        return { ...item, subItem: item.alertGeneratedTime.filter((subItem) => subItem >= currentStartTime && subItem <= currentEndTime) };
+      }).map(data => data.vin);
+      console.log(filterVIN);
+
       if(filterVIN.length > 0){
         distinctVIN = filterVIN.filter((value, index, self) => self.indexOf(value) === index);
         if(distinctVIN.length > 0){
@@ -2489,7 +2495,7 @@ let prepare = []
     let _type = '';
     let _alertLevel = '';
     // if(_currentAlert.alertLevel) _alertLevel = (_currentAlert.alertLevel).toLowerCase();
-      switch (_currentAlert.alertLevel) {
+      switch ((_currentAlert.alertLevel).toLowerCase()) {
         case 'C':
           case 'critical':{
           _fillColor = '#D50017';
