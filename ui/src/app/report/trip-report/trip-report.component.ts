@@ -194,6 +194,8 @@ export class TripReportComponent implements OnInit, OnDestroy {
   dataService: any;
   noRecordFound: boolean = false;
   brandimagePath: any;
+  pageSize: number = 5;
+  pageIndex = 0;
 
   public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
@@ -1014,7 +1016,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
       this.liveFleetPositionreqObj.tripIds = [];
     }
     else {
-      this.dataSource.data.forEach((row) => {
+      this.dataSource.data.slice(0,this.pageSize).forEach((row) => {
         this.selectedTrip.select(row);
         this.tripTraceArray.push(row);
         this.allTripSelectedFlag = true;
@@ -1023,6 +1025,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
       this.tripTraceArray.forEach(item => {
         this.liveFleetPositionreqObj.tripIds.push(item.tripId);
       });
+      
       this.liveFleetPositionreqObj.vin = this.tripTraceArray[0].vin;
       this.getLiveFleePositionData(this.liveFleetPositionreqObj);
       this.showMap = true;
@@ -1031,7 +1034,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
 
   isAllSelectedForTrip() {
     const numSelected = this.selectedTrip.selected.length;
-    const numRows = this.dataSource.data.length;
+    const numRows = this.pageSize;
     return numSelected === numRows;
   }
 
@@ -1043,7 +1046,30 @@ export class TripReportComponent implements OnInit, OnDestroy {
         } row`;
   }
 
-  pageSizeUpdated(_event) { }
+  uncheckAll = ()=> {
+    this.selectedTrip.clear();
+    this.reportMapService.clearRoutesFromMap();
+    this.showMap = false;
+  }
+
+
+  pageSizeUpdated(_event) {
+    console.log(_event);
+    if(this.pageSize > _event.pageSize){
+      this.pageSize = _event.pageSize;
+      this.tripTraceArray.slice(0,this.tripTraceArray.length-this.pageSize)
+      this.masterToggleForTrip();
+    } else{
+      if(this.tripTraceArray.length > 1){
+        this.selectedTrip.clear();
+        this.masterToggleForTrip();
+      }
+      this.pageSize = _event.pageSize;
+    }
+    if(_event.pageIndex != this.pageIndex){
+      this.uncheckAll();
+    }  
+   }
 
   tripCheckboxClicked(event: any, row: any) {
     this.showMap = this.selectedTrip.selected.length > 0 ? true : false;
