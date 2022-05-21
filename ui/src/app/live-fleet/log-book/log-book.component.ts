@@ -1936,7 +1936,6 @@ let prepare = []
       let filterVIN: any = this.wholeLogBookData?.logbookTripAlertDetailsRequest?.map((item) => {
         return { ...item, subItem: item.alertGeneratedTime.filter((subItem) => subItem >= currentStartTime && subItem <= currentEndTime) };
       }).map(data => data.vin);
-      console.log(filterVIN);
 
       if(filterVIN.length > 0){
         distinctVIN = filterVIN.filter((value, index, self) => self.indexOf(value) === index);
