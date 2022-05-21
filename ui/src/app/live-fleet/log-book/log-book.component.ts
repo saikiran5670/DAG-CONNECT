@@ -2070,23 +2070,22 @@ let prepare = []
 
   }
 
-  onAlertCategoryChange(event: any){
+  onAlertCategoryChange(event: any) {
     let alertsTypes = this.wholeLogBookData["enumTranslation"].filter(item => item.type == 'T');
-    if(event.value == 'all') {
-      this.alertTyp = alertsTypes; 
+    if (event.value == 'all') {
+      this.alertTyp = alertsTypes;
     } else {
-      let types = this.wholeLogBookData?.logbookTripAlertDetailsRequest?.filter(item => item.alertCategoryType == event.value).map(item => item.alertType);
-      let uniqueAlertEnums = [...new Set(types)];
+      let types = alertsTypes.filter(type => type.parentEnum == event.value);
+      const uniqueAlertEnums = [...new Set(types.map(item => item.enum))];
       let filteredTypes = [];
       alertsTypes.forEach(element => {
-        if(uniqueAlertEnums.includes(element.enum)){
+        if (uniqueAlertEnums.includes(element.enum)) {
           filteredTypes.push(element);
         }
       });
       this.alertTyp = filteredTypes;
     }
   }
-
 
   setVehicleGroupAndVehiclePreSelection() {
     if(!this.internalSelection && this.globalSearchFilterData.modifiedFrom !== "") {
