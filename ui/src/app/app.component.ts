@@ -742,36 +742,38 @@ export class AppComponent {
         }
 
         this.appForm.get("languageSelection").setValue(this.localStLanguage.id); //-- set language dropdown
-
-        this.organizationService.getAllOrganizations().subscribe((data: any) => {
-          if (data) {
-            this.organizationList = data["organizationList"];
-            this.filteredOrganizationList.next(this.organizationList);
-            this.organizationList.sort(this.compare);
-            let _contextOrgId = parseInt(localStorage.getItem("contextOrgId"));
-            let _orgId: any;
-            if (_contextOrgId) {
-              _orgId = _contextOrgId;
-            } else {
-              _orgId = parseInt(localStorage.getItem("accountOrganizationId"));
+        let roleLevel = parseInt(localStorage.getItem('roleLevel'));
+        if(roleLevel == 10 || roleLevel == 20){
+          this.organizationService.getAllOrganizations().subscribe((data: any) => {
+            if (data) {
+              this.organizationList = data["organizationList"];
+              this.filteredOrganizationList.next(this.organizationList);
+              this.organizationList.sort(this.compare);
+              let _contextOrgId = parseInt(localStorage.getItem("contextOrgId"));
+              let _orgId: any;
+              if (_contextOrgId) {
+                _orgId = _contextOrgId;
+              } else {
+                _orgId = parseInt(localStorage.getItem("accountOrganizationId"));
+              }
+              let _searchOrg = this.organizationList.filter(i => i.id == _orgId);
+              if (_searchOrg.length > 0) {
+                localStorage.setItem("contextOrgId", _searchOrg[0].id);
+                localStorage.setItem("contextOrgName", _searchOrg[0].name);
+                this.appForm.get("contextOrgSelection").setValue(_searchOrg[0].id); //-- set context org dropdown
+              }
+              else {
+                localStorage.setItem("contextOrgId", this.organizationList[0].id);
+                localStorage.setItem("contextOrgName", this.organizationList[0].name);
+                this.appForm.get("contextOrgSelection").setValue(this.organizationList[0].id); //-- set context org dropdown
+              }
+              this.calledTranslationLabels(preferencelanguageCode);
             }
-            let _searchOrg = this.organizationList.filter(i => i.id == _orgId);
-            if (_searchOrg.length > 0) {
-              localStorage.setItem("contextOrgId", _searchOrg[0].id);
-              localStorage.setItem("contextOrgName", _searchOrg[0].name);
-              this.appForm.get("contextOrgSelection").setValue(_searchOrg[0].id); //-- set context org dropdown
-            }
-            else {
-              localStorage.setItem("contextOrgId", this.organizationList[0].id);
-              localStorage.setItem("contextOrgName", this.organizationList[0].name);
-              this.appForm.get("contextOrgSelection").setValue(this.organizationList[0].id); //-- set context org dropdown
-            }
+          }, (error) => {
+            this.organizationList = [];
             this.calledTranslationLabels(preferencelanguageCode);
-          }
-        }, (error) => {
-          this.organizationList = [];
-          this.calledTranslationLabels(preferencelanguageCode);
-        });
+          });
+        }
       });
 
     }
@@ -1042,7 +1044,10 @@ export class AppComponent {
   onRoleChange(value: any) {
     localStorage.setItem("accountRoleId", value);
     let rolename = this.roleDropdown.filter(item => parseInt(item.id) === parseInt(value));
-    this.userRole = rolename[0].name;
+    if(rolename && rolename.length > 0){
+      this.userRole = rolename[0].name;
+      localStorage.setItem('roleLevel', rolename[0].level);
+    }
     this.setLocalContext(localStorage.getItem("accountOrganizationId"));
     this.filterOrgBasedRoles(localStorage.getItem("accountOrganizationId"), true);
   }
