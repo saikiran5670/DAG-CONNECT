@@ -2089,6 +2089,7 @@ let prepare = []
       });
       this.alertTyp = filteredTypes;
     }
+    this.logBookForm.get('alertType').setValue('all');
   }
 
   setVehicleGroupAndVehiclePreSelection() {
