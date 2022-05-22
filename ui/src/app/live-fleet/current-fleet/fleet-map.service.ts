@@ -2320,34 +2320,40 @@ export class FleetMapService {
         element.startPositionLongitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[0].gpsLongitude : element.startPositionLongitude;
         element.latestReceivedPositionLattitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[element.liveFleetPosition.length - 1].gpsLatitude : element.latestReceivedPositionLattitude;
         element.latestReceivedPositionLongitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[element.liveFleetPosition.length - 1].gpsLongitude : element.latestReceivedPositionLongitude;
-        if (element.latestReceivedPositionLattitude != 255 && element.latestReceivedPositionLongitude != 255){
-        if(element.latestReceivedPositionLattitude != 0 && element.latestReceivedPositionLongitude != 0) {
-          flag = true;
-        }
-       }
+        flag = this.checkLatLongValid(element.latestReceivedPositionLattitude, element.latestReceivedPositionLongitude);
       }
+
       else if (element.tripId != "" && element.liveFleetPosition.length == 0 && element.latestWarningClass != 0) {
         element.latestReceivedPositionLattitude = element.latestWarningPositionLatitude;
         element.latestReceivedPositionLongitude = element.latestWarningPositionLongitude;
-        if (element.latestReceivedPositionLattitude != 255 && element.latestReceivedPositionLongitude != 255){
-        if(element.latestReceivedPositionLattitude != 0 && element.latestReceivedPositionLongitude != 0) {
+        flag = this.checkLatLongValid(element.latestReceivedPositionLattitude, element.latestReceivedPositionLongitude)
+      }
+
+      else if (element.latestReceivedPositionLattitude != 255 || element.latestReceivedPositionLongitude != 255) {
+        if (element.latestReceivedPositionLattitude != 0 && element.latestReceivedPositionLongitude != 0) { // why ?
+          element.latestReceivedPositionLattitude = element.latestReceivedPositionLattitude; // 48.8566
+          element.latestReceivedPositionLongitude = element.latestReceivedPositionLongitude; // 2.3522
           flag = true;
         }
-       } 
       }
-      else if (element.latestReceivedPositionLattitude != 255 && element.latestReceivedPositionLongitude != 255){
-     if (element.latestReceivedPositionLattitude != 0 && element.latestReceivedPositionLongitude != 0) { // why ?
-        element.latestReceivedPositionLattitude = element.latestReceivedPositionLattitude; // 48.8566
-        element.latestReceivedPositionLongitude = element.latestReceivedPositionLongitude; // 2.3522
-        flag = true;
-      }
-     }
+
       if (flag) {
         _arr.push(element); // valid record only
       }
     });
-
+    
     return _arr;
+  }
+
+  checkLatLongValid = (lat: number, lon: number) => {
+    let flag: boolean = false;
+    
+    if (lat != 255 || lon != 255  ){
+      if(lat != 0 && lon != 0){
+        flag = true;
+      } 
+   }
+   return flag; 
   }
 
   skipInvalidRecord(livePoints: any) {

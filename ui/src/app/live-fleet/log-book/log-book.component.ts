@@ -933,13 +933,13 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
       this.showLoadingIndicator = true;
       this.getLogbookDetailsAPICall = this.reportService.getLogbookDetails(objData).subscribe((logbookData: any) => {
         this.hideloader();
-        // let logBookResult = logbookData;
-        let logBookResult = [];
-        logbookData.forEach((ele, i) => {
-          if ((ele.latitude >= -90 && ele.latitude <= 90) && (ele.longitude >= -180 && ele.longitude <= 180)) {
-            logBookResult.push(ele)
-          }
-        })
+         let logBookResult = logbookData;
+        // let logBookResult = []; // removing this check for DAF defect #2160
+        // logbookData.forEach((ele, i) => {
+        //   if ((ele.latitude >= -90 && ele.latitude <= 90) && (ele.longitude >= -180 && ele.longitude <= 180)) {
+        //     logBookResult.push(ele)
+        //   }
+        // })
         // let logBookResult : any = this.removeDuplicates(logbookData, "alertId");
         let newLogbookData = [];
         logbookData.forEach(element => {
@@ -1135,13 +1135,14 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
 
   onReset(){
     this._state=null;
+    this.initData = [];
     this.herePOIArr = [];
     this.internalSelection = false;
     this.setDefaultStartEndTime();
     this.setDefaultTodayDate();
     this.tripData = [];
     this.vehicleListData = [];
-    this.noRecordFound = false;
+    this.noRecordFound = true;
     this.updateDataSource(this.tripData);
     this.resetLogFormControlValue();
     this.filterDateData(); // extra addded as per discuss with Atul
@@ -1928,10 +1929,14 @@ let prepare = []
           levelListData.push({'name':levelName, 'value': item.value})
         });
 
-
     if(this.wholeLogBookData.logbookTripAlertDetailsRequest.length > 0){
-      let filterVIN: any = this.wholeLogBookData?.logbookTripAlertDetailsRequest?.filter(item => item.alertGeneratedTime >= currentStartTime && item.alertGeneratedTime <= currentEndTime).map(data => data.vin);
+      // let filterVIN: any = this.wholeLogBookData?.logbookTripAlertDetailsRequest?.filter(item => item.alertGeneratedTime >= currentStartTime && item.alertGeneratedTime <= currentEndTime).map(data => data.vin);
       // this.singleVehicle = this.wholeTripData?.vehicleDetailsWithAccountVisibiltyList?.filter(i=> i.groupType == 'S');
+      
+      let filterVIN: any = this.wholeLogBookData?.logbookTripAlertDetailsRequest?.map((item) => {
+        return { ...item, subItem: item.alertGeneratedTime.filter((subItem) => subItem >= currentStartTime && subItem <= currentEndTime) };
+      }).map(data => data.vin);
+
       if(filterVIN.length > 0){
         distinctVIN = filterVIN.filter((value, index, self) => self.indexOf(value) === index);
         if(distinctVIN.length > 0){
@@ -2069,23 +2074,23 @@ let prepare = []
 
   }
 
-  onAlertCategoryChange(event: any){
+  onAlertCategoryChange(event: any) {
     let alertsTypes = this.wholeLogBookData["enumTranslation"].filter(item => item.type == 'T');
-    if(event.value == 'all') {
-      this.alertTyp = alertsTypes; 
+    if (event.value == 'all') {
+      this.alertTyp = alertsTypes;
     } else {
-      let types = this.wholeLogBookData?.logbookTripAlertDetailsRequest?.filter(item => item.alertCategoryType == event.value).map(item => item.alertType);
-      let uniqueAlertEnums = [...new Set(types)];
+      let types = alertsTypes.filter(type => type.parentEnum == event.value);
+      const uniqueAlertEnums = [...new Set(types.map(item => item.enum))];
       let filteredTypes = [];
       alertsTypes.forEach(element => {
-        if(uniqueAlertEnums.includes(element.enum)){
+        if (uniqueAlertEnums.includes(element.enum)) {
           filteredTypes.push(element);
         }
       });
       this.alertTyp = filteredTypes;
     }
+    this.logBookForm.get('alertType').setValue('all');
   }
-
 
   setVehicleGroupAndVehiclePreSelection() {
     if(!this.internalSelection && this.globalSearchFilterData.modifiedFrom !== "") {
@@ -2489,7 +2494,7 @@ let prepare = []
     let _type = '';
     let _alertLevel = '';
     // if(_currentAlert.alertLevel) _alertLevel = (_currentAlert.alertLevel).toLowerCase();
-      switch (_currentAlert.alertLevel) {
+      switch ((_currentAlert.alertLevel).toLowerCase()) {
         case 'C':
           case 'critical':{
           _fillColor = '#D50017';
