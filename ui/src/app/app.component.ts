@@ -743,7 +743,7 @@ export class AppComponent {
 
         this.appForm.get("languageSelection").setValue(this.localStLanguage.id); //-- set language dropdown
         let roleLevel = parseInt(localStorage.getItem('roleLevel'));
-        if(roleLevel == 10 || roleLevel == 20){
+        // if(roleLevel == 10 || roleLevel == 20){
           this.organizationService.getAllOrganizations().subscribe((data: any) => {
             if (data) {
               this.organizationList = data["organizationList"];
@@ -773,7 +773,7 @@ export class AppComponent {
             this.organizationList = [];
             this.calledTranslationLabels(preferencelanguageCode);
           });
-        }
+        // }
       });
 
     }
