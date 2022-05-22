@@ -34,12 +34,20 @@ export class ReportsPreferencesComponent implements OnInit {
   tabIndex: any = 0;
   prefDetail: any = {};
   reportDetail: any = [];
+  tripReport: boolean = false;
+  fleetUtilisationReport: boolean = false;
+  driveTimeReport: boolean = false;
+  ecoScoreReport: boolean = false;
+  fuelBenchmarkingReport: boolean = false;
+  fleetFuelReport: boolean = false;
+  fuelDeviationReport: boolean = false;
 
   constructor(private reportService: ReportService, private router: Router, private cdr: ChangeDetectorRef) { }
 
   ngOnInit() {
     this.prefDetail = JSON.parse(localStorage.getItem('prefDetail'));
     this.reportDetail = JSON.parse(localStorage.getItem('reportDetail')); 
+    this.showHideReports();
   }
 
   ngAfterViewInit(){
@@ -231,4 +239,35 @@ export class ReportsPreferencesComponent implements OnInit {
     return false;
   }
 
+  showHideReports(){
+    let reportMenu = JSON.parse(localStorage.getItem('accountFeatures'));
+    if(reportMenu && reportMenu.menus){
+      reportMenu.menus.forEach(menu => {
+        for(var key in menu){
+          if(menu && menu.key && menu.key == 'lblReport'){
+            menu.subMenus.forEach(subMenu => {
+              for(var key in subMenu){
+                if(subMenu && subMenu.key){
+                  if(subMenu.key == 'lblFuelDeviationReport')
+                    this.fuelDeviationReport = true;
+                  else if(subMenu.key == 'lblTripReport')
+                    this.tripReport = true;
+                  else if(subMenu.key == 'lblFleetFuelReport')
+                    this.fleetFuelReport = true;
+                  else if(subMenu.key == 'lblFleetUtilisation')
+                    this.fleetUtilisationReport = true;
+                  else if(subMenu.key == 'lblFuelBenchmarking')
+                    this.fuelBenchmarkingReport = true;
+                  else if(subMenu.key == 'lblDriveTimeManagement')
+                    this.driveTimeReport = true;
+                  else if(subMenu.key == 'lblECOScoreReport')
+                    this.ecoScoreReport = true;
+                }
+              }
+            });
+          }
+        }
+      });
+    }
+  }
 }

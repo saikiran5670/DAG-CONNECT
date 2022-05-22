@@ -97,8 +97,16 @@ export class EcoScoreProfileManagementComponent implements OnInit {
       filter: "",
       menuId: 44 // Eco-score profilemgnt
     }
-    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-      this.processTranslation(data);
+
+    let menuId = 'menu_44_' + this.localStLanguage.code;
+    if (!localStorage.getItem(menuId)) {
+      this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+        this.processTranslation(data);
+      });
+    } else {
+      this.translationData = JSON.parse(localStorage.getItem(menuId));
+    }
+    
       this.breadcumMsg = this.getBreadcum(this.actionType);
       if(this.prefDetail){
         if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ 
@@ -111,7 +119,6 @@ export class EcoScoreProfileManagementComponent implements OnInit {
           });
         }
       }
-    });
 
     this.ecoScoreProfileForm = this._formBuilder.group({
       profileName: ['', [ Validators.required, CustomValidators.noWhitespaceValidatorforDesc ]],
@@ -229,6 +236,9 @@ export class EcoScoreProfileManagementComponent implements OnInit {
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
+    let langCode =this.localStLanguage? this.localStLanguage.code : 'EN-GB';
+    let menuId = 'menu_44_'+ langCode;
+    localStorage.setItem(menuId, JSON.stringify(this.translationData));
   }
 
   getBreadcum(type: any){

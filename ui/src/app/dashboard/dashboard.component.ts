@@ -55,8 +55,16 @@ export class DashboardComponent implements OnInit {
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
     this.showLoadingIndicator = true;
-    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-      this.processTranslation(data);
+
+    let menuId = 'menu_1_' + _langCode;
+    if(!localStorage.getItem(menuId)){
+      this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+        this.processTranslation(data);
+      });
+    } else{
+      this.translationData = JSON.parse(localStorage.getItem(menuId));
+    } 
+
       if(this.prefDetail){
         if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ 
           this.preference = this.accountPrefObj.accountPreference;
@@ -71,7 +79,7 @@ export class DashboardComponent implements OnInit {
           });
         }
       }
-    });
+
   }
 
   loadReportData() {
@@ -101,6 +109,9 @@ export class DashboardComponent implements OnInit {
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
+    let langCode =this.localStLanguage? this.localStLanguage.code : 'EN-GB';
+    let menuId = 'menu_1_'+ langCode;
+    localStorage.setItem(menuId, JSON.stringify(this.translationData));
   }
 
   proceedStep(preference: any){
@@ -120,10 +131,11 @@ export class DashboardComponent implements OnInit {
   }
 
   processVins(tripData){
-    let _vinList = tripData['vinTripList'].map(x=>x.vin);
-    if(_vinList.length > 0){
-      this.finalVinList = _vinList.filter((value, index, self) => self.indexOf(value) === index);
-    }
+    // API will always send unique VIN's
+    this.finalVinList = tripData['vinTripList'];
+    // if(_vinList.length > 0){
+    //   this.finalVinList = _vinList.filter((value, index, self) => self.indexOf(value) === index);
+    // }
   }
 
   hideloader() {

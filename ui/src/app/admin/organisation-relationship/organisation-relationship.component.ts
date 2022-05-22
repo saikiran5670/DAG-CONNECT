@@ -76,6 +76,7 @@ export class OrganisationRelationshipComponent implements OnInit {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
     this.adminAccessType = JSON.parse(localStorage.getItem("accessType"));
+    
     let translationObj = {
       id: 0,
       code: this.localStLanguage.code,
@@ -85,12 +86,20 @@ export class OrganisationRelationshipComponent implements OnInit {
       filter: "",
       menuId: 29 //-- for org relationship mgnt
     }
-    this.translationService.getMenuTranslations(translationObj).subscribe((data) => {
-      this.processTranslation(data);
+
+    let menuId = 'menu_29_' + this.localStLanguage.code;
+    if (!localStorage.getItem(menuId)) {
+      this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+        this.processTranslation(data);
+        this.loadInitData();
+        this.getTransAllType();
+      });
+    } else {
+      this.translationData = JSON.parse(localStorage.getItem(menuId));
       this.loadInitData();
       this.getTransAllType();
-    });
-    this.loadInitData();//temporary
+    }
+    
     this.relationFilter.valueChanges.subscribe(filterValue => {
       if (filterValue === 'allRelations') {
         this.filteredValues['relation'] = '';
@@ -356,8 +365,9 @@ export class OrganisationRelationshipComponent implements OnInit {
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
     this.defaultTranslation();
-
-    ////console.log("process translationData:: ", this.translationData)
+    let langCode =this.localStLanguage? this.localStLanguage.code : 'EN-GB';
+    let menuId = 'menu_29_'+ langCode;
+    localStorage.setItem(menuId, JSON.stringify(this.translationData));
   }
 
   newRelationship() {

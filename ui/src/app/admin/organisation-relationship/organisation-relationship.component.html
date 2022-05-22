@@ -109,19 +109,19 @@
                           <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedOrgRelations.toggle(row) : null'
                             [checked]='selectedOrgRelations.isSelected(row)' [aria-label]='checkboxLabelForOrgRelationship(row)' [disabled]="row.endDate != 0">
                           </mat-checkbox>
-                        </mat-cell>
+                        </mat-cell> 
                       </ng-container>
                     <ng-container matColumnDef="relationshipName">
                         <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRelationshipName }}</mat-header-cell>
                         <mat-cell *matCellDef="let row" [disabled]="row.endDate != 0" style="word-break: 'break-word'">
                           <!-- <a routerLink="relationshipmanagement", viewFlag;> -->
 
-                            <a *ngIf="row.endDate == 0" [routerLink]="['relationshipmanagement']" [state]="{ id:1 ,name:'orgRelationship',rowData: row, viewRelationshipFromOrg:true}">
+                            <!-- <a *ngIf="row.endDate == 0" [routerLink]="['relationshipmanagement']" [state]="{ id:1 ,name:'orgRelationship',rowData: row, viewRelationshipFromOrg:true}"> -->
                               {{row.relationshipName}}
-                            </a>
-                        <a *ngIf="row.endDate != 0" style= "cursor:not-allowed" >
+                            <!-- </a> -->
+                        <!-- <a *ngIf="row.endDate != 0" style= "cursor:not-allowed" >
                           {{row.relationshipName}}
-                        </a>
+                        </a> -->
                         <!-- <button type="button" class="btn btn-primary-outline pull-right" (click)="btnClick();"><i class="fa fa-plus"></i> Add</button> -->
                         </mat-cell>
                     </ng-container>

@@ -57,6 +57,7 @@ vehicleListData: any = [];
 driverListData: any = [];
 finalDriverList: any = [];
 levelList : any= [];
+firstClick :number = 0;
 healthList : any= [];
 otherList : any= [];
 driverVehicleForm: FormGroup;
@@ -71,10 +72,11 @@ svgIcon:any;
 displayedColumns: string[] = ['icon','vin','driverName','drivingStatus','healthStatus'];
 @ViewChild('dataContainer') dataContainer: ElementRef;
 // @ViewChild('allSelected') private allSelected;
-allSelectedHealthStatus = true;
-allSelectedOther = true;
-allSelectedAlertCategory = true;
-allSelectedAlertLevel = true;
+allSelectedHealthStatus = false;
+allSelectedOther = false;
+allSelectedAlertCategory = false;
+allSelectedAlertLevel = false;
+allSelectedGroup = true;
 @ViewChild('select1') select1: MatSelect;
 @ViewChild('select2') select2: MatSelect;
 @ViewChild('select3') select3: MatSelect;
@@ -92,6 +94,8 @@ driverListDropFilter = [];
 filterType: any =[];
 alertListData: any =[];
 categoryListData : any =[];
+groupFilterData: any =[];
+firstClickData: any = [];
 
 public filteredSelectGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
@@ -101,7 +105,7 @@ constructor(private fleetMapService: FleetMapService, private messageService: Me
     private dataInterchangeService: DataInterchangeService, private cdr: ChangeDetectorRef,private reportMapService: ReportMapService) {
       this.subscription = this.messageService.getMessage().subscribe(message => {
         if (message.key.indexOf("refreshData") !== -1) {
-          this.loadVehicleData();
+          this.loadVehicleData(true);
         }
       });
 }
@@ -122,6 +126,18 @@ ngOnChanges(changes: SimpleChanges) {
   if(changes && changes.filterData && changes.filterData.currentValue){
     this.filterData = changes.filterData.currentValue;
     this.filterData.vehicleGroups = this.filterData.vehicleGroups.filter(v=> v.vehicleGroupType !== "S");
+  }
+  if(this.filterData && this.fleetData && this.firstClick == 0){
+    this.updateVehicleFilter();
+    this.setDropdownValues(this.fleetData);
+    this.selection1 = [];
+    this.selection2 = [];
+    this.selection3 = [];
+    this.selection4 = [];
+    this.vehicleListData = this.firstClickData;
+    this.noRecordFlag = false;
+    this.filterVINonMap();
+    this.firstClick = this.firstClick + 1;
   }
 }
 
@@ -161,8 +177,21 @@ ngOnChanges(changes: SimpleChanges) {
     this.filterVehicleForm.get("status").setValue(healthStatusList);
     this.filterVehicleForm.get("otherFilter").setValue(otherFilterList);
     this.filterVehicleForm.get("level").setValue(alertLevelList);
-    this.filterVehicleForm.get("category").setValue(alertCategoryList)
-  }
+    this.filterVehicleForm.get("category").setValue(alertCategoryList);
+     if(this.filterData){
+      let obj = this.levelList.find(element => element.value === 'B');
+      if(!obj){
+      this.levelList.push({name: 'No Alert', value:'B'});
+      this.categoryList.push({name: 'No Alert', value:'B'});
+      }
+          if(this.select1 && this.select2 && this.select3 && this.select4){
+          this.toggleAllSelectionAlertLevel();
+          this.toggleAllSelectionAlertCategory();
+          this.toggleAllSelectionHealth();
+          this.toggleAllSelectionOther();
+          }
+      }
+   }
 
   tabVisibilityHandler(tabVisibility: boolean){
     this.tabVisibilityStatus = tabVisibility;
@@ -420,7 +449,7 @@ ngOnChanges(changes: SimpleChanges) {
     this.healthList = [];
     this.otherList = [];
     this.vehicleListData = [];
-    this.showLoadingIndicator = false;
+    //this.showLoadingIndicator = false;
     if (!this.todayFlagClicked && this.selectedIndex == 0) {
       this.filterData["vehicleGroups"].forEach(item => {
         this.groupList.push(item);
@@ -464,25 +493,25 @@ ngOnChanges(changes: SimpleChanges) {
         });
       }
 
-      if(this.detailsData){
-        this.detailsData.forEach(item => {
-          if (this.filterData && this.filterData.healthStatus) {
-            this.filterData["healthStatus"].forEach(e => {
-              if (item.vehicleHealthStatusType == e.value) {
-                item.vehicleHealthStatusType = this.translationData[e.name];
-              }
-            });
-          }
+      // if(this.detailsData){
+      //   this.detailsData.forEach(item => {
+      //     if (this.filterData && this.filterData.healthStatus) {
+      //       this.filterData["healthStatus"].forEach(e => {
+      //         if (item.vehicleHealthStatusType == e.value) {
+      //           item.vehicleHealthStatusType = this.translationData[e.name];
+      //         }
+      //       });
+      //     }
   
-          if (this.filterData && this.filterData.otherFilter) {
-            this.filterData["otherFilter"].forEach(element => {
-              if (item.vehicleDrivingStatusType == element.value) {
-                item.vehicleDrivingStatusType = this.translationData[element.name];
-              }
-            });
-          }
-        });
-      }
+      //     if (this.filterData && this.filterData.otherFilter) {
+      //       this.filterData["otherFilter"].forEach(element => {
+      //         if (item.vehicleDrivingStatusType == element.value) {
+      //           item.vehicleDrivingStatusType = this.translationData[element.name];
+      //         }
+      //       });
+      //     }
+      //   });
+      // }
       
       this.setDefaultDropValue();
       this.vehicleListData = this.detailsData;
@@ -622,16 +651,19 @@ removeDuplicates(originalArray, prop) {
     this.filterVehicleForm.get("group").setValue(id);   
     if(id == 'all'){
       this.vehicleListData= this.fleetData;
+      this.allSelectedGroup = true;
     }
     else{
-     let selectedVehicleGroup = this.filterData.vehicleGroups.filter(item=> item.vehicleGroupId == id);
-     let VehicleGroupList = this.removeDuplicates(selectedVehicleGroup, "vin");
-     let newFilterData=[];
-     VehicleGroupList.forEach(element => {
+      this.allSelectedGroup = false;
+    let selectedVehicleGroup = this.filterData.vehicleGroups.filter(item=> item.vehicleGroupId == id);
+    let VehicleGroupList = this.removeDuplicates(selectedVehicleGroup, "vin");
+    let newFilterData=[];
+    VehicleGroupList.forEach(element => {
       let filterDataList = this.fleetData.filter(item=> item.vin == element.vin );
       newFilterData.push(...filterDataList);
-     });
-     this.vehicleListData= newFilterData;
+    });
+    this.vehicleListData= newFilterData;
+    this.groupFilterData = [...this.vehicleListData];
     //   this.filterData.vehicleGroups.forEach(element => {
     //     this.fleetData.forEach(i => {
     //       if(element.vin == i.vin){
@@ -641,9 +673,16 @@ removeDuplicates(originalArray, prop) {
     //   });
     // this.vehicleListData= this.fleetData.filter(i=> i.VehGroupId == id);    
   
-     }
-     this.filterVINonMap();
-     this.filterVehicleForm.get("vehicleSearch").setValue('');
+    }
+    if(!this.allSelectedGroup && this.allSelectedAlertLevel && this.allSelectedAlertCategory && this.allSelectedHealthStatus && this.allSelectedOther){
+        this.vehicleListData = this.groupFilterData;
+        this.noRecordFlag = false;
+    }
+    else{
+    this.applyFilterOnVehicleData();
+    }
+    this.filterVINonMap();
+    this.filterVehicleForm.get("vehicleSearch").setValue('');
   }
 
   toggleAllSelectionAlertLevel() {
@@ -651,74 +690,131 @@ removeDuplicates(originalArray, prop) {
       this.select3.options.forEach((item: MatOption) => item.select());
       this.vehicleListData = this.fleetData;
       this.noRecordFlag=false;
+      this.applyFilterOnVehicleData();
     } else {
       this.select3.options.forEach((item: MatOption) => item.deselect());
+      if(this.firstClick > 0){
       this.vehicleListData = [];
-      this.onChangeLevel();
+       this.onChangeLevel();
+      }
     }
-    this.filterVINonMap();
+     this.filterVINonMap();
   }
 
-  applyFilterOnVehicleData(filterType){
+  applyFilterOnVehicleData(){
 
-    let filterData= {
-      data : this.fleetData,
-      filterApplied : false
-    }
     let objData =[];
-    // let distinctTypes = [... new Set(this.filterType)];
-    let distinctTypes = [];
-    if(this.levelList.length> 0 && this.allSelectedAlertLevel){
-      distinctTypes.push('level');
+
+    if(this.allSelectedGroup && this.allSelectedAlertLevel && this.allSelectedAlertCategory && this.allSelectedHealthStatus && this.allSelectedOther){
+      this.vehicleListData = this.fleetData;
+      
     }
-    if(this.categoryList.length > 0 && this.allSelectedAlertCategory){
-      distinctTypes.push('category');
+
+    else if(this.allSelectedGroup && !this.allSelectedAlertLevel && !this.allSelectedAlertCategory && !this.allSelectedHealthStatus && !this.allSelectedOther &&
+      this.filterVehicleForm.controls.level.value.length == 0 && this.filterVehicleForm.controls.category.value.length == 0 &&
+      this.filterVehicleForm.controls.status.value.length == 0 && this.filterVehicleForm.controls.otherFilter.value.length == 0){
+      this.vehicleListData = this.fleetData;
+      this.noRecordFlag = false;
     }
-   
-    distinctTypes.push('health','other');
-    
+    else if(!this.allSelectedGroup && !this.allSelectedAlertLevel && !this.allSelectedAlertCategory && !this.allSelectedHealthStatus && !this.allSelectedOther &&
+      this.filterVehicleForm.controls.level.value.length == 0 && this.filterVehicleForm.controls.category.value.length == 0 &&
+      this.filterVehicleForm.controls.status.value.length == 0 && this.filterVehicleForm.controls.otherFilter.value.length == 0){
+      this.vehicleListData = this.groupFilterData;
+      this.noRecordFlag = false;
+    }
+
+    else{
+    let distinctTypes = ['level','category','health','other'];
     distinctTypes.forEach(ele=>{
       switch (ele) {
         case 'level':
           {
             this.fleetData =this.fleetData.filter((value, index, self) => self.indexOf(value) === index);
-            this.filterLevel(this.fleetData);
+            if(this.allSelectedAlertLevel && this.allSelectedGroup){
+              // this.filterLevel(this.fleetData); 05-04-2022
+              this.vehicleListData = this.fleetData;
+              this.noRecordFlag =false;
+            }
+            else if(this.filterVehicleForm.controls.level.value.length > 0){
+                  if(this.filterVehicleForm.controls.group.value){
+                    if(this.allSelectedAlertLevel && this.allSelectedAlertCategory){
+                      this.vehicleListData = this.fleetData;
+                      this.noRecordFlag =false;
+                    }
+                    else{
+                    this.filterLevel(this.groupFilterData);
+                    }
+                  }
+
+                  else{
+                    this.filterLevel(this.vehicleListData);
+                  }
+              }
+            if (this.filterVehicleForm.controls.level.value.length <= 0 && !this.allSelectedGroup) {
+              this.filterLevel(this.groupFilterData);
+            }
             this.vehicleListData = this.vehicleListData.filter((value, index, self) => self.indexOf(value) === index);
             break;
+          
           }
+
         case 'category': {
-          if(this.filterVehicleForm.controls.level.value != 'all'){
-            objData = this.vehicleListData;
-          }
-          else{
-            objData = this.fleetData;
-          }
-          if(!this.allSelectedAlertCategory){
-            this.vehicleListData = [];
-          }
+          // if (this.allSelectedGroup) {
+          //      if (this.filterVehicleForm.controls.level.value.length <= 0) {
+          //       objData = this.fleetData;
+          //      }
+          //      else{
+          //     objData = this.vehicleListData;
+          //      }
+          //    if(this.filterVehicleForm.controls.category.value.length != 0){
+          //    this.filterCategory(objData);
+          //    }
+          //   break;
+          //   }
+            
+          // else{  //specific vehicle group selected
+          //   if (this.filterVehicleForm.controls.level.value.length <= 0) {
+          //     objData = this.groupFilterData;
+          //   }
+          //   else{
+          //     objData = this.vehicleListData;
+          //   }
+          //     this.filterCategory(objData);
+             
+          // }
+            if (this.filterVehicleForm.controls.level.value.length <= 0) {
+                this.allSelectedGroup ? objData = this.fleetData : objData = this.groupFilterData;
+            }
+            else{
+                this.allSelectedGroup ? objData = this.vehicleListData : objData = this.vehicleListData;
+            }
+          if(this.filterVehicleForm.controls.category.value.length != 0){
           this.filterCategory(objData);
-          break;
-        }
+          }
+         break;
+         
+         
+          }
 
         case 'health': {
-          if(!this.allSelectedAlertLevel && !this.allSelectedAlertCategory){
+          if((this.allSelectedAlertLevel && this.allSelectedAlertCategory &&this.allSelectedGroup)|| 
+          (this.filterVehicleForm.controls.level.value.length == 0 && this.allSelectedAlertCategory) || (this.filterVehicleForm.controls.category.value.length == 0 && this.allSelectedAlertLevel)){
+            this.allSelectedGroup? this.vehicleListData = this.fleetData : this.vehicleListData = this.groupFilterData;
+            objData = this.vehicleListData;
+          }
+          else if(this.allSelectedAlertLevel && this.allSelectedAlertCategory && !this.allSelectedGroup){
+            this.vehicleListData = this.groupFilterData;
+            objData = this.vehicleListData;
+          }
+          else if(this.allSelectedGroup && this.filterVehicleForm.controls.level.value <= 0 && this.filterVehicleForm.controls.category.value <= 0){
             objData = this.fleetData;
           }
-          // if(this.levelList.length == 0 || this.vehicleListData.length == 0){
-          //   objData = this.fleetData;
-          // }
-          else if(this.filterVehicleForm.controls.level.value == '' || this.filterVehicleForm.controls.category.value == '')
-          {
-            objData =[];
+          else if(!this.allSelectedGroup && this.filterVehicleForm.controls.level.value <= 0 && this.filterVehicleForm.controls.category.value <= 0){
+            objData = this.groupFilterData;
           }
           else{
             objData = this.vehicleListData;
           }
-         
-          if(this.levelList.length <= 0 && (this.filterVehicleForm.controls.otherFilter.value == 'all' || this.allSelectedOther || this.filterVehicleForm.controls.otherFilter.value.length > 0 )){
-            objData = this.fleetData;
-          }
-          if(this.filterVehicleForm.controls.status.value != 'all'){
             let vehicledata = [];
             this.filterData["healthStatus"].forEach(e => {
               for (let i of this.filterVehicleForm.controls.status.value) {
@@ -729,23 +825,25 @@ removeDuplicates(originalArray, prop) {
               }
             });
 
-          if(!this.allSelectedAlertLevel && !this.allSelectedAlertCategory){ //alert not available
-            let helthStatusData: any = [];
-            if(this.filterVehicleForm.controls.status.value != ''){
-            objData.forEach(i => {
-              for (let e of vehicledata) {
-                if (i.vehicleHealthStatusType == e && i.fleetOverviewAlert.length == 0) {
-                  //this.noRecordFlag = false;
-                  helthStatusData.push(i);
-                  break;
-                }
+            
+            if((this.filterVehicleForm.controls.level.value == 'B' && 
+            (this.allSelectedAlertCategory || this.filterVehicleForm.controls.category.value.length == 0 || this.filterVehicleForm.controls.category.value == 'B'))
+            || (this.filterVehicleForm.controls.category.value == 'B' && (this.allSelectedAlertLevel || this.filterVehicleForm.controls.level.value.length == 0 || 
+              this.filterVehicleForm.controls.level.value == 'B'))){
+              let newData :any;
+              if(this.allSelectedGroup){
+                newData = this.fleetData;
               }
-            });
-          }
-          this.vehicleListData = helthStatusData;
-          }
-          
-          else{
+              else{
+                newData = this.groupFilterData;
+              }
+              newData.forEach(i=> {
+                  if(i.fleetOverviewAlert.length == 0){
+                    this.vehicleListData.push(i);
+                  }
+              })
+            }
+
             let helthStatusData: any = [];
             if(this.filterVehicleForm.controls.status.value != ''){
             objData.forEach(i => {
@@ -757,23 +855,21 @@ removeDuplicates(originalArray, prop) {
                 }
               }
             });
-          }
             this.vehicleListData = helthStatusData;
           }
-  
+            this.vehicleListData = this.vehicleListData.filter((value, index, self) => self.indexOf(value) === index);
             this.noRecordFlag = (this.vehicleListData.length > 0) ? false : true;
-          }
           break;
         }
 
         case 'other': {
-          // if(this.vehicleListData.length > 0){
-          //   objData = this.vehicleListData;
-          // }
-          // else{
-          //   objData = this.fleetData;
-          // }
+          if(this.filterVehicleForm.controls.level.value <= 0 && this.filterVehicleForm.controls.category.value <=0 &&
+            this.filterVehicleForm.controls.status.value <= 0){
+            objData = this.fleetData;
+          }
+          else{
           objData = this.vehicleListData;
+          }
           if(this.filterVehicleForm.controls.otherFilter.value != 'all'){
           let otherFilterVehicleData = [];
           this.filterData["otherFilter"].forEach(e => {
@@ -790,9 +886,7 @@ removeDuplicates(originalArray, prop) {
           objData.forEach(i => {
             for (let e of otherFilterVehicleData) {
               if (i.vehicleDrivingStatusType == e) {
-                //this.noRecordFlag = false;
                 otherFilterData.push(i);
-                //this.vehicleListData.push(i);
                 break;
               }
             }
@@ -800,48 +894,101 @@ removeDuplicates(originalArray, prop) {
           
           this.vehicleListData = otherFilterData;
         }
-        else{
-          this.vehicleListData = [];
-        }
           this.noRecordFlag = (this.vehicleListData.length > 0) ? false : true;
         }
-        if(this.allSelectedAlertLevel && this.allSelectedAlertCategory && this.filterVehicleForm.controls.status.value == '' && this.filterVehicleForm.controls.otherFilter.value == ''){
-          this.filterLevel(this.fleetData);
-        }
+        // if(this.allSelectedAlertLevel && this.allSelectedAlertCategory && this.filterVehicleForm.controls.status.value == '' && this.filterVehicleForm.controls.otherFilter.value == ''){
+        //   this.filterLevel(this.fleetData);
+        // }
           break;
         }
       }
     })
   }
+  }
+
+  setDefaultValues(){
+    if(this.filterVehicleForm.controls.level.value.length == 0 || this.filterVehicleForm.controls.category.value.length == 0 ||
+      this.filterVehicleForm.controls.status.value.length == 0 || this.filterVehicleForm.controls.otherFilter.value.length == 0){
+        this.vehicleListData = this.fleetData;
+      }
+  }
 
   filterCategory(objData){
+    this.vehicleListData = [];
     if (objData && objData.length > 0) {
-      objData.forEach(e => {
-        if (e.fleetOverviewAlert && e.fleetOverviewAlert.length > 0) {
+      // objData.forEach(e => {
+        // if (e.fleetOverviewAlert && e.fleetOverviewAlert.length > 0) {
           for (let i of this.filterVehicleForm.controls.category.value) {
-            let alertcategorycheck = e.fleetOverviewAlert.filter(l => l.categoryType == i);
-            if (alertcategorycheck.length > 0) {
-              this.vehicleListData.push(e);
-              this.noRecordFlag = false;
-              break;
-            }
+            this.findCriticality(objData);
+            objData.forEach(e => {
+            //  if(e.fleetOverviewAlert.length > 0){
+            //   e.alertDetails?.forEach(j=> {
+            //     if(j.categoryType == i){
+            //   this.vehicleListData.push(e);
+            //   this.noRecordFlag = false;
+            //     }
+            //   // break;
+            //  })
+            //   }
+
+              let latestAlert = e.fleetOverviewAlert.sort((x, y) => y.time - x.time); 
+              if(latestAlert.length > 0){
+              e.alertCategoryType = latestAlert[0].categoryType;
+              }
+                if(e.alertCategoryType == i){
+                  this.vehicleListData.push(e);
+                  this.noRecordFlag = false;
+                 }
+            })
           }
-        }
-      });
+        // }
+      // });
     }
     this.vehicleListData = this.vehicleListData.filter((value, index, self) => self.indexOf(value) === index);
   }
 
+  findCriticality(objData){
+    if(objData.length > 0){
+    objData.forEach((ele, index) => {
+      let newData = ele.fleetOverviewAlert;
+      if(newData.length > 0){
+      newData.forEach(j =>{
+    if(j.level == 'C'){
+      ele.alertDetails = [j];
+    }
+    else if(j.level == 'W' && !(ele.fleetOverviewAlert.some(c => c.level == 'C'))){
+      ele.alertDetails = [j];
+    }
+    else if(j.level == 'A' && !(ele.fleetOverviewAlert.some(c => c.level == 'C')) && !(ele.fleetOverviewAlert.some(c => c.level == 'W'))){
+      ele.alertDetails = [j];
+    }
+  })
+}
+});
+    }
+  }
+
   filterLevel(fleetData :any){
     this.vehicleListData = [];
-    if(fleetData && fleetData.length > 0) {
+    let critical = 0;
+    let warning = 0;
+    let advisory = 0;
+    let objData: any;
+    let latestAlert:any =[];
+    if(!this.allSelectedGroup){
+      objData = this.groupFilterData;
+    }
+    else{
+      objData = this.fleetData;
+    }
+    if(fleetData && fleetData.length > 0 && this.allSelectedAlertLevel) {
       fleetData.forEach(e => {
-        let critical = 0;
-        let warning = 0;
-        let advisory = 0;
-        if(e.fleetOverviewAlert && e.fleetOverviewAlert.length > 0) {
+        if(e.fleetOverviewAlert && e.fleetOverviewAlert.length > 0 ) {
           for(let i of this.filterVehicleForm.controls.level.value) {
+            // this.filterVehicleForm.controls.level.value.forEach(i => {
+              // latestAlert = e.fleetOverviewAlert.sort((x, y) => y.time - x.time);
             switch (i) {
+        
               case 'C': if(e.fleetOverviewAlert.some(c => c.level == 'C')) {
                 critical = 1;
                 this.vehicleListData.push(e);
@@ -864,12 +1011,91 @@ removeDuplicates(originalArray, prop) {
                   break;
                 }
             }
-            if (critical == 1 || warning == 1 || advisory == 1) {
-              break;
+            if(critical == 1 && warning ==1 && advisory ==1){
+              let newdata = [...this.vehicleListData];
+              this.vehicleListData = [];
+              newdata.forEach(i=>{
+                  if(i.level == 'C'){
+                    this.vehicleListData(i);
+                  }
+              })
             }
           }
         }
       });
+    }
+    else if(this.filterVehicleForm.controls.level.value.length > 0){
+        this.filterVehicleForm.controls.level.value.forEach(i => {
+      //     objData.forEach((ele, index) => {
+      //       let newData = ele.fleetOverviewAlert;
+      //       if(newData.length > 0){
+      //       newData.forEach(j =>{
+      //     if(j.level == 'C'){
+      //       critical = 1; 
+      //       ele.fleetOverviewAlert = [j];
+      //     }
+      //     else if(j.level == 'W' && j.level != 'C'){
+      //       warning =1;
+      //       ele.fleetOverviewAlert = [j];
+      //     }
+      //     else if(j.level == 'A' && j.level != 'C' && j.level !='W'){
+      //       advisory = 1;
+      //       ele.fleetOverviewAlert = [j];
+      //     }
+      //   })
+      // }
+      // });
+      this.findCriticality(objData);
+        switch (i) {
+          case 'C': {
+            objData.forEach(i=>{
+              i.alertDetails?.filter(j => 
+                {
+                  if(j.level == 'C'){
+                    this.vehicleListData.push(i);
+                  }
+                })
+            })
+            
+            this.noRecordFlag = false;
+            break;
+          }
+            // break;
+          case 'W': {
+            warning = 1;
+            objData.forEach(i=>{
+              i.alertDetails?.filter(j => 
+                {
+                  if(j.level == 'W'){
+                    this.vehicleListData.push(i);
+                  }
+                })
+            })
+            this.noRecordFlag = false;
+            
+            break;
+          }
+            case 'A': {
+              advisory = 1;
+              objData.forEach(i=>{
+                i.alertDetails?.filter(j => 
+                  {
+                    if(j.level == 'A'){
+                      this.vehicleListData.push(i);
+                    }
+                  })
+              })
+              this.noRecordFlag = false;
+    
+              break;
+            }
+            
+        }
+      });
+      
+    }
+    else{
+      this.vehicleListData = this.groupFilterData;
     }
     if(this.allSelectedAlertLevel && this.allSelectedAlertCategory && this.filterVehicleForm.controls.status.value == '' && this.filterVehicleForm.controls.otherFilter.value == ''){
         this.filterCategory(this.vehicleListData);
@@ -887,81 +1113,39 @@ removeDuplicates(originalArray, prop) {
       }
     });
     this.allSelectedAlertLevel = newStatus;
-    // if(this.fleetData && this.fleetData.length > 0) {
-    //   this.fleetData.forEach(e => {
-    //     let critical = 0;
-    //     let warning = 0;
-    //     let advisory = 0;
-    //     if(e.fleetOverviewAlert && e.fleetOverviewAlert.length > 0) {
-    //       for(let i of this.filterVehicleForm.controls.level.value) {
-    //         switch (i) {
-    //           case 'C': if(e.fleetOverviewAlert.some(c => c.level == 'C')) {
-    //             critical = 1;
-    //             this.vehicleListData.push(e);
-    //             this.noRecordFlag = false;
-    //           }
-    //             break;
-    //           case 'W': if(e.fleetOverviewAlert.some(w => w.level == 'W') && !(e.fleetOverviewAlert.some(c => c.level == 'C'))) {
-    //             warning = 1;
-    //             this.vehicleListData.push(e);
-    //             this.noRecordFlag = false;
-    //           }
-    //             break;
-    //             case 'A': if(e.fleetOverviewAlert.some(a => a.level == 'A') && !(e.fleetOverviewAlert.some(c => c.level == 'C') || e.fleetOverviewAlert.some(w => w.level == 'W'))) {
-    //               advisory = 1;
-    //               this.vehicleListData.push(e);
-    //               this.noRecordFlag = false;
-    //             }
-    //               break;
-    //         }
-    //         if (critical == 1 || warning == 1 || advisory == 1) {
-    //           break;
-    //         }
-    //       }
-    //     }
-    //   });
-    // }
-    // this.filterType.push('level');
-    this.applyFilterOnVehicleData(this.filterType);
+    if(this.filterVehicleForm.controls.level.value.length <= 0){
+      if(this.allSelectedGroup){
+      this.vehicleListData = this.fleetData;
+      }
+      else{
+        this.vehicleListData = this.groupFilterData;
+      }
+    }
+    if(this.allSelectedAlertLevel){
+      this.toggleAllSelectionAlertLevel();
+    }
+    else{
+      this.filterVehicleForm.get("vehicleSearch").setValue('');
+    this.applyFilterOnVehicleData();
     this.filterVINonMap();
-    this.filterVehicleForm.get("vehicleSearch").setValue('');
+    
+    }
   }
-  // onChangeLevel(id: any){
-  //   this.filterVehicleForm.get("level").setValue(id);
-  //   // this.loadVehicleData();
-  //   if(id == 'all'){
-  //     this.vehicleListData= this.fleetData;
-  //   }
-  //   else{
-  //   if(this.fleetData.fleetOverviewAlert.length > 0){
-  //   this.vehicleListData = this.fleetData.filter(i=> i.fleetOverviewAlert.level == id);
-  //   }
-  // }
-  // }
-
-  // onChangeCategory(id: any){
-  //   this.filterVehicleForm.get("category").setValue(id);
-  //   // this.loadVehicleData();
-  //   if(id == 'all'){
-  //     this.vehicleListData= this.fleetData;
-  //   }
-  //   else{
-  //   if(this.fleetData.fleetOverviewAlert.length > 0){
-  //     this.vehicleListData = this.fleetData.filter(i=> i.fleetOverviewAlert.categoryType == id);
-  //     }
-  //   }
-  // }
 
   toggleAllSelectionAlertCategory(){
     if(this.allSelectedAlertCategory) {
       this.select1.options.forEach((item: MatOption) => item.select());
       this.vehicleListData = this.fleetData;
+      this.applyFilterOnVehicleData();
       this.noRecordFlag=false;
     } else {
       this.select1.options.forEach((item: MatOption) => item.deselect());
+      if(this.firstClick > 0){
       this.vehicleListData = [];
-      this.onChangeCategory();
+       this.onChangeCategory();
+      }
     }
+    //this.onChangeCategory();
     this.filterVINonMap();
   }
   onChangeCategory(){
@@ -976,47 +1160,15 @@ removeDuplicates(originalArray, prop) {
     });
     this.allSelectedAlertCategory = newStatus;
 
-    // if(this.fleetData && this.fleetData.length > 0){
-    //   this.fleetData.forEach(e => {
-    //     if(e.fleetOverviewAlert && e.fleetOverviewAlert.length > 0)
-    //     {
-    //     for(let i of this.filterVehicleForm.controls.category.value) {
-    //     let alertcategorycheck = e.fleetOverviewAlert.filter(l => l.categoryType == i);
-    //     if(alertcategorycheck.length >0){
-    //       this.vehicleListData.push(e);
-    //       this.noRecordFlag = false;
-    //       break;
-    //     }
-    //   }
-    //   }
-    // });
-    // }
-    // this.filterType.push('category');
-    this.applyFilterOnVehicleData(this.filterType);
+    if(this.allSelectedAlertCategory){
+      this.toggleAllSelectionAlertCategory();
+    }
+    else{
+    this.applyFilterOnVehicleData();
     this.filterVINonMap();
     this.filterVehicleForm.get("vehicleSearch").setValue('');
+    }
   }
-
-  // onChangHealthStatus(all, id: any) {
-  //   if (this.allSelected.selected) {
-  //     this.allSelected.deselect();
-  //   }
-  //   if (this.filterVehicleForm.controls.status.value.length == this.healthList.length) {
-  //     this.allSelected.select();
-  //   }
-  //   // this.loadVehicleData();
-  //   if (id == 'all') {
-  //     this.vehicleListData = this.fleetData;
-  //   }
-  //   else {
-  //     this.filterData["healthStatus"].forEach(e => {
-  //       if (id == e.value) {
-  //         id = this.translationData[e.name];
-  //       }
-  //     });
-  //     this.vehicleListData = this.fleetData.filter(i => i.vehicleHealthStatusType == id);
-  //   }
-  // }
 
   onChangeHealthStatus(){
     let newStatus = true;
@@ -1031,132 +1183,47 @@ removeDuplicates(originalArray, prop) {
     });
     this.allSelectedHealthStatus = newStatus;
 
-    // this.filterData["healthStatus"].forEach(e => {
-    //   for(let i of this.filterVehicleForm.controls.status.value) {
-    //     if (i == e.value) {
-    //       vehicledata.push(this.translationData[e.name]);
-    //       break;
-    //     }
-    //   }
-    // });
-
-    // let helthStatusData: any = [];
-    // this.fleetData.forEach(i => {
-    //   for(let e of vehicledata){
-    //     if(i.vehicleHealthStatusType == e){
-    //     //this.noRecordFlag = false;
-    //     helthStatusData.push(i);
-    //    break;
-    //   }
-    // }
-    // });
-
-    // let otherFData: any = [];
-    // this.filterData["otherFilter"].forEach(e => {
-    //   for(let i of this.filterVehicleForm.controls.otherFilter.value) {
-    //     if (i == e.value) {
-    //       otherFData.push(this.translationData[e.name]);
-    //       break;
-    //     }
-    //   }
-    // });
-
-    // if(otherFData && otherFData.length > 0){ // other filter present
-    //   let newFilterData = [];
-    //   if(vehicledata && vehicledata.length > 0){
-    //     newFilterData = helthStatusData.slice();
-    //   }else{
-    //     newFilterData = this.fleetData.slice();
-    //   }
-    //   newFilterData.forEach(i => {
-    //     for(let e of otherFData){
-    //       if(i.vehicleDrivingStatusType == e){
-    //         this.noRecordFlag = false;
-    //         this.vehicleListData.push(i);
-    //         break;
-    //       }
-    //     }
-    //   });
-    // }else{ // other filter not present
-    //   this.vehicleListData = helthStatusData.slice();
-    //   this.noRecordFlag = (helthStatusData.length > 0) ? false : true;
-    // }
-    // this.filterType.push('health');
-    this.applyFilterOnVehicleData(this.filterType);
+    if(this.allSelectedHealthStatus){
+      this.toggleAllSelectionHealth();
+    }
+    else{
+    this.applyFilterOnVehicleData();
     this.filterVINonMap();
     this.filterVehicleForm.get("vehicleSearch").setValue('');
+    }
   }
 
   toggleAllSelectionHealth() {
     if(this.allSelectedHealthStatus) {
       this.select2.options.forEach((item: MatOption) => item.select());
-      //this.vehicleListData = this.fleetData;
-      this.onChangeHealthStatus();
+      this.vehicleListData = this.fleetData;
+      this.noRecordFlag=false;
+      this.applyFilterOnVehicleData();
     } else {
       this.select2.options.forEach((item: MatOption) => item.deselect());
-      if(this.filterVehicleForm.controls.otherFilter.value && this.filterVehicleForm.controls.otherFilter.value.length > 0){
-        this.onChangeOtherFilter();
-      }else{
-        this.vehicleListData = [];
-        this.filterVINonMap();
+      if(this.firstClick > 0){
+      this.vehicleListData = [];
+      this.onChangeHealthStatus();
       }
     }
+    this.filterVINonMap();
   }
-
-  // toggleAllSelectionHealth() {
-  //   if (this.allSelected.selected) {
-  //     this.filterVehicleForm.controls.status.patchValue([
-  //       ...this.healthList.map(item => item.value),
-  //       0
-  //     ]);
-  //   } else {
-  //     this.filterVehicleForm.controls.status.patchValue([]);
-  //   }
-  //   // this.loadVehicleData();
-  //   let health_status:any;
-  //   let status=this.filterVehicleForm.controls.status.value;
-  //   if(status.length == 0 || status == 'all'){
-  //     health_status =['all'];
-  //   }
-  //   else {
-  //     if(status.includes(0))
-  //     {
-  //       let newStatus = status.filter(i=>i != 0 && i != undefined);
-  //       newStatus.push('all');
-  //       status =  newStatus
-  //     }
-  //     health_status =status;
-  //   }
-
-  //   this.filterData["healthStatus"].forEach(e => {
-  //     health_status.forEach((element,index) => {
-  //     if (element == e.value) {
-  //       health_status[index] = this.translationData[e.name];
-  //     }
-  //   });
-  //   });
-
-  //   health_status.forEach(element => {
-  //     this.fleetData.filter(i=>i.vehicleHealthStatusType == element)
-  //   });
-
-  // }
 
   toggleAllSelectionOther(){
     if (this.allSelectedOther) {
       this.select4.options.forEach((item: MatOption) => item.select());
-      //this.vehicleListData = this.fleetData;
-      this.onChangeOtherFilter();
+      this.vehicleListData = this.fleetData;
+      this.noRecordFlag=false;
+      // this.onChangeOtherFilter();
+      this.applyFilterOnVehicleData();
+
     } else {
       this.select4.options.forEach((item: MatOption) => item.deselect());
-      if(this.filterVehicleForm.controls.status.value && this.filterVehicleForm.controls.status.value.length > 0){
-        this.onChangeHealthStatus();
-      }else{
-        this.vehicleListData = [];
-        this.onChangeOtherFilter();
-        this.filterVINonMap();
+      if(this.firstClick > 0){
+      this.onChangeOtherFilter();
       }
     }
+    this.filterVINonMap();
   }
 
   onChangeOtherFilter(){
@@ -1170,62 +1237,14 @@ removeDuplicates(originalArray, prop) {
       }
     });
     this.allSelectedOther = newStatus;
-
-    // this.filterData["otherFilter"].forEach(e => {
-    //   for(let i of this.filterVehicleForm.controls.otherFilter.value) {
-    //     if (i == e.value) {
-    //       otherFilterVehicleData.push(this.translationData[e.name]);
-    //       break;
-    //     }
-    //   }
-    // });
-
-    // let otherFilterData: any = []
-    // this.fleetData.forEach(i => {
-    //   for(let e of otherFilterVehicleData){
-    //     if(i.vehicleDrivingStatusType == e){
-    //     //this.noRecordFlag = false;
-    //     otherFilterData.push(i);
-    //    //this.vehicleListData.push(i);
-    //    break;
-    //   }
-    // }
-    // });
-
-    // let h_status: any = [];
-    // this.filterData["healthStatus"].forEach(e => {
-    //   for(let i of this.filterVehicleForm.controls.status.value) {
-    //     if (i == e.value) {
-    //       h_status.push(this.translationData[e.name]);
-    //       break;
-    //     }
-    //   }
-    // });
-
-    // if(h_status && h_status.length > 0){ // health filter present
-    //   let newFilterData = [];
-    //   if(otherFilterVehicleData && otherFilterVehicleData.length > 0){
-    //     newFilterData = otherFilterData.slice();
-    //   }else{
-    //     newFilterData = this.fleetData.slice();
-    //   }
-    //   newFilterData.forEach(i => {
-    //     for(let e of h_status){
-    //       if(i.vehicleHealthStatusType == e){
-    //         this.noRecordFlag = false;
-    //         this.vehicleListData.push(i);
-    //         break;
-    //       }
-    //     }
-    //   });
-    // }else{ // health filter not present
-    //   this.vehicleListData = otherFilterData.slice();
-    //   this.noRecordFlag = (otherFilterData.length > 0) ? false : true;
-    // }
-    // this.filterType.push('other');
-    this.applyFilterOnVehicleData(this.filterType);
+    if(this.allSelectedOther){
+      this.toggleAllSelectionOther();
+    }
+    else{
+    this.applyFilterOnVehicleData();
     this.filterVINonMap();
     this.filterVehicleForm.get("vehicleSearch").setValue('');
+    }
   }
 
   filterVINonMap(){ // VIN on map
@@ -1236,22 +1255,6 @@ removeDuplicates(originalArray, prop) {
     if(!this.fromVehicleHealth || (this.fromVehicleHealth && !this.fromVehicleHealth.fromVehicleHealth))
       this.dataInterchangeService.getVehicleData(_dataObj);//change as per filter data
   }
-
-  // onChangeOtherFilter(id: any){
-  //   this.filterVehicleForm.get("otherFilter").setValue(id);
-  //   // this.loadVehicleData();
-  //   if (id == 'all') {
-  //     this.vehicleListData = this.fleetData;
-  //   }
-  //   else {
-  //     this.filterData["otherFilter"].forEach(element => {
-  //       if (id == element.value) {
-  //         id = this.translationData[element.name];
-  //       }
-  //     });
-  //     this.vehicleListData = this.fleetData.filter(i => i.vehicleDrivingStatusType == id);
-  //   }
-  // }
 
   onChangeDriver(val: any){
     let value = [];
@@ -1316,7 +1319,7 @@ removeDuplicates(originalArray, prop) {
       this.dataInterchangeService.getVehicleData(_dataObj);//change as per filter data
   }
 
-  loadVehicleData(){
+  loadVehicleData(refresh?:boolean){
     this.noRecordFlag = true;
     this.showLoadingIndicator=true;
     this.initData =this.detailsData;
@@ -1361,16 +1364,16 @@ removeDuplicates(originalArray, prop) {
 
     if(this.filterVehicleForm.controls.category.value.length == 0 || this.filterVehicleForm.controls.category.value == 'all'){
       categoryList = ['all'];
-     }
-     else {
-       let newCategoryList = this.filterVehicleForm.controls.category.value.filter(i=>i != 0 && i != undefined);
-       if(this.filterVehicleForm.controls.category.value.includes(0))
-       {
-         newCategoryList.push('all');
+    }
+    else {
+      let newCategoryList = this.filterVehicleForm.controls.category.value.filter(i=>i != 0 && i != undefined);
+      if(this.filterVehicleForm.controls.category.value.includes(0))
+      {
+        newCategoryList.push('all');
 
-       }
-       categoryList = newCategoryList;
-     }
+      }
+      categoryList = newCategoryList;
+    }
 
     // let levelVal = this.filterVehicleForm.controls.level.value;
      // if(levelVal == 'all')
@@ -1394,10 +1397,10 @@ removeDuplicates(originalArray, prop) {
     {
       this.objData = {
         "groupId": [this.filterVehicleForm.controls.group.value.toString()],
-        "alertLevel": levelList,
-        "alertCategory": categoryList,
-        "healthStatus": health_status,
-        "otherFilter": otherList,
+        "alertLevel": ["all"],
+        "alertCategory": ["all"],
+        "healthStatus": ["all"],
+        "otherFilter": ["all"],
         "driverId": ["all"],
         "days": 90,
         "languagecode":this.localStLanguage ? this.localStLanguage.code : "EN-GB"
@@ -1419,10 +1422,10 @@ removeDuplicates(originalArray, prop) {
       let _endTime = Util.getMillisecondsToUTCDate(endDateValue, this.preferenceObject.prefTimeZone);
       this.objData = {
         "groupId": [this.filterVehicleForm.controls.group.value.toString()],
-        "alertLevel": levelList,
-        "alertCategory": categoryList,
-        "healthStatus": health_status,
-        "otherFilter": otherList,
+        "alertLevel": ["all"],
+        "alertCategory": ["all"],
+        "healthStatus": ["all"],
+        "otherFilter": ["all"],
         "driverId": ["all"],
         "days": 0,
         "languagecode":this.localStLanguage ? this.localStLanguage.code : "EN-GB",
@@ -1439,7 +1442,6 @@ removeDuplicates(originalArray, prop) {
     this.getFleetOverviewDetails = this.reportService.getFleetOverviewDetails(this.objData).subscribe((fleetdata:any) => {
      let data = fleetdata.fleetOverviewDetailList;//this.fleetMapService.processedLiveFLeetData(fleetdata.fleetOverviewDetailList);
     this.fleetData = data;
-
     let val = [{vehicleGroup : vehicleGroupSel.vehicleGroupName, data : data}];
     this.messageService.sendMessage(val);
     // this.messageService.sendMessage("refreshTimer");
@@ -1452,7 +1454,8 @@ removeDuplicates(originalArray, prop) {
     // this.categoryList = this.removeDuplicates(newAlertCat, "value");
 
     this.vehicleListData = data;
-    this.detailsData = data;
+    this.applyFilterOnVehicleData();
+    this.detailsData = this.vehicleListData;
 
     let _dataObj: any = {};
     if(this.setflag){ // vehicle details
@@ -1492,53 +1495,56 @@ removeDuplicates(originalArray, prop) {
       this.showLoadingIndicator=false;
     });
     //this.noRecordFlag = false;
+    if(this.filterData && !refresh){
+        this.setDefaultDropValue();
+    }
  }
 
   setDropdownValues(data: any) {
     let newAlertCat = [];
-    this.healthList = [];
-    this.levelList = [];
-    this.categoryList = [];
-    this.otherList = [];
+    // this.healthList = [];
+    // this.levelList = [];
+    // this.categoryList = [];
+    // this.otherList = [];
     let vehicleGrps = [];
     if (data) {
       data.forEach(item => {
-        let sortedAlertData;
-        if (item.fleetOverviewAlert && item.fleetOverviewAlert.length > 0) {
-          sortedAlertData = item.fleetOverviewAlert.sort((x, y) => y.time - x.time);
+        // let sortedAlertData;
+        // if (item.fleetOverviewAlert && item.fleetOverviewAlert.length > 0) {
+        //   sortedAlertData = item.fleetOverviewAlert.sort((x, y) => y.time - x.time);
 
-          if (this.filterData && this.filterData.alertCategory && sortedAlertData) {
-            this.filterData["alertCategory"].forEach(e => {
-              if (sortedAlertData[0]['categoryType'] == e.value) {
-                let catName = this.translationData[e.name];
-                this.categoryList.push({ 'name': catName, 'value': e.value });
-              }
-            });
-            this.categoryList = this.removeDuplicates(this.categoryList, "value");
-          }
-          if (this.filterData && this.filterData.alertLevel && sortedAlertData) {
-            sortedAlertData = this.removeDuplicates(sortedAlertData, 'level')
+        //   if (this.filterData && this.filterData.alertCategory && sortedAlertData) {
+        //     this.filterData["alertCategory"].forEach(e => {
+        //       if (sortedAlertData[0]['categoryType'] == e.value) {
+        //         let catName = this.translationData[e.name];
+        //         this.categoryList.push({ 'name': catName, 'value': e.value });
+        //       }
+        //     });
+        //     this.categoryList = this.removeDuplicates(this.categoryList, "value");
+        //   }
+        //   if (this.filterData && this.filterData.alertLevel && sortedAlertData) {
+        //     sortedAlertData = this.removeDuplicates(sortedAlertData, 'level')
 
-            let tempAlertIndx;
-            if (sortedAlertData.findIndex(x => (x.level == 'C' || x.level == 'Critical')) > -1) {
-              tempAlertIndx = this.filterData["alertLevel"].findIndex(y => y.value === 'C');
-            } else if (sortedAlertData.findIndex(x => x.level == 'W' || x.level == 'warning') > -1) {
-              tempAlertIndx = this.filterData["alertLevel"].findIndex(y => y.value === 'W');
-            } else if (sortedAlertData.findIndex(x => x.level == 'A' || x.level == 'Advisory') > -1) {
-              tempAlertIndx = this.filterData["alertLevel"].findIndex(y => y.value === 'A');
-            }
-            this.levelList.push({
-              'name': this.translationData[this.filterData["alertLevel"][tempAlertIndx]['name']],
-              'value': this.filterData["alertLevel"][tempAlertIndx]['value']
-            });
+        //     let tempAlertIndx;
+        //     if (sortedAlertData.findIndex(x => (x.level == 'C' || x.level == 'Critical')) > -1) {
+        //       tempAlertIndx = this.filterData["alertLevel"].findIndex(y => y.value === 'C');
+        //     } else if (sortedAlertData.findIndex(x => x.level == 'W' || x.level == 'warning') > -1) {
+        //       tempAlertIndx = this.filterData["alertLevel"].findIndex(y => y.value === 'W');
+        //     } else if (sortedAlertData.findIndex(x => x.level == 'A' || x.level == 'Advisory') > -1) {
+        //       tempAlertIndx = this.filterData["alertLevel"].findIndex(y => y.value === 'A');
+        //     }
+        //     this.levelList.push({
+        //       'name': this.translationData[this.filterData["alertLevel"][tempAlertIndx]['name']],
+        //       'value': this.filterData["alertLevel"][tempAlertIndx]['value']
+        //     });
 
-            this.levelList = this.removeDuplicates(this.levelList, "value");
+        //     this.levelList = this.removeDuplicates(this.levelList, "value");
             // this.selection3 = [];
             // this.levelList.forEach(item => {
             //   this.selection3.push(item.value);
             // });
-          }
-        }
+        //   }
+        // }
 
         if (this.filterData && this.filterData.vehicleGroups) {
           this.filterData["vehicleGroups"].forEach(element => {
@@ -1550,26 +1556,26 @@ removeDuplicates(originalArray, prop) {
           this.filteredSelectGroups.next(vehicleGrps);
         }
 
-        if (this.filterData && this.filterData.healthStatus) {
-          this.filterData["healthStatus"].forEach(e => {
-            if (item.vehicleHealthStatusType == e.value) {
-              item.vehicleHealthStatusType = this.translationData[e.name];
-              let statusName = this.translationData[e.name];
-              this.healthList.push({ 'name': statusName, 'value': e.value });
-            }
-          });
-          this.healthList = this.removeDuplicates(this.healthList, "value");
-        }
-        if (this.filterData && this.filterData.otherFilter) {
-          this.filterData["otherFilter"].forEach(element => {
-            if (item.vehicleDrivingStatusType == element.value) {
-              item.vehicleDrivingStatusType = this.translationData[element.name];
-              let statusName = this.translationData[element.name];
-              this.otherList.push({ 'name': statusName, 'value': element.value });
-            }
-          });
-          this.otherList = this.removeDuplicates(this.otherList, "value");
-        }
+        // if (this.filterData && this.filterData.healthStatus) {
+        //   this.filterData["healthStatus"].forEach(e => {
+        //     if (item.vehicleHealthStatusType == e.value) {
+        //       item.vehicleHealthStatusType = this.translationData[e.name];
+        //       let statusName = this.translationData[e.name];
+        //       this.healthList.push({ 'name': statusName, 'value': e.value });
+        //     }
+        //   });
+        //   this.healthList = this.removeDuplicates(this.healthList, "value");
+        // }
+        // if (this.filterData && this.filterData.otherFilter) {
+        //   this.filterData["otherFilter"].forEach(element => {
+        //     if (item.vehicleDrivingStatusType == element.value) {
+        //       item.vehicleDrivingStatusType = this.translationData[element.name];
+        //       let statusName = this.translationData[element.name];
+        //       this.otherList.push({ 'name': statusName, 'value': element.value });
+        //     }
+        //   });
+        //   this.otherList = this.removeDuplicates(this.otherList, "value");
+        // }
         // if (this.categoryList.length > 0) {
         //   item.fleetOverviewAlert.forEach(e => {
         //     let alertCategory = this.categoryList.filter((ele) => ele.value == e.categoryType);
@@ -1578,9 +1584,68 @@ removeDuplicates(originalArray, prop) {
         //     }
         //   });
         // }
+            if (this.filterData && this.filterData.healthStatus) {
+              this.filterData["healthStatus"].forEach(e => {
+                if (item.vehicleHealthStatusType == e.value) {
+                  item.vehicleHealthStatusType = this.translationData[e.name];
+                }
+              });
+            }
+    
+            if (this.filterData && this.filterData.otherFilter) {
+              this.filterData["otherFilter"].forEach(element => {
+                if (item.vehicleDrivingStatusType == element.value) {
+                  item.vehicleDrivingStatusType = this.translationData[element.name];
+                }
+              });
+            }
       });
       // this.categoryList = this.removeDuplicates(newAlertCat, "value");
+      // if(this.filterData){
+      // this.toggleAllSelectionAlertLevel();
+      // this.toggleAllSelectionAlertCategory();
+      // this.toggleAllSelectionHealth();
+      // this.toggleAllSelectionOther();
+      // }
+        this.firstClickData = data;
     }
+  }
+
+  firstClickGetData(data){
+    if (data) {
+      let vehicleGrps = [];
+      data.forEach(item => {
+        data.forEach(item => {
+          if (this.filterData && this.filterData.vehicleGroups) {
+            this.filterData["vehicleGroups"].forEach(element => {
+              if (item.vin == element.vin) {
+                vehicleGrps.push(element);
+              }
+            });
+            vehicleGrps = this.removeDuplicates(vehicleGrps, "vehicleGroupId");
+            this.filteredSelectGroups.next(vehicleGrps);
+          }
+          if (this.filterData && this.filterData.healthStatus) {
+            this.filterData["healthStatus"].forEach(e => {
+              if (item.vehicleHealthStatusType == e.value) {
+                item.vehicleHealthStatusType = this.translationData[e.name];
+              }
+            });
+          }
+  
+          if (this.filterData && this.filterData.otherFilter) {
+            this.filterData["otherFilter"].forEach(element => {
+              if (item.vehicleDrivingStatusType == element.value) {
+                item.vehicleDrivingStatusType = this.translationData[element.name];
+              }
+            });
+          }
+    });
+    this.levelList.push({name: 'No Alert', value:'B'});
+    this.categoryList.push({name: 'No Alert', value:'B'});
+    this.firstClickData = data;
+  })
+}
   }
 
   checkToHideFilter(item: any){
@@ -1596,9 +1661,9 @@ removeDuplicates(originalArray, prop) {
   this.fleetMapService.clearRoutesFromMap();
 
   this.todayFlagClicked = item.todayFlagClicked;
-  // if(!this.todayFlagClicked){
-  //   this.getFilterData();
-  // }
+  if(!this.todayFlagClicked){
+    this.getFilterData();
+  }
   // this.getFilterData();
   //this.setDropdownValues(this.fleetData);
   this.isVehicleDetails = item.vehicleDetailsFlag;

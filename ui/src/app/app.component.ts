@@ -276,6 +276,7 @@ export class AppComponent {
   subscription: Subscription;
   showTimer: boolean = false;
   accountRoleLevel: string;
+  contextSwitchFlag: string = 'false';
   public langFilterCtrl: FormControl = new FormControl();
   public filteredLanguages: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredOrganizationList: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
@@ -481,6 +482,10 @@ export class AppComponent {
     localStorage.setItem("accountNavMenu", JSON.stringify(landingPageMenus));
     let refreshPage = localStorage.getItem('pageRefreshed') == 'true';
     if(refreshPage || from == 'orgContextSwitch'){
+      if(from == 'orgContextSwitch') {
+        this.contextSwitchFlag = 'true';
+        localStorage.setItem('contextSwitchFlag',this.contextSwitchFlag);
+      }
       let _feature: any = JSON.parse(localStorage.getItem("accountFeatures"));
       if(_feature && _feature.features && _feature.features.length > 0){
         _feature.menus = this.menuPages.menus; 
@@ -488,6 +493,7 @@ export class AppComponent {
       }
       localStorage.removeItem('pageRefreshed');
     }else{
+      localStorage.removeItem('contextSwitchFlag');
       localStorage.setItem("accountFeatures", JSON.stringify(this.menuPages));
     }
     //-- For checking Access of the User --//
@@ -736,36 +742,38 @@ export class AppComponent {
         }
 
         this.appForm.get("languageSelection").setValue(this.localStLanguage.id); //-- set language dropdown
-
-        this.organizationService.getAllOrganizations().subscribe((data: any) => {
-          if (data) {
-            this.organizationList = data["organizationList"];
-            this.filteredOrganizationList.next(this.organizationList);
-            this.organizationList.sort(this.compare);
-            let _contextOrgId = parseInt(localStorage.getItem("contextOrgId"));
-            let _orgId: any;
-            if (_contextOrgId) {
-              _orgId = _contextOrgId;
-            } else {
-              _orgId = parseInt(localStorage.getItem("accountOrganizationId"));
+        let roleLevel = parseInt(localStorage.getItem('roleLevel'));
+        if(roleLevel == 10 || roleLevel == 20){
+          this.organizationService.getAllOrganizations().subscribe((data: any) => {
+            if (data) {
+              this.organizationList = data["organizationList"];
+              this.filteredOrganizationList.next(this.organizationList);
+              this.organizationList.sort(this.compare);
+              let _contextOrgId = parseInt(localStorage.getItem("contextOrgId"));
+              let _orgId: any;
+              if (_contextOrgId) {
+                _orgId = _contextOrgId;
+              } else {
+                _orgId = parseInt(localStorage.getItem("accountOrganizationId"));
+              }
+              let _searchOrg = this.organizationList.filter(i => i.id == _orgId);
+              if (_searchOrg.length > 0) {
+                localStorage.setItem("contextOrgId", _searchOrg[0].id);
+                localStorage.setItem("contextOrgName", _searchOrg[0].name);
+                this.appForm.get("contextOrgSelection").setValue(_searchOrg[0].id); //-- set context org dropdown
+              }
+              else {
+                localStorage.setItem("contextOrgId", this.organizationList[0].id);
+                localStorage.setItem("contextOrgName", this.organizationList[0].name);
+                this.appForm.get("contextOrgSelection").setValue(this.organizationList[0].id); //-- set context org dropdown
+              }
+              this.calledTranslationLabels(preferencelanguageCode);
             }
-            let _searchOrg = this.organizationList.filter(i => i.id == _orgId);
-            if (_searchOrg.length > 0) {
-              localStorage.setItem("contextOrgId", _searchOrg[0].id);
-              localStorage.setItem("contextOrgName", _searchOrg[0].name);
-              this.appForm.get("contextOrgSelection").setValue(_searchOrg[0].id); //-- set context org dropdown
-            }
-            else {
-              localStorage.setItem("contextOrgId", this.organizationList[0].id);
-              localStorage.setItem("contextOrgName", this.organizationList[0].name);
-              this.appForm.get("contextOrgSelection").setValue(this.organizationList[0].id); //-- set context org dropdown
-            }
+          }, (error) => {
+            this.organizationList = [];
             this.calledTranslationLabels(preferencelanguageCode);
-          }
-        }, (error) => {
-          this.organizationList = [];
-          this.calledTranslationLabels(preferencelanguageCode);
-        });
+          });
+        }
       });
 
     }
@@ -809,6 +817,9 @@ export class AppComponent {
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
     this.translationService.applicationTranslationData = this.translationData;
+    let langCode =this.localStLanguage? this.localStLanguage.code : 'EN-GB';
+    let menuId = 'menu_0_'+ langCode;
+    localStorage.setItem(menuId, JSON.stringify(this.translationData));
   }
 
   ngOnInit() {
@@ -1033,7 +1044,10 @@ export class AppComponent {
   onRoleChange(value: any) {
     localStorage.setItem("accountRoleId", value);
     let rolename = this.roleDropdown.filter(item => parseInt(item.id) === parseInt(value));
-    this.userRole = rolename[0].name;
+    if(rolename && rolename.length > 0){
+      this.userRole = rolename[0].name;
+      localStorage.setItem('roleLevel', rolename[0].level);
+    }
     this.setLocalContext(localStorage.getItem("accountOrganizationId"));
     this.filterOrgBasedRoles(localStorage.getItem("accountOrganizationId"), true);
   }
@@ -1121,6 +1135,12 @@ export class AppComponent {
       languageCode: this.localStLanguage.code
     }
     this.accountService.switchOrgContext(switchObj).subscribe((data: any) => {
+      localStorage.setItem('vehUtilisation_lastweek','');
+      localStorage.setItem('vehUtilisation_lastmonth','');
+      localStorage.setItem('vehUtilisation_last3month','');
+      localStorage.setItem('fleetKPI_lastweek','');
+      localStorage.setItem('fleetKPI_lastmonth','');
+      localStorage.setItem('fleetKPI_last3month','');
       // this.accountService.getSessionInfo().subscribe((accountData: any) => {
         this.getMenu(data, 'orgContextSwitch', this.accountRoleLevel);
         let accinfo = JSON.parse(localStorage.getItem("accountInfo"))

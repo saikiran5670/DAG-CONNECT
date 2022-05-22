@@ -154,8 +154,8 @@
                   <mat-error *ngIf="firstFormGroup.get('loginEmail').hasError('required')">
                     {{ translationData.lblPleaseenteremailID  }}
                   </mat-error>
-                  <mat-error *ngIf="firstFormGroup.get('loginEmail').hasError('email')">
-                    {{ translationData.lblPleaseentervalidemailID }}
+                  <mat-error *ngIf="firstFormGroup.get('loginEmail').hasError('pattern')">
+                    {{ translationData.lblPleaseentervalidemailID  }}
                   </mat-error>
                   <mat-error *ngIf="duplicateEmailMsg != ''">
                     {{ duplicateEmailMsg }}

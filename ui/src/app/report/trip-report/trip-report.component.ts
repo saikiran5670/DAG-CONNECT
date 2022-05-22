@@ -105,10 +105,19 @@ export class TripReportComponent implements OnInit, OnDestroy {
     regNo: true
   };
   userPOIList: any = [];
+  maxStartTime: any;
+  selectedStartTimeValue: any ='00:00';
+  selectedEndTimeValue: any ='11:59';
+  endTimeStart:any;
   herePOIList: any = [];
   displayPOIList: any = [];
   internalSelection: boolean = false;
+  allTripSelectedFlag : boolean = false;
   herePOIArr: any = [];
+  liveFleetPositionreqObj = {
+    tripIds: [],
+    vin: ''
+  };
   prefMapData: any = [
     {
       key: 'rp_tr_report_tripreportdetails_averagespeed',
@@ -185,6 +194,8 @@ export class TripReportComponent implements OnInit, OnDestroy {
   dataService: any;
   noRecordFound: boolean = false;
   brandimagePath: any;
+  pageSize: number = 5;
+  pageIndex = 0;
 
   public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
@@ -248,9 +259,16 @@ export class TripReportComponent implements OnInit, OnDestroy {
       filter: "",
       menuId: 6 //-- for Trip Report
     }
-    this.showLoadingIndicator = true;
-    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-      this.processTranslation(data);
+
+    let menuId = 'menu_6_' + this.localStLanguage.code;
+    if (!localStorage.getItem(menuId)) {
+      this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+        this.processTranslation(data);
+      });
+    } else {
+      this.translationData = JSON.parse(localStorage.getItem(menuId));
+    }
+   
       this.mapFilterForm.get('trackType').setValue('snail');
       this.mapFilterForm.get('routeType').setValue('C');
       this.makeHerePOIList();
@@ -273,7 +291,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
           }
         }
       }
-    });
+    
     this.updateDataSource(this.tripData);
 
     this.messageService.brandLogoSubject.subscribe(value => {
@@ -612,6 +630,9 @@ export class TripReportComponent implements OnInit, OnDestroy {
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
+    let langCode =this.localStLanguage? this.localStLanguage.code : 'EN-GB';
+    let menuId = 'menu_6_'+ langCode;
+    localStorage.setItem(menuId, JSON.stringify(this.translationData));
   }
 
   public ngAfterViewInit() { }
@@ -986,24 +1007,34 @@ export class TripReportComponent implements OnInit, OnDestroy {
   masterToggleForTrip() {
     this.tripTraceArray = [];
     let _ui = this.reportMapService.getUI();
+
     if (this.isAllSelectedForTrip()) {
       this.selectedTrip.clear();
       this.reportMapService.viewSelectedRoutes(this.translationData, this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr, this.alertsChecked);
       this.showMap = false;
+      this.allTripSelectedFlag = false;
+      this.liveFleetPositionreqObj.tripIds = [];
     }
     else {
-      this.dataSource.data.forEach((row) => {
+      this.dataSource.data.slice(0,this.pageSize).forEach((row) => {
         this.selectedTrip.select(row);
         this.tripTraceArray.push(row);
+        this.allTripSelectedFlag = true;
       });
+      this.liveFleetPositionreqObj.tripIds = [];
+      this.tripTraceArray.forEach(item => {
+        this.liveFleetPositionreqObj.tripIds.push(item.tripId);
+      });
+      
+      this.liveFleetPositionreqObj.vin = this.tripTraceArray[0].vin;
+      this.getLiveFleePositionData(this.liveFleetPositionreqObj);
       this.showMap = true;
-      this.reportMapService.viewSelectedRoutes(this.translationData, this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr, this.alertsChecked);
     }
   }
 
   isAllSelectedForTrip() {
     const numSelected = this.selectedTrip.selected.length;
-    const numRows = this.dataSource.data.length;
+    const numRows = this.pageSize;
     return numSelected === numRows;
   }
 
@@ -1015,14 +1046,45 @@ export class TripReportComponent implements OnInit, OnDestroy {
         } row`;
   }
 
-  pageSizeUpdated(_event) { }
+  uncheckAll = ()=> {
+    this.selectedTrip.clear();
+    this.reportMapService.clearRoutesFromMap();
+    this.showMap = false;
+  }
+
+
+  pageSizeUpdated(_event) {
+    console.log(_event);
+    if(this.pageSize > _event.pageSize){
+      this.pageSize = _event.pageSize;
+      this.tripTraceArray.slice(0,this.tripTraceArray.length-this.pageSize)
+      this.masterToggleForTrip();
+    } else{
+      if(this.tripTraceArray.length > 1){
+        this.selectedTrip.clear();
+        this.masterToggleForTrip();
+      }
+      this.pageSize = _event.pageSize;
+    }
+    if(_event.pageIndex != this.pageIndex){
+      this.uncheckAll();
+    }  
+   }
 
   tripCheckboxClicked(event: any, row: any) {
     this.showMap = this.selectedTrip.selected.length > 0 ? true : false;
-    if (event.checked) { //-- add new marker
-      this.tripTraceArray.push(row);
-      let _ui = this.reportMapService.getUI();
-      this.reportMapService.viewSelectedRoutes(this.translationData, this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr, this.alertsChecked);
+    this.tripTraceArray = [];
+    this.selectedTrip.selected.forEach(item => {
+      this.tripTraceArray.push(item);
+    });
+
+    if (event.checked && !this.allTripSelectedFlag) {//-- add new marker 
+      this.liveFleetPositionreqObj.tripIds = [];
+      this.tripTraceArray.forEach(item => {
+        this.liveFleetPositionreqObj.tripIds.push(item.tripId)
+      });
+      this.liveFleetPositionreqObj.vin = this.tripTraceArray[0].vin;
+      this.getLiveFleePositionData(this.liveFleetPositionreqObj)
     }
     else { //-- remove existing marker
       let arr = this.tripTraceArray.filter(item => item.id != row.id);
@@ -1030,36 +1092,96 @@ export class TripReportComponent implements OnInit, OnDestroy {
       let _ui = this.reportMapService.getUI();
       this.reportMapService.viewSelectedRoutes(this.translationData, this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr, this.alertsChecked);
     }
+
+  }
+
+  getLiveFleePositionData(tripData: any) {
+    this.showLoadingIndicator = true;
+    this.reportService.getLiveFleetPositions(tripData).subscribe((data: any) => {
+      
+      if (data && data.trips.length > 0) {
+        data.trips.forEach(trip => {
+          this.tripTraceArray.forEach(item => {
+            if (trip.tripId == item.tripId) {
+              item.liveFleetPosition = trip.liveFleetPosition
+            }
+          })
+        })
+      }
+
+      let _ui = this.reportMapService.getUI();
+      this.reportMapService.viewSelectedRoutes(this.translationData, this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr, this.alertsChecked);
+      this.hideloader();
+    })
   }
 
   hideloader() {
     this.showLoadingIndicator = false;
   }
 
+  getStartTimeChanged(time: any){
+    this.selectedStartTimeValue = time;
+  }
+
+  getEndTimeChanged(time: any){
+    this.selectedEndTimeValue = time;
+  }
+
   startTimeChanged(selectedTime: any) {
     this.internalSelection = true;
-    this.selectedStartTime = selectedTime;
+    this.selectedStartTime = this.selectedStartTimeValue;
     if (this.prefTimeFormat == 24) {
-      this.startTimeDisplay = selectedTime + ':00';
+      this.startTimeDisplay = this.selectedStartTimeValue + ':00';
     }
     else {
-      this.startTimeDisplay = selectedTime;
+      this.startTimeDisplay = this.selectedStartTimeValue;
     }
     this.startDateValue = this.setStartEndDateTime(this.startDateValue, this.selectedStartTime, 'start');
+    let startDate1 = this.startDateValue.getFullYear() + "/" + (this.startDateValue.getMonth() + 1) + "/" + this.startDateValue.getDate();
+    let endDate1 = this.endDateValue.getFullYear() + "/" + (this.endDateValue.getMonth() + 1) + "/" + this.endDateValue.getDate();
+    if (startDate1 == endDate1) {
+      this.maxStartTime = this.selectedEndTime;
+      this.endTimeStart = this.selectedStartTime;
+    }
+    else {
+      if (this.prefTimeFormat == 24) {
+        this.maxStartTime = '23:59';
+      }
+      else {
+        this.maxStartTime = '11:59';
+      }
+      this.endTimeStart = "00:00";
+    }
     this.resetTripFormControlValue(); // extra addded as per discuss with Atul
     this.filterDateData(); // extra addded as per discuss with Atul
   }
 
   endTimeChanged(selectedTime: any) {
     this.internalSelection = true;
-    this.selectedEndTime = selectedTime;
+    this.selectedEndTime = this.selectedEndTimeValue;
     if (this.prefTimeFormat == 24) {
-      this.endTimeDisplay = selectedTime + ':59';
+      this.endTimeDisplay = this.selectedEndTimeValue + ':59';
     }
     else {
-      this.endTimeDisplay = selectedTime;
+      this.endTimeDisplay = this.selectedEndTimeValue;
     }
     this.endDateValue = this.setStartEndDateTime(this.endDateValue, this.selectedEndTime, 'end');
+    let startDate1 = this.startDateValue.getFullYear() + "/" + (this.startDateValue.getMonth() + 1) + "/" + this.startDateValue.getDate();
+    let endDate1 = this.endDateValue.getFullYear() + "/" + (this.endDateValue.getMonth() + 1) + "/" + this.endDateValue.getDate();
+    if(startDate1 == endDate1){
+      this.maxStartTime = this.selectedEndTime;
+      this.endTimeStart = this.selectedStartTime; 
+    }
+    else{
+      this.maxStartTime = this.selectedEndTime;
+      if (this.prefTimeFormat == 24) {
+        this.maxStartTime = '23:59';
+      }
+      else{
+        this.maxStartTime = '11:59';
+      }
+      this.endTimeStart = "00:00";
+    }
     this.resetTripFormControlValue(); // extra addded as per discuss with Atul
     this.filterDateData(); // extra addded as per discuss with Atul
   }
@@ -1155,6 +1277,21 @@ export class TripReportComponent implements OnInit, OnDestroy {
       dateTime = this.last3MonthDate;
     }
     this.startDateValue = this.setStartEndDateTime(dateTime, this.selectedStartTime, 'start');
+    let startDate1 = this.startDateValue.getFullYear() + "/" + (this.startDateValue.getMonth() + 1) + "/" + this.startDateValue.getDate();
+    let endDate1 = this.endDateValue.getFullYear() + "/" + (this.endDateValue.getMonth() + 1) + "/" + this.endDateValue.getDate();
+    if(startDate1 == endDate1){
+      this.maxStartTime = this.selectedEndTime;
+      this.endTimeStart = this.selectedStartTime; 
+    }
+    else{
+      if (this.prefTimeFormat == 24) {
+        this.maxStartTime = '23:59';
+      }
+      else{
+        this.maxStartTime = '11:59';
+      }
+      this.endTimeStart = "00:00";
+    }
     this.resetTripFormControlValue(); // extra addded as per discuss with Atul
     this.filterDateData(); // extra addded as per discuss with Atul
   }
@@ -1172,6 +1309,21 @@ export class TripReportComponent implements OnInit, OnDestroy {
       dateTime = this.todayDate;
     }
     this.endDateValue = this.setStartEndDateTime(dateTime, this.selectedEndTime, 'end');
+    let startDate1 = this.startDateValue.getFullYear() + "/" + (this.startDateValue.getMonth() + 1)+ "/" + this.startDateValue.getDate();
+    let endDate1 = this.endDateValue.getFullYear() + "/" + (this.endDateValue.getMonth() + 1) + "/" + this.endDateValue.getDate();
+    if(startDate1 == endDate1){
+      this.maxStartTime = this.selectedEndTime;
+      this.endTimeStart = this.selectedStartTime; 
+    }
+    else{
+      if (this.prefTimeFormat == 24) {
+        this.maxStartTime = '23:59';
+      }
+      else{
+        this.maxStartTime = '11:59';
+      }
+      this.endTimeStart = "00:00";
+    }
     this.resetTripFormControlValue(); // extra addded as per discuss with Atul
     this.filterDateData(); // extra addded as per discuss with Atul
   }

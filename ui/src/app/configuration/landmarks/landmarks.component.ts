@@ -19,6 +19,7 @@ export class LandmarksComponent implements OnInit {
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    
     let translationObj = {
       id: 0,
       code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
@@ -28,10 +29,17 @@ export class LandmarksComponent implements OnInit {
       filter: "",
       menuId: 18 //-- for landmark
     }
-    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-      this.processTranslation(data);
-      this.selectedIndex=0;
-    });
+
+    let menuId = 'menu_18_' + this.localStLanguage.code;
+    if (!localStorage.getItem(menuId)) {
+      this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+        this.processTranslation(data);
+      });
+    } else {
+      this.translationData = JSON.parse(localStorage.getItem(menuId));
+    }
+    this.selectedIndex=0;
+    
   }
 
   tabVisibilityHandler(tabVisibility: boolean){
@@ -40,6 +48,9 @@ export class LandmarksComponent implements OnInit {
   
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
+    let langCode =this.localStLanguage? this.localStLanguage.code : 'EN-GB';
+    let menuId = 'menu_18_'+ langCode;
+    localStorage.setItem(menuId, JSON.stringify(this.translationData));
   }
 
   onTabChanged(event: any){
