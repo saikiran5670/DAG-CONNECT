@@ -784,7 +784,10 @@ export class AppComponent {
             this.calledTranslationLabels(preferencelanguageCode);
           });
         } else {
-          this.getAllOrg(preferencelanguageCode, isRoleChange);
+          if(this.orgContextType)
+            this.getAllOrg(preferencelanguageCode, isRoleChange);
+          else
+            this.calledTranslationLabels(preferencelanguageCode);
         }
       });
     }
@@ -904,8 +907,10 @@ export class AppComponent {
   }
 
   ngOnDestroy() {
-    this.subscription.unsubscribe();
-    this.sub.unsubscribe();
+    if(this.subscription)
+      this.subscription.unsubscribe();
+    if(this.sub)
+      this.sub.unsubscribe();
   }
 
   proceedStep(prefDetail: any, preference: any) {
@@ -1025,6 +1030,7 @@ export class AppComponent {
   }
 
   logOut() {
+    this.menuResult=null;
     this.authService.signOut().subscribe(() => {
       this.isLogedIn = false;
       this.removeStorage();
