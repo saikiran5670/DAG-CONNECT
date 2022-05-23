@@ -426,13 +426,13 @@ export class DriverManagementComponent implements OnInit {
   driverIDNumberValidation(value: any, index: any){
     let obj: any = { status: true, reason: 'correct data'};
     // const regx = /[A-Z0-9]{13,13}[0-9]{3,3}/;
-    if(!value || value == '' || value.trim().length == 0){
+    if(!value || value == '' || value.toString().trim().length == 0){
       obj.status = false;
       obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblDriverIDNumberismandatoryinput}`;
       return obj;
     }
     
-    if(!(value.trim().length == 16 || value.trim().length == 14 )){
+    if(!(value.toString().trim().length == 16 || value.toString().trim().length == 14 )){
       obj.status = false;
       obj.reason = `${this.translationData.lblRowNo || 'Row No'}.${index+1} - ${this.translationData.lblDriverIDshouldbeexactly16charsinlength}`;
       return obj;
