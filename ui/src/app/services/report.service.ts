@@ -612,6 +612,16 @@ export class ReportService {
       .pipe(catchError(this.handleError));
   }
 
+  getLiveFleetPositionsAlerts(data: any){
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(`${this.reportServiceUrl}/trip/alerts`, data, headers)
+      .pipe(catchError(this.handleError));
+  }
+
 }
 
 
