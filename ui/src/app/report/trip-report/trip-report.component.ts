@@ -1598,18 +1598,27 @@ export class TripReportComponent implements OnInit, OnDestroy {
     this.liveFleetPositionreqObj.enddatetime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);
     
     if (this.alertsChecked) {
+      this.showLoadingIndicator = true;
       this.reportService.getLiveFleetPositionsAlerts(this.liveFleetPositionreqObj).subscribe(alertData => {
         if (alertData && alertData['tripAlerts'].length > 0) {
+          this.hideloader();
           alertData['tripAlerts'].forEach(trip => {
+            trip.tripAlert.forEach(ele=>{
+              ele.convertedAlertTime = this.reportMapService.getStarttime(ele.alertTime, this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true);
+            })
             this.tripTraceArray.forEach(item => {
               if (trip.tripAlert[0].tripId == item.tripId) {
                 item.tripAlert = trip.tripAlert
               }
             })
           })
+        } else{
+          this.hideloader();
         }
         let _ui = this.reportMapService.getUI();
         this.reportMapService.viewSelectedRoutes(this.translationData, this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr, this.alertsChecked);
+      }, (error) => {
+        this.hideloader();
       })
     } else {
       this.tripTraceArray.forEach(item => {
