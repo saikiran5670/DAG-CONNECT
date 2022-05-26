@@ -8,6 +8,7 @@ trigger:
     - testing
 #   - tst1-branch    
     - performance-pen-testing
+    - perf-testing
     - master
   paths:
     include:
@@ -111,7 +112,7 @@ stages:
           manifestFile: $(manifestFile)
           jsonPath: $(jsonFile)
           #log4netConfigPath: $(log4netConfigFile)
-    condition: eq(variables['Build.SourceBranchName'],  'performance-pen-testing')
+    condition: eq(variables['Build.SourceBranchName'],  'perf-testing')
 
   - stage: stage_acc3
     jobs:
