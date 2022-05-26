@@ -1871,6 +1871,7 @@ export class FleetMapService {
 
           let infoBubble: any;
           clusterMarker.addEventListener('tap', (event) => {
+            
             this.removedDisabledGroup();
             let colName: any;
             if (this.vehicleDisplayPreference == 'dvehicledisplay_VehicleName') {
@@ -1920,6 +1921,7 @@ export class FleetMapService {
                 this.removedDisabledGroup();
               }
             });
+            ui.getBubbles().forEach(bub => ui.removeBubble(bub));
             ui.addBubble(infoBubble);
           });
 
@@ -2143,14 +2145,12 @@ export class FleetMapService {
               }
             );
             tooltipContent += "</tbody></table>";
-
             infoBubble = new H.ui.InfoBubble(this.hereMap.screenToGeo(screenPosition.x, screenPosition.y), {
               content: tooltipContent,
               onStateChange: (event) => {
                 this.removedDisabledGroup();
               }
             });
-
             ui.addBubble(infoBubble);
 
             document.querySelectorAll('.checkbox').forEach((item: any) => {
