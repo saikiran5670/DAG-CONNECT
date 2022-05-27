@@ -12,6 +12,7 @@ import { DataInterchangeService } from 'src/app/services/data-interchange.servic
 export class LoginDialogComponent {
   public loginDialogForm: FormGroup;
   selectedRoles: any = [];
+  orgID: number;
   constructor(@Inject(MAT_DIALOG_DATA) public data: {
     title: string,
     cancelText: string,
@@ -58,6 +59,7 @@ export class LoginDialogComponent {
   }
 
   filterOrgRoles(orgId: any) {
+    if(orgId) this.orgID = Number(orgId);
     if (this.data.role.length > 0) { //-- (Roles > 0) 
       let filterRoles = this.data.role.filter(item => parseInt(item.organization_Id) === parseInt(orgId));
 
@@ -73,4 +75,16 @@ export class LoginDialogComponent {
     }
   }
 
+  onRoleChange(event: any){
+    if (this.data.role.length > 0) {
+      let filterRoles = this.data.role.find(item => parseInt(item.organization_Id) === this.orgID && item.id === Number(event.value));
+      if (filterRoles) {
+        this.loginDialogForm.get('role').setValue(filterRoles.id);
+        localStorage.setItem('roleLevel', filterRoles.level);
+      }
+      else {
+        this.selectedRoles = [];
+      }
+    }
+  }
 }
