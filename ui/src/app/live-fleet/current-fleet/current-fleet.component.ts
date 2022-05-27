@@ -51,6 +51,7 @@ export class CurrentFleetComponent implements OnInit, OnDestroy {
   dashboardPref: any;
   reportDetail: any = [];
   prefDetail: any = {};
+  vehicleGroups: any = [];
   
   constructor(private translationService: TranslationService,
     private reportService: ReportService, private reportMapService: ReportMapService,
@@ -222,6 +223,7 @@ export class CurrentFleetComponent implements OnInit, OnDestroy {
       this.hideLoader();
       //let processedData = this.fleetMapService.processedLiveFLeetData(data.fleetOverviewDetailList);
       this.detailsData = data.fleetOverviewDetailList;
+      this.vehicleGroups = data.vehicleGroups
       this.fleetSummary = data.fleetOverviewSummary;
       this.getFilterData();
       let _dataObj = {
