@@ -234,7 +234,7 @@ constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private fleetMapServi
     "apikey": this.map_key
   });
   this.configureAutoSuggest();
-  if(this._state){
+  if(this._state && !this._state.fromDashboard){
     this.showBack = true;
   }else{
     this.showBack = false;
