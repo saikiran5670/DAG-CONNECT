@@ -262,7 +262,7 @@ export class UserManagementComponent implements OnInit {
   }
 
   deleteUser(item: any) {
-    console.log("The deleteUser function is called");
+    // console.log("The deleteUser function is called");
     const options = {
       title: this.translationData.lblDeleteAccount,
       message: this.translationData.lblAreyousureyouwanttodeleteuseraccount,
@@ -509,31 +509,31 @@ export class UserManagementComponent implements OnInit {
   }
 
   OpenDialog(options: any, flag: any, item: any) {
-    console.log("The openDialog popup is called");
+    // console.log("The openDialog popup is called");
     // Model for delete
     this.filterFlag = true;
     let name = `${item.salutation} ${item.firstName} ${item.lastName}`;
     this.dialogService.DeleteModelOpen(options, name);
     this.dialogService.confirmedDel().subscribe((res) => {
-      console.log("It goes confirmDel method inside");
+      // console.log("It goes confirmDel method inside");
       if (res) {
-        console.log("It goes inside if");
+        // console.log("It goes inside if");
         
         this.accountService.deleteAccount(item).subscribe(d=>{
-          console.log("it goes into deleteAccount method");
+          // console.log("it goes into deleteAccount method");
           this.deleteRecord = true;
           this.successMsgBlink(this.getDeletMsg(name));
           this.loadUsersData();
         },(error) => {
           let errorMsg = error.error;
-          console.log("errorMsg:", errorMsg);
+          // console.log("errorMsg:", errorMsg);
           this.errorMsgBlink(errorMsg);
         });
       }
     });
   }
   errorMsgBlink(errorMsg: any) {
-    console.log("It goes errorMsgBlink inside");
+    // console.log("It goes errorMsgBlink inside");
     this.errorVisible = true;
     this.displayMessage = errorMsg;
     setTimeout(() => {
@@ -542,7 +542,7 @@ export class UserManagementComponent implements OnInit {
   }
 
   getDeletMsg(userName: any){
-    console.log("getDeleteMsg is called");
+    // console.log("getDeleteMsg is called");
     if(this.translationData.lblUseraccountwassuccessfullydeleted)
       return this.translationData.lblUseraccountwassuccessfullydeleted.replace('$', userName);
     else
@@ -590,7 +590,7 @@ export class UserManagementComponent implements OnInit {
   }
 
   successMsgBlink(msg: any){
-    console.log("It goes into successMsgBlink method");
+    // console.log("It goes into successMsgBlink method");
     this.grpTitleVisible = true;
     this.userCreatedMsg = msg;
     setTimeout(() => {
