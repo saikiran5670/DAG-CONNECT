@@ -26,7 +26,7 @@ export class ConfirmDialogService {
   }
 
   public DeleteModelOpen(options: any, name?: any) {
-    console.log("The DeleteModelopen popup called");
+    // console.log("The DeleteModelopen popup called");
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;

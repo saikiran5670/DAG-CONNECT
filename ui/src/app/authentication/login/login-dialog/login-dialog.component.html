@@ -32,7 +32,7 @@
           <div class='areaWidth full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
             <mat-label class='font-16-px line-height-24px'>Select Role</mat-label>
             <mat-form-field appearance="outline" class="full-width">
-              <mat-select [disabled]='selectedRoles.length == 0' formControlName="role">
+              <mat-select [disabled]='selectedRoles.length == 0' (selectionChange)="onRoleChange($event)" formControlName="role">
                 <mat-option *ngFor="let role of selectedRoles" [value]="role.id">
                   {{ role.name }}
                 </mat-option>
