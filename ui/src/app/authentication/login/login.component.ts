@@ -87,6 +87,7 @@ export class LoginComponent implements OnInit {
       
             if(data.body.accountRole.length > 0){
               localStorage.setItem('accountRoleId', data.body.accountRole[0].id);
+              localStorage.setItem('roleLevel', data.body.accountRole[0].level);
             }
             
             if(data.body && data.body.accountInfo && data.body.accountInfo.id) {

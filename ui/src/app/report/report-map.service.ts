@@ -397,8 +397,11 @@ export class ReportMapService {
             }
 
             if (alertsChecked) {
-              if (elem.filterAlerts.length > 0) {
+              if (elem.filterAlerts && elem.filterAlerts.length > 0) {
                 this.drawAlerts(elem.filterAlerts, _ui, translationData);
+              } else if (elem.tripAlert && elem.tripAlert.length > 0) {
+                elem.tripAlert = elem.tripAlert.filter(i => (i.alertLatitude >= -90 && i.alertLatitude <= 90) && (i.alertLongitude >= -180 && i.alertLongitude <= 180));
+                this.drawAlerts(elem.tripAlert, _ui, translationData);
               }
             }
             //  this.hereMap.addObject(this.group);

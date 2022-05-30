@@ -106,17 +106,19 @@ export class TripReportComponent implements OnInit, OnDestroy {
   };
   userPOIList: any = [];
   maxStartTime: any;
-  selectedStartTimeValue: any ='00:00';
-  selectedEndTimeValue: any ='11:59';
-  endTimeStart:any;
+  selectedStartTimeValue: any = '00:00';
+  selectedEndTimeValue: any = '11:59';
+  endTimeStart: any;
   herePOIList: any = [];
   displayPOIList: any = [];
   internalSelection: boolean = false;
-  allTripSelectedFlag : boolean = false;
+  allTripSelectedFlag: boolean = false;
   herePOIArr: any = [];
   liveFleetPositionreqObj = {
     tripIds: [],
-    vin: ''
+    vin: '',
+    startdatetime: 0,
+    enddatetime: 0
   };
   prefMapData: any = [
     {
@@ -268,30 +270,30 @@ export class TripReportComponent implements OnInit, OnDestroy {
     } else {
       this.translationData = JSON.parse(localStorage.getItem(menuId));
     }
-   
-      this.mapFilterForm.get('trackType').setValue('snail');
-      this.mapFilterForm.get('routeType').setValue('C');
-      this.makeHerePOIList();
 
-      if (this.prefDetail) {
-        if (this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != '') { // account pref
-          this.proceedStep(this.accountPrefObj.accountPreference);
-        } else { // org pref
-          this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any) => {
-            this.proceedStep(orgPref);
-          }, (error) => {
-            this.proceedStep({});
-          });
-        }
-        let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
-        if (vehicleDisplayId) {
-          let vehicledisplay = this.prefDetail.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
-          if (vehicledisplay.length != 0) {
-            this.vehicleDisplayPreference = vehicledisplay[0].name;
-          }
+    this.mapFilterForm.get('trackType').setValue('snail');
+    this.mapFilterForm.get('routeType').setValue('C');
+    this.makeHerePOIList();
+
+    if (this.prefDetail) {
+      if (this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != '') { // account pref
+        this.proceedStep(this.accountPrefObj.accountPreference);
+      } else { // org pref
+        this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any) => {
+          this.proceedStep(orgPref);
+        }, (error) => {
+          this.proceedStep({});
+        });
+      }
+      let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
+      if (vehicleDisplayId) {
+        let vehicledisplay = this.prefDetail.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+        if (vehicledisplay.length != 0) {
+          this.vehicleDisplayPreference = vehicledisplay[0].name;
         }
       }
-    
+    }
+
     this.updateDataSource(this.tripData);
 
     this.messageService.brandLogoSubject.subscribe(value => {
@@ -630,8 +632,8 @@ export class TripReportComponent implements OnInit, OnDestroy {
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    let langCode =this.localStLanguage? this.localStLanguage.code : 'EN-GB';
-    let menuId = 'menu_6_'+ langCode;
+    let langCode = this.localStLanguage ? this.localStLanguage.code : 'EN-GB';
+    let menuId = 'menu_6_' + langCode;
     localStorage.setItem(menuId, JSON.stringify(this.translationData));
   }
 
@@ -657,7 +659,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
       this.reportService.getTripDetails(_startTime, _endTime, _vinData[0].vin).subscribe((_tripData: any) => {
         this.hideloader();
         this.tripData = this.reportMapService.convertTripReportDataBasedOnPref(_tripData.tripData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat, this.prefTimeZone);
-        if(this.tripData.length == 0) {
+        if (this.tripData.length == 0) {
           this.noRecordFound = true;
         } else {
           this.noRecordFound = false;
@@ -737,10 +739,10 @@ export class TripReportComponent implements OnInit, OnDestroy {
       } else {
         this.tripForm.get('vehicle').setValue(this.globalSearchFilterData.vehicleDropDownValue);
       }
-       this.tripForm.get('vehicleGroup').setValue(this.globalSearchFilterData.vehicleGroupDropDownValue);
-        // this.onVehicleGroupChange({'value': this.globalSearchFilterData.vehicleGroupDropDownValue}, true);
-      } else {
-      if(this.vehicleDD.length >0){
+      this.tripForm.get('vehicleGroup').setValue(this.globalSearchFilterData.vehicleGroupDropDownValue);
+      // this.onVehicleGroupChange({'value': this.globalSearchFilterData.vehicleGroupDropDownValue}, true);
+    } else {
+      if (this.vehicleDD.length > 0) {
         this.tripForm.get('vehicle').setValue(this.vehicleDD[0].vehicleId);
       }
       else {
@@ -901,7 +903,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
     })
     this.initData.forEach(item => {
       worksheet.addRow([item.vin, item.vehicleName, item.registrationNo, item.convertedStartTime,
-      item.convertedEndTime, item.convertedDistance,this.reportMapService.getHhMmSsTimeExport(item.idleDuration), item.convertedAverageSpeed,
+      item.convertedEndTime, item.convertedDistance, this.reportMapService.getHhMmSsTimeExport(item.idleDuration), item.convertedAverageSpeed,
       item.convertedAverageWeight, item.convertedOdometer, item.startPosition, item.endPosition, item.convertedFuelConsumed,
       this.reportMapService.getHhMmSsTimeExport(item.drivingTime), item.totalAlerts]);
     });
@@ -934,74 +936,74 @@ export class TripReportComponent implements OnInit, OnDestroy {
     var doc = new jsPDF('p', 'mm', 'a2');
     let DATA = document.getElementById('charts');
     var transpdfheader = this.translationData.lblTripReportDetails;
-    html2canvas( DATA)
-    .then(canvas => {
-    (doc as any).autoTable({
-      styles: {
-        cellPadding: 0.5,
-        fontSize: 12
-      },
-      didDrawPage: function (data) {
-        // Header
-        doc.setFontSize(20);
-        var fileTitle = transpdfheader;
-        // var img = "/assets/logo.png";
-        doc.addImage(imgleft, 'JPEG', 10, 10, 0, 16.5);
+    html2canvas(DATA)
+      .then(canvas => {
+        (doc as any).autoTable({
+          styles: {
+            cellPadding: 0.5,
+            fontSize: 12
+          },
+          didDrawPage: function (data) {
+            // Header
+            doc.setFontSize(20);
+            var fileTitle = transpdfheader;
+            // var img = "/assets/logo.png";
+            doc.addImage(imgleft, 'JPEG', 10, 10, 0, 16.5);
 
-        var img = "/assets/logo_daf.png";
-        doc.text(fileTitle, 14, 40);
-        doc.addImage(img, 'JPEG', 370, 15, 0, 10);
-      },
-      margin: {
-        bottom: 30,
-        top: 80
-      }
-    });
+            var img = "/assets/logo_daf.png";
+            doc.text(fileTitle, 14, 40);
+            doc.addImage(img, 'JPEG', 370, 15, 0, 10);
+          },
+          margin: {
+            bottom: 30,
+            top: 80
+          }
+        });
 
-    let fileWidth = 390;
-    let fileHeight = canvas.height * fileWidth / canvas.width;
+        let fileWidth = 390;
+        let fileHeight = canvas.height * fileWidth / canvas.width;
 
-    const FILEURI = canvas.toDataURL('image/png');
-    let position = 0;
-    doc.addImage(FILEURI, 'PNG', 15, 42,fileWidth, fileHeight) ;
+        const FILEURI = canvas.toDataURL('image/png');
+        let position = 0;
+        doc.addImage(FILEURI, 'PNG', 15, 42, fileWidth, fileHeight);
 
 
 
-    let pdfColumns = this.getPDFExcelHeader();
-    let prepare = []
-    this.initData.forEach(e => {
-      var tempObj = [];
-      tempObj.push(e.vin);
-      tempObj.push(e.vehicleName);
-      tempObj.push(e.registrationNo);
-      tempObj.push(e.convertedStartTime);
-      tempObj.push(e.convertedEndTime);
-      tempObj.push(e.convertedDistance);
-      tempObj.push(e.convertedIdleDuration);
-      tempObj.push(e.convertedAverageSpeed);
-      tempObj.push(e.convertedAverageWeight);
-      tempObj.push(e.convertedOdometer);
-      tempObj.push(e.startPosition);
-      tempObj.push(e.endPosition);
-      //tempObj.push(e.convertedFuelConsumed100Km);
-      tempObj.push(e.convertedFuelConsumed);
-      tempObj.push(e.convertedDrivingTime);
-      tempObj.push(e.totalAlerts);
-      //tempObj.push(e.events);
+        let pdfColumns = this.getPDFExcelHeader();
+        let prepare = []
+        this.initData.forEach(e => {
+          var tempObj = [];
+          tempObj.push(e.vin);
+          tempObj.push(e.vehicleName);
+          tempObj.push(e.registrationNo);
+          tempObj.push(e.convertedStartTime);
+          tempObj.push(e.convertedEndTime);
+          tempObj.push(e.convertedDistance);
+          tempObj.push(e.convertedIdleDuration);
+          tempObj.push(e.convertedAverageSpeed);
+          tempObj.push(e.convertedAverageWeight);
+          tempObj.push(e.convertedOdometer);
+          tempObj.push(e.startPosition);
+          tempObj.push(e.endPosition);
+          //tempObj.push(e.convertedFuelConsumed100Km);
+          tempObj.push(e.convertedFuelConsumed);
+          tempObj.push(e.convertedDrivingTime);
+          tempObj.push(e.totalAlerts);
+          //tempObj.push(e.events);
 
-      prepare.push(tempObj);
-    });
-    (doc as any).autoTable({
-      head: [pdfColumns],
-      body: prepare,
-      theme: 'striped',
-      didDrawCell: data => {
-        ////console.log(data.column.index)
-      }
-    })
-    // below line for Download PDF document
-    doc.save('tripReport.pdf');
-  });
+          prepare.push(tempObj);
+        });
+        (doc as any).autoTable({
+          head: [pdfColumns],
+          body: prepare,
+          theme: 'striped',
+          didDrawCell: data => {
+            ////console.log(data.column.index)
+          }
+        })
+        // below line for Download PDF document
+        doc.save('tripReport.pdf');
+      });
   }
 
   masterToggleForTrip() {
@@ -1016,7 +1018,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
       this.liveFleetPositionreqObj.tripIds = [];
     }
     else {
-      this.dataSource.data.slice(0,this.pageSize).forEach((row) => {
+      this.dataSource.data.slice(0, this.pageSize).forEach((row) => {
         this.selectedTrip.select(row);
         this.tripTraceArray.push(row);
         this.allTripSelectedFlag = true;
@@ -1025,7 +1027,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
       this.tripTraceArray.forEach(item => {
         this.liveFleetPositionreqObj.tripIds.push(item.tripId);
       });
-      
+
       this.liveFleetPositionreqObj.vin = this.tripTraceArray[0].vin;
       this.getLiveFleePositionData(this.liveFleetPositionreqObj);
       this.showMap = true;
@@ -1046,7 +1048,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
         } row`;
   }
 
-  uncheckAll = ()=> {
+  uncheckAll = () => {
     this.selectedTrip.clear();
     this.reportMapService.clearRoutesFromMap();
     this.showMap = false;
@@ -1054,22 +1056,21 @@ export class TripReportComponent implements OnInit, OnDestroy {
 
 
   pageSizeUpdated(_event) {
-    console.log(_event);
-    if(this.pageSize > _event.pageSize){
+    if (this.pageSize > _event.pageSize) {
       this.pageSize = _event.pageSize;
-      this.tripTraceArray.slice(0,this.tripTraceArray.length-this.pageSize)
+      this.tripTraceArray.slice(0, this.tripTraceArray.length - this.pageSize)
       this.masterToggleForTrip();
-    } else{
-      if(this.tripTraceArray.length > 1){
+    } else {
+      if (this.tripTraceArray.length > 1) {
         this.selectedTrip.clear();
         this.masterToggleForTrip();
       }
       this.pageSize = _event.pageSize;
     }
-    if(_event.pageIndex != this.pageIndex){
+    if (_event.pageIndex != this.pageIndex) {
       this.uncheckAll();
-    }  
-   }
+    }
+  }
 
   tripCheckboxClicked(event: any, row: any) {
     this.showMap = this.selectedTrip.selected.length > 0 ? true : false;
@@ -1081,7 +1082,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
     if (event.checked && !this.allTripSelectedFlag) {//-- add new marker 
       this.liveFleetPositionreqObj.tripIds = [];
       this.tripTraceArray.forEach(item => {
-        this.liveFleetPositionreqObj.tripIds.push(item.tripId)
+        this.liveFleetPositionreqObj.tripIds.push(item.tripId);
       });
       this.liveFleetPositionreqObj.vin = this.tripTraceArray[0].vin;
       this.getLiveFleePositionData(this.liveFleetPositionreqObj)
@@ -1098,7 +1099,6 @@ export class TripReportComponent implements OnInit, OnDestroy {
   getLiveFleePositionData(tripData: any) {
     this.showLoadingIndicator = true;
     this.reportService.getLiveFleetPositions(tripData).subscribe((data: any) => {
-      
       if (data && data.trips.length > 0) {
         data.trips.forEach(trip => {
           this.tripTraceArray.forEach(item => {
@@ -1119,11 +1119,11 @@ export class TripReportComponent implements OnInit, OnDestroy {
     this.showLoadingIndicator = false;
   }
 
-  getStartTimeChanged(time: any){
+  getStartTimeChanged(time: any) {
     this.selectedStartTimeValue = time;
   }
 
-  getEndTimeChanged(time: any){
+  getEndTimeChanged(time: any) {
     this.selectedEndTimeValue = time;
   }
 
@@ -1168,16 +1168,16 @@ export class TripReportComponent implements OnInit, OnDestroy {
     this.endDateValue = this.setStartEndDateTime(this.endDateValue, this.selectedEndTime, 'end');
     let startDate1 = this.startDateValue.getFullYear() + "/" + (this.startDateValue.getMonth() + 1) + "/" + this.startDateValue.getDate();
     let endDate1 = this.endDateValue.getFullYear() + "/" + (this.endDateValue.getMonth() + 1) + "/" + this.endDateValue.getDate();
-    if(startDate1 == endDate1){
+    if (startDate1 == endDate1) {
       this.maxStartTime = this.selectedEndTime;
-      this.endTimeStart = this.selectedStartTime; 
+      this.endTimeStart = this.selectedStartTime;
     }
-    else{
+    else {
       this.maxStartTime = this.selectedEndTime;
       if (this.prefTimeFormat == 24) {
         this.maxStartTime = '23:59';
       }
-      else{
+      else {
         this.maxStartTime = '11:59';
       }
       this.endTimeStart = "00:00";
@@ -1279,15 +1279,15 @@ export class TripReportComponent implements OnInit, OnDestroy {
     this.startDateValue = this.setStartEndDateTime(dateTime, this.selectedStartTime, 'start');
     let startDate1 = this.startDateValue.getFullYear() + "/" + (this.startDateValue.getMonth() + 1) + "/" + this.startDateValue.getDate();
     let endDate1 = this.endDateValue.getFullYear() + "/" + (this.endDateValue.getMonth() + 1) + "/" + this.endDateValue.getDate();
-    if(startDate1 == endDate1){
+    if (startDate1 == endDate1) {
       this.maxStartTime = this.selectedEndTime;
-      this.endTimeStart = this.selectedStartTime; 
+      this.endTimeStart = this.selectedStartTime;
     }
-    else{
+    else {
       if (this.prefTimeFormat == 24) {
         this.maxStartTime = '23:59';
       }
-      else{
+      else {
         this.maxStartTime = '11:59';
       }
       this.endTimeStart = "00:00";
@@ -1309,17 +1309,17 @@ export class TripReportComponent implements OnInit, OnDestroy {
       dateTime = this.todayDate;
     }
     this.endDateValue = this.setStartEndDateTime(dateTime, this.selectedEndTime, 'end');
-    let startDate1 = this.startDateValue.getFullYear() + "/" + (this.startDateValue.getMonth() + 1)+ "/" + this.startDateValue.getDate();
+    let startDate1 = this.startDateValue.getFullYear() + "/" + (this.startDateValue.getMonth() + 1) + "/" + this.startDateValue.getDate();
     let endDate1 = this.endDateValue.getFullYear() + "/" + (this.endDateValue.getMonth() + 1) + "/" + this.endDateValue.getDate();
-    if(startDate1 == endDate1){
+    if (startDate1 == endDate1) {
       this.maxStartTime = this.selectedEndTime;
-      this.endTimeStart = this.selectedStartTime; 
+      this.endTimeStart = this.selectedStartTime;
     }
-    else{
+    else {
       if (this.prefTimeFormat == 24) {
         this.maxStartTime = '23:59';
       }
-      else{
+      else {
         this.maxStartTime = '11:59';
       }
       this.endTimeStart = "00:00";
@@ -1594,8 +1594,41 @@ export class TripReportComponent implements OnInit, OnDestroy {
 
   changeAlertSelection(_event: any) {
     this.alertsChecked = _event.checked;
-    let _ui = this.reportMapService.getUI();
-    this.reportMapService.viewSelectedRoutes(this.translationData, this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr, this.alertsChecked);
+    this.liveFleetPositionreqObj.startdatetime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone);
+    this.liveFleetPositionreqObj.enddatetime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);
+    
+    if (this.alertsChecked) {
+      this.showLoadingIndicator = true;
+      this.reportService.getLiveFleetPositionsAlerts(this.liveFleetPositionreqObj).subscribe(alertData => {
+        if (alertData && alertData['tripAlerts'].length > 0) {
+          this.hideloader();
+          alertData['tripAlerts'].forEach(trip => {
+            trip.tripAlert.forEach(ele=>{
+              ele.convertedAlertTime = this.reportMapService.getStarttime(ele.alertTime, this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true);
+            })
+            this.tripTraceArray.forEach(item => {
+              if (trip.tripAlert[0].tripId == item.tripId) {
+                item.tripAlert = trip.tripAlert
+              }
+            })
+          })
+        } else{
+          this.hideloader();
+        }
+        let _ui = this.reportMapService.getUI();
+        this.reportMapService.viewSelectedRoutes(this.translationData, this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr, this.alertsChecked);
+      }, (error) => {
+        this.hideloader();
+      })
+    } else {
+      this.tripTraceArray.forEach(item => {
+        if (item.tripAlert && item.tripAlert.length > 0) {
+          item.tripAlert = [];
+        }
+      })
+      let _ui = this.reportMapService.getUI();
+      this.reportMapService.viewSelectedRoutes(this.translationData, this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr, this.alertsChecked);
+    }
   }
 
   filterVehicleGroups(vehicleSearch) {
@@ -1639,12 +1672,12 @@ export class TripReportComponent implements OnInit, OnDestroy {
     }
     this.filteredVehicle.next(
       this.vehicleDD.filter(item => {
-        if(filterby == 'registrationNo') {
-          let ofilterby = (item['registrationNo'])? 'registrationNo' :'vehicleName';
+        if (filterby == 'registrationNo') {
+          let ofilterby = (item['registrationNo']) ? 'registrationNo' : 'vehicleName';
           return item[ofilterby]?.toLowerCase()?.indexOf(VehicleSearch) > -1;
         } else {
           return item[filterby]?.toLowerCase()?.indexOf(VehicleSearch) > -1;
-        }    
+        }
       })
     );
     ////console.log("filtered vehicles", this.filteredVehicle);
