@@ -54,7 +54,7 @@ export class EditDriverDetailsComponent implements OnInit {
     this.driverFormGroup.get('emailId').setValue(this.driverData.email);
     this.driverFormGroup.get('firstName').setValue(this.driverData.firstName);
     this.driverFormGroup.get('lastName').setValue(this.driverData.lastName);
-    this.selectedConsentType = this.driverData.status;
+    this.selectedConsentType = this.driverData.optIn;
   }
 
   getBreadcum(){
@@ -91,11 +91,14 @@ export class EditDriverDetailsComponent implements OnInit {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;    
     dialogConfig.autoFocus = true;
+    let optInTypeVal:any;
+    optInTypeVal = consentType;
     dialogConfig.data = {
       translationData: this.translationData,
       driverData: driverData,
       actionType: actionType,
       consentType: consentType,
+      optInType: optInTypeVal,
       organizationData: this.organizationData,
       radioSelected:true
     }
