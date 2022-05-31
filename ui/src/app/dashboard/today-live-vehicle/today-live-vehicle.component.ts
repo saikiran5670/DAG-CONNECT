@@ -333,7 +333,9 @@ doughnutDistanceColors: Color[] = [
     this.activeThreshold = thresholdValue;
     // let vehicleTarget = this.dashboardService.calculateTargetValue(activeVehicleCount,thresholdValue,1);
     let yesterdayCount = this.liveVehicleData.yesterdayActiveVinCount;
-    let activeVehicleChangePercent = this.dashboardService.calculateLastChange(activeVehicleCount,yesterdayCount);
+    let activeVehicleChangePercent=0;
+    if(yesterdayCount != 0)
+     activeVehicleChangePercent = this.dashboardService.calculateLastChange(activeVehicleCount,yesterdayCount);
     let activeVehicleCaretColor = 'caretGreen';
     let caretIcon = ''
     let transTarget = this.translationData.lblTarget;
@@ -522,7 +524,9 @@ doughnutDistanceColors: Color[] = [
     let todayTimeRate = this.liveVehicleData.todayTimeBasedUtilizationRate;
     let _threshold = this.getPreferenceThreshold('timebasedutilizationrate')['value'];
     this.timeBasedThreshold = _threshold;
-    let timeBasedCalculation = this.dashboardService.calculateKPIPercentage(todayTimeRate,this.activeVehicleTotalCount,_threshold,1);
+    let timeBasedCalculation = {cuttOff : 0, kpiPercent: 0};
+    if(_threshold != 0 && todayTimeRate != 0)
+     timeBasedCalculation = this.dashboardService.calculateKPIPercentage(todayTimeRate,this.activeVehicleTotalCount,_threshold,1);
     let timeBasedPercent = timeBasedCalculation['kpiPercent']*1000;       //Since the calculation is done secs / ms, hence multiplying by 1000
     let nextPercent = 100 - timeBasedPercent;
     if(timeBasedPercent > 100){
@@ -550,7 +554,9 @@ doughnutDistanceColors: Color[] = [
     }
 
     let lastTimeRate = this.liveVehicleData.yesterDayTimeBasedUtilizationRate;
-    let timeChangePercent = this.dashboardService.calculateLastChange(todayTimeRate,lastTimeRate);
+    let timeChangePercent = 0;
+    if(lastTimeRate != 0)
+     timeChangePercent = this.dashboardService.calculateLastChange(todayTimeRate,lastTimeRate);
     let activeVehicleCaretColor = 'caretGreen';
     let caretIcon = ''
     let transTarget = this.translationData.lblTarget;
@@ -737,8 +743,12 @@ doughnutDistanceColors: Color[] = [
     this.distanceRate = this.reportMapService.getDistance(todayDistance, this.prefUnitFormat);
     let _threshold = this.getPreferenceThreshold('distancebasedutilizationrate')['value'];
     this.distanceBasedThreshold = _threshold;
-    let distanceBasedPercent = this.dashboardService.calculateKPIPercentage(todayDistance,this.activeVehicleTotalCount,_threshold,1)["kpiPercent"];
-    let distancecutOff = this.dashboardService.calculateKPIPercentage(todayDistance,this.activeVehicleTotalCount,_threshold,1)["cuttOff"];
+    let distanceBasedPercent = 0;
+    let distancecutOff = 0;
+    if(todayDistance != 0)
+     distanceBasedPercent = this.dashboardService.calculateKPIPercentage(todayDistance,this.activeVehicleTotalCount,_threshold,1)["kpiPercent"];
+    if(todayDistance != 0)
+      distancecutOff = this.dashboardService.calculateKPIPercentage(todayDistance,this.activeVehicleTotalCount,_threshold,1)["cuttOff"];
     let nextPercent = 100 - distanceBasedPercent;
 
     if(distanceBasedPercent > 100){
@@ -746,7 +756,9 @@ doughnutDistanceColors: Color[] = [
     }
     this.doughnutChartDistanceBasedData = [[distanceBasedPercent,(nextPercent)]]
     let distanceTarget = this.reportMapService.getDistance(distancecutOff, this.prefUnitFormat);// this.dashboardService.calculateTargetValue(this.activeVehicleTotalCount,_threshold,1);
-    let changePercent = this.dashboardService.calculateLastChange(todayDistance,lastDistance,4);
+    let changePercent=0;
+    if(lastDistance != 0)
+     changePercent = this.dashboardService.calculateLastChange(todayDistance,lastDistance,4);
     let activeVehicleCaretColor = 'caretGreen';
     let caretIcon = ''
     let transTarget = this.translationData.lblTarget;
