@@ -331,7 +331,7 @@ doughnutDistanceColors: Color[] = [
     let activeVehiclePercent = this.dashboardService.calculateTodayLivePercentage(activeVehicleCount,this.totalVehicles);
     let thresholdValue = this.getPreferenceThreshold('activevehicles')['value']; //10;
     this.activeThreshold = thresholdValue;
-    let vehicleTarget = this.dashboardService.calculateTargetValue(activeVehicleCount,thresholdValue,1);
+    // let vehicleTarget = this.dashboardService.calculateTargetValue(activeVehicleCount,thresholdValue,1);
     let yesterdayCount = this.liveVehicleData.yesterdayActiveVinCount;
     let activeVehicleChangePercent = this.dashboardService.calculateLastChange(activeVehicleCount,yesterdayCount);
     let activeVehicleCaretColor = 'caretGreen';
@@ -380,7 +380,7 @@ doughnutDistanceColors: Color[] = [
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
-            tooltipEl.innerHTML = `<div class='dashboardTT'><div>${transTarget}: ` + vehicleTarget + 
+            tooltipEl.innerHTML = `<div class='dashboardTT'><div>${transTarget}: ` + thresholdValue + 
             '</div><div>'+transLastChange+': ' + activeVehicleChangePercent.toFixed(2) + '%'+
             `<span>${caretIcon}</span></div>`;
             this._chart.canvas.parentNode.appendChild(tooltipEl);
