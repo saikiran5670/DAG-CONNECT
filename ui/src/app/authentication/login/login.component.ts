@@ -215,7 +215,7 @@ export class LoginComponent implements OnInit {
     this.translationService.getLanguageCodes().subscribe(languageCodes => {
       let objData = {
         AccountId: data.accountInfo.id,
-        OrganizationId: data.accountOrganization[0].id
+        OrganizationId: localStorage.getItem("accountOrganizationId")
       }  
       this.translationService.checkUserAcceptedTaC(objData).subscribe(response => {
         if(!response){ 
