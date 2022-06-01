@@ -351,7 +351,8 @@ export class LoginComponent implements OnInit {
       this.dialogRefLogin.disableClose = true;//disable default close operation
       this.dialogRefLogin.beforeClosed().subscribe(result => {
         this.result = result;
-        this.checkTermsAndConditions(data, accountDetails, accountPreference);
+        if(result){
+        this.checkTermsAndConditions(data, accountDetails, accountPreference);}
         this.dialogRefLogin.close();
       });
     }
