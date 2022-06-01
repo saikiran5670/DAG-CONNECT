@@ -143,9 +143,9 @@ export class TermsConditionsManagementComponent implements OnInit {
         else{
           let msg= this.translationData.lblTermsAndConditionsFileSuccessfullyUploaded ? this.translationData.lblTermsAndConditionsFileSuccessfullyUploaded : "Terms and Conditions file successfully uploaded";
           this.successMsgBlink(msg);
-          this.filelist= [];
-          this.uploadTermsConditionsFormGroup.controls.uploadFile.setValue("");
         }
+        this.filelist= [];
+        this.uploadTermsConditionsFormGroup.controls.uploadFile.setValue("");
       }
     }, (error) => {
       this.uploadFileErrorCode = error.status;
