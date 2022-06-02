@@ -61,6 +61,7 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
   firstClick: number = 0;
   healthList: any = [];
   otherList: any = [];
+  vehicleGroupData = [];
   driverVehicleForm: FormGroup;
   showLoadingIndicator: any = false;
   dataSource: any = new MatTableDataSource([]);
@@ -1447,10 +1448,15 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
     this.getFleetOverviewDetails = this.reportService.getFleetOverviewDetails(this.objData).subscribe((fleetdata: any) => {
       let data = fleetdata.fleetOverviewDetailList;//this.fleetMapService.processedLiveFLeetData(fleetdata.fleetOverviewDetailList);
       this.fleetData = data
-      let vehicleGroupData = fleetdata.vehicleGroups;
-      if (vehicleGroupData && vehicleGroupData.length > 0 && !this.todayFlagClicked && this.selectedIndex == 0) {
+      if(fleetdata && fleetdata.vehicleGroups && fleetdata.vehicleGroups.length > 0){
+      this.vehicleGroupData = fleetdata.vehicleGroups;
+      }
+      else{
+        this.vehicleGroupData = [];
+      }
+      if (this.vehicleGroupData && this.vehicleGroupData.length > 0 && !this.todayFlagClicked && this.selectedIndex == 0) {
         this.filterData.vehicleGroups = [];
-        this.filterData.vehicleGroups = this.getVinObj(vehicleGroupData)
+        this.filterData.vehicleGroups = this.getVinObj(this.vehicleGroupData)
         // let tempArr = [];
         // let arr = [];
         // let grpIds = [];
@@ -1515,7 +1521,9 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
       if (data.length > 0) {
         this.noRecordFlag = false;
       }
+      if(this.fleetData && this.fleetData.length > 0){
       this.showLoadingIndicator = false;
+      }
       this.applyFilter(this.filterVehicleForm.controls.vehicleSearch.value)
     }, (error) => {
       this.getFleetOverviewDetails.unsubscribe();
