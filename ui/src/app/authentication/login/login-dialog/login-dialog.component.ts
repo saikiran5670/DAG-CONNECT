@@ -60,6 +60,7 @@ export class LoginDialogComponent {
 
   filterOrgRoles(orgId: any) {
     if(orgId) this.orgID = Number(orgId);
+    localStorage.setItem("accountOrganizationId", orgId);
     if (this.data.role.length > 0) { //-- (Roles > 0) 
       let filterRoles = this.data.role.filter(item => parseInt(item.organization_Id) === parseInt(orgId));
 
