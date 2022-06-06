@@ -5,7 +5,7 @@ export class OriginService {
     getOrigin(){
         this.origin = window.location.origin;
         if(this.origin && this.origin.includes("localhost")){
-            this.origin = "https://api.dev1.ct2.atos.net";
+            this.origin = "https://portal.dev1.ct2.atos.net";
         }
         return this.origin;
     }
