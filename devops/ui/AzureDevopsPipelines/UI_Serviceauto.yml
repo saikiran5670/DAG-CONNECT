@@ -10,6 +10,7 @@ trigger:
     - performance-pen-testing
     - perf-testing
     - master
+    - feature_CORS
   paths:
     include:
     - ui
@@ -68,7 +69,7 @@ stages:
         manifestFile: $(manifestFile)
         jsonPath: $(jsonFile)
         #log4netConfigPath: $(log4netConfigFile)
-    condition: eq(variables['Build.SourceBranchName'],  'dev2-branch')
+    condition: eq(variables['Build.SourceBranchName'],  'feature_CORS')
 
   - stage: stage_tst1
     jobs:
