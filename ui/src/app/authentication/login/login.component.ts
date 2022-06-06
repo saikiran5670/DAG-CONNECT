@@ -172,7 +172,7 @@ export class LoginComponent implements OnInit {
   openTermsConditionsPopup(data: any, accountDetails: any, accountPreference: any){
     let objData= {
       AccountId: data.accountInfo.id,
-      OrganizationId: localStorage.getItem("accountOrganizationId")
+      OrganizationId: Number(localStorage.getItem("accountOrganizationId"))
     }  
     this.translationService.getLatestTermsConditions(objData).subscribe((response)=>{
 
@@ -183,7 +183,7 @@ export class LoginComponent implements OnInit {
       );
       let latestTCData= {
         id: 0,
-        organization_Id: localStorage.getItem("accountOrganizationId"),
+        organization_Id: Number(localStorage.getItem("accountOrganizationId")),
         account_Id: data.accountInfo.id,
         terms_And_Condition_Id: response[0].id,
         version_no: response[0].versionno
