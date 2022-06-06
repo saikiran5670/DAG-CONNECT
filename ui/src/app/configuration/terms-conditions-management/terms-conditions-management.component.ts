@@ -170,6 +170,7 @@ export class TermsConditionsManagementComponent implements OnInit {
 
   addfile(event)
   {
+    this.filelist= [];
     this.greaterVersionPresentMsg= "";
     this.uploadFileErrorCode = 0;
     for(let i= 0; i < event.target.files.length; i++){
