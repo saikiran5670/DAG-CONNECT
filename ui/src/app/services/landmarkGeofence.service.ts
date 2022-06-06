@@ -8,13 +8,14 @@ import {
   HttpParams
 } from '@angular/common/http';
 import { ConfigService } from '@ngx-config/core';
+import { OriginService } from './origin.service';
 
 @Injectable()
 export class GeofenceService {
     GeofenceServiceUrl: string = '';
 
-  constructor(private httpClient: HttpClient, private config: ConfigService) {
-    this.GeofenceServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/geofence';
+  constructor(private httpClient: HttpClient, private originService: OriginService) {
+    this.GeofenceServiceUrl = originService.getOrigin() + '/geofence';
   }
 
   generateHeader(){

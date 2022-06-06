@@ -9,6 +9,7 @@ import {
   HttpParameterCodec
 } from '@angular/common/http';
 import { ConfigService } from '@ngx-config/core';
+import { OriginService } from './origin.service';
 
 
 @Injectable({
@@ -16,8 +17,8 @@ import { ConfigService } from '@ngx-config/core';
 })
 export class DashboardService {
   dashboardServiceUrl : any;
-  constructor(private httpClient: HttpClient, private config: ConfigService) { 
-    this.dashboardServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/dashboard';
+  constructor(private httpClient: HttpClient, private originService: OriginService) { 
+    this.dashboardServiceUrl = originService.getOrigin() + '/dashboard';
 
   }
 

@@ -8,6 +8,7 @@ import {
   HttpParams
 } from '@angular/common/http';
 import { ConfigService } from '@ngx-config/core';
+import { OriginService } from './origin.service';
 declare var H: any;
 
 @Injectable()
@@ -17,8 +18,8 @@ export class POIService {
   map_key: any = '';
   private platform: any;
 
-  constructor(private httpClient: HttpClient, private config: ConfigService) {
-    this.PoiServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/poi';
+  constructor(private httpClient: HttpClient, private originService: OriginService) {
+    this.PoiServiceUrl = originService.getOrigin() + '/poi';
     // this.map_key = config.getSettings("hereMap").api_key;
     this.map_key = localStorage.getItem("hereMapsK");
     this.platform = new H.service.Platform({

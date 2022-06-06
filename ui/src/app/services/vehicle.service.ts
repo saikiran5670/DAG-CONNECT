@@ -7,14 +7,15 @@ import {
   HttpHeaders
 } from '@angular/common/http';
 import { ConfigService } from '@ngx-config/core';
+import { OriginService } from './origin.service';
 
 @Injectable()
 export class VehicleService {
     vehicleServiceUrl: string = '';
 
 
-  constructor(private httpClient: HttpClient, private config: ConfigService) {
-    this.vehicleServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/vehicle';
+  constructor(private httpClient: HttpClient, private originService: OriginService) {
+    this.vehicleServiceUrl = originService.getOrigin() + '/vehicle';
 
   }
 

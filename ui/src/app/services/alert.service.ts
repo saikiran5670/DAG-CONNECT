@@ -8,13 +8,14 @@ import {
   HttpHeaders,
 } from '@angular/common/http';
 import { ConfigService } from '@ngx-config/core';
+import { OriginService } from './origin.service';
 
 @Injectable()
 export class AlertService {
     alertServiceUrl: string = '';
 
-  constructor(private httpClient: HttpClient, private config: ConfigService) {
-    this.alertServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/alert';
+  constructor(private httpClient: HttpClient, private originService: OriginService) {
+    this.alertServiceUrl = originService.getOrigin() + '/alert';
   }
 
   private handleError(errResponse: HttpErrorResponse) {

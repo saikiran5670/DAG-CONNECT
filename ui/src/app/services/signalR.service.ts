@@ -6,6 +6,7 @@ import { TranslationService } from '../services/translation.service';
 import { OrganizationService } from '../services/organization.service';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { Util } from 'src/app/shared/util';
+import { OriginService } from './origin.service';
 
 @Injectable( {providedIn: 'root'})
 export class SignalRService {
@@ -30,9 +31,9 @@ export class SignalRService {
   
   accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
   accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
-  constructor(private httpClient: HttpClient, private config: ConfigService, private translationService: TranslationService, private organizationService: OrganizationService, @Inject(MAT_DATE_FORMATS) private dateFormats) {
+  constructor(private httpClient: HttpClient, private translationService: TranslationService, private organizationService: OrganizationService, @Inject(MAT_DATE_FORMATS) private dateFormats, private originService: OriginService) {
     let _langCode = this.localStLanguage ? this.localStLanguage.code  :  "EN-GB";
-    this.signalRServiceURL = config.getSettings("authentication").authRESTServiceURL + '/notificationhub';  
+    this.signalRServiceURL = originService.getOrigin() + '/notificationhub';  
     
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
     this.isUserLogin = JSON.parse(localStorage.getItem('isUserLogin'));

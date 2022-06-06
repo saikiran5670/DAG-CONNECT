@@ -9,13 +9,14 @@ import {
   HttpParameterCodec
 } from '@angular/common/http';
 import { ConfigService } from '@ngx-config/core';
+import { OriginService } from './origin.service';
 
 @Injectable()
 export class AccountService {
   accountServiceUrl: string = '';
 
-  constructor(private httpClient: HttpClient, private config: ConfigService) {
-    this.accountServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/account';
+  constructor(private httpClient: HttpClient, private originService: OriginService) {
+    this.accountServiceUrl = originService.getOrigin() + '/account';
   }
 
   generateHeader(){

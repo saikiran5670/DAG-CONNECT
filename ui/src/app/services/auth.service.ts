@@ -2,14 +2,15 @@ import { Injectable } from '@angular/core';
 import { Observable, Subject, of } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ConfigService } from '@ngx-config/core';
+import { OriginService } from './origin.service';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AuthService {
     private domainUrl: string;
-    constructor(private httpClient: HttpClient, private config: ConfigService) {
-        this.domainUrl = config.getSettings("authentication").authRESTServiceURL;
+    constructor(private httpClient: HttpClient, private originService: OriginService) {
+        this.domainUrl = originService.getOrigin();
     }
 
     generateHeader(){

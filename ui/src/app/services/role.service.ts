@@ -9,15 +9,16 @@ import {
   HttpParams,
 } from '@angular/common/http';
 import { ConfigService } from '@ngx-config/core';
+import { OriginService } from './origin.service';
 
 @Injectable()
 export class RoleService {
     roleServiceUrl: string = '';
     featureServiceUrl: string = '';
 
-  constructor(private httpClient: HttpClient, private config: ConfigService) {
-    this.roleServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/role';
-    this.featureServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/feature';
+  constructor(private httpClient: HttpClient, private originService: OriginService) {
+    this.roleServiceUrl = originService.getOrigin() + '/role';
+    this.featureServiceUrl = originService.getOrigin() + '/feature';
   }
 
   private handleError(errResponse: HttpErrorResponse) {

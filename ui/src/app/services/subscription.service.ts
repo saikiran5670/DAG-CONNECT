@@ -8,6 +8,7 @@ import {
   HttpParams
 } from '@angular/common/http';
 import { ConfigService } from '@ngx-config/core';
+import { OriginService } from './origin.service';
 
 @Injectable()
 export class SubscriptionService {
@@ -15,10 +16,10 @@ export class SubscriptionService {
     vehicleServiceUrl: string = '';
     organizationUrl: string = '';
 
-  constructor(private httpClient: HttpClient, private config: ConfigService) {
-    this.SubscriptionServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/subscribe';
-    this.vehicleServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/vehicle';
-    this.organizationUrl = config.getSettings("authentication").authRESTServiceURL + '/organization';
+  constructor(private httpClient: HttpClient, private originService: OriginService) {
+    this.SubscriptionServiceUrl = originService.getOrigin() + '/subscribe';
+    this.vehicleServiceUrl = originService.getOrigin() + '/vehicle';
+    this.organizationUrl = originService.getOrigin() + '/organization';
   }
 
   generateHeader(){

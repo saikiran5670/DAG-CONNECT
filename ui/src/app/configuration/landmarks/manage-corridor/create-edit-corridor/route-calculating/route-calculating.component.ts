@@ -167,7 +167,7 @@ export class RouteCalculatingComponent implements OnInit, AfterViewInit{
   gpsLineString: any =[];
 
   constructor(private hereService: HereService,private formBuilder: FormBuilder, private corridorService : CorridorService,
-    private completerService: CompleterService, private config: ConfigService,private landmarkCategoryService: LandmarkCategoryService) {
+    private completerService: CompleterService, private landmarkCategoryService: LandmarkCategoryService) {
       this.showLoadingIndicator = true;
       // //console.log(this.hereService.hereMapsdata);
     //   this.map_key =  config.getSettings("hereMap").api_key;

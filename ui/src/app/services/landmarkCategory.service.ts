@@ -8,6 +8,7 @@ import {
   HttpParameterCodec
 } from '@angular/common/http';
 import { ConfigService } from '@ngx-config/core';
+import { OriginService } from './origin.service';
 
 @Injectable()
 export class LandmarkCategoryService {
@@ -15,10 +16,10 @@ export class LandmarkCategoryService {
     poiServiceUrl: string = '';
     geofenceServiceUrl: string = '';
     
-    constructor(private httpClient: HttpClient, private config: ConfigService) {
-        this.landmarkCategoryServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/poigeofence';
-        this.poiServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/poi';
-        this.geofenceServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/geofence';
+    constructor(private httpClient: HttpClient, private originService: OriginService) {
+        this.landmarkCategoryServiceUrl = originService.getOrigin() + '/poigeofence';
+        this.poiServiceUrl = originService.getOrigin() + '/poi';
+        this.geofenceServiceUrl = originService.getOrigin() + '/geofence';
     }
 
     generateHeader(){

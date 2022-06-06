@@ -3,6 +3,7 @@ import { Observable, Subject, of, throwError } from 'rxjs';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { ConfigService } from '@ngx-config/core';
 import { delay, catchError } from 'rxjs/internal/operators';
+import { OriginService } from './origin.service';
 
 @Injectable({
     providedIn: 'root'
@@ -10,8 +11,8 @@ import { delay, catchError } from 'rxjs/internal/operators';
 export class TranslationService {
     private translationUrl: string;
     public applicationTranslationData:any = {};
-    constructor(private httpClient: HttpClient, private config: ConfigService) {
-        this.translationUrl = config.getSettings("authentication").authRESTServiceURL + '/translation';
+    constructor(private httpClient: HttpClient, private originService: OriginService) {
+        this.translationUrl = originService.getOrigin() + '/translation';
     }
 
     generateHeader(){

@@ -17,6 +17,7 @@ import html2canvas from 'html2canvas';
 import { FormControl } from '@angular/forms';
 import { element, utils } from 'protractor';
 import { Util } from 'src/app/shared/util';
+import { OriginService } from 'src/app/services/origin.service';
 
 @Component({
   selector: 'app-subscription-management',
@@ -80,12 +81,11 @@ export class SubscriptionManagementComponent implements OnInit {
 
   constructor(
     private httpClient: HttpClient,
-    private config: ConfigService,
     private translationService: TranslationService,
     private dialogService: ConfirmDialogService,
     private subscriptionService: SubscriptionService,
-    public dialog: MatDialog) {
-    this.domainUrl = config.getSettings("authentication").authRESTServiceURL + '/account/sso';
+    public dialog: MatDialog, private originService: OriginService) {
+    this.domainUrl = originService.getOrigin() + '/account/sso';
     // this.defaultTranslation();
   }
 

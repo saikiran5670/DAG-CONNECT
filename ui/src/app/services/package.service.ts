@@ -8,15 +8,16 @@ import {
   HttpParams
 } from '@angular/common/http';
 import { ConfigService } from '@ngx-config/core';
+import { OriginService } from './origin.service';
 
 @Injectable()
 export class PackageService {
   PackageServiceUrl: string = '';
   featureServiceUrl: string = '';
 
-  constructor(private httpClient: HttpClient, private config: ConfigService) {
-    this.PackageServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/package';
-    this.featureServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/feature';
+  constructor(private httpClient: HttpClient, private originService: OriginService) {
+    this.PackageServiceUrl = originService.getOrigin() + '/package';
+    this.featureServiceUrl = originService.getOrigin() + '/feature';
   }
 
   generateHeader(){

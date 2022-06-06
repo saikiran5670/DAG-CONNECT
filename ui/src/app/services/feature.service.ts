@@ -4,13 +4,14 @@ import { of } from 'rxjs';
 import { delay, catchError } from 'rxjs/internal/operators';
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParameterCodec, HttpParams } from '@angular/common/http';
 import { ConfigService } from '@ngx-config/core';
+import { OriginService } from './origin.service';
 
 @Injectable()
 export class FeatureService {
     featureServiceUrl: string = '';
 
-    constructor(private httpClient: HttpClient, private config: ConfigService) {
-      this.featureServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/feature';
+    constructor(private httpClient: HttpClient, private originService: OriginService) {
+      this.featureServiceUrl = originService.getOrigin() + '/feature';
     }
 
     generateHeader(){

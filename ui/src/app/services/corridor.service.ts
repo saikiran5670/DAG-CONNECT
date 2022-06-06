@@ -8,6 +8,7 @@ import {
   HttpParams
 } from '@angular/common/http';
 import { ConfigService } from '@ngx-config/core';
+import { OriginService } from './origin.service';
 
 
 @Injectable({
@@ -18,9 +19,9 @@ export class CorridorService {
   reportCorridorUrl: string = '';
   hereMapApiUrl: string = 'https://places.ls.hereapi.com';
 
-  constructor(private httpClient: HttpClient, private config: ConfigService) {
-    this.corridorServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/corridor';
-    this.reportCorridorUrl = config.getSettings("authentication").authRESTServiceURL + '/report';
+  constructor(private httpClient: HttpClient, private originService: OriginService) {
+    this.corridorServiceUrl = originService.getOrigin() + '/corridor';
+    this.reportCorridorUrl = originService.getOrigin() + '/report';
    }
 
    generateHeader(){

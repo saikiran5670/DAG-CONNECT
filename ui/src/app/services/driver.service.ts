@@ -4,13 +4,14 @@ import { of } from 'rxjs';
 import { delay, catchError } from 'rxjs/internal/operators';
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParameterCodec } from '@angular/common/http';
 import { ConfigService } from '@ngx-config/core';
+import { OriginService } from './origin.service';
 
 @Injectable()
 export class DriverService {
     driverServiceUrl: string = '';
 
-    constructor(private httpClient: HttpClient, private config: ConfigService) {
-      this.driverServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/driver';
+    constructor(private httpClient: HttpClient, private originService: OriginService) {
+      this.driverServiceUrl = originService.getOrigin() + '/driver';
     }
 
     generateHeader(){

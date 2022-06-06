@@ -9,13 +9,14 @@ import {
   HttpParameterCodec
 } from '@angular/common/http';
 import { ConfigService } from '@ngx-config/core';
+import { OriginService } from './origin.service';
 
 @Injectable()
 export class ReportSchedulerService {
   reportSchedulerServiceURL: string = '';
   
-  constructor(private httpClient: HttpClient, private config: ConfigService) {
-    this.reportSchedulerServiceURL = config.getSettings("authentication").authRESTServiceURL + '/reportscheduler';
+  constructor(private httpClient: HttpClient, private originService: OriginService) {
+    this.reportSchedulerServiceURL = originService.getOrigin() + '/reportscheduler';
   }
 
   generateHeader(){

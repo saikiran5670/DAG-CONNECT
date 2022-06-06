@@ -9,13 +9,14 @@ import {
   HttpParams,
 } from '@angular/common/http';
 import { ConfigService } from '@ngx-config/core';
+import { OriginService } from './origin.service';
 
 @Injectable()
 export class LandmarkGroupService {
     landmarkGroupServiceUrl: string = '';
 
-  constructor(private httpClient: HttpClient, private config: ConfigService) {
-    this.landmarkGroupServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/landmarkgroup';
+  constructor(private httpClient: HttpClient, private originService: OriginService) {
+    this.landmarkGroupServiceUrl = originService.getOrigin() + '/landmarkgroup';
   }
 
   private handleError(errResponse: HttpErrorResponse) {

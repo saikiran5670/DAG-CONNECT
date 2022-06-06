@@ -71,8 +71,7 @@ export class ManageCorridorComponent implements OnInit {
     private corridorService : CorridorService,
     private _snackBar: MatSnackBar,
     private mapFunctions: MapFunctionsService,
-    private completerService: CompleterService,
-    private _configService: ConfigService)  {
+    private completerService: CompleterService)  {
       // this.map_key = _configService.getSettings("hereMap").api_key;
       this.map_key = localStorage.getItem("hereMapsK");
       this.platform = new H.service.Platform({

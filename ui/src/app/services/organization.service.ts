@@ -9,13 +9,14 @@ import {
   HttpParams,
 } from '@angular/common/http';
 import { ConfigService } from '@ngx-config/core';
+import { OriginService } from './origin.service';
 
 @Injectable()
 export class OrganizationService {
     organizationServiceUrl: string = '';
 
-  constructor(private httpClient: HttpClient, private config: ConfigService) {
-    this.organizationServiceUrl = config.getSettings("authentication").authRESTServiceURL + '/organization';
+  constructor(private httpClient: HttpClient, private originService: OriginService) {
+    this.organizationServiceUrl = originService.getOrigin() + '/organization';
   }
 
   private handleError(errResponse: HttpErrorResponse) {

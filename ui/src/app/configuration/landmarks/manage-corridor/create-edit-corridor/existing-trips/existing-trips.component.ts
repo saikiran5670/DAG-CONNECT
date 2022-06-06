@@ -195,7 +195,7 @@ export class ExistingTripsComponent implements OnInit {
     private _formBuilder: FormBuilder, private translationService: TranslationService,
     private corridorService: CorridorService, private poiService: POIService,
     private mapFunctions: MapFunctionsService, private organizationService: OrganizationService,
-    private completerService: CompleterService, private config: ConfigService) {
+    private completerService: CompleterService) {
 
     // this.map_key = config.getSettings("hereMap").api_key;
     // this.map_id = config.getSettings("hereMap").app_id;
