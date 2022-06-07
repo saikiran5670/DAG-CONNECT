@@ -172,7 +172,7 @@ export class LoginComponent implements OnInit {
   openTermsConditionsPopup(data: any, accountDetails: any, accountPreference: any){
     let objData= {
       AccountId: data.accountInfo.id,
-      OrganizationId: data.accountOrganization[0].id
+      OrganizationId: Number(localStorage.getItem("accountOrganizationId"))
     }  
     this.translationService.getLatestTermsConditions(objData).subscribe((response)=>{
 
@@ -183,7 +183,7 @@ export class LoginComponent implements OnInit {
       );
       let latestTCData= {
         id: 0,
-        organization_Id: data.accountOrganization[0].id,
+        organization_Id: Number(localStorage.getItem("accountOrganizationId")),
         account_Id: data.accountInfo.id,
         terms_And_Condition_Id: response[0].id,
         version_no: response[0].versionno
@@ -215,7 +215,7 @@ export class LoginComponent implements OnInit {
     this.translationService.getLanguageCodes().subscribe(languageCodes => {
       let objData = {
         AccountId: data.accountInfo.id,
-        OrganizationId: data.accountOrganization[0].id
+        OrganizationId: localStorage.getItem("accountOrganizationId")
       }  
       this.translationService.checkUserAcceptedTaC(objData).subscribe(response => {
         if(!response){ 
@@ -351,7 +351,8 @@ export class LoginComponent implements OnInit {
       this.dialogRefLogin.disableClose = true;//disable default close operation
       this.dialogRefLogin.beforeClosed().subscribe(result => {
         this.result = result;
-        this.checkTermsAndConditions(data, accountDetails, accountPreference);
+        if(result){
+        this.checkTermsAndConditions(data, accountDetails, accountPreference);}
         this.dialogRefLogin.close();
       });
     }

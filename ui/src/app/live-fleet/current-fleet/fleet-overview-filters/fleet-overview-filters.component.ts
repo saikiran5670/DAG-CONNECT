@@ -44,6 +44,7 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
   selection3: any;
   selection4: any;
   filterVehicleForm: FormGroup;
+  isBackClicked: boolean = true;
   todayFlagClicked: boolean = true;
   driverFlagClicked: boolean = true;
   isVehicleDetails: boolean = false;
@@ -60,6 +61,7 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
   firstClick: number = 0;
   healthList: any = [];
   otherList: any = [];
+  vehicleGroupData = [];
   driverVehicleForm: FormGroup;
   showLoadingIndicator: any = false;
   dataSource: any = new MatTableDataSource([]);
@@ -469,7 +471,7 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
     this.vehicleListData = [];
    
     if (!this.todayFlagClicked && this.selectedIndex == 0) {
-      if(this.filterData["vehicleGroups"] && this.filterData["vehicleGroups"].length > 0){
+      if(this.filterData && this.filterData["vehicleGroups"] && this.filterData["vehicleGroups"].length > 0){
         this.filterData["vehicleGroups"].forEach(item => {
           this.groupList.push(item);
         });
@@ -805,7 +807,7 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
             else {
               this.allSelectedGroup ? objData = this.vehicleListData : objData = this.vehicleListData;
             }
-            if (this.filterVehicleForm.controls.category.value.length != 0) {
+            if (this.filterVehicleForm.controls.category.value.length != 0 && !this.filterVehicleForm.controls.category.value.includes('all')) {
               this.filterCategory(objData);
             }
             break;
@@ -862,7 +864,7 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
             }
 
             let helthStatusData: any = [];
-            if (this.filterVehicleForm.controls.status.value != '') {
+            if (this.filterVehicleForm.controls.status.value != '' && this.filterVehicleForm.controls.status.value != 'all') {
               objData.forEach(i => {
                 for (let e of vehicledata) {
                   if (i.vehicleHealthStatusType == e) {
@@ -1033,7 +1035,7 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
               this.vehicleListData = [];
               newdata.forEach(i => {
                 if (i.level == 'C') {
-                  this.vehicleListData(i);
+                  this.vehicleListData.push(i);
                 }
               })
             }
@@ -1446,10 +1448,15 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
     this.getFleetOverviewDetails = this.reportService.getFleetOverviewDetails(this.objData).subscribe((fleetdata: any) => {
       let data = fleetdata.fleetOverviewDetailList;//this.fleetMapService.processedLiveFLeetData(fleetdata.fleetOverviewDetailList);
       this.fleetData = data
-      let vehicleGroupData = fleetdata.vehicleGroups;
-      if (vehicleGroupData && vehicleGroupData.length > 0 && !this.todayFlagClicked && this.selectedIndex == 0) {
+      if(fleetdata && fleetdata.vehicleGroups && fleetdata.vehicleGroups.length > 0){
+      this.vehicleGroupData = fleetdata.vehicleGroups;
+      }
+      else{
+        this.vehicleGroupData = [];
+      }
+      if (this.vehicleGroupData && this.vehicleGroupData.length > 0 && !this.todayFlagClicked && this.selectedIndex == 0) {
         this.filterData.vehicleGroups = [];
-        this.filterData.vehicleGroups = this.getVinObj(vehicleGroupData)
+        this.filterData.vehicleGroups = this.getVinObj(this.vehicleGroupData)
         // let tempArr = [];
         // let arr = [];
         // let grpIds = [];
@@ -1492,7 +1499,9 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
       // this.categoryList = this.removeDuplicates(newAlertCat, "value");
 
       this.vehicleListData = data;
+      if(!this.isBackClicked){
       this.applyFilterOnVehicleData();
+      }
       this.detailsData = this.vehicleListData;
 
       let _dataObj: any = {};
@@ -1512,7 +1521,9 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
       if (data.length > 0) {
         this.noRecordFlag = false;
       }
+      if(this.fleetData && this.fleetData.length > 0){
       this.showLoadingIndicator = false;
+      }
       this.applyFilter(this.filterVehicleForm.controls.vehicleSearch.value)
     }, (error) => {
       this.getFleetOverviewDetails.unsubscribe();
@@ -1728,6 +1739,8 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
           data: this.vehicleListData
         }
         this.dataInterchangeService.getVehicleData(_dataObj); // when back clicked 
+        this.isBackClicked = true;
+        this.loadVehicleData();
       }
     }
     // this.driverFlagClicked = true;

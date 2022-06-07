@@ -214,17 +214,17 @@ get24Time(_time: any){
     //  this.hubConnection.on("NotifyAlertResponse", (notificationMessage) => {
       this.hubConnection.on("PushNotificationForAlertResponse", (notificationMessage) => {
        notificationMessage= JSON.parse(notificationMessage);
-       this.notificationCount++;
+       
        //console.log("PushNotificationForAlertResponse = ",notificationMessage);
-        this.AlertNotifcaionList.push(notificationMessage);
-      //  notificationMessage["alertTypeValue"] = this.translationData[notificationMessage["alertTypeKey"]] 
-        if(this.notificationData.length < 5){
-          this.notificationData.push(notificationMessage);
-        }
-        else{
-          this.notificationData.shift();
-          this.notificationData.push(notificationMessage);
-        }
+       notificationMessage.forEach((notification)=>{
+        this.notificationCount++;
+        this.AlertNotifcaionList.push(notification);
+       })
+        
+        this.notificationData = [...this.notificationData, ...notificationMessage];
+        if(this.notificationData.length >= 5)
+          this.notificationData = this.notificationData.splice(this.notificationData.length-5,this.notificationData.length);
+        
         this.getDateAndTime();
     })
 
