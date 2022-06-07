@@ -120,6 +120,8 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
   }
 
   ngOnDestroy() {
+    this.getFleetOverviewDetails = undefined;
+    this.getFleetOverviewDetails.unsubscribe();
     this.subscription.unsubscribe();
   }
 
@@ -360,8 +362,8 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
     }
 
     let driverSelected = this.driverList.filter((elem) => elem.driverId === this.driverVehicleForm.get("driver").value);
-    this.reportService.getFleetOverviewDetails(this.objData).subscribe((fleetdata: any) => {
-    let data = fleetdata.fleetOverviewDetailList; //this.fleetMapService.processedLiveFLeetData(fleetdata.fleetOverviewDetailList);
+    this.getFleetOverviewDetails =this.reportService.getFleetOverviewDetails(this.objData).subscribe((fleetdata: any) => {
+    let data = fleetdata.fleetOverviewDetailList;
     let val: any;
       if (data.length > 0) {
         if (driverSelected.length > 0) {
@@ -443,6 +445,7 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
       }
       this.applyFilterDriver(this.driverVehicleForm.controls.driverSearch.value);
     }, (error) => {
+      this.getFleetOverviewDetails.unsubscribe();
       let val = [{ vehicleGroup: driverSelected[0]?.driverId, data: error }];
       this.messageService.sendMessage(val);
       this.messageService.sendMessage("refreshTimer");
@@ -482,7 +485,6 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
 
       if (this.filterData && this.filterData.alertCategory) {
         this.filterData["alertCategory"].forEach(item => {
-          // let catName =  this.translationAlertData[item.name];
           let catName = this.translationData[item.name];
           if (catName != undefined) {
             this.categoryList.push({ 'name': catName, 'value': item.value })
@@ -492,7 +494,6 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
 
       if (this.filterData && this.filterData.alertLevel) {
         this.filterData["alertLevel"].forEach(item => {
-          // let levelName =  this.translationAlertData[item.name];
           let levelName = this.translationData[item.name];
           this.levelList.push({ 'name': levelName, 'value': item.value })
         });
@@ -507,39 +508,16 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
 
       if (this.filterData && this.filterData.otherFilter) {
         this.filterData["otherFilter"].forEach(item => {
-          // if(item.value == 'N'){
           let statusName = this.translationData[item.name];
           this.otherList.push({ 'name': statusName, 'value': item.value })
-          // }
         });
       }
 
-      // if(this.detailsData){
-      //   this.detailsData.forEach(item => {
-      //     if (this.filterData && this.filterData.healthStatus) {
-      //       this.filterData["healthStatus"].forEach(e => {
-      //         if (item.vehicleHealthStatusType == e.value) {
-      //           item.vehicleHealthStatusType = this.translationData[e.name];
-      //         }
-      //       });
-      //     }
-
-      //     if (this.filterData && this.filterData.otherFilter) {
-      //       this.filterData["otherFilter"].forEach(element => {
-      //         if (item.vehicleDrivingStatusType == element.value) {
-      //           item.vehicleDrivingStatusType = this.translationData[element.name];
-      //         }
-      //       });
-      //     }
-      //   });
-      // }
-
       this.setDefaultDropValue();
       this.vehicleListData = this.detailsData;
-      // this.loadVehicleData();
     }
+
     if (this.todayFlagClicked && this.selectedIndex == 0) {
-      // this.loadVehicleData();
       if (this.detailsData) {
         this.detailsData.forEach(element => {
           let currentDate = new Date().getTime();
@@ -557,19 +535,9 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
           this.resetSelectGroupFilter();
         });
       }
-      // let currentDate = new Date().getTime();
-      //     let categoryData =this.filterData["fleetOverviewAlerts"].forEach(element => {
-      //       let createdDate = parseInt(element.alertTime);
-      //       let nextDate = createdDate + 86400000;
-      //       if(currentDate > createdDate && currentDate < nextDate){
-      //         this.categoryList.push(element);
-      //         this.healthList.push(element);
-      //       }
-      //     });
 
       if (this.filterData && this.filterData.alertCategory) {
         this.filterData["alertCategory"].forEach(item => {
-          // let catName =  this.translationAlertData[item.name];
           let catName = this.translationData[item.name];
           if (catName != undefined) {
             this.categoryList.push({ 'name': catName, 'value': item.value })
@@ -579,7 +547,6 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
 
       if (this.filterData && this.filterData.alertLevel) {
         this.filterData["alertLevel"].forEach(item => {
-          // let levelName =  this.translationAlertData[item.name];
           let levelName = this.translationData[item.name];
           this.levelList.push({ 'name': levelName, 'value': item.value })
         });
@@ -593,10 +560,8 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
       }
       if (this.filterData && this.filterData.otherFilter) {
         this.filterData["otherFilter"].forEach(item => {
-          // if(item.value == 'N'){
           let statusName = this.translationData[item.name];
           this.otherList.push({ 'name': statusName, 'value': item.value })
-          // }
         });
       }
       this.setDefaultDropValue();
@@ -683,15 +648,6 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
       });
       this.vehicleListData = newFilterData;
       this.groupFilterData = [...this.vehicleListData];
-      //   this.filterData.vehicleGroups.forEach(element => {
-      //     this.fleetData.forEach(i => {
-      //       if(element.vin == i.vin){
-      //         i.VehGroupId = element.vehicleGroupId;
-      //       }
-      //     });
-      //   });
-      // this.vehicleListData= this.fleetData.filter(i=> i.VehGroupId == id);    
-
     }
     if (!this.allSelectedGroup && this.allSelectedAlertLevel && this.allSelectedAlertCategory && this.allSelectedHealthStatus && this.allSelectedOther) {
       this.vehicleListData = this.groupFilterData;
@@ -750,7 +706,6 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
             {
               this.fleetData = this.fleetData.filter((value, index, self) => self.indexOf(value) === index);
               if (this.allSelectedAlertLevel && this.allSelectedGroup) {
-                // this.filterLevel(this.fleetData); 05-04-2022
                 this.vehicleListData = this.fleetData;
                 this.noRecordFlag = false;
               }
@@ -778,29 +733,6 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
             }
 
           case 'category': {
-            // if (this.allSelectedGroup) {
-            //      if (this.filterVehicleForm.controls.level.value.length <= 0) {
-            //       objData = this.fleetData;
-            //      }
-            //      else{
-            //     objData = this.vehicleListData;
-            //      }
-            //    if(this.filterVehicleForm.controls.category.value.length != 0){
-            //    this.filterCategory(objData);
-            //    }
-            //   break;
-            //   }
-
-            // else{  //specific vehicle group selected
-            //   if (this.filterVehicleForm.controls.level.value.length <= 0) {
-            //     objData = this.groupFilterData;
-            //   }
-            //   else{
-            //     objData = this.vehicleListData;
-            //   }
-            //     this.filterCategory(objData);
-
-            // }
             if (this.filterVehicleForm.controls.level.value.length <= 0) {
               this.allSelectedGroup ? objData = this.fleetData : objData = this.groupFilterData;
             }
@@ -868,7 +800,6 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
               objData.forEach(i => {
                 for (let e of vehicledata) {
                   if (i.vehicleHealthStatusType == e) {
-                    //this.noRecordFlag = false;
                     helthStatusData.push(i);
                     break;
                   }
@@ -915,9 +846,6 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
               }
               this.noRecordFlag = (this.vehicleListData.length > 0) ? false : true;
             }
-            // if(this.allSelectedAlertLevel && this.allSelectedAlertCategory && this.filterVehicleForm.controls.status.value == '' && this.filterVehicleForm.controls.otherFilter.value == ''){
-            //   this.filterLevel(this.fleetData);
-            // }
             break;
           }
         }
@@ -935,21 +863,10 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
   filterCategory(objData) {
     this.vehicleListData = [];
     if (objData && objData.length > 0) {
-      // objData.forEach(e => {
-      // if (e.fleetOverviewAlert && e.fleetOverviewAlert.length > 0) {
+
       for (let i of this.filterVehicleForm.controls.category.value) {
         this.findCriticality(objData);
         objData.forEach(e => {
-          //  if(e.fleetOverviewAlert.length > 0){
-          //   e.alertDetails?.forEach(j=> {
-          //     if(j.categoryType == i){
-          //   this.vehicleListData.push(e);
-          //   this.noRecordFlag = false;
-          //     }
-          //   // break;
-          //  })
-          //   }
-
           let latestAlert = e.fleetOverviewAlert.sort((x, y) => y.time - x.time);
           if (latestAlert.length > 0) {
             e.alertCategoryType = latestAlert[0].categoryType;
@@ -960,8 +877,6 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
           }
         })
       }
-      // }
-      // });
     }
     this.vehicleListData = this.vehicleListData.filter((value, index, self) => self.indexOf(value) === index);
   }
@@ -1004,8 +919,7 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
       fleetData.forEach(e => {
         if (e.fleetOverviewAlert && e.fleetOverviewAlert.length > 0) {
           for (let i of this.filterVehicleForm.controls.level.value) {
-            // this.filterVehicleForm.controls.level.value.forEach(i => {
-            // latestAlert = e.fleetOverviewAlert.sort((x, y) => y.time - x.time);
+           
             switch (i) {
 
               case 'C': if (e.fleetOverviewAlert.some(c => c.level == 'C')) {
@@ -1014,7 +928,7 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
                 this.noRecordFlag = false;
                 break;
               }
-              // break;
+          
               case 'W': if (e.fleetOverviewAlert.some(w => w.level == 'W') && !(e.fleetOverviewAlert.some(c => c.level == 'C'))) {
                 warning = 1;
                 this.vehicleListData.push(e);
@@ -1045,25 +959,6 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
     }
     else if (this.filterVehicleForm.controls.level.value.length > 0) {
       this.filterVehicleForm.controls.level.value.forEach(i => {
-        //     objData.forEach((ele, index) => {
-        //       let newData = ele.fleetOverviewAlert;
-        //       if(newData.length > 0){
-        //       newData.forEach(j =>{
-        //     if(j.level == 'C'){
-        //       critical = 1; 
-        //       ele.fleetOverviewAlert = [j];
-        //     }
-        //     else if(j.level == 'W' && j.level != 'C'){
-        //       warning =1;
-        //       ele.fleetOverviewAlert = [j];
-        //     }
-        //     else if(j.level == 'A' && j.level != 'C' && j.level !='W'){
-        //       advisory = 1;
-        //       ele.fleetOverviewAlert = [j];
-        //     }
-        //   })
-        // }
-        // });
         this.findCriticality(objData);
         switch (i) {
           case 'C': {
@@ -1078,7 +973,6 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
             this.noRecordFlag = false;
             break;
           }
-          // break;
           case 'W': {
             warning = 1;
             objData.forEach(i => {
@@ -1161,13 +1055,11 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
         this.onChangeCategory();
       }
     }
-    //this.onChangeCategory();
     this.filterVINonMap();
   }
   onChangeCategory() {
     let newStatus = true;
     this.noRecordFlag = true;
-    // this.vehicleListData = [];
 
     this.select1.options.forEach((item: MatOption) => {
       if (!item.selected) {
@@ -1189,7 +1081,6 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
   onChangeHealthStatus() {
     let newStatus = true;
     let vehicledata = [];
-    // this.vehicleListData = [];
     this.noRecordFlag = true;
 
     this.select2.options.forEach((item: MatOption) => {
@@ -1230,7 +1121,6 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
       this.select4.options.forEach((item: MatOption) => item.select());
       this.vehicleListData = this.fleetData;
       this.noRecordFlag = false;
-      // this.onChangeOtherFilter();
       this.applyFilterOnVehicleData();
 
     } else {
@@ -1244,7 +1134,6 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
 
   onChangeOtherFilter() {
     let otherFilterVehicleData = [];
-    // this.vehicleListData = [];
     this.noRecordFlag = true;
     let newStatus = true;
     this.select4.options.forEach((item: MatOption) => {
@@ -1275,7 +1164,6 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
   onChangeDriver(val: any) {
     let value = [];
     this.driverVehicleForm.get("driver").setValue(val);
-    // this.loadDriverData();
     this.vehicleListData = this.forFilterVehicleListData.filter(item => {
       if (val == "Unknown") {
         if (item.driverName == "" && item.driver1Id == "") {
@@ -1304,10 +1192,7 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
   }
 
   getprocessedLiveFLeetFilterData(vehicalDataVal, val) {
-    let data = vehicalDataVal;//this.fleetMapService.processedLiveFLeetData(vehicalDataVal);
-
-    // this.messageService.sendMessage(val);
-    // this.messageService.sendMessage("refreshTimer");
+    let data = vehicalDataVal;
     this.drawIcons(data);
     data.forEach(item => {
       if (this.filterData && this.filterData.healthStatus) {
@@ -1340,7 +1225,6 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
     this.showLoadingIndicator = true;
     this.initData = this.detailsData;
     let newAlertCat = [];
-    // let otherList= [];
     let otherList = this.filterVehicleForm.controls.otherFilter.value;
     let levelList = this.filterVehicleForm.controls.level.value;
     let status = this.filterVehicleForm.controls.status.value;
@@ -1370,12 +1254,6 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
       otherList = newOtherList;
     }
 
-    // let d = this.filterVehicleForm.controls.category.value;
-    // if(d == 'all')
-    // {
-    //   this.filterVehicleForm.get("category").setValue(['all']);
-    // }
-
     if (this.filterVehicleForm.controls.category.value.length == 0 || this.filterVehicleForm.controls.category.value == 'all') {
       categoryList = ['all'];
     }
@@ -1387,12 +1265,6 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
       }
       categoryList = newCategoryList;
     }
-
-    // let levelVal = this.filterVehicleForm.controls.level.value;
-    // if(levelVal == 'all')
-    // {
-    //   this.filterVehicleForm.get("level").setValue(['all']);
-    // }
 
     if (this.filterVehicleForm.controls.level.value.length == 0 || this.filterVehicleForm.controls.level.value == 'all') {
       levelList = ['all'];
@@ -1457,47 +1329,11 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
       if (this.vehicleGroupData && this.vehicleGroupData.length > 0 && !this.todayFlagClicked && this.selectedIndex == 0) {
         this.filterData.vehicleGroups = [];
         this.filterData.vehicleGroups = this.getVinObj(this.vehicleGroupData)
-        // let tempArr = [];
-        // let arr = [];
-        // let grpIds = [];
-        // let vinObj = {
-        //   vin: '',
-        //   associatedGrpIds: [],
-        //   associatedvehicleGroups: []
-        // };
-        // vehicleGroupData.forEach(item => {
-        //   let itemSplitArr = item.vehicleGroupDetails.split("||");
-        //   itemSplitArr.forEach(val => {
-        //     let vgGroupDetail = val.split('~');
-        //     if (vgGroupDetail[2] != 'S') {
-        //       let obj = {
-        //         "vehicleGroupId": (vgGroupDetail[0] && vgGroupDetail[0] != '') ? parseInt(vgGroupDetail[0]) : 0,
-        //         "vehicleGroupName": vgGroupDetail[1],
-        //         "vehicleId": parseInt(item.vehicleId),
-        //         'vin': item.vin
-        //       }
-        //       tempArr.push(vgGroupDetail[0])
-        //       grpIds = tempArr;
-        //       arr.push(obj);
-        //     };
-        //   });
-        //   vinObj.vin = item.vin;
-        //   vinObj.associatedvehicleGroups = arr;
-        //   vinObj.associatedGrpIds = grpIds;
-        // });
-        // this.filterData.vehicleGroups = vinObj.associatedvehicleGroups;
       }
       let val = [{ vehicleGroup: vehicleGroupSel.vehicleGroupName, data: data }];
       this.messageService.sendMessage(val);
-      // this.messageService.sendMessage("refreshTimer");
       this.drawIcons(data);
-      // this.healthList = [];
-      // this.levelList = [];
-      // this.categoryList = [];
-      // this.otherList = [];
       this.setDropdownValues(this.fleetData);
-      // this.categoryList = this.removeDuplicates(newAlertCat, "value");
-
       this.vehicleListData = data;
       if(!this.isBackClicked){
       this.applyFilterOnVehicleData();
@@ -1535,7 +1371,6 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
       this.messageService.sendMessage(val);
       this.messageService.sendMessage("refreshTimer");
       if (error.status == 404) {
-        //this.noRecordFlag = true;
         this.showLoadingIndicator = false;
         let _dataObj = {
           vehicleDetailsFlag: this.isVehicleDetails,
@@ -1545,7 +1380,6 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
       }
       this.showLoadingIndicator = false;
     });
-    //this.noRecordFlag = false;
     if (this.filterData && !refresh) {
       this.setDefaultDropValue();
     }
@@ -1553,49 +1387,9 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
 
   setDropdownValues(data: any) {
     let newAlertCat = [];
-    // this.healthList = [];
-    // this.levelList = [];
-    // this.categoryList = [];
-    // this.otherList = [];
     let vehicleGrps = [];
     if (data) {
       data.forEach(item => {
-        // let sortedAlertData;
-        // if (item.fleetOverviewAlert && item.fleetOverviewAlert.length > 0) {
-        //   sortedAlertData = item.fleetOverviewAlert.sort((x, y) => y.time - x.time);
-
-        //   if (this.filterData && this.filterData.alertCategory && sortedAlertData) {
-        //     this.filterData["alertCategory"].forEach(e => {
-        //       if (sortedAlertData[0]['categoryType'] == e.value) {
-        //         let catName = this.translationData[e.name];
-        //         this.categoryList.push({ 'name': catName, 'value': e.value });
-        //       }
-        //     });
-        //     this.categoryList = this.removeDuplicates(this.categoryList, "value");
-        //   }
-        //   if (this.filterData && this.filterData.alertLevel && sortedAlertData) {
-        //     sortedAlertData = this.removeDuplicates(sortedAlertData, 'level')
-
-        //     let tempAlertIndx;
-        //     if (sortedAlertData.findIndex(x => (x.level == 'C' || x.level == 'Critical')) > -1) {
-        //       tempAlertIndx = this.filterData["alertLevel"].findIndex(y => y.value === 'C');
-        //     } else if (sortedAlertData.findIndex(x => x.level == 'W' || x.level == 'warning') > -1) {
-        //       tempAlertIndx = this.filterData["alertLevel"].findIndex(y => y.value === 'W');
-        //     } else if (sortedAlertData.findIndex(x => x.level == 'A' || x.level == 'Advisory') > -1) {
-        //       tempAlertIndx = this.filterData["alertLevel"].findIndex(y => y.value === 'A');
-        //     }
-        //     this.levelList.push({
-        //       'name': this.translationData[this.filterData["alertLevel"][tempAlertIndx]['name']],
-        //       'value': this.filterData["alertLevel"][tempAlertIndx]['value']
-        //     });
-
-        //     this.levelList = this.removeDuplicates(this.levelList, "value");
-        // this.selection3 = [];
-        // this.levelList.forEach(item => {
-        //   this.selection3.push(item.value);
-        // });
-        //   }
-        // }
 
         if (this.filterData && this.filterData.vehicleGroups) {
           this.filterData["vehicleGroups"].forEach(element => {
@@ -1608,34 +1402,6 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
           this.filteredSelectGroups.next(vehicleGrps);
         }
 
-        // if (this.filterData && this.filterData.healthStatus) {
-        //   this.filterData["healthStatus"].forEach(e => {
-        //     if (item.vehicleHealthStatusType == e.value) {
-        //       item.vehicleHealthStatusType = this.translationData[e.name];
-        //       let statusName = this.translationData[e.name];
-        //       this.healthList.push({ 'name': statusName, 'value': e.value });
-        //     }
-        //   });
-        //   this.healthList = this.removeDuplicates(this.healthList, "value");
-        // }
-        // if (this.filterData && this.filterData.otherFilter) {
-        //   this.filterData["otherFilter"].forEach(element => {
-        //     if (item.vehicleDrivingStatusType == element.value) {
-        //       item.vehicleDrivingStatusType = this.translationData[element.name];
-        //       let statusName = this.translationData[element.name];
-        //       this.otherList.push({ 'name': statusName, 'value': element.value });
-        //     }
-        //   });
-        //   this.otherList = this.removeDuplicates(this.otherList, "value");
-        // }
-        // if (this.categoryList.length > 0) {
-        //   item.fleetOverviewAlert.forEach(e => {
-        //     let alertCategory = this.categoryList.filter((ele) => ele.value == e.categoryType);
-        //     if (alertCategory.length > 0) {
-        //       newAlertCat.push(...alertCategory);
-        //     }
-        //   });
-        // }
         if (this.filterData && this.filterData.healthStatus) {
           this.filterData["healthStatus"].forEach(e => {
             if (item.vehicleHealthStatusType == e.value) {
@@ -1652,54 +1418,11 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
           });
         }
       });
-      // this.categoryList = this.removeDuplicates(newAlertCat, "value");
-      // if(this.filterData){
-      // this.toggleAllSelectionAlertLevel();
-      // this.toggleAllSelectionAlertCategory();
-      // this.toggleAllSelectionHealth();
-      // this.toggleAllSelectionOther();
-      // }
+      
       this.firstClickData = data;
     }
   }
 
-  //Function Not Used
-  //   firstClickGetData(data){
-  //     if (data) {
-  //       let vehicleGrps = [];
-  //       data.forEach(item => {
-  //         data.forEach(item => {
-  //           if (this.filterData && this.filterData.vehicleGroups) {
-  //             this.filterData["vehicleGroups"].forEach(element => {
-  //               if (item.vin == element.vin) {
-  //                 vehicleGrps.push(element);
-  //               }
-  //             });
-  //             vehicleGrps = this.removeDuplicates(vehicleGrps, "vehicleGroupId");
-  //             this.filteredSelectGroups.next(vehicleGrps);
-  //           }
-  //           if (this.filterData && this.filterData.healthStatus) {
-  //             this.filterData["healthStatus"].forEach(e => {
-  //               if (item.vehicleHealthStatusType == e.value) {
-  //                 item.vehicleHealthStatusType = this.translationData[e.name];
-  //               }
-  //             });
-  //           }
-
-  //           if (this.filterData && this.filterData.otherFilter) {
-  //             this.filterData["otherFilter"].forEach(element => {
-  //               if (item.vehicleDrivingStatusType == element.value) {
-  //                 item.vehicleDrivingStatusType = this.translationData[element.name];
-  //               }
-  //             });
-  //           }
-  //     });
-  //     this.levelList.push({name: 'No Alert', value:'B'});
-  //     this.categoryList.push({name: 'No Alert', value:'B'});
-  //     this.firstClickData = data;
-  //   })
-  // }
-  //   }
 
   checkToHideFilter(item: any) {
     this.isVehicleDetails = item.vehicleDetailsFlag;
@@ -1717,8 +1440,6 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
     if (!this.todayFlagClicked) {
       this.getFilterData();
     }
-    // this.getFilterData();
-    //this.setDropdownValues(this.fleetData);
     this.isVehicleDetails = item.vehicleDetailsFlag;
     if (this.selectedIndex == 1) {
       if (item.hasOwnProperty('vehicleDetailsFlag') && !item.vehicleDetailsFlag) {
@@ -1730,7 +1451,6 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
       this.driverVehicleForm.get("driver").setValue('all');
       this.loadDriverData();
     } else {
-      //this.getFilterData();
       if (!(item.hasOwnProperty('isBackClick') && item.isBackClick === true)) {
         this.loadVehicleData();
       } else if (item.hasOwnProperty('isBackClick') && item.isBackClick === true) { // back from detail page
@@ -1743,15 +1463,10 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
         this.loadVehicleData();
       }
     }
-    // this.driverFlagClicked = true;
   }
 
   checkCreationForDriver(item: any) {
     this.driverFlagClicked = item.driverFlagClicked;
-    // this.todayFlagClicked  = true;
-    // this.getDriverData();
-    // this.loadVehicleData();
-    // this.loadDriverData();
   }
 
 
@@ -1792,76 +1507,22 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
     if (element.vehicleDrivingStatusType === 'D' || element.vehicleDrivingStatusType === 'Driving') {
       this.drivingStatus = false;
     }
-    // switch (element.vehicleHealthStatusType) {
-    //   case 'T': // stop now;
-    //     _healthStatus = 'Stop Now';
-    //     break;
-    //   case 'V': // service now;
-    //     _healthStatus = 'Service Now';
-    //     break;
-    //   case 'N': // no action;
-    //     _healthStatus = 'No Action';
-    //     break
-    //   default:
-    //     break;
-    // }
-    // switch (element.vehicleDrivingStatusType) {
-    //   case 'N':
-    //     _drivingStatus = 'Never Moved';
-    //     break;
-    //   case 'D':
-    //     _drivingStatus = 'Driving';
-    //     break;
-    //   case 'I': // no action;
-    //     _drivingStatus = 'Idle';
-    //     break;
-    //   case 'U': // no action;
-    //     _drivingStatus = 'Unknown';
-    //     break;
-    //   case 'S': // no action;
-    //     _drivingStatus = 'Stopped';
-    //     break
-
-    //   default:
-    //     break;
-    // }
+  
     let healthColor = '#606060';
     let _alertConfig = undefined;
     _drivingStatus = this.fleetMapService.getDrivingStatus(element, _drivingStatus);
     let obj = this.fleetMapService.getVehicleHealthStatusType(element, _healthStatus, healthColor, this.drivingStatus);
     _healthStatus = obj._healthStatus;
     healthColor = obj.healthColor;
-    // if (element.vehicleDrivingStatusType === 'D') {
-    //   _drivingStatus = true
-    // }
-    //   switch (element.vehicleHealthStatusType) {
-    //     case 'T': // stop now;
-    //       healthColor = '#D50017'; //red
-    //       break;
-    //     case 'V': // service now;
-    //       healthColor = '#FC5F01'; //orange
-    //       break;
-    //     case 'N': // no action;
-    //       // healthColor = '#606060'; //grey
-    //       healthColor = '#00AE10'; //green for no action
-    //     if (_drivingStatus) {
-    //       healthColor = '#00AE10'; //green
-    //     }
-    //     break
-    //   default:
-    //     break;
-    // }
+
     let _vehicleIcon: any;
     if (_drivingStatus) {
 
     }
-    // else{
     let _alertFound = undefined;
     let alertsData = [];
     if (element.fleetOverviewAlert.length > 0) {
-      // _alertFound = element.fleetOverviewAlert.find(item=>item.latitude == element.latestReceivedPositionLattitude && item.longitude == element.latestReceivedPositionLongitude)
       if (element.tripId != "" && element.liveFleetPosition.length > 0 && element.fleetOverviewAlert.length > 0) {
-        // _alertFound = element.fleetOverviewAlert.find(item=>item.time == element.latestProcessedMessageTimeStamp);
         _alertFound = element.fleetOverviewAlert.sort((x, y) => y.time - x.time);
         if (_alertFound) {
           alertsData.push(_alertFound);
@@ -1891,35 +1552,12 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
         let warningCount = 0;
         let advisoryCount = 0;
         alertsData[0].forEach(element => {
-          //   let _currentElem = element.fleetOverviewAlert.find(item=> item.level === 'C' && item.alertId === element.alertId);
-          //   if(_currentElem){
-          //     _alertConfig = this.getAlertConfig(element);
-          //   }
-          //   let warnElem = element.fleetOverviewAlert.find(item=> item.level === 'W' && item.alertId === element.alertId);
-          //   if(_currentElem == undefined && warnElem){
-          //     _alertConfig = this.getAlertConfig(element);
-          //   }
-          //  if(_currentElem == undefined && warnElem == undefined ){ //advisory
-          //     _alertConfig = this.getAlertConfig(element);
-          //   }
-          //--------------------------------------------------------------------------------------------------
-          // let _currentElem = element.level === 'C' ? true : false;
-          //   if(_currentElem){
-          //     _alertConfig = this.getAlertConfig(element);
-          //   }
-          //   let warnElem = element.level === 'W' ? true : false;
-          //   if(!_currentElem && warnElem){
-          //     _alertConfig = this.getAlertConfig(element);
-          //   }
-          //  if(!_currentElem && !warnElem){ //advisory
-          //     _alertConfig = this.getAlertConfig(element);
-          //   }
-
           criticalCount += element.level === 'C' ? 1 : 0;
           warningCount += element.level === 'W' ? 1 : 0;
           advisoryCount += element.level === 'A' ? 1 : 0;
 
         });
+        
         if (criticalCount > 0) {
           _alertConfig = this.getAlertConfig(alertsData[0].filter(item => item.level === 'C')[0]);
         }
@@ -1934,6 +1572,7 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
         _alertConfig = this.getAlertConfig(_alertFound[0]);
       }
     }
+
     if (_drivingStatus == "Unknown" || _drivingStatus == "Never Moved") {
       let obj = this.fleetMapService.setIconForUnknownOrNeverMoved(_alertFound, _drivingStatus, _healthStatus, _alertConfig);
       let data = obj.icon;
@@ -1941,7 +1580,6 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
     }
     else {
       if (_alertFound) {
-        // _alertConfig = this.getAlertConfig(_alertFound);
         _vehicleIcon = `<svg width="40" height="49" viewBox="0 0 40 49" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M32.5 24.75C32.5 37 16.75 47.5 16.75 47.5C16.75 47.5 1 37 1 24.75C1 20.5728 2.65937 16.5668 5.61307 13.6131C8.56677 10.6594 12.5728 9 16.75 9C20.9272 9 24.9332 10.6594 27.8869 13.6131C30.8406 16.5668 32.5 20.5728 32.5 24.75Z" stroke="${healthColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M16.75 46.625C24.1875 40.5 31.625 32.9652 31.625 24.75C31.625 16.5348 24.9652 9.875 16.75 9.875C8.53477 9.875 1.875 16.5348 1.875 24.75C1.875 32.9652 9.75 40.9375 16.75 46.625Z" fill="${healthColor}"/>
@@ -1994,8 +1632,6 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
       }
       return { icon: _vehicleIcon, alertConfig: _alertConfig };
     }
-    // }
-    //   return {icon: _vehicleIcon,alertConfig:_alertConfig};
   }
 
   getAlertConfig(_currentAlert) {
@@ -2003,6 +1639,7 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
     let _fillColor = '#D50017';
     let _level = 'Critical';
     let _type = '';
+    
     switch (_currentAlert.level) {
       case 'C': {
         _fillColor = '#D50017';
@@ -2022,6 +1659,7 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
       default:
         break;
     }
+
     switch (_currentAlert.categoryType) {
       case 'L': {
         _type = 'Logistics Alerts'
@@ -2033,7 +1671,6 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
         break;
       case 'R': {
         _type = 'Repair and Maintenance'
-
       }
         break;
       default:
@@ -2046,12 +1683,14 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
     if (!this.finalgroupList) {
       return;
     }
+
     if (!groupsearch) {
       this.resetSelectGroupFilter();
       return;
     } else {
       groupsearch = groupsearch.toLowerCase();
     }
+
     this.filteredSelectGroups.next(
       this.finalgroupList.filter(item => item.vehicleGroupName.toLowerCase().indexOf(groupsearch) > -1)
 
@@ -2059,26 +1698,21 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
   }
 
   filterSelectDrivers(driversearch) {
-
-
     if (driversearch == "") {
       this.driversListfilterGet = this.driverListDropFilter;
     }
+
     if (!this.driversListfilterGet) {
       return;
     }
+
     if (!driversearch) {
       this.resetDriverSearchFilter();
       return;
     } else {
       driversearch = driversearch.toLowerCase();
     }
-
     this.driversListfilterGet = this.driverListDropFilter.filter(item => item.driverName.toLowerCase().indexOf(driversearch) > -1);
-    // this.filteredDrivers.next(
-    //   //this.finalDriverList.filter(item => item.firstName.toLowerCase().indexOf(driversearch) > -1)
-    //   this.finalDriverList.filter(item => (item.firstName.toLowerCase() + ' ' + item.lastName.toLowerCase()).indexOf(driversearch) > -1)
-    //   );
   }
 
 }
