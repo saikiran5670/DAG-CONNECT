@@ -72,6 +72,7 @@ export class LoginComponent implements OnInit {
       // if(this.loginClicks == 0){//commenting this for facing issue multiple times login ,popup is not getting displayed.
         this.loginClicks = 1;
        this.authService.signIn(this.loginForm.value).subscribe((data:any) => {
+         localStorage.setItem('isLoginSetUser', 'true'); //For checking user login, to remove unwanted setuserselection call.
         this.hideLoader();
          ////console.log("data:: ", data)
          if(data.status === 200){
@@ -115,13 +116,13 @@ export class LoginComponent implements OnInit {
             }
 
                //this.cookiesFlag = true;
-            let sessionObject: any = {
-              accountId: data.body.accountInfo.id,
-              orgId:  data.body.accountOrganization[0].id,
-              roleId: data.body.accountRole[0].id
-            }
-            this.accountService.setUserSelection(sessionObject).subscribe((data) =>{
-            });
+            // let sessionObject: any = {
+            //   accountId: data.body.accountInfo.id,
+            //   orgId:  data.body.accountOrganization[0].id,
+            //   roleId: data.body.accountRole[0].id
+            // }
+            // this.accountService.setUserSelection(sessionObject).subscribe((data) =>{
+            // });
          }
          else if(data.status === 401){
           this.invalidUserMsg = true;
@@ -212,45 +213,59 @@ export class LoginComponent implements OnInit {
   }
 
   checkTermsAndConditions(data, accountDetails, accountPreference){
-    this.translationService.getLanguageCodes().subscribe(languageCodes => {
-      let objData = {
-        AccountId: data.accountInfo.id,
-        OrganizationId: localStorage.getItem("accountOrganizationId")
-      }  
-      this.translationService.checkUserAcceptedTaC(objData).subscribe(response => {
-        if(!response){ 
-          let langCode;
-          if(accountPreference && accountPreference !== ''){
-            let filterLang = languageCodes.filter(item => item.id == accountPreference["languageId"]);
-            langCode = filterLang[0].code;
-          } else {
-            langCode ='EN-GB';
-          }
-            let translationObj = {
-              id: 0,
-              code: langCode, //-- TODO: Lang code based on account 
-              type: "Menu",
-              name: "",
-              value: "",
-              filter: "",
-              menuId: 0 //-- for common & user preference
+    this.showLoadingIndicator=true;
+    let sessionObject: any = {
+      accountId: data.accountInfo.id,
+      orgId:  Number(localStorage.getItem('accountOrganizationId')),
+      roleId: Number(localStorage.getItem('accountRoleId'))
+    }
+    this.accountService.setUserSelection(sessionObject).subscribe(() =>{
+      this.translationService.getLanguageCodes().subscribe(languageCodes => {
+        let objData = {
+          AccountId: data.accountInfo.id,
+          OrganizationId: localStorage.getItem("accountOrganizationId")
+        }  
+        this.translationService.checkUserAcceptedTaC(objData).subscribe(response => {
+          if(!response){ 
+            let langCode;
+            if(accountPreference && accountPreference !== ''){
+              let filterLang = languageCodes.filter(item => item.id == accountPreference["languageId"]);
+              langCode = filterLang[0].code;
+            } else {
+              langCode ='EN-GB';
             }
-          this.translationService.getMenuTranslations(translationObj).subscribe( (resp) => {
-            this.processTranslation(resp);
-             this.openTermsConditionsPopup(data, accountDetails, accountPreference);
-            });
-        }
-        else{
-          if(this.result){
-          this.gotoDashBoard();
+              let translationObj = {
+                id: 0,
+                code: langCode, //-- TODO: Lang code based on account 
+                type: "Menu",
+                name: "",
+                value: "",
+                filter: "",
+                menuId: 0 //-- for common & user preference
+              }
+            this.translationService.getMenuTranslations(translationObj).subscribe( (resp) => {
+              this.processTranslation(resp);
+              this.openTermsConditionsPopup(data, accountDetails, accountPreference);
+              });
           }
           else{
-            this.dialogRefLogin.close();
+            if(this.result){
+            this.gotoDashBoard();
+            }
+            else{
+              this.dialogRefLogin.close();
+            }
           }
-        }
+          this.hideLoader();
+        }, (error) => {
+          this.hideLoader();
+          this.gotoDashBoard();
+        })  
       }, (error) => {
-        this.gotoDashBoard();
-      })  
+        this.hideLoader();
+      });
+    }, (error) => {
+      this.hideLoader();
     });
   }
 
@@ -270,13 +285,13 @@ export class LoginComponent implements OnInit {
         accountDetail: this.data.accountDetail,
         accountPreference: this.data.accountPreference
       }
-      let sessionObject: any = {
-        accountId:  this.data.accountDetail.id,
-        orgId: this.result.organization,
-        roleId: this.result.role
-      }
-      this.accountService.setUserSelection(sessionObject).subscribe((data) =>{
-      });
+      // let sessionObject: any = {
+      //   accountId:  this.data.accountDetail.id,
+      //   orgId: this.result.organization,
+      //   roleId: this.result.role
+      // }
+      // this.accountService.setUserSelection(sessionObject).subscribe((data) =>{
+      // });
       localStorage.setItem("accountInfo", JSON.stringify(loginDetailsObj));
       this.dataInterchangeService.getDataInterface(true);
       this.dataInterchangeService.getOrgRoleInterface(this.data);
