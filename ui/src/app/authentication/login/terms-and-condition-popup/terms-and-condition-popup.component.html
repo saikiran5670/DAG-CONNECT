@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<div>
+    <div fxLayout="row" fxLayoutAlign="start space-around"
+        class="header">
+        <div class='full-width' fxLayout="row"  fxLayoutAlign="left">
+            <h3 style="width: 50%">Cookies Notice</h3>
+            <mat-icon style="text-align: right; width: 50%; cursor: pointer;"(click)='onCancel()'>clear</mat-icon>
+              </div>
+    </div>
+</div>
+
+<body>
+    <div class="intro">
+    <h3 class="font">Introduction</h3>
+    <span>To make this website work properly, and to provide the most relevant products and services to our site
+        visitors, we place small data files called cookies on your device. This policy provides you with information
+        about cookies and how to control them for this website. </span>
+    <h3 class="font">What is a cookie?</h3>
+    <p>A cookie is a small text file that a website saves on your computer or mobile device when you visit the website.
+        Cookies are then sent back to the originating website on each subsequent visit, or to another website that
+        recognizes that cookie, to develop a record of the user’s online activity. Cookies on this site may be delivered
+        in a first-party (set by this website) or third-party (set by another website) context and may also be set in
+        association with e-newsletters you receive from us. </p>
+    <p>Cookies help us enhance your experience when using the website. They also help us understand how people use our
+        site, such as which pages are most popular, so that we can better serve our site users. </p>
+    <h3 class="fontNew">Types of cookies </h3>
+    <h4 class="fontNew">Functional cookies: </h4>
+    <p>Functional cookies help make a website usable by enabling basic functions like page navigation. The website
+        cannot function properly without these cookies. These cookies do not gather information about you that could be
+        used for marketing purposes and do not remember where you have been on the internet. This category of cookies
+        cannot be disabled. </p>
+
+        <mat-table [dataSource]="dataSource" class="table-items" matSort>
+            <ng-container *ngFor="let disCol of data.colsList; let colIndex = index" matColumnDef="{{disCol}}">
+              <div *ngIf="disCol == 'cookie'">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ data.colsName[colIndex] }}</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{ element.cookie}}</mat-cell>
+              </div>
+              <div *ngIf="disCol == 'source'">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ data.colsName[colIndex] }}</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{ element.source}}</mat-cell>
+              </div>
+              <div *ngIf="disCol == 'expiry'">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ data.colsName[colIndex] }}</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{ element.expiry }}</mat-cell>
+              </div>
+              <div *ngIf="disCol == 'purpose'">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ data.colsName[colIndex] }}</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{ element.purpose }}</mat-cell>
+              </div>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="data.colsList"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: data.colsList;">
+            </mat-row>
+          </mat-table>
+        
+    <p class="block">If you choose to block cookies on this site, you will still be able to visit the website. However, it is possible
+        that you may not be able to use all of the sections or features of the website. </p>
+    <p>If you would prefer not to receive any cookies whatsoever, you can also customise your Internet browser settings
+        to completely block any sites from placing cookies on your computer. You can find out how to do this using your
+        browser's help function.</p>
+    <p>Version, 26 May 2022 </p>
+
+</div>
+<footer>
+    <div class="button">
+        <button type="button" class='margin-right-10' mat-raised-button color="warn"
+            (click)='onCancel()'>Cancel</button>
+        <button mat-raised-button color="primary" (click)='acceptLoginClicked()'>Accept To Login</button>
+    </div>
+</footer>
+</body>
+
+</html>
