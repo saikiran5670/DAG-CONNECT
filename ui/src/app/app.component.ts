@@ -1137,14 +1137,19 @@ export class AppComponent {
       if (refreshPage && this.orgContextType) { // page refresh
         this.getNavigationMenu();
       } else { // login & org/role change 
-        let sessionObject: any = {
-          accountId: parseInt(localStorage.getItem('accountId')),
-          orgId: parseInt(localStorage.getItem('accountOrganizationId')),
-          roleId: parseInt(localStorage.getItem('accountRoleId')),
-        }
-        this.accountService.setUserSelection(sessionObject).subscribe((data) => {
+        if(localStorage.getItem('isLoginSetUser') == 'false'){
+          let sessionObject: any = {
+            accountId: parseInt(localStorage.getItem('accountId')),
+            orgId: parseInt(localStorage.getItem('accountOrganizationId')),
+            roleId: parseInt(localStorage.getItem('accountRoleId')),
+          }
+          this.accountService.setUserSelection(sessionObject).subscribe((data) => {
+            this.getNavigationMenu();
+          }, (error) => { });
+        } else {
           this.getNavigationMenu();
-        }, (error) => { });
+          localStorage.setItem('isLoginSetUser', 'false');
+        }
       }
     }
   }
