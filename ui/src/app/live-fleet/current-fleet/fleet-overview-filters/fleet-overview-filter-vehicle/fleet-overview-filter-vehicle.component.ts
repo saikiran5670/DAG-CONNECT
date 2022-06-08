@@ -69,7 +69,6 @@ ngAfterViewInit(){
   openVehicleDetails(data: any){
     this.isVehicleDetails = true;
     this.selectedElementData = data;
-    this.selectedElementData.todayFlag= this.todayFlagClicked;
     this.tabvisibility.emit(false);
     let obj ={
       vehicleDetailsFlag : this.isVehicleDetails
