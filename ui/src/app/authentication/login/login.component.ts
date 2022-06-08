@@ -11,6 +11,7 @@ import { DataInterchangeService } from 'src/app/services/data-interchange.servic
 import { TermsConditionsPopupComponent } from 'src/app/terms-conditions-content/terms-conditions-popup.component';
 import { TranslationService } from 'src/app/services/translation.service';
 import { OrganizationService } from 'src/app/services/organization.service';
+import { TermsAndConditionPopupComponent } from './terms-and-condition-popup/terms-and-condition-popup.component';
 
 export interface Organization {
   id: number ;
@@ -44,6 +45,7 @@ export class LoginComponent implements OnInit {
   showLoadingIndicator: any = false;
   resetPwdOnedayFlag : boolean = false;
   resetPwdOnedayMsg : string = '';
+  dialogRef: MatDialogRef<TermsAndConditionPopupComponent>;
 
   constructor(private cookieService: CookieService, public fb: FormBuilder, public router: Router, public authService: AuthService, private dialogService: ConfirmDialogService, private dialog: MatDialog, private accountService: AccountService, private dataInterchangeService: DataInterchangeService, private translationService: TranslationService, private organizationService: OrganizationService) {
     this.loginForm = this.fb.group({
@@ -159,6 +161,63 @@ export class LoginComponent implements OnInit {
       //  }
        //------------------------//
     }
+  }
+
+  termsAndConditionPopup(){
+    let cookieData=[{
+      cookie: 'Local Storage',
+      source: 'This Website',
+      expiry: 'Session',
+      purpose: 'To support the website performance'
+    },
+    {
+      cookie: 'Account',
+      source: 'This Website',
+      expiry: 'Session',
+      purpose: 'To support the website performance'
+    },
+    {
+      cookie: 'AspNetCore.Session',
+      source: 'This Website',
+      expiry: 'Session',
+      purpose: 'To support the website performance'
+    },
+    {
+      cookie: '_4623f',
+      source: 'This Website',
+      expiry: 'Session',
+      purpose: 'To support the website performance'
+    },
+    {
+      cookie: '_28d01',
+      source: 'This Website',
+      expiry: 'Session',
+      purpose: 'To support the website performance'
+    },
+    {
+      cookie: 'cookiePolicy',
+      source: 'This Website',
+      expiry: 'Session',
+      purpose: 'To support the website performance'
+    },
+  ];
+    const colsList = ['cookie','source','expiry','purpose'];
+    const colsName =['Cookie name', 'Source', 'Expiry', 'Purpose'];
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.maxHeight = '90vh';
+    dialogConfig.data = {
+      tableData: cookieData,
+      colsList: colsList,
+      colsName:colsName,
+    }
+    this.dialogRef = this.dialog.open(TermsAndConditionPopupComponent, dialogConfig);
+    this.dialogRef.afterClosed().subscribe((res: any) => {
+        if(res){
+          this.acceptCookies();
+        }
+    });
   }
 
   openOrgRolePopup(data){
