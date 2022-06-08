@@ -1,16 +1,13 @@
-<!DOCTYPE html>
-<html>
 <div>
     <div fxLayout="row" fxLayoutAlign="start space-around"
         class="header">
         <div class='full-width' fxLayout="row"  fxLayoutAlign="left">
-            <h3 style="width: 50%">Cookies Notice</h3>
+            <h3>Cookies Notice</h3>
             <mat-icon style="text-align: right; width: 50%; cursor: pointer;"(click)='onCancel()'>clear</mat-icon>
               </div>
     </div>
 </div>
 
-<body>
     <div class="intro">
     <h3 class="font">Introduction</h3>
     <span>To make this website work properly, and to provide the most relevant products and services to our site
@@ -30,6 +27,26 @@
         cannot function properly without these cookies. These cookies do not gather information about you that could be
         used for marketing purposes and do not remember where you have been on the internet. This category of cookies
         cannot be disabled. </p>
+        <p>Functional cookies help make a website usable by enabling basic functions like page navigation. The website
+          cannot function properly without these cookies. These cookies do not gather information about you that could be
+          used for marketing purposes and do not remember where you have been on the internet. This category of cookies
+          cannot be disabled. </p>
+          <p>Functional cookies help make a website usable by enabling basic functions like page navigation. The website
+            cannot function properly without these cookies. These cookies do not gather information about you that could be
+            used for marketing purposes and do not remember where you have been on the internet. This category of cookies
+            cannot be disabled. </p>
+            <p>Functional cookies help make a website usable by enabling basic functions like page navigation. The website
+              cannot function properly without these cookies. These cookies do not gather information about you that could be
+              used for marketing purposes and do not remember where you have been on the internet. This category of cookies
+              cannot be disabled. </p>
+              <p>Functional cookies help make a website usable by enabling basic functions like page navigation. The website
+                cannot function properly without these cookies. These cookies do not gather information about you that could be
+                used for marketing purposes and do not remember where you have been on the internet. This category of cookies
+                cannot be disabled. </p>
+                <p>Functional cookies help make a website usable by enabling basic functions like page navigation. The website
+                  cannot function properly without these cookies. These cookies do not gather information about you that could be
+                  used for marketing purposes and do not remember where you have been on the internet. This category of cookies
+                  cannot be disabled. </p>
 
         <mat-table [dataSource]="dataSource" class="table-items" matSort>
             <ng-container *ngFor="let disCol of data.colsList; let colIndex = index" matColumnDef="{{disCol}}">
@@ -63,13 +80,10 @@
     <p>Version, 26 May 2022 </p>
 
 </div>
-<footer>
+<footer class="cookieFoot">
     <div class="button">
         <button type="button" class='margin-right-10' mat-raised-button color="warn"
             (click)='onCancel()'>Cancel</button>
         <button mat-raised-button color="primary" (click)='acceptLoginClicked()'>Accept To Login</button>
     </div>
 </footer>
-</body>
-
-</html>
