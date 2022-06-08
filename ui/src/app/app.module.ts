@@ -44,6 +44,7 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { SignalrAlertNotificationComponent } from './signalr-alert-notification/signalr-alert-notification.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { OriginService } from './services/origin.service';
 
 
 
@@ -80,7 +81,8 @@ export function configFactory(httpClient: HttpClient): ConfigLoader {
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AppInterceptor, multi: true },
-    { provide: LocationStrategy, useClass: HashLocationStrategy },  
+    { provide: LocationStrategy, useClass: HashLocationStrategy }, 
+    OriginService,
     SessionDialogService,
     DataInterchangeService,
     AccountService,
