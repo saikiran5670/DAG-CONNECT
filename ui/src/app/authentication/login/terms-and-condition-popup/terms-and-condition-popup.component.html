@@ -27,43 +27,23 @@
         cannot function properly without these cookies. These cookies do not gather information about you that could be
         used for marketing purposes and do not remember where you have been on the internet. This category of cookies
         cannot be disabled. </p>
-        <p>Functional cookies help make a website usable by enabling basic functions like page navigation. The website
-          cannot function properly without these cookies. These cookies do not gather information about you that could be
-          used for marketing purposes and do not remember where you have been on the internet. This category of cookies
-          cannot be disabled. </p>
-          <p>Functional cookies help make a website usable by enabling basic functions like page navigation. The website
-            cannot function properly without these cookies. These cookies do not gather information about you that could be
-            used for marketing purposes and do not remember where you have been on the internet. This category of cookies
-            cannot be disabled. </p>
-            <p>Functional cookies help make a website usable by enabling basic functions like page navigation. The website
-              cannot function properly without these cookies. These cookies do not gather information about you that could be
-              used for marketing purposes and do not remember where you have been on the internet. This category of cookies
-              cannot be disabled. </p>
-              <p>Functional cookies help make a website usable by enabling basic functions like page navigation. The website
-                cannot function properly without these cookies. These cookies do not gather information about you that could be
-                used for marketing purposes and do not remember where you have been on the internet. This category of cookies
-                cannot be disabled. </p>
-                <p>Functional cookies help make a website usable by enabling basic functions like page navigation. The website
-                  cannot function properly without these cookies. These cookies do not gather information about you that could be
-                  used for marketing purposes and do not remember where you have been on the internet. This category of cookies
-                  cannot be disabled. </p>
 
-        <mat-table [dataSource]="dataSource" class="table-items" matSort>
+        <mat-table [dataSource]="dataSource" class="table-items">
             <ng-container *ngFor="let disCol of data.colsList; let colIndex = index" matColumnDef="{{disCol}}">
               <div *ngIf="disCol == 'cookie'">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ data.colsName[colIndex] }}</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef >{{ data.colsName[colIndex] }}</mat-header-cell>
                 <mat-cell *matCellDef="let element">{{ element.cookie}}</mat-cell>
               </div>
               <div *ngIf="disCol == 'source'">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ data.colsName[colIndex] }}</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef >{{ data.colsName[colIndex] }}</mat-header-cell>
                 <mat-cell *matCellDef="let element">{{ element.source}}</mat-cell>
               </div>
               <div *ngIf="disCol == 'expiry'">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ data.colsName[colIndex] }}</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef >{{ data.colsName[colIndex] }}</mat-header-cell>
                 <mat-cell *matCellDef="let element">{{ element.expiry }}</mat-cell>
               </div>
               <div *ngIf="disCol == 'purpose'">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ data.colsName[colIndex] }}</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef >{{ data.colsName[colIndex] }}</mat-header-cell>
                 <mat-cell *matCellDef="let element">{{ element.purpose }}</mat-cell>
               </div>
             </ng-container>
