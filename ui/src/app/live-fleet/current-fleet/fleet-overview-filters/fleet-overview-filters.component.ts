@@ -1318,6 +1318,7 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
     }
     let vehicleGroupSel = this.groupList.filter((elem) => elem.vehicleId === this.filterVehicleForm.get("group").value);
     this.getFleetOverviewDetails = this.reportService.getFleetOverviewDetails(this.objData).subscribe((fleetdata: any) => {
+      this.showLoadingIndicator=false;
       let data = fleetdata.fleetOverviewDetailList;//this.fleetMapService.processedLiveFLeetData(fleetdata.fleetOverviewDetailList);
       this.fleetData = data
       if(fleetdata && fleetdata.vehicleGroups && fleetdata.vehicleGroups.length > 0){
@@ -1357,9 +1358,9 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
       if (data.length > 0) {
         this.noRecordFlag = false;
       }
-      if(this.fleetData && this.fleetData.length > 0){
-      this.showLoadingIndicator = false;
-      }
+      // if(this.fleetData && this.fleetData.length > 0){
+      // this.showLoadingIndicator = false;
+      // }
       this.applyFilter(this.filterVehicleForm.controls.vehicleSearch.value)
     }, (error) => {
       this.getFleetOverviewDetails.unsubscribe();
