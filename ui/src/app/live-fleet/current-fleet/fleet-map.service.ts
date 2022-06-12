@@ -1289,8 +1289,16 @@ export class FleetMapService {
   validateLatLng(lat, lng) {
     // let pattern = new RegExp('^-?([1-8]?[1-9]|[1-9]0)\\.{1}\\d{1,6}');
     // return pattern.test(lat) && pattern.test(lng);
-    let flag: any = (lat >= -90 && lat <= 90) && (lng >= -180 && lng <= 180);
-    return flag ? true : false;
+    if(lat == null || lng == null 
+      || (lat == 0 && lng == 0) 
+      || lat == 255 || lng == 255 
+      || lat < -90 || lat > 90 
+      || lng < -180 || lng > 180){
+        return false;
+    }
+    return true;
+    // let flag: any = (lat >= -90 && lat <= 90) && (lng >= -180 && lng <= 180);
+    // return flag ? true : false;
   }
 
   setIconsOnMap(element, _ui) {

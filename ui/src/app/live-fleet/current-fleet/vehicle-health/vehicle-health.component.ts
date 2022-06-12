@@ -696,14 +696,15 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
     }
     this.onSearch();
   }
-  
+  overallVehHealthStatusType: string = '';
   getWarningData(warningdata) {
     if(this.getvehiclehealthstatusservicecall) {
       this.getvehiclehealthstatusservicecall.unsubscribe();
     }
     this.showLoadingIndicator=true;
-    this.getvehiclehealthstatusservicecall = this.reportService.getvehiclehealthstatus(this.healthData.vin, this.localStLanguage.code, warningdata).subscribe((res) => {      
-      let healthStatusData = res;
+    this.getvehiclehealthstatusservicecall = this.reportService.getvehiclehealthstatus(this.healthData.vin, this.localStLanguage.code, warningdata).subscribe((res: any) => {      
+      let healthStatusData = res.vehicleHealthStatus;
+      this.overallVehHealthStatusType = res.warningVehicleHealthStatusType;
       let deactiveActiveData=[];
       let healthStatusActiveData=healthStatusData.filter(item => item.warningType== "A");
       healthStatusData.forEach((element,index) => {
@@ -971,7 +972,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
     if (element.warningVehicleDrivingStatusType === 'D' || element.warningVehicleDrivingStatusType === 'Driving') {
       _drivingStatus = true
     }
-    switch (element.warningVehicleHealthStatusType) {
+    switch (this.overallVehHealthStatusType) {
       case 'T': // stop now;
       case 'Stop Now':
         healthColor = '#D50017'; //red

@@ -720,7 +720,7 @@ if(!this._state){
 
   }
 
-  if(this.showBack && this.selectionTab == 'today'){
+  if(this._state && this.selectionTab == 'today'){
   if(this._state && this._state.fromDashboard == true && this._state.logisticFlag == true){
     this.logBookForm.get('alertCategory').setValue("L");
   }
@@ -2340,8 +2340,10 @@ let prepare = []
   else{
       let icon = new H.map.Icon(_vehicleMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
       this.vehicleIconMarker = new H.map.Marker({ lat:markerPositionLat, lng:markerPositionLng},{ icon:icon });
-
-      this.mapGroup.addObject(this.vehicleIconMarker);
+      let _checkValidLatLong = this.fleetMapService.validateLatLng(elem.latitude, elem.longitude);
+      if (_checkValidLatLong) {
+        this.mapGroup.addObject(this.vehicleIconMarker);
+      }
   }
       let iconBubble;
       let vehicleDisplayPref = '';
