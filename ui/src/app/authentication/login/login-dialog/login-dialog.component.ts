@@ -60,6 +60,7 @@ export class LoginDialogComponent {
 
   filterOrgRoles(orgId: any) {
     if(orgId) this.orgID = Number(orgId);
+    localStorage.setItem("accountOrganizationId", orgId);
     if (this.data.role.length > 0) { //-- (Roles > 0) 
       let filterRoles = this.data.role.filter(item => parseInt(item.organization_Id) === parseInt(orgId));
 
@@ -68,6 +69,7 @@ export class LoginDialogComponent {
         this.loginDialogForm.get('role').setValue(this.selectedRoles[0].id);
         let selectedRoleLevel = this.selectedRoles[0].level;
         localStorage.setItem('roleLevel', selectedRoleLevel);
+        localStorage.setItem('accountRoleId', this.selectedRoles[0].id);
       }
       else {
         this.selectedRoles = [];
@@ -81,6 +83,7 @@ export class LoginDialogComponent {
       if (filterRoles) {
         this.loginDialogForm.get('role').setValue(filterRoles.id);
         localStorage.setItem('roleLevel', filterRoles.level);
+        localStorage.setItem('accountRoleId', filterRoles.id);
       }
       else {
         this.selectedRoles = [];

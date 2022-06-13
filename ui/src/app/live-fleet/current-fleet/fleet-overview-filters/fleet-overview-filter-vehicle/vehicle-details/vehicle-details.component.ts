@@ -21,6 +21,7 @@ export class VehicleDetailsComponent implements OnInit {
   @Input() categoryList: any;
   @Input() vehInfoPrefData: any;
   @Input() todayFlagClicked: any;
+  @Input() vehicleGroupData: any;
   vehicleGroups: any;
   vehicleGroupId: any;
   gridData: any = [];
@@ -163,8 +164,28 @@ export class VehicleDetailsComponent implements OnInit {
     this.dataInterchangeService.gethealthDetails(this.selectedElementData);
   }
 
+  getVinObj(chngs) {
+    let arr = [];
+    chngs.forEach(item => {
+      item.vehicleGroupDetails.split("||").forEach(val => {
+        let vgGroupDetail = val.split('~');
+        
+        if (vgGroupDetail[2] != 'S') {
+          arr.push({
+            "vehicleGroupId": (vgGroupDetail[0] && vgGroupDetail[0] != '') ? parseInt(vgGroupDetail[0]) : 0,
+            "vehicleGroupName": vgGroupDetail[1],
+            "vehicleId": parseInt(item.vehicleId),
+            'vin': item.vin
+          });
+        };
+
+      });
+    });
+    return arr;
+  }
+
   gotoLogBook(){
-    this.vehicleGroups =this.filterData.vehicleGroups;   
+    this.vehicleGroups =this.getVinObj(this.vehicleGroupData);
     for(let i=0; i< this.vehicleGroups.length; i++)
     {
       if(this.vehicleGroups[i].vin == this.selectedElementData.vin)
@@ -191,5 +212,6 @@ export class VehicleDetailsComponent implements OnInit {
     };
     this.router.navigate(['fleetoverview/logbook'], navigationExtras);
   }
-
 }
+
+

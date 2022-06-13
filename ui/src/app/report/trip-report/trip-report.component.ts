@@ -1014,14 +1014,12 @@ export class TripReportComponent implements OnInit, OnDestroy {
       this.selectedTrip.clear();
       this.reportMapService.viewSelectedRoutes(this.translationData, this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr, this.alertsChecked);
       this.showMap = false;
-      this.allTripSelectedFlag = false;
       this.liveFleetPositionreqObj.tripIds = [];
     }
     else {
       this.dataSource.data.slice(0, this.pageSize).forEach((row) => {
         this.selectedTrip.select(row);
         this.tripTraceArray.push(row);
-        this.allTripSelectedFlag = true;
       });
       this.liveFleetPositionreqObj.tripIds = [];
       this.tripTraceArray.forEach(item => {
@@ -1037,6 +1035,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
   isAllSelectedForTrip() {
     const numSelected = this.selectedTrip.selected.length;
     const numRows = this.pageSize;
+    this.allTripSelectedFlag = numSelected === numRows;
     return numSelected === numRows;
   }
 
@@ -1099,7 +1098,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
   getLiveFleePositionData(tripData: any) {
     this.showLoadingIndicator = true;
     this.reportService.getLiveFleetPositions(tripData).subscribe((data: any) => {
-      if (data && data.trips.length > 0) {
+      if (data && data.trips && data.trips.length > 0) {
         data.trips.forEach(trip => {
           this.tripTraceArray.forEach(item => {
             if (trip.tripId == item.tripId) {
@@ -1107,6 +1106,8 @@ export class TripReportComponent implements OnInit, OnDestroy {
             }
           })
         })
+      } else{
+        this.hideloader();
       }
 
       let _ui = this.reportMapService.getUI();
