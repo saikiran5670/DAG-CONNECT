@@ -279,13 +279,12 @@ Refer : https://styleguide.daf.com/en/guidelines-for-developers/use-of-colors
     // height: 610px;
     height: calc(100vh - 48px) !important;
     max-width: 100%;
-    background-image: url(assets/images/DAF-Background.jpg); 
-        background-repeat: no-repeat; 
-        // background-size: 100% 100%;
-        background-size: cover;
-        // background: url(assets/images/DAF-login-background.jpg) no-repeat center fixed;
-        //background-size:cover;
-        background-position: fixed !important;
+    background-repeat: no-repeat;
+    // background-size: 100% 100%;
+    background-size: cover;
+    // background: url(assets/images/DAF-login-background.jpg) no-repeat center fixed;
+    //background-size:cover;
+    background-position: fixed !important;
         background-attachment: fixed !important;
         background-position-x: center;
         background-position-y: center;
@@ -297,11 +296,10 @@ Refer : https://styleguide.daf.com/en/guidelines-for-developers/use-of-colors
         }
     }
     .txtContainer{ 
-        padding: 0px 24px 0px 0px; 
+        padding: 24px;
         height: 100%;       
         .loginTxtContainer{
-            width:390px; 
-            padding: 32px; 
+            padding: 32px;
             background: #f1f1f1;
             .invalidMsgContainer{
                 color: #f44336;
@@ -1593,4 +1591,127 @@ mat-card, mat-expansion-panel, mat-expansion-panel-header, mat-panel-title, .mat
 
 .mat-flat-button{
     font-family: 'Helvetica Neue LT Std-Md', 'Arial' !important;
+}
+//-----Temp Login page changes------//
+@media screen and (max-width: 1000px) {
+    .loginPageContainer {
+        background-image: url(assets/images/DAF-Background-Tab.jpg);
+
+        .welcome-msg {
+            width: 94%;
+            right: 24px;
+            left: 24px;
+        }
+
+        .loginTxtContainer {
+            width: 100%;
+            top: 25px;
+            position: relative;
+
+            .login-logo-img {
+                width: 250px;
+            }
+        }
+    }
+
+    footer {
+        .cookieContainer {
+            margin-right: 20px;
+            padding: 0px 24px 0px 24px;
+
+            .accept-login-msg {
+                font-size: small;
+                line-height: 0.8;
+                left: 5px;
+                position: relative;
+                display: block;
+            }
+        }
+
+        .loginFooter {
+            a {
+                line-height: normal;
+            }
+
+            .footer-logo-img {
+                width: 250px;
+            }
+
+            .footer-support-msg {
+                position: relative;
+                bottom: 7px;
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 1100px) and (min-width: 600px) and (orientation: landscape) {
+    .loginPageContainer {
+        background-image: url(assets/images/DAF-Background-Landscape.jpg);
+
+        .welcome-msg {
+            width: 510px;
+            right: 24px;
+        }
+
+        .loginTxtContainer {
+            width: 390px;
+            top: 25px;
+            position: relative;
+        }
+    }
+
+    footer {
+        .cookieContainer {
+            margin-right: 20px;
+        }
+
+        .loginFooter {
+            a {
+                line-height: normal;
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 1500px) and (min-width: 1100px) {
+    .loginPageContainer {
+        background-image: url(assets/images/DAF-Background.jpg);
+
+        .welcome-msg {
+            width: 510px;
+            right: 24px;
+        }
+
+        .loginTxtContainer {
+            width: 390px;
+        }
+    }
+
+    footer {
+        .cookieContainer {
+            margin-right: 100px;
+        }
+    }
+}
+
+@media screen and (min-width: 1500px) {
+    .loginPageContainer {
+        background-image: url(assets/images/DAF-Background.jpg);
+
+        .welcome-msg {
+            width: 479px;
+            right: 24px;
+        }
+
+        .loginTxtContainer {
+            width: 390px;
+        }
+    }
+
+    footer {
+        .cookieContainer {
+            margin-right: 100px;
+        }
+    }
 }
