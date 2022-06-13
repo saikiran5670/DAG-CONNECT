@@ -301,6 +301,7 @@
             </div>
             <mat-paginator class="full-width"  fxLayoutAlign="left" *ngIf="obs" [pageSize]="3" [pageSizeOptions]="[3, 9, 15, 30]"></mat-paginator>
           </div>
+          <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
         </mat-expansion-panel>
       </mat-card>
       </div>
