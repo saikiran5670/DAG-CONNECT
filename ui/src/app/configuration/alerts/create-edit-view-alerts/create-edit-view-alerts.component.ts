@@ -1334,8 +1334,8 @@ PoiCheckboxClicked(event: any, row: any) {
       else if(element.type == "O"){
         this.polyPoints = [];
         element.nodes.forEach(item => {
-        this.polyPoints.push(item.latitude.toFixed(4));
-        this.polyPoints.push(item.longitude.toFixed(4));
+        this.polyPoints.push(Number(item.latitude.toFixed(4)));
+        this.polyPoints.push(Number(item.longitude.toFixed(4)));
         this.polyPoints.push(0);
         });
         this.createResizablePolygon(this.map,this.polyPoints,this,this.ui, element);
@@ -1373,8 +1373,8 @@ PoiCheckboxClicked(event: any, row: any) {
       else{
         this.polyPoints = [];
         element.nodes.forEach(item => {
-        this.polyPoints.push(item.latitude);
-        this.polyPoints.push(item.longitude);
+        this.polyPoints.push(Number(item.latitude));
+        this.polyPoints.push(Number(item.longitude));
         this.polyPoints.push(0);
         });
         this.createResizablePolygon(this.map,this.polyPoints,this,this.ui, element);

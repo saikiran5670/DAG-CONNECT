@@ -646,8 +646,8 @@ export class AlertAdvancedFilterComponent implements OnInit {
         else if(element.type == "O"){
           this.polyPoints = [];
           element.nodes.forEach(item => {
-          this.polyPoints.push(item.latitude.toFixed(4));
-          this.polyPoints.push(item.longitude.toFixed(4));
+          this.polyPoints.push(Number(item.latitude.toFixed(4)));
+          this.polyPoints.push(Number(item.longitude.toFixed(4)));
           this.polyPoints.push(0);
           });
           this.createResizablePolygon(this.map,this.polyPoints,this,this.ui, element);
@@ -925,8 +925,8 @@ export class AlertAdvancedFilterComponent implements OnInit {
           else{
             this.polyPoints = [];
             element.nodes.forEach(item => {
-            this.polyPoints.push(item.latitude.toFixed(4));
-            this.polyPoints.push(item.longitude.toFixed(4));
+            this.polyPoints.push(Number(item.latitude.toFixed(4)));
+            this.polyPoints.push(Number(item.longitude.toFixed(4)));
             this.polyPoints.push(0);
             });
             this.createResizablePolygon(this.map,this.polyPoints,this, this.ui, element);
