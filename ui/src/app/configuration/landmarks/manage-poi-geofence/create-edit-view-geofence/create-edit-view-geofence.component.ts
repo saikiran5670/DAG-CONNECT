@@ -672,8 +672,8 @@ export class CreateEditViewGeofenceComponent implements OnInit {
                 evt.currentPointer.viewportY);
         if(!thisRef.isPolyCreated && pointsArray.length <= 30000){ //-- Min-3 & Max-10000
           nodeNo++;
-          let x = coord.lat.toFixed(4);
-          let y = coord.lng.toFixed(4);
+          let x = Number(coord.lat.toFixed(4));
+          let y = Number(coord.lng.toFixed(4));
           pointsArray.push(x);
           pointsArray.push(y);
           pointsArray.push(0);
@@ -705,7 +705,7 @@ export class CreateEditViewGeofenceComponent implements OnInit {
           '</svg>';
           //let icon = new H.map.Icon(markup.replace('${COLOR}', '#55b242'));
           let icon = new H.map.Icon(locMarkup, {anchor: {x: 10, y: 10}});
-          let marker = new H.map.Marker({ lat: coord.lat.toFixed(4), lng: coord.lng.toFixed(4) }, { icon: icon });
+          let marker = new H.map.Marker({ lat: Number(coord.lat.toFixed(4)), lng: Number(coord.lng.toFixed(4)) }, { icon: icon });
           map.addObject(marker);
         }
 
@@ -840,8 +840,8 @@ export class CreateEditViewGeofenceComponent implements OnInit {
     if(this.actionType == 'view' || this.actionType == 'edit'){
       this.polyPoints = [];
       this.selectedElementData.nodes.forEach(element => {
-        this.polyPoints.push(element.latitude.toFixed(4));
-        this.polyPoints.push(element.longitude.toFixed(4));
+        this.polyPoints.push(Number(element.latitude.toFixed(4)));
+        this.polyPoints.push(Number(element.longitude.toFixed(4)));
         this.polyPoints.push(0);
       });
     }
