@@ -343,8 +343,8 @@ export class ManagePoiGeofenceComponent implements OnInit {
       else{ //-- add polygon geofence on map
         let polyPoints: any = [];
         element.nodes.forEach(item => {
-          polyPoints.push(Math.abs(item.latitude));
-          polyPoints.push(Math.abs(item.longitude));
+          polyPoints.push(item.latitude);
+          polyPoints.push(item.longitude);
           polyPoints.push(0);
         });
         this.createResizablePolygon(this.map, polyPoints, this,this.ui, element);
