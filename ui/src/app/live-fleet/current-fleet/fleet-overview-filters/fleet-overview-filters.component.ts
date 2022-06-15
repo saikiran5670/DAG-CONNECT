@@ -120,8 +120,6 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
   }
 
   ngOnDestroy() {
-    this.getFleetOverviewDetails = undefined;
-    this.getFleetOverviewDetails.unsubscribe();
     this.subscription.unsubscribe();
   }
 
