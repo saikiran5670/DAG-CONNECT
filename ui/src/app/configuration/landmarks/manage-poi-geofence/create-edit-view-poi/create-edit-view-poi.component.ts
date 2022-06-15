@@ -313,8 +313,8 @@ this.map.setZoom(14);
     }
     var coord = map.screenToGeo(evt.currentPointer.viewportX,
       evt.currentPointer.viewportY);
-    let x = Math.abs(coord.lat.toFixed(4));
-    let y = Math.abs(coord.lng.toFixed(4));
+    let x = Number(coord.lat.toFixed(4));
+    let y = Number(coord.lng.toFixed(4));
     this.actualLattitude = x;
     this.actuallongitude = y;
     ////console.log("latitude=" + x);
@@ -364,8 +364,8 @@ this.map.setZoom(14);
 
       var coord = map.screenToGeo(evt.currentPointer.viewportX,
         evt.currentPointer.viewportY);
-      let x = Math.abs(coord.lat.toFixed(4));
-      let y = Math.abs(coord.lng.toFixed(4));
+      let x = Number(coord.lat.toFixed(4));
+      let y = Number(coord.lng.toFixed(4));
       ////console.log(" updated - latitude=" + x);
       ////console.log("updated - longi=" + y);
 
