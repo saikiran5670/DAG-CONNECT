@@ -22,6 +22,7 @@ export class FleetOverviewFilterVehicleComponent implements OnInit {
 @Input() vehicleListData: any;
 @Input() fromVehicleHealth: any;
 @Input() vehInfoPrefData: any;
+@Input () vehicleGroupData: any;
 @Output() vehicleFilterComponentEmit =  new EventEmitter<object>();
 @Output() vehicleDetailsInfoEmit =  new EventEmitter<object>();
 @Output() tabvisibility : EventEmitter<boolean> =  new EventEmitter<boolean>()
@@ -68,6 +69,7 @@ ngAfterViewInit(){
   openVehicleDetails(data: any){
     this.isVehicleDetails = true;
     this.selectedElementData = data;
+    this.selectedElementData.todayFlag= this.todayFlagClicked;
     this.tabvisibility.emit(false);
     let obj ={
       vehicleDetailsFlag : this.isVehicleDetails

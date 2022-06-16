@@ -8,6 +8,8 @@
 
 <div fxLayout="row" fxLayoutAlign="stretch" class="loginPageContainer">
     <div fxLayout="column" fxLayoutAlign="stretch" class='full-width loginPageBg'>
+
+        <div class="welcome-msg"><p>Welcome to the new Login page of DAF CONNECT</p> DAF developed a new portal for DAF Connect to be ready for the future. For this new portal you need to reset your password via the "Forgot Password?" link below. Initially our New Generation DAF truck range will not be visible in this portal yet. As soon as these new vehicles are released in the portal we will inform you accordingly. For any further questions, please contact your dealer or our Support Team at <a href="mailto:daf.connect@daftrucks.com">daf.connect@daftrucks.com</a> or via phone: +31402143040. </div>
         <div fxLayout="row" fxLayoutAlign="end end" class='logo-icon'>
             <div fxLayout="column" fxLayoutAlign="stretch">
                 <!--<img src="../../../assets/logo_daf.png" alt="" srcset="">-->
@@ -17,7 +19,7 @@
             <div fxLayout="column" fxLayoutAlign="stretch" class='loginTxtContainer'>
                 <div fxLayout="row" fxLayoutAlign="center" class='logoContainer'>
                     <div fxLayout="column" fxLayoutAlign="center">
-                        <img src="../../../assets/DAF_connect_logo.png" alt="" srcset="">
+                        <img class="login-logo-img" src="../../../assets/DAF_connect_logo.png" alt="" srcset="">
                     </div>
                 </div> 
                  <div fxLayout="row" fxLayoutAlign="center" class='invalidMsgContainer'>
@@ -138,9 +140,10 @@
     <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
 </div>
 <footer>
-    <div *ngIf='cookiesFlag' fxLayout="row" fxLayoutAlign="space-around center" fxLayoutGap="100px" class='cookieContainer'>
+    <div *ngIf='cookiesFlag' fxLayout="row" fxLayoutAlign="space-around center" class='cookieContainer'>
         <div fxLayout="column">
-            <span>This site uses cookies to offer you a better browsing experience. No third party cookies are used on this site.<br><a href='https://www.daf.com/en/legal/daf-and-cookies' target="_blank">Click here</a> to view the full details. By clicking accept you are accepting the policy.</span>
+            <!-- <span>This site uses cookies to offer you a better browsing experience. No third party cookies are used on this site.<br><a href='https://www.daf.com/en/legal/daf-and-cookies' target="_blank">Click here</a> to view the full details. By clicking accept you are accepting the policy.</span> -->
+            <span class="accept-login-msg">This site uses cookies to offer you a better browsing experience. No third party cookies are used on this site.<br><a (click)="termsAndConditionPopup()" target="_blank"><span class="clickLink">Click here</span></a> to view the full details. By clicking accept you are accepting the policy.</span>
         </div>
         <div fxLayout="column">
             <button mat-raised-button color="primary" class="cookieBtn" (click)='acceptCookies()'>Accept To Login</button>
@@ -151,7 +154,7 @@
             <div fxLayout="row" fxLayoutAlign="space-between" fxLayoutGap="30px">
                 <div fxLayout="column" fxLayoutAlign="left">
                     <a href='https://www.paccar.com/'  target='_blank'>
-                    <img src='../../../assets/paccar-logo.png'>
+                    <img class="footer-logo-img" alt="A PACCAR COMPANY" src='../../../assets/paccar-logo.png'>
                     </a>
                 </div>
                 <div fxLayout="column" fxLayoutAlign="left">
@@ -165,7 +168,7 @@
                 </div>
             </div>
         </div>
-        <div fxLayout="column" fxLayoutAlign="end">
+        <div fxLayout="column" fxLayoutAlign="end" class="footer-support-msg">
             <div fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="30px">
                 <div fxLayout="column" fxLayoutAlign="left">
                     <a href='mailto:DAF.Connect@DAFTRUCKS.com' target='_blank'><span>Support: DAF.Connect@DAFTRUCKS.com</span></a>

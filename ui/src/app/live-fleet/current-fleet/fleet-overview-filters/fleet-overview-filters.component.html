@@ -216,6 +216,7 @@
             [noRecordFlag]="noRecordFlag" [vehicleListData]="vehicleListData" [drivingStatus]="drivingStatus"
             [showLoadingIndicator]="showLoadingIndicator" (vehicleFilterComponentEmit)='checkCreationForVehicle($event)'
             (vehicleDetailsInfoEmit)='checkToHideFilter($event)' [vehInfoPrefData]='vehInfoPrefData'
+            [vehicleGroupData] = "vehicleGroupData"
             [filterData]="filterData" [todayFlagClicked] = "todayFlagClicked">
         </app-fleet-overview-filter-vehicle>
     </div>

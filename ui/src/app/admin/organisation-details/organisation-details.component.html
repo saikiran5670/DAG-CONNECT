@@ -45,12 +45,12 @@
                             <span class='font-helvetica-md'>{{ organisationData.organizationName }}</span>
                         </div>
                     </div>
-                    <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                    <!-- <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                         <mat-label><span class='font-16-px'>{{ translationData.lblStreetName }}</span></mat-label>
                         <div>
                             <span class='font-helvetica-md'>{{ organisationData.addressStreet }}</span>
                         </div>
-                    </div>
+                    </div> -->
                     <!-- <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                         <mat-label style='display: flex; place-content: space-between;'>
                             <span class="text-truncate font-16-px">{{ translationData.lblDescription || 'Description' }}</span>
@@ -61,7 +61,7 @@
                     </div> -->
                 </div>
 
-                <div fxLayout="row" class="full-width margin-bottom-xlg" fxLayoutGap="20px">
+                <!-- <div fxLayout="row" class="full-width margin-bottom-xlg" fxLayoutGap="20px">
                     <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                         <mat-label style='display: flex;'>
                             <span class='font-16-px'>{{ translationData.lblStreetNumber }}</span>
@@ -95,7 +95,7 @@
                             <span class='font-helvetica-md'>{{ organisationData.country }}</span>
                         </div>
                     </div>
-                </div>
+                </div> -->
             </div>
             <div *ngIf="organisationData && (userLevel == 10 || userLevel == 20)" style='padding: 20px; position: relative;'>
                 <mat-divider></mat-divider>

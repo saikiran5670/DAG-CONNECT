@@ -11,6 +11,7 @@ import { DataInterchangeService } from 'src/app/services/data-interchange.servic
 import { TermsConditionsPopupComponent } from 'src/app/terms-conditions-content/terms-conditions-popup.component';
 import { TranslationService } from 'src/app/services/translation.service';
 import { OrganizationService } from 'src/app/services/organization.service';
+import { TermsAndConditionPopupComponent } from './terms-and-condition-popup/terms-and-condition-popup.component';
 
 export interface Organization {
   id: number ;
@@ -44,6 +45,7 @@ export class LoginComponent implements OnInit {
   showLoadingIndicator: any = false;
   resetPwdOnedayFlag : boolean = false;
   resetPwdOnedayMsg : string = '';
+  dialogRef: MatDialogRef<TermsAndConditionPopupComponent>;
 
   constructor(private cookieService: CookieService, public fb: FormBuilder, public router: Router, public authService: AuthService, private dialogService: ConfirmDialogService, private dialog: MatDialog, private accountService: AccountService, private dataInterchangeService: DataInterchangeService, private translationService: TranslationService, private organizationService: OrganizationService) {
     this.loginForm = this.fb.group({
@@ -72,6 +74,7 @@ export class LoginComponent implements OnInit {
       // if(this.loginClicks == 0){//commenting this for facing issue multiple times login ,popup is not getting displayed.
         this.loginClicks = 1;
        this.authService.signIn(this.loginForm.value).subscribe((data:any) => {
+         localStorage.setItem('isLoginSetUser', 'true'); //For checking user login, to remove unwanted setuserselection call.
         this.hideLoader();
          ////console.log("data:: ", data)
          if(data.status === 200){
@@ -87,6 +90,7 @@ export class LoginComponent implements OnInit {
       
             if(data.body.accountRole.length > 0){
               localStorage.setItem('accountRoleId', data.body.accountRole[0].id);
+              localStorage.setItem('roleLevel', data.body.accountRole[0].level);
             }
             
             if(data.body && data.body.accountInfo && data.body.accountInfo.id) {
@@ -114,13 +118,13 @@ export class LoginComponent implements OnInit {
             }
 
                //this.cookiesFlag = true;
-            let sessionObject: any = {
-              accountId: data.body.accountInfo.id,
-              orgId:  data.body.accountOrganization[0].id,
-              roleId: data.body.accountRole[0].id
-            }
-            this.accountService.setUserSelection(sessionObject).subscribe((data) =>{
-            });
+            // let sessionObject: any = {
+            //   accountId: data.body.accountInfo.id,
+            //   orgId:  data.body.accountOrganization[0].id,
+            //   roleId: data.body.accountRole[0].id
+            // }
+            // this.accountService.setUserSelection(sessionObject).subscribe((data) =>{
+            // });
          }
          else if(data.status === 401){
           this.invalidUserMsg = true;
@@ -159,6 +163,63 @@ export class LoginComponent implements OnInit {
     }
   }
 
+  termsAndConditionPopup(){
+    let cookieData=[{
+      cookie: 'Local Storage',
+      source: 'This Website',
+      expiry: 'Session',
+      purpose: 'To support the website performance'
+    },
+    {
+      cookie: 'Account',
+      source: 'This Website',
+      expiry: 'Session',
+      purpose: 'To support the website performance'
+    },
+    {
+      cookie: 'AspNetCore.Session',
+      source: 'This Website',
+      expiry: 'Session',
+      purpose: 'To support the website performance'
+    },
+    {
+      cookie: '_4623f',
+      source: 'This Website',
+      expiry: 'Session',
+      purpose: 'To support the website performance'
+    },
+    {
+      cookie: '_28d01',
+      source: 'This Website',
+      expiry: 'Session',
+      purpose: 'To support the website performance'
+    },
+    {
+      cookie: 'cookiePolicy',
+      source: 'This Website',
+      expiry: 'Session',
+      purpose: 'To support the website performance'
+    },
+  ];
+    const colsList = ['cookie','source','expiry','purpose'];
+    const colsName =['Cookie name', 'Source', 'Expiry', 'Purpose'];
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.maxHeight = '90vh';
+    dialogConfig.data = {
+      tableData: cookieData,
+      colsList: colsList,
+      colsName:colsName,
+    }
+    this.dialogRef = this.dialog.open(TermsAndConditionPopupComponent, dialogConfig);
+    this.dialogRef.afterClosed().subscribe((res: any) => {
+        if(res){
+          this.acceptCookies();
+        }
+    });
+  }
+
   openOrgRolePopup(data){
     localStorage.setItem("liveFleetTimer", (1*60).toString()); // default timer set 
     this.showOrganizationRolePopup(data.body, data.body.accountInfo, "");
@@ -171,7 +232,7 @@ export class LoginComponent implements OnInit {
   openTermsConditionsPopup(data: any, accountDetails: any, accountPreference: any){
     let objData= {
       AccountId: data.accountInfo.id,
-      OrganizationId: data.accountOrganization[0].id
+      OrganizationId: Number(localStorage.getItem("accountOrganizationId"))
     }  
     this.translationService.getLatestTermsConditions(objData).subscribe((response)=>{
 
@@ -182,7 +243,7 @@ export class LoginComponent implements OnInit {
       );
       let latestTCData= {
         id: 0,
-        organization_Id: data.accountOrganization[0].id,
+        organization_Id: Number(localStorage.getItem("accountOrganizationId")),
         account_Id: data.accountInfo.id,
         terms_And_Condition_Id: response[0].id,
         version_no: response[0].versionno
@@ -211,45 +272,59 @@ export class LoginComponent implements OnInit {
   }
 
   checkTermsAndConditions(data, accountDetails, accountPreference){
-    this.translationService.getLanguageCodes().subscribe(languageCodes => {
-      let objData = {
-        AccountId: data.accountInfo.id,
-        OrganizationId: data.accountOrganization[0].id
-      }  
-      this.translationService.checkUserAcceptedTaC(objData).subscribe(response => {
-        if(!response){ 
-          let langCode;
-          if(accountPreference && accountPreference !== ''){
-            let filterLang = languageCodes.filter(item => item.id == accountPreference["languageId"]);
-            langCode = filterLang[0].code;
-          } else {
-            langCode ='EN-GB';
-          }
-            let translationObj = {
-              id: 0,
-              code: langCode, //-- TODO: Lang code based on account 
-              type: "Menu",
-              name: "",
-              value: "",
-              filter: "",
-              menuId: 0 //-- for common & user preference
+    this.showLoadingIndicator=true;
+    let sessionObject: any = {
+      accountId: data.accountInfo.id,
+      orgId:  Number(localStorage.getItem('accountOrganizationId')),
+      roleId: Number(localStorage.getItem('accountRoleId'))
+    }
+    this.accountService.setUserSelection(sessionObject).subscribe(() =>{
+      this.translationService.getLanguageCodes().subscribe(languageCodes => {
+        let objData = {
+          AccountId: data.accountInfo.id,
+          OrganizationId: localStorage.getItem("accountOrganizationId")
+        }  
+        this.translationService.checkUserAcceptedTaC(objData).subscribe(response => {
+          if(!response){ 
+            let langCode;
+            if(accountPreference && accountPreference !== ''){
+              let filterLang = languageCodes.filter(item => item.id == accountPreference["languageId"]);
+              langCode = filterLang[0].code;
+            } else {
+              langCode ='EN-GB';
             }
-          this.translationService.getMenuTranslations(translationObj).subscribe( (resp) => {
-            this.processTranslation(resp);
-             this.openTermsConditionsPopup(data, accountDetails, accountPreference);
-            });
-        }
-        else{
-          if(this.result){
-          this.gotoDashBoard();
+              let translationObj = {
+                id: 0,
+                code: langCode, //-- TODO: Lang code based on account 
+                type: "Menu",
+                name: "",
+                value: "",
+                filter: "",
+                menuId: 0 //-- for common & user preference
+              }
+            this.translationService.getMenuTranslations(translationObj).subscribe( (resp) => {
+              this.processTranslation(resp);
+              this.openTermsConditionsPopup(data, accountDetails, accountPreference);
+              });
           }
           else{
-            this.dialogRefLogin.close();
+            if(this.result){
+            this.gotoDashBoard();
+            }
+            else{
+              this.dialogRefLogin.close();
+            }
           }
-        }
+          this.hideLoader();
+        }, (error) => {
+          this.hideLoader();
+          this.gotoDashBoard();
+        })  
       }, (error) => {
-        this.gotoDashBoard();
-      })  
+        this.hideLoader();
+      });
+    }, (error) => {
+      this.hideLoader();
     });
   }
 
@@ -269,13 +344,13 @@ export class LoginComponent implements OnInit {
         accountDetail: this.data.accountDetail,
         accountPreference: this.data.accountPreference
       }
-      let sessionObject: any = {
-        accountId:  this.data.accountDetail.id,
-        orgId: this.result.organization,
-        roleId: this.result.role
-      }
-      this.accountService.setUserSelection(sessionObject).subscribe((data) =>{
-      });
+      // let sessionObject: any = {
+      //   accountId:  this.data.accountDetail.id,
+      //   orgId: this.result.organization,
+      //   roleId: this.result.role
+      // }
+      // this.accountService.setUserSelection(sessionObject).subscribe((data) =>{
+      // });
       localStorage.setItem("accountInfo", JSON.stringify(loginDetailsObj));
       this.dataInterchangeService.getDataInterface(true);
       this.dataInterchangeService.getOrgRoleInterface(this.data);
@@ -350,7 +425,8 @@ export class LoginComponent implements OnInit {
       this.dialogRefLogin.disableClose = true;//disable default close operation
       this.dialogRefLogin.beforeClosed().subscribe(result => {
         this.result = result;
-        this.checkTermsAndConditions(data, accountDetails, accountPreference);
+        if(result){
+        this.checkTermsAndConditions(data, accountDetails, accountPreference);}
         this.dialogRefLogin.close();
       });
     }

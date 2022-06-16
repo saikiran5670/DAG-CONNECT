@@ -22,7 +22,7 @@ export class SignalrService {
         this.hubConnection
         .start()
         .then(() => {
-            console.log('Hub Connection Started!');
+            // console.log('Hub Connection Started!');
         })
         .catch(err => console.log('Error while starting connection: ' + err))
     }
@@ -33,7 +33,7 @@ export class SignalrService {
    
     askServerListener():any {
          this.hubConnection.on("askServerResponse", (someText) => {
-            console.log(someText);
+            // console.log(someText);
             return someText;
         })
     }
