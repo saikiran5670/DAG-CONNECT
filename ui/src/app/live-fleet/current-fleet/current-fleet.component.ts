@@ -27,7 +27,8 @@ export class CurrentFleetComponent implements OnInit, OnDestroy {
   translationData: any = {};
   clickOpenClose:string;
   currentFleetReportId: number;
-  detailsData =[];
+  detailsData = [];
+  fleetOverViewDetail: any;
   messages: any[] = [];
   subscription: Subscription;
   isOpen: boolean = false;
@@ -223,6 +224,7 @@ export class CurrentFleetComponent implements OnInit, OnDestroy {
       this.hideLoader();
       //let processedData = this.fleetMapService.processedLiveFLeetData(data.fleetOverviewDetailList);
       this.detailsData = data.fleetOverviewDetailList;
+      this.fleetOverViewDetail = data;
       this.vehicleGroups = data.vehicleGroups
       this.fleetSummary = data.fleetOverviewSummary;
       this.getFilterData();
