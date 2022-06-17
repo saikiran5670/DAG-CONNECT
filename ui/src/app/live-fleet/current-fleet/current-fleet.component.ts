@@ -231,12 +231,7 @@ export class CurrentFleetComponent implements OnInit, OnDestroy {
         data: this.detailsData
       }
       this.dataInterchangeService.getVehicleData(_dataObj);
-      let data$=JSON.parse(JSON.stringify(data));
-      if(data$){
-        data$['startTime'] = _startTime;
-        data$['endTime'] = _endTime;
-      }
-      this.dataInterchangeService.setFleetOverViewDetails(data$);
+      this.dataInterchangeService.setFleetOverViewDetails(JSON.parse(JSON.stringify(data)));
       // if (this._state && this._state.data) {
       //   this.userPreferencesSetting();
       //   this.toBack();

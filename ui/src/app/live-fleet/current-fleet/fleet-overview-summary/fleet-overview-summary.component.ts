@@ -56,6 +56,8 @@ export class FleetOverviewSummaryComponent implements OnInit, OnDestroy {
   totalDriveTime: number = 0;
   prefDetail: any = {};
   @ViewChild('mep') mep: any;
+  isSummaryOpened: boolean=false;
+  currentData: any;
 
   constructor(private messageService: MessageService, private reportService: ReportService, private fleetMapService: FleetMapService, private organizationService: OrganizationService, private translationService: TranslationService, private cdref: ChangeDetectorRef, private reportMapService: ReportMapService, private dataService: DataInterchangeService) {
     //this.loadData();
@@ -85,36 +87,61 @@ export class FleetOverviewSummaryComponent implements OnInit, OnDestroy {
       this.dataService.fleetOverViewSource$.subscribe(data => {
         let data$=JSON.parse(JSON.stringify(data));
         if(this.mep && this.mep.expanded && data$.startTime && data$.endTime){
-          let vinSet = new Set();
-          data$.fleetOverviewDetailList.forEach(element => {
-            vinSet.add(element.vin);
-          });
-          //API call for summary
-          let objData = {
-            "viNs": Array.from(vinSet),        
-            "startDateTime": data$.startTime,        
-            "endDateTime": data$.endTime        
-          }
-          this.showLoadingIndicator=true;
-          this.reportService.getFleetOverviewSummary(objData).subscribe((summary: any) => {
-            if(summary) {
-              this.resetSummaryPartOne();
-              this.fleetSummary = summary.fleetOverviewSummary;
-            }
-            if(data$){
-              this.totalVehicle = data$.visibleVinsCount;
-              this.stepForword(data$.fleetOverviewDetailList, true);
-            }
-            this.showLoadingIndicator=false;
-          }, (error) => {
-            this.loadSummaryPartTwo(data$, false);
-            this.showLoadingIndicator=false;
-            this.resetSummaryPartOne();
-          });
+          this.currentData = data$;
+          this.getSummary();
         } else {
           this.loadSummaryPartTwo(data$, false);
         }
       });
+  }
+
+  getSummary(){
+    let selectedStartTime = '';
+    let selectedEndTime = '';
+    if(this.prefTimeFormat == 24){
+      selectedStartTime = "00:00";
+      selectedEndTime = "23:59";
+    } else{      
+      selectedStartTime = "12:00 AM";
+      selectedEndTime = "11:59 PM";
+    }
+    let startDateValue = this.setStartEndDateTime(Util.getUTCDate(this.prefTimeZone), selectedStartTime, 'start');
+    let endDateValue = this.setStartEndDateTime(Util.getUTCDate(this.prefTimeZone), selectedEndTime, 'end');
+    let _startTime = Util.getMillisecondsToUTCDate(startDateValue, this.prefTimeZone);
+    let _endTime = Util.getMillisecondsToUTCDate(endDateValue, this.prefTimeZone);
+    let vinSet = new Set();
+    if(!this.currentData) this.currentData = this.dataService.fleetOverViewDetailData;
+    this.currentData.fleetOverviewDetailList.forEach(element => {
+      vinSet.add(element.vin);
+    });
+    //API call for summary
+    let objData = {
+      "viNs": Array.from(vinSet),        
+      "startDateTime": _startTime,        
+      "endDateTime": _endTime        
+    }
+    
+    this.showLoadingIndicator=true;
+    this.reportService.getFleetOverviewSummary(objData).subscribe((summary: any) => {
+      if(summary) {
+        this.resetSummaryPartOne();
+        this.fleetSummary = summary.fleetOverviewSummary;
+      }
+      if(this.currentData){
+        this.totalVehicle = this.currentData.visibleVinsCount;
+        this.stepForword(this.currentData.fleetOverviewDetailList, true);
+      }
+      this.showLoadingIndicator=false;
+    }, (error) => {
+      this.loadSummaryPartTwo(this.currentData, false);
+      this.showLoadingIndicator=false;
+      this.resetSummaryPartOne();
+    });
+  }
+
+  panelClick(event: any){
+    this.getSummary();
+    this.isSummaryOpened=true;
   }
 
   ngAfterViewInit() {

@@ -1353,12 +1353,7 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
     }
     let vehicleGroupSel = this.groupList.filter((elem) => elem.vehicleId === this.filterVehicleForm.get("group").value);
     this.getFleetOverviewDetails = this.reportService.getFleetOverviewDetails(this.objData).subscribe((fleetdata: any) => {
-      let data$ = JSON.parse(JSON.stringify(fleetdata))
-      if(data$){
-        data$['startTime'] = _startTime;
-        data$['endTime'] = _endTime;
-      }
-      this.dataInterchangeService.setFleetOverViewDetails(data$);
+      this.dataInterchangeService.setFleetOverViewDetails(JSON.parse(JSON.stringify(fleetdata)));
       this.showLoadingIndicator=false;
       let data = fleetdata.fleetOverviewDetailList;//this.fleetMapService.processedLiveFLeetData(fleetdata.fleetOverviewDetailList);
       this.fleetData = data

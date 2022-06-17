@@ -1,5 +1,5 @@
 <mat-card class='mat-elevation-z no-padding' style='margin: 10px; background: transparent !important;'>
-  <mat-expansion-panel style="width:100%;" class="full-width" #mep> 
+  <mat-expansion-panel style="width:100%;" class="full-width" #mep (click)="!isSummaryOpened && panelClick($event) "> 
     <mat-expansion-panel-header class="full-width">
       <mat-panel-title>
         <span> {{ translationData.lblSummary }}</span>
