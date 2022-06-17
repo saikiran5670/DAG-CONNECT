@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Input, SimpleChanges, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, SimpleChanges, ChangeDetectorRef, ViewChild } from '@angular/core';
 import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
 import { Color, Label, MultiDataSet } from 'ng2-charts';
 import { Subscription } from 'rxjs';
@@ -9,6 +9,7 @@ import { FleetMapService } from '../fleet-map.service';
 import { OrganizationService } from '../../../services/organization.service';
 import { TranslationService } from '../../../services/translation.service';
 import { ReportMapService } from 'src/app/report/report-map.service';
+import { DataInterchangeService } from 'src/app/services/data-interchange.service';
 
 @Component({
   selector: 'app-fleet-overview-summary',
@@ -54,26 +55,66 @@ export class FleetOverviewSummaryComponent implements OnInit, OnDestroy {
   timeThreshold: number;
   totalDriveTime: number = 0;
   prefDetail: any = {};
+  @ViewChild('mep') mep: any;
 
-  constructor(private messageService: MessageService, private reportService: ReportService, private fleetMapService: FleetMapService, private organizationService: OrganizationService, private translationService: TranslationService, private cdref: ChangeDetectorRef, private reportMapService: ReportMapService) {
+  constructor(private messageService: MessageService, private reportService: ReportService, private fleetMapService: FleetMapService, private organizationService: OrganizationService, private translationService: TranslationService, private cdref: ChangeDetectorRef, private reportMapService: ReportMapService, private dataService: DataInterchangeService) {
     //this.loadData();
-    this.subscription = this.messageService.getMessage().subscribe(message => {
-      if (message.key.indexOf("refreshData") < 0 && message.key.indexOf("refreshTimer") < 0 && message.key.indexOf("fleetKpiData") < 0 && message.key.indexOf("vehUtilData") < 0) {
-        this.filterInvoked = true;
-        this.vehicleGroup = message.key[0].vehicleGroup;
-        if (message.key[0].vehicleGroup && message.key[0].vehicleGroup === 'all')
-          this.vehicleGroup += ' Groups';
-        if (JSON.stringify(message.key[0].data).indexOf("HttpErrorResponse") !== -1 || JSON.stringify(message.key[0].data).indexOf("No Result Found") !== -1) {
-          this.resetSummary();
+    // this.subscription = this.messageService.getMessage().subscribe(message => {
+    //   if (message.key.indexOf("refreshData") < 0 && message.key.indexOf("refreshTimer") < 0 && message.key.indexOf("fleetKpiData") < 0 && message.key.indexOf("vehUtilData") < 0) {
+    //     this.filterInvoked = true;
+    //     this.vehicleGroup = message.key[0].vehicleGroup;
+    //     if (message.key[0].vehicleGroup && message.key[0].vehicleGroup === 'all')
+    //       this.vehicleGroup += ' Groups';
+    //     if (JSON.stringify(message.key[0].data).indexOf("HttpErrorResponse") !== -1 || JSON.stringify(message.key[0].data).indexOf("No Result Found") !== -1) {
+    //       this.resetSummary();
+    //     } else {
+    //       this.summaryData = message.key[0].data;
+    //       //this.refreshData();
+    //       this.stepForword(this.summaryData);
+    //     }
+    //   } else if (!this.filterInvoked && message.key.indexOf("refreshData") !== -1) {
+    //     this.loadData();
+    //   }
+    //   this.filterInvoked=false;
+    // });
+    // this.subscription = this.messageService.getMessage().subscribe(message => {
+    //   if(!this.dataService.isFleetOverViewFilterOpen && message.key.indexOf("refreshData") !== -1){
+    //     this.loadData();
+    //   }
+    // });
+      this.dataService.fleetOverViewSource$.subscribe(data => {
+        let data$=JSON.parse(JSON.stringify(data));
+        if(this.mep && this.mep.expanded && data$.startTime && data$.endTime){
+          let vinSet = new Set();
+          data$.fleetOverviewDetailList.forEach(element => {
+            vinSet.add(element.vin);
+          });
+          //API call for summary
+          let objData = {
+            "viNs": Array.from(vinSet),        
+            "startDateTime": data$.startTime,        
+            "endDateTime": data$.endTime        
+          }
+          this.showLoadingIndicator=true;
+          this.reportService.getFleetOverviewSummary(objData).subscribe((summary: any) => {
+            if(summary) {
+              this.resetSummaryPartOne();
+              this.fleetSummary = summary.fleetOverviewSummary;
+            }
+            if(data$){
+              this.totalVehicle = data$.visibleVinsCount;
+              this.stepForword(data$.fleetOverviewDetailList, true);
+            }
+            this.showLoadingIndicator=false;
+          }, (error) => {
+            this.loadSummaryPartTwo(data$, false);
+            this.showLoadingIndicator=false;
+            this.resetSummaryPartOne();
+          });
         } else {
-          this.summaryData = message.key[0].data;
-          //this.refreshData();
-          this.stepForword(this.summaryData);
+          this.loadSummaryPartTwo(data$, false);
         }
-      } else if (!this.filterInvoked && message.key.indexOf("refreshData") !== -1) {
-        this.loadData();
-      }
-    });
+      });
   }
 
   ngAfterViewInit() {
@@ -81,7 +122,8 @@ export class FleetOverviewSummaryComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.subscription.unsubscribe();
+    if(this.subscription)
+      this.subscription.unsubscribe();
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -97,16 +139,9 @@ export class FleetOverviewSummaryComponent implements OnInit, OnDestroy {
       this.totalVehicle = Number(changes.totalVehicleCount.currentValue);
       this.updateVehicleGraph();
     }
-  }
+  } 
+
   updateVehicleGraph() {
-    // let distinctVIN = [];
-    // if(this.filterData && this.filterData.vehicleGroups && this.filterData.vehicleGroups.length > 0){
-    //  let vehIds = this.filterData.vehicleGroups.map(i => i.vehicleId);
-    //  if(vehIds && vehIds.length > 0){
-    //   distinctVIN = vehIds.filter((value, index, self) => self.indexOf(value) === index);
-    //  }
-    // }
-    // this.totalVehicle = distinctVIN.length;
     this.barChartData = [
       { data: [this.movedVehicle, this.totalVehicle], label: '', barThickness: 16, barPercentage: 0.5 }
     ];
@@ -141,8 +176,15 @@ export class FleetOverviewSummaryComponent implements OnInit, OnDestroy {
       this.prefTimeFormat = Number(this.prefDetail.timeformat[0].name.split("_")[1].substring(0,2));    
     }
     this.unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile);
-    // this.stepForword(this.detailsData, true);
     this.setFleetThreshold();
+  }
+
+  loadSummaryPartTwo(data$: any, isToday: boolean){
+    if(data$){
+      this.fleetSummary = data$.fleetOverviewSummary;
+      this.totalVehicle = data$.visibleVinsCount;
+      this.stepForword(data$.fleetOverviewDetailList, isToday);
+    }
   }
 
   loadData() {
@@ -177,12 +219,6 @@ export class FleetOverviewSummaryComponent implements OnInit, OnDestroy {
       this.totalVehicle = data.visibleVinsCount;
       //let filterData = this.fleetMapService.processedLiveFLeetData(data.fleetOverviewDetailList);
       this.stepForword(data.fleetOverviewDetailList);
-      //this.summaryData = filterData;
-      // this.unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm ) : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile) : (this.translationData.lblmile);
-      // this.refreshData();
-      // this.barChartLabels = [this.translationData.lblMovedVehicle, this.translationData.lblTotalVehicle];
-      // this.doughnutChartLabelsMileage = [(this.translationData.lblFleetMileageRate ), ''];
-      // this.doughnutChartLabelsUtil = [(this.translationData.lblFleetUtilizationRate), '', ''];
       this.hideloader();
     }, (error) => {
       this.resetSummary();
@@ -275,15 +311,6 @@ export class FleetOverviewSummaryComponent implements OnInit, OnDestroy {
     { data: [this.movedVehicle, this.totalVehicle], label: '', barThickness: 16, barPercentage: 0.5 }
   ];
 
-  // // events
-  // chartClicked({ event, active }: { event: MouseEvent, active: {}[] }): void {
-  //   //console.log(event, active);
-  // }
-
-  // chartHovered({ event, active }: { event: MouseEvent, active: {}[] }): void {
-  //   //console.log(event, active);
-  // }
-
   barChartColors: Color[] = [
     {
       backgroundColor: ["#75c3f0", "#168cd0"]
@@ -344,22 +371,13 @@ export class FleetOverviewSummaryComponent implements OnInit, OnDestroy {
   };
 
   refreshData(flag?: boolean) {
-    // let totalDriveTime=0;
     let tripDistance = 0;
-    //this.movedVehicle=0;
     this.noAction = 0;
     this.serviceNow = 0;
     this.stopNow = 0;
 
-    //this.totalVehicle=0;
-    //this.criticalAlert=0;
-    //this.mileageDone = this.summaryData.reduce((val, elem) => val + elem.tripDistance, 0);
       if (flag) {
-        // this.movedVehicle = 0;
-        // let drivers = this.summaryData.filter((elem) => elem.driver1Id);
-        // let driversUnknown = this.summaryData.filter((elem) => elem.driver1Id=='');
-        // let uniqueDrivers = [...new Set(drivers)];
-        // this.drivers = uniqueDrivers.length + driversUnknown.length;
+        this.movedVehicle=0;
         if(this.fleetSummary){
         //drivers count
         this.drivers = this.fleetSummary.driverCount;
@@ -367,83 +385,27 @@ export class FleetOverviewSummaryComponent implements OnInit, OnDestroy {
         this.totalDriveTime = this.fleetSummary.drivingTime;
         }
       }
-      // let drivers = this.summaryData.filter((elem) => elem.driver1Id);
-      // let uniqueDrivers = [...new Set(drivers)];
-      // this.drivers = uniqueDrivers.length;
       tripDistance = this.fleetSummary? this.fleetSummary.drivingDistance :0;
       if (this.summaryData) {
-      let vins = this.summaryData.filter((elem) => elem.vin);
-      let uniqueVin = [...new Set(vins)];
-      //this.totalVehicle = uniqueVin.length;
-      let criticalCount = 0;
+        
+        this.summaryData.forEach(element => {
+            if (flag && (element.vehicleDrivingStatusType && element.vehicleDrivingStatusType != 'N')) {
+              this.movedVehicle += 1;
+            }
 
-      this.summaryData.forEach(element => {
-
-        // if (element.tripDistance) {
-        //   tripDistance += element.tripDistance;
-        // }
-        // if (flag) {
-          // if (element.drivingTime)
-          //   this.totalDriveTime += element.drivingTime;
-
-          if (flag && (element.vehicleDrivingStatusType && element.vehicleDrivingStatusType != 'N')) {
-            this.movedVehicle += 1;
+          if (element.vehicleHealthStatusType) {
+            if (element.vehicleHealthStatusType === 'N') {
+              this.noAction += 1;
+            } else if (element.vehicleHealthStatusType === 'V') {
+              this.serviceNow += 1;
+            } else if (element.vehicleHealthStatusType === 'T') {
+              this.stopNow += 1;
+            }
           }
-
-          // if (element.fleetOverviewAlert.length > 0) {
-          //   let isCritical = true;
-          //   element.fleetOverviewAlert.forEach(ele => {
-          //     if (isCritical) {
-          //       if (ele.level === 'C') {
-          //         criticalCount += ele.level === 'C' ? 1 : 0;
-          //         isCritical = false;
-          //         return;
-          //       }
-          //     }
-          //   });
-          //   if (criticalCount > 0) {
-          //     this.criticalAlert = criticalCount;
-          //   }
-          // }
-
-        // }
-        // if(element.drivingTime)
-        //   totalDriveTime += element.drivingTime;
-        // if(element.tripDistance){
-        //   tripDistance += element.tripDistance;
-        // }
-        // if(element.vehicleDrivingStatusType && element.vehicleDrivingStatusType === 'D'){
-        //   this.movedVehicle += 1;
-        // }
-        if (element.vehicleHealthStatusType) {
-          if (element.vehicleHealthStatusType === 'N') {
-            this.noAction += 1;
-          } else if (element.vehicleHealthStatusType === 'V') {
-            this.serviceNow += 1;
-          } else if (element.vehicleHealthStatusType === 'T') {
-            this.stopNow += 1;
-          }
-          // if(element.fleetOverviewAlert.length > 0){         
-          //   let isCritical = true;
-          //   element.fleetOverviewAlert.forEach(ele => {
-          //     if(isCritical){
-          //       if(ele.level === 'C' ){
-          //         criticalCount += ele.level === 'C' ? 1 : 0;   
-          //         isCritical = false; 
-          //         return;             
-          //       }             
-          //     }                         
-          //   });        
-          //   if(criticalCount > 0){
-          //     this.criticalAlert = criticalCount;
-          //   }  
-          // }  
-        }
-      });
-    }
-    //this.mileageDone = (this.prefUnitFormat == 'dunit_Metric' ? tripDistance : (tripDistance * 0.621371)) + ' ' + this.unitValkm;
+        });
+      }
+  
     let milDone: any = this.getDistance(tripDistance, this.prefUnitFormat);
-
     this.mileageDone = milDone + ' ' + this.unitValkm;
     let totDriveTime = Util.getHhMmTime(this.totalDriveTime).split(':'); //driving time is coming in seconds
     this.driveTime = flag ? totDriveTime[0] + (this.translationData.lblhh ) + ' ' +totDriveTime[1] + (this.translationData.lblmm) : this.driveTime;
@@ -452,16 +414,8 @@ export class FleetOverviewSummaryComponent implements OnInit, OnDestroy {
       { data: [this.movedVehicle, this.totalVehicle], label: '', barThickness: 16, barPercentage: 0.5 }
     ];
 
-    // let totDriveTime = Util.getHhMmTime(totalDriveTime).split(':');
-    // this.driveTime = totDriveTime[0] + (this.translationData.lblhh ) + ' ' +totDriveTime[1] + (this.translationData.lblmm);
-    // this.barChartData = [
-    //   { data: [this.movedVehicle, this.totalVehicle], label: '', barThickness: 16, barPercentage: 0.5 }
-    // ];
-    //Fleet Mileage rate
-    // let liveFleetMileageVal:any= localStorage.getItem('liveFleetMileageThreshold');
-    // let liveFleetUtilizationThresholdVal = localStorage.getItem('liveFleetUtilizationThreshold');
-    //let milRate = (Number.parseFloat(this.mileageDone)/Number.parseInt(liveFleetMileageVal)) * 100;
     this.doughnutChartDataMileage = [[0, 0]];
+    if(this.distanceThreshold) this.doughnutChartDataMileage = [[0, 100]];
     if (milDone && this.distanceThreshold) {
       this.mileageRate = Number.parseFloat(((Number.parseFloat(milDone) / this.distanceThreshold) * 100).toFixed(2));
       let thresholdLeft = (100 - this.mileageRate > 0) ? 100 - this.mileageRate : 0;
@@ -469,6 +423,7 @@ export class FleetOverviewSummaryComponent implements OnInit, OnDestroy {
     }
     //Fleet Utilization rate
     this.doughnutChartDataUtil = [[0, 0]];
+    if(this.timeThreshold) this.doughnutChartDataUtil = [[0, 100]];
     if (this.totalDriveTime && this.timeThreshold) {
       this.utilizationRate = Number(((this.totalDriveTime / (this.timeThreshold/1000)) * 100).toFixed(2));
       let thresholdLeft = (100 - this.utilizationRate > 0) ? 100 - this.utilizationRate : 0;
@@ -477,18 +432,18 @@ export class FleetOverviewSummaryComponent implements OnInit, OnDestroy {
   }
 
   resetSummary() {
-    //this.movedVehicle=0;
     this.noAction = 0;
     this.serviceNow = 0;
     this.stopNow = 0;
-    //this.totalVehicle=0;
-    //this.criticalAlert=0;
-    //this.barChartData = [ { data : [0, 0] } ];
     this.doughnutChartDataMileage = [[0, 0]];
     this.doughnutChartDataUtil = [[0, 0]];
-    //this.mileageDone = '00 ' + this.unitValkm;
-    //this.driveTime = '00' + (this.translationData.lblhh) + ' 00' + (this.translationData.lblmm);
-    //this.drivers = 0;
+  }
+
+  resetSummaryPartOne(){
+    this.criticalAlert = 0;
+    this.mileageDone = '00 ' + this.unitValkm;
+    this.driveTime = '00' + (this.translationData.lblhh) + ' 00' + (this.translationData.lblmm);
+    this.drivers = 0;
   }
 
   getDistance(distance: any, unitFormat: any) {

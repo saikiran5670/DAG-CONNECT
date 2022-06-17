@@ -61,8 +61,8 @@ export class CurrentFleetComponent implements OnInit, OnDestroy {
     private dashboardService : DashboardService,
     private organizationService: OrganizationService) { 
       this.subscription = this.messageService.getMessage().subscribe(message => {
-        if (message.key.indexOf("refreshData") !== -1) {
-          this.refreshData();
+        if (!this.dataInterchangeService.isFleetOverViewFilterOpen && message.key.indexOf("refreshData") !== -1) {
+          this.getFleetOverviewDetails();
         }
       });
       this.sendMessage();
@@ -231,6 +231,12 @@ export class CurrentFleetComponent implements OnInit, OnDestroy {
         data: this.detailsData
       }
       this.dataInterchangeService.getVehicleData(_dataObj);
+      let data$=JSON.parse(JSON.stringify(data));
+      if(data$){
+        data$['startTime'] = _startTime;
+        data$['endTime'] = _endTime;
+      }
+      this.dataInterchangeService.setFleetOverViewDetails(data$);
       // if (this._state && this._state.data) {
       //   this.userPreferencesSetting();
       //   this.toBack();
@@ -318,8 +324,6 @@ export class CurrentFleetComponent implements OnInit, OnDestroy {
   sendMessage(): void {
     this.messageService.sendMessage('refreshTimer');
   }
-  
-  refreshData(){}
 
   toBack(item?: any){
     this.obj = {

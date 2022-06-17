@@ -25,6 +25,9 @@ export class DataInterchangeService {
     prefSource$ = this.prefSource.asObservable();
     private prefClosedSource = new Subject<any>();
     prefClosedSource$ = this.prefClosedSource.asObservable();
+    private fleetOverViewSource = new Subject<any>();
+    fleetOverViewSource$ = this.fleetOverViewSource.asObservable();
+    isFleetOverViewFilterOpen: boolean = false;
 
     constructor(){ }
 
@@ -70,6 +73,14 @@ export class DataInterchangeService {
 
     closedPrefTab(flag: any){
         this.prefClosedSource.next(flag);
+    }
+
+    setFleetOverViewDetails(data: any){
+        this.fleetOverViewSource.next(data);
+    }
+
+    setFleetOverViewFilterOpen(val: boolean){
+        this.isFleetOverViewFilterOpen = val;
     }
 
 }   

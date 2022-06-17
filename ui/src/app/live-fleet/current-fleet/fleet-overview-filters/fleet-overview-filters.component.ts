@@ -103,6 +103,7 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
         this.loadVehicleData(true);
       }
     });
+    this.dataInterchangeService.isFleetOverViewFilterOpen=true;
   }
 
   ngAfterViewInit() {
@@ -113,13 +114,18 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
     }
     else {
       if (this.detailsData) {
-        this.updateVehicleFilter();
+        // this.updateVehicleFilter();
       }
     }
 
   }
 
   ngOnDestroy() {
+    this.dataInterchangeService.isFleetOverViewFilterOpen=false;
+    if(this.getFleetOverviewDetails){
+    this.getFleetOverviewDetails.unsubscribe();
+    this.getFleetOverviewDetails=undefined;
+    }
     this.subscription.unsubscribe();
   }
 
@@ -188,6 +194,30 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
       driverSearch: ['']
     })
     this.getFilterData();
+    this.setTranslationValues();
+    // this.drawIcons(this.detailsData);
+  }
+
+  setTranslationValues(){
+    if(this.detailsData){
+     this.detailsData.forEach(item => {
+        if (this.filterData && this.filterData.healthStatus) {
+          this.filterData["healthStatus"].forEach(e => {
+            if (item.vehicleHealthStatusType == e.value) {
+              item.vehicleHealthStatusType = this.translationData[e.name];
+            }
+          });
+        }
+
+        if (this.filterData && this.filterData.otherFilter) {
+          this.filterData["otherFilter"].forEach(element => {
+            if (item.vehicleDrivingStatusType == element.value) {
+              item.vehicleDrivingStatusType = this.translationData[element.name];
+            }
+          });
+        }
+      });
+    }
     this.drawIcons(this.detailsData);
   }
 
@@ -1287,6 +1317,8 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
         "languagecode": this.localStLanguage ? this.localStLanguage.code : "EN-GB"
       }
     }
+    let _startTime;
+    let _endTime;
     if (this.todayFlagClicked && this.selectedIndex == 0) {
       let selectedStartTime = '';
       let selectedEndTime = '';
@@ -1299,8 +1331,8 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
       }
       let startDateValue = this.setStartEndDateTime(Util.getUTCDate(this.preferenceObject.prefTimeZone), selectedStartTime, 'start');
       let endDateValue = this.setStartEndDateTime(Util.getUTCDate(this.preferenceObject.prefTimeZone), selectedEndTime, 'end');
-      let _startTime = Util.getMillisecondsToUTCDate(startDateValue, this.preferenceObject.prefTimeZone);
-      let _endTime = Util.getMillisecondsToUTCDate(endDateValue, this.preferenceObject.prefTimeZone);
+      _startTime = Util.getMillisecondsToUTCDate(startDateValue, this.preferenceObject.prefTimeZone);
+      _endTime = Util.getMillisecondsToUTCDate(endDateValue, this.preferenceObject.prefTimeZone);
       this.objData = {
         "groupId": [this.filterVehicleForm.controls.group.value.toString()],
         "alertLevel": ["all"],
@@ -1316,6 +1348,12 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
     }
     let vehicleGroupSel = this.groupList.filter((elem) => elem.vehicleId === this.filterVehicleForm.get("group").value);
     this.getFleetOverviewDetails = this.reportService.getFleetOverviewDetails(this.objData).subscribe((fleetdata: any) => {
+      let data$ = JSON.parse(JSON.stringify(fleetdata))
+      if(data$){
+        data$['startTime'] = _startTime;
+        data$['endTime'] = _endTime;
+      }
+      this.dataInterchangeService.setFleetOverViewDetails(data$);
       this.showLoadingIndicator=false;
       let data = fleetdata.fleetOverviewDetailList;//this.fleetMapService.processedLiveFLeetData(fleetdata.fleetOverviewDetailList);
       this.fleetData = data
