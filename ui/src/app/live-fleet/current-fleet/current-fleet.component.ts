@@ -283,11 +283,13 @@ export class CurrentFleetComponent implements OnInit, OnDestroy {
     localStorage.setItem(menuId, JSON.stringify(this.translationData));
   }
   
+  isFilterOpenClick: boolean=false;
   userPreferencesSetting(event?: any) {
     this.userPreferencesFlag = !this.userPreferencesFlag;
     let summary = document.getElementById("summary");
     let sidenav = document.getElementById("sidenav");
     if(this.userPreferencesFlag){
+      this.isFilterOpenClick=true;
     summary.style.width = '67%';
     sidenav.style.width = '32%';
     this.clickOpenClose=this.translationData.lblClickToHide ? this.translationData.lblClickToHide :'Click To Hide';

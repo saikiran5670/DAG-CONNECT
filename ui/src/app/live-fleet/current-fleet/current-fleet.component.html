@@ -19,7 +19,7 @@
                     {{ clickOpenClose }} </button>
             </div>
             <div>
-                <app-fleet-overview-filters *ngIf="userPreferencesFlag" [filterData]='filterData' [fromVehicleHealth]="obj" [translationData]='translationData' [detailsData] ="detailsData" [vehInfoPrefData]='vehInfoPrefData' [preferenceObject]='preferenceObject' [vehicleGroups]='vehicleGroups'></app-fleet-overview-filters>
+                <app-fleet-overview-filters *ngIf="userPreferencesFlag" [filterData]='filterData' [fromVehicleHealth]="obj" [translationData]='translationData' [detailsData] ="detailsData" [vehInfoPrefData]='vehInfoPrefData' [preferenceObject]='preferenceObject' [vehicleGroups]='vehicleGroups' [isFilterOpenClick]='isFilterOpenClick'></app-fleet-overview-filters>
             </div>
         </div>
     </div>

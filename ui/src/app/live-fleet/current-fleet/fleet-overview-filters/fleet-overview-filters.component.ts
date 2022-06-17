@@ -28,6 +28,7 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
   @Input() filterData: any;
   @Input() preferenceObject: any;
   @Input() vehicleGroups: any;
+  @Input() isFilterOpenClick: any;
   @ViewChild('dataContainer') dataContainer: ElementRef;
   @ViewChild('select1') select1: MatSelect;
   @ViewChild('select2') select2: MatSelect;
@@ -114,7 +115,7 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
     }
     else {
       if (this.detailsData) {
-        // this.updateVehicleFilter();
+        this.updateVehicleFilter();
       }
     }
 
@@ -1181,6 +1182,10 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
   }
 
   filterVINonMap() { // VIN on map
+    if(this.isFilterOpenClick){
+      this.vehicleListData = this.detailsData;
+      this.isFilterOpenClick=false;
+    }
     let _dataObj: any = {
       vehicleDetailsFlag: this.isVehicleDetails,
       data: this.vehicleListData
