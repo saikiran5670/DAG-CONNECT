@@ -358,11 +358,11 @@ export class DashboardPreferencesComponent implements OnInit {
       }
       else if(element.key.includes('fleetkpi_fuelconsumption'))
       {
-        let totalmililitres = this.prefUnitFormat == 'dunit_Imperial' ? this.reportMapService.convertFuelConsumptionMpgToMlm(thresholdValue): this.reportMapService.convertFuelConsumptionLtr100kmToMlm(thresholdValue);
+        let totalmililitres = this.prefUnitFormat == 'dunit_Imperial' ?  (thresholdValue > 0 ? ((282.481/thresholdValue)/100).toFixed(6) : '0'): (thresholdValue > 0 ? (thresholdValue/100).toFixed(6) : '0');
         saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: chartType ? chartType : '', thresholdType: thresholdType, thresholdValue: parseFloat(totalmililitres), reportId: element.reportId  });
       }
       else if (element.key.includes('fleetkpi_fuelusedidling') || element.key.includes('fleetkpi_fuelconsumed')) {
-        let totalmililitres = this.prefUnitFormat == 'dunit_Imperial' ? thresholdValue * 3785.41 : thresholdValue * 1000;
+        let totalmililitres = this.prefUnitFormat == 'dunit_Imperial' ? thresholdValue * 4546.09 : thresholdValue * 1000;
 
         saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: chartType ? chartType : '', thresholdType: thresholdType, thresholdValue: totalmililitres, reportId: element.reportId  });
       } else if (element.key.includes('fleetkpi_co2emission')) {
