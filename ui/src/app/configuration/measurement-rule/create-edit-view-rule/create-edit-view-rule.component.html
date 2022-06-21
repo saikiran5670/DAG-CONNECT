@@ -1,0 +1,674 @@
+<div class='rulesMainDiv'>
+  <div *ngIf="actionType == 'create' || actionType == 'edit' || actionType == 'view'" fxLayout="row"
+    fxLayoutAlign="space-between" class='margin-bottom-sm'>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+      <span class="">Home/Configuration/Measurement Campaign Rules/New Rule</span>
+    </div>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+      <span class='custom-font' (click)="toBack()">
+        <span>
+          <&nbsp; </span> <span class='backBtnCss'>Back
+        </span>
+      </span>
+    </div>
+  </div>
+
+  <form [formGroup]="ruleForm">
+    <mat-card class='mat-elevation-z'>
+      <mat-expansion-panel class="full-width" fxLayoutGap="10px" [(expanded)]="isExpandedOpenAlert">
+        <mat-expansion-panel-header class="full-width">
+          <mat-panel-title>
+            <span *ngIf="actionType == 'create'" class='font-18-px line-height-27px font-helvetica-md'>Add New
+              Rule</span>
+            <span *ngIf="actionType == 'view'" class='font-18-px line-height-27px font-helvetica-md'>View Rule
+              Details</span>
+            <span *ngIf="actionType == 'edit'" class='font-18-px line-height-27px font-helvetica-md'>Edit Rule
+              Details</span>
+            <span *ngIf="actionType == 'duplicate'" class='font-18-px line-height-27px font-helvetica-md'>Duplicate Rule
+              Details</span>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div *ngIf="actionType == 'create' || actionType == 'duplicate'">
+          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+            <div fxLayout="column" class="areaWidth min-width-50-per" fxLayoutGap="3px"></div>
+            <div fxLayout="column" class="areaWidth min-width-50-per" fxLayoutGap="3px" fxLayoutAlign="end">
+              <span class="mandatorySpan">*All Details are mandatory.</span>
+            </div>
+          </div>
+          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-xlg"
+            fxLayoutGap="10px">
+            <!-- <div *ngIf="actionType == 'edit'" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label class='font-16-px line-height-24px'>Seq No</mat-label>
+              <div>
+                <mat-form-field appearance="outline" class="full-width">
+                  <input placeholder="Decription" matInput formControlName="seqNo" [disabled] = 'true'>
+                </mat-form-field>
+              </div>
+            </div> -->
+            <div class="areaWidth min-width-65-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label class='font-16-px line-height-24px'>Description
+                <span class='mandatoryColor'>*</span>
+                <span class='font-14-px' style="float: right;">Max 120 Characters</span></mat-label>
+              <div *ngIf="actionType != 'view'">
+                <mat-form-field appearance="outline" class="full-width">
+                  <input placeholder="Description" matInput formControlName="description" maxlength="120">
+                </mat-form-field>
+                <mat-error *ngIf="ruleForm.get('description').hasError('required') && ruleForm.get('description').touched">
+                Please fill the Description
+              </mat-error>
+                <mat-error *ngIf="!(ruleForm.get('description').hasError('required'))  && ruleForm.get('description').hasError('whitespace')">
+                Rule Description cannot contain only white spaces.
+              </mat-error>
+                <!-- <mat-error *ngIf="alertForm.get('alertName').hasError('specialCharsNotAllowed')">
+                  {{ translationData.lblSpecialcharactersnotallowed }}
+              </mat-error> -->
+              </div>
+              <!-- <div *ngIf="actionType == 'view'">
+              <span class='font-helvetica-md'>{{ this.selectedRowData.name }}</span>
+            </div> -->
+            </div>
+            <div class="areaWidth min-width-30-per max-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label class='font-16-px line-height-24px'>Status <span *ngIf="actionType != 'view'"
+                  class='mandatoryColor'>*</span></mat-label>
+              <div *ngIf="actionType != 'view'">
+                <div class="margin-bottom-sm">
+                  <mat-radio-group (change)='onStatusChange($event)' formControlName="status">
+                    <mat-radio-button style='margin-right: 20px;' value="A">
+                      Active
+                    </mat-radio-button>
+                    <mat-radio-button style='margin-right: 20px;' value="I">
+                      Inactive
+                    </mat-radio-button>
+                  </mat-radio-group>
+                </div>
+                <!-- <p style="color: darkgray;">{{translationData.lblselectsinglevehorgroup ||'Select alert to apply alert on a single vehicle or a group of vehicles'}}</p> -->
+              </div>
+              <!-- <div *ngIf="actionType == 'view'">
+            <span class='font-helvetica-md'>{{ selectedRowData.applyOn == 'G' ? translationData.lblGroup : translationData.lblVehicle }}</span>
+          </div> -->
+            </div>
+          </div>
+          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-xlg"
+            fxLayoutGap="10px">
+            <div class="areaWidth min-width-65-per" fxLayout="column" fxLayoutAlign="left">
+              <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <mat-label class='font-16-px line-height-24px'>Start Date</mat-label>
+                  <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
+                    <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
+                      <mat-form-field appearance="outline">
+                        <input matInput [(ngModel)]="startDateValue" (dateChange)="changeStartDateEvent($event)"
+                          [min]='todayDate'  [matDatepicker]="startPicker" formControlName="startDate">
+                        <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+                        <mat-datepicker #startPicker></mat-datepicker>
+                      </mat-form-field>
+                    </div>
+                    <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
+                      <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" class="timepicker"
+                        style='margin-top: 4px;'>
+                        <span class='timeAdjustSpan'>{{ startTimeDisplay }}</span>
+                        <input [max]='selectedEndTime' [(ngModel)]="selectedStartTime" class='inputBox'
+                          [format]="prefTimeFormat" [ngxTimepicker]="toggleStartTimepicker" formControlName="startTime"
+                          readonly>
+                        <ngx-material-timepicker-toggle [for]="toggleStartTimepicker"></ngx-material-timepicker-toggle>
+                        <ngx-material-timepicker (timeChanged)="startTimeChanged($event)" #toggleStartTimepicker>
+                        </ngx-material-timepicker>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <mat-label class='font-16-px line-height-24px'>End Date time</mat-label>
+                  <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
+                    <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
+                      <mat-form-field appearance="outline">
+                        <input matInput [(ngModel)]="endDateValue" (dateChange)="changeEndDateEvent($event)"
+                          [min]='startDateValue' [max]='todayDate' [matDatepicker]="endPicker"
+                          formControlName="endDate">
+                        <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+                        <mat-datepicker #endPicker></mat-datepicker>
+                      </mat-form-field>
+                    </div>
+                    <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
+                      <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" class="timepicker"
+                        style='margin-top: 4px;'>
+                        <span class='timeAdjustSpan'>{{endTimeDisplay}}</span>
+                        <input [min]='selectedStartTime' [(ngModel)]="selectedEndTime" class='inputBox'
+                          [format]="prefTimeFormat" [ngxTimepicker]="toggleEndTimepicker" [disableClick]="true"
+                          formControlName="endTime" readonly>
+                        <ngx-material-timepicker-toggle [for]="toggleEndTimepicker"></ngx-material-timepicker-toggle>
+                        <ngx-material-timepicker (timeChanged)="endTimeChanged($event)" #toggleEndTimepicker>
+                        </ngx-material-timepicker>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label class='font-16-px line-height-24px'>OEM<span *ngIf="actionType != 'view'"></span></mat-label>
+              <div *ngIf="actionType != 'view'">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-select formControlName="OEM">
+                    <mat-option *ngFor="let type of tcuBrands" [value]="type">
+                      {{ type }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <!-- <mat-error *ngIf="alertForm.get('vehicleGroup').hasError('required') && alertForm.get('vehicleGroup').touched">
+                {{translationData.lblPleaseSelectVehicleGroup }}
+              </mat-error>  -->
+              </div>
+            </div>
+          </div>
+          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-xlg"
+            fxLayoutGap="10px" style="margin-top: 20px;">
+            <div class="areaWidth min-width-30-per max-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label class='font-16-px line-height-24px'>TCU Brand<span *ngIf="actionType != 'view'"
+                  class='mandatoryColor'>*</span></mat-label>
+              <div *ngIf="actionType != 'view'">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-select formControlName="tcuBrand">
+                    <mat-option *ngFor="let type of tcuBrands" [value]="type">
+                      {{ type }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <!-- <mat-error *ngIf="alertForm.get('vehicleGroup').hasError('required') && alertForm.get('vehicleGroup').touched">
+                {{translationData.lblPleaseSelectVehicleGroup }}
+              </mat-error> -->
+              </div>
+              <!-- <div *ngIf="actionType == 'view'">
+              <span class='font-helvetica-md'>{{ selectedRowData.applyOn == 'G' ? translationData.lblGroup : translationData.lblVehicle }}</span>
+            </div> -->
+            </div>
+            <div class="areaWidth min-width-30-per max-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label class='font-16-px line-height-24px'>Vehicle Generation<span *ngIf="actionType != 'view'"
+                  class='mandatoryColor'>*</span></mat-label>
+              <div *ngIf="actionType != 'view'">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-select formControlName="vehicleGeneration">
+                    <mat-option *ngFor="let type of vehicleGenerationList" [value]="type">
+                      {{ type }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <!-- <mat-error *ngIf="alertForm.get('vehicleGroup').hasError('required') && alertForm.get('vehicleGroup').touched">
+              {{translationData.lblPleaseSelectVehicleGroup }}
+            </mat-error> -->
+              </div>
+              <!-- <div *ngIf="actionType == 'view'">
+            <span class='font-helvetica-md'>{{ selectedRowData.applyOn == 'G' ? translationData.lblGroup : translationData.lblVehicle }}</span>
+          </div> -->
+            </div>
+            <div class="areaWidth min-width-30-per max-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label class='font-16-px line-height-24px'>Data Frequency<span *ngIf="actionType != 'view'"
+                  class='mandatoryColor'>*</span></mat-label>
+              <div *ngIf="actionType != 'view'">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-select formControlName="dataFrequency">
+                    <mat-option *ngFor="let type of dataFrequencyList" [value]="type">
+                      {{ type }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <!-- <mat-error *ngIf="alertForm.get('vehicleGroup').hasError('required') && alertForm.get('vehicleGroup').touched">
+            {{translationData.lblPleaseSelectVehicleGroup }}
+          </mat-error> -->
+              </div>
+              <!-- <div *ngIf="actionType == 'view'">
+          <span class='font-helvetica-md'>{{ selectedRowData.applyOn == 'G' ? translationData.lblGroup : translationData.lblVehicle }}</span>
+        </div> -->
+            </div>
+          </div>
+          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-xlg"
+            fxLayoutGap="10px" style="margin-top: 20px;">
+            <div class="areaWidth min-width-30-per max-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label class='font-16-px line-height-24px'>Connect State<span *ngIf="actionType != 'view'"
+                  class='mandatoryColor'>*</span></mat-label>
+              <div *ngIf="actionType != 'view'">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-select formControlName="connectState">
+                    <mat-option *ngFor="let type of connectStateList" [value]="type">
+                      {{ type }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <!-- <mat-error *ngIf="alertForm.get('vehicleGroup').hasError('required') && alertForm.get('vehicleGroup').touched">
+                {{translationData.lblPleaseSelectVehicleGroup }}
+              </mat-error> -->
+              </div>
+              <!-- <div *ngIf="actionType == 'view'">
+              <span class='font-helvetica-md'>{{ selectedRowData.applyOn == 'G' ? translationData.lblGroup : translationData.lblVehicle }}</span>
+            </div> -->
+            </div>
+          </div>
+          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-xlg"
+            fxLayoutGap="10px" style="margin-top: 20px;">
+            <div class="areaWidth min-width-30-per max-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label class='font-16-px line-height-24px'>Target System<span *ngIf="actionType != 'view'"
+                  class='mandatoryColor'>*</span></mat-label>
+              <div *ngIf="actionType != 'view'">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-select formControlName="targetSystem">
+                    <mat-option *ngFor="let type of targetSystemList" [value]="type">
+                      {{ type }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <!-- <mat-error *ngIf="alertForm.get('vehicleGroup').hasError('required') && alertForm.get('vehicleGroup').touched">
+                {{translationData.lblPleaseSelectVehicleGroup }}
+              </mat-error> -->
+              </div>
+              <!-- <div *ngIf="actionType == 'view'">
+              <span class='font-helvetica-md'>{{ selectedRowData.applyOn == 'G' ? translationData.lblGroup : translationData.lblVehicle }}</span>
+            </div> -->
+            </div>
+            <div class="areaWidth min-width-30-per max-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label class='font-16-px line-height-24px'>Action<span *ngIf="actionType != 'view'"
+                  class='mandatoryColor'>*</span></mat-label>
+              <div *ngIf="actionType != 'view'">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-select formControlName="action">
+                    <mat-option *ngFor="let type of actionList" [value]="type">
+                      {{ type }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <!-- <mat-error *ngIf="alertForm.get('vehicleGroup').hasError('required') && alertForm.get('vehicleGroup').touched">
+              {{translationData.lblPleaseSelectVehicleGroup }}
+            </mat-error> -->
+              </div>
+              <!-- <div *ngIf="actionType == 'view'">
+            <span class='font-helvetica-md'>{{ selectedRowData.applyOn == 'G' ? translationData.lblGroup : translationData.lblVehicle }}</span>
+          </div> -->
+            </div>
+            <div class="areaWidth min-width-30-per max-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label class='font-16-px line-height-24px'>Action Argument<span *ngIf="actionType != 'view'"
+                  class='mandatoryColor'>*</span></mat-label>
+              <div *ngIf="actionType != 'view'">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-select formControlName="actionArgument">
+                    <mat-option *ngFor="let type of actionArgumentList" [value]="type">
+                      {{ type }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <!-- <mat-error *ngIf="alertForm.get('vehicleGroup').hasError('required') && alertForm.get('vehicleGroup').touched">
+              {{translationData.lblPleaseSelectVehicleGroup }}
+            </mat-error> -->
+              </div>
+              <!-- <div *ngIf="actionType == 'view'">
+            <span class='font-helvetica-md'>{{ selectedRowData.applyOn == 'G' ? translationData.lblGroup : translationData.lblVehicle }}</span>
+          </div> -->
+            </div>
+          </div>
+        </div>
+        <div *ngIf="actionType == 'edit'">
+          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+            <div fxLayout="column" class="areaWidth min-width-50-per" fxLayoutGap="3px"></div>
+            <div fxLayout="column" class="areaWidth min-width-50-per" fxLayoutGap="3px" fxLayoutAlign="end">
+              <span class="mandatorySpan">*All Details are mandatory.</span>
+            </div>
+          </div>
+          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-xlg"
+            fxLayoutGap="10px">
+            <div *ngIf="actionType == 'edit'" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label class='font-16-px line-height-24px'>Seq No</mat-label>
+              <div>
+                <mat-form-field appearance="outline" class="full-width">
+                  <input placeholder="Decription" matInput formControlName="seqNo" [disabled]='true'>
+                </mat-form-field>
+              </div>
+            </div>
+            <div class="areaWidth min-width-65-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label class='font-16-px line-height-24px'>Description
+                <span class='mandatoryColor'>*</span>
+                <span class='font-14-px' style="float: right;">Max 120 Characters</span></mat-label>
+              <div *ngIf="actionType != 'view'">
+                <mat-form-field appearance="outline" class="full-width">
+                  <input placeholder="Decription" matInput formControlName="description" maxlength="120">
+                </mat-form-field>
+                <!-- <mat-error *ngIf="alertForm.get('alertName').hasError('required') && alertForm.get('alertName').touched">
+                {{translationData.lblPleaseEnterNewAlertName }}
+              </mat-error> -->
+                <!-- <mat-error *ngIf="!alertForm.get('alertName').hasError('required')  && alertForm.get('alertName').hasError('whitespace')">
+                {{ translationData.lblAlertNamecannotcontainonlywhitespace }}
+              </mat-error> -->
+                <!-- <mat-error *ngIf="alertForm.get('alertName').hasError('specialCharsNotAllowed')">
+                  {{ translationData.lblSpecialcharactersnotallowed }}
+              </mat-error> -->
+              </div>
+              <!-- <div *ngIf="actionType == 'view'">
+              <span class='font-helvetica-md'>{{ this.selectedRowData.name }}</span>
+            </div> -->
+            </div>
+          </div>
+          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-xlg"
+            fxLayoutGap="10px">
+            <div class="areaWidth min-width-30-per max-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label class='font-16-px line-height-24px'>Status <span *ngIf="actionType != 'view'"
+                  class='mandatoryColor'>*</span></mat-label>
+              <div *ngIf="actionType != 'view'">
+                <div class="margin-bottom-sm">
+                  <mat-radio-group (change)='onStatusChange($event)' formControlName="status">
+                    <mat-radio-button style='margin-right: 20px;' value="A">
+                      Active
+                    </mat-radio-button>
+                    <mat-radio-button style='margin-right: 20px;' value="I">
+                      Inactive
+                    </mat-radio-button>
+                  </mat-radio-group>
+                </div>
+                <!-- <p style="color: darkgray;">{{translationData.lblselectsinglevehorgroup ||'Select alert to apply alert on a single vehicle or a group of vehicles'}}</p> -->
+              </div>
+              <!-- <div *ngIf="actionType == 'view'">
+            <span class='font-helvetica-md'>{{ selectedRowData.applyOn == 'G' ? translationData.lblGroup : translationData.lblVehicle }}</span>
+          </div> -->
+            </div>
+            <div class="areaWidth min-width-65-per" style="padding-left: 35px" fxLayout="column" fxLayoutAlign="left">
+              <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <mat-label class='font-16-px line-height-24px'>Start Date</mat-label>
+                  <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
+                    <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
+                      <mat-form-field appearance="outline">
+                        <input matInput [(ngModel)]="startDateValue" (dateChange)="changeStartDateEvent($event)"
+                          [min]='minDate' [max]='maxDate' [matDatepicker]="startPicker" formControlName="startDate">
+                        <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+                        <mat-datepicker #startPicker></mat-datepicker>
+                      </mat-form-field>
+                    </div>
+                    <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
+                      <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" class="timepicker"
+                        style='margin-top: 4px;'>
+                        <span class='timeAdjustSpan'></span>
+                        <input [max]='selectedEndTime' [(ngModel)]="selectedStartTime" class='inputBox'
+                          [format]="prefTimeFormat" [ngxTimepicker]="toggleStartTimepicker" formControlName="startTime"
+                          readonly>
+                        <ngx-material-timepicker-toggle [for]="toggleStartTimepicker"></ngx-material-timepicker-toggle>
+                        <ngx-material-timepicker (timeChanged)="startTimeChanged($event)" #toggleStartTimepicker>
+                        </ngx-material-timepicker>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <mat-label class='font-16-px line-height-24px'>End Date time</mat-label>
+                  <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
+                    <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
+                      <mat-form-field appearance="outline">
+                        <input matInput [(ngModel)]="endDateValue" (dateChange)="changeEndDateEvent($event)"
+                          [min]='startDateValue' [max]='todayDate' [matDatepicker]="endPicker"
+                          formControlName="endDate">
+                        <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+                        <mat-datepicker #endPicker></mat-datepicker>
+                      </mat-form-field>
+                    </div>
+                    <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
+                      <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" class="timepicker"
+                        style='margin-top: 4px;'>
+                        <span class='timeAdjustSpan'></span>
+                        <input [min]='selectedStartTime' [(ngModel)]="selectedEndTime" class='inputBox'
+                          [format]="prefTimeFormat" [ngxTimepicker]="toggleEndTimepicker" [disableClick]="true"
+                          formControlName="endTime" readonly>
+                        <ngx-material-timepicker-toggle [for]="toggleEndTimepicker"></ngx-material-timepicker-toggle>
+                        <ngx-material-timepicker (timeChanged)="endTimeChanged($event)" #toggleEndTimepicker>
+                        </ngx-material-timepicker>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-xlg"
+            fxLayoutGap="10px" style="margin-top: 20px;">
+            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label class='font-16-px line-height-24px'>OEM<span *ngIf="actionType != 'view'"></span></mat-label>
+              <div *ngIf="actionType != 'view'">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-select formControlName="OEM">
+                    <mat-option *ngFor="let type of tcuBrands" [value]="type">
+                      {{ type }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <!-- <mat-error *ngIf="alertForm.get('vehicleGroup').hasError('required') && alertForm.get('vehicleGroup').touched">
+                {{translationData.lblPleaseSelectVehicleGroup }}
+              </mat-error>  -->
+              </div>
+            </div>
+            <div class="areaWidth min-width-30-per max-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label class='font-16-px line-height-24px'>TCU Brand<span *ngIf="actionType != 'view'"
+                  class='mandatoryColor'>*</span></mat-label>
+              <div *ngIf="actionType != 'view'">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-select formControlName="tcuBrand">
+                    <mat-option *ngFor="let type of tcuBrands" [value]="type">
+                      {{ type }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <!-- <mat-error *ngIf="alertForm.get('vehicleGroup').hasError('required') && alertForm.get('vehicleGroup').touched">
+                {{translationData.lblPleaseSelectVehicleGroup }}
+              </mat-error> -->
+              </div>
+              <!-- <div *ngIf="actionType == 'view'">
+              <span class='font-helvetica-md'>{{ selectedRowData.applyOn == 'G' ? translationData.lblGroup : translationData.lblVehicle }}</span>
+            </div> -->
+            </div>
+            <div class="areaWidth min-width-30-per max-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label class='font-16-px line-height-24px'>Vehicle Generation<span *ngIf="actionType != 'view'"
+                  class='mandatoryColor'>*</span></mat-label>
+              <div *ngIf="actionType != 'view'">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-select formControlName="vehicleGeneration">
+                    <mat-option *ngFor="let type of vehicleGenerationList" [value]="type">
+                      {{ type }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <!-- <mat-error *ngIf="alertForm.get('vehicleGroup').hasError('required') && alertForm.get('vehicleGroup').touched">
+              {{translationData.lblPleaseSelectVehicleGroup }}
+            </mat-error> -->
+              </div>
+              <!-- <div *ngIf="actionType == 'view'">
+            <span class='font-helvetica-md'>{{ selectedRowData.applyOn == 'G' ? translationData.lblGroup : translationData.lblVehicle }}</span>
+          </div> -->
+            </div>
+          </div>
+          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-xlg"
+            fxLayoutGap="10px" style="margin-top: 20px;">
+            <div class="areaWidth min-width-30-per max-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label class='font-16-px line-height-24px'>Data Frequency<span *ngIf="actionType != 'view'"
+                  class='mandatoryColor'>*</span></mat-label>
+              <div>
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-select formControlName="dataFrequency">
+                    <mat-option *ngFor="let type of dataFrequencyList" [value]="type">
+                      {{ type }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <!-- <mat-error *ngIf="alertForm.get('vehicleGroup').hasError('required') && alertForm.get('vehicleGroup').touched">
+            {{translationData.lblPleaseSelectVehicleGroup }}
+          </mat-error> -->
+              </div>
+              <!-- <div *ngIf="actionType == 'view'">
+          <span class='font-helvetica-md'>{{ selectedRowData.applyOn == 'G' ? translationData.lblGroup : translationData.lblVehicle }}</span>
+        </div> -->
+            </div>
+            <div class="areaWidth min-width-30-per max-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label class='font-16-px line-height-24px'>Connect State<span *ngIf="actionType != 'view'"
+                  class='mandatoryColor'>*</span></mat-label>
+              <div *ngIf="actionType != 'view'">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-select formControlName="connectState">
+                    <mat-option *ngFor="let type of connectStateList" [value]="type">
+                      {{ type }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <!-- <mat-error *ngIf="alertForm.get('vehicleGroup').hasError('required') && alertForm.get('vehicleGroup').touched">
+                {{translationData.lblPleaseSelectVehicleGroup }}
+              </mat-error> -->
+              </div>
+              <!-- <div *ngIf="actionType == 'view'">
+              <span class='font-helvetica-md'>{{ selectedRowData.applyOn == 'G' ? translationData.lblGroup : translationData.lblVehicle }}</span>
+            </div> -->
+            </div>
+            <div class="areaWidth min-width-30-per max-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            </div>
+          </div>
+          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-xlg"
+            fxLayoutGap="10px" style="margin-top: 20px;">
+            <div class="areaWidth min-width-30-per max-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label class='font-16-px line-height-24px'>Target System<span *ngIf="actionType != 'view'"
+                  class='mandatoryColor'>*</span></mat-label>
+              <div *ngIf="actionType != 'view'">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-select formControlName="targetSystem">
+                    <mat-option *ngFor="let type of targetSystemList" [value]="type">
+                      {{ type }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <!-- <mat-error *ngIf="alertForm.get('vehicleGroup').hasError('required') && alertForm.get('vehicleGroup').touched">
+                {{translationData.lblPleaseSelectVehicleGroup }}
+              </mat-error> -->
+              </div>
+              <!-- <div *ngIf="actionType == 'view'">
+              <span class='font-helvetica-md'>{{ selectedRowData.applyOn == 'G' ? translationData.lblGroup : translationData.lblVehicle }}</span>
+            </div> -->
+            </div>
+            <div class="areaWidth min-width-30-per max-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label class='font-16-px line-height-24px'>Action<span *ngIf="actionType != 'view'"
+                  class='mandatoryColor'>*</span></mat-label>
+              <div *ngIf="actionType != 'view'">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-select formControlName="action">
+                    <mat-option *ngFor="let type of actionList" [value]="type">
+                      {{ type }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <!-- <mat-error *ngIf="alertForm.get('vehicleGroup').hasError('required') && alertForm.get('vehicleGroup').touched">
+              {{translationData.lblPleaseSelectVehicleGroup }}
+            </mat-error> -->
+              </div>
+              <!-- <div *ngIf="actionType == 'view'">
+            <span class='font-helvetica-md'>{{ selectedRowData.applyOn == 'G' ? translationData.lblGroup : translationData.lblVehicle }}</span>
+          </div> -->
+            </div>
+            <div class="areaWidth min-width-30-per max-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label class='font-16-px line-height-24px'>Action Argument<span *ngIf="actionType != 'view'"
+                  class='mandatoryColor'>*</span></mat-label>
+              <div *ngIf="actionType != 'view'">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-select formControlName="actionArgument">
+                    <mat-option *ngFor="let type of actionArgumentList" [value]="type">
+                      {{ type }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <!-- <mat-error *ngIf="alertForm.get('vehicleGroup').hasError('required') && alertForm.get('vehicleGroup').touched">
+              {{translationData.lblPleaseSelectVehicleGroup }}
+            </mat-error> -->
+              </div>
+              <!-- <div *ngIf="actionType == 'view'">
+            <span class='font-helvetica-md'>{{ selectedRowData.applyOn == 'G' ? translationData.lblGroup : translationData.lblVehicle }}</span>
+          </div> -->
+            </div>
+          </div>
+        </div>
+        <div *ngIf="actionType == 'view'">
+          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-xlg"
+            fxLayoutGap="10px">
+            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label class='font-16-px line-height-24px'>Seq No</mat-label>
+              <span class='font-helvetica-md'>{{this.selectedRowData.SeqNo }}</span>
+            </div>
+            <div class="areaWidth min-width-65-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label class='font-16-px line-height-24px'>Description</mat-label>
+              <span class='font-helvetica-md'>{{this.selectedRowData.Description }}</span>
+            </div>
+          </div>
+          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-xlg"
+            fxLayoutGap="10px">
+            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label class='font-16-px line-height-24px'>Status</mat-label>
+              <span class='font-helvetica-md'>{{this.selectedRowData.Enabled }}</span>
+            </div>
+            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label class='font-16-px line-height-24px'>Start Date-Time</mat-label>
+              <span class='font-helvetica-md'>{{this.selectedRowData.StartTimestampt }}</span>
+            </div>
+            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label class='font-16-px line-height-24px'>End Date-Time</mat-label>
+              <span class='font-helvetica-md'>{{this.selectedRowData.EndTimestamp }}</span>
+            </div>
+          </div>
+          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-xlg"
+            fxLayoutGap="10px">
+            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label class='font-16-px line-height-24px'>OEM</mat-label>
+              <span class='font-helvetica-md'>{{this.selectedRowData.OEM }}</span>
+            </div>
+            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label class='font-16-px line-height-24px'>TCU Brand</mat-label>
+              <span class='font-helvetica-md'>{{this.selectedRowData.TCUBrand }}</span>
+            </div>
+            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label class='font-16-px line-height-24px'>Vehicle Generation</mat-label>
+              <span class='font-helvetica-md'>{{this.selectedRowData.VehicleGeneration }}</span>
+            </div>
+          </div>
+          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-xlg"
+            fxLayoutGap="10px">
+            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label class='font-16-px line-height-24px'>Data Frequency</mat-label>
+              <span class='font-helvetica-md'>{{this.selectedRowData.Datafrequency }}</span>
+            </div>
+            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label class='font-16-px line-height-24px'>Connect State</mat-label>
+              <span class='font-helvetica-md'>{{this.selectedRowData.ConnectedState }}</span>
+            </div>
+            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            </div>
+          </div>
+          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-xlg"
+            fxLayoutGap="10px">
+            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label class='font-16-px line-height-24px'>Target System</mat-label>
+              <span class='font-helvetica-md'>{{this.selectedRowData.TargetSystem }}</span>
+            </div>
+            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label class='font-16-px line-height-24px'>Action</mat-label>
+              <span class='font-helvetica-md'>{{this.selectedRowData.Action }}</span>
+            </div>
+            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label class='font-16-px line-height-24px'>Action Argument</mat-label>
+              <span class='font-helvetica-md'>{{this.selectedRowData.ActionArgument }}</span>
+            </div>
+          </div>
+        </div>
+      </mat-expansion-panel>
+    </mat-card>
+    <mat-card-actions style="padding: 10px;" fxLayoutAlign="end" *ngIf="actionType != 'view'">
+      <div fxLayout="row" fxLayoutAlign="space-between center">
+        <div fxLayout="column" fxLayoutAlign="end">
+          <div fxLayout="row" class='areaWidth'>
+            <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary"
+              (click)='onCancel()'>Cancel</button>
+            <button *ngIf="actionType == 'edit'" class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button
+              color="primary" (click)='onReset()'>Reset</button>
+            <button class='no-margin' mat-raised-button color="primary"
+              (click)='onCreateUpdate()'>{{ actionType == 'create' || actionType == 'duplicate' ? 'Create' : 'Confirm'}}</button>
+          </div>
+        </div>
+      </div>
+    </mat-card-actions>
+    <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
+  </form>
+</div>

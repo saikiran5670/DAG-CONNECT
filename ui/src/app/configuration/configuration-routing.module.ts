@@ -8,7 +8,9 @@ import { DriverManagementComponent } from '../admin/driver-management/driver-man
 import { TermsConditionsManagementComponent } from './terms-conditions-management/terms-conditions-management.component';
 import { DtcTranslationComponent } from './dtc-translation/dtc-translation.component';
 import { ReportSchedulerComponent } from "./report-scheduler/report-scheduler.component";
-import { EcoScoreProfileManagementComponent } from "./eco-score-profile-management/eco-score-profile-management.component"
+import { EcoScoreProfileManagementComponent } from "./eco-score-profile-management/eco-score-profile-management.component";
+import { MeasurementCampaignRuleComponent } from "./measurement-rule/measurement-campaign-rule.component";
+
 
 const routes: Routes = [
   {
@@ -20,7 +22,9 @@ const routes: Routes = [
       { path: "drivermanagement", component: DriverManagementComponent },
       { path: "vehiclemanagement", component: VehicleManagementComponent },
       { path: "termsandcondition", component: TermsConditionsManagementComponent },
-      { path: "dtctranslation", component: DtcTranslationComponent }
+      { path: "dtctranslation", component: DtcTranslationComponent },
+      { path: "measurementcampaignrule", component: MeasurementCampaignRuleComponent}
+
     ]
   }
 ];

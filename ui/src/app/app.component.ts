@@ -96,6 +96,7 @@ export class AppComponent {
     ecoscoreprofilemanagement: 'lblEcoScoreProfileManagement',
     alerts: 'lblAlerts',
     landmarks: 'lblLandmarks',
+    measurementcampaignrule: 'lblMeasurmentCampaignRule',
     reportscheduler: 'lblReportScheduler',
     drivermanagement: 'lblDriverManagement',
     vehiclemanagement: 'lblVehicleManagement',
@@ -172,6 +173,7 @@ export class AppComponent {
       pageTitles: {
         alerts: 'lblAlerts',
         landmarks: 'lblLandmarks',
+        measurementcampaignrule: 'lblMeasurmentCampaignRule',
         reportscheduler: 'lblReportScheduler',
         ecoscoreprofilemanagement: 'lblEcoScoreProfileManagement',
         drivermanagement: 'lblDriverManagement',

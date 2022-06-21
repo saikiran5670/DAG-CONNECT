@@ -44,6 +44,7 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { SignalrAlertNotificationComponent } from './signalr-alert-notification/signalr-alert-notification.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { MeasurementRuleService } from './services/measurementrule.service';
 
 
 
@@ -96,7 +97,8 @@ export function configFactory(httpClient: HttpClient): ConfigLoader {
     GeofenceService,
     AlertService,
     ReportService,
-    ReportSchedulerService
+    ReportSchedulerService,
+    MeasurementRuleService
   ],
   bootstrap: [AppComponent],
 })

@@ -46,6 +46,9 @@ import { TimeRangeSliderComponent } from './eco-score-profile-management/time-ra
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter } from '@angular/material-moment-adapter';
 import { ScrollingModule } from '@angular/cdk/scrolling';
+import { MeasurementCampaignRuleComponent } from './measurement-rule/measurement-campaign-rule.component';
+import { CreateEditViewRuleComponent } from './measurement-rule/create-edit-view-rule/create-edit-view-rule.component';
+
 
 export const MY_DATE_FORMAT = {
   parse: {
@@ -90,7 +93,9 @@ export const MY_DATE_FORMAT = {
     ViewReportSchedulerComponent,
     BreakingScoreComponent,
     MaxTargetScoreComponent,
-    TimeRangeSliderComponent
+    TimeRangeSliderComponent,
+    MeasurementCampaignRuleComponent,
+    CreateEditViewRuleComponent
   ],
   imports: [
     CommonModule,
