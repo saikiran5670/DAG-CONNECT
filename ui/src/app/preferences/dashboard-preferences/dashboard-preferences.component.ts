@@ -358,7 +358,7 @@ export class DashboardPreferencesComponent implements OnInit {
       }
       else if(element.key.includes('fleetkpi_fuelconsumption'))
       {
-        let totalmililitres = this.prefUnitFormat == 'dunit_Imperial' ? this.reportMapService.convertFuelConsumptionMpgToMlm(thresholdValue): this.reportMapService.convertFuelConsumptionLtr100kmToMlm(thresholdValue);
+        let totalmililitres = this.prefUnitFormat == 'dunit_Imperial' ?  (thresholdValue > 0 ? ((282.481/thresholdValue)/100).toFixed(4) : '0'): this.reportMapService.convertFuelConsumptionLtr100kmToMlm(thresholdValue);
         saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: chartType ? chartType : '', thresholdType: thresholdType, thresholdValue: parseFloat(totalmililitres), reportId: element.reportId  });
       }
       else if (element.key.includes('fleetkpi_fuelusedidling') || element.key.includes('fleetkpi_fuelconsumed')) {
