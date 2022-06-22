@@ -359,7 +359,7 @@
                     <button class='resetCancelBtnColor margin-right-10' (click)='onReset()' mat-raised-button
                         color="primary">{{
                         translationData.lblReset }}</button>
-                    <button [disabled]='!dashboardPreferenceForm.valid ||(selectionForFleetKPIColumns.selected.length == 0 && fleetKPIColumnData.length > 0) || (selectionForVehicleUtilizationColumns.selected.length == 0 && vehicleUtilizationColumnData.length > 0) || (selectionForTodayLiveVehicleColumns.selected.length == 0 && todayLiveVehicleColumnData.length > 0) || (selectionForAlertLast24HoursColumns.selected.length == 0 && alertLast24HoursColumnData.length > 0)' class='no-margin' (click)='onConfirm()' mat-raised-button color="primary">{{
+                    <button [disabled]='dashboardPreferenceForm.pristine || !dashboardPreferenceForm.valid ||(selectionForFleetKPIColumns.selected.length == 0 && fleetKPIColumnData.length > 0) || (selectionForVehicleUtilizationColumns.selected.length == 0 && vehicleUtilizationColumnData.length > 0) || (selectionForTodayLiveVehicleColumns.selected.length == 0 && todayLiveVehicleColumnData.length > 0) || (selectionForAlertLast24HoursColumns.selected.length == 0 && alertLast24HoursColumnData.length > 0)' class='no-margin' (click)='onConfirm()' mat-raised-button color="primary">{{
                         (translationData.lblConfirm) }}</button>
                 </div>
             </mat-expansion-panel>
