@@ -698,6 +698,8 @@ export class DriverManagementComponent implements OnInit {
     data.forEach(d => {
       let row = worksheet.addRow(d);
     });
+    let ws = workbook.worksheets[0];
+    ws.getColumn(2).numFmt = '@';//to make driver id column of type 'Text' in excel Azure - 30219
 
     workbook.xlsx.writeBuffer().then((data) => {
       let blob = new Blob([data], { type: EXCEL_TYPE });
