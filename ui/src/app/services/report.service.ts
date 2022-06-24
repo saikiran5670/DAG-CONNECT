@@ -515,16 +515,6 @@ export class ReportService {
     //}
   }
 
-  getvehiclehealthstatusHistory(vin, languagecode, warningtype:any, startTime, endTime): Observable<any[]> {
-    let headerObj = this.generateHeader();
-    const headers = {
-      headers: new HttpHeaders({ headerObj }),
-    };
-      return this.httpClient
-        .get<any[]>(`${this.reportServiceUrl}/fleetoverview/getvehiclehealthstatus?VIN=${vin}&LngCode=${languagecode}&WarningType=${warningtype}&StartDateTime=${startTime}&EndDateTime=${endTime}`, headers)
-        .pipe(catchError(this.handleError));
-  }
-
   getLogbookDetails(data: any) {
     let headerObj = this.generateHeader();
     const headers = {
