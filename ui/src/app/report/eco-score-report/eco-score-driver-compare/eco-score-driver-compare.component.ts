@@ -415,9 +415,10 @@ export class EcoScoreDriverCompareComponent implements OnInit {
         valTemp = Number.parseInt(valTemp.toString());
         return new Date(valTemp * 1000).toISOString().substr(11, 8);
       } else if(this.prefUnitFormat !== 'dunit_Metric'){
-          if(dataContext.key && dataContext.key === 'rp_averagegrossweight'){
-            return (valTemp * 1.10231).toFixed(2);
-          } else if(dataContext.key && (dataContext.key === 'rp_distance' || dataContext.key === 'rp_averagedistanceperday'
+          // if(dataContext.key && dataContext.key === 'rp_averagegrossweight'){
+          //   return (valTemp * 1.10231).toFixed(2);
+          // } else 
+          if(dataContext.key && (dataContext.key === 'rp_distance' || dataContext.key === 'rp_averagedistanceperday'
                     || dataContext.key === 'rp_averagedrivingspeed' || dataContext.key === 'rp_averagespeed')){
             return (valTemp * 0.62137119).toFixed(2);
           } else if(dataContext.key && dataContext.key === 'rp_fuelconsumption'){
