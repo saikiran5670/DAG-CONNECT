@@ -50,6 +50,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   selectedStartTimeValue: any ='00:00';
   selectedEndTimeValue: any ='11:59';
   endTimeStart:any;
+  prefDetail:any;
   public filteredVehicleGroups: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
   public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
@@ -57,6 +58,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
+    this.prefDetail = JSON.parse(localStorage.getItem('prefDetail'));
     if (!this.utilsService.isEmpty(localStorage.getItem("globalSearchFilterData"))) {
       this.globalSearchFilterData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
     }
@@ -72,6 +74,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
       startTime: ['00:00', []],
       endTime: ['23:59', []]
     });
+    this.getPreferences(this.prefDetail);
   }
 
   getPreferences(prefData) {
@@ -333,7 +336,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   }
 
   setDefaultStartEndTime() {
-    if (!this.internalSelection && !this.utilsService.isEmpty(this.globalSearchFilterData)) {
+    if (!this.internalSelection && this.globalSearchFilterData.modifiedFrom !== "" && ((this.globalSearchFilterData.startTimeStamp || this.globalSearchFilterData.endTimeStamp) !== "")) {
       if (this.prefTimeFormat == this.globalSearchFilterData.filterPrefTimeFormat) { // same format
         this.searchForm.get('startTime').setValue(this.globalSearchFilterData.startTimeStamp);
         this.searchForm.get('endTime').setValue(this.globalSearchFilterData.endTimeStamp);
@@ -369,7 +372,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   }
 
   setDefaultTodayDate() {
-    if (!this.internalSelection && !this.utilsService.isEmpty(this.globalSearchFilterData)) {
+    if (!this.internalSelection && this.globalSearchFilterData.modifiedFrom !== '') {
       if (this.utilsService.isEmpty(this.globalSearchFilterData.timeRangeSelection)) {
         this.selectionTab = 'today';
       } else {
