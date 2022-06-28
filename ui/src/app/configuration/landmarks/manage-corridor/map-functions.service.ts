@@ -288,8 +288,8 @@ export class MapFunctionsService {
                   }
 
                 if (data[0].viaAddressDetail.length > 0) {
-                  this.viaRoutePlottedPoints = [];
-                  this.viaRoutePlottedPoints = data[0].viaAddressDetail;
+                  this.viaRoutePlottedPoints = data[0].viaAddressDetail.filter( e => e.type == "V");
+                  // this.viaRoutePlottedPoints = data[0].viaAddressDetail;
                   this.plotViaStopPoints();
                 }
                 else{
