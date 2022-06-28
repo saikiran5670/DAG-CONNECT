@@ -131,7 +131,7 @@ export class FleetUtilisationComponent implements OnInit, OnDestroy {
   prefMapData: any = [
     {
       key: 'rp_fu_report_details_vehiclename',
-      value: 'vehiclename'
+      value: 'vehicleName'
     },
     {
       key: 'rp_fu_report_details_averagespeed',
@@ -159,7 +159,7 @@ export class FleetUtilisationComponent implements OnInit, OnDestroy {
     },
     {
       key: 'rp_fu_report_details_registrationnumber',
-      value: 'registrationnumber'
+      value: 'registrationNumber'
     },
     {
       key: 'rp_fu_report_details_vin',
