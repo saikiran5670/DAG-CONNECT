@@ -65,6 +65,10 @@ export class CreateEditViewGroupComponent implements OnInit {
         CustomValidators.specialCharValidationForNameWithoutRequired('landmarkGroupDescription')
       ]
     });
+    this.loadPOIData();
+    this.updatePOIDataSource(this.poiGridData);
+    this.updateGeofenceDataSource(this.geofenceDataSource);
+        this.loadGeofenceData();
 //console.log('Ac',this.actionType);
 //console.log('TT',this.titleText);
     if(this.actionType == 'edit' ){
@@ -72,8 +76,6 @@ export class CreateEditViewGroupComponent implements OnInit {
     }
     this.breadcumMsg = this.getBreadcum();
     // this.showLoadingIndicator = true;
-    this.loadPOIData();
-    this.loadGeofenceData();
     this.loadLandmarkCategoryData();
     // this.hideloader();
   }
@@ -168,7 +170,7 @@ export class CreateEditViewGroupComponent implements OnInit {
         });
         this.poiGridData = poilist;
         this.updatePOIDataSource(this.poiGridData);
-        if(this.actionType == 'view' || this.actionType == 'edit'){
+        if(this.actionType == 'edit'){
           this.loadPOISelectedData(this.poiGridData);
         }
       }
@@ -212,7 +214,7 @@ export class CreateEditViewGroupComponent implements OnInit {
       this.geofenceGridData = geofencelist.geofenceList;
      this.geofenceGridData = this.geofenceGridData.filter(item => item.type == "C" || item.type == "O");
       this.updateGeofenceDataSource(this.geofenceGridData);
-      if(this.actionType == 'view' || this.actionType == 'edit')
+      if(this.actionType == 'edit')
         this.loadGeofenceSelectedData(this.geofenceGridData);
     }, (error)=>{
       this.hideloader();
