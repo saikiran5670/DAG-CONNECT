@@ -202,14 +202,45 @@ export class CreateEditViewGeofenceComponent implements OnInit {
         this.circularGeofence = true;
         this.setDefaultCircularGeofenceFormValue();
         this.loadGridData(this.poiData);
+        let geoMarkerArray= [];
+        geoMarkerArray.push(this.selectedElementData);
+        this.addMarkersAndSetViewBoundsGeofence(this.hereMap, geoMarkerArray); 
         this.drawCircularGeofence();
       } else { //-- polygon geofence
         this.polygoanGeofence = true;
         this.setInfoBubble(this.polygoanGeofence);
         this.setDefaultPolygonGeofenceFormValue();
+        let geoMarkerArray= [];
+        geoMarkerArray.push(this.selectedElementData);
+        this.addMarkersAndSetViewBoundsGeofence(this.hereMap, geoMarkerArray); 
         this.drawPolygon();
       }
     }
+  }
+
+  addMarkersAndSetViewBoundsGeofence(map, geoMarkerArray) {
+    let group = new H.map.Group();
+    let locationObjArray= [];
+    geoMarkerArray.forEach(row => {
+
+    if(row.type == 'C'){
+      locationObjArray.push(new H.map.Marker({lat:row.latitude, lng:row.longitude}));
+    } else {
+      row.nodes.forEach(element => {
+        locationObjArray.push(new H.map.Marker({lat:element.latitude, lng:element.longitude}));
+      });
+    }
+  });
+
+    group.removeAll();
+    // add markers to the group
+    group.addObjects(locationObjArray);
+    map.addObject(group);
+
+    // get geo bounding box for the group and set it to the map
+    map.getViewModel().setLookAtData({
+      bounds: group.getBoundingBox()
+    });
   }
 
   drawCircularGeofence(){
