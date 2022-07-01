@@ -3,7 +3,7 @@ trigger:
   branches:
     include:
     - development
-#   - develop_ct_2.1_ui
+    - develop_ct_2.1_ui
 #   - dev2-branch
     - release
     - testing
