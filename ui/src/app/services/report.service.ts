@@ -433,7 +433,7 @@ export class ReportService {
     };
     return this.httpClient
       .post<any[]>(
-        `${this.reportServiceUrl}/fleetoverview/getfleetoverviewdetails`, data, headers
+        `${this.reportServiceUrl}/fleetoverview/details`, data, headers
       )
       .pipe(catchError(this.handleError));
   }
@@ -446,7 +446,7 @@ export class ReportService {
     };
     return this.httpClient
       .get<any[]>(
-        `${this.reportServiceUrl}/fleetoverview/getfilterdetails`, headers
+        `${this.reportServiceUrl}/fleetoverview/filters`, headers
       )
       .pipe(catchError(this.handleError));
   }
@@ -470,7 +470,7 @@ export class ReportService {
     };
     return this.httpClient
       .get<any[]>(
-        `${this.reportServiceUrl}/fleetoverview/getfilterpoidetails`, headers
+        `${this.reportServiceUrl}/fleetoverview/poifilters`, headers
       )
       .pipe(catchError(this.handleError));
   }
