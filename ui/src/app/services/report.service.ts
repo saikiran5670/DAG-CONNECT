@@ -516,15 +516,9 @@ export class ReportService {
     const headers = {
       headers: new HttpHeaders({ headerObj }),
     };
-    //if (tripid) {
-    //  return this.httpClient
-    //    .get<any[]>(`${this.reportServiceUrl}/fleetoverview/getvehiclehealthstatus?VIN=${vin}&TripId=${tripid}&LngCode=${languagecode}`, headers)
-    //    .pipe(catchError(this.handleError));
-   // } else {
-      return this.httpClient
-        .get<any[]>(`${this.reportServiceUrl}/fleetoverview/getvehiclehealthstatus?VIN=${vin}&LngCode=${languagecode}&WarningType=${warningtype}`, headers)
-        .pipe(catchError(this.handleError));
-    //}
+    return this.httpClient
+      .get<any[]>(`${this.reportServiceUrl}/fleetoverview/vehicle/health?VIN=${vin}&LngCode=${languagecode}&WarningType=${warningtype}`, headers)
+      .pipe(catchError(this.handleError));
   }
 
   getLogbookDetails(data: any) {
