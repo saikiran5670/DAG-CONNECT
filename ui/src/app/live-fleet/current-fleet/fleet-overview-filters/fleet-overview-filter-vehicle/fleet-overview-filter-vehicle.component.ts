@@ -1,5 +1,6 @@
 import { EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { ReportService } from 'src/app/services/report.service';
 import { DataInterchangeService } from '../../../../services/data-interchange.service';
 
 
@@ -31,7 +32,7 @@ vehicleFilterComponentEmitFlag: boolean =false;
 isVehicleDetails : boolean = false;
 selectedElementData: any = [];
 
-constructor(private dataInterchangeService: DataInterchangeService, private cdr: ChangeDetectorRef) { }
+constructor(private dataInterchangeService: DataInterchangeService, private cdr: ChangeDetectorRef, private reportService: ReportService) { }
 
 ngAfterViewInit(){
   this.cdr.detectChanges();
@@ -44,9 +45,9 @@ ngAfterViewInit(){
       this.onChangetodayCheckbox(this.fromVehicleHealth.selectedElementData.todayFlag); 
       this.openVehicleDetails(this.fromVehicleHealth.selectedElementData);
     }
-    else{
-      this.onChangetodayCheckbox(this.todayFlagClicked);
-    }
+    // else{
+    //   this.onChangetodayCheckbox(this.todayFlagClicked);
+    // }
   }
 
   onChangetodayCheckbox(flag){
@@ -67,6 +68,12 @@ ngAfterViewInit(){
   }
 
   openVehicleDetails(data: any){
+    let tripData = {
+      tripIds: [data.tripId],
+      vin: data.vin,
+      startdatetime: 0,
+      enddatetime: 0
+    };
     this.isVehicleDetails = true;
     this.selectedElementData = data;
     this.selectedElementData.todayFlag= this.todayFlagClicked;
@@ -74,14 +81,30 @@ ngAfterViewInit(){
     let obj ={
       vehicleDetailsFlag : this.isVehicleDetails
     }
+    this.showLoadingIndicator = true;
     let _dataObj = {
       vehicleDetailsFlag: this.isVehicleDetails,
       data: data,
       setFlag: true
     }
-    //this.vehicleDetailsInfoEmit.emit(obj);
-    this.vehicleDetailsInfoEmit.emit(_dataObj);
-    this.dataInterchangeService.getVehicleData(_dataObj); //change as per selected vehicle
+    this.reportService.getLiveFleetPositions(tripData).subscribe((tripData: any) => {
+      if(tripData && tripData.trips && tripData.trips.length > 0){
+        data['liveFleetPosition'] = tripData.trips[0].liveFleetPosition;
+        _dataObj = {
+          vehicleDetailsFlag: this.isVehicleDetails,
+          data: data,
+          setFlag: true
+        }
+        this.vehicleDetailsInfoEmit.emit(_dataObj);      
+        this.dataInterchangeService.getVehicleData(_dataObj);
+      } else {
+        this.vehicleDetailsInfoEmit.emit(_dataObj);      
+        this.dataInterchangeService.getVehicleData(_dataObj);
+      }
+      this.showLoadingIndicator = false;
+    }, ()=>{
+      this.showLoadingIndicator = false;
+    });
   }
 
   checkCreationForVehicleDetails(item: any,isBackClick = false){
