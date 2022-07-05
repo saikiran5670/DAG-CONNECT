@@ -45,7 +45,7 @@
             <span class='font-18-px line-height-27px font-helvetica-md'>{{ translationData.lblPOI || 'POI' }} ({{ poiInitData.length }})</span>
           </div>
 
-          <div *ngIf='adminAccessType.adminFullAccess' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+          <div *ngIf='adminAccessType.adminFullAccess || adminAccessType.adminContributorAccess' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
             <div fxLayout="row" class='areaWidth'>
               <button mat-flat-button color="primary" [matMenuTriggerFor]="belowMenu">
                 <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewLandmark || 'New Landmark' }}

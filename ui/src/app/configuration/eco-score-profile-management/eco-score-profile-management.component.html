@@ -26,7 +26,7 @@
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
                 <span class='font-18-px line-height-27px font-helvetica-md'>{{ actionType == 'create' ? (translationData.lblCreateProfile || 'Create Profile') : (translationData.lblManageProfile || 'Manage Profile')  }}</span>
             </div>
-            <div *ngIf="adminAccessType.adminFullAccess" >
+            <div *ngIf="adminAccessType.adminFullAccess || adminAccessType.adminContributorAccess" >
                 <button *ngIf="actionType != 'create'" mat-flat-button color="primary" (click)="createNewProfile()" [disabled]='profileList.length > 29'>
                   <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewProfile || 'New Profile' }}
                 </button>

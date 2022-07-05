@@ -15,7 +15,7 @@
                 'Categories' }} -
                 ({{ dataSource.filteredData.length }})</span>
             </div>
-            <div *ngIf="adminAccessType.adminFullAccess" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+            <div *ngIf="adminAccessType.adminFullAccess || adminAccessType.adminContributorAccess" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
               <div fxLayout="row" class='areaWidth'>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
                   <button mat-flat-button color="primary" (click)="onNewCategory()">

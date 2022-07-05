@@ -34,7 +34,7 @@
                 <button mat-menu-item (click)="exportAsCSV()">{{ translationData.lblCSV }}</button>
             </mat-menu>
             </div>
-              <div *ngIf="adminAccessType.adminFullAccess" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+              <div *ngIf="adminAccessType.adminFullAccess || adminAccessType.adminContributorAccess" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
                 <button mat-flat-button color="primary" (click)="onNewUserGroup()">
                 <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewUserGroup }}
                 </button>

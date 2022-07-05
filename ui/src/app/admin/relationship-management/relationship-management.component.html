@@ -39,7 +39,7 @@
                         <button mat-menu-item (click)="exportAsCSV()">{{ translationData.lblCSV }}</button>
                       </mat-menu>
                     </div>
-                    <div  *ngIf="adminAccessType.adminFullAccess" >
+                    <div  *ngIf="adminAccessType.adminFullAccess || adminAccessType.adminContributorAccess" >
                     <button mat-flat-button color="primary" (click)="newRelationship()">
                         <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewRelationship }}
                     </button>

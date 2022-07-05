@@ -40,7 +40,7 @@
               <span class='font-18-px line-height-27px font-helvetica-md'>{{ translationData.lblCorridorList || 'Corridor List'
               }}  </span>
             </div>
-            <div *ngIf="adminAccessType.adminFullAccess" class="groupDetails margin-bottom-sm" fxLayout="row" fxLayoutAlign="space-between">
+            <div *ngIf="adminAccessType.adminFullAccess || adminAccessType.adminContributorAccess" class="groupDetails margin-bottom-sm" fxLayout="row" fxLayoutAlign="space-between">
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
                     <div fxLayout="row" class='areaWidth'>
                         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">

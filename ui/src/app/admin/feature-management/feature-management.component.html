@@ -20,7 +20,7 @@
     [actionColumnElements]="actionColumnElements" [selectColumnDataElements]="selectColumnDataElements" [selectColumnHeaderElements]="selectColumnHeaderElements" showExport="true" exportFileName="Feature Details">
 
     <ng-template #topRightElements>
-      <div *ngIf="adminAccessType.adminFullAccess">
+      <div *ngIf="adminAccessType.adminFullAccess || adminAccessType.adminContributorAccess">
         <button mat-flat-button color="primary" (click)="createNewFeature()">
           <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewFeature  }}
         </button>

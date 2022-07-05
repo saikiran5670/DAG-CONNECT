@@ -97,7 +97,7 @@
                     </mat-menu>
                     </div> -->
             <div
-              *ngIf="adminAccessType.adminFullAccess"
+              *ngIf="adminAccessType.adminFullAccess || adminAccessType.adminContributorAccess"
               fxLayout="column"
               fxLayoutGap="3px"
               fxLayoutAlign="end"
