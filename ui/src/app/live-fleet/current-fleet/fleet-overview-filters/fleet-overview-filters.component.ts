@@ -1400,10 +1400,7 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
           data: data
         }
       }
-      if(!this.fromVehicleHealth || (this.fromVehicleHealth && !this.fromVehicleHealth.fromVehicleHealth))
         this.dataInterchangeService.getVehicleData(_dataObj);//change as per filter data
-      if(this.fromVehicleHealth)
-        this.fromVehicleHealth.fromVehicleHealth=false;
       if (data.length > 0) {
         this.noRecordFlag = false;
       }

@@ -121,7 +121,7 @@ export class FleetOverviewSummaryComponent implements OnInit, OnDestroy {
       "endDateTime": _endTime        
     }
     
-    if(vinSet && vinSet.size > 0){
+    // if(vinSet && vinSet.size > 0){
       this.showLoadingIndicator=true;
       this.reportService.getFleetOverviewSummary(objData).subscribe((summary: any) => {
         if(summary) {
@@ -138,8 +138,8 @@ export class FleetOverviewSummaryComponent implements OnInit, OnDestroy {
         this.showLoadingIndicator=false;
         this.resetSummaryPartOne();
       });
-    }
-    
+    // }
+
   }
 
   panelClick(event: any){
