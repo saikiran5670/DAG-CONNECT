@@ -104,7 +104,7 @@ export class LiveFleetMapComponent implements OnInit {
     else {
       this.showIcons = true;
     }
-      if(this.tripTraceArray && this.tripTraceArray.length == 1 && !this.tripTraceArray[0].liveFleetPosition){
+      if(vehicleResponse && vehicleResponse.vehicleDetailsFlag && this.tripTraceArray && this.tripTraceArray.length == 1 && !this.tripTraceArray[0].liveFleetPosition){
         let tripData = {
           tripIds: [this.tripTraceArray[0].tripId],
           vin: this.tripTraceArray[0].vin,
