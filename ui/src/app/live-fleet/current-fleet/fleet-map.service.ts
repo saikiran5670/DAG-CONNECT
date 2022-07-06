@@ -726,7 +726,7 @@ export class FleetMapService {
           }
         }
 
-        if (elem.liveFleetPosition.length > 1) { // required 2 points atleast to draw polyline
+        if (elem.liveFleetPosition && elem.liveFleetPosition.length > 1) { // required 2 points atleast to draw polyline
           let liveFleetPoints: any = elem.liveFleetPosition;
           liveFleetPoints.sort((a, b) => parseInt(a.messageTimeStamp) - parseInt(b.messageTimeStamp)); // sorted in Asc order based on messageTimeStamp
           if (_displayRouteView == 'C') { // classic route
@@ -1318,7 +1318,7 @@ export class FleetMapService {
     let _alertFound = undefined;
     let alertsData = [];
     if (element.fleetOverviewAlert.length > 0) {
-      if (element.tripId != "" && element.liveFleetPosition.length > 0 && element.fleetOverviewAlert.length > 0) {
+      if (element.tripId != "" && element.fleetOverviewAlert.length > 0) {
         // _alertFound = element.fleetOverviewAlert.find(item=>item.time == element.latestProcessedMessageTimeStamp);
         _alertFound = element.fleetOverviewAlert.sort((x, y) => y.time - x.time); //latest timestamp
         if (_alertFound) {
@@ -1698,8 +1698,8 @@ export class FleetMapService {
   setInitialCluster(data: any, ui: any) {
     // let data = newData.filter(i=>i.vehicleDrivingStatusType !='N' || i.vehicleDrivingStatusType !='Never Moved');
     let dataPoints = data.map((item) => {
-      item.startPositionLattitude = (item.liveFleetPosition.length > 1) ? item.liveFleetPosition[0].gpsLatitude : item.startPositionLattitude;
-      item.startPositionLongitude = (item.liveFleetPosition.length > 1) ? item.liveFleetPosition[0].gpsLongitude : item.startPositionLongitude;
+      item.startPositionLattitude = item.startPositionLattitude;
+      item.startPositionLongitude = item.startPositionLongitude;
       return new H.clustering.DataPoint(item.startPositionLattitude, item.startPositionLongitude);
     });
     var noiseSvg =
@@ -1835,8 +1835,8 @@ export class FleetMapService {
 
   clusterAllPoints(data: any, ui: any, translationData: any) {
     let dataPoints = data.map((item) => {
-      item.lat = (item.liveFleetPosition.length > 1) ? item.liveFleetPosition[item.liveFleetPosition.length - 1].gpsLatitude : item.latestReceivedPositionLattitude;
-      item.lng = (item.liveFleetPosition.length > 1) ? item.liveFleetPosition[item.liveFleetPosition.length - 1].gpsLongitude : item.latestReceivedPositionLongitude;
+      item.lat = item.latestReceivedPositionLattitude;
+      item.lng = item.latestReceivedPositionLongitude;
       return new H.clustering.DataPoint(item.lat, item.lng, null, item);
     });
     var noiseSvg =
@@ -2322,16 +2322,16 @@ export class FleetMapService {
     let _arr: any = [];
     fleetData.forEach(element => {
       let flag: boolean = false;
-      if (element.tripId != "" && element.liveFleetPosition.length > 0) {
-        element.liveFleetPosition = this.skipInvalidRecord(element.liveFleetPosition);
-        element.startPositionLattitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[0].gpsLatitude : element.startPositionLattitude;
-        element.startPositionLongitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[0].gpsLongitude : element.startPositionLongitude;
-        element.latestReceivedPositionLattitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[element.liveFleetPosition.length - 1].gpsLatitude : element.latestReceivedPositionLattitude;
-        element.latestReceivedPositionLongitude = (element.liveFleetPosition.length > 1) ? element.liveFleetPosition[element.liveFleetPosition.length - 1].gpsLongitude : element.latestReceivedPositionLongitude;
+      if (element.tripId != "" ) {
+        // element.liveFleetPosition = this.skipInvalidRecord(element.liveFleetPosition);
+        element.startPositionLattitude = element.startPositionLattitude;
+        element.startPositionLongitude = element.startPositionLongitude;
+        element.latestReceivedPositionLattitude = element.latestReceivedPositionLattitude;
+        element.latestReceivedPositionLongitude =element.latestReceivedPositionLongitude;
         flag = this.checkLatLongValid(element.latestReceivedPositionLattitude, element.latestReceivedPositionLongitude);
       }
 
-      else if (element.tripId != "" && element.liveFleetPosition.length == 0 && element.latestWarningClass != 0) {
+      else if (element.tripId != "" && element.latestWarningClass != 0) {
         element.latestReceivedPositionLattitude = element.latestWarningPositionLatitude;
         element.latestReceivedPositionLongitude = element.latestWarningPositionLongitude;
         flag = this.checkLatLongValid(element.latestReceivedPositionLattitude, element.latestReceivedPositionLongitude)

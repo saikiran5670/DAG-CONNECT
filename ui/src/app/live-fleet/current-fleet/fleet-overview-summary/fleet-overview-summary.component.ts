@@ -121,22 +121,25 @@ export class FleetOverviewSummaryComponent implements OnInit, OnDestroy {
       "endDateTime": _endTime        
     }
     
-    this.showLoadingIndicator=true;
-    this.reportService.getFleetOverviewSummary(objData).subscribe((summary: any) => {
-      if(summary) {
+    if(vinSet && vinSet.size > 0){
+      this.showLoadingIndicator=true;
+      this.reportService.getFleetOverviewSummary(objData).subscribe((summary: any) => {
+        if(summary) {
+          this.resetSummaryPartOne();
+          this.fleetSummary = summary.fleetOverviewSummary;
+        }
+        if(this.currentData){
+          this.totalVehicle = this.currentData.visibleVinsCount;
+          this.stepForword(this.currentData.fleetOverviewDetailList, true);
+        }
+        this.showLoadingIndicator=false;
+      }, (error) => {
+        this.loadSummaryPartTwo(this.currentData, false);
+        this.showLoadingIndicator=false;
         this.resetSummaryPartOne();
-        this.fleetSummary = summary.fleetOverviewSummary;
-      }
-      if(this.currentData){
-        this.totalVehicle = this.currentData.visibleVinsCount;
-        this.stepForword(this.currentData.fleetOverviewDetailList, true);
-      }
-      this.showLoadingIndicator=false;
-    }, (error) => {
-      this.loadSummaryPartTwo(this.currentData, false);
-      this.showLoadingIndicator=false;
-      this.resetSummaryPartOne();
-    });
+      });
+    }
+    
   }
 
   panelClick(event: any){
