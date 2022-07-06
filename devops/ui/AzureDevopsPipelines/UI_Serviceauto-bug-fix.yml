@@ -1,0 +1,102 @@
+trigger:
+ - none
+
+name: '1.0.$(Rev:r)'
+
+variables:
+ - name: imageName
+   value: 'uiservice'
+ - name: dockerFile
+   value: 'ui/dockerfilefront'
+ - name: manifestFile
+   value: 'devops/ui/AKS_Manifest/manifest.yml'
+ - name: jsonFile
+   value: 'ui/src/assets/config/default.json'
+
+stages:
+  - stage: stage_dev1
+    jobs:
+    - template: ui-pipeline-template.yaml  # Template reference
+      parameters:
+        #subscription: 'DAF CT AZURE DTA LANDING ZONE DEV1'
+        containerRegistry: 'dev1-acrakspzfu3h3wyefhu'
+        variableGroup: 'DEV01-Build-Variables'
+        imageName: $(imageName)
+        dockerFile: $(dockerFile)
+        manifestFile: $(manifestFile)
+        jsonPath: $(jsonFile)
+        #log4netConfigPath: $(log4netConfigFile)
+    condition: eq(variables['Build.SourceBranchName'], 'atos.daf.ct2.1_ui_bug_fix')
+       
+# - stage: stage_dev2
+#   dependsOn: []
+#   jobs:
+#   - template: ui-pipeline-template.yaml  # Template reference
+#     parameters:
+#       #subscription: 'DAF CT AZURE DTA LANDING ZONE DEV2'
+#       containerRegistry: 'dev2-acraksvyajhwtrez6ou'
+#       variableGroup: 'DEV02-Build-Variables'
+#       imageName: $(imageName)
+#       dockerFile: $(dockerFile)
+#       manifestFile: $(manifestFile)
+#       jsonPath: $(jsonFile)
+#       #log4netConfigPath: $(log4netConfigFile)
+#   condition: eq(variables['Build.SourceBranchName'],  'dev2-branch')
+#
+# - stage: stage_tst1
+#   jobs:
+#   - template: ui-pipeline-template.yaml  # Template reference
+#     parameters:
+#       #subscription: 'DAF CT AZURE DTA LANDING ZONE TST1'
+#       containerRegistry: 'tst1-acraksoxvoiq64cpv6y'
+#       variableGroup: 'TEST01-Build-Variables'
+#       imageName: $(imageName)
+#       dockerFile: $(dockerFile)
+#       manifestFile: $(manifestFile)
+#       jsonPath: $(jsonFile)
+#       #log4netConfigPath: $(log4netConfigFile)
+#   condition: eq(variables['Build.SourceBranchName'],  'tst1-branch')
+
+  - stage: stage_tst2
+    dependsOn: []
+    jobs:
+    - template: ui-pipeline-template.yaml  # Template reference
+      parameters:
+        #subscription: 'DAF CT AZURE DTA LANDING ZONE TST2'
+        containerRegistry: 'tst2-acrakswoxum6mmjejgo'
+        variableGroup: 'TEST02-Build-Variables'
+        imageName: $(imageName)
+        dockerFile: $(dockerFile)
+        manifestFile: $(manifestFile)
+        jsonPath: $(jsonFile)
+        #log4netConfigPath: $(log4netConfigFile)
+    condition: eq(variables['Build.SourceBranchName'],  'atos.daf.ct2.1_ui_bug_fix')
+
+# Commented out because ACC 1 builds should not be triggered. It will be un-commented in future
+# - stage: stage_acc1
+#   jobs:
+#     - template: ui-pipeline-template.yaml  # Template reference
+#       parameters:
+#         #subscription: 'DAF CT AZURE DTA LANDING ZONE ACC1'
+#         containerRegistry: 'acc1-acraksk3kcvqdoasw7w'
+#         variableGroup: 'ACC01-Build-Variables'
+#         imageName: $(imageName)
+#         dockerFile: $(dockerFile)
+#         manifestFile: $(manifestFile)
+#         jsonPath: $(jsonFile)
+#         #log4netConfigPath: $(log4netConfigFile)
+#   condition: eq(variables['Build.SourceBranchName'],  'perf-testing')
+#   
+# - stage: stage_acc2
+#   jobs:
+#   - template: ui-pipeline-template.yaml  # Template reference
+#     parameters:
+#       #subscription: 'DAF CT AZURE DTA LANDING ZONE ACC2'
+#       containerRegistry: 'acc2-acraksebegqte3xzjlk'
+#       variableGroup: 'ACC02-Build-Variables'
+#       imageName: $(imageName)
+#       dockerFile: $(dockerFile)
+#       manifestFile: $(manifestFile)
+#       jsonPath: $(jsonFile)
+#       #log4netConfigPath: $(log4netConfigFile)
+#   condition: eq(variables['Build.SourceBranchName'],  'performance-pen-testing')
