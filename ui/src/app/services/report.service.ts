@@ -433,7 +433,7 @@ export class ReportService {
     };
     return this.httpClient
       .post<any[]>(
-        `${this.reportServiceUrl}/fleetoverview/getfleetoverviewdetails`, data, headers
+        `${this.reportServiceUrl}/fleetoverview/details`, data, headers
       )
       .pipe(catchError(this.handleError));
   }
@@ -446,9 +446,21 @@ export class ReportService {
     };
     return this.httpClient
       .get<any[]>(
-        `${this.reportServiceUrl}/fleetoverview/getfilterdetails`, headers
+        `${this.reportServiceUrl}/fleetoverview/filters`, headers
       )
       .pipe(catchError(this.handleError));
+  }
+
+  getFleetOverviewSummary(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+    .post<any[]>(
+      `${this.reportServiceUrl}/fleetoverview/summary`, data, headers
+    )
+    .pipe(catchError(this.handleError));
   }
 
   getFilterPOIDetails(): Observable<any[]>{
@@ -458,7 +470,7 @@ export class ReportService {
     };
     return this.httpClient
       .get<any[]>(
-        `${this.reportServiceUrl}/fleetoverview/getfilterpoidetails`, headers
+        `${this.reportServiceUrl}/fleetoverview/poifilters`, headers
       )
       .pipe(catchError(this.handleError));
   }
@@ -504,15 +516,9 @@ export class ReportService {
     const headers = {
       headers: new HttpHeaders({ headerObj }),
     };
-    //if (tripid) {
-    //  return this.httpClient
-    //    .get<any[]>(`${this.reportServiceUrl}/fleetoverview/getvehiclehealthstatus?VIN=${vin}&TripId=${tripid}&LngCode=${languagecode}`, headers)
-    //    .pipe(catchError(this.handleError));
-   // } else {
-      return this.httpClient
-        .get<any[]>(`${this.reportServiceUrl}/fleetoverview/getvehiclehealthstatus?VIN=${vin}&LngCode=${languagecode}&WarningType=${warningtype}`, headers)
-        .pipe(catchError(this.handleError));
-    //}
+    return this.httpClient
+      .get<any[]>(`${this.reportServiceUrl}/fleetoverview/vehicle/health?VIN=${vin}&LngCode=${languagecode}&WarningType=${warningtype}`, headers)
+      .pipe(catchError(this.handleError));
   }
 
   getvehiclehealthstatusHistory(vin, languagecode, warningtype:any, startTime, endTime): Observable<any[]> {
