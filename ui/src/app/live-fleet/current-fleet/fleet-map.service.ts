@@ -1287,8 +1287,6 @@ export class FleetMapService {
   }
 
   validateLatLng(lat, lng) {
-    // let pattern = new RegExp('^-?([1-8]?[1-9]|[1-9]0)\\.{1}\\d{1,6}');
-    // return pattern.test(lat) && pattern.test(lng);
     if(lat == null || lng == null 
       || (lat == 0 && lng == 0) 
       || lat == 255 || lng == 255 
@@ -1297,8 +1295,6 @@ export class FleetMapService {
         return false;
     }
     return true;
-    // let flag: any = (lat >= -90 && lat <= 90) && (lng >= -180 && lng <= 180);
-    // return flag ? true : false;
   }
 
   setIconsOnMap(element, _ui) {
@@ -2328,13 +2324,13 @@ export class FleetMapService {
         element.startPositionLongitude = element.startPositionLongitude;
         element.latestReceivedPositionLattitude = element.latestReceivedPositionLattitude;
         element.latestReceivedPositionLongitude =element.latestReceivedPositionLongitude;
-        flag = this.checkLatLongValid(element.latestReceivedPositionLattitude, element.latestReceivedPositionLongitude);
+        flag = this.validateLatLng(element.latestReceivedPositionLattitude, element.latestReceivedPositionLongitude);
       }
 
       else if (element.tripId != "" && element.latestWarningClass != 0) {
         element.latestReceivedPositionLattitude = element.latestWarningPositionLatitude;
         element.latestReceivedPositionLongitude = element.latestWarningPositionLongitude;
-        flag = this.checkLatLongValid(element.latestReceivedPositionLattitude, element.latestReceivedPositionLongitude)
+        flag = this.validateLatLng(element.latestReceivedPositionLattitude, element.latestReceivedPositionLongitude)
       }
 
       else if (element.latestReceivedPositionLattitude != 255 || element.latestReceivedPositionLongitude != 255) {
@@ -2353,20 +2349,9 @@ export class FleetMapService {
     return _arr;
   }
 
-  checkLatLongValid = (lat: number, lon: number) => {
-    let flag: boolean = false;
-    
-    if (lat != 255 || lon != 255  ){
-      if(lat != 0 && lon != 0){
-        flag = true;
-      } 
-   }
-   return flag; 
-  }
-
   skipInvalidRecord(livePoints: any) {
     livePoints.sort((a, b) => parseInt(a.messageTimeStamp) - parseInt(b.messageTimeStamp)); // lat-> -90 to 90 & lng -> -180 to 180
-    let filterPoints = livePoints.filter(i => (i.gpsLatitude >= -90 && i.gpsLatitude <= 90) && (i.gpsLongitude >= -180 && i.gpsLongitude <= 180));
+    let filterPoints = livePoints.filter(i => this.validateLatLng(i.gpsLatitude, i.gpsLongitude));
     return filterPoints;
   }
 

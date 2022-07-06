@@ -3,6 +3,7 @@ import { HereService } from '../services/here.service';
 import { Util } from '../shared/util';
 import { ConfigService } from '@ngx-config/core';
 import { elementEventFullName } from '@angular/compiler/src/view_compiler/view_compiler';
+import { FleetMapService } from '../live-fleet/current-fleet/fleet-map.service';
 
 declare var H: any;
 
@@ -37,7 +38,7 @@ export class ReportMapService {
   herePOISearch: any = '';
   entryPoint: any = '';
 
-  constructor(private hereSerive : HereService, private _configService: ConfigService) {
+  constructor(private hereSerive : HereService, private _configService: ConfigService, private fleetMapService: FleetMapService) {
     // this.map_key =  _configService.getSettings("hereMap").api_key;
     this.map_key = localStorage.getItem("hereMapsK");
     this.platform = new H.service.Platform({
@@ -313,8 +314,8 @@ export class ReportMapService {
       _selectedRoutes.forEach(elem => {
         
         if (elem.liveFleetPosition.length > 1) {
-          let flagStartPoint = this.checkLatLongValid(elem.startPositionLattitude, elem.startPositionLongitude);
-          let flagEndPoint = this.checkLatLongValid(elem.endPositionLattitude, elem.endPositionLongitude);
+          let flagStartPoint = this.fleetMapService.validateLatLng(elem.startPositionLattitude, elem.startPositionLongitude);
+          let flagEndPoint = this.fleetMapService.validateLatLng(elem.endPositionLattitude, elem.endPositionLongitude);
 
           if (flagStartPoint && flagEndPoint) {
             this.startAddressPositionLat = elem.startPositionLattitude;
@@ -420,17 +421,6 @@ export class ReportMapService {
         this.hereMap.addObject(this.group);
       }
     }
-  }
-
-   checkLatLongValid = (lat: number, lon: number) => {
-    let flag: boolean = false;
-    
-    if (lat != 255 || lon != 255  ){
-      if(lat != 0 && lon != 0){
-        flag = true;
-      } 
-   }
-   return flag; 
   }
 
    drawAlerts(_alertDetails: any, _ui: any, translationData: any){
