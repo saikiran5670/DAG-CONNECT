@@ -81,6 +81,7 @@ ngAfterViewInit(){
     let obj ={
       vehicleDetailsFlag : this.isVehicleDetails
     }
+    data['liveFleetPosition'] = [];
     this.showLoadingIndicator = true;
     let _dataObj = {
       vehicleDetailsFlag: this.isVehicleDetails,

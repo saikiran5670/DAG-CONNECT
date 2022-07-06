@@ -1373,7 +1373,7 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
       else{
         this.vehicleGroupData = [];
       }
-      if (this.vehicleGroupData && this.vehicleGroupData.length > 0 && !this.todayFlagClicked && this.selectedIndex == 0) {
+      if (this.vehicleGroupData && this.vehicleGroupData.length > 0 && !this.todayFlagClicked && this.selectedIndex == 0 && this.filterData) {
         this.filterData.vehicleGroups = [];
         this.filterData.vehicleGroups = this.getVinObj(this.vehicleGroupData)
       }
@@ -1400,7 +1400,10 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
           data: data
         }
       }
-      this.dataInterchangeService.getVehicleData(_dataObj);//change as per filter data
+      if(!this.fromVehicleHealth || (this.fromVehicleHealth && !this.fromVehicleHealth.fromVehicleHealth))
+        this.dataInterchangeService.getVehicleData(_dataObj);//change as per filter data
+      if(this.fromVehicleHealth)
+        this.fromVehicleHealth.fromVehicleHealth=false;
       if (data.length > 0) {
         this.noRecordFlag = false;
       }
@@ -1548,7 +1551,7 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
     let _alertFound = undefined;
     let alertsData = [];
     if (element.fleetOverviewAlert.length > 0) {
-      if (element.tripId != "" && element.liveFleetPosition.length > 0 && element.fleetOverviewAlert.length > 0) {
+      if (element.tripId != "" && element.fleetOverviewAlert.length > 0) {
         _alertFound = element.fleetOverviewAlert.sort((x, y) => y.time - x.time);
         if (_alertFound) {
           alertsData.push(_alertFound);

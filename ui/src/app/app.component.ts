@@ -1220,7 +1220,7 @@ export class AppComponent {
 
   sub: Subscription;
   startTimer() {
-    const source = timer(1000, 2000);
+    const source = timer(1000, 1000);
     this.sub = source.subscribe(val => {
       this.subscribeTimer = this.transform(this.timeLeft - val);
       if (this.timeLeft - val == 0) {
