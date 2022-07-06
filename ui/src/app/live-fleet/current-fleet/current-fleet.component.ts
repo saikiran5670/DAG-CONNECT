@@ -222,11 +222,9 @@ export class CurrentFleetComponent implements OnInit, OnDestroy {
     this.reportService.getFleetOverviewDetails(objData).subscribe((data: any) => {
       this.totalVehicleCount = data.visibleVinsCount;
       this.hideLoader();
-      //let processedData = this.fleetMapService.processedLiveFLeetData(data.fleetOverviewDetailList);
       this.detailsData = data.fleetOverviewDetailList;
       this.fleetOverViewDetail = data;
       this.vehicleGroups = data.vehicleGroups
-      this.fleetSummary = data.fleetOverviewSummary;
       this.getFilterData();
       let _dataObj = {
         vehicleDetailsFlag: false,
@@ -234,10 +232,6 @@ export class CurrentFleetComponent implements OnInit, OnDestroy {
       }
       this.dataInterchangeService.getVehicleData(_dataObj);
       this.dataInterchangeService.setFleetOverViewDetails(JSON.parse(JSON.stringify(data)));
-      // if (this._state && this._state.data) {
-      //   this.userPreferencesSetting();
-      //   this.toBack();
-      // }
     }, (err) => {
       this.hideLoader();
       this.getFilterData();

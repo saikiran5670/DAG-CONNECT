@@ -22,7 +22,7 @@ export class FleetOverviewSummaryComponent implements OnInit, OnDestroy {
   @Input() filterData: any = {};
   @Input() totalVehicleCount: number;
   @Input() dashboardPref: any;
-  @Input() fleetSummary;
+  fleetSummary: any;
   criticalAlert: number = 0;
   mileageDone: string = '';
   drivers: number = 0;
@@ -60,32 +60,10 @@ export class FleetOverviewSummaryComponent implements OnInit, OnDestroy {
   currentData: any;
 
   constructor(private messageService: MessageService, private reportService: ReportService, private fleetMapService: FleetMapService, private organizationService: OrganizationService, private translationService: TranslationService, private cdref: ChangeDetectorRef, private reportMapService: ReportMapService, private dataService: DataInterchangeService) {
-    //this.loadData();
-    // this.subscription = this.messageService.getMessage().subscribe(message => {
-    //   if (message.key.indexOf("refreshData") < 0 && message.key.indexOf("refreshTimer") < 0 && message.key.indexOf("fleetKpiData") < 0 && message.key.indexOf("vehUtilData") < 0) {
-    //     this.filterInvoked = true;
-    //     this.vehicleGroup = message.key[0].vehicleGroup;
-    //     if (message.key[0].vehicleGroup && message.key[0].vehicleGroup === 'all')
-    //       this.vehicleGroup += ' Groups';
-    //     if (JSON.stringify(message.key[0].data).indexOf("HttpErrorResponse") !== -1 || JSON.stringify(message.key[0].data).indexOf("No Result Found") !== -1) {
-    //       this.resetSummary();
-    //     } else {
-    //       this.summaryData = message.key[0].data;
-    //       //this.refreshData();
-    //       this.stepForword(this.summaryData);
-    //     }
-    //   } else if (!this.filterInvoked && message.key.indexOf("refreshData") !== -1) {
-    //     this.loadData();
-    //   }
-    //   this.filterInvoked=false;
-    // });
-    // this.subscription = this.messageService.getMessage().subscribe(message => {
-    //   if(!this.dataService.isFleetOverViewFilterOpen && message.key.indexOf("refreshData") !== -1){
-    //     this.loadData();
-    //   }
-    // });
-      this.dataService.fleetOverViewSource$.subscribe(data => {
+      
+    this.dataService.fleetOverViewSource$.subscribe(data => {
         let data$=JSON.parse(JSON.stringify(data));
+
         if(this.mep && this.mep.expanded && data$.startTime && data$.endTime){
           this.currentData = data$;
           this.getSummary();
@@ -126,7 +104,7 @@ export class FleetOverviewSummaryComponent implements OnInit, OnDestroy {
       this.reportService.getFleetOverviewSummary(objData).subscribe((summary: any) => {
         if(summary) {
           this.resetSummaryPartOne();
-          this.fleetSummary = summary.fleetOverviewSummary;
+          this.fleetSummary = summary;
         }
         if(this.currentData){
           this.totalVehicle = this.currentData.visibleVinsCount;
@@ -211,7 +189,7 @@ export class FleetOverviewSummaryComponent implements OnInit, OnDestroy {
 
   loadSummaryPartTwo(data$: any, isToday: boolean){
     if(data$){
-      this.fleetSummary = data$.fleetOverviewSummary;
+      // this.fleetSummary = data$.fleetOverviewSummary;
       this.totalVehicle = data$.visibleVinsCount;
       this.stepForword(data$.fleetOverviewDetailList, isToday);
     }
