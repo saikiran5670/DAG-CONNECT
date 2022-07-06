@@ -81,31 +81,13 @@ ngAfterViewInit(){
     let obj ={
       vehicleDetailsFlag : this.isVehicleDetails
     }
-    data['liveFleetPosition'] = [];
-    this.showLoadingIndicator = true;
     let _dataObj = {
       vehicleDetailsFlag: this.isVehicleDetails,
       data: data,
       setFlag: true
     }
-    this.reportService.getLiveFleetPositions(tripData).subscribe((tripData: any) => {
-      if(tripData && tripData.trips && tripData.trips.length > 0){
-        data['liveFleetPosition'] = tripData.trips[0].liveFleetPosition;
-        _dataObj = {
-          vehicleDetailsFlag: this.isVehicleDetails,
-          data: data,
-          setFlag: true
-        }
-        this.vehicleDetailsInfoEmit.emit(_dataObj);      
-        this.dataInterchangeService.getVehicleData(_dataObj);
-      } else {
-        this.vehicleDetailsInfoEmit.emit(_dataObj);      
-        this.dataInterchangeService.getVehicleData(_dataObj);
-      }
-      this.showLoadingIndicator = false;
-    }, ()=>{
-      this.showLoadingIndicator = false;
-    });
+    this.vehicleDetailsInfoEmit.emit(_dataObj);
+    this.dataInterchangeService.getVehicleData(_dataObj);
   }
 
   checkCreationForVehicleDetails(item: any,isBackClick = false){

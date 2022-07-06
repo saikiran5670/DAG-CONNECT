@@ -9,6 +9,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { FleetMapService } from '../fleet-map.service'
 import { DataInterchangeService } from '../../../services/data-interchange.service';
 import { CompleterItem, CompleterService } from 'ng2-completer';
+import { ReportService } from 'src/app/services/report.service';
 
 declare var H: any;
 
@@ -61,6 +62,7 @@ export class LiveFleetMapComponent implements OnInit {
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   prefDetail: any = {};
   @Input() fromVehicleHealth: boolean = false;
+  showLoadingIndicator: boolean = false;
 
   constructor(
     private _formBuilder: FormBuilder,
@@ -69,7 +71,8 @@ export class LiveFleetMapComponent implements OnInit {
     private hereService: HereService,
     private fleetMapService:FleetMapService,
     private dataInterchangeService:DataInterchangeService,
-    private completerService: CompleterService) {
+    private completerService: CompleterService,
+    private reportService: ReportService) {
     // this.map_key = _configService.getSettings("hereMap").api_key;
     this.map_key = localStorage.getItem("hereMapsK"); 
     this.platform = new H.service.Platform({
@@ -101,7 +104,28 @@ export class LiveFleetMapComponent implements OnInit {
     else {
       this.showIcons = true;
     }
-    this.mapIconData();
+      if(this.tripTraceArray && this.tripTraceArray.length == 1 && !this.tripTraceArray[0].liveFleetPosition){
+        let tripData = {
+          tripIds: [this.tripTraceArray[0].tripId],
+          vin: this.tripTraceArray[0].vin,
+          startdatetime: 0,
+          enddatetime: 0
+        };
+        this.tripTraceArray[0]['liveFleetPosition'] = [];
+      this.showLoadingIndicator = true;
+      this.reportService.getLiveFleetPositions(tripData).subscribe((tripData: any) => {
+        if(tripData && tripData.trips && tripData.trips.length > 0){
+          this.tripTraceArray[0]['liveFleetPosition'] = tripData.trips[0].liveFleetPosition;
+        } 
+        this.mapIconData();
+        this.showLoadingIndicator = false;
+      }, ()=>{
+        this.mapIconData();
+        this.showLoadingIndicator = false;
+      });
+      } else {
+          this.mapIconData();
+      }
     })
   }
 
