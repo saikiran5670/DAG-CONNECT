@@ -27,7 +27,8 @@ export class CurrentFleetComponent implements OnInit, OnDestroy {
   translationData: any = {};
   clickOpenClose:string;
   currentFleetReportId: number;
-  detailsData =[];
+  detailsData = [];
+  fleetOverViewDetail: any;
   messages: any[] = [];
   subscription: Subscription;
   isOpen: boolean = false;
@@ -61,8 +62,8 @@ export class CurrentFleetComponent implements OnInit, OnDestroy {
     private dashboardService : DashboardService,
     private organizationService: OrganizationService) { 
       this.subscription = this.messageService.getMessage().subscribe(message => {
-        if (message.key.indexOf("refreshData") !== -1) {
-          this.refreshData();
+        if (!this.dataInterchangeService.isFleetOverViewFilterOpen && message.key.indexOf("refreshData") !== -1) {
+          this.getFleetOverviewDetails();
         }
       });
       this.sendMessage();
@@ -223,6 +224,7 @@ export class CurrentFleetComponent implements OnInit, OnDestroy {
       this.hideLoader();
       //let processedData = this.fleetMapService.processedLiveFLeetData(data.fleetOverviewDetailList);
       this.detailsData = data.fleetOverviewDetailList;
+      this.fleetOverViewDetail = data;
       this.vehicleGroups = data.vehicleGroups
       this.fleetSummary = data.fleetOverviewSummary;
       this.getFilterData();
@@ -231,6 +233,7 @@ export class CurrentFleetComponent implements OnInit, OnDestroy {
         data: this.detailsData
       }
       this.dataInterchangeService.getVehicleData(_dataObj);
+      this.dataInterchangeService.setFleetOverViewDetails(JSON.parse(JSON.stringify(data)));
       // if (this._state && this._state.data) {
       //   this.userPreferencesSetting();
       //   this.toBack();
@@ -277,11 +280,13 @@ export class CurrentFleetComponent implements OnInit, OnDestroy {
     localStorage.setItem(menuId, JSON.stringify(this.translationData));
   }
   
+  isFilterOpenClick: boolean=false;
   userPreferencesSetting(event?: any) {
     this.userPreferencesFlag = !this.userPreferencesFlag;
     let summary = document.getElementById("summary");
     let sidenav = document.getElementById("sidenav");
     if(this.userPreferencesFlag){
+      this.isFilterOpenClick=true;
     summary.style.width = '67%';
     sidenav.style.width = '32%';
     this.clickOpenClose=this.translationData.lblClickToHide ? this.translationData.lblClickToHide :'Click To Hide';
@@ -318,8 +323,6 @@ export class CurrentFleetComponent implements OnInit, OnDestroy {
   sendMessage(): void {
     this.messageService.sendMessage('refreshTimer');
   }
-  
-  refreshData(){}
 
   toBack(item?: any){
     this.obj = {
