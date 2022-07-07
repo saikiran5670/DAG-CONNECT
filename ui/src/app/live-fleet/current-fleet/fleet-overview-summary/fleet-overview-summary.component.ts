@@ -39,6 +39,7 @@ export class FleetOverviewSummaryComponent implements OnInit, OnDestroy {
   doughnutChartType: ChartType = 'doughnut';
   messages: any[] = [];
   subscription: Subscription;
+  private subscriptions: Subscription[] = [];
   summaryData: any = [];
   movedVehicle: number = 0;
   totalVehicle: number = 0;
@@ -58,19 +59,30 @@ export class FleetOverviewSummaryComponent implements OnInit, OnDestroy {
   @ViewChild('mep') mep: any;
   isSummaryOpened: boolean=false;
   currentData: any;
+  todayData: any;
 
   constructor(private messageService: MessageService, private reportService: ReportService, private fleetMapService: FleetMapService, private organizationService: OrganizationService, private translationService: TranslationService, private cdref: ChangeDetectorRef, private reportMapService: ReportMapService, private dataService: DataInterchangeService) {
-      
-    this.dataService.fleetOverViewSource$.subscribe(data => {
-        let data$=JSON.parse(JSON.stringify(data));
-
-        if(this.mep && this.mep.expanded && data$.startTime && data$.endTime){
+    this.subscriptions.push(
+      this.dataService.fleetOverViewSource$.subscribe(data => {
+          let data$=JSON.parse(JSON.stringify(data));
           this.currentData = data$;
+          if(this.mep && this.mep.expanded){
+            this.loadSummaryPartTwo(data$, false);
+          }
+        })
+      );
+    this.subscriptions.push(
+      this.dataService.fleetOverViewSourceToday$.subscribe(data => {
+        let data$=JSON.parse(JSON.stringify(data));
+        this.todayData=data$;
+        this.currentData = data$;
+        if(this.mep && this.mep.expanded){
           this.getSummary();
         } else {
-          this.loadSummaryPartTwo(data$, false);
+          this.loadSummaryPartTwo(data$, true);
         }
-      });
+      })
+    );
   }
 
   getSummary(){
@@ -88,10 +100,12 @@ export class FleetOverviewSummaryComponent implements OnInit, OnDestroy {
     let _startTime = Util.getMillisecondsToUTCDate(startDateValue, this.prefTimeZone);
     let _endTime = Util.getMillisecondsToUTCDate(endDateValue, this.prefTimeZone);
     let vinSet = new Set();
-    if(!this.currentData) this.currentData = this.dataService.fleetOverViewDetailData;
-    this.currentData.fleetOverviewDetailList.forEach(element => {
-      vinSet.add(element.vin);
-    });
+    let fleetDetailToday = JSON.parse(JSON.stringify(this.dataService.fleetOverViewDetailDataToday));
+    if(fleetDetailToday && fleetDetailToday.fleetOverviewDetailList && fleetDetailToday.fleetOverviewDetailList.length > 0){
+      fleetDetailToday.fleetOverviewDetailList.forEach(element => {
+        vinSet.add(element.vin);
+      });
+    }
     //API call for summary
     let objData = {
       "viNs": Array.from(vinSet),        
@@ -99,25 +113,24 @@ export class FleetOverviewSummaryComponent implements OnInit, OnDestroy {
       "endDateTime": _endTime        
     }
     
-    // if(vinSet && vinSet.size > 0){
       this.showLoadingIndicator=true;
-      this.reportService.getFleetOverviewSummary(objData).subscribe((summary: any) => {
-        if(summary) {
+      this.subscriptions.push(
+        this.reportService.getFleetOverviewSummary(objData).subscribe((summary: any) => {
+          if(summary) {
+            this.resetSummaryPartOne();
+            this.fleetSummary = summary;
+          }
+          if(this.currentData){
+            this.totalVehicle = this.currentData.visibleVinsCount;
+            this.stepForword(this.currentData.fleetOverviewDetailList, true);
+          }
+          this.showLoadingIndicator=false;
+        }, (error) => {
+          this.loadSummaryPartTwo(this.currentData, false);
+          this.showLoadingIndicator=false;
           this.resetSummaryPartOne();
-          this.fleetSummary = summary;
-        }
-        if(this.currentData){
-          this.totalVehicle = this.currentData.visibleVinsCount;
-          this.stepForword(this.currentData.fleetOverviewDetailList, true);
-        }
-        this.showLoadingIndicator=false;
-      }, (error) => {
-        this.loadSummaryPartTwo(this.currentData, false);
-        this.showLoadingIndicator=false;
-        this.resetSummaryPartOne();
-      });
-    // }
-
+        })
+      );
   }
 
   panelClick(event: any){
@@ -125,29 +138,11 @@ export class FleetOverviewSummaryComponent implements OnInit, OnDestroy {
     this.isSummaryOpened=true;
   }
 
-  ngAfterViewInit() {
-    this.cdref.detectChanges();
-  }
-
   ngOnDestroy() {
     if(this.subscription)
       this.subscription.unsubscribe();
+      this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
-
-  ngOnChanges(changes: SimpleChanges) {
-    if(changes && changes.fleetSummary){
-      this.fleetSummary = changes.fleetSummary.currentValue;
-    }
-    if (changes && changes.detailsData && changes.detailsData.currentValue) {
-      this.detailsData = changes.detailsData.currentValue;     
-      this.stepForword(this.detailsData, true);
-    }
-    if (changes && changes.totalVehicleCount) {
-      // this.filterData = changes.filterData.currentValue;
-      this.totalVehicle = Number(changes.totalVehicleCount.currentValue);
-      this.updateVehicleGraph();
-    }
-  } 
 
   updateVehicleGraph() {
     this.barChartData = [
@@ -189,7 +184,6 @@ export class FleetOverviewSummaryComponent implements OnInit, OnDestroy {
 
   loadSummaryPartTwo(data$: any, isToday: boolean){
     if(data$){
-      // this.fleetSummary = data$.fleetOverviewSummary;
       this.totalVehicle = data$.visibleVinsCount;
       this.stepForword(data$.fleetOverviewDetailList, isToday);
     }
@@ -225,7 +219,6 @@ export class FleetOverviewSummaryComponent implements OnInit, OnDestroy {
     }
     this.reportService.getFleetOverviewDetails(objData).subscribe((data: any) => {
       this.totalVehicle = data.visibleVinsCount;
-      //let filterData = this.fleetMapService.processedLiveFLeetData(data.fleetOverviewDetailList);
       this.stepForword(data.fleetOverviewDetailList);
       this.hideloader();
     }, (error) => {
@@ -388,18 +381,25 @@ export class FleetOverviewSummaryComponent implements OnInit, OnDestroy {
         this.movedVehicle=0;
         if(this.fleetSummary){
         //drivers count
-        this.drivers = this.fleetSummary.driverCount;
-        this.criticalAlert = this.fleetSummary.criticalAlertCount;
-        this.totalDriveTime = this.fleetSummary.drivingTime;
+          this.drivers = this.fleetSummary.driverCount;
+          this.criticalAlert = this.fleetSummary.criticalAlertCount;
+          this.totalDriveTime = this.fleetSummary.drivingTime;
+        }
+        if(this.todayData && this.todayData.fleetOverviewDetailList){
+          this.todayData.fleetOverviewDetailList.forEach(element => {
+            if (element.vehicleDrivingStatusType && element.vehicleDrivingStatusType != 'N') {
+              this.movedVehicle += 1;
+            }
+          });
         }
       }
       tripDistance = this.fleetSummary? this.fleetSummary.drivingDistance :0;
       if (this.summaryData) {
         
         this.summaryData.forEach(element => {
-            if (flag && (element.vehicleDrivingStatusType && element.vehicleDrivingStatusType != 'N')) {
-              this.movedVehicle += 1;
-            }
+            // if (flag && (element.vehicleDrivingStatusType && element.vehicleDrivingStatusType != 'N')) {
+            //   this.movedVehicle += 1;
+            // }
 
           if (element.vehicleHealthStatusType) {
             if (element.vehicleHealthStatusType === 'N') {
