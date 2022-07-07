@@ -38,7 +38,7 @@ export class ReportMapService {
   herePOISearch: any = '';
   entryPoint: any = '';
 
-  constructor(private hereSerive : HereService, private _configService: ConfigService, private fleetMapService: FleetMapService) {
+  constructor(private hereSerive : HereService, private _configService: ConfigService) {
     // this.map_key =  _configService.getSettings("hereMap").api_key;
     this.map_key = localStorage.getItem("hereMapsK");
     this.platform = new H.service.Platform({
@@ -314,8 +314,8 @@ export class ReportMapService {
       _selectedRoutes.forEach(elem => {
         
         if (elem.liveFleetPosition.length > 1) {
-          let flagStartPoint = this.fleetMapService.validateLatLng(elem.startPositionLattitude, elem.startPositionLongitude);
-          let flagEndPoint = this.fleetMapService.validateLatLng(elem.endPositionLattitude, elem.endPositionLongitude);
+          let flagStartPoint = this.validateLatLng(elem.startPositionLattitude, elem.startPositionLongitude);
+          let flagEndPoint = this.validateLatLng(elem.endPositionLattitude, elem.endPositionLongitude);
 
           if (flagStartPoint && flagEndPoint) {
             this.startAddressPositionLat = elem.startPositionLattitude;
@@ -2398,6 +2398,17 @@ export class ReportMapService {
     let seconds = (secs < 10) ? "0" + secs : secs;
   
     return hours + ":" + minutes + ":" + seconds + "." + milliseconds;
+  }
+
+  validateLatLng(lat, lng) {
+    if(lat == null || lng == null 
+      || (lat == 0 && lng == 0) 
+      || lat == 255 || lng == 255 
+      || lat < -90 || lat > 90 
+      || lng < -180 || lng > 180){
+        return false;
+    }
+    return true;
   }
 
 }
