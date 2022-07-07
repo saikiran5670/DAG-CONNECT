@@ -51,7 +51,7 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
   driverFlagClicked: boolean = true;
   isVehicleDetails: boolean = false;
   isVehicleListOpen: boolean = true;
-  noRecordFlag: boolean = false;
+  noRecordFlag: boolean = true;
   groupList: any = [];
   finalgroupList: any = [];
   driverList: any = [];
