@@ -29,6 +29,9 @@ export class DataInterchangeService {
     fleetOverViewSource$ = this.fleetOverViewSource.asObservable();
     isFleetOverViewFilterOpen: boolean = false;
     fleetOverViewDetailData: any;
+    private fleetOverViewSourceToday = new Subject<any>();
+    fleetOverViewSourceToday$ = this.fleetOverViewSourceToday.asObservable();
+    fleetOverViewDetailDataToday: any;
 
     constructor(){ }
 
@@ -83,6 +86,15 @@ export class DataInterchangeService {
 
     getFleetOverViewDetails(){
         return this.fleetOverViewDetailData;
+    }
+
+    setFleetOverViewDetailsToday(data: any){
+        this.fleetOverViewSourceToday.next(data);
+        this.fleetOverViewDetailDataToday=data;
+    }
+
+    getFleetOverViewDetailsToday(){
+        return this.fleetOverViewDetailDataToday;
     }
 
     setFleetOverViewFilterOpen(val: boolean){

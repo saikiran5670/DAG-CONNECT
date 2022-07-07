@@ -51,7 +51,7 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
   driverFlagClicked: boolean = true;
   isVehicleDetails: boolean = false;
   isVehicleListOpen: boolean = true;
-  noRecordFlag: boolean = false;
+  noRecordFlag: boolean = true;
   groupList: any = [];
   finalgroupList: any = [];
   driverList: any = [];
@@ -378,6 +378,10 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
     let driverSelected = this.driverList.filter((elem) => elem.driverId === this.driverVehicleForm.get("driver").value);
     this.getFleetOverviewDetails =this.reportService.getFleetOverviewDetails(this.objData).subscribe((fleetdata: any) => {
     let data = fleetdata.fleetOverviewDetailList;
+    if(this.todayFlagClicked)
+      this.dataInterchangeService.setFleetOverViewDetailsToday(JSON.parse(JSON.stringify(fleetdata)));
+    else
+      this.dataInterchangeService.setFleetOverViewDetails(JSON.parse(JSON.stringify(fleetdata)));
     let val: any;
       if (data.length > 0) {
         if (driverSelected.length > 0) {
@@ -1334,7 +1338,10 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
     }
     let vehicleGroupSel = this.groupList.filter((elem) => elem.vehicleId === this.filterVehicleForm.get("group").value);
     this.getFleetOverviewDetails = this.reportService.getFleetOverviewDetails(this.objData).subscribe((fleetdata: any) => {
-      this.dataInterchangeService.setFleetOverViewDetails(JSON.parse(JSON.stringify(fleetdata)));
+      if(this.todayFlagClicked)
+        this.dataInterchangeService.setFleetOverViewDetailsToday(JSON.parse(JSON.stringify(fleetdata)));
+      else
+        this.dataInterchangeService.setFleetOverViewDetails(JSON.parse(JSON.stringify(fleetdata)));
       this.fleetOverViewDetail=fleetdata;
       this.setVehicleData();
     }, (error) => {
