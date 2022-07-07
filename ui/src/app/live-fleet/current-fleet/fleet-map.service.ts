@@ -1586,7 +1586,8 @@ export class FleetMapService {
   showClassicRoute(dataPoints: any, _trackType: any, _colorCode: any) {
     let lineString: any = new H.geo.LineString();
     dataPoints.map((element) => {
-      lineString.pushPoint({ lat: element.gpsLatitude, lng: element.gpsLongitude });
+      if(this.validateLatLng(element.gpsLatitude, element.gpsLongitude))
+        lineString.pushPoint({ lat: element.gpsLatitude, lng: element.gpsLongitude });
     });
 
     let _style: any = {
@@ -1606,7 +1607,8 @@ export class FleetMapService {
   selectionPolylineRoute(dataPoints: any, _index: any, checkStatus?: any) {
     let lineString: any = new H.geo.LineString();
     dataPoints.map((element) => {
-      lineString.pushPoint({ lat: element.gpsLatitude, lng: element.gpsLongitude });
+      if(this.validateLatLng(element.gpsLatitude, element.gpsLongitude))
+        lineString.pushPoint({ lat: element.gpsLatitude, lng: element.gpsLongitude });
     });
 
     let _style: any = {

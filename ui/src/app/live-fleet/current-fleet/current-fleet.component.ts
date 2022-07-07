@@ -160,38 +160,30 @@ export class CurrentFleetComponent implements OnInit, OnDestroy {
   getTranslatedColumnName(prefData: any){
     if(prefData && prefData.subReportUserPreferences && prefData.subReportUserPreferences.length > 0){
       prefData.subReportUserPreferences.forEach(element => {
-        //if(element.subReportUserPreferences && element.subReportUserPreferences.length > 0){
-          //element.subReportUserPreferences.forEach(item => {
             let _data: any = element;
-            // if(element.key.includes('rp_fo_fleetoverview_settimer_')){
-            //   this.timerPrefData.push(_data);
-            // }else 
             if(element.key.includes('rp_fo_fleetoverview_generalvehicleinformation_')){
               let index: any;
-             switch(element.key){
-               case 'rp_fo_fleetoverview_generalvehicleinformation_currentmileage':{
-                 index = 0;
-                 break;
-               }
-               case 'rp_fo_fleetoverview_generalvehicleinformation_nextservicein':{
-                 index = 1;
-                 break;
-               }
-               case 'rp_fo_fleetoverview_generalvehicleinformation_healthstatus':{
-                 index = 2;
-                 break;
-               }
-             }
+              switch(element.key){
+                case 'rp_fo_fleetoverview_generalvehicleinformation_currentmileage':{
+                  index = 0;
+                  break;
+                }
+                case 'rp_fo_fleetoverview_generalvehicleinformation_nextservicein':{
+                  index = 1;
+                  break;
+                }
+                case 'rp_fo_fleetoverview_generalvehicleinformation_healthstatus':{
+                  index = 2;
+                  break;
+                }
+              }
               this.vehInfoPrefData[index] = _data;
             }
-          //});
-        //}
       });
     }
   }
 
   getFleetOverviewDetails(){
-    // this.clickOpenClose='Click to Open';
     this.clickOpenClose = this.translationData.lblClickToOpen || 'Click to Open';
     this.showLoadingIndicator = true;
     let selectedStartTime = '';
