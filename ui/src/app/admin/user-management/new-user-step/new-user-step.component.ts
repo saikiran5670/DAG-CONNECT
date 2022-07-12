@@ -806,10 +806,6 @@ export class NewUserStepComponent implements OnInit {
   }
 
   onLink(linkStatus: any){
-    // let linkObj = {
-    //   accountId: this.linkAccountId, //-- link account id
-    //   organizationId: this.accountOrganizationId
-    // }
     let infoObj = {
       id: this.linkAccountId,
       emailId: this.firstFormGroup.controls.loginEmail.value,
