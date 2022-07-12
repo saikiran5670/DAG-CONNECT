@@ -806,22 +806,23 @@ export class NewUserStepComponent implements OnInit {
   }
 
   onLink(linkStatus: any){
-    // let linkObj = {
-    //   accountId: this.linkAccountId, //-- link account id
-    //   organizationId: this.accountOrganizationId
-    // }
-    let infoObj = {
-      id: this.linkAccountId,
-      emailId: this.firstFormGroup.controls.loginEmail.value,
-      salutation: this.firstFormGroup.controls.salutation.value,
-      firstName: this.firstFormGroup.controls.firstName.value,
-      lastName: this.firstFormGroup.controls.lastName.value,
-      type: (this.privilegeAccess) ? this.firstFormGroup.controls.userType.value : this.userTypeList[0].value, // privilege check
+    let linkObj = {
+      accountId: this.linkAccountId, //-- link account id
       organizationId: this.accountOrganizationId,
-      driverId: ""
+      emailId: this.firstFormGroup.controls.loginEmail.value
     }
     this.showLoadingIndicator=true;
-    this.accountService.linkAccountToOrganisation(infoObj).subscribe((res) => {     
+    this.accountService.linkAccountToOrganisation(linkObj).subscribe((res) => {
+      let infoObj = {
+        id: this.linkAccountId,
+        emailId: this.firstFormGroup.controls.loginEmail.value,
+        salutation: this.firstFormGroup.controls.salutation.value,
+        firstName: this.firstFormGroup.controls.firstName.value,
+        lastName: this.firstFormGroup.controls.lastName.value,
+        type: (this.privilegeAccess) ? this.firstFormGroup.controls.userType.value : this.userTypeList[0].value, // privilege check
+        organizationId: this.accountOrganizationId,
+        driverId: ""
+      }
       this.accountService.updateAccount(infoObj).subscribe((data)=>{
         let prefObj: any = {
           id: this.prefId,
