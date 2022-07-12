@@ -808,7 +808,8 @@ export class NewUserStepComponent implements OnInit {
   onLink(linkStatus: any){
     let linkObj = {
       accountId: this.linkAccountId, //-- link account id
-      organizationId: this.accountOrganizationId
+      organizationId: this.accountOrganizationId,
+      emailId: this.firstFormGroup.controls.loginEmail.value
     }
     this.showLoadingIndicator=true;
     this.accountService.linkAccountToOrganisation(linkObj).subscribe((res) => {
