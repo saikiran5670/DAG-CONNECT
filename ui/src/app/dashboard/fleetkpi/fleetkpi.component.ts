@@ -47,6 +47,7 @@ export class FleetkpiComponent implements OnInit, OnDestroy {
   fuelConsumedThreshold = 0;
   fuelUsedThreshold = 0;
   fuelConsumptionThreshold = 0;
+  convertedThreshold = 0;
    //CO2 Emission Chart
    currentC02Value : any =  0;
    cutOffC02Value : any =  0;
@@ -1849,9 +1850,9 @@ export class FleetkpiComponent implements OnInit, OnDestroy {
     let currentValue = this.kpiData['fleetKpis']?.fuelConsumption; // value of fuel consumption is actually fuelConsumed from api
     this.currentFuelConsumption=  this.reportMapService.getFuelConsumedUnits(currentValue,this.prefUnitFormat,true);
     let _thresholdValue = this.getPreferenceThreshold('fuelconsumption')['value']; //5000000;
-    let convertedThreshold = this.reportMapService.getFuelConsumedUnits(_thresholdValue,this.prefUnitFormat,true); // conversion done before due to calculation error
+    this.convertedThreshold = this.reportMapService.getFuelConsumedUnits(_thresholdValue,this.prefUnitFormat,true); // conversion done before due to calculation error
     this.fuelConsumptionThreshold = _thresholdValue;
-    let calculationValue = this.dashboardService.calculateKPIPercentage(this.currentFuelConsumption,this.activeVehicles,convertedThreshold,this.totalDays);
+    let calculationValue = this.dashboardService.calculateKPIPercentage(this.currentFuelConsumption,this.activeVehicles,this.convertedThreshold,this.totalDays);
     let targetValue = calculationValue['cuttOff'] //this.reportMapService.getFuelConsumedUnits(calculationValue['cuttOff'],this.prefUnitFormat,true); // calculationValue['cuttOff'] //
     this.cutOffFuelConsumption = calculationValue['cuttOff'].toFixed(2); //this.reportMapService.getFuelConsumedUnits(calculationValue['cuttOff'],this.prefUnitFormat,true); //calculationValue['cuttOff'] //
     let currentPercent = (this.currentFuelConsumption / this.cutOffFuelConsumption ) * 100;//calculationValue['kpiPercent'];
@@ -2071,11 +2072,13 @@ export class FleetkpiComponent implements OnInit, OnDestroy {
     let thresholdType = 'U';
     let thresholdValue = 10;
     if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences.length > 0 && this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.length != 0) {
-      let filterData = this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_fleetkpi_'+fieldKey));
+      this.dashboardPrefData.subReportUserPreferences.forEach(element => {         
+      let filterData = element.subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_fleetkpi_'+fieldKey));
       if (filterData.length > 0) {
         thresholdType = filterData[0].thresholdType;
-        thresholdValue = filterData[0].thresholdValue;
-      }
+        thresholdValue = filterData[0].thresholdValue; 
+      }   
+     });
     }
     return {type:thresholdType , value:thresholdValue};
   }
