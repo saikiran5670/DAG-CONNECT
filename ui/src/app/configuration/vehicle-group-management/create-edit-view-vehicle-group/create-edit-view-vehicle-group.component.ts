@@ -105,6 +105,12 @@ export class CreateEditViewVehicleGroupComponent implements OnInit {
     // ${(this.actionType == 'edit') ? (this.translationData.lblEditVehicleGroupDetails ? this.translationData.lblEditVehicleGroupDetails : 'Edit Vehicle Group Details') : (this.translationData.lblViewVehicleGroupDetails ? this.translationData.lblViewVehicleGroupDetails : 'View Vehicle Group Details') }`;
   }
 
+  groupNameChange(name){
+    if(name.length > 0 && this.duplicateVehicleGroupMsg) {
+      this.duplicateVehicleGroupMsg = false;
+    }
+  }
+
   setDefaultValue(){
     this.vehicleGroupForm.get('vehicleGroupName').setValue(this.selectedRowData.groupName);
     this.vehicleGroupForm.get('vehicleGroupType').setValue(this.selectedRowData.groupType);
