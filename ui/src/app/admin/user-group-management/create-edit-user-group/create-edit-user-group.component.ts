@@ -39,6 +39,7 @@ export class CreateEditUserGroupComponent implements OnInit {
   tableDataList: any;
   showLoadingIndicator: boolean = false;
   filterValue: string;
+  editGroupType: boolean = false;
 
   constructor(private _formBuilder: FormBuilder, private accountService: AccountService, private router: Router) { }
 
@@ -69,6 +70,10 @@ export class CreateEditUserGroupComponent implements OnInit {
     ];
     if(this.actionType == 'edit' ){
       this.setDefaultValue();
+      this.editGroupType= true;
+    }
+    else{
+      this.editGroupType= false;
     }
     if(this.actionType == 'view' || this.actionType == 'edit' || this.actionType == 'create'){
       this.showHideUserList();

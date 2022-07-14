@@ -36,7 +36,7 @@ export class CreateEditViewVehicleGroupComponent implements OnInit {
   existingGroupList:any =[];
   filterValue: string;
   showLoadingIndicator: boolean = false;
-
+  editGroupType: boolean = false;
   constructor(private _formBuilder: FormBuilder, private vehicleService: VehicleService) { }
 
   ngOnInit() {
@@ -79,6 +79,9 @@ export class CreateEditViewVehicleGroupComponent implements OnInit {
     this.vehicleGroupForm.get('vehicleGroupType').setValue('G'); //-- default selection Group
     if(this.actionType == 'edit' ){
       this.setDefaultValue();
+      this.editGroupType= true;
+    } else{
+      this.editGroupType= false;
     }
     if(this.actionType == 'view' || this.actionType == 'edit'){
       this.showHideVehicleList();
@@ -103,6 +106,12 @@ export class CreateEditViewVehicleGroupComponent implements OnInit {
     ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} /
     ${this.translationData.lblVehicleGroupManagement ? this.translationData.lblVehicleGroupManagement : "Vehicle Group Management"} / `+lastBreadCumValue;
     // ${(this.actionType == 'edit') ? (this.translationData.lblEditVehicleGroupDetails ? this.translationData.lblEditVehicleGroupDetails : 'Edit Vehicle Group Details') : (this.translationData.lblViewVehicleGroupDetails ? this.translationData.lblViewVehicleGroupDetails : 'View Vehicle Group Details') }`;
+  }
+
+  groupNameChange(name){
+    if(name.length > 0 && this.duplicateVehicleGroupMsg) {
+      this.duplicateVehicleGroupMsg = false;
+    }
   }
 
   setDefaultValue(){
