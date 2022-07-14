@@ -46,7 +46,7 @@
           <mat-label class='font-16-px line-height-24px'>{{ translationData.lblGroupType || 'Group Type' }}<span class='mandatoryColor'>*</span></mat-label>
           <div *ngIf="actionType != 'view'">  
             <mat-form-field appearance="outline" class="full-width">
-                <mat-select (selectionChange)="vehGroupTypeChange($event)" placeholder="{{ translationData.lblGroupType || 'Group Type' }}" formControlName="vehicleGroupType" required>
+                <mat-select [disabled]="editGroupType" (selectionChange)="vehGroupTypeChange($event)" placeholder="{{ translationData.lblGroupType || 'Group Type' }}" formControlName="vehicleGroupType" required>
                 <mat-option *ngFor="let rer of vehGroupTypeList" [value]="rer.value">
                   {{ rer.name }}
                 </mat-option>
