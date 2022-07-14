@@ -36,7 +36,7 @@ export class CreateEditViewVehicleGroupComponent implements OnInit {
   existingGroupList:any =[];
   filterValue: string;
   showLoadingIndicator: boolean = false;
-
+  editGroupType: boolean = false;
   constructor(private _formBuilder: FormBuilder, private vehicleService: VehicleService) { }
 
   ngOnInit() {
@@ -79,6 +79,9 @@ export class CreateEditViewVehicleGroupComponent implements OnInit {
     this.vehicleGroupForm.get('vehicleGroupType').setValue('G'); //-- default selection Group
     if(this.actionType == 'edit' ){
       this.setDefaultValue();
+      this.editGroupType= true;
+    } else{
+      this.editGroupType= false;
     }
     if(this.actionType == 'view' || this.actionType == 'edit'){
       this.showHideVehicleList();
