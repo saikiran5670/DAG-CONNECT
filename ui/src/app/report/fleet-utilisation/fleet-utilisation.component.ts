@@ -2087,13 +2087,13 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
 
   getLastMonthDate(){
     var date = Util.getUTCDate(this.prefTimeZone);
-    date.setDate(date.getDate()-30);
+    date.setMonth(date.getMonth() - 1);
     return date;
   }
 
   getLast3MonthDate(){
     var date = Util.getUTCDate(this.prefTimeZone);
-    date.setDate(date.getDate()-90);
+    date.setMonth(date.getMonth() - 3);
     date.setHours(0);
     date.setMinutes(0);
     date.setSeconds(0);

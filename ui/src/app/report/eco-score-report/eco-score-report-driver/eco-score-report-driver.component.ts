@@ -815,13 +815,13 @@ export class EcoScoreReportDriverComponent implements OnInit {
 
   getLastMonthDate() {
     var date = Util.getUTCDate(this.prefObj.prefTimeZone);
-    date.setDate(date.getDate() - 1);
+    date.setMonth(date.getMonth() - 1);
     return date.getTime();
   }
 
   getLast3MonthDate() {
     var date = Util.getUTCDate(this.prefObj.prefTimeZone);
-    date.setDate(date.getDate() - 3);
+    date.setMonth(date.getMonth() - 3);
     return date.getTime();
   }
 
