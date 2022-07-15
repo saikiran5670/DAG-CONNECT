@@ -799,9 +799,9 @@
               <!-- <mat-header-cell *matHeaderCellDef mat-sort-header
                 [hidden]="!checkForPreference('vehicledetails_vehiclename')">{{ translationData.lblVehicleName}}
               </mat-header-cell> -->
-              <mat-header-cell [ngClass]="{'text-truncate': validTableEntry.length < 20}" *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleName }}
+              <mat-header-cell [ngClass]="{'text-truncate': validTableEntry.length < 20}" [hidden]="!checkForPreference('vehicledetails_vehiclename')" *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleName }}
               </mat-header-cell>
-              <mat-cell *matCellDef="let row" [ngClass]="{'text-truncate': validTableEntry.length < 20}">
+              <mat-cell *matCellDef="let row" [ngClass]="{'text-truncate': validTableEntry.length < 20}" [hidden]="!checkForPreference('vehicledetails_vehiclename')">
                 <span class='navigatePoint' (click)='onVehicleSelected(row)'>{{ row.vehicleName != '' ? row.vehicleName
                   : '-'
                   }}</span>
@@ -818,7 +818,8 @@
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [ngClass]="{'text-truncate': validTableEntry.length < 20}" matTooltip="{{row.vin}}"
                 [hidden]="!checkForPreference('vehicledetails_vin')">
-                <span>{{ row.vin }}</span>
+                <span *ngIf="!checkForPreference('vehicledetails_vehiclename')" class='navigatePoint' (click)='onVehicleSelected(row)'>{{ row.vin }}</span>
+                <span *ngIf="checkForPreference('vehicledetails_vehiclename')">{{ row.vin }}</span>
               </mat-cell>
               <!-- <mat-cell *matCellDef="let row">{{ row.vin != '' ? row.vin : '-' }}</mat-cell> -->
             </ng-container>
@@ -829,7 +830,8 @@
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [ngClass]="{'text-truncate': validTableEntry.length < 20}" 
                 [hidden]="!checkForPreference('vehicledetails_vehicleregistrationno')">
-                <span>{{ row.vehicleRegistrationNo }}</span>
+                <span *ngIf="(!checkForPreference('vehicledetails_vehiclename') && !checkForPreference('vehicledetails_vin'))" class='navigatePoint' (click)='onVehicleSelected(row)'>{{ row.vehicleRegistrationNo }}</span>
+                <span *ngIf="(checkForPreference('vehicledetails_vehiclename') || checkForPreference('vehicledetails_vin'))">{{ row.vehicleRegistrationNo }}</span>
               </mat-cell>
               <!-- <mat-cell *matCellDef="let row">{{ row.registrationNumber != '' ? row.registrationNumber : '-' }}</mat-cell> -->
             </ng-container>
