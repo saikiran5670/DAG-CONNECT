@@ -3,6 +3,7 @@ trigger:
   branches:
     include:
     - development
+    - develop_ct_2.1_ui
 #   - dev2-branch
     - release
     - testing
@@ -10,7 +11,6 @@ trigger:
     - performance-pen-testing
     - perf-testing
     - master
-    - FleetOverView-PerformanceFix
   paths:
     include:
     - ui
@@ -54,7 +54,7 @@ stages:
         manifestFile: $(manifestFile)
         jsonPath: $(jsonFile)
         #log4netConfigPath: $(log4netConfigFile)
-    condition: eq(variables['Build.SourceBranchName'], 'development')
+    condition: eq(variables['Build.SourceBranchName'], 'develop_ct_2.1_ui')
        
   - stage: stage_dev2
     dependsOn: []
@@ -98,7 +98,7 @@ stages:
         manifestFile: $(manifestFile)
         jsonPath: $(jsonFile)
         #log4netConfigPath: $(log4netConfigFile)
-    condition: eq(variables['Build.SourceBranchName'],  'FleetOverView-PerformanceFix')
+    condition: eq(variables['Build.SourceBranchName'],  'testing') #updated branch
 
 # Commented out because ACC 1 builds should not be triggered. It will be un-commented in future
   - stage: stage_acc1

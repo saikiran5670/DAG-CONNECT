@@ -204,7 +204,6 @@ export class TripReportComponent implements OnInit, OnDestroy {
   filterValue: string;
 
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private landmarkCategoryService: LandmarkCategoryService, private router: Router, private organizationService: OrganizationService, private completerService: CompleterService, private _configService: ConfigService, private hereService: HereService, private dataInterchangeService: DataInterchangeService, private messageService: MessageService, private _sanitizer: DomSanitizer) {
-    // this.map_key = _configService.getSettings("hereMap").api_key;
     this.map_key = localStorage.getItem("hereMapsK");
     this.platform = new H.service.Platform({
       "apikey": this.map_key
@@ -740,7 +739,6 @@ export class TripReportComponent implements OnInit, OnDestroy {
         this.tripForm.get('vehicle').setValue(this.globalSearchFilterData.vehicleDropDownValue);
       }
       this.tripForm.get('vehicleGroup').setValue(this.globalSearchFilterData.vehicleGroupDropDownValue);
-      // this.onVehicleGroupChange({'value': this.globalSearchFilterData.vehicleGroupDropDownValue}, true);
     } else {
       if (this.vehicleDD.length > 0) {
         this.tripForm.get('vehicle').setValue(this.vehicleDD[0].vehicleId);
@@ -1017,7 +1015,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
       this.liveFleetPositionreqObj.tripIds = [];
     }
     else {
-      this.dataSource.data.slice(0, this.pageSize).forEach((row) => {
+        this.dataSource.data.forEach((row) => {
         this.selectedTrip.select(row);
         this.tripTraceArray.push(row);
       });
@@ -1034,7 +1032,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
 
   isAllSelectedForTrip() {
     const numSelected = this.selectedTrip.selected.length;
-    const numRows = this.pageSize;
+    const numRows = this.dataSource.data.length;
     this.allTripSelectedFlag = numSelected === numRows;
     return numSelected === numRows;
   }
@@ -1055,20 +1053,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
 
 
   pageSizeUpdated(_event) {
-    if (this.pageSize > _event.pageSize) {
-      this.pageSize = _event.pageSize;
-      this.tripTraceArray.slice(0, this.tripTraceArray.length - this.pageSize)
-      this.masterToggleForTrip();
-    } else {
-      if (this.tripTraceArray.length > 1) {
-        this.selectedTrip.clear();
-        this.masterToggleForTrip();
-      }
-      this.pageSize = _event.pageSize;
-    }
-    if (_event.pageIndex != this.pageIndex) {
-      this.uncheckAll();
-    }
+
   }
 
   tripCheckboxClicked(event: any, row: any) {
@@ -1681,7 +1666,6 @@ export class TripReportComponent implements OnInit, OnDestroy {
         }
       })
     );
-    ////console.log("filtered vehicles", this.filteredVehicle);
   }
 
   resetVehicleFilter() {
