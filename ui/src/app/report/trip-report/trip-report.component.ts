@@ -1017,7 +1017,8 @@ export class TripReportComponent implements OnInit, OnDestroy {
       this.liveFleetPositionreqObj.tripIds = [];
     }
     else {
-      this.dataSource.data.slice(0, this.pageSize).forEach((row) => {
+      // this.dataSource.data.slice(0, this.pageSize).forEach((row) => {
+        this.dataSource.data.forEach((row) => {
         this.selectedTrip.select(row);
         this.tripTraceArray.push(row);
       });
@@ -1034,7 +1035,8 @@ export class TripReportComponent implements OnInit, OnDestroy {
 
   isAllSelectedForTrip() {
     const numSelected = this.selectedTrip.selected.length;
-    const numRows = this.pageSize;
+    const numRows = this.dataSource.data.length;
+    // const numRows = this.pageSize;
     this.allTripSelectedFlag = numSelected === numRows;
     return numSelected === numRows;
   }
@@ -1055,20 +1057,20 @@ export class TripReportComponent implements OnInit, OnDestroy {
 
 
   pageSizeUpdated(_event) {
-    if (this.pageSize > _event.pageSize) {
-      this.pageSize = _event.pageSize;
-      this.tripTraceArray.slice(0, this.tripTraceArray.length - this.pageSize)
-      this.masterToggleForTrip();
-    } else {
-      if (this.tripTraceArray.length > 1) {
-        this.selectedTrip.clear();
-        this.masterToggleForTrip();
-      }
-      this.pageSize = _event.pageSize;
-    }
-    if (_event.pageIndex != this.pageIndex) {
-      this.uncheckAll();
-    }
+    // if (this.pageSize > _event.pageSize) {
+    //   this.pageSize = _event.pageSize;
+    //   this.tripTraceArray.slice(0, this.tripTraceArray.length - this.pageSize)
+    //   this.masterToggleForTrip();
+    // } else {
+    //   if (this.tripTraceArray.length > 1) {
+    //     this.selectedTrip.clear();
+    //     this.masterToggleForTrip();
+    //   }
+    //   this.pageSize = _event.pageSize;
+    // }
+    // if (_event.pageIndex != this.pageIndex) {
+    //   this.uncheckAll();
+    // }
   }
 
   tripCheckboxClicked(event: any, row: any) {
