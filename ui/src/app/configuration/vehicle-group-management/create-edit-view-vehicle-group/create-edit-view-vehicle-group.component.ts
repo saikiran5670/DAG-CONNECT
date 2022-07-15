@@ -109,7 +109,7 @@ export class CreateEditViewVehicleGroupComponent implements OnInit {
   }
 
   groupNameChange(name){
-    if(name.length > 0 && this.duplicateVehicleGroupMsg) {
+    if(name.length >= 0 && this.duplicateVehicleGroupMsg) {
       this.duplicateVehicleGroupMsg = false;
     }
   }
