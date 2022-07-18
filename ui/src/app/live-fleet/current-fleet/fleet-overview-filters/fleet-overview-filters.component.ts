@@ -1389,7 +1389,7 @@ export class FleetOverviewFiltersComponent implements OnInit, OnChanges, OnDestr
       this.drawIcons(data);
       this.setDropdownValues(this.fleetData);
       this.vehicleListData = data;
-      if(!this.isBackClicked){
+      if(this.isBackClicked){
       this.applyFilterOnVehicleData();
       }
       this.detailsData = this.vehicleListData;
