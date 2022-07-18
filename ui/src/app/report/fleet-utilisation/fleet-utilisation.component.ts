@@ -1551,7 +1551,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
         break;
       }
       case "rp_fu_report_calendarview_mileagebasedutilization": { // maleage based utilisation
-        var mileagebasedutilisationvalue = (this.mileagebasedThreshold == 0) ? 0 : ((element.averagedistance/this.mileagebasedThreshold)*100).toFixed(2)+' %';
+        var mileagebasedutilisationvalue = (this.mileagebasedThreshold == 0) ? 0 : (((this.reportMapService.convertDistanceUnits(element.averagedistance, this.prefUnitFormat))/this.mileagebasedThreshold)*100).toFixed(2)+' %';
         this.calendarOptions.events =[ {title : `${mileagebasedutilisationvalue}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}];
         break;
       }
