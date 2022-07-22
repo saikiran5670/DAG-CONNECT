@@ -817,6 +817,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     this.vehicleGroupListData = [];
     let finalVinList = [];
     let distinctDriver;
+
     if (driverList && driverList.length > 0) {
       distinctDriver = driverList.filter((value, index, self) => self.indexOf(value) === index);
       distinctDriver = distinctDriver.filter(i => i !== "")
@@ -837,13 +838,17 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
         });
         vinList = finalVinList;
       }
+
       //TODO: plz verify fleet-utilisation for below logic
       this.singleVehicle = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.groupType == 'S');
+
       if (vinList.length > 0) {
         distinctVin = vinList.filter((value, index, self) => self.indexOf(value) === index);
+
         if (distinctVin && distinctVin.length > 0) {
           distinctVin.forEach(element => {
             let _item = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element && i.groupType != 'S')
+            
             if (_item.length > 0) {
               filteredVehicleList.push(_item[0]); //-- unique VIN data added
               _item.forEach(element => {
@@ -859,28 +864,35 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       this.vehicleGroupListData = finalVehicleList;
       this.vehicleGroupListData.sort(this.compareGrpName);
       this.resetVehicleGroupFilter();
+
       if(this.vehicleGroupListData.length > 0){
         let _s = this.vehicleGroupListData.map(item => item.vehicleGroupId).filter((value, index, self) => self.indexOf(value) === index);
+        
         if(_s.length > 0){
           _s.forEach(element => {
             let count = this.vehicleGroupListData.filter(j => j.vehicleGroupId == element);
+            
             if(count.length > 0){
               this.vehicleGrpDD.push(count[0]);
               this.vehicleGrpDD.sort(this.compare);
             }
           });
         }
+
        this.vehicleGrpDD.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
        this.resetVehicleGroupFilter();
       }
+
       if (this.vehicleListData.length > 0 && this.vehicleListData[0].vehicleId != 0) {
         this.vehicleListData.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll });
         this.resetVehicleFilter();
       }
+
       if (this.driverListData.length > 0) {
         this.driverListData.unshift({ driverID: 0, firstName: this.translationData.lblAll });
         this.resetDriverFilter();
       }
+
       let vehicleData = this.vehicleListData.slice();
       this.vehicleDD = this.getUniqueVINs([...vehicleData]);
       this.vehicleDD.sort(this.compareVin);
