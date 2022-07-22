@@ -874,7 +874,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
             
             if(count.length > 0){
               this.vehicleGrpDD.push(count[0]);
-              this.vehicleGrpDD.sort(this.compare);
+              this.vehicleGrpDD.sort(this.compareGrpName);
             }
           });
         }
