@@ -816,6 +816,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     this.vehicleDD = [];
     this.vehicleGroupListData = [];
     let finalVinList = [];
+    this.vehicleGrpDD = [];
     let distinctDriver;
 
     if (driverList && driverList.length > 0) {
