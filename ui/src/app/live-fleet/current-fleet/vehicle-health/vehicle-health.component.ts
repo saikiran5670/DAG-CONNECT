@@ -100,7 +100,6 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
   prefDetail: any = {};
 
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder,private organizationService: OrganizationService, private reportService: ReportService, private changeDetectorRef: ChangeDetectorRef, private reportMapService: ReportMapService) { 
-      // this.map_key = _configService.getSettings("hereMap").api_key;
       this.map_key = localStorage.getItem("hereMapsK");
       this.platform = new H.service.Platform({
         "apikey": this.map_key
@@ -199,25 +198,60 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
       this.applyDatatoCardPaginator(this.currentHealthData);
     } else {
       this.filteredHistoryHealthData = [];
-      for (let row of this.historyHealthData) {
-        if (row && row.warningTimetamp) {
-          let check = new Date(row.warningTimetamp);
-          if (check >= this.startDateValue && check <= this.endDateValue) {
-            this.filteredHistoryHealthData.push(row)
-          }
+
+      if(this.getvehiclehealthstatusservicecall) {
+        this.getvehiclehealthstatusservicecall.unsubscribe();
+      }
+
+      let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone);
+      let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);  
+      
+      this.showLoadingIndicator=true;
+      this.getvehiclehealthstatusservicecall = this.reportService.getvehiclehealthstatusHistory(this.healthData.vin, this.localStLanguage.code, 'H', _startTime, _endTime).subscribe((res: any) => {      
+        this.showLoadingIndicator=false;
+        let healthStatusData = res.vehicleHealthStatus;
+        this.overallVehHealthStatusType = res.warningVehicleHealthStatusType;
+        let deactiveActiveData=[];
+        let healthStatusActiveData=healthStatusData.filter(item => item.warningType== "A");
+
+        healthStatusData.forEach((element,index) => {
+          element.warningAdvice = element.warningAdvice.replaceAll('\\u022', '"');
+          element.warningActivatedForDeactive = '';
+
+          if(element.warningType== "D"){        
+            let healthFilterData = healthStatusActiveData.filter(item => item.warningClass == element.warningClass && item.warningNumber == element.warningNumber);
+            let activeDataObj;
+
+            healthFilterData.forEach(e => {
+              if(e.warningTimetamp < element.warningTimetamp){
+                element.warningActivatedForDeactive = e.warningTimetamp;
+                activeDataObj= e;
+              }    
+            });
+            
+            if(activeDataObj != undefined )  {
+            deactiveActiveData.push(activeDataObj);
+            }          
+          }          
+        });     
+
+        let deactiveActiveToDeleteSet = new Set(deactiveActiveData);
+        let newHealthStatusData = healthStatusData.filter((item) => {
+          return !deactiveActiveToDeleteSet.has(item);
+        });
+
+        this.filteredHistoryHealthData = newHealthStatusData;
+        let warningType = this.vehicleHealthForm.get('warningType').value;
+        if (warningType == 'Active') {
+          this.filteredHistoryHealthData = this.filteredHistoryHealthData.filter((item: any) => item.warningType == 'A');
         }
+        else if (warningType == 'Deactive') {
+          this.filteredHistoryHealthData = this.filteredHistoryHealthData.filter((item: any) => item.warningType == 'D');
+        }      
+        this.applyDatatoCardPaginator(this.filteredHistoryHealthData);
+        this.setGeneralFleetValue();
+        });
       }
-      let warningType = this.vehicleHealthForm.get('warningType').value;
-      if (warningType == 'Active') {
-        this.filteredHistoryHealthData = this.filteredHistoryHealthData.filter((item: any) => item.warningType == 'A');
-      }
-      else if (warningType == 'Deactive') {
-        this.filteredHistoryHealthData = this.filteredHistoryHealthData.filter((item: any) => item.warningType == 'D');
-      }      
-      //console.log("filterrredData", this.filteredHistoryHealthData)
-      this.applyDatatoCardPaginator(this.filteredHistoryHealthData);
-      this.setGeneralFleetValue();
-    }
    
     if(!this.isCurrent){
       this.vehicleHealthForm.get('warningTypeSorting').setValue('deactivated_time');
@@ -692,7 +726,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
       this.getWarningData('C');
     } else {
       this.isCurrent = false;
-      this.getWarningData('H');
+      // this.getWarningData('H');
     }
     this.onSearch();
   }
