@@ -1915,14 +1915,16 @@ export class FleetFuelReportVehicleComponent implements OnInit, OnDestroy {
         this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });  
         //console.log("vehicleDD 2", this.vehicleDD);
       }else{
-      let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
-        if(search.length > 0){
+        let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
+        const arrayUniqueByKey = [...new Map(search.map(item => [item['vehicleId'], item])).values()];
+
+        if(arrayUniqueByKey.length > 0){
           this.vehicleDD = [];
-          search.forEach(element => {
+          arrayUniqueByKey.forEach(element => {
             this.vehicleDD.push(element);
           });
-         this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });  
-        }
+          this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });  
+          }
       }
     } else {
       this.tripForm.get('vehicleGroup').setValue(parseInt(this.fleetFuelSearchData.vehicleGroupDropDownValue));
