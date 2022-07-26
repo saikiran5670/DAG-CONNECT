@@ -535,17 +535,15 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     this.driverTimeForm.get('vehicle').setValue(''); //- reset vehicle dropdown
     this.driverTimeForm.get('driver').setValue(''); //- reset driver dropdown
     if(parseInt(event.value) == 0){ //-- all group
-      //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
       let vehicleData = this.vehicleListData.slice();
       this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
       this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
-      ////console.log("vehicleDD 2", this.vehicleDD);
-      
     } else {
       let search = this.vehicleListData.filter(i => i.vehicleGroupId == parseInt(event.value));
-      if (search.length > 0) {
+      const arrayUniqueByKey = [...new Map(search.map(item => [item['vehicleId'], item])).values()];
+      if (arrayUniqueByKey.length > 0) {
         this.vehicleDD = [];
-        search.forEach(element => {
+        arrayUniqueByKey.forEach(element => {
           this.vehicleDD.push(element);
         });
         this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });

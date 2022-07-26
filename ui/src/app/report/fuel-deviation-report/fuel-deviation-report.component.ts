@@ -1126,9 +1126,10 @@ export class FuelDeviationReportComponent implements OnInit {
       this.resetVehicleFilter();
     } else {
       let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == _val);
-      if (search.length > 0) {
+      const arrayUniqueByKey = [...new Map(search.map(item => [item['vehicleId'], item])).values()];
+      if (arrayUniqueByKey.length > 0) {
         this.vehicleDD = [];
-        search.forEach(element => {
+        arrayUniqueByKey.forEach(element => {
           this.vehicleDD.push(element);
         });
         this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll , registrationNo: this.translationData.lblAll , vin: this.translationData.lblAll  });
