@@ -1,13 +1,10 @@
-import { Input } from '@angular/core';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef, Input, Inject } from '@angular/core';
 import { Label, Color, SingleDataSet } from 'ng2-charts';
 import { ChartOptions, ChartType, ChartDataSets } from 'chart.js';
 import { NavigationExtras, Router } from '@angular/router';
-import { ElementRef } from '@angular/core';
 import { DashboardService } from '../../services/dashboard.service';
 import { Util } from 'src/app/shared/util';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
-import { Inject } from '@angular/core';
 import { ReportMapService } from '../../report/report-map.service';
 import { MessageService } from '../../services/message.service';
 import { DataInterchangeService } from '../../services/data-interchange.service';
@@ -909,7 +906,6 @@ export class DashboardVehicleUtilisationComponent implements OnInit {
     this.greaterTimeCount = 0;
     this.vehicleUtilisationData.forEach((element) => {
       var date = new Date(element.calenderDate);
-	  // date = Util.convertUtcToDateNoFormat(date, this.prefTimeZone);
       const months = [
         'January',
         'February',
@@ -965,6 +961,13 @@ export class DashboardVehicleUtilisationComponent implements OnInit {
     percentage1 = parseFloat(percentage1).toFixed(2);
     percentage2 = (this.totalDistance / this.totalThresholdDistance) * 100;
     percentage2 = parseFloat(percentage2).toFixed(2);
+
+    this.doughnutChartColors = [
+      {
+        backgroundColor: ['#89c64d ', '#ff0000 '],
+        hoverBackgroundColor: ['#89c64d ', '#ff0000 '],
+      }
+    ];
 
     if (this.distanceChartType == 'bar') {
       let label1 =
@@ -1231,24 +1234,6 @@ export class DashboardVehicleUtilisationComponent implements OnInit {
       ];
     }
 
-    if (this.totalDrivingTime < this.totalThreshold) {
-      //red color
-      this.doughnutChartColors = [
-        {
-          backgroundColor: ['#ff0000 ', '#cecece '],
-          hoverBackgroundColor: ['#ff0000 ', '#cecece '],
-        },
-      ];
-    }
-    if (this.totalDrivingTime >= this.totalThreshold) {
-      //green
-      this.doughnutChartColors = [
-        {
-          backgroundColor: ['#89c64d ', '#cecece '],
-          hoverBackgroundColor: ['#89c64d ', '#cecece '],
-        },
-      ];
-    }
     if (this.timeDChartType == 'doughnut') {
       this.doughnut_barOptions = {
         responsive: true,
@@ -1318,26 +1303,6 @@ export class DashboardVehicleUtilisationComponent implements OnInit {
         let underUtilisation = (100 - percentage1).toFixed(2);
         this.timePieChartData = [percentage1, underUtilisation];
       }
-    }
-
-    if (this.totalDistance < this.totalThresholdDistance) {
-      //red color
-      this.doughnutChartColors = [
-        {
-          backgroundColor: ['#ff0000 ', '#89c64d '],
-          hoverBackgroundColor: ['#ff0000 ', '#89c64d '],
-        },
-      ];
-    }
-
-    if (this.totalDistance >= this.totalThresholdDistance) {
-      //green
-      this.doughnutChartColors = [
-        {
-          backgroundColor: ['#89c64d ', '#ff0000 '],
-          hoverBackgroundColor: ['#89c64d ', '#ff0000 '],
-        },
-      ];
     }
 
     let label3;
