@@ -15,7 +15,6 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { LandmarkCategoryService } from '../../services/landmarkCategory.service';
-//var jsPDF = require('jspdf');
 import * as moment from 'moment-timezone';
 import { Util } from '../../shared/util';
 import * as Highcharts from 'highcharts';
@@ -24,7 +23,6 @@ import html2canvas from 'html2canvas';
 import { ChartOptions, ChartType, ChartDataSets } from 'chart.js';
 import { Router, NavigationExtras } from '@angular/router';
 import { CalendarOptions } from '@fullcalendar/angular';
-// import { CalendarOptions } from '@fullcalendar/angular';
 import { OrganizationService } from '../../services/organization.service';
 import { element } from 'protractor';
 import { Workbook } from 'exceljs';
@@ -55,9 +53,6 @@ export class FleetUtilisationComponent implements OnInit, OnDestroy {
   displayedColumns = ['vehicleName', 'vin', 'registrationNumber', 'distance', 'numberOfTrips', 'tripTime', 'drivingTime', 'idleDuration', 'stopTime', 'averageDistancePerDay', 'averageSpeed', 'averageWeight', 'odometer'];
   translationData: any = {};
   fleetUtilizationSearchData: any = {};
-  // hereMap: any;
-  // platform: any;
-  // ui: any;
   @ViewChild("map")
   public mapElement: ElementRef;
   dontShow: boolean = false;
@@ -263,57 +258,6 @@ distanceLineChartColors: Color[] = [
 ];
 noRecordFound: boolean = false;
 
-// distanceLineChartOptions = {
-//   responsive: true,
-//   legend: {
-//     position: 'bottom',
-//      },
-//   scales: {
-//     yAxes: [{
-//       id: "y-axis-1",
-//       position: 'right',
-//       type: 'linear',
-//        ticks: {
-//         beginAtZero: true,
-//       },
-//       scaleLabel: {
-//         display: true,
-//         labelString: (this.prefUnitFormat == 'dunit_Metric') ? `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblkm  || 'km' })` : `${this.translationData.lblTotalDistance || 'Total distance'} (${this.translationData.lblmiles  || 'miles' })`
-//        }
-//     },{
-//       id: "y-axis-2",
-//       position: 'left',
-//       type: 'linear',
-//       ticks: {
-//         steps: 10,
-//         stepSize: 1,
-//         beginAtZero:true,
-//       },
-//       scaleLabel: {
-//         display: true,
-//         labelString: this.prefUnitFormat == 'dunit_Metric' ? `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblkmperday  || 'km/day' })` : `${this.translationData.lblpervehicle || 'per vehicle'} (${this.translationData.lblmilesperday  || 'miles/day' })`
-//       }
-//     }],
-//     xAxes: [{
-//       type:'time',
-//       time:
-//       {
-//         tooltipFormat:  this.chartLabelDateFormat,
-//         unit: 'day',
-//         stepSize:1,
-//         displayFormats: {
-//           day:  this.chartLabelDateFormat,
-//          },
-//       },
-//     scaleLabel: {
-//       display: true,
-//       labelString: this.translationData.lblDates || 'Dates'
-//     }
-//   }]
-//   }
-// };
-
-
 // Pie chart for mileage based utilisation
 
 public pieChartOptions: ChartOptions = {
@@ -331,7 +275,6 @@ public pieChartPlugins = [];
 
 // Doughnut chart implementation for Mileage based utilisation
 
-//doughnutChartLabels: Label[] = ['Percentage of vehicles with distance done above 1000 km', 'Percentage of vehicles with distance done under 1000 km'];
 doughnutChartLabels: Label[] = [];
 doughnutChartData: any = [];
 doughnutChartType: ChartType = 'doughnut';
@@ -343,7 +286,6 @@ doughnutChartColors: Color[] = [
 
 // Doughnut chart implementation for Time based utilisation
 
-//doughnutChartLabelsForTime: Label[] = ['Percentage of vehicles with driving time above 1h 0 m', 'Percentage of vehicles with driving time under 1h 0 m'];
 doughnutChartLabelsForTime: Label[] = [];
 doughnutChartDataForTime: any = [];
 doughnutChartTypeTime: ChartType = 'doughnut';
@@ -352,10 +294,6 @@ public doughnut_barOptions: ChartOptions = {
   responsive: true,
   legend: {
     position: 'bottom',
-    // labels: {
-    //   //fontSize: 10,
-    //   usePointStyle: true,
-    // },
   },
   cutoutPercentage: 70,
 };
@@ -384,7 +322,6 @@ lineChartOptions = {
       ticks: {
         steps: 10,
         stepSize: 1,
-        // max:10,
         beginAtZero: true,
       },
       scaleLabel: {
@@ -467,12 +404,6 @@ fromTripPageBack: boolean = false;
 calendarOptions: CalendarOptions = {
   initialView: 'dayGridMonth',
   timeZone: 'local',
-  // validRange: function(nowDate) {
-  //   return {
-  //     start:  '2021-03-24' ,
-  //     end: nowDate
-  //   };
-  // },
   events: [ ],
 };
 
@@ -500,7 +431,6 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       fromTripReport: boolean,
       vehicleDropDownId: any
     };
-    ////console.log(state)
     if(this._state){
       this.fromTripPageBack = true;
     }else{
@@ -840,7 +770,6 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
           this.mileageBasedChart.chartType = element.chartType;
           this.mileageBasedChart.thresholdValue = element.thresholdValue;
           this.mileageBasedChart.thresholdType = element.thresholdType;
-         // this.mileagebasedThreshold = parseInt(element.thresholdValue);        
            this.mileagebasedThreshold = this.reportMapService.convertDistanceUnits(element.thresholdValue, this.prefUnitFormat);
 
           this.mileageDChartType = element.chartType == "D" ? true : false;
@@ -878,7 +807,6 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       // 4- Keep only seconds not extracted to minutes:
       minutes = parseInt(minutes);
       seconds = seconds % 60;
-      ////console.log( hours+":"+minutes+":"+seconds);
       return `${hours < 10 ? '0'+hours : hours} ${this.translationData.lblHour} ${minutes < 10 ? '0'+minutes : minutes} ${this.translationData.lblMinute}`;
     }else{
       return `'00 ${this.translationData.lblHour} 00 ${this.translationData.lblMinute}'`;
@@ -899,7 +827,6 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       this.setPDFTranslations();
     }, 0);
 
-    //////console.log("process translationData:: ", this.translationData)
   }
 
   setPDFTranslations(){
@@ -957,7 +884,6 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       this.noRecordFound = true;
       this.wholeTripData.vinTripList = [];
       this.wholeTripData.vehicleDetailsWithAccountVisibiltyList = [];
-      //this.loadUserPOI();
     });
   }
 
@@ -966,11 +892,6 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
     let finalVINDataList: any = [];
     this.vehicleListData = [];
     this.vehicleGrpDD = [];
-    // let _last3m = this.setStartEndDateTime(this.getLast3MonthDate(), this.selectedStartTime, 'start');
-    // let _yesterday = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
-    // let currentStartTime = Util.convertDateToUtc(_last3m); //_last3m.getTime();
-    // let currentEndTime = Util.convertDateToUtc(_yesterday); // _yesterday.getTime();
-    ////console.log(currentStartTime + "<->" + currentEndTime);
     let currentStartTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone);
     let currentEndTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);
     // let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
@@ -988,10 +909,8 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       if(vinArray.length > 0){
         // this.singleVehicle = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i=> i.groupType == 'S');//commenting this line for bug #22168
         distinctVIN = vinArray.filter((value, index, self) => self.indexOf(value) === index);
-        //////console.log("distinctVIN:: ", distinctVIN);
         if(distinctVIN.length > 0){
           distinctVIN.forEach(element => {
-            // let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element && i.groupType != 'S');
             let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element);
             //The vins which are coming in vinTripList those needs to be displayed in vehicle dropdown(no matter if it's single or group type vehicle)
             if(_item.length > 0){
@@ -1669,12 +1588,8 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
 
   setVehicleGroupAndVehiclePreSelection() {
     if(!this.internalSelection && this.fleetUtilizationSearchData.modifiedFrom !== "") {
-      // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
       this.onVehicleGroupChange(this.fleetUtilizationSearchData.vehicleGroupDropDownValue, false);
     }
-    // else if(this.fleetUtilizationSearchData.vehicleDropDownValue !== "") {
-    //   // this.tripForm.get('vehicle').setValue(this.fleetUtilizationSearchData.vehicleDropDownValue);
-    // }
   }
 
   onVehicleGroupChange(event: any, flag?: any){
@@ -1682,29 +1597,21 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
       this.internalSelection = true;
       this.tripForm.get('vehicle').setValue(0); //- reset vehicle dropdown
       if(parseInt(event.value) == 0){ //-- all group
-        //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
         let vehicleData = this.vehicleListData.slice();
         this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
         this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
-        ////console.log("vehicleDD 2", this.vehicleDD);
-      }else{
-      //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
-      let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
-        if(search.length > 0){
+      } else {
+        let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
+        const arrayUniqueByKey = [...new Map(search.map(item => [item['vehicleId'], item])).values()];
+        if(arrayUniqueByKey.length > 0){
           this.vehicleDD = [];
-          search.forEach(element => {
+          arrayUniqueByKey.forEach(element => {
             this.vehicleDD.push(element);
-            ////console.log("vehicleDD 3", this.vehicleDD);
-
           });
           this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
         }
       }
-      // this.fleetUtilizationSearchData["vehicleGroupDropDownValue"] = event.value;
-      // this.fleetUtilizationSearchData["vehicleDropDownValue"] = '';
-      // this.setGlobalSearchData(this.fleetUtilizationSearchData)
     }else {
-      // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event));
       if (this._state && this._state.vehicleDropDownId != undefined && this.vehicleDD.length > 0) {
         let _v = this.vehicleDD.filter(i => i.vehicleId == Number(this._state.vehicleDropDownId));
         if (_v.length > 0) {

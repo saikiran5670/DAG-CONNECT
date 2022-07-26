@@ -591,8 +591,9 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       this.ecoScoreForm.get('driver').setValue(0);
     } else {
       let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
-      if (search.length > 0) {
-        search.forEach(element => {
+      const arrayUniqueByKey = [...new Map(search.map(item => [item['vehicleId'], item])).values()];
+      if (arrayUniqueByKey.length > 0) {
+        arrayUniqueByKey.forEach(element => {
           this.vehicleDD.push(element);
         });
       }
