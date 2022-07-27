@@ -881,7 +881,8 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
           });
         }
 
-       this.vehicleGrpDD.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
+       this.vehicleGrpDD.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll });
+       this.vehicleGroupListData.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll });
        this.resetVehicleGroupFilter();
       }
 
