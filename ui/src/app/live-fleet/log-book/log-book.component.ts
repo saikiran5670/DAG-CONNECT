@@ -1266,7 +1266,7 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
 
     }
     else{
-
+        this.vehicleDD=[];
         let vehicle_group_selected: any = parseInt(value);
         if(this._state && this._state.fromAlertsNotifications){
           let vehicle = this.wholeLogBookData.associatedVehicleRequest.filter(item => item.vin == this._state.data[0].vin && item.vehicleGroupDetails.includes(vehicle_group_selected + "~"));
@@ -1274,18 +1274,15 @@ if(this._state && (this._state.fromAlertsNotifications || this._state.fromMoreAl
               this.logBookForm.get('vehicle').setValue(vehicle[0].vin);
             }
         }
-        this.vehicleGrpDD.forEach(element => {
-          //console.log("vhicleGrpDD2", this.vehicleGrpDD);
-
-          let vehicle = this.wholeLogBookData.associatedVehicleRequest.filter(item => item.vehicleId == element.vehicleId && item.vehicleGroupDetails.includes(vehicle_group_selected + "~"));
-          //  let vehicle= element.filter(item => item.vehicleId == value);
+        // this.vehicleGrpDD.forEach(element => {
+          // let vehicle = this.wholeLogBookData.associatedVehicleRequest.filter(item => item.vehicleId == element.vehicleId && item.vehicleGroupDetails.includes(vehicle_group_selected + "~"));
+          let vehicle = this.wholeLogBookData.associatedVehicleRequest.filter(item => item.vehicleGroupDetails.includes(vehicle_group_selected + "~"));
+          console.log(vehicle);
           if (vehicle.length > 0) {
-            this.vehicleDD.push(vehicle[0]);
-            //console.log("vehicleDD 3", this.vehicleDD);
+            this.vehicleDD.push(...vehicle);
           }
-        });
+        // });
         this.vehicleDD = this.getUnique(this.vehicleDD, "vehicleName");
-        //console.log("vehicleDD 4", this.vehicleDD);
         this.vehicleDD.sort(this.compareVehName);
         this.resetVehicleNamesFilter();
       
