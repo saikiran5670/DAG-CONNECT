@@ -1124,11 +1124,11 @@
               </mat-cell>
             </ng-container>
 
-            <ng-container matColumnDef="idlingPTO">
+                        <ng-container matColumnDef="idlingPTO">
               <mat-header-cell *matHeaderCellDef mat-sort-header
-                [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingwithPTO }} (%)
+                [hidden]="!checkForPreference('vehicledetails_idlingwithpto(%)')">{{ translationData.lblIdlingwithPTO }} (%)
               </mat-header-cell>
-              <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">
+              <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingwithpto(%)')">
                 <span>{{ row.idlingPTO }}</span>
               </mat-cell>
             </ng-container>
@@ -1144,9 +1144,9 @@
 
             <ng-container matColumnDef="idlingWithoutPTOpercent">
               <mat-header-cell *matHeaderCellDef mat-sort-header
-                [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingwithoutPTO }} (%)
+                [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto(%)')">{{ translationData.lblIdlingwithoutPTO }} (%)
               </mat-header-cell>
-              <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">
+              <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto(%)')">
                 <span>{{ row.idlingWithoutPTOpercent }}</span>
               </mat-cell>
             </ng-container>
