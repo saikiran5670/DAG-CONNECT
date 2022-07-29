@@ -1388,7 +1388,7 @@ export class ExistingTripsComponent implements OnInit {
 
     if (event.checked) { //-- add new marker
       this.markerArray.push(row);
-      this.mapFunctions.viewSelectedRoutes(this.markerArray);
+      this.mapFunctions.viewSelectedRoutes(this.markerArray,undefined,undefined,undefined, false);
       this.tripsSelection.push(row);
       //console.log("----this.tripsSelection.push(row);------", this.tripsSelection);
 
