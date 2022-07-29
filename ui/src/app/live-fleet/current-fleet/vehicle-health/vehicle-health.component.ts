@@ -302,18 +302,15 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
     } else {
       let stopnow = filteredHistoryHealthData.filter(item => item?.warningVehicleHealthStatusType == 'T');
       let servicenow = filteredHistoryHealthData.filter(item => item?.warningVehicleHealthStatusType == 'V');
-      //let noaction = filteredHistoryHealthData.filter(item => item?.warningVehicleHealthStatusType == 'N' || item?.warningVehicleHealthStatusType.trim() == '');
       let noaction = [];     
       if (this.selectedIndex == 0) {
-         noaction = filteredHistoryHealthData.filter(item => item?.warningVehicleHealthStatusType == 'N' )
-      if(noaction.length == 0){
-        noaction = filteredHistoryHealthData.sort((a, b) =>  a.warningClass - b.warningClass  );
-      }}
-      else{
-        noaction = filteredHistoryHealthData.filter(item => item?.warningVehicleHealthStatusType == 'N' || item?.warningVehicleHealthStatusType.trim() == '');
+        noaction = filteredHistoryHealthData.filter(item => item?.warningVehicleHealthStatusType == 'N' )
       }
-        return [...stopnow, ...servicenow, ...noaction];
-      }
+      else {
+        noaction = filteredHistoryHealthData.filter(item => item.warningVehicleHealthStatusType == 'N' || item.warningVehicleHealthStatusType.trim() == '');
+      } 
+      return Array.from(new Set([...stopnow, ...servicenow, ...noaction])).sort((a, b) => a.warningClass - b.warningClass)
+    }
   }
 
   onChangeWarningType(warning: any){
