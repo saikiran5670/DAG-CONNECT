@@ -29,7 +29,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   searchForm: FormGroup;
   searchExpandPanel: boolean = true;
   formSubmitted: boolean = false;
-  selectionTab: string = 'today';
+  selectionTab: any;
   prefTimeFormat: any = 12;
   prefTimeZone: any;
   prefDateFormat;
