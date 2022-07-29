@@ -2150,7 +2150,7 @@ getAllSummaryData(){
      });
 
     let DATA = document.getElementById('charts');
-    // let DATA = document.getElementById('hideData');
+     
 
     html2canvas( DATA)
     .then(canvas => {
@@ -2181,10 +2181,6 @@ getAllSummaryData(){
         let fileHeight = canvas.height * fileWidth / canvas.width;
 
         const FILEURI = canvas.toDataURL('image/png')
-        // let PDF = new jsPDF('p', 'mm', 'a4');
-        // if (FILEURI == 'data:,') {
-        //   this.callAgainExportAsPDF();
-        // }
         let position = 0;
         doc.addImage(FILEURI, 'PNG', 10, 40, fileWidth, fileHeight) ;
         doc.addPage('a2','p');
