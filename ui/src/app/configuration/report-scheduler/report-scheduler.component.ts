@@ -258,7 +258,8 @@ export class ReportSchedulerComponent implements OnInit {
               if(element.scheduledReportVehicleRef[0].parentVehicleGroupId > 0){
                 element.scheduledReportVehicleRef[0].vehicleGroupId=element.scheduledReportVehicleRef[0].parentVehicleGroupId;
                 let vehicleNewGroupList= this.associatedVehicleGroup.filter(item=> item.vehicleGroupId == element.scheduledReportVehicleRef[0].parentVehicleGroupId);
-                element.scheduledReportVehicleRef[0].vehicleGroupName=vehicleNewGroupList[0].vehicleGroupName;
+                if(vehicleNewGroupList.length > 0){
+                element.scheduledReportVehicleRef[0].vehicleGroupName=vehicleNewGroupList[0].vehicleGroupName;}
               }           
            }   
         });
