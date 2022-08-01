@@ -750,6 +750,13 @@ export class ExistingTripsComponent implements OnInit {
     this.noRecordFound = false;
     this.updatedTableData(this.initData);
     this.filterDateData();
+    this.mapFunctions.viewSelectedRoutes([]);
+    this.mapExpandPanel = false;
+    this.existingTripForm.controls.label.setValue('');
+    this.existingTripForm.get('startaddress').setValue('');
+    this.existingTripForm.get('endaddress').setValue('');
+    this.existingTripForm.controls.widthInput.setValue(0.1);
+    this.changeSliderInput();
   }
 
   setDefaultTodayDate() {
