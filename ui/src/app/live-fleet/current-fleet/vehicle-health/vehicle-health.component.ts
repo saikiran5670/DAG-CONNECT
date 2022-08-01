@@ -76,7 +76,6 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
   prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   accountPrefObj: any;
-  // translationData: any = {};
   isSummaryOpen: boolean = true;
   isWarningOpen: boolean = true;
   isMapOpen: boolean = false;
@@ -248,6 +247,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
         else if (warningType == 'Deactive') {
           this.filteredHistoryHealthData = this.filteredHistoryHealthData.filter((item: any) => item.warningType == 'D');
         }
+        this.filteredHistoryHealthData = this.filteredHistoryHealthData.filter((item: any) => item.warningType == 'D');   //removing records from final list which do not have deactivated time
         this.applyDatatoCardPaginator(this.filteredHistoryHealthData);
         this.setGeneralFleetValue();
       });
@@ -268,7 +268,6 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
     this.setDefaultTodayDate();
     this.setDefaultStartEndTime();
     this.vehicleHealthForm.get('warningType').setValue('AllWarnings');
-    //this.warningTypeSelection='';
     if (!this.isCurrent) {
       this.vehicleHealthForm.get('warningTypeSorting').setValue('deactivated_time');
     } else {
@@ -326,7 +325,6 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
     } else {
       sorteddata = this.sortWarningData(warning, this.filteredHistoryHealthData);
     }
-    //console.log(sorteddata);
     this.applyDatatoCardPaginator(sorteddata);
   }
 
@@ -724,7 +722,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
         return !deactiveActiveToDeleteSet.has(item);
       });
       if (warningdata == 'C') {
-        this.currentHealthData = newHealthStatusData;//res;
+        this.currentHealthData = newHealthStatusData;
         this.applyDatatoCardPaginator(this.currentHealthData);
       } else {
         this.historyHealthData = newHealthStatusData;
