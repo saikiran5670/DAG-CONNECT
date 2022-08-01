@@ -750,6 +750,13 @@ export class ExistingTripsComponent implements OnInit {
     this.noRecordFound = false;
     this.updatedTableData(this.initData);
     this.filterDateData();
+    this.mapFunctions.viewSelectedRoutes([]);
+    this.mapExpandPanel = false;
+    this.existingTripForm.controls.label.setValue('');
+    this.existingTripForm.get('startaddress').setValue('');
+    this.existingTripForm.get('endaddress').setValue('');
+    this.existingTripForm.controls.widthInput.setValue(0.1);
+    this.changeSliderInput();
   }
 
   setDefaultTodayDate() {
@@ -1388,7 +1395,7 @@ export class ExistingTripsComponent implements OnInit {
 
     if (event.checked) { //-- add new marker
       this.markerArray.push(row);
-      this.mapFunctions.viewSelectedRoutes(this.markerArray);
+      this.mapFunctions.viewSelectedRoutes(this.markerArray,undefined,undefined,undefined, false);
       this.tripsSelection.push(row);
       //console.log("----this.tripsSelection.push(row);------", this.tripsSelection);
 

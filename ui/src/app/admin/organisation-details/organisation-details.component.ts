@@ -343,6 +343,7 @@ compareHere(a, b) {
   deleteBrandLogo(){
     this.uploadLogo = "";    
     this.orgDetailsPreferenceForm.get('uploadBrandLogo').setValue('');
+    this.organisationData.icon = '';
   }
 
   keyPressNumbers(event: any){

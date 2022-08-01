@@ -29,7 +29,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   searchForm: FormGroup;
   searchExpandPanel: boolean = true;
   formSubmitted: boolean = false;
-  selectionTab: string = 'today';
+  selectionTab: any;
   prefTimeFormat: any = 12;
   prefTimeZone: any;
   prefDateFormat;
@@ -429,9 +429,10 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
         this.vehicleGrpDD.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
       } else {
         let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
-        if (search.length > 0) {
+        const arrayUniqueByKey = [...new Map(search.map(item => [item['vehicleId'], item])).values()];
+        if (arrayUniqueByKey.length > 0) {
           this.vehicleDD = [];
-          search.forEach(element => {
+          arrayUniqueByKey.forEach(element => {
             this.vehicleDD.push(element);
           });
           this.vehicleGrpDD.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });

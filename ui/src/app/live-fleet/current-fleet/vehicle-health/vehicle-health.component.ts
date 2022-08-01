@@ -208,7 +208,6 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
       this.showLoadingIndicator=true;
       this.getvehiclehealthstatusservicecall = this.reportService.getvehiclehealthstatusHistory(this.healthData.vin, this.localStLanguage.code, 'H', _startTime, _endTime).subscribe((res: any) => {      
         this.showLoadingIndicator=false;
-        
         let healthStatusData = res.vehicleHealthStatus;
         this.overallVehHealthStatusType = res.warningVehicleHealthStatusType;
         let deactiveActiveData=[];
@@ -225,14 +224,15 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
               if(e.warningTimetamp < element.warningTimetamp){
                 element.warningActivatedForDeactive = e.warningTimetamp;
                 activeDataObj= e;
-              }
+              }    
             });
             
             if(activeDataObj != undefined )  {
-              deactiveActiveData.push(activeDataObj);
-            }
-          }
+            deactiveActiveData.push(activeDataObj);
+            }          
+          }          
         });     
+
         let deactiveActiveToDeleteSet = new Set(deactiveActiveData);
         let newHealthStatusData = healthStatusData.filter((item) => {
           return !deactiveActiveToDeleteSet.has(item);
@@ -245,13 +245,10 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
         else if (warningType == 'Deactive') {
           this.filteredHistoryHealthData = this.filteredHistoryHealthData.filter((item: any) => item.warningType == 'D');
         }      
-        // console.log(this.filteredHistoryHealthData);
-        this.filteredHistoryHealthData = this.filteredHistoryHealthData.filter((item: any) => item.warningType == 'D');
-        // console.log(this.filteredHistoryHealthData);
         this.applyDatatoCardPaginator(this.filteredHistoryHealthData);
         this.setGeneralFleetValue();
-      });
-    }
+        });
+      }
    
     if(!this.isCurrent){
       this.vehicleHealthForm.get('warningTypeSorting').setValue('deactivated_time');
@@ -336,18 +333,15 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
     } else {
       let stopnow = filteredHistoryHealthData.filter(item => item?.warningVehicleHealthStatusType == 'T');
       let servicenow = filteredHistoryHealthData.filter(item => item?.warningVehicleHealthStatusType == 'V');
-      //let noaction = filteredHistoryHealthData.filter(item => item?.warningVehicleHealthStatusType == 'N' || item?.warningVehicleHealthStatusType.trim() == '');
       let noaction = [];     
       if (this.selectedIndex == 0) {
          noaction = filteredHistoryHealthData.filter(item => item?.warningVehicleHealthStatusType == 'N' )
-      if(noaction.length == 0){
-        noaction = filteredHistoryHealthData.sort((a, b) =>  a.warningClass - b.warningClass  );
-      }}
-      else{
-        noaction = filteredHistoryHealthData.filter(item => item?.warningVehicleHealthStatusType == 'N' || item?.warningVehicleHealthStatusType.trim() == '');
       }
-        return [...stopnow, ...servicenow, ...noaction];
-      }
+      else {
+        noaction = filteredHistoryHealthData.filter(item => item.warningVehicleHealthStatusType == 'N' || item.warningVehicleHealthStatusType.trim() == '');
+      } 
+      return Array.from(new Set([...stopnow, ...servicenow, ...noaction])).sort((a, b) => a.warningClass - b.warningClass)
+    }
   }
 
   onChangeWarningType(warning: any){

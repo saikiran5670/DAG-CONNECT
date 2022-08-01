@@ -147,7 +147,7 @@ export class MapFunctionsService {
   group = new H.map.Group();
   viaRoutePlottedPoints = [];
 
-  viewSelectedRoutes(_selectedRoutes, accountOrganizationId?, isRCorridor?, translationData?: any) {
+  viewSelectedRoutes(_selectedRoutes, accountOrganizationId?, isRCorridor?, translationData?:any, isExisting?:any) {
     let corridorName = '';
     let startAddress = '';
     let endAddress = '';
@@ -206,11 +206,13 @@ export class MapFunctionsService {
           this.corridorWidthKm = this.corridorWidth / 1000;
         }
         //create and add Icon
+        if(isExisting || isExisting == undefined){
         let locMarkup = this.getCategoryPOIIcon();
         let markerSizeIcon = { w: 25, h: 39 };
         const locIcon = new H.map.Icon(locMarkup, { size: markerSizeIcon, anchor: { x: Math.round(markerSizeIcon.w / 2), y: Math.round(markerSizeIcon.h / 2) } });
         this.startMarker = new H.map.Marker({ lat: this.startAddressPositionLat, lng: this.startAddressPositionLong }, { icon: locIcon });
         this.mapGroup.addObject(this.startMarker);
+        }
         //create and add start marker
         let houseMarker = this.createHomeMarker();
         let markerSize = { w: 26, h: 32 };
