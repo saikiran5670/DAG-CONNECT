@@ -43,13 +43,11 @@ export class ExistingTripsComponent implements OnInit {
   endDate = new FormControl();
   startDate = new FormControl();
   startTime = new FormControl();
-  // @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
   @Input() disabled: boolean;
   @Input() value: string = '11:00 PM';
   @Input() format: number = 12;
   @Input() vehicleGroupList: any;
   @Input() vinTripList: any;
-  //internalSelection: boolean = false;
   vehicleGrpDD: any = [];
   vehicleDD: any = [];
   vehicleListData: any = [];
@@ -84,13 +82,13 @@ export class ExistingTripsComponent implements OnInit {
   accountOrganizationId: any = 0;
   corridorCreatedMsg: any = '';
   covertedDateValue: any = [];
-  // actionType: string;
+
   titleVisible: boolean = false;
   titleFailVisible: boolean = false;
   showMap: boolean = false;
   map: any;
   initData: any = [];
-  // dataSource: any;
+
   markerArray: any = [];
   tripsSelection: any = [];
   showLoadingIndicator: boolean;
@@ -103,10 +101,7 @@ export class ExistingTripsComponent implements OnInit {
   vinListSelectedValue: any = [];
   vehicleGroupIdsSet: any = [];
   localStLanguage: any;
-  // createExistingTripObj :any = {
-  // id : 1,
-  // sequence :"first"
-  // }
+
   selectedTrips: any = [];
   internalNodePoints: any = [];
   getAttributeData: any;
@@ -197,15 +192,11 @@ export class ExistingTripsComponent implements OnInit {
     private mapFunctions: MapFunctionsService, private organizationService: OrganizationService,
     private completerService: CompleterService, private config: ConfigService) {
 
-    // this.map_key = config.getSettings("hereMap").api_key;
-    // this.map_id = config.getSettings("hereMap").app_id;
-    // this.map_code = config.getSettings("hereMap").app_code;
     this.map_key = localStorage.getItem("hereMapsK");
 
     this.platform = new H.service.Platform({
       "apikey": this.map_key
     });
-    // this.configureAutoCompleteForLocationSearch();
 
   }
 
@@ -219,14 +210,6 @@ export class ExistingTripsComponent implements OnInit {
     if (this.vehicleGroupIdsSet.length > 0) {
       this.vehicleGroupIdsSet.unshift(this.translationData.lblAll || 'All');
     };
-    // //this.vinList = [];
-    // this.vehicleGroupList.forEach(item => {
-    //   this.vinList.push(item.vin)
-    // });
-    // if(this.vinList.length > 0){
-    //   this.vinList.unshift(this.translationData.lblAll || 'All' );
-    // };
-    //this.filteredVehicleList.next(this.vinList);
 
     this.showLoadingIndicator = true;
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -247,29 +230,29 @@ export class ExistingTripsComponent implements OnInit {
       endDate: ['', []],
       startTime: ['', []],
       endTime: ['', []]
-      // userGroupDescription: ['', [CustomValidators.noWhitespaceValidatorforDesc]]
+
     },
       {
         validator: [
           CustomValidators.specialCharValidationForName('label')
         ]
-      }); 
-      if(this.prefDetail){
-        if (this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != '') { // account pref
-          this.proceedStep(this.accountPrefObj.accountPreference);
-        } else { // org pref
-          this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any) => {
-            this.proceedStep(orgPref);
-          }, (error) => {
-            this.proceedStep({});
-          });
-        }
+      });
+    if (this.prefDetail) {
+      if (this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != '') { // account pref
+        this.proceedStep(this.accountPrefObj.accountPreference);
+      } else { // org pref
+        this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any) => {
+          this.proceedStep(orgPref);
+        }, (error) => {
+          this.proceedStep({});
+        });
       }
-      this.sliderChanged();
+    }
+    this.sliderChanged();
   }
 
   resetExistingTripFormControlValue() {
-    if(this.vehicleGroupListData.length > 0){
+    if (this.vehicleGroupListData.length > 0) {
       this.existingTripForm.get('vehicleGroup').setValue(0);
     }
     else {
@@ -281,13 +264,13 @@ export class ExistingTripsComponent implements OnInit {
 
   proceedStep(preference: any) {
     let _search = this.prefDetail.timeformat.filter(i => i.id == preference.timeFormatId);
-    if (_search.length > 0) { 
-      this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0, 2)); 
+    if (_search.length > 0) {
+      this.prefTimeFormat = Number(_search[0].name.split("_")[1].substring(0, 2));
       this.prefTimeZone = this.prefDetail.timezone.filter(i => i.id == preference.timezoneId)[0].name;
       this.prefDateFormat = this.prefDetail.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
       this.prefUnitFormat = this.prefDetail.unit.filter(i => i.id == preference.unitId)[0].name;
-    } else { 
-      this.prefTimeFormat = Number(this.prefDetail.timeformat[0].name.split("_")[1].substring(0, 2)); 
+    } else {
+      this.prefTimeFormat = Number(this.prefDetail.timeformat[0].name.split("_")[1].substring(0, 2));
       this.prefTimeZone = this.prefDetail.timezone[0].name;
       this.prefDateFormat = this.prefDetail.dateformat[0].name;
       this.prefUnitFormat = this.prefDetail.unit[0].name;
@@ -337,40 +320,6 @@ export class ExistingTripsComponent implements OnInit {
 
     this.getVehicleGroupsForExistingTrip();
     this.resetExistingTripFormControlValue();
-
-    // if(this.vehicleGroupListData.length > 0){
-    //   let _s = this.vehicleGroupListData.map(item => item.vehicleGroupId).filter((value, index, self) => self.indexOf(value) === index);
-    //   if(_s.length > 0){
-    //     _s.forEach(element => {
-    //       let count = this.vehicleGroupListData.filter(j => j.vehicleGroupId == element);
-    //       if(count.length > 0){
-    //         this.vehicleGrpDD.push(count[0]); //-- unique Veh grp data added
-    //         this.vehicleGrpDD.sort(this.compare);
-    //         this.resetVehicleGroupFilter();
-    //       }
-    //     });
-    //   }
-
-    //   this.vehicleGrpDD.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
-    //   this.resetVehicleGroupFilter();
-    // }
-
-    // let vehicleData = this.vehicleListData.slice();
-    // this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
-    // ////console.log("vehicleDD 1", this.vehicleDD);
-    // this.vehicleDD.sort(this.compareVin);
-    // this.resetVehicleSearch();
-
-    // if(this.vehicleListData.length > 0){
-    //   this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
-    //   this.resetVehicleSearch();
-    //   //this.resetTripFormControlValue();----later
-    // };
-    //this.setVehicleGroupAndVehiclePreSelection();
-    // if(this.fromTripPageBack){ --------later
-    //   this.onSearch();
-    // }
-
 
   }
 
@@ -430,8 +379,8 @@ export class ExistingTripsComponent implements OnInit {
         let associatedList = element.vehicleGroupDetails.split(",");
         let associatedVechileList = [];
         associatedList.forEach(item => {
-        let itemSplit = item.split("~");
-        associatedVechileList.push(itemSplit[0]);
+          let itemSplit = item.split("~");
+          associatedVechileList.push(itemSplit[0]);
         })
 
         let vehicleObj = {
@@ -439,14 +388,14 @@ export class ExistingTripsComponent implements OnInit {
           vehicleName: element.vehicleName,
           vin: element.vin,
           vehicleRegistrationNo: element.registrationNo,
-          associatedVehGrpIds:associatedVechileList,
+          associatedVehGrpIds: associatedVechileList,
         }
         this.newVehicleList.push(vehicleObj);
-      this.vinList.push(vehicleObj.vin);
+        this.vinList.push(vehicleObj.vin);
         let vehicleGroupDetails = element.vehicleGroupDetails.split(",");
         vehicleGroupDetails.forEach(item => {
           let itemSplit = item.split("~");
-          // if(itemSplit[2] != 'S') { 
+
           let vehicleGroupObj = {
             "vehicleGroupId": parseInt(itemSplit[0]),
             "vehicleGroupName": itemSplit[1],
@@ -454,20 +403,11 @@ export class ExistingTripsComponent implements OnInit {
           }
           this.newVehicleGrpList.push(vehicleGroupObj);
 
-          // console.log("vehicleGroupList 1", this.newVehicleGrpList);
-          //  } else {
-          //    this.singleVehicle.push(element);
-          //  }
         });
       });
-      this.newVehicleGrpList =this.getUnique(this.newVehicleGrpList, 'vehicleGroupName')
+      this.newVehicleGrpList = this.getUnique(this.newVehicleGrpList, 'vehicleGroupName')
 
       this.newVehicleGrpList.sort(this.compareHere);
-
-
-      // this.newVehicleGrpList.forEach(element => {
-      //   element.vehicleGroupId = parseInt(element.vehicleGroupId);
-      // });
 
       this.newVehicleGrpList.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll });
       this.resetVehicleGroupFilter();
@@ -482,15 +422,6 @@ export class ExistingTripsComponent implements OnInit {
   }
 
   public ngAfterViewInit() {
-    //For Edit Screen
-    // if((this.actionType === 'edit' || this.actionType === 'view') && this.selectedElementData){
-    //   this.setCorridorData();
-    //   this.createFlag = false;
-    //   this.strPresentStart = true;
-    //   this.strPresentEnd = true;
-    // }
-    // this.subscribeWidthValue();
-    // this.existingTripForm.controls.widthInput.setValue(this.corridorWidthKm);
     setTimeout(() => {
       this.mapFunctions.initMap(this.mapElement, this.translationData);
     }, 0);
@@ -698,27 +629,12 @@ export class ExistingTripsComponent implements OnInit {
 
 
   onSearch() {
-    // https://api.dev1.ct2.atos.net/poi/getalltripdetails?vin=XLR0998HGFFT76657&startdatetime=1604336137000&enddatetime=1604337449000
-
-    //     VIN: "5A39727"
-    // _startTime = 1604336137000
-    //_endTime = 1604337449000
-    // StartDateTime=1078724200000&EndDateTime=2078724200000&VIN=XLR0998HGFFT76657
-
     let _startTime = Util.getMillisecondsToUTCDate(this.startDateValue, this.prefTimeZone);
     let _endTime = Util.getMillisecondsToUTCDate(this.endDateValue, this.prefTimeZone);
-    //For testing data
-    // _startTime = 1604336137000;
-    // _endTime = 1604337449000;
-    // this.vinListSelectedValue= "XLR0998HGFFT76657";
-
-    // this.vinListSelectedValue = "5A39727"
-    // _startTime = 1604336137000
-    // _endTime = 1604337449000
     this.poiService.getalltripdetails(_startTime, _endTime, this.vinListSelectedValue).subscribe((existingTripDetails: any) => {
       this.showLoadingIndicator = true;
       this.initData = existingTripDetails.tripData;
-      if(this.initData.length == 0) {
+      if (this.initData.length == 0) {
         this.noRecordFound = true;
       } else {
         this.noRecordFound = false;
@@ -736,16 +652,12 @@ export class ExistingTripsComponent implements OnInit {
 
 
   onReset() {
-    // this.selectedStartTime = '00:00:00';
-    // this.selectedEndTime= '23:59:59';
+
     this.startTimeDisplay = '00:00:00';
     this.endTimeDisplay = '23:59:59';
     this.setDefaultStartEndTime();
     this.setDefaultTodayDate();
-    // this.existingTripForm.get('startTime').setValue(this.selectedStartTime);
-    // this.existingTripForm.get('endTime').setValue(this.selectedEndTime);
     this.vinListSelectedValue = '';
-    //this.vinList = [];
     this.initData = [];
     this.noRecordFound = false;
     this.updatedTableData(this.initData);
@@ -773,7 +685,6 @@ export class ExistingTripsComponent implements OnInit {
     this.hereMap = new H.Map(this.mapElement.nativeElement,
       defaultLayers.vector.normal.map, {
       center: { lat: 51.43175839453286, lng: 5.519981221425336 },
-      //center:{lat:41.881944, lng:-87.627778},
       zoom: 4,
       pixelRatio: window.devicePixelRatio || 1
     });
@@ -894,33 +805,12 @@ export class ExistingTripsComponent implements OnInit {
     return viaMarker;
   }
 
-  // loadExistingTripData() {
-
-  // }
-
-  // suggestionData: any;
-  // dataService: any;
-  // private configureAutoCompleteForLocationSearch() {
-  //   let searchParam = this.searchEndStr !== null ? this.searchEndStr : this.searchStr != null ? this.searchStr : this.searchViaStr;
-  //   let AUTOCOMPLETION_URL = 'https://autocomplete.geocoder.cit.api.here.com/6.2/suggest.json' + '?' +
-  //     '&maxresults=5' +  // The upper limit the for number of suggestions to be included in the response.  Default is set to 5.
-  //     '&app_id=' + this.map_id + // TODO: Store this configuration in Config File.
-  //     '&app_code=' + this.map_code +  // TODO: Store this configuration in Config File.
-  //     '&query=' + searchParam;
-  //   this.suggestionData = this.completerService.remote(
-  //     AUTOCOMPLETION_URL,
-  //     "label",
-  //     "label");
-  //   this.suggestionData.dataField("suggestions");
-  //   this.dataService = this.suggestionData;
-  // }
 
   hideloader() {
     this.showLoadingIndicator = false;
   }
   vehicleGroupSelection(vehicleGroupValue: any) {
     this.vinList = [];
-    // //console.log("----vehicleGroupList---",this.vehicleGroupList)
     if (vehicleGroupValue.value == 0) {
       this.newVehicleList.forEach(item => {
         this.vinList.push(item.vin)
@@ -929,8 +819,8 @@ export class ExistingTripsComponent implements OnInit {
     else {
       this.newVehicleGrpList.forEach(element => {
         if (element.vehicleGroupId == parseInt(vehicleGroupValue.value)) {
-          this.newVehicleList.forEach((item)=>{
-            if(item.associatedVehGrpIds.indexOf(vehicleGroupValue.value.toString()) > -1){
+          this.newVehicleList.forEach((item) => {
+            if (item.associatedVehGrpIds.indexOf(vehicleGroupValue.value.toString()) > -1) {
               this.vinList.push(item.vin);
             }
           })
@@ -957,8 +847,7 @@ export class ExistingTripsComponent implements OnInit {
       this.startMarker = new H.map.Marker({ lat: this.startAddressPositionLat, lng: this.startAddressPositionLong }, { icon: icon });
       var group = new H.map.Group();
       this.hereMap.addObject(this.startMarker);
-      //this.hereMap.getViewModel().setLookAtData({zoom: 8});
-      //this.hereMap.setZoom(8);
+
       this.hereMap.setCenter({ lat: this.startAddressPositionLat, lng: this.startAddressPositionLong }, 'default');
       this.checkRoutePlot();
 
@@ -978,8 +867,7 @@ export class ExistingTripsComponent implements OnInit {
 
       this.endMarker = new H.map.Marker({ lat: this.endAddressPositionLat, lng: this.endAddressPositionLong }, { icon: icon });
       this.hereMap.addObject(this.endMarker);
-      // this.hereMap.getViewModel().setLookAtData({bounds: this.endMarker.getBoundingBox()});
-      //this.hereMap.setZoom(8);
+
       this.hereMap.setCenter({ lat: this.endAddressPositionLat, lng: this.endAddressPositionLong }, 'default');
       this.checkRoutePlot();
 
@@ -1012,8 +900,6 @@ export class ExistingTripsComponent implements OnInit {
 
           this.viaMarker = new H.map.Marker({ lat: this.viaAddressPositionLat, lng: this.viaAddressPositionLong }, { icon: icon });
           this.hereMap.addObject(this.viaMarker);
-          // this.hereMap.getViewModel().setLookAtData({bounds: this.endMarker.getBoundingBox()});
-          //this.hereMap.setZoom(8);
           this.hereMap.setCenter({ lat: this.viaAddressPositionLat, lng: this.viaAddressPositionLong }, 'default');
           this.viaRoutePlottedObject.push({
             "viaRoutName": _viaRouteList[i],
@@ -1044,7 +930,7 @@ export class ExistingTripsComponent implements OnInit {
         'routingMode': 'fast',
         'transportMode': 'truck',
         'origin': `${this.startAddressPositionLat},${this.startAddressPositionLong}`,
-        'via': viaPoints,//`${this.viaAddressPositionLat},${this.viaAddressPositionLong}`,
+        'via': viaPoints,
         'destination': `${this.endAddressPositionLat},${this.endAddressPositionLong}`,
         'return': 'polyline'
       };
@@ -1089,7 +975,6 @@ export class ExistingTripsComponent implements OnInit {
       // create a group that represents the route line and contains
       // outline and the pattern
       var routeLine = new H.map.Group();
-      // routeLine.addObjects([routeOutline, routeArrows]);
       this.hereMap.addObjects([this.routeOutlineMarker, this.routeCorridorMarker]);
       this.hereMap.getViewModel().setLookAtData({ bounds: this.routeCorridorMarker.getBoundingBox() });
 
@@ -1097,12 +982,10 @@ export class ExistingTripsComponent implements OnInit {
   }
 
   sliderChanged() {
-    // this.corridorWidth = _event.value;
     this.corridorWidthKm = this.corridorWidth / 1000;
     this.existingTripForm.controls.widthInput.setValue(this.corridorWidthKm);
     this.mapFunctions.updateWidth(this.corridorWidthKm, true);
     this.checkRoutePlot();
-    //this.calculateRouteFromAtoB();
   }
 
   checkRoutePlot() {
@@ -1169,8 +1052,6 @@ export class ExistingTripsComponent implements OnInit {
 
       }
 
-      // //console.log("------- Node points--",this.internalNodePoints)
-      // //console.log("-------all slected Values--", items)
       this.startAddressLatitudePoints.push(items.startPositionlattitude)
       this.startAddressLongitudePoints.push(items.startPositionLongitude)
       this.endAddressLatitudePoints.push(items.endPositionLattitude)
@@ -1218,7 +1099,6 @@ export class ExistingTripsComponent implements OnInit {
       "existingTrips": [...this.selectedTrips]
     }
 
-    //console.log("------existingTrip Create Obj--", existingTripObj)
     this.corridorService.createExistingCorridor(existingTripObj).subscribe((responseData) => {
       if (responseData.code === 200) {
         let emitObj = {
@@ -1255,7 +1135,7 @@ export class ExistingTripsComponent implements OnInit {
   }
 
   resetToEditData() {
-    // this.setDefaultStartEndTime();
+
     this.searchStrError = false;
     this.searchEndStrError = false;
     this.setCorridorData();
@@ -1368,7 +1248,7 @@ export class ExistingTripsComponent implements OnInit {
       this.mapFunctions.viewSelectedRoutes(this.markerArray);
       this.showMap = true;
     }
-    // //console.log("---markerArray---",this.markerArray);
+
     this.setAllAddressValues(this.markerArray);
 
   }
@@ -1388,27 +1268,25 @@ export class ExistingTripsComponent implements OnInit {
   }
 
   checkboxClicked(event: any, row: any) {
-    // this.showMapSection = true;
+
     let startAddress = row.startPositionlattitude + "," + row.startPositionLongitude;
     let endAddress = row.endPositionLattitude + "," + row.endPositionLongitude;
-    // this.position = row.startPositionlattitude + "," + row.startPositionLongitude;
 
     if (event.checked) { //-- add new marker
       this.markerArray.push(row);
-      this.mapFunctions.viewSelectedRoutes(this.markerArray,undefined,undefined,undefined, false);
+      this.mapFunctions.viewSelectedRoutes(this.markerArray, null, null, null, true);
       this.tripsSelection.push(row);
-      //console.log("----this.tripsSelection.push(row);------", this.tripsSelection);
+
 
     } else { //-- remove existing marker
       //It will filter out checked points only
       let arr = this.markerArray.filter(item => item.id != row.id);
       this.markerArray = arr;
       this.tripsSelection = this.markerArray.filter(item => item.id !== row.id);
-      //console.log("----this.tripsSelection.push(row);------", this.tripsSelection);
+
       this.mapFunctions.clearRoutesFromMap();
       this.mapFunctions.viewSelectedRoutes(this.markerArray);
     }
-    //console.log("---markerArray--", this.markerArray)
 
     this.setAllAddressValues(this.markerArray);
   }
@@ -1416,16 +1294,16 @@ export class ExistingTripsComponent implements OnInit {
   updatedTableData(tableData: any) {
     tableData = this.getNewTagData(tableData);
     this.dataSource = new MatTableDataSource(tableData);
-    // //console.log("------dataSource--", this.dataSource)
+
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
       this.sort.disableClear = true;
-      this.dataSource.filterPredicate = function(data: any, filter: string): boolean {
-        let driverName = data.driverFirstName+" "+data.driverLastName;
+      this.dataSource.filterPredicate = function (data: any, filter: string): boolean {
+        let driverName = data.driverFirstName + " " + data.driverLastName;
         let startDate = moment(data.startTimeStamp).format("DD/MM/YYYY-h:mm:ss")
-        return (  
-          driverName.toString().toLowerCase().includes(filter) || 
+        return (
+          driverName.toString().toLowerCase().includes(filter) ||
           data.distance.toString().toLowerCase().includes(filter) ||
           startDate.toString().toLowerCase().includes(filter) ||
           data.startAddress.toString().toLowerCase().includes(filter) ||
@@ -1436,13 +1314,13 @@ export class ExistingTripsComponent implements OnInit {
         const isAsc = sort.direction === 'asc';
         return data.sort((a: any, b: any) => {
           let columnName = sort.active;
-          if(columnName !== 'DriverName'){
-            return this.compare(a[sort.active], b[sort.active], isAsc , columnName);
-            }else{
-            const currentName = a.driverFirstName+" "+a.driverLastName;
-            const nextName = b.driverFirstName+" "+b.driverLastName;
-            return this.compare(currentName, nextName, isAsc , columnName);
-            }
+          if (columnName !== 'DriverName') {
+            return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
+          } else {
+            const currentName = a.driverFirstName + " " + a.driverLastName;
+            const nextName = b.driverFirstName + " " + b.driverLastName;
+            return this.compare(currentName, nextName, isAsc, columnName);
+          }
           // if(columnName === date){
           //   return this.compare(a[sort.active], b[sort.active], isAsc , date);
           // }
@@ -1523,7 +1401,7 @@ export class ExistingTripsComponent implements OnInit {
     this.vinListSelectedValue = vinSelectedValue.value;
     if (vinSelectedValue.value == 'All')
       this.vinListSelectedValue = this.vinList;
-    // //console.log("------vins selection--", this.vinListSelectedValue)
+
   }
 
   applyFilter(filterValue: string) {
@@ -1541,7 +1419,7 @@ export class ExistingTripsComponent implements OnInit {
     if (date === 0) {
       return "-";
     } else {
-      var dateValue = Util.convertUtcToDateAndTimeFormatWithSeconds(date , this.prefTimeZone);
+      var dateValue = Util.convertUtcToDateAndTimeFormatWithSeconds(date, this.prefTimeZone);
       return dateValue;
     }
   }

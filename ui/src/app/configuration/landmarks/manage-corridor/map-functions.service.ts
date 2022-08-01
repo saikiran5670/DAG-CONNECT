@@ -20,7 +20,7 @@ export class MapFunctionsService {
   startAddressPositionLong: number = 0; // = {lat : 18.50424,long : 73.85286};
   startMarker: any;
   endMarker: any;
-  polyLineArray:any = [];
+  polyLineArray: any = [];
   routeCorridorMarker: any;
   routeOutlineMarker: any;
   endAddressPositionLat: number = 0;
@@ -31,16 +31,16 @@ export class MapFunctionsService {
   corridorWidthKm: number = 0.1;
   additionalData = [];
 
-  corridorPath : any;
-  polylinePath : any;
-  polyLinePathArray : any = [];
-  organizationId:any;
-  corridorId : any;
+  corridorPath: any;
+  polylinePath: any;
+  polyLinePathArray: any = [];
+  organizationId: any;
+  corridorId: any;
   tollRoadChecked = false;
   motorwayChecked = false;
   boatFerriesChecked = false;
-  railFerriesChecked =false;
-  tunnelsChecked=false;
+  railFerriesChecked = false;
+  tunnelsChecked = false;
   dirtRoadChecked = false;
   exclusions = [];
 
@@ -48,7 +48,6 @@ export class MapFunctionsService {
   ui: any;
 
   constructor(private hereService: HereService, private corridorService: CorridorService, private _configService: ConfigService) {
-    // this.map_key = _configService.getSettings("hereMap").api_key;
     this.map_key = localStorage.getItem("hereMapsK");
     this.platform = new H.service.Platform({
       "apikey": this.map_key
@@ -71,12 +70,8 @@ export class MapFunctionsService {
   vehicleLengthValue = 0
   vehicleLimitedWtValue = 0
   vehicleWtPerAxleValue = 0
-  defaultLayers : any;
+  defaultLayers: any;
 
-
-  // public ngAfterViewInit() {
-  //   this.initMap();
-  // }
 
   initMap(mapElement: any, translationData?: any) {
     this.defaultLayers = this.platform.createDefaultLayers();
@@ -92,20 +87,20 @@ export class MapFunctionsService {
     this.ui.removeControl("mapsettings");
     // create custom one
     var ms = new H.ui.MapSettingsControl({
-        baseLayers : [ {
-          label: translationData ? translationData.lblNormal || "Normal" : "Normal", layer: this.defaultLayers.raster.normal.map
-        },{
-          label: translationData ? translationData.lblSatellite || "Satellite" : "Satellite", layer: this.defaultLayers.raster.satellite.map
-        }, {
-          label: translationData ? translationData.lblTerrain || "Terrain" : "Terrain", layer: this.defaultLayers.raster.terrain.map
-        }
-        ],
-      layers : [{
-            label: translationData ? translationData.lblLayerTraffic || "Layer.Traffic" : "Layer.Traffic", layer: this.defaultLayers.vector.normal.traffic
-        },
-        {
-            label: translationData ? translationData.lblLayerIncidents || "Layer.Incidents" : "Layer.Incidents", layer: this.defaultLayers.vector.normal.trafficincidents
-        }
+      baseLayers: [{
+        label: translationData ? translationData.lblNormal || "Normal" : "Normal", layer: this.defaultLayers.raster.normal.map
+      }, {
+        label: translationData ? translationData.lblSatellite || "Satellite" : "Satellite", layer: this.defaultLayers.raster.satellite.map
+      }, {
+        label: translationData ? translationData.lblTerrain || "Terrain" : "Terrain", layer: this.defaultLayers.raster.terrain.map
+      }
+      ],
+      layers: [{
+        label: translationData ? translationData.lblLayerTraffic || "Layer.Traffic" : "Layer.Traffic", layer: this.defaultLayers.vector.normal.traffic
+      },
+      {
+        label: translationData ? translationData.lblLayerIncidents || "Layer.Incidents" : "Layer.Incidents", layer: this.defaultLayers.vector.normal.trafficincidents
+      }
       ]
     });
     this.ui.addControl("customized", ms);
@@ -114,12 +109,7 @@ export class MapFunctionsService {
     this.mapGroup = group;
   }
 
-  // clearRoutesFromMap() {
-  //   var group = new H.map.Group();
-  //   group.removeAll();
-  //   this.hereMap.removeObjects(this.hereMap.getObjects())
-  //   this.startMarker = null; this.endMarker = null;
-  // }
+
   clearRoutesFromMap() {
     this.mapGroup.removeAll();
     this.startMarker = null; this.endMarker = null;
@@ -127,27 +117,14 @@ export class MapFunctionsService {
     this.hereMap.removeLayer(this.defaultLayers.vector.normal.truck);
     this.transportOnceChecked = false;
     this.trafficOnceChecked = false;
-    this.ui.getBubbles().forEach(bub =>this.ui.removeBubble(bub));
+    this.ui.getBubbles().forEach(bub => this.ui.removeBubble(bub));
   }
 
-  // code changed for bug 16249
-  // added to remove selected polyline  // functions removed as points are preserved from lat long line : 246
-  // removeCorridor(_id){
-  //   if(this.polyLinePathArray.length >0){
-  //     let filteredPolyline = this.polyLinePathArray.filter(elem => elem.id != _id);
-  //     this.polyLinePathArray = filteredPolyline;
-  //   }
-
-  // }
-
-  // clearPolylines(){
-  //   this.polyLinePathArray = [];
-  // }
 
   group = new H.map.Group();
   viaRoutePlottedPoints = [];
 
-  viewSelectedRoutes(_selectedRoutes, accountOrganizationId?, isRCorridor?, translationData?:any, isExisting?:any) {
+  viewSelectedRoutes(_selectedRoutes, accountOrganizationId?, isRCorridor?, translationData?: any, isExisting?: boolean) {
     let corridorName = '';
     let startAddress = '';
     let endAddress = '';
@@ -161,25 +138,21 @@ export class MapFunctionsService {
     this.transportOnceChecked = false;
     this.trafficOnceChecked = false;
     this.viaRoutePlottedPoints = [];
- // var group = new H.map.Group();
 
- this.mapGroup.removeAll();
- this.hereMap.removeObjects(this.hereMap.getObjects())
-    // if(this.routeOutlineMarker){
-    //   this.hereMap.removeObjects([this.routeOutlineMarker, this.routeCorridorMarker]);
-    //   this.routeOutlineMarker = null;
-    // }
+    this.mapGroup.removeAll();
+    this.hereMap.removeObjects(this.hereMap.getObjects())
+
     if (_selectedRoutes) {
       for (var i in _selectedRoutes) {
         if (accountOrganizationId) {
-          if(_selectedRoutes[i].trips && _selectedRoutes[i].trips.length > 0){ // for existing trip
+          if (_selectedRoutes[i].trips && _selectedRoutes[i].trips.length > 0) { // for existing trip
             this.startAddressPositionLat = _selectedRoutes[i].trips[0].startLatitude;
             this.startAddressPositionLong = _selectedRoutes[i].trips[0].startLongitude;
             this.endAddressPositionLat = _selectedRoutes[i].trips[0].endLatitude;
             this.endAddressPositionLong = _selectedRoutes[i].trips[0].endLongitude;
             startAddress = _selectedRoutes[i].trips[0].startPosition;
             endAddress = _selectedRoutes[i].trips[0].endPosition;
-          }else{ // for routing calculating
+          } else { // for routing calculating
             this.startAddressPositionLat = _selectedRoutes[i].startLat;
             this.startAddressPositionLong = _selectedRoutes[i].startLong;
             this.endAddressPositionLat = _selectedRoutes[i].endLat;
@@ -197,22 +170,19 @@ export class MapFunctionsService {
           this.startAddressPositionLong = _selectedRoutes[i].startPositionLongitude;
           this.endAddressPositionLat = _selectedRoutes[i].endPositionLattitude;
           this.endAddressPositionLong = _selectedRoutes[i].endPositionLongitude;
-
-          // this.startAddressPositionLat =  19.14045;
-          // this.startAddressPositionLong = 72.88235;
-          // this.endAddressPositionLat=  19.03261;
-          // this.endAddressPositionLong= 73.02961;
           this.corridorWidth = 100;
           this.corridorWidthKm = this.corridorWidth / 1000;
         }
+
         //create and add Icon
-        if(isExisting || isExisting == undefined){
-        let locMarkup = this.getCategoryPOIIcon();
-        let markerSizeIcon = { w: 25, h: 39 };
-        const locIcon = new H.map.Icon(locMarkup, { size: markerSizeIcon, anchor: { x: Math.round(markerSizeIcon.w / 2), y: Math.round(markerSizeIcon.h / 2) } });
-        this.startMarker = new H.map.Marker({ lat: this.startAddressPositionLat, lng: this.startAddressPositionLong }, { icon: locIcon });
-        this.mapGroup.addObject(this.startMarker);
+        if (!isExisting) {
+          let locMarkup = this.getCategoryPOIIcon();
+          let markerSizeIcon = { w: 25, h: 39 };
+          const locIcon = new H.map.Icon(locMarkup, { size: markerSizeIcon, anchor: { x: Math.round(markerSizeIcon.w / 2), y: Math.round(markerSizeIcon.h / 2) } });
+          this.startMarker = new H.map.Marker({ lat: this.startAddressPositionLat, lng: this.startAddressPositionLong }, { icon: locIcon });
+          this.mapGroup.addObject(this.startMarker);
         }
+
         //create and add start marker
         let houseMarker = this.createHomeMarker();
         let markerSize = { w: 26, h: 32 };
@@ -234,39 +204,39 @@ export class MapFunctionsService {
         </div>`
         this.endMarker.setData(endMarkerHtml);
         this.mapGroup.addObject(this.endMarker);
-        //this.hereMap.addObject(this.mapGroup)
+
         this.hereMap.getViewModel().setLookAtData({
           bounds: this.mapGroup.getBoundingBox()
         });
 
-        if(accountOrganizationId){
-        // add end tooltip
-        let bubble;
-        this.endMarker.addEventListener('pointerenter',  (evt)=> {
-          // event target is the marker itself, group is a parent event target
-          // for all objects that it contains
-          bubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
-            // read custom data
-            content: evt.target.getData()
-          });
-          // show info bubble
-          this.ui.addBubble(bubble);
-        }, false);
-        this.endMarker.addEventListener('pointerleave', (evt)=> {
-          this.ui.removeBubble(bubble);
-          bubble.close();
-          bubble.dispose();
-        }, false);
-      }
-        //this.group.addObjects([this.startMarker, this.endMarker]);
-        if(isRCorridor && _selectedRoutes[i].corridorType && _selectedRoutes[i].corridorType == 'R'){
-          let gpsLineString:any = [];
+        if (accountOrganizationId) {
+          // add end tooltip
+          let bubble;
+          this.endMarker.addEventListener('pointerenter', (evt) => {
+            // event target is the marker itself, group is a parent event target
+            // for all objects that it contains
+            bubble = new H.ui.InfoBubble(evt.target.getGeometry(), {
+              // read custom data
+              content: evt.target.getData()
+            });
+            // show info bubble
+            this.ui.addBubble(bubble);
+          }, false);
+          this.endMarker.addEventListener('pointerleave', (evt) => {
+            this.ui.removeBubble(bubble);
+            bubble.close();
+            bubble.dispose();
+          }, false);
+        }
+
+        if (isRCorridor && _selectedRoutes[i].corridorType && _selectedRoutes[i].corridorType == 'R') {
+          let gpsLineString: any = [];
           _selectedRoutes[i].viaAddressDetail.forEach(element => {
             gpsLineString.push(element.latitude, element.longitude, 0);
           });
-          if(_selectedRoutes[i].viaAddressDetail.length > 0){
-            // this.viaRouteCount = true;
-            this.viaRoutePlottedPoints = _selectedRoutes[i].viaAddressDetail.filter( e => e.type == "V");
+          if (_selectedRoutes[i].viaAddressDetail.length > 0) {
+
+            this.viaRoutePlottedPoints = _selectedRoutes[i].viaAddressDetail.filter(e => e.type == "V");
             this.viaRoutePlottedPoints.forEach(element => {
               element["viaRoutName"] = element.corridorViaStopName;
             });
@@ -274,36 +244,36 @@ export class MapFunctionsService {
           }
           this.addTruckRouteShapeToMapEdit(gpsLineString);
         } else {
-        if (accountOrganizationId) {
-          if (_selectedRoutes[i].id) {
-            this.corridorService.getCorridorFullList(accountOrganizationId, _selectedRoutes[i].id).subscribe((data) => {
-              ////console.log(data)
-              if (data[0]["corridorProperties"]) {
-                this.additionalData = data[0]["corridorProperties"];
-                this.setAdditionalData();
-              }
-                  if(this.trafficOnceChecked){
-                    this.hereMap.addLayer(this.defaultLayers.vector.normal.traffic);
-                  }
-                  if(this.transportOnceChecked){
-                    this.hereMap.addLayer(this.defaultLayers.vector.normal.truck);
-                  }
+          if (accountOrganizationId) {
+            if (_selectedRoutes[i].id) {
+              this.corridorService.getCorridorFullList(accountOrganizationId, _selectedRoutes[i].id).subscribe((data) => {
+
+                if (data[0]["corridorProperties"]) {
+                  this.additionalData = data[0]["corridorProperties"];
+                  this.setAdditionalData();
+                }
+                if (this.trafficOnceChecked) {
+                  this.hereMap.addLayer(this.defaultLayers.vector.normal.traffic);
+                }
+                if (this.transportOnceChecked) {
+                  this.hereMap.addLayer(this.defaultLayers.vector.normal.truck);
+                }
 
                 if (data[0].viaAddressDetail.length > 0) {
                   this.viaRoutePlottedPoints = [];
                   this.viaRoutePlottedPoints = data[0].viaAddressDetail;
                   this.plotViaStopPoints();
                 }
-                else{
+                else {
                   this.viaRoutePlottedPoints = [];
                 }
 
-                if(data[0].trips && data[0].trips.length > 0){ // For existing trip
+                if (data[0].trips && data[0].trips.length > 0) { // For existing trip
                   this.startAddressPositionLat = data[0].trips[0].startLatitude;
                   this.startAddressPositionLong = data[0].trips[0].startLongitude;
                   this.endAddressPositionLat = data[0].trips[0].endLatitude;
                   this.endAddressPositionLong = data[0].trips[0].endLongitude;
-                }else{ // For route calculating
+                } else { // For route calculating
                   this.startAddressPositionLat = data[0].startLat;
                   this.startAddressPositionLong = data[0].startLong;
                   this.endAddressPositionLat = data[0].endLat;
@@ -311,67 +281,63 @@ export class MapFunctionsService {
                 }
                 this.calculateTruckRoute();
 
-            })
+              })
+            }
+          }
+          else {
+            this.calculateTruckRoute();
+            this.plotStartPoint(this.startAddressPositionLong)
+
           }
         }
-        else {
-          this.calculateTruckRoute();
-        this.plotStartPoint(this.startAddressPositionLong)
 
-        }
-      }
-        //this.removeBubble();
-
-        // this.hereMap.getViewModel().setLookAtData({ bounds: group.getBoundingBox()});
-        // let successRoute = this.calculateAB('view');
       }
 
     }
   }
 
-  viewSelectedRoutesCorridor(_selectedRoutes, accountOrganizationId?, translationData?: any){
-        this.viewSelectedRoutes(_selectedRoutes, accountOrganizationId, true, translationData);
+  viewSelectedRoutesCorridor(_selectedRoutes, accountOrganizationId?, translationData?: any) {
+    this.viewSelectedRoutes(_selectedRoutes, accountOrganizationId, true, translationData);
   }
 
-  addTruckRouteShapeToMapEdit(gpsLineString){
-        let co = [[19.14012, 72.88097, 0], [19.14012, 72.88097, 0]];
-        let ob = {
-          precision : 5,
-          thirdDim : 0,
-          thirdDimPrecision: 0,
-          polyline: co
-        };
-        let lineVal = encode(ob);
-        let linestring = H.geo.LineString.fromFlexiblePolyline(lineVal);
-        linestring.Y = gpsLineString;
-        this.corridorPath = new H.map.Polyline(linestring, {
-          style:  {
-            lineWidth: this.corridorWidthKm * 10,
-            strokeColor: 'rgba(181, 199, 239, 0.6)'
-          }
-        });
-        // Create a polyline to display the route:
-        let polylinePath = new H.map.Polyline(linestring, {
-          style:  {
-            lineWidth: 3,
-            strokeColor: '#436ddc'
-          }
-        });
+  addTruckRouteShapeToMapEdit(gpsLineString) {
+    let co = [[19.14012, 72.88097, 0], [19.14012, 72.88097, 0]];
+    let ob = {
+      precision: 5,
+      thirdDim: 0,
+      thirdDimPrecision: 0,
+      polyline: co
+    };
+    let lineVal = encode(ob);
+    let linestring = H.geo.LineString.fromFlexiblePolyline(lineVal);
+    linestring.Y = gpsLineString;
+    this.corridorPath = new H.map.Polyline(linestring, {
+      style: {
+        lineWidth: this.corridorWidthKm * 10,
+        strokeColor: 'rgba(181, 199, 239, 0.6)'
+      }
+    });
+    // Create a polyline to display the route:
+    let polylinePath = new H.map.Polyline(linestring, {
+      style: {
+        lineWidth: 3,
+        strokeColor: '#436ddc'
+      }
+    });
 
-        // Add the polyline to the map
-        this.mapGroup.addObjects([this.corridorPath,polylinePath]);
-        this.hereMap.addObject(this.mapGroup);
-        // And zoom to its bounding rectangle
-        this.hereMap.getViewModel().setLookAtData({
-          bounds: this.mapGroup.getBoundingBox()
-        });
-    //   });
-    // }
+    // Add the polyline to the map
+    this.mapGroup.addObjects([this.corridorPath, polylinePath]);
+    this.hereMap.addObject(this.mapGroup);
+    // And zoom to its bounding rectangle
+    this.hereMap.getViewModel().setLookAtData({
+      bounds: this.mapGroup.getBoundingBox()
+    });
+
   }
 
-  removeBubble(){
+  removeBubble() {
     this.hereMap.addEventListener('tap', (evt) => {
-    this.ui.getBubbles().forEach(bub =>this.ui.removeBubble(bub));
+      this.ui.getBubbles().forEach(bub => this.ui.removeBubble(bub));
 
     })
   }
@@ -380,7 +346,7 @@ export class MapFunctionsService {
   viaMarker: any;
 
   plotViaStopPoints() {
-    for (var i in this.viaRoutePlottedPoints){
+    for (var i in this.viaRoutePlottedPoints) {
       this.viaAddressPositionLat = this.viaRoutePlottedPoints[i]["latitude"];
       this.viaAddressPositionLong = this.viaRoutePlottedPoints[i]["longitude"];
       let viaMarker = this.createViaMarker();
@@ -416,27 +382,27 @@ export class MapFunctionsService {
     this.trafficFlowChecked = _data["isTrafficFlow"];
     this.transportDataChecked = _data["isTransportData"];
     this.trafficFlowChecked = _data["isTrafficFlow"];
-    if(this.trafficFlowChecked){
-      this.trafficOnceChecked= true;
-      //this.hereMap.addLayer(this.defaultLayers.vector.normal.traffic);
+    if (this.trafficFlowChecked) {
+      this.trafficOnceChecked = true;
     }
+
     this.transportDataChecked = _data["isTransportData"];
-    if(this.transportDataChecked){
+    if (this.transportDataChecked) {
       this.transportOnceChecked = true;
-      //this.hereMap.addLayer(this.defaultLayers.vector.normal.truck);
     }
+
     this.vehicleHeightValue = _data["vehicleSize"].vehicleHeight;
     this.vehicleWidthValue = _data["vehicleSize"].vehicleWidth;
     this.vehicleLengthValue = _data["vehicleSize"].vehicleLength;
     this.vehicleLimitedWtValue = _data["vehicleSize"].vehicleLimitedWeight;
     this.vehicleWtPerAxleValue = _data["vehicleSize"].vehicleWeightPerAxle;
 
-    this.getExclusionList["tunnelsType"] == 'A'  ? this.exclusions.push('tunnel') :'';
-    this.getExclusionList["tollRoadType"] == 'A'  ? this.exclusions.push('tollRoad') :'';
-    this.getExclusionList["boatFerriesType"] == 'A'  ? this.exclusions.push('ferry') :'';
-    this.getExclusionList["dirtRoadType"] == 'A'  ? this.exclusions.push('dirtRoad') :'';
-    this.getExclusionList["mortorway"] == 'A'  ? this.exclusions.push('controlledAccessHighway') :'';
-    this.getExclusionList["railFerriesType"] == 'A'  ? this.exclusions.push('carShuttleTrain') :'';
+    this.getExclusionList["tunnelsType"] == 'A' ? this.exclusions.push('tunnel') : '';
+    this.getExclusionList["tollRoadType"] == 'A' ? this.exclusions.push('tollRoad') : '';
+    this.getExclusionList["boatFerriesType"] == 'A' ? this.exclusions.push('ferry') : '';
+    this.getExclusionList["dirtRoadType"] == 'A' ? this.exclusions.push('dirtRoad') : '';
+    this.getExclusionList["mortorway"] == 'A' ? this.exclusions.push('controlledAccessHighway') : '';
+    this.getExclusionList["railFerriesType"] == 'A' ? this.exclusions.push('carShuttleTrain') : '';
 
   }
   plotIconPoint(_locationId) {
@@ -455,14 +421,13 @@ export class MapFunctionsService {
       this.startMarker = new H.map.Marker({ lat: this.startAddressPositionLat, lng: this.startAddressPositionLong }, { icon: icon });
       var group = new H.map.Group();
       this.hereMap.addObject(this.startMarker);
-      //this.hereMap.getViewModel().setLookAtData({zoom: 8});
-      //this.hereMap.setZoom(8);
+
       this.hereMap.setCenter({ lat: this.startAddressPositionLat, lng: this.startAddressPositionLong }, 'default');
       this.checkRoutePlot();
 
     });
   }
-  getUI(){
+  getUI() {
     return this.ui;
   }
 
@@ -482,8 +447,7 @@ export class MapFunctionsService {
       this.startMarker = new H.map.Marker({ lat: this.startAddressPositionLat, lng: this.startAddressPositionLong }, { icon: icon });
       var group = new H.map.Group();
       this.hereMap.addObject(this.startMarker);
-      //this.hereMap.getViewModel().setLookAtData({zoom: 8});
-      //this.hereMap.setZoom(8);
+
       this.hereMap.setCenter({ lat: this.startAddressPositionLat, lng: this.startAddressPositionLong }, 'default');
       this.checkRoutePlot();
 
@@ -509,21 +473,20 @@ export class MapFunctionsService {
 
       this.endMarker = new H.map.Marker({ lat: this.endAddressPositionLat, lng: this.endAddressPositionLong }, { icon: icon });
       this.hereMap.addObject(this.endMarker);
-      // this.hereMap.getViewModel().setLookAtData({bounds: this.endMarker.getBoundingBox()});
-      //this.hereMap.setZoom(8);
+
       this.hereMap.setCenter({ lat: this.endAddressPositionLat, lng: this.endAddressPositionLong }, 'default');
       this.checkRoutePlot();
 
     });
 
   }
-  getCategoryPOIIcon(){
+  getCategoryPOIIcon() {
     let locMarkup = `<svg width="25" height="39" viewBox="0 0 25 39" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M22.9991 12.423C23.2909 20.9156 12.622 28.5702 12.622 28.5702C12.622 28.5702 1.45279 21.6661 1.16091 13.1735C1.06139 10.2776 2.11633 7.46075 4.09368 5.34265C6.07103 3.22455 8.8088 1.9787 11.7047 1.87917C14.6006 1.77965 17.4175 2.83459 19.5356 4.81194C21.6537 6.78929 22.8995 9.52706 22.9991 12.423Z" stroke="#00529C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
     <path d="M12.6012 37.9638C12.6012 37.9638 22.5882 18.1394 22.3924 12.444C22.1967 6.74858 17.421 2.29022 11.7255 2.48596C6.03013 2.6817 1.57177 7.45742 1.76751 13.1528C1.96325 18.8482 12.6012 37.9638 12.6012 37.9638Z" fill="#00529C"/>
     <path d="M12.3824 21.594C17.4077 21.4213 21.3486 17.4111 21.1845 12.637C21.0204 7.86293 16.8136 4.13277 11.7882 4.30549C6.76283 4.4782 2.82198 8.48838 2.98605 13.2625C3.15013 18.0366 7.357 21.7667 12.3824 21.594Z" fill="white"/>
     </svg>`;
-      return locMarkup;
+    return locMarkup;
   }
 
   createHomeMarker() {
@@ -562,21 +525,21 @@ export class MapFunctionsService {
     let lineWidth = this.corridorWidthKm;
     let routeRequestParams = {}
     routeRequestParams = {
-      'origin':`${this.startAddressPositionLat},${this.startAddressPositionLong}`,
+      'origin': `${this.startAddressPositionLat},${this.startAddressPositionLong}`,
       'destination': `${this.endAddressPositionLat},${this.endAddressPositionLong}`,
-      'return':'polyline,summary,travelSummary',
-      'routingMode':'fast',
-      'transportMode':'truck',
-      'apikey':this.map_key
+      'return': 'polyline,summary,travelSummary',
+      'routingMode': 'fast',
+      'transportMode': 'truck',
+      'apikey': this.map_key
 
     }
 
-    if(this.viaRoutePlottedPoints.length>0){
+    if (this.viaRoutePlottedPoints.length > 0) {
       let waypoints = [];
-      for(var i in this.viaRoutePlottedPoints){
+      for (var i in this.viaRoutePlottedPoints) {
         waypoints.push(`${this.viaRoutePlottedPoints[i]["latitude"]},${this.viaRoutePlottedPoints[i]["longitude"]}`)
       }
-      routeRequestParams['via'] = new H.service.Url.MultiValueQueryParameter( waypoints )
+      routeRequestParams['via'] = new H.service.Url.MultiValueQueryParameter(waypoints)
 
     }
 
@@ -584,7 +547,7 @@ export class MapFunctionsService {
       routeRequestParams['truck[trailerCount]'] = this.selectedTrailerId;
     }
     if (this.tunnelId) {
-      routeRequestParams['truck[tunnelCategory]']= this.tunnelId;
+      routeRequestParams['truck[tunnelCategory]'] = this.tunnelId;
     }
     if (this.vehicleHeightValue) {
       routeRequestParams['truck[height]'] = Math.round(this.vehicleHeightValue);
@@ -593,7 +556,7 @@ export class MapFunctionsService {
       routeRequestParams['truck[width]'] = Math.round(this.vehicleWidthValue);
     }
     if (this.vehicleLengthValue) {
-      routeRequestParams['truck[length]']= Math.round(this.vehicleLengthValue);
+      routeRequestParams['truck[length]'] = Math.round(this.vehicleLengthValue);
     }
     if (this.vehicleLimitedWtValue) {
       routeRequestParams['truck[grossWeight]'] = Math.round(this.vehicleLimitedWtValue);
@@ -603,24 +566,24 @@ export class MapFunctionsService {
     }
 
     if (this.hazardousMaterial.length > 0) {
-      routeRequestParams['truck[shippedHazardousGoods]']= this.hazardousMaterial.join();
+      routeRequestParams['truck[shippedHazardousGoods]'] = this.hazardousMaterial.join();
     }
 
-    if(this.exclusions.length>0){
+    if (this.exclusions.length > 0) {
       routeRequestParams['avoid[features]'] = this.exclusions.join();
 
     }
     this.routePoints = [];
-    this.hereService.calculateRoutePoints(routeRequestParams).then((data:any)=>{
-      if(data && data.routes){
-        if(data.routes.length == 0){
+    this.hereService.calculateRoutePoints(routeRequestParams).then((data: any) => {
+      if (data && data.routes) {
+        if (data.routes.length == 0) {
         }
-        else{
+        else {
           this.routePoints = data.routes[0];
           this.addTruckRouteShapeToMap(lineWidth);
         }
 
-        }
+      }
 
     })
 
@@ -649,41 +612,14 @@ export class MapFunctionsService {
           }
         });
 
-         this.polyLineArray.push(this.corridorPath);
-         this.mapGroup.addObjects([this.corridorPath, this.polylinePath]);
+        this.polyLineArray.push(this.corridorPath);
+        this.mapGroup.addObjects([this.corridorPath, this.polylinePath]);
 
-        // functions removed as points are preserved from lat long line : 246 - were added for 16249
-        // if(this.organizationId){ // to store all the polylines 16249
-        //   this.polyLinePathArray.push({
-        //     'id' : this.corridorId,
-        //     'corridorPath' : this.corridorPath,
-        //     'polylinePath' : this.polylinePath
-        //   })
-        // }
-        // if(this.polyLinePathArray.length > 0){
-        //   for(var i in this.polyLinePathArray){
-        //     this.mapGroup.addObjects([this.polyLinePathArray[i]['corridorPath'], this.polyLinePathArray[i]['polylinePath']]);
-
-        //   }
-        // }
-        // else{
-        //   this.mapGroup.addObjects([this.corridorPath, this.polylinePath]);
-
-        // }
-        // added for 16249 till here!
-
-        // Add the polyline to the map
-        // if (this.viaMarker) {
-        //   this.mapGroup.addObject(this.viaMarker);
-        // }
         this.hereMap.addObject(this.mapGroup);
         this.hereMap.getViewModel().setLookAtData({
           bounds: this.mapGroup.getBoundingBox()
-       });
-        // And zoom to its bounding rectangle
-        //  this.hereMap.getViewModel().setLookAtData({
-        //     bounds: this.mapGroup.getBoundingBox()
-        //  });
+        });
+
       });
     }
   }
@@ -710,33 +646,25 @@ export class MapFunctionsService {
     }, false);
   }
 
-  updateWidth(_width,fromExistingTrip?){
+  updateWidth(_width, fromExistingTrip?) {
     this.corridorWidthKm = _width;
-    let setWidth = _width*10;
-   // this.addTruckRouteShapeToMap();
-    //let geoLineString = this.corridorPath.getGeometry();
+    let setWidth = _width * 10;
 
-  if(fromExistingTrip && this.polyLineArray.length > 0) {
-    this.polyLineArray.forEach(getAllPaths => {
-      getAllPaths.setStyle({
-        lineWidth: setWidth,
-        strokeColor: 'rgba(181, 199, 239, 0.6)'
+    if (fromExistingTrip && this.polyLineArray.length > 0) {
+      this.polyLineArray.forEach(getAllPaths => {
+        getAllPaths.setStyle({
+          lineWidth: setWidth,
+          strokeColor: 'rgba(181, 199, 239, 0.6)'
+        });
       });
-    });
-  }else {
-    if(this.corridorPath){
-      this.corridorPath.setStyle({
-        lineWidth: setWidth,
-        strokeColor: 'rgba(181, 199, 239, 0.6)'
-      });
+    } else {
+      if (this.corridorPath) {
+        this.corridorPath.setStyle({
+          lineWidth: setWidth,
+          strokeColor: 'rgba(181, 199, 239, 0.6)'
+        });
+      }
+
     }
-
-
-
-
-    //this.corridorPath.setStyle( this.corridorPath.getStyle().getCopy({linewidth:_width}));
-    ////console.log(geoLineString)
-    //this.corridorPath.setGeometry(geoLineString);
   }
-}
 }
