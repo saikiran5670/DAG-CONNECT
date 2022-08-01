@@ -539,7 +539,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       this.vehicleDD = this.getUniqueVINs([...this.singleVehicle, ...vehicleData]);
       this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
     } else {
-      let search = this.vehicleListData.filter(i => i.vehicleGroupId == parseInt(event.value));
+      let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
       const arrayUniqueByKey = [...new Map(search.map(item => [item['vehicleId'], item])).values()];
       if (arrayUniqueByKey.length > 0) {
         this.vehicleDD = [];
