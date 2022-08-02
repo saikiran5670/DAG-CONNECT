@@ -770,7 +770,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
           this.mileageBasedChart.chartType = element.chartType;
           this.mileageBasedChart.thresholdValue = element.thresholdValue;
           this.mileageBasedChart.thresholdType = element.thresholdType;
-           this.mileagebasedThreshold = this.reportMapService.convertDistanceUnits(element.thresholdValue, this.prefUnitFormat);
+           this.mileagebasedThreshold = parseInt(element.thresholdValue);
 
           this.mileageDChartType = element.chartType == "D" ? true : false;
           this.doughnutChartLabels = [`${this.translationData.lblPercentageofvehicleswithdistancedoneabove || 'Percentage of vehicles with distance done above'} ${this.mileagebasedThreshold} `+ prefUnit, `${this.translationData.lblPercentageofvehicleswithdistancedoneunder || 'Percentage of vehicles with distance done under'} ${this.mileagebasedThreshold} `+ prefUnit]
@@ -1021,7 +1021,7 @@ public filteredVehicle: ReplaySubject<String[]> = new ReplaySubject<String[]>(1)
 
       let totalConvDistance : any = this.reportMapService.getDistance(totalDistance, this.prefUnitFormat);
       if (totalConvDistance && this.mileagebasedThreshold){
-      let percentDistance = Number(((Number(totalConvDistance) / this.mileagebasedThreshold) * 100).toFixed(2));
+      let percentDistance =Number(((totalConvDistance / this.mileagebasedThreshold) * 100).toFixed(2));
       let thresholdLeft = (100 - percentDistance > 0) ? 100 - percentDistance : 0;
       this.doughnutChartData = [[(percentDistance > 100) ? 100 : percentDistance, thresholdLeft]];
       this.mileagePieChartData = [[(percentDistance > 100) ? 100 : percentDistance, thresholdLeft]];
